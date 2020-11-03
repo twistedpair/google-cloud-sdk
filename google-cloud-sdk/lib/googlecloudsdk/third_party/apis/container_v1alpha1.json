@@ -1306,6 +1306,10 @@
         "podIpv4CidrBlock": {
           "description": "The IP address range for pod IPs in this node pool. Only applicable if `create_pod_range` is true. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. `\/14`) to have a range chosen with a specific netmask. Set to a [CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing) notation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g. `10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range to use.",
           "type": "string"
+        },
+        "enableEndpointsliceProxying": {
+          "description": "If true, kube-proxy will read from EndpointSlices instead of Endpoints. This flag only applies to GKE 1.18.",
+          "type": "boolean"
         }
       }
     },
@@ -2737,6 +2741,10 @@
         "desiredGkeOidcConfig": {
           "description": "Security message for security related configuration",
           "$ref": "GkeOidcConfig"
+        },
+        "desiredWorkloadMonitoringEapConfig": {
+          "description": "Configuration for workload monitoring EAP.",
+          "$ref": "WorkloadMonitoringEapConfig"
         }
       }
     },
@@ -2780,6 +2788,17 @@
       "properties": {
         "enabled": {
           "description": "Enables l4 ILB subsetting for this cluster",
+          "type": "boolean"
+        }
+      }
+    },
+    "WorkloadMonitoringEapConfig": {
+      "id": "WorkloadMonitoringEapConfig",
+      "description": "WorkloadMonitoringConfig is configuration for collecting workload metrics on GKE. Temporary config for EAP.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether to send workload metrics from the cluster to Google Cloud Monitoring.",
           "type": "boolean"
         }
       }

@@ -375,7 +375,8 @@ Cluster Autoscaler will be able to delete the node pool if it's unneeded.""",
 def AddLocalSSDFlag(parser, suppressed=False, help_text=''):
   """Adds a --local-ssd-count flag to the given parser."""
   help_text += """\
-The number of local SSD disks to provision on each node.
+The number of local SSD disks to provision on each node, formatted and mounted
+in the filesystem.
 
 Local SSDs have a fixed 375 GB capacity per device. The number of disks that
 can be attached to an instance is limited by the maximum number of disks
@@ -863,6 +864,18 @@ def AddEnableLoggingMonitoringSystemOnlyFlag(parser):
       help=help_text)
 
 
+def AddEnableWorkloadMonitoringEapFlag(parser):
+  """Adds a --enable-workload-monitoring-eap flag to parser."""
+  help_text = """Enable workload monitoring (EAP)."""
+  parser.add_argument(
+      '--enable-workload-monitoring-eap',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=True,
+  )
+
+
 def AddEnableMasterSignalsFlags(parser, for_create=False):
   """Adds --master-logs and --enable-master-metrics flags to parser."""
 
@@ -943,21 +956,21 @@ and usage information."""
 
 def AddLocalSSDsAlphaFlags(parser, for_node_pool=False, suppressed=False):
   """Adds the --local-ssd-count and --local-ssd-volumes flags to the parser."""
-  help_text = """\
---local-ssd-volumes enables the ability to request local SSD with variable count, interfaces, and format\n
---local-ssd-count is the equivalent of using --local-ssd-volumes with type=scsi,format=fs
-
+  local_ssd_relationship = """\
+--local-ssd-count is the equivalent of using --local-ssd-volumes with type=scsi,format=fs\n
 """
   group = parser.add_mutually_exclusive_group()
-  AddLocalSSDVolumeConfigsFlag(
-      group, for_node_pool=for_node_pool, help_text=help_text)
-  AddLocalSSDFlag(group, suppressed=suppressed, help_text=help_text)
+  AddLocalSSDVolumeConfigsFlag(group, for_node_pool=for_node_pool)
+  AddEphemeralStorageFlag(group, for_node_pool=for_node_pool, hidden=suppressed)
+  AddLocalSSDFlag(
+      group, suppressed=suppressed, help_text=local_ssd_relationship)
 
 
-def AddLocalSSDsBetaFlags(parser, suppressed=False):
+def AddLocalSSDsBetaFlags(parser, for_node_pool=False, suppressed=False):
   """Adds the --local-ssd-count flag to the parser."""
   group = parser.add_mutually_exclusive_group()
   AddLocalSSDFlag(group, suppressed=suppressed)
+  AddEphemeralStorageFlag(group, for_node_pool=for_node_pool, hidden=suppressed)
 
 
 def AddLocalSSDVolumeConfigsFlag(parser, for_node_pool=False, help_text=''):
@@ -998,6 +1011,33 @@ https://cloud.google.com/compute/docs/disks/local-ssd for more information.
           max_length=3),
       action='append',
       help=help_text)
+
+
+def AddEphemeralStorageFlag(parser,
+                            hidden=False,
+                            for_node_pool=False,
+                            help_text=''):
+  """Adds --ephemeral-storage flag to the parser."""
+  help_text += """\
+Parameters for the ephemeral storage filesystem.
+If unspecified, ephemeral storage is backed by the boot disk. Example:
+
+  $ {{command}} {0} --ephemeral-storage local-ssd-count=2
+
+'local-ssd-count' specifies the number of local SSDs to use to back ephemeral
+storage. Local SDDs use NVMe interfaces and each is 375 GB in size.
+If 'local-ssd-count=0', it means to disable using local SSDs as ephemeral storage.
+
+See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
+""".format('node-pool-1 --cluster=example cluster'
+           if for_node_pool else 'example_cluster')
+  parser.add_argument(
+      '--ephemeral-storage',
+      help=help_text,
+      hidden=hidden,
+      type=arg_parsers.ArgDict(
+          spec={'local-ssd-count': int}, required_keys=['local-ssd-count']),
+  )
 
 
 def AddNodeTaintsFlag(parser, for_node_pool=False, hidden=False):

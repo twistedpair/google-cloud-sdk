@@ -1073,6 +1073,28 @@ class ImportContext(_messages.Message):
   uri = _messages.StringField(7)
 
 
+class InsightsConfig(_messages.Message):
+  r"""Insights configuration. This specifies when Cloud SQL Insights feature
+  is enabled and optional configuration.
+
+  Fields:
+    queryInsightsEnabled: Whether Query Insights feature is enabled.
+    queryStringLength: Maximum query length stored in bytes. Default value:
+      1024 bytes. Range: 256-4500 bytes. Query length more than this field
+      value will be truncated to this value. When unset, query length will be
+      the default value.
+    recordApplicationTags: Whether Query Insights will record application tags
+      from query when enabled.
+    recordClientAddress: Whether Query Insights will record client address
+      when enabled.
+  """
+
+  queryInsightsEnabled = _messages.BooleanField(1)
+  queryStringLength = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  recordApplicationTags = _messages.BooleanField(3)
+  recordClientAddress = _messages.BooleanField(4)
+
+
 class InstancesCloneRequest(_messages.Message):
   r"""Database instance clone request.
 
@@ -1734,6 +1756,8 @@ class Settings(_messages.Message):
     databaseReplicationEnabled: Configuration specific to read replica
       instances. Indicates whether replication is enabled or not.
     denyMaintenancePeriods: Deny maintenance periods
+    insightsConfig: Insights configuration, for now relevant only for
+      Postgres.
     ipConfiguration: The settings for IP Management. This allows to enable or
       disable the instance IP and manage which external networks can connect
       to the instance. The IPv4 address cannot be disabled for Second
@@ -1887,17 +1911,18 @@ class Settings(_messages.Message):
   databaseFlags = _messages.MessageField('DatabaseFlags', 10, repeated=True)
   databaseReplicationEnabled = _messages.BooleanField(11)
   denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 12, repeated=True)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 13)
-  kind = _messages.StringField(14)
-  locationPreference = _messages.MessageField('LocationPreference', 15)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 16)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 17)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 18)
-  settingsVersion = _messages.IntegerField(19)
-  storageAutoResize = _messages.BooleanField(20)
-  storageAutoResizeLimit = _messages.IntegerField(21)
-  tier = _messages.StringField(22)
-  userLabels = _messages.MessageField('UserLabelsValue', 23)
+  insightsConfig = _messages.MessageField('InsightsConfig', 13)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 14)
+  kind = _messages.StringField(15)
+  locationPreference = _messages.MessageField('LocationPreference', 16)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 17)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 18)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 19)
+  settingsVersion = _messages.IntegerField(20)
+  storageAutoResize = _messages.BooleanField(21)
+  storageAutoResizeLimit = _messages.IntegerField(22)
+  tier = _messages.StringField(23)
+  userLabels = _messages.MessageField('UserLabelsValue', 24)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):

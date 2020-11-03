@@ -641,33 +641,6 @@
         }
       }
     },
-    "ProjectSettings": {
-      "id": "ProjectSettings",
-      "description": "The Artifact Registry settings that apply to a Project.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the project's settings. Always of the form: projects\/{project-id}\/projectSettings In update request: never set In response: always set",
-          "type": "string"
-        },
-        "legacyRedirectionState": {
-          "description": "The redirection state of the legacy repositories in this project.",
-          "type": "string",
-          "enumDescriptions": [
-            "No redirection status has been set.",
-            "Redirection is disabled.",
-            "Redirection is enabled.",
-            "Redirection is enabled, and has been finalized so cannot be reverted."
-          ],
-          "enum": [
-            "REDIRECTION_STATE_UNSPECIFIED",
-            "REDIRECTION_FROM_GCR_IO_DISABLED",
-            "REDIRECTION_FROM_GCR_IO_ENABLED",
-            "REDIRECTION_FROM_GCR_IO_FINALIZED"
-          ]
-        }
-      }
-    },
     "ListDockerImagesResponse": {
       "id": "ListDockerImagesResponse",
       "description": "The response from listing docker images.",
@@ -794,75 +767,16 @@
           "items": {
             "type": "string"
           }
+        },
+        "useWildcards": {
+          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
+          "type": "boolean"
         }
       }
     }
   },
   "resources": {
     "projects": {
-      "methods": {
-        "getProjectSettings": {
-          "id": "artifactregistry.projects.getProjectSettings",
-          "path": "v1beta2/{+name}",
-          "flatPath": "v1beta2/projects/{projectsId}/projectSettings",
-          "httpMethod": "GET",
-          "parameters": {
-            "name": {
-              "description": "Required. The name of the projectSettings resource.",
-              "location": "path",
-              "required": true,
-              "pattern": "^projects\/[^\/]+\/projectSettings$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "ProjectSettings"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/cloud-platform.read-only"
-          ],
-          "description": "Retrieves the Settings for the Project"
-        },
-        "updateProjectSettings": {
-          "id": "artifactregistry.projects.updateProjectSettings",
-          "path": "v1beta2/{+name}",
-          "flatPath": "v1beta2/projects/{projectsId}/projectSettings",
-          "httpMethod": "PATCH",
-          "parameters": {
-            "name": {
-              "description": "The name of the project's settings. Always of the form: projects\/{project-id}\/projectSettings In update request: never set In response: always set",
-              "location": "path",
-              "required": true,
-              "pattern": "^projects\/[^\/]+\/projectSettings$",
-              "type": "string"
-            },
-            "updateMask": {
-              "description": "Field mask to support partial updates.",
-              "location": "query",
-              "type": "string",
-              "format": "google-fieldmask"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "request": {
-            "$ref": "ProjectSettings"
-          },
-          "response": {
-            "$ref": "ProjectSettings"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Retrieves the Settings for the Project"
-        }
-      }
-      ,
       "resources": {
         "locations": {
           "methods": {

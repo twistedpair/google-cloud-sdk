@@ -618,10 +618,14 @@ def GetTags(args, client):
   return None
 
 
-def GetLabels(args, client):
+def GetLabels(args, client, instance_properties=False):
+  """Gets labels for the instance message."""
+  labels_value = client.messages.Instance.LabelsValue
+  if instance_properties:
+    labels_value = client.messages.InstanceProperties.LabelsValue
   if args.labels:
-    return client.messages.Instance.LabelsValue(additionalProperties=[
-        client.messages.Instance.LabelsValue.AdditionalProperty(
+    return labels_value(additionalProperties=[
+        labels_value.AdditionalProperty(
             key=key, value=value)
         for key, value in sorted(six.iteritems(args.labels))
     ])

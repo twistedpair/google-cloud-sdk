@@ -698,6 +698,30 @@ class InstanceInfo(_messages.Message):
   uri = _messages.StringField(8)
 
 
+class LatencyDistribution(_messages.Message):
+  r"""Describes measured latency distribution.
+
+  Fields:
+    latencyPercentiles: Representative latency percentiles.
+  """
+
+  latencyPercentiles = _messages.MessageField('LatencyPercentile', 1, repeated=True)
+
+
+class LatencyPercentile(_messages.Message):
+  r"""Latency percentile rank and value.
+
+  Fields:
+    latencyMicros: percent-th percentile of latency observed, in microseconds.
+      Fraction of percent/100 of samples have latency lower or equal to the
+      value of this field.
+    percent: Percentage of samples this data point applies to.
+  """
+
+  latencyMicros = _messages.IntegerField(1)
+  percent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class ListConnectivityTestsResponse(_messages.Message):
   r"""Response for the `ListConnectivityTests` method.
 
@@ -1388,6 +1412,9 @@ class ProbingDetails(_messages.Message):
       destination endpoint where the probing was run.
     error: The details of an internal failure or a cancellation of
       reachability analysis.
+    probingLatency: One way probing latency distribution. The latency is
+      measured as duration of packet traversal of Google Cloud network, from
+      source to destination endpoint.
     result: The overall reachability result of the test.
     sentProbeCount: Number of probes sent.
     successfulProbeCount: Number of probes that reached destination.
@@ -1433,10 +1460,11 @@ class ProbingDetails(_messages.Message):
   abortCause = _messages.EnumField('AbortCauseValueValuesEnum', 1)
   endpointInfo = _messages.MessageField('EndpointInfo', 2)
   error = _messages.MessageField('Status', 3)
-  result = _messages.EnumField('ResultValueValuesEnum', 4)
-  sentProbeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  successfulProbeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  verifyTime = _messages.StringField(7)
+  probingLatency = _messages.MessageField('LatencyDistribution', 4)
+  result = _messages.EnumField('ResultValueValuesEnum', 5)
+  sentProbeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  successfulProbeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  verifyTime = _messages.StringField(8)
 
 
 class ReachabilityDetails(_messages.Message):

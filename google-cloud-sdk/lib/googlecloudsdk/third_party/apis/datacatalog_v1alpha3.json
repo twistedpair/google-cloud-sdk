@@ -500,7 +500,7 @@
       "type": "object",
       "properties": {
         "bucket": {
-          "description": "The bucket name. For example, GCS bucket name.",
+          "description": "The Google Cloud Storage bucket name.",
           "type": "string"
         }
       }

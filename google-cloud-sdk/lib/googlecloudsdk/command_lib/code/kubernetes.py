@@ -30,6 +30,11 @@ import six
 DEFAULT_CLUSTER_NAME = 'gcloud-local-dev'
 
 
+def GetKindVersion():
+  """Returns the current version of minikube."""
+  return six.ensure_text(subprocess.check_output([_FindKind(), 'version']))
+
+
 class _KubeCluster(object):
   """A kubernetes cluster.
 
@@ -150,6 +155,11 @@ def _FindKind():
   return run_subprocess.GetGcloudPreferredExecutable('kind')
 
 
+def GetMinikubeVersion():
+  """Returns the current version of minikube."""
+  return six.ensure_text(subprocess.check_output([_FindMinikube(), 'version']))
+
+
 class MinikubeCluster(_KubeCluster):
   """A cluster on minikube.
 
@@ -258,7 +268,13 @@ def _HandleMinikubeStatusEvent(progress_bar, json_obj):
   if json_obj['type'] == _MINIKUBE_STEP:
     data = json_obj['data']
 
-    if 'currentstep' in data and 'totalsteps' in data:
+    # currentstep and totalsteps could be:
+    #   missing -> invalid
+    #   ''      -> invalid
+    #   '0'     -> ok
+    #   0       -> ok
+    # pylint:disable=g-explicit-bool-comparison
+    if data.get('currentstep', '') != '' and data.get('totalsteps', '') != '':
       current_step = int(data['currentstep'])
       total_steps = int(data['totalsteps'])
       completion_fraction = current_step / float(total_steps)
@@ -314,7 +330,7 @@ def _StopMinikube(cluster_name, debug=False):
 
 def DeleteMinikube(cluster_name):
   """Delete a minikube cluster."""
-  cmd = [_FindMinikube(), 'delete', '-p', cluster_name, '--purge']
+  cmd = [_FindMinikube(), 'delete', '-p', cluster_name]
   print("Deleting development environment '%s' ..." % cluster_name)
   run_subprocess.Run(cmd, timeout_sec=150, show_output=False)
   print('Development environment stopped.')

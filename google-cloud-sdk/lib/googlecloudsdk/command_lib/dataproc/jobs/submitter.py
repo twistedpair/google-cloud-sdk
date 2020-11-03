@@ -35,9 +35,16 @@ class JobSubmitter(base.Command):
     parser.add_argument(
         '--max-failures-per-hour',
         type=int,
-        help=('Specifies maximum number of times a job can be restarted in '
-              'event of failure. Expressed as a per-hour rate. '
-              'Default is 0 (no failure retries).'))
+        help=('Specifies the maximum number of times a job can be restarted '
+              'per hour in event of failure. '
+              'Default is 0 (no retries after job failure).'))
+    parser.add_argument(
+        '--max-failures-total',
+        type=int,
+        hidden=True,
+        help=('Specifies the maximum total number of times a job can be '
+              'restarted after the job fails. '
+              'Default is 0 (no retries after job failure).'))
     parser.add_argument(
         '--cluster',
         required=True,
@@ -75,9 +82,10 @@ class JobSubmitter(base.Command):
             clusterName=args.cluster))
     self.ConfigureJob(dataproc.messages, job, args)
 
-    if args.max_failures_per_hour:
+    if args.max_failures_per_hour or args.max_failures_total:
       scheduling = dataproc.messages.JobScheduling(
-          maxFailuresPerHour=args.max_failures_per_hour)
+          maxFailuresPerHour=args.max_failures_per_hour,
+          maxFailuresTotal=args.max_failures_total)
       job.scheduling = scheduling
 
     request = dataproc.messages.DataprocProjectsRegionsJobsSubmitRequest(

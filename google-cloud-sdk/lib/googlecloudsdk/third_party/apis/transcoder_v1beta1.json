@@ -312,6 +312,10 @@
         "audio": {
           "description": "Audio preprocessing configuration.",
           "$ref": "Audio"
+        },
+        "crop": {
+          "description": "Specify the video cropping configuration.",
+          "$ref": "Crop"
         }
       }
     },
@@ -386,6 +390,33 @@
         "lowBoost": {
           "description": "Enable boosting low frequency components. The default is `false`.",
           "type": "boolean"
+        }
+      }
+    },
+    "Crop": {
+      "id": "Crop",
+      "description": "Video cropping configuration.",
+      "type": "object",
+      "properties": {
+        "topPixels": {
+          "description": "The number of pixels to crop from the top. The default is 0.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "bottomPixels": {
+          "description": "The number of pixels to crop from the bottom. The default is 0.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "leftPixels": {
+          "description": "The number of pixels to crop from the left. The default is 0.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "rightPixels": {
+          "description": "The number of pixels to crop from the right. The default is 0.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

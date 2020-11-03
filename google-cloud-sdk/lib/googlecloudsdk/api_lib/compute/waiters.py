@@ -63,6 +63,14 @@ _HUMAN_FRIENDLY_OPERATION_TYPE_SUFFIXES = {
         'past': 'deleted',
         'present': 'delete'
     },
+    'createRegionPscForwardingRule': {
+        'past': 'created',
+        'present': 'create'
+    },
+    'deleteRegionPscForwardingRule': {
+        'past': 'deleted',
+        'present': 'delete'
+    },
     'insert': {
         'past': 'created',
         'present': 'create'

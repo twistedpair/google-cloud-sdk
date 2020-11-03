@@ -119,6 +119,17 @@ class InvalidRuntimeNameError(Error):
         'Must match regular expression [{}].'.format(runtime, allowed_regex))
 
 
+class RequiredFileMissingError(Error):
+  """Error for skipped/ignored files that must be uploaded."""
+
+  def __init__(self, filename):
+    super(RequiredFileMissingError, self).__init__(
+        'Required file is not uploaded: [{}]. '
+        'This file should not be added to a ignore list ('
+        'https://cloud.google.com/sdk/gcloud/reference/topic/gcloudignore)'
+        .format(filename))
+
+
 class FlexImageBuildOptions(enum.Enum):
   """Enum declaring different options for building image for flex deploys."""
   ON_CLIENT = 1
@@ -259,8 +270,9 @@ class ServiceDeployer(object):
       BuildArtifact, a wrapper which contains either the build ID for
         an in-progress build, or the name of the container image for a serial
         build. Possibly None if the service does not require an image.
+    Raises:
+      RequiredFileMissingError: if a required file is not uploaded.
     """
-
     build = None
     if image:
       if service.RequiresImage() and service.parsed.skip_files.regex:
@@ -269,6 +281,9 @@ class ServiceDeployer(object):
                     'already been built.'.format(new_version.service))
       return app_cloud_build.BuildArtifact.MakeImageArtifact(image)
     elif service.RequiresImage():
+      if not _AppYamlInSourceFiles(source_files, service.GetAppYamlBasename()):
+        raise RequiredFileMissingError(service.GetAppYamlBasename())
+
       if flex_image_build_option == FlexImageBuildOptions.ON_SERVER:
         cloud_build_options = {
             'appYamlPath': service.GetAppYamlBasename(),
@@ -337,6 +352,9 @@ class ServiceDeployer(object):
 
     Returns:
       Dictionary mapping source files to Google Cloud Storage locations.
+
+    Raises:
+      RequiredFileMissingError: if a required file is not uploaded.
     """
     manifest = None
     # "Non-hermetic" services require file upload outside the Docker image
@@ -344,6 +362,10 @@ class ServiceDeployer(object):
     if (not image and
         (flex_image_build_option == FlexImageBuildOptions.ON_SERVER or
          not service_info.is_hermetic)):
+      if (service_info.env == env.FLEX and not _AppYamlInSourceFiles(
+          source_files, service_info.GetAppYamlBasename())):
+        raise RequiredFileMissingError(service_info.GetAppYamlBasename())
+
       limit = None
       if (service_info.env == env.STANDARD and
           service_info.runtime in _RUNTIMES_WITH_FILE_SIZE_LIMITS):
@@ -478,8 +500,9 @@ def ArgsDeploy(parser):
       instances are always running.""")
   parser.add_argument(
       '--image-url',
-      help='Deploy with a specific Docker image.  Docker url must be from one '
-      'of the valid gcr hostnames.')
+      help='(App Engine flexible environment only.) Deploy with a specific '
+      'Docker image. Docker url must be from one of the valid Container '
+      'Registry hostnames.')
   parser.add_argument(
       '--appyaml',
       help='Deploy with a specific app.yaml that will replace '
@@ -917,3 +940,13 @@ def GetRuntimeBuilderStrategy(release_track):
     return runtime_builders.RuntimeBuilderStrategy.WHITELIST_BETA
   else:
     raise ValueError('Unrecognized release track [{}]'.format(release_track))
+
+
+def _AppYamlInSourceFiles(source_files, app_yaml_path):
+  if not source_files:
+    return False
+
+  # TODO(b/171495697) until the bug is fixed, the app yaml has to be located in
+  #  the root of the app code, hence we're searching only the filename
+  app_yaml_filename = os.path.basename(app_yaml_path)
+  return any([f == app_yaml_filename for f in source_files])

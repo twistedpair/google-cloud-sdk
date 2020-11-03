@@ -360,7 +360,7 @@ class InstallationState(object):
     with file_utils.TemporaryDirectory() as t:
       download_dir = os.path.join(t, '.download')
       extract_dir = os.path.join(t, '.extract')
-      installers.ComponentInstaller.DownloadAndExtractTar(
+      installers.DownloadAndExtractTar(
           url, download_dir, extract_dir, progress_callback=progress_callback,
           command_path='components.reinstall')
       files = os.listdir(extract_dir)

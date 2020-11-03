@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 
@@ -54,34 +53,43 @@ class S3ApiError(CloudApiError):
             self.error_format == other.error_format)
 
 
-# Modified version of api_lib.util.exceptions.CatchHTTPErrorRaiseHTTPException
-def catch_http_error_raise_gcs_api_error(format_str=None):
-  """Decorator catches HttpError and returns GcsApiError with custom message.
+def catch_error_raise_cloud_api_error(untranslated_error_class,
+                                      cloud_api_error_class,
+                                      format_str=None):
+  """Decorator catches an error and raises CloudApiError with a custom message.
 
   Args:
+    untranslated_error_class (Exception): An error class that needs to be
+      translated to a CloudApiError.
+    cloud_api_error_class (CloudApiError): A subclass of CloudApiError to be
+      raised instead of untranslated_error_class.
     format_str (str): A googlecloudsdk.api_lib.util.exceptions.HttpErrorPayload
-        format string. Note that any properties that are accessed here are on
-        the HttpErrorPayload object, not the object returned from the server.
+      format string. Note that any properties that are accessed here are on the
+      HttpErrorPayload object, not the object returned from the server.
 
   Returns:
-    A decorator that catches apitools.HttpError and returns GcsApiError with a
-        customizable error message.
+    A decorator that catches errors and raises a CloudApiError with a
+      customizable error message.
 
   Example:
-    @catch_http_error_raise_gcs_api_error('Error [{status_code}]')
+    @catch_error_raise_cloud_api_error(apitools_exceptions.HttpError,
+        GcsApiError, 'Error [{status_code}]')
     def some_func_that_might_throw_an_error():
-      ...
   """
 
-  def catch_http_error_raise_gcs_api_error_decorator(function):
+  # TODO(b/170215786): Update the docstring for the format_str attribute when an
+  # interoperable version of HttpErrorPayload is created.
+
+  def translate_api_error_decorator(function):
     # Need to define a secondary wrapper to get an argument to the outer
     # decorator.
     def wrapper(*args, **kwargs):
       try:
         return function(*args, **kwargs)
-      except apitools_exceptions.HttpError as error:
-        gcs_error = GcsApiError(error, format_str)
-        core_exceptions.reraise(gcs_error)
+      except untranslated_error_class as error:
+        cloud_api_error = cloud_api_error_class(error, format_str)
+        core_exceptions.reraise(cloud_api_error)
+
     return wrapper
 
-  return catch_http_error_raise_gcs_api_error_decorator
+  return translate_api_error_decorator

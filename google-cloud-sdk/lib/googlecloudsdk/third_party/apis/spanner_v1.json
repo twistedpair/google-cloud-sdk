@@ -257,6 +257,11 @@
           "description": "Output only. Applicable only for restored databases. Contains information about the restore source.",
           "readOnly": true,
           "$ref": "RestoreInfo"
+        },
+        "encryptionConfig": {
+          "description": "Output only. Custom encryption configuration (Cloud KMS keys). Applicable only for databases using the Customer Managed Encryption Keys feature.",
+          "readOnly": true,
+          "$ref": "EncryptionConfig"
         }
       }
     },
@@ -303,6 +308,17 @@
         }
       }
     },
+    "EncryptionConfig": {
+      "id": "EncryptionConfig",
+      "description": "Encryption configuration describing key resources in Cloud KMS used to encrypt\/decrypt a Cloud Spanner database.",
+      "type": "object",
+      "properties": {
+        "kmsKeyName": {
+          "description": "The resource name of the Cloud KMS key that was used to encrypt and decrypt the database. Values are of the form `projects\/\/locations\/\/keyRings\/\/cryptoKeys\/`.",
+          "type": "string"
+        }
+      }
+    },
     "CreateDatabaseRequest": {
       "id": "CreateDatabaseRequest",
       "description": "The request for CreateDatabase.",
@@ -318,6 +334,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "encryptionConfig": {
+          "description": "Optional.",
+          "$ref": "EncryptionConfig"
         }
       }
     },
@@ -409,7 +429,6 @@
           "$ref": "Expr"
         },
         "bindingId": {
-          "description": "A client-specified ID for this binding. Expected to be globally unique to support the internal bindings-by-ID API.",
           "type": "string"
         }
       }
@@ -1090,7 +1109,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the field. For reads, this is the column name. For SQL queries, it is the column alias (e.g., `\"Word\"` in the query `\"SELECT 'hello' AS Word\"`), or the column name (e.g., `\"ColName\"` in the query `\"SELECT ColName FROM Table\"`). Some columns might have an empty name (e.g., !\"SELECT UPPER(ColName)\"`). Note that a query result can contain multiple fields with the same name.",
+          "description": "The name of the field. For reads, this is the column name. For SQL queries, it is the column alias (e.g., `\"Word\"` in the query `\"SELECT 'hello' AS Word\"`), or the column name (e.g., `\"ColName\"` in the query `\"SELECT ColName FROM Table\"`). Some columns might have an empty name (e.g., `\"SELECT UPPER(ColName)\"`). Note that a query result can contain multiple fields with the same name.",
           "type": "string"
         },
         "type": {

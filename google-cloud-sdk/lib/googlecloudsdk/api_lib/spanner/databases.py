@@ -31,15 +31,19 @@ KNOWN_ROLES = [
 ]
 
 
-def Create(instance_ref, database, ddl):
+def Create(instance_ref, database, ddl, kms_key=None):
   """Create a new database."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
+  req_args = {
+      'createStatement': 'CREATE DATABASE `{}`'.format(database),
+      'extraStatements': ddl,
+  }
+  if kms_key:
+    req_args['encryptionConfig'] = msgs.EncryptionConfig(kmsKeyName=kms_key)
   req = msgs.SpannerProjectsInstancesDatabasesCreateRequest(
       parent=instance_ref.RelativeName(),
-      createDatabaseRequest=msgs.CreateDatabaseRequest(
-          createStatement='CREATE DATABASE `'+database+'`',
-          extraStatements=ddl))
+      createDatabaseRequest=msgs.CreateDatabaseRequest(**req_args))
   return client.projects_instances_databases.Create(req)
 
 

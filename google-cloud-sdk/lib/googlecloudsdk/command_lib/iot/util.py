@@ -56,7 +56,6 @@ MAX_METADATA_VALUE_SIZE = 1024 * 32
 MAX_METADATA_SIZE = 1024 * 256
 
 # Mapping of apitools request message fields to  their json parameters
-# TODO (b/124063772): Remove this mapping fix once apitools base fix is applied
 # pylint: disable=line-too-long, for readability.
 _CUSTOM_JSON_FIELD_MAPPINGS = {
     'gatewayListOptions_gatewayType': 'gatewayListOptions.gatewayType',
@@ -498,7 +497,6 @@ def AddUnBindArgsToRequest(ref, args, req):
   return req
 
 
-# TODO(b/124063772): Workaround for apitools issues with nested GET request
 # message fields.
 def RegistriesDevicesListRequestHook(ref, args, req):
   """Add Api field query string mappings to list requests."""

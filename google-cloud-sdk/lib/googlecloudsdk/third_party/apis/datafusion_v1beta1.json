@@ -381,7 +381,7 @@
           "type": "string"
         },
         "zone": {
-          "description": "Name of the zone in which the Data Fusion instance will be created.",
+          "description": "Name of the zone in which the Data Fusion instance will be created. Only DEVELOPER instances use this field.",
           "type": "string"
         },
         "version": {

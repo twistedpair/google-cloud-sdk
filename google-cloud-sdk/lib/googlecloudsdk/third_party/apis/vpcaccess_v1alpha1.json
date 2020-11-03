@@ -303,7 +303,22 @@
           }
         },
         "subnet": {
-          "description": "The subnet in which to house the connector. If present, this field will take priority over `ip_cidr_range` and `network`. Format: `projects\/[HOST_PROJECT_ID]\/regions\/*\/subnetworks\/*`. If the subnet is from the same project as the connector, this path does not need to be fully qualified.",
+          "description": "The subnet in which to house the VPC Access Connector.",
+          "$ref": "Subnet"
+        }
+      }
+    },
+    "Subnet": {
+      "id": "Subnet",
+      "description": "The subnet in which to house the connector.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Subnet name (relative, not fully qualified). E.g. if the full subnet selfLink is https:\/\/compute.googleapis.com\/compute\/v1\/projects\/{project}\/regions\/{region}\/subnetworks\/{subnetName} the correct input for this field would be {subnetName}",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "Project in which the subnet exists. If not set, this project is assumed to be the project for which the connector create request was issued.",
           "type": "string"
         }
       }

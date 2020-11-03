@@ -131,8 +131,7 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A client-specified ID for this binding. Expected to be globally
-      unique to support the internal bindings-by-ID API.
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -281,6 +280,7 @@ class CreateDatabaseRequest(_messages.Message):
       expression `a-z*[a-z0-9]` and be between 2 and 30 characters in length.
       If the database ID is a reserved word or if it contains a hyphen, the
       database ID must be enclosed in backticks (`` ` ``).
+    encryptionConfig: Optional.
     extraStatements: Optional. A list of DDL statements to run inside the
       newly created database. Statements can create tables, indexes, etc.
       These statements execute atomically with the creation of the database:
@@ -288,7 +288,8 @@ class CreateDatabaseRequest(_messages.Message):
   """
 
   createStatement = _messages.StringField(1)
-  extraStatements = _messages.StringField(2, repeated=True)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
+  extraStatements = _messages.StringField(3, repeated=True)
 
 
 class CreateInstanceMetadata(_messages.Message):
@@ -344,6 +345,9 @@ class Database(_messages.Message):
   Fields:
     createTime: Output only. If exists, the time at which the database
       creation started.
+    encryptionConfig: Output only. Custom encryption configuration (Cloud KMS
+      keys). Applicable only for databases using the Customer Managed
+      Encryption Keys feature.
     name: Required. The name of the database. Values are of the form
       `projects//instances//databases/`, where `` is as specified in the
       `CREATE DATABASE` statement. This name can be passed to other API
@@ -374,9 +378,10 @@ class Database(_messages.Message):
     READY_OPTIMIZING = 3
 
   createTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  restoreInfo = _messages.MessageField('RestoreInfo', 3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
+  name = _messages.StringField(3)
+  restoreInfo = _messages.MessageField('RestoreInfo', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class Delete(_messages.Message):
@@ -403,6 +408,19 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class EncryptionConfig(_messages.Message):
+  r"""Encryption configuration describing key resources in Cloud KMS used to
+  encrypt/decrypt a Cloud Spanner database.
+
+  Fields:
+    kmsKeyName: The resource name of the Cloud KMS key that was used to
+      encrypt and decrypt the database. Values are of the form
+      `projects//locations//keyRings//cryptoKeys/`.
+  """
+
+  kmsKeyName = _messages.StringField(1)
 
 
 class ExecuteBatchDmlRequest(_messages.Message):
@@ -668,7 +686,7 @@ class Field(_messages.Message):
       queries, it is the column alias (e.g., `"Word"` in the query `"SELECT
       'hello' AS Word"`), or the column name (e.g., `"ColName"` in the query
       `"SELECT ColName FROM Table"`). Some columns might have an empty name
-      (e.g., !"SELECT UPPER(ColName)"`). Note that a query result can contain
+      (e.g., `"SELECT UPPER(ColName)"`). Note that a query result can contain
       multiple fields with the same name.
     type: The type of the field.
   """

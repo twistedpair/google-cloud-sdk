@@ -45,6 +45,24 @@ DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 DEFAULT_NUM_RETRIES = 23
 
 
+def _catch_http_error_raise_gcs_api_error(format_str=None):
+  """Decorator catches HttpError and returns GcsApiError with custom message.
+
+  Args:
+    format_str (str): A googlecloudsdk.api_lib.util.exceptions.HttpErrorPayload
+      format string. Note that any properties that are accessed here are on the
+      HttpErrorPayload object, not the object returned from the server.
+
+  Returns:
+    A decorator that catches apitools.HttpError and returns GcsApiError with a
+      customizable error message.
+  """
+  return cloud_errors.catch_error_raise_cloud_api_error(
+      apitools_exceptions.HttpError,
+      cloud_errors.GcsApiError,
+      format_str=format_str)
+
+
 def _bucket_resource_from_metadata(metadata):
   """Helper method to generate a BucketResource instance from GCS metadata.
 
@@ -69,14 +87,23 @@ def _object_resource_from_metadata(metadata):
   Returns:
     ObjectResource with properties populated by metadata.
   """
+  if metadata.generation is not None:
+    # Generation may be 0 integer, which is valid although falsy.
+    generation = str(metadata.generation)
+  else:
+    generation = None
   url = storage_url.CloudUrl(
       scheme=storage_url.ProviderPrefix.GCS,
       bucket_name=metadata.bucket,
       object_name=metadata.name,
-      generation=getattr(metadata, 'generation', None))
+      generation=generation)
   return gcs_resource_reference.GcsObjectResource(
-      url, creation_time=metadata.timeCreated, etag=metadata.etag,
-      metadata=metadata, size=metadata.size)
+      url,
+      creation_time=metadata.timeCreated,
+      etag=metadata.etag,
+      metadata=metadata,
+      metageneration=metadata.metageneration,
+      size=metadata.size)
 
 
 # Disable Apitools' default print callbacks.
@@ -154,7 +181,7 @@ class GcsApi(cloud_api.CloudApi):
       return projection_enum.full
     return projection_enum.noAcl
 
-  @cloud_errors.catch_http_error_raise_gcs_api_error()
+  @_catch_http_error_raise_gcs_api_error()
   def create_bucket(self,
                     bucket_resource,
                     fields_scope=cloud_api.FieldsScope.NO_ACL):
@@ -172,7 +199,7 @@ class GcsApi(cloud_api.CloudApi):
     created_bucket_metadata = self.client.buckets.Insert(request)
     return _bucket_resource_from_metadata(created_bucket_metadata)
 
-  @cloud_errors.catch_http_error_raise_gcs_api_error()
+  @_catch_http_error_raise_gcs_api_error()
   def delete_bucket(self, bucket_name, request_config=None):
     """See super class."""
     if not request_config:
@@ -184,7 +211,7 @@ class GcsApi(cloud_api.CloudApi):
     # https://cloud.google.com/storage/docs/json_api/v1/buckets/delete
     self.client.buckets.Delete(request)
 
-  @cloud_errors.catch_http_error_raise_gcs_api_error()
+  @_catch_http_error_raise_gcs_api_error()
   def get_bucket(self, bucket_name, fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
     projection = self._GetProjection(
@@ -270,7 +297,7 @@ class GcsApi(cloud_api.CloudApi):
       if not object_list.nextPageToken:
         break
 
-  @cloud_errors.catch_http_error_raise_gcs_api_error()
+  @_catch_http_error_raise_gcs_api_error()
   def delete_object(self,
                     bucket_name,
                     object_name,
@@ -290,7 +317,7 @@ class GcsApi(cloud_api.CloudApi):
     # https://cloud.google.com/storage/docs/json_api/v1/objects/delete
     self.client.objects.Delete(request)
 
-  @cloud_errors.catch_http_error_raise_gcs_api_error()
+  @_catch_http_error_raise_gcs_api_error()
   def get_object_metadata(self,
                           bucket_name,
                           object_name,
@@ -321,7 +348,7 @@ class GcsApi(cloud_api.CloudApi):
       )
     return _object_resource_from_metadata(object_metadata)
 
-  @cloud_errors.catch_http_error_raise_gcs_api_error()
+  @_catch_http_error_raise_gcs_api_error()
   def patch_object_metadata(self,
                             bucket_name,
                             object_name,
@@ -366,7 +393,7 @@ class GcsApi(cloud_api.CloudApi):
     updated_metadata = self.client.objects.Patch(request)
     return _object_resource_from_metadata(updated_metadata)
 
-  @cloud_errors.catch_http_error_raise_gcs_api_error()
+  @_catch_http_error_raise_gcs_api_error()
   def copy_object(self,
                   source_resource,
                   destination_resource,
@@ -455,7 +482,7 @@ class GcsApi(cloud_api.CloudApi):
     return apitools_download.encoding
 
   # pylint: disable=unused-argument
-  @cloud_errors.catch_http_error_raise_gcs_api_error()
+  @_catch_http_error_raise_gcs_api_error()
   def download_object(self,
                       bucket_name,
                       object_name,
@@ -583,7 +610,7 @@ class GcsApi(cloud_api.CloudApi):
       # TODO(b/160998556): Implement resumable upload.
       pass
 
-  @cloud_errors.catch_http_error_raise_gcs_api_error()
+  @_catch_http_error_raise_gcs_api_error()
   def upload_object(self,
                     upload_stream,
                     upload_resource,

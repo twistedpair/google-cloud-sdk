@@ -31,6 +31,16 @@ class Collections(enum.Enum):
       ['projectsId'],
       True
   )
+  PROJECTS_SCHEMAS = (
+      'projects.schemas',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/schemas/{schemasId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_SNAPSHOTS = (
       'projects.snapshots',
       '{+snapshot}',

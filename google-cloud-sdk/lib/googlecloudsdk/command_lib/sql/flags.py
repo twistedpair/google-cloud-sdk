@@ -459,7 +459,6 @@ def AddMaintenanceReleaseChannel(parser):
 
 
 def AddMaintenanceWindowDay(parser):
-  # TODO(b/79740068) Convert to ChoiceArgument when resolved.
   parser.add_argument(
       '--maintenance-window-day',
       choices=arg_parsers.DayOfWeek.DAYS,

@@ -1373,6 +1373,14 @@
         "webhookKey": {
           "description": "Optional. The key that should be attached to webhook calls to the ReceiveWebhook endpoint.",
           "type": "string"
+        },
+        "peeredNetwork": {
+          "description": "Optional. The network to be used when reaching out to the GitHub Enterprise server. The VPC network must be enabled for private service connection. This should be set if the GitHub Enterprise server is hosted on-premises and not reachable by public internet. If this field is left empty, no network peering will occur and calls to the GitHub Enterprise server will be made over the public internet. Must be in the format `projects\/{project}\/global\/networks\/{network}`, where {project} is a project number or id and {network} is the name of a VPC network in the project.",
+          "type": "string"
+        },
+        "secrets": {
+          "description": "Optional. Names of secrets in Secret Manager.",
+          "$ref": "GitHubEnterpriseSecrets"
         }
       }
     },
@@ -1393,6 +1401,29 @@
           "description": "Google Cloud Storage generation for the object. If the generation is omitted, the latest generation will be used.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "GitHubEnterpriseSecrets": {
+      "id": "GitHubEnterpriseSecrets",
+      "description": "GitHubEnterpriseSecrets represents the names of all necessary secrets in Secret Manager for a GitHub Enterprise server. Format is: projects\/\/secrets\/.",
+      "type": "object",
+      "properties": {
+        "privateKeyName": {
+          "description": "The resource name for the private key secret.",
+          "type": "string"
+        },
+        "webhookSecretName": {
+          "description": "The resource name for the webhook secret in Secret Manager.",
+          "type": "string"
+        },
+        "oauthSecretName": {
+          "description": "The resource name for the OAuth secret in Secret Manager.",
+          "type": "string"
+        },
+        "oauthClientIdName": {
+          "description": "The resource name for the OAuth client ID secret in Secret Manager.",
+          "type": "string"
         }
       }
     },

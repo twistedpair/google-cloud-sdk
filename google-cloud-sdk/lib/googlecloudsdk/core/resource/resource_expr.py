@@ -127,7 +127,6 @@ def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
   else:
     text = NormalizeForSearch(value, html=True)
 
-  # TODO(b/64595527): OnePlatform : and = operator deprecation train.
   # Phase 1: return deprecated_matched and warn if different from matched.
   # Phase 2: return matched and warn if different from deprecated_matched.
   # Phase 3: drop deprecated logic.
@@ -639,7 +638,6 @@ class _ExprHAS(_ExprWordMatchBase):
     super(_ExprHAS, self).__init__(backend, key, operand, transform, op=':',
                                    warned_attribute='_deprecated_has_warned')
 
-  # TODO(b/64595527): Drop the deprecation logic when the train stops.
   def _AddPattern(self, pattern):
     """Adds a HAS match pattern to self._patterns.
 
@@ -718,7 +716,6 @@ class _ExprEQ(_ExprWordMatchBase):
                                   op=op or '=',
                                   warned_attribute='_deprecated_eq_warned')
 
-  # TODO(b/64595527): Drop the deprecation logic when the train stops.
   def _AddPattern(self, pattern):
     """Adds an EQ match pattern to self._patterns.
 

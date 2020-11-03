@@ -14,8 +14,189 @@ from apitools.base.py import extra_types
 package = 'datamigration'
 
 
+class AuditConfig(_messages.Message):
+  r"""Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConfig must have one or more
+  AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditLogConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
+  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts jose@example.com from DATA_READ logging, and
+  aliya@example.com from DATA_WRITE logging.
+
+  Fields:
+    auditLogConfigs: The configuration for logging of each type of permission.
+    exemptedMembers: A string attribute.
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
+  """
+
+  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
+  exemptedMembers = _messages.StringField(2, repeated=True)
+  service = _messages.StringField(3)
+
+
+class AuditLogConfig(_messages.Message):
+  r"""Provides the configuration for logging a type of permissions. Example: {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
+  DATA_READ logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of Binding.members.
+    ignoreChildExemptions: A boolean attribute.
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    r"""The log type that this config enables.
+
+    Values:
+      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
+      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
+      DATA_WRITE: Data writes. Example: CloudSQL Users create
+      DATA_READ: Data reads. Example: CloudSQL Users list
+    """
+    LOG_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    DATA_WRITE = 2
+    DATA_READ = 3
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  ignoreChildExemptions = _messages.BooleanField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
+
+
+class AuthorizationLoggingOptions(_messages.Message):
+  r"""Authorization-related information used by Cloud Audit Logging.
+
+  Enums:
+    PermissionTypeValueValuesEnum: The type of the permission that was
+      checked.
+
+  Fields:
+    permissionType: The type of the permission that was checked.
+  """
+
+  class PermissionTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the permission that was checked.
+
+    Values:
+      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
+      ADMIN_READ: A read of admin (meta) data.
+      ADMIN_WRITE: A write of admin (meta) data.
+      DATA_READ: A read of standard data.
+      DATA_WRITE: A write of standard data.
+    """
+    PERMISSION_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    ADMIN_WRITE = 2
+    DATA_READ = 3
+    DATA_WRITE = 4
+
+  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
+
+
+class Binding(_messages.Message):
+  r"""Associates `members` with a `role`.
+
+  Fields:
+    bindingId: A client-specified ID for this binding. Expected to be globally
+      unique to support the internal bindings-by-ID API.
+    condition: The condition that is associated with this binding. If the
+      condition evaluates to `true`, then this binding applies to the current
+      request. If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the members in this binding.
+      To learn which resources support conditions in their IAM policies, see
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    members: Specifies the identities requesting access for a Cloud Platform
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@example.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding. *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
+    role: Role that is assigned to `members`. For example, `roles/viewer`,
+      `roles/editor`, or `roles/owner`.
+  """
+
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class CloudAuditOptions(_messages.Message):
+  r"""Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    authorizationLoggingOptions: Information used by the Cloud Audit Logging
+      pipeline.
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    r"""The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      UNSPECIFIED_LOG_NAME: Default. Should not be used.
+      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
+      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
+    """
+    UNSPECIFIED_LOG_NAME = 0
+    ADMIN_ACTIVITY = 1
+    DATA_ACCESS = 2
+
+  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
 
 
 class CloudSqlConnectionProfile(_messages.Message):
@@ -85,7 +266,7 @@ class CloudSqlSettings(_messages.Message):
     ipConfig: The settings for IP Management. This allows to enable or disable
       the instance IP and manage which external networks can connect to the
       instance. The IPv4 address cannot be disabled.
-    rootPassword: Initial root password.
+    rootPassword: Input only. Initial root password.
     sourceId: The Database Migration Service source connection profile ID, in
       the format: `projects/my_project_name/locations/us-
       central1/connectionProfiles/connection_profile_ID`
@@ -93,9 +274,9 @@ class CloudSqlSettings(_messages.Message):
       automatically increased. The default value is 0, which specifies that
       there is no limit.
     tier: The tier (or machine type) for this instance, for example:
-      `db-n1-standard-1` (MySQL instances) or `db-custom-1-3840` (PostgreSQL
-      instances). For more information, see [Cloud SQL Instance
-      Settings](/sql/docs/db_path/instance-settings).
+      `db-n1-standard-1` (MySQL instances). For more information, see [Cloud
+      SQL Instance Settings](https://cloud.google.com/sql/docs/mysql/instance-
+      settings).
     userLabels: The resource labels for a Cloud SQL instance to use to
       annotate any related underlying resources such as Compute Engine VMs. An
       object containing a list of "key": "value" pairs. Example: `{ "name":
@@ -223,6 +404,124 @@ class CloudSqlSettings(_messages.Message):
   zone = _messages.StringField(14)
 
 
+class Condition(_messages.Message):
+  r"""A condition to be met.
+
+  Enums:
+    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
+    OpValueValuesEnum: An operator to apply the subject with.
+    SysValueValuesEnum: Trusted attributes supplied by any service that owns
+      resources and uses the IAM system for access control.
+
+  Fields:
+    iam: Trusted attributes supplied by the IAM system.
+    op: An operator to apply the subject with.
+    svc: Trusted attributes discharged by the service.
+    sys: Trusted attributes supplied by any service that owns resources and
+      uses the IAM system for access control.
+    values: The objects of the condition.
+  """
+
+  class IamValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by the IAM system.
+
+    Values:
+      NO_ATTR: Default non-attribute.
+      AUTHORITY: Either principal or (if present) authority selector.
+      ATTRIBUTION: The principal (even if an authority selector is present),
+        which must only be used for attribution, not authorization.
+      SECURITY_REALM: Any of the security realms in the IAMContext
+        (go/security-realms). When used with IN, the condition indicates "any
+        of the request's realms match one of the given values; with NOT_IN,
+        "none of the realms match any of the given values". Note that a value
+        can be: - 'self' (i.e., allow connections from clients that are in the
+        same security realm) - 'self:metro' (i.e., clients that are in the
+        same metro) - 'self:cloud-region' (i.e., allow connections from
+        clients that are in the same cloud region) - 'guardians' (i.e., allow
+        connections from its guardian realms. See go/security-realms-
+        glossary#guardian for more information.) - a realm (e.g., 'campus-
+        abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see: go/realm-
+        groups) A match is determined by a realm group membership check
+        performed by a RealmAclRep object (go/realm-acl-howto). It is not
+        permitted to grant access based on the *absence* of a realm, so realm
+        conditions can only be used in a "positive" context (e.g., ALLOW/IN or
+        DENY/NOT_IN).
+      APPROVER: An approver (distinct from the requester) that has authorized
+        this request. When used with IN, the condition indicates that one of
+        the approvers associated with the request matches the specified
+        principal, or is a member of the specified group. Approvers can only
+        grant additional access, and are thus only used in a strictly positive
+        context (e.g. ALLOW/IN or DENY/NOT_IN).
+      JUSTIFICATION_TYPE: What types of justifications have been supplied with
+        this request. String values should match enum names from
+        security.credentials.JustificationType, e.g. "MANUAL_STRING". It is
+        not permitted to grant access based on the *absence* of a
+        justification, so justification conditions can only be used in a
+        "positive" context (e.g., ALLOW/IN or DENY/NOT_IN). Multiple
+        justifications, e.g., a Buganizer ID and a manually-entered reason,
+        are normal and supported.
+      CREDENTIALS_TYPE: What type of credentials have been supplied with this
+        request. String values should match enum names from
+        security_loas_l2.CredentialsType - currently, only
+        CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
+        based on the *absence* of a credentials type, so the conditions can
+        only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+      CREDS_ASSERTION: EXPERIMENTAL -- DO NOT USE. The conditions can only be
+        used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+    """
+    NO_ATTR = 0
+    AUTHORITY = 1
+    ATTRIBUTION = 2
+    SECURITY_REALM = 3
+    APPROVER = 4
+    JUSTIFICATION_TYPE = 5
+    CREDENTIALS_TYPE = 6
+    CREDS_ASSERTION = 7
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""An operator to apply the subject with.
+
+    Values:
+      NO_OP: Default no-op.
+      EQUALS: DEPRECATED. Use IN instead.
+      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
+      IN: The condition is true if the subject (or any element of it if it is
+        a set) matches any of the supplied values.
+      NOT_IN: The condition is true if the subject (or every element of it if
+        it is a set) matches none of the supplied values.
+      DISCHARGED: Subject is discharged
+    """
+    NO_OP = 0
+    EQUALS = 1
+    NOT_EQUALS = 2
+    IN = 3
+    NOT_IN = 4
+    DISCHARGED = 5
+
+  class SysValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by any service that owns resources and
+    uses the IAM system for access control.
+
+    Values:
+      NO_ATTR: Default non-attribute type
+      REGION: Region of the resource
+      SERVICE: Service name
+      NAME: Resource name
+      IP: IP address of the caller
+    """
+    NO_ATTR = 0
+    REGION = 1
+    SERVICE = 2
+    NAME = 3
+    IP = 4
+
+  iam = _messages.EnumField('IamValueValuesEnum', 1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  svc = _messages.StringField(3)
+  sys = _messages.EnumField('SysValueValuesEnum', 4)
+  values = _messages.StringField(5, repeated=True)
+
+
 class ConnectionProfile(_messages.Message):
   r"""A connection profile definition.
 
@@ -334,6 +633,82 @@ class ConnectionProfile(_messages.Message):
   updateTime = _messages.StringField(11)
 
 
+class CounterOptions(_messages.Message):
+  r"""Increment a streamz counter with the specified metric and field names.
+  Metric names should start with a '/', generally be lowercase-only, and end
+  in "_count". Field names should not contain an initial slash. The actual
+  exported metric names will have "/iam/policy" prepended. Field names
+  correspond to IAM request parameters and field values are their respective
+  values. Supported field names: - "authority", which is "[token]" if
+  IAMContext.token is present, otherwise the value of
+  IAMContext.authority_selector if present, and otherwise a representation of
+  IAMContext.principal; or - "iam_principal", a representation of
+  IAMContext.principal even if a token or authority selector is present; or -
+  "" (empty string), resulting in a counter with no fields. Examples: counter
+  { metric: "/debug_access_count" field: "iam_principal" } ==> increment
+  counter /iam/policy/debug_access_count {iam_principal=[value of
+  IAMContext.principal]}
+
+  Fields:
+    customFields: Custom fields.
+    field: The field value to attribute.
+    metric: The metric to update.
+  """
+
+  customFields = _messages.MessageField('CustomField', 1, repeated=True)
+  field = _messages.StringField(2)
+  metric = _messages.StringField(3)
+
+
+class CustomField(_messages.Message):
+  r"""Custom fields. These can be used to create a counter with arbitrary
+  field/value pairs. See: go/rpcsp-custom-fields.
+
+  Fields:
+    name: Name is the field name.
+    value: Value is the field value. It is important that in contrast to the
+      CounterOptions.field, the value here is a constant that is not derived
+      from the IAMContext.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class DataAccessOptions(_messages.Message):
+  r"""Write a Data Access (Gin) log
+
+  Enums:
+    LogModeValueValuesEnum:
+
+  Fields:
+    logMode: A LogModeValueValuesEnum attribute.
+  """
+
+  class LogModeValueValuesEnum(_messages.Enum):
+    r"""LogModeValueValuesEnum enum type.
+
+    Values:
+      LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
+        immediately after the authorization check. If client chooses to write
+        one and it fails, client may either fail open (allow the operation to
+        continue) or fail closed (handle as a DENY outcome).
+      LOG_FAIL_CLOSED: The application's operation in the context of which
+        this authorization check is being made may only be performed if it is
+        successfully logged to Gin. For instance, the authorization library
+        may satisfy this obligation by emitting a partial log entry at
+        authorization check time and only returning ALLOW to the application
+        if it succeeds. If a matching Rule has this directive, but the client
+        has not indicated that it will honor such requirements, then the IAM
+        check will result in authorization failure by setting
+        CheckPolicyResponse.success=false.
+    """
+    LOG_MODE_UNSPECIFIED = 0
+    LOG_FAIL_CLOSED = 1
+
+  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
+
+
 class DatabaseType(_messages.Message):
   r"""A message defining the database engine and provider.
 
@@ -382,7 +757,8 @@ class DatamigrationProjectsLocationsConnectionProfilesCreateRequest(_messages.Me
     connectionProfile: A ConnectionProfile resource to be passed as the
       request body.
     connectionProfileId: Required. The connection profile identifier.
-    parent: The parent, which owns this collection of connection profiles.
+    parent: Required. The parent, which owns this collection of connection
+      profiles.
     requestId: A unique id used to identify the request. If the server
       receives two requests with the same id, then the second request will be
       ignored. It is recommended to always set this value to a UUID. The id
@@ -402,7 +778,7 @@ class DatamigrationProjectsLocationsConnectionProfilesDeleteRequest(_messages.Me
   Fields:
     force: In case of force delete, the CloudSQL replica database is also
       deleted (only for CloudSQL connection profile).
-    name: Name of the connection profile resource to delete.
+    name: Required. Name of the connection profile resource to delete.
     requestId: A unique id used to identify the request. If the server
       receives two requests with the same id, then the second request will be
       ignored. It is recommended to always set this value to a UUID. The id
@@ -415,11 +791,33 @@ class DatamigrationProjectsLocationsConnectionProfilesDeleteRequest(_messages.Me
   requestId = _messages.StringField(3)
 
 
+class DatamigrationProjectsLocationsConnectionProfilesGetIamPolicyRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsConnectionProfilesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class DatamigrationProjectsLocationsConnectionProfilesGetRequest(_messages.Message):
   r"""A DatamigrationProjectsLocationsConnectionProfilesGetRequest object.
 
   Fields:
-    name: Name of the connection profile resource to get.
+    name: Required. Name of the connection profile resource to get.
   """
 
   name = _messages.StringField(1, required=True)
@@ -434,9 +832,9 @@ class DatamigrationProjectsLocationsConnectionProfilesListRequest(_messages.Mess
       operator, and the value that you want to use for filtering. The value
       must be a string, a number, or a boolean. The comparison operator must
       be either =, !=, >, or <. For example, list connection profiles created
-      this year by specifying *createTime %gt;
-      2020-01-01T00:00:00.000000000Z*. You can also filter nested fields. For
-      example, you could specify *mySql.username = %lt;my_username%gt;* to
+      this year by specifying **createTime %gt;
+      2020-01-01T00:00:00.000000000Z**. You can also filter nested fields. For
+      example, you could specify **mySql.username = %lt;my_username%gt;** to
       list all connection profiles configured to connect with a specific
       username.
     orderBy: the order by fields for the result.
@@ -448,7 +846,8 @@ class DatamigrationProjectsLocationsConnectionProfilesListRequest(_messages.Mess
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to `ListConnectionProfiles` must match the
       call that provided the page token.
-    parent: The parent, which owns this collection of connection profiles.
+    parent: Required. The parent, which owns this collection of connection
+      profiles.
   """
 
   filter = _messages.StringField(1)
@@ -479,6 +878,39 @@ class DatamigrationProjectsLocationsConnectionProfilesPatchRequest(_messages.Mes
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class DatamigrationProjectsLocationsConnectionProfilesSetIamPolicyRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsConnectionProfilesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DatamigrationProjectsLocationsConnectionProfilesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  DatamigrationProjectsLocationsConnectionProfilesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class DatamigrationProjectsLocationsGetRequest(_messages.Message):
@@ -516,7 +948,8 @@ class DatamigrationProjectsLocationsMigrationJobsCreateRequest(_messages.Message
   Fields:
     migrationJob: A MigrationJob resource to be passed as the request body.
     migrationJobId: Required. The ID of the instance to create.
-    parent: The parent, which owns this collection of migration jobs.
+    parent: Required. The parent, which owns this collection of migration
+      jobs.
     requestId: A unique id used to identify the request. If the server
       receives two requests with the same id, then the second request will be
       ignored. It is recommended to always set this value to a UUID. The id
@@ -537,7 +970,7 @@ class DatamigrationProjectsLocationsMigrationJobsDeleteRequest(_messages.Message
     force: The destination CloudSQL connection profile is always deleted with
       the migration job. In case of force delete, the destination CloudSQL
       replica database is also deleted.
-    name: Name of the migration job resource to delete.
+    name: Required. Name of the migration job resource to delete.
     requestId: A unique id used to identify the request. If the server
       receives two requests with the same id, then the second request will be
       ignored. It is recommended to always set this value to a UUID. The id
@@ -564,11 +997,32 @@ class DatamigrationProjectsLocationsMigrationJobsGenerateSshScriptRequest(_messa
   name = _messages.StringField(2, required=True)
 
 
+class DatamigrationProjectsLocationsMigrationJobsGetIamPolicyRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsMigrationJobsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class DatamigrationProjectsLocationsMigrationJobsGetRequest(_messages.Message):
   r"""A DatamigrationProjectsLocationsMigrationJobsGetRequest object.
 
   Fields:
-    name: Name of the migration job resource to get.
+    name: Required. Name of the migration job resource to get.
   """
 
   name = _messages.StringField(1, required=True)
@@ -583,9 +1037,9 @@ class DatamigrationProjectsLocationsMigrationJobsListRequest(_messages.Message):
       operator, and the value that you want to use for filtering. The value
       must be a string, a number, or a boolean. The comparison operator must
       be either =, !=, >, or <. For example, list migration jobs created this
-      year by specifying *createTime %gt; 2020-01-01T00:00:00.000000000Z.* You
-      can also filter nested fields. For example, you could specify
-      *reverseSshConnectivity.vmIp = "1.2.3.4"* to select all migration jobs
+      year by specifying **createTime %gt; 2020-01-01T00:00:00.000000000Z.**
+      You can also filter nested fields. For example, you could specify
+      **reverseSshConnectivity.vmIp = "1.2.3.4"** to select all migration jobs
       connecting through the specific SSH tunnel bastion.
     orderBy: Sort the results based on the migration job name. Valid values
       are: "name", "name asc", and "name desc".
@@ -598,7 +1052,7 @@ class DatamigrationProjectsLocationsMigrationJobsListRequest(_messages.Message):
       page of results. On first call this should be left blank. When
       paginating, all other parameters provided to migrationJobs.list must
       match the call that provided the page token.
-    parent: The parent, which owns this collection of migrationJobs.
+    parent: Required. The parent, which owns this collection of migrationJobs.
   """
 
   filter = _messages.StringField(1)
@@ -669,6 +1123,21 @@ class DatamigrationProjectsLocationsMigrationJobsResumeRequest(_messages.Message
   resumeMigrationJobRequest = _messages.MessageField('ResumeMigrationJobRequest', 2)
 
 
+class DatamigrationProjectsLocationsMigrationJobsSetIamPolicyRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsMigrationJobsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
 class DatamigrationProjectsLocationsMigrationJobsStartRequest(_messages.Message):
   r"""A DatamigrationProjectsLocationsMigrationJobsStartRequest object.
 
@@ -693,6 +1162,22 @@ class DatamigrationProjectsLocationsMigrationJobsStopRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   stopMigrationJobRequest = _messages.MessageField('StopMigrationJobRequest', 2)
+
+
+class DatamigrationProjectsLocationsMigrationJobsTestIamPermissionsRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsMigrationJobsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class DatamigrationProjectsLocationsMigrationJobsVerifyRequest(_messages.Message):
@@ -767,14 +1252,50 @@ class Empty(_messages.Message):
 
 
 
+class Expr(_messages.Message):
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
+
+  Fields:
+    description: Optional. Description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
 class GenerateSshScriptRequest(_messages.Message):
   r"""Request message for 'GenerateSshScript' request.
 
   Fields:
     vm: Required. Bastion VM Instance name to use or to create.
-    vmCreationConfig: A VmCreationConfig attribute.
+    vmCreationConfig: The VM creation configuration.
     vmPort: The port that will be open on the bastion host
-    vmSelectionConfig: A VmSelectionConfig attribute.
+    vmSelectionConfig: The VM selection configuration.
   """
 
   vm = _messages.StringField(1)
@@ -946,6 +1467,20 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LogConfig(_messages.Message):
+  r"""Specifies what kind of log the caller must write
+
+  Fields:
+    cloudAudit: Cloud audit options.
+    counter: Counter options.
+    dataAccess: Data access options.
+  """
+
+  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
+  counter = _messages.MessageField('CounterOptions', 2)
+  dataAccess = _messages.MessageField('DataAccessOptions', 3)
+
+
 class MigrationJob(_messages.Message):
   r"""Represents a Database Migration Service migration job object.
 
@@ -972,8 +1507,8 @@ class MigrationJob(_messages.Message):
     dumpPath: The path to the dump file in Google Cloud Storage, in the
       format: (gs://[BUCKET_NAME]/[OBJECT_NAME]).
     duration: Output only. The duration of the migration job (in seconds). A
-      duration in seconds with up to nine fractional digits, ending with 's'.
-      Example: "3.5s".
+      duration in seconds with up to nine fractional digits, terminated by
+      's'. Example: "3.5s".
     endTime: Output only. If the migration job is completed, the time when it
       was completed.
     error: Output only. The error details in case of state FAILED.
@@ -1123,19 +1658,21 @@ class MigrationJobVerificationError(_messages.Message):
   r"""Error message of a verification Migration job.
 
   Enums:
-    ErrorCodeValueValuesEnum: An instance of ErrorCode specifying the error
-      that occurred.
+    ErrorCodeValueValuesEnum: Output only. An instance of ErrorCode specifying
+      the error that occurred.
 
   Fields:
-    errorCode: An instance of ErrorCode specifying the error that occurred.
-    errorDetailMessage: Optional. A specific detailed error message, if
+    errorCode: Output only. An instance of ErrorCode specifying the error that
+      occurred.
+    errorDetailMessage: Output only. A specific detailed error message, if
       supplied by the engine.
-    errorMessage: A formatted message with further details about the error and
-      a CTA.
+    errorMessage: Output only. A formatted message with further details about
+      the error and a CTA.
   """
 
   class ErrorCodeValueValuesEnum(_messages.Enum):
-    r"""An instance of ErrorCode specifying the error that occurred.
+    r"""Output only. An instance of ErrorCode specifying the error that
+    occurred.
 
     Values:
       ERROR_CODE_UNSPECIFIED: An unknown error occurred
@@ -1200,10 +1737,10 @@ class MySqlConnectionProfile(_messages.Message):
     hasPassword: Output only. Indicates If this connection profile password is
       stored.
     host: Required. The IP or hostname of the source MySQL database.
-    password: Required. The password for the user that Database Migration
-      Service will be using to connect to the database. This field is not
-      returned on request, and the value is encrypted when stored in Database
-      Migration Service.
+    password: Required. Input only. The password for the user that Database
+      Migration Service will be using to connect to the database. This field
+      is not returned on request, and the value is encrypted when stored in
+      Database Migration Service.
     port: Required. The network port of the source MySQL database.
     ssl: SSL configuration for the destination to connect to the source
       database.
@@ -1329,6 +1866,88 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class Policy(_messages.Message):
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources. A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members` to a single `role`.
+  Members can be user accounts, service accounts, Google groups, and domains
+  (such as G Suite). A `role` is a named list of permissions; each `role` can
+  be an IAM predefined role or a user-created custom role. For some types of
+  Google Cloud resources, a `binding` can also specify a `condition`, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to `true`. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3 For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
+
+  Fields:
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
+    bindings: Associates a list of `members` to a `role`. Optionally, may
+      specify a `condition` that determines how and when the `bindings` are
+      applied. Each of the `bindings` must contain at least one member.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy. **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
+    iamOwned: A boolean attribute.
+    rules: If more than one rule is specified, the rules are applied in the
+      following manner: - All matching LOG rules are always applied. - If any
+      DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
+      applied if one or more matching rule requires logging. - Otherwise, if
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
+      will be applied if one or more matching rule requires logging. -
+      Otherwise, if no rule applies, permission is denied.
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations: * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy that includes conditions **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost. If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset. To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+  """
+
+  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  iamOwned = _messages.BooleanField(4)
+  rules = _messages.MessageField('Rule', 5, repeated=True)
+  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
 class PostgreSqlConnectionProfile(_messages.Message):
   r"""Specifies connection parameters required specifically for PostgreSQL
   databases.
@@ -1339,10 +1958,10 @@ class PostgreSqlConnectionProfile(_messages.Message):
     hasPassword: Output only. Indicates If this connection profile password is
       stored.
     host: Required. The IP or hostname of the source PostgreSQL database.
-    password: Required. The password for the user that Database Migration
-      Service will be using to connect to the database. This field is not
-      returned on request, and the value is encrypted when stored in Database
-      Migration Service.
+    password: Required. Input only. The password for the user that Database
+      Migration Service will be using to connect to the database. This field
+      is not returned on request, and the value is encrypted when stored in
+      Database Migration Service.
     port: Required. The network port of the source PostgreSQL database.
     ssl: SSL configuration for the destination to connect to the source
       database.
@@ -1394,6 +2013,76 @@ class ReverseSshConnectivity(_messages.Message):
   vmIp = _messages.StringField(2)
   vmPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   vpc = _messages.StringField(4)
+
+
+class Rule(_messages.Message):
+  r"""A rule to be applied in a Policy.
+
+  Enums:
+    ActionValueValuesEnum: Required
+
+  Fields:
+    action: Required
+    conditions: Additional restrictions that must be met. All conditions must
+      pass for the rule to match.
+    description: Human-readable description of the rule.
+    in_: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
+    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
+      any entries that match the LOG action.
+    notIn: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
+      for in and not_in entries can be found at in the Local IAM documentation
+      (see go/local-iam#features).
+    permissions: A permission is a string of form '..' (e.g.,
+      'storage.buckets.list'). A value of '*' matches all permissions, and a
+      verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required
+
+    Values:
+      NO_ACTION: Default no action.
+      ALLOW: Matching 'Entries' grant access.
+      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
+        to log the request per the returned log_configs.
+      DENY: Matching 'Entries' deny access.
+      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
+        log the request per the returned log_configs.
+      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
+    """
+    NO_ACTION = 0
+    ALLOW = 1
+    ALLOW_WITH_LOG = 2
+    DENY = 3
+    DENY_WITH_LOG = 4
+    LOG = 5
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  description = _messages.StringField(3)
+  in_ = _messages.StringField(4, repeated=True)
+  logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
+  notIn = _messages.StringField(6, repeated=True)
+  permissions = _messages.StringField(7, repeated=True)
+
+
+class SetIamPolicyRequest(_messages.Message):
+  r"""Request message for `SetIamPolicy` method.
+
+  Fields:
+    policy: REQUIRED: The complete policy to be applied to the `resource`. The
+      size of the policy is limited to a few 10s of KB. An empty policy is a
+      valid policy but certain Cloud Platform services (such as Projects)
+      might reject them.
+    updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
+      modify. Only the fields in the mask will be modified. If no mask is
+      provided, the following default mask is used: `paths: "bindings, etag"`
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  updateMask = _messages.StringField(2)
 
 
 class SqlAclEntry(_messages.Message):
@@ -1453,15 +2142,15 @@ class SslConfig(_messages.Message):
       'client_key', 'client_certificate' and 'ca_certificate'.
 
   Fields:
-    caCertificate: Required. The x509 PEM-encoded certificate of the CA that
-      signed the source database server's certificate. The replica will use
-      this certificate to verify it's connecting to the right host.
-    clientCertificate: The x509 PEM-encoded certificate that will be used by
-      the replica to authenticate against the source database server.If this
-      field is used then the 'client_key' field is mandatory
-    clientKey: The unencrypted PKCS#1 or PKCS#8 PEM-encoded private key
-      associated with the Client Certificate. If this field is used then the
-      'client_certificate' field is mandatory
+    caCertificate: Required. Input only. The x509 PEM-encoded certificate of
+      the CA that signed the source database server's certificate. The replica
+      will use this certificate to verify it's connecting to the right host.
+    clientCertificate: Input only. The x509 PEM-encoded certificate that will
+      be used by the replica to authenticate against the source database
+      server.If this field is used then the 'client_key' field is mandatory.
+    clientKey: Input only. The unencrypted PKCS#1 or PKCS#8 PEM-encoded
+      private key associated with the Client Certificate. If this field is
+      used then the 'client_certificate' field is mandatory.
     type: Output only. The ssl config type according to 'client_key',
       'client_certificate' and 'ca_certificate'.
   """
@@ -1617,12 +2306,36 @@ class StopMigrationJobRequest(_messages.Message):
   r"""Request message for 'StopMigrationJob' request."""
 
 
+class TestIamPermissionsRequest(_messages.Message):
+  r"""Request message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class TestIamPermissionsResponse(_messages.Message):
+  r"""Response message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
 class VerifyMigrationJobRequest(_messages.Message):
   r"""Request message for 'VerifyMigrationJob' request."""
 
 
 class VmCreationConfig(_messages.Message):
-  r"""A VmCreationConfig object.
+  r"""VM creation configuration message.
 
   Fields:
     subnet: The subnet name the vm needs to be created in.
@@ -1638,7 +2351,7 @@ class VmCreationConfig(_messages.Message):
 
 
 class VmSelectionConfig(_messages.Message):
-  r"""A VmSelectionConfig object.
+  r"""VM selection configuration message
 
   Fields:
     vmZone: Required. The Google Cloud Platform zone the VM is located.
@@ -1660,6 +2373,8 @@ class VpcPeeringConnectivity(_messages.Message):
   vpc = _messages.StringField(1)
 
 
+encoding.AddCustomJsonFieldMapping(
+    Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

@@ -227,11 +227,11 @@ def AddCsekKeyArgs(parser, flags_about_creation=True, resource_type='resource'):
       '--csek-key-file',
       metavar='FILE',
       help="""\
-      Path to a Customer-Supplied Encryption Key (CSEK) key file, mapping
-      Google Compute Engine {resource}s to user managed keys to be used when
-      creating, mounting, or snapshotting disks.
+      Path to a Customer-Supplied Encryption Key (CSEK) key file that maps
+      Compute Engine {resource}s to user managed keys to be used when
+      creating, mounting, or taking snapshots of disks.
 
-      If you pass `-` as value of the flag the CSEK will be read from stdin.
+      If you pass `-` as value of the flag, the CSEK is read from stdin.
       See {csek_help} for more details.
       """.format(resource=resource_type, csek_help=CSEK_HELP_URL))
 

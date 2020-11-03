@@ -1712,7 +1712,12 @@ class GoogleCloudDatacatalogV1beta1SerializedTaxonomy(_messages.Message):
   r"""Message capturing a taxonomy and its policy tag hierarchy as a nested
   proto. Used for taxonomy import/export and mutation.
 
+  Enums:
+    ActivatedPolicyTypesValueListEntryValuesEnum:
+
   Fields:
+    activatedPolicyTypes: A list of policy types that are activated for a
+      taxonomy.
     description: Description of the serialized taxonomy. The length of the
       description is limited to 2000 bytes when encoded in UTF-8. If not set,
       defaults to an empty description.
@@ -1721,9 +1726,21 @@ class GoogleCloudDatacatalogV1beta1SerializedTaxonomy(_messages.Message):
     policyTags: Top level policy tags associated with the taxonomy if any.
   """
 
-  description = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  policyTags = _messages.MessageField('GoogleCloudDatacatalogV1beta1SerializedPolicyTag', 3, repeated=True)
+  class ActivatedPolicyTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""ActivatedPolicyTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      POLICY_TYPE_UNSPECIFIED: Unspecified policy type.
+      FINE_GRAINED_ACCESS_CONTROL: Fine grained access control policy, which
+        enables access control on tagged resources.
+    """
+    POLICY_TYPE_UNSPECIFIED = 0
+    FINE_GRAINED_ACCESS_CONTROL = 1
+
+  activatedPolicyTypes = _messages.EnumField('ActivatedPolicyTypesValueListEntryValuesEnum', 1, repeated=True)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  policyTags = _messages.MessageField('GoogleCloudDatacatalogV1beta1SerializedPolicyTag', 4, repeated=True)
 
 
 class GoogleCloudDatacatalogV1beta1SystemTimestamps(_messages.Message):
@@ -1977,6 +1994,10 @@ class GoogleCloudDatacatalogV1beta1Taxonomy(_messages.Message):
       in UTF-8.
     name: Output only. Resource name of this taxonomy, whose format is:
       "projects/{project_number}/locations/{location_id}/taxonomies/{id}".
+    policyTagCount: Output only. Number of policy tags contained in this
+      taxonomy.
+    taxonomyTimestamps: Output only. Timestamps about this taxonomy. Only
+      create_time and update_time are used.
   """
 
   class ActivatedPolicyTypesValueListEntryValuesEnum(_messages.Enum):
@@ -1994,6 +2015,8 @@ class GoogleCloudDatacatalogV1beta1Taxonomy(_messages.Message):
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
   name = _messages.StringField(4)
+  policyTagCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  taxonomyTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1beta1SystemTimestamps', 6)
 
 
 class GoogleCloudDatacatalogV1beta1ViewSpec(_messages.Message):

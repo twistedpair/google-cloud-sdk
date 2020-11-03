@@ -35,9 +35,9 @@ class KubeRunAuthException(exceptions.Error):
 def GetAuthToken(account=None):
   """Generate a JSON object containing the current gcloud auth token."""
   try:
-    cred = c_store.LoadFreshCredential(account)
+    access_token = c_store.GetFreshAccessToken(account)
     output = {
-        'AuthToken': cred.access_token,
+        'AuthToken': access_token,
     }
   except Exception as e:  # pylint: disable=broad-except
     raise KubeRunAuthException(

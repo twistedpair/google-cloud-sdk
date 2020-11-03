@@ -260,6 +260,24 @@ def TargetHttpsProxyArg(include_l7_internal_load_balancing=False):
       if include_l7_internal_load_balancing else None)
   return target_https_proxy_arg
 
+
+def TargetServiceAttachmentArg():
+  """Return a resource argument for parsing a target service attachment."""
+
+  target_service_attachment_arg = compute_flags.ResourceArgument(
+      name='--target-service-attachment',
+      required=False,
+      resource_name='target service attachment',
+      regional_collection='compute.serviceAttachments',
+      short_help='Target service attachment that receives the traffic.',
+      detailed_help=(
+          'Reference of target service attachment that receives the traffic. '
+          'The target service attachment must be in the same region as the '
+          'forwarding rule.'),
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
+  return target_service_attachment_arg
+
+
 TARGET_INSTANCE_ARG = compute_flags.ResourceArgument(
     name='--target-instance',
     required=False,
@@ -376,12 +394,16 @@ def AddressArg(include_l7_internal_load_balancing):
 def AddUpdateArgs(parser,
                   include_l7_internal_load_balancing=False,
                   include_target_grpc_proxy=False,
-                  include_psc_google_apis=False):
+                  include_psc_google_apis=False,
+                  include_target_service_attachment=False):
   """Adds common flags for mutating forwarding rule targets."""
   target = parser.add_mutually_exclusive_group(required=True)
 
   if include_target_grpc_proxy:
     TargetGrpcProxyArg().AddArgument(parser, mutex_group=target)
+
+  if include_target_service_attachment:
+    TargetServiceAttachmentArg().AddArgument(parser, mutex_group=target)
 
   TargetHttpProxyArg(
       include_l7_internal_load_balancing=include_l7_internal_load_balancing
@@ -418,12 +440,16 @@ def AddUpdateArgs(parser,
   AddLoadBalancingScheme(
       parser,
       include_l7_ilb=include_l7_internal_load_balancing,
-      include_target_grpc_proxy=include_target_grpc_proxy)
+      include_target_grpc_proxy=include_target_grpc_proxy,
+      include_psc_google_apis=include_psc_google_apis,
+      include_target_service_attachment=include_target_service_attachment)
 
 
 def AddLoadBalancingScheme(parser,
                            include_l7_ilb=False,
-                           include_target_grpc_proxy=False):
+                           include_target_grpc_proxy=False,
+                           include_psc_google_apis=False,
+                           include_target_service_attachment=False):
   """Adds the load-balancing-scheme flag."""
   td_proxies = ('--target-http-proxy, --target-https-proxy, --target-grpc-proxy'
                 if include_target_grpc_proxy else
@@ -447,12 +473,15 @@ def AddLoadBalancingScheme(parser,
                             '--target-http-proxy, --target-https-proxy.'
     })
 
+  # There isn't a default load-balancing-scheme for PSC forwarding rules.
+  # But the default is EXTERNAL for non-PSC forwarding rules.
+  include_psc = (include_psc_google_apis or include_target_service_attachment)
   parser.add_argument(
       '--load-balancing-scheme',
       choices=load_balancing_choices,
       type=lambda x: x.replace('-', '_').upper(),
-      default='EXTERNAL',
-      help='This defines the forwarding rule\'s load balancing scheme.')
+      default=None if include_psc else 'EXTERNAL',
+      help="This defines the forwarding rule's load balancing scheme.")
 
 
 def AddAllowGlobalAccess(parser):

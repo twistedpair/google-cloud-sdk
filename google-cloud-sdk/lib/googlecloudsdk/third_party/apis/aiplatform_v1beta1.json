@@ -667,8 +667,12 @@
           "format": "google-datetime"
         },
         "explanationSpec": {
-          "description": "Explanation configuration for this DeployedModel. When deploying a Model using EndpointService.DeployModel, this value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of explanation_spec is not populated, the value of the same field of Model.explanation_spec is inherited. The corresponding Model.explanation_spec must be populated, otherwise explanation for this Model is not allowed. Currently, only AutoML tabular Models support explanation_spec.",
+          "description": "Explanation configuration for this DeployedModel. When deploying a Model using EndpointService.DeployModel, this value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of explanation_spec is not populated, the value of the same field of Model.explanation_spec is inherited. The corresponding Model.explanation_spec must be populated, otherwise explanation for this Model is not allowed.",
           "$ref": "GoogleCloudAiplatformV1beta1ExplanationSpec"
+        },
+        "serviceAccount": {
+          "description": "The service account that the DeployedModel's container runs as. Specify the email address of the service account. If this service account is not specified, the container runs as a service account that doesn't have access to the resource project. Users deploying the Model must have the `iam.serviceAccounts.actAs` permission on this service account.",
+          "type": "string"
         },
         "enableContainerLogging": {
           "description": "If true, the container of the DeployedModel instances will send `stderr` and `stdout` streams to Stackdriver Logging. Only supported for custom-trained Models and AutoML Tables Models.",
@@ -926,7 +930,7 @@
     },
     "GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadata": {
       "id": "GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadata",
-      "description": "Metadata of the input of a feature. Fields other than InputMetadata.input_baselines are only applicable to Models that are using AI Platform provided images for Tensorflow.",
+      "description": "Metadata of the input of a feature. Fields other than InputMetadata.input_baselines are applicable only for Models that are using AI Platform-provided images for Tensorflow.",
       "type": "object",
       "properties": {
         "inputBaselines": {
@@ -1008,7 +1012,7 @@
     },
     "GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataFeatureValueDomain": {
       "id": "GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataFeatureValueDomain",
-      "description": "Domain details of input feature value. Provides numeric information about the feature such as its range (min, max). If the feature has been pre-processed, e.g. via z-scoring, then it also provides information about how to recover the original feature. For example, if the input feature is an image and it has been pre-processed to obtain 0-mean and stddev = 1 values, then original_mean, and original_stddev refer to the mean and stddev of the original feature (e.g. image tensor) from which input feature (with mean = 0 and stddev = 1) was obtained.",
+      "description": "Domain details of the input feature value. Provides numeric information about the feature, such as its range (min, max). If the feature has been pre-processed, for example with z-scoring, then it provides information about how to recover the original feature. For example, if the input feature is an image and it has been pre-processed to obtain 0-mean and stddev = 1 values, then original_mean, and original_stddev refer to the mean and stddev of the original feature (e.g. image tensor) from which input feature (with mean = 0 and stddev = 1) was obtained.",
       "type": "object",
       "properties": {
         "min": {
@@ -1293,6 +1297,10 @@
         "scheduling": {
           "description": "Scheduling options for a CustomJob.",
           "$ref": "GoogleCloudAiplatformV1beta1Scheduling"
+        },
+        "serviceAccount": {
+          "description": "Specifies the service account for workload run-as account. Users submitting jobs must have act-as permission on this run-as account.",
+          "type": "string"
         },
         "baseOutputDirectory": {
           "description": "The Google Cloud Storage location to store the output of this CustomJob or HyperparameterTuningJob. For HyperparameterTuningJob, base_output_directory of each child CustomJob backing a Trial is set to a subdirectory of name id under parent HyperparameterTuningJob's base_output_directory. Following AI Platform environment variables will be passed to containers or python modules when this field is set: For CustomJob: * AIP_MODEL_DIR = `\/model\/` * AIP_CHECKPOINT_DIR = `\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/logs\/` For CustomJob backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `\/\/model\/` * AIP_CHECKPOINT_DIR = `\/\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/\/logs\/`",
@@ -2789,7 +2797,7 @@
     },
     "GoogleCloudAiplatformV1beta1ModelExplanation": {
       "id": "GoogleCloudAiplatformV1beta1ModelExplanation",
-      "description": "Aggregated explanation metrics for a Model over a set of instances. Currently, only AutoML tabular Models support aggregated explanation.",
+      "description": "Aggregated explanation metrics for a Model over a set of instances.",
       "type": "object",
       "properties": {
         "meanAttributions": {
@@ -2843,6 +2851,11 @@
           "readOnly": true,
           "type": "number",
           "format": "double"
+        },
+        "outputName": {
+          "description": "Output only. Name of the explain output. Specified as the key in ExplanationMetadata.outputs.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -3054,8 +3067,12 @@
           "$ref": "GoogleCloudAiplatformV1beta1TimestampSplit"
         },
         "gcsDestination": {
-          "description": "The Google Cloud Storage location where the output is to be written to. In the given directory a new directory will be created with name: `dataset---` where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. All training input data will be written into that directory. The AI Platform environment variables representing Google Cloud Storage data URIs will always be represented in the Google Cloud Storage wildcard format to support sharded data. e.g.: \"gs:\/\/...\/training-*.jsonl\" * AIP_DATA_FORMAT = \"jsonl\". * AIP_TRAINING_DATA_URI = \"gcs_destination\/dataset---\/training-*.jsonl\" * AIP_VALIDATION_DATA_URI = \"gcs_destination\/dataset---\/validation-*.jsonl\" * AIP_TEST_DATA_URI = \"gcs_destination\/dataset---\/test-*.jsonl\"",
+          "description": "The Google Cloud Storage location where the training data is to be written to. In the given directory a new directory will be created with name: `dataset---` where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. All training input data will be written into that directory. The AI Platform environment variables representing Google Cloud Storage data URIs will always be represented in the Google Cloud Storage wildcard format to support sharded data. e.g.: \"gs:\/\/...\/training-*.jsonl\" * AIP_DATA_FORMAT = \"jsonl\" for non-tabular data, \"csv\" for tabular data * AIP_TRAINING_DATA_URI = \"gcs_destination\/dataset---\/training-*.${AIP_DATA_FORMAT}\" * AIP_VALIDATION_DATA_URI = \"gcs_destination\/dataset---\/validation-*.${AIP_DATA_FORMAT}\" * AIP_TEST_DATA_URI = \"gcs_destination\/dataset---\/test-*.${AIP_DATA_FORMAT}\"",
           "$ref": "GoogleCloudAiplatformV1beta1GcsDestination"
+        },
+        "bigqueryDestination": {
+          "description": "The BigQuery project location where the training data is to be written to. In the given project a new dataset is created with name `dataset---` where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. All training input data will be written into that dataset. In the dataset three tables will be created, `training`, `validation` and `test`. * AIP_DATA_FORMAT = \"bigquery\". * AIP_TRAINING_DATA_URI = \"bigquery_destination.dataset---.training\" * AIP_VALIDATION_DATA_URI = \"bigquery_destination.dataset---.validation\" * AIP_TEST_DATA_URI = \"bigquery_destination.dataset---.test\"",
+          "$ref": "GoogleCloudAiplatformV1beta1BigQueryDestination"
         },
         "datasetId": {
           "description": "Required. The ID of the Dataset in the same Project and Location which data will be used to train the Model. The Dataset must use schema compatible with Model being trained, and what is compatible should be described in the used TrainingPipeline's training_task_definition. For tabular Datasets, all their data is exported to training, to pick and choose from.",
@@ -3259,7 +3276,7 @@
     },
     "GoogleCloudAiplatformV1beta1Explanation": {
       "id": "GoogleCloudAiplatformV1beta1Explanation",
-      "description": "Explanation of a prediction (provided in PredictResponse.predictions) produced by the Model on a given instance. Currently, only AutoML tabular Models support explanation.",
+      "description": "Explanation of a prediction (provided in PredictResponse.predictions) produced by the Model on a given instance.",
       "type": "object",
       "properties": {
         "attributions": {
@@ -3827,7 +3844,7 @@
           "format": "google-datetime"
         },
         "explanationSpec": {
-          "description": "Explanation configuration for this DeployedModel. When deploying a Model using EndpointService.DeployModel, this value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of explanation_spec is not populated, the value of the same field of Model.explanation_spec is inherited. The corresponding Model.explanation_spec must be populated, otherwise explanation for this Model is not allowed. Currently, only AutoML tabular Models support explanation_spec.",
+          "description": "Explanation configuration for this DeployedModel. When deploying a Model using EndpointService.DeployModel, this value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of explanation_spec is not populated, the value of the same field of Model.explanation_spec is inherited. The corresponding Model.explanation_spec must be populated, otherwise explanation for this Model is not allowed.",
           "$ref": "GoogleCloudAiplatformUiExplanationSpec"
         },
         "uiState": {
@@ -3848,6 +3865,10 @@
             "UI_DEPLOYMENT_STATE_BEING_UNDEPLOYED",
             "UI_DEPLOYMENT_STATE_FAILED"
           ]
+        },
+        "serviceAccount": {
+          "description": "The service account that the DeployedModel's container runs as. Specify the email address of the service account. If this service account is not specified, the container runs as a service account that doesn't have access to the resource project. Users deploying the Model must have the `iam.serviceAccounts.actAs` permission on this service account.",
+          "type": "string"
         },
         "enableContainerLogging": {
           "description": "If true, the container of the DeployedModel instances will send `stderr` and `stdout` streams to Stackdriver Logging. Only supported for custom-trained Models and AutoML Tables Models.",
@@ -4105,7 +4126,7 @@
     },
     "GoogleCloudAiplatformUiExplanationMetadataInputMetadata": {
       "id": "GoogleCloudAiplatformUiExplanationMetadataInputMetadata",
-      "description": "Metadata of the input of a feature. Fields other than InputMetadata.input_baselines are only applicable to Models that are using AI Platform provided images for Tensorflow.",
+      "description": "Metadata of the input of a feature. Fields other than InputMetadata.input_baselines are applicable only for Models that are using AI Platform-provided images for Tensorflow.",
       "type": "object",
       "properties": {
         "inputBaselines": {
@@ -4187,7 +4208,7 @@
     },
     "GoogleCloudAiplatformUiExplanationMetadataInputMetadataFeatureValueDomain": {
       "id": "GoogleCloudAiplatformUiExplanationMetadataInputMetadataFeatureValueDomain",
-      "description": "Domain details of input feature value. Provides numeric information about the feature such as its range (min, max). If the feature has been pre-processed, e.g. via z-scoring, then it also provides information about how to recover the original feature. For example, if the input feature is an image and it has been pre-processed to obtain 0-mean and stddev = 1 values, then original_mean, and original_stddev refer to the mean and stddev of the original feature (e.g. image tensor) from which input feature (with mean = 0 and stddev = 1) was obtained.",
+      "description": "Domain details of the input feature value. Provides numeric information about the feature, such as its range (min, max). If the feature has been pre-processed, for example with z-scoring, then it provides information about how to recover the original feature. For example, if the input feature is an image and it has been pre-processed to obtain 0-mean and stddev = 1 values, then original_mean, and original_stddev refer to the mean and stddev of the original feature (e.g. image tensor) from which input feature (with mean = 0 and stddev = 1) was obtained.",
       "type": "object",
       "properties": {
         "min": {
@@ -5595,7 +5616,7 @@
           "format": "google-datetime"
         },
         "explanationSpec": {
-          "description": "Explanation configuration for this DeployedModel. When deploying a Model using EndpointService.DeployModel, this value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of explanation_spec is not populated, the value of the same field of Model.explanation_spec is inherited. The corresponding Model.explanation_spec must be populated, otherwise explanation for this Model is not allowed. Currently, only AutoML tabular Models support explanation_spec.",
+          "description": "Explanation configuration for this DeployedModel. When deploying a Model using EndpointService.DeployModel, this value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of explanation_spec is not populated, the value of the same field of Model.explanation_spec is inherited. The corresponding Model.explanation_spec must be populated, otherwise explanation for this Model is not allowed.",
           "$ref": "GoogleCloudAiplatformV1alpha1ExplanationSpec"
         }
       }
@@ -5696,26 +5717,6 @@
         "sampledShapleyAttribution": {
           "description": "An attribution method that approximates Shapley values for features that contribute to the label being predicted. A sampling strategy is used to approximate the value rather than considering all subsets of features. Refer to this paper for model details: https:\/\/arxiv.org\/abs\/1306.4265.",
           "$ref": "GoogleCloudAiplatformV1alpha1SampledShapleyAttribution"
-        },
-        "integratedGradientsAttribution": {
-          "description": "An attribution method that computes Aumann-Shapley values taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1703.01365",
-          "$ref": "GoogleCloudAiplatformV1alpha1IntegratedGradientsAttribution"
-        },
-        "xraiAttribution": {
-          "description": "An attribution method that redistributes Integrated Gradients attribution to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 XRAI currently performs better on natural images, like a picture of a house or an animal. If the images are taken in artificial environments, like a lab or manufacturing line, or from diagnostic equipment, like x-rays or quality-control cameras, use Integrated Gradients instead.",
-          "$ref": "GoogleCloudAiplatformV1alpha1XraiAttribution"
-        },
-        "topK": {
-          "description": "If populated, returns attributions for top K indices of outputs (defaults to 1). Only applies to Models that predicts more than one outputs (e,g, multi-class Models). When set to -1, returns explanations for all outputs.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "outputIndices": {
-          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indeices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
-          "type": "array",
-          "items": {
-            "type": "any"
-          }
         }
       }
     },
@@ -5728,89 +5729,6 @@
           "description": "Required. The number of feature permutations to consider when approximating the Shapley values. Valid range of its value is [1, 50], inclusively.",
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1alpha1IntegratedGradientsAttribution": {
-      "id": "GoogleCloudAiplatformV1alpha1IntegratedGradientsAttribution",
-      "description": "An attribution method that computes the Aumann-Shapley value taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1703.01365",
-      "type": "object",
-      "properties": {
-        "stepCount": {
-          "description": "Required. The number of steps for approximating the path integral. A good value to start is 50 and gradually increase until the sum to diff property is within the desired error range. Valid range of its value is [1, 100], inclusively.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "smoothGradConfig": {
-          "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
-          "$ref": "GoogleCloudAiplatformV1alpha1SmoothGradConfig"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1alpha1SmoothGradConfig": {
-      "id": "GoogleCloudAiplatformV1alpha1SmoothGradConfig",
-      "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
-      "type": "object",
-      "properties": {
-        "noiseSigma": {
-          "description": "This is a single float value and will be used to add noise to all the features. Use this field when all features are normalized to have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring, where features are normalized to have 0-mean and 1-variance. Refer to this doc for more details about normalization: https: \/\/developers.google.com\/machine-learning \/\/ \/data-prep\/transform\/normalization. For best results the recommended value is about 10% - 20% of the standard deviation of the input feature. Refer to section 3.2 of the SmoothGrad paper: https:\/\/arxiv.org\/pdf\/1706.03825.pdf. Defaults to 0.1. If the distribution is different per feature, set feature_noise_sigma instead for each feature.",
-          "type": "number",
-          "format": "float"
-        },
-        "featureNoiseSigma": {
-          "description": "This is similar to noise_sigma, but provides additional flexibility. A separate noise sigma can be provided for each feature, which is useful if their distributions are different. No noise is added to features that are not set. If this field is unset, noise_sigma will be used for all features.",
-          "$ref": "GoogleCloudAiplatformV1alpha1FeatureNoiseSigma"
-        },
-        "noisySampleCount": {
-          "description": "The number of gradient samples to use for approximation. The higher this number, the more accurate the gradient is, but the runtime complexity increases by this factor as well. Valid range of its value is [1, 50]. Defaults to 3.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1alpha1FeatureNoiseSigma": {
-      "id": "GoogleCloudAiplatformV1alpha1FeatureNoiseSigma",
-      "description": "Noise sigma by features. Noise sigma represents the standard deviation of the gaussian kernel that will be used to add noise to interpolated inputs prior to computing gradients.",
-      "type": "object",
-      "properties": {
-        "noiseSigma": {
-          "description": "Noise sigma per feature. No noise is added to features that are not set.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1alpha1FeatureNoiseSigmaNoiseSigmaForFeature"
-          }
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1alpha1FeatureNoiseSigmaNoiseSigmaForFeature": {
-      "id": "GoogleCloudAiplatformV1alpha1FeatureNoiseSigmaNoiseSigmaForFeature",
-      "description": "Noise sigma for a single feature.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the input feature for which noise sigma is provided. The features are defined in explanation metadata inputs.",
-          "type": "string"
-        },
-        "sigma": {
-          "description": "This represents the standard deviation of the Gaussian kernel that will be used to add noise to the feature prior to computing gradients. Similar to noise_sigma but represents the noise added to the current feature. Defaults to 0.1.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1alpha1XraiAttribution": {
-      "id": "GoogleCloudAiplatformV1alpha1XraiAttribution",
-      "description": "An explanation method that redistributes Integrated Gradients attributions to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 Only supports image Models (modality is IMAGE).",
-      "type": "object",
-      "properties": {
-        "stepCount": {
-          "description": "Required. The number of steps for approximating the path integral. A good value to start is 50 and gradually increase until the sum to diff property is met within the desired error range. Valid range of its value is [1, 100], inclusively.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "smoothGradConfig": {
-          "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
-          "$ref": "GoogleCloudAiplatformV1alpha1SmoothGradConfig"
         }
       }
     },
@@ -5841,7 +5759,7 @@
     },
     "GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadata": {
       "id": "GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadata",
-      "description": "Metadata of the input of a feature. Fields other than InputMetadata.input_baselines are only applicable to Models that are using AI Platform provided images for Tensorflow.",
+      "description": "Metadata of the input of a feature. Fields other than InputMetadata.input_baselines are applicable only for Models that are using AI Platform-provided images for Tensorflow.",
       "type": "object",
       "properties": {
         "inputBaselines": {
@@ -5850,188 +5768,6 @@
           "items": {
             "type": "any"
           }
-        },
-        "inputTensorName": {
-          "description": "Name of the input tensor for this feature. Required and is only applicable to AI Platform provided images for Tensorflow.",
-          "type": "string"
-        },
-        "encoding": {
-          "description": "Defines how the feature is encoded into the input tensor. Defaults to IDENTITY.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default value. This is the same as IDENTITY.",
-            "The tensor represents one feature.",
-            "The tensor represents a bag of features where each index maps to a feature. InputMetadata.index_feature_mapping must be provided for this encoding. For example: ``` input = [27, 6.0, 150] index_feature_mapping = [\"age\", \"height\", \"weight\"] ```",
-            "The tensor represents a bag of features where each index maps to a feature. Zero values in the tensor indicates feature being non-existent. InputMetadata.index_feature_mapping must be provided for this encoding. For example: ``` input = [2, 0, 5, 0, 1] index_feature_mapping = [\"a\", \"b\", \"c\", \"d\", \"e\"] ```",
-            "The tensor is a list of binaries representing whether a feature exists or not (1 indicates existence). InputMetadata.index_feature_mapping must be provided for this encoding. For example: ``` input = [1, 0, 1, 0, 1] index_feature_mapping = [\"a\", \"b\", \"c\", \"d\", \"e\"] ```",
-            "The tensor is encoded into a 1-dimensional array represented by an encoded tensor. InputMetadata.encoded_tensor_name must be provided for this encoding. For example: ``` input = [\"This\", \"is\", \"a\", \"test\", \".\"] encoded = [0.1, 0.2, 0.3, 0.4, 0.5] ```",
-            "Select this encoding when the input tensor is encoded into a 2-dimensional array represented by an encoded tensor. InputMetadata.encoded_tensor_name must be provided for this encoding. The first dimension of the encoded tensor's shape is the same as the input tensor's shape. For example: ``` input = [\"This\", \"is\", \"a\", \"test\", \".\"] encoded = [[0.1, 0.2, 0.3, 0.4, 0.5], [0.2, 0.1, 0.4, 0.3, 0.5], [0.5, 0.1, 0.3, 0.5, 0.4], [0.5, 0.3, 0.1, 0.2, 0.4], [0.4, 0.3, 0.2, 0.5, 0.1]] ```"
-          ],
-          "enum": [
-            "ENCODING_UNSPECIFIED",
-            "IDENTITY",
-            "BAG_OF_FEATURES",
-            "BAG_OF_FEATURES_SPARSE",
-            "INDICATOR",
-            "COMBINED_EMBEDDING",
-            "CONCAT_EMBEDDING"
-          ]
-        },
-        "modality": {
-          "description": "Modality of the feature. Valid values are: numeric, image. Defaults to numeric.",
-          "type": "string"
-        },
-        "featureValueDomain": {
-          "description": "The domain details of the input feature value. Like min\/max, original mean or standard deviation if normalized.",
-          "$ref": "GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadataFeatureValueDomain"
-        },
-        "indicesTensorName": {
-          "description": "Specifies the index of the values of the input tensor. Required when the input tensor is a sparse representation. Refer to Tensorflow documentation for more details: https:\/\/www.tensorflow.org\/api_docs\/python\/tf\/sparse\/SparseTensor.",
-          "type": "string"
-        },
-        "denseShapeTensorName": {
-          "description": "Specifies the shape of the values of the input if the input is a sparse representation. Refer to Tensorflow documentation for more details: https:\/\/www.tensorflow.org\/api_docs\/python\/tf\/sparse\/SparseTensor.",
-          "type": "string"
-        },
-        "indexFeatureMapping": {
-          "description": "A list of feature names for each index in the input tensor. Required when the input InputMetadata.encoding is BAG_OF_FEATURES, BAG_OF_FEATURES_SPARSE, INDICATOR.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "encodedTensorName": {
-          "description": "Encoded tensor is a transformation of the input tensor. Must be provided if choosing Integrated Gradients attribution or XRAI attribution and the input tensor is not differentiable. An encoded tensor is generated if the input tensor is encoded by a lookup table.",
-          "type": "string"
-        },
-        "encodedBaselines": {
-          "description": "A list of baselines for the encoded tensor. The shape of each baseline should match the shape of the encoded tensor. If a scalar is provided, AI Platform broadcast to the same shape as the encoded tensor.",
-          "type": "array",
-          "items": {
-            "type": "any"
-          }
-        },
-        "visualization": {
-          "description": "Visualization configurations for image explanation.",
-          "$ref": "GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadataVisualization"
-        },
-        "groupName": {
-          "description": "Name of the group that the input belongs to. Features with the same group name will be treated as one feature when computing attributions. Features grouped together can have different shapes in value. If provided, there will be one single attribution generated in featureAttributions, keyed by the group name.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadataFeatureValueDomain": {
-      "id": "GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadataFeatureValueDomain",
-      "description": "Domain details of input feature value. Provides numeric information about the feature such as its range (min, max). If the feature has been pre-processed, e.g. via z-scoring, then it also provides information about how to recover the original feature. For example, if the input feature is an image and it has been pre-processed to obtain 0-mean and stddev = 1 values, then original_mean, and original_stddev refer to the mean and stddev of the original feature (e.g. image tensor) from which input feature (with mean = 0 and stddev = 1) was obtained.",
-      "type": "object",
-      "properties": {
-        "min": {
-          "description": "The minimum permissible value for this feature.",
-          "type": "number",
-          "format": "float"
-        },
-        "max": {
-          "description": "The maximum permissible value for this feature.",
-          "type": "number",
-          "format": "float"
-        },
-        "originalMean": {
-          "description": "If this input feature has been normalized to a mean value of 0, the original_mean specifies the mean value of the domain prior to normalization.",
-          "type": "number",
-          "format": "float"
-        },
-        "originalStddev": {
-          "description": "If this input feature has been normalized to a standard deviation of 1.0, the original_stddev specifies the standard deviation of the domain prior to normalization.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadataVisualization": {
-      "id": "GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadataVisualization",
-      "description": "Visualization configurations for image explanation.",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "Type of the image visualization. Only applicable to Integrated Gradients attribution. OUTLINES shows regions of attribution, while PIXELS shows per-pixel attribution. Defaults to OUTLINES.",
-          "type": "string",
-          "enumDescriptions": [
-            "Should not be used.",
-            "Shows which pixel contributed to the image prediction.",
-            "Shows which region contributed to the image prediction by outlining the region."
-          ],
-          "enum": [
-            "TYPE_UNSPECIFIED",
-            "PIXELS",
-            "OUTLINES"
-          ]
-        },
-        "polarity": {
-          "description": "Whether to only highlight pixels with positive contributions, negative or both. Defaults to POSITIVE.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default value. This is the same as POSITIVE.",
-            "Highlights the pixels\/outlines that were most influential to the model's prediction.",
-            "Setting polarity to negative highlights areas that does not lead to the models's current prediction.",
-            "Shows both positive and negative attributions."
-          ],
-          "enum": [
-            "POLARITY_UNSPECIFIED",
-            "POSITIVE",
-            "NEGATIVE",
-            "BOTH"
-          ]
-        },
-        "colorMap": {
-          "description": "The color scheme used for the highlighted areas. Defaults to PINK_GREEN for Integrated Gradients attribution, which shows positive attributions in green and negative in pink. Defaults to VIRIDIS for XRAI attribution, which highlights the most influential regions in yellow and the least influential in blue.",
-          "type": "string",
-          "enumDescriptions": [
-            "Should not be used.",
-            "Positive: green. Negative: pink.",
-            "Viridis color map: A perceptually uniform color mapping which is easier to see by those with colorblindness and progresses from yellow to green to blue. Positive: yellow. Negative: blue.",
-            "Positive: red. Negative: red.",
-            "Positive: green. Negative: green.",
-            "Positive: green. Negative: red.",
-            "PiYG palette."
-          ],
-          "enum": [
-            "COLOR_MAP_UNSPECIFIED",
-            "PINK_GREEN",
-            "VIRIDIS",
-            "RED",
-            "GREEN",
-            "RED_GREEN",
-            "PINK_WHITE_GREEN"
-          ]
-        },
-        "clipPercentUpperbound": {
-          "description": "Excludes attributions above the specified percentile from the highlighted areas. Using the clip_percent_upperbound and clip_percent_lowerbound together can be useful for filtering out noise and making it easier to see areas of strong attribution. Defaults to 99.9.",
-          "type": "number",
-          "format": "float"
-        },
-        "clipPercentLowerbound": {
-          "description": "Excludes attributions below the specified percentile, from the highlighted areas. Defaults to 35.",
-          "type": "number",
-          "format": "float"
-        },
-        "overlayType": {
-          "description": "How the original image is displayed in the visualization. Adjusting the overlay can help increase visual clarity if the original image makes it difficult to view the visualization. Defaults to NONE.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default value. This is the same as NONE.",
-            "No overlay.",
-            "The attributions are shown on top of the original image.",
-            "The attributions are shown on top of grayscaled version of the original image.",
-            "The attributions are used as a mask to reveal predictive parts of the image and hide the un-predictive parts."
-          ],
-          "enum": [
-            "OVERLAY_TYPE_UNSPECIFIED",
-            "NONE",
-            "ORIGINAL",
-            "GRAYSCALE",
-            "MASK_BLACK"
-          ]
         }
       }
     },
@@ -6046,10 +5782,6 @@
         },
         "displayNameMappingKey": {
           "description": "Specify a field name in the prediction to look for the display name. Use this if the prediction contains the display names for the outputs. The display names in the prediction must have the same shape of the outputs, so that it can be located by Attribution.output_index for a specific output.",
-          "type": "string"
-        },
-        "outputTensorName": {
-          "description": "Name of the output tensor. Required and is only applicable to AI Platform provided images for Tensorflow.",
           "type": "string"
         }
       }

@@ -128,17 +128,25 @@ def _GetServiceAccountCreds(args):
   account = properties.VALUES.core.account.Get()
   if not account:
     raise store.NoActiveAccountException()
-  cred = store.Load(account, prevent_refresh=True)
+  cred = store.Load(account, prevent_refresh=True, use_google_auth=True)
   if not cred:
     raise store.NoCredentialsForAccountException(account)
 
-  account_type = creds.CredentialType.FromCredentials(cred)
-  if account_type == creds.CredentialType.SERVICE_ACCOUNT:
+  if _IsServiceAccountCredentials(cred):
     paths = config.Paths()
     json_content = files.ReadFileContents(
         paths.LegacyCredentialsAdcPath(account))
     return base64.b64encode(json_content.encode("utf-8")).decode("utf-8")
   return ""
+
+
+def _IsServiceAccountCredentials(cred):
+  if creds.IsOauth2ClientCredentials(cred):
+    return creds.CredentialType.FromCredentials(
+        cred) == creds.CredentialType.SERVICE_ACCOUNT
+  else:
+    return creds.CredentialTypeGoogleAuth.FromCredentials(
+        cred) == creds.CredentialTypeGoogleAuth.SERVICE_ACCOUNT
 
 
 def GetNpmSettingsSnippet(args):
@@ -215,13 +223,13 @@ def GetMavenSnippet(args):
       "build_ext":
           """\n
 <build>
-<extensions>
-  <extension>
-    <groupId>com.google.cloud.artifactregistry</groupId>
-    <artifactId>artifactregistry-maven-wagon</artifactId>
-    <version>2.1.0</version>
-  </extension>
-</extensions>
+  <extensions>
+    <extension>
+      <groupId>com.google.cloud.artifactregistry</groupId>
+      <artifactId>artifactregistry-maven-wagon</artifactId>
+      <version>2.1.0</version>
+    </extension>
+  </extensions>
 </build>""",
       "location":
           location,
@@ -274,6 +282,9 @@ def GetMavenSnippet(args):
           <get>
             <usePreemptive>true</usePreemptive>
           </get>
+          <head>
+            <usePreemptive>true</usePreemptive>
+          </head>
           <put>
             <params>
               <property>

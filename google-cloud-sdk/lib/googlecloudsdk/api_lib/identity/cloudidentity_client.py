@@ -80,7 +80,6 @@ def LookupGroupName(version, email):
   client = GetClient(version)
   messages = GetMessages(version)
 
-  # TODO: (b/124063772) Kluge for fixing inconsistency in python message
   encoding.AddCustomJsonFieldMapping(
       messages.CloudidentityGroupsLookupRequest,
       'groupKey_id', 'groupKey.id')
@@ -105,7 +104,6 @@ def LookupMembershipName(version, group_id, member_email):
   client = GetClient(version)
   messages = GetMessages(version)
 
-  # TODO: (b/124063772) Kluge for fixing inconsistency in python message
   encoding.AddCustomJsonFieldMapping(
       messages.CloudidentityGroupsMembershipsLookupRequest,
       'memberKey_id', 'memberKey.id')

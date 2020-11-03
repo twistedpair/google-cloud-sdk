@@ -2958,8 +2958,7 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
       explanation_spec is not populated, the value of the same field of
       Model.explanation_spec is inherited. The corresponding
       Model.explanation_spec must be populated, otherwise explanation for this
-      Model is not allowed. Currently, only AutoML tabular Models support
-      explanation_spec.
+      Model is not allowed.
     id: Output only. The ID of the DeployedModel.
     model: Required. The name of the Model this is the deployment of. Note
       that the Model may be in a different location than the DeployedModel's
@@ -2968,6 +2967,12 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
       DeployedModel was created from.
     modelObjective: Output only. The objective of the Model this DeployedModel
       was created from.
+    serviceAccount: The service account that the DeployedModel's container
+      runs as. Specify the email address of the service account. If this
+      service account is not specified, the container runs as a service
+      account that doesn't have access to the resource project. Users
+      deploying the Model must have the `iam.serviceAccounts.actAs` permission
+      on this service account.
     uiState: Output only. The state of the model deployment. Different from
       public API, BEING_DEPLOYED and FAILED deployment state model will also
       be returned in Ui ListEndpoints.
@@ -3006,7 +3011,8 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
   model = _messages.StringField(9)
   modelDisplayName = _messages.StringField(10)
   modelObjective = _messages.StringField(11)
-  uiState = _messages.EnumField('UiStateValueValuesEnum', 12)
+  serviceAccount = _messages.StringField(12)
+  uiState = _messages.EnumField('UiStateValueValuesEnum', 13)
 
 
 class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
@@ -3119,8 +3125,8 @@ class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
 
 class GoogleCloudAiplatformUiExplanationMetadataInputMetadata(_messages.Message):
   r"""Metadata of the input of a feature. Fields other than
-  InputMetadata.input_baselines are only applicable to Models that are using
-  AI Platform provided images for Tensorflow.
+  InputMetadata.input_baselines are applicable only for Models that are using
+  AI Platform-provided images for Tensorflow.
 
   Enums:
     EncodingValueValuesEnum: Defines how the feature is encoded into the input
@@ -3230,14 +3236,14 @@ class GoogleCloudAiplatformUiExplanationMetadataInputMetadata(_messages.Message)
 
 
 class GoogleCloudAiplatformUiExplanationMetadataInputMetadataFeatureValueDomain(_messages.Message):
-  r"""Domain details of input feature value. Provides numeric information
-  about the feature such as its range (min, max). If the feature has been pre-
-  processed, e.g. via z-scoring, then it also provides information about how
-  to recover the original feature. For example, if the input feature is an
-  image and it has been pre-processed to obtain 0-mean and stddev = 1 values,
-  then original_mean, and original_stddev refer to the mean and stddev of the
-  original feature (e.g. image tensor) from which input feature (with mean = 0
-  and stddev = 1) was obtained.
+  r"""Domain details of the input feature value. Provides numeric information
+  about the feature, such as its range (min, max). If the feature has been
+  pre-processed, for example with z-scoring, then it provides information
+  about how to recover the original feature. For example, if the input feature
+  is an image and it has been pre-processed to obtain 0-mean and stddev = 1
+  values, then original_mean, and original_stddev refer to the mean and stddev
+  of the original feature (e.g. image tensor) from which input feature (with
+  mean = 0 and stddev = 1) was obtained.
 
   Fields:
     max: The maximum permissible value for this feature.
@@ -4756,8 +4762,7 @@ class GoogleCloudAiplatformV1alpha1DeployedModel(_messages.Message):
       explanation_spec is not populated, the value of the same field of
       Model.explanation_spec is inherited. The corresponding
       Model.explanation_spec must be populated, otherwise explanation for this
-      Model is not allowed. Currently, only AutoML tabular Models support
-      explanation_spec.
+      Model is not allowed.
     id: Output only. The ID of the DeployedModel.
     model: Required. The name of the Model this is the deployment of. Note
       that the Model may be in a different location than the DeployedModel's
@@ -4884,42 +4889,10 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
 
 class GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadata(_messages.Message):
   r"""Metadata of the input of a feature. Fields other than
-  InputMetadata.input_baselines are only applicable to Models that are using
-  AI Platform provided images for Tensorflow.
-
-  Enums:
-    EncodingValueValuesEnum: Defines how the feature is encoded into the input
-      tensor. Defaults to IDENTITY.
+  InputMetadata.input_baselines are applicable only for Models that are using
+  AI Platform-provided images for Tensorflow.
 
   Fields:
-    denseShapeTensorName: Specifies the shape of the values of the input if
-      the input is a sparse representation. Refer to Tensorflow documentation
-      for more details:
-      https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor.
-    encodedBaselines: A list of baselines for the encoded tensor. The shape of
-      each baseline should match the shape of the encoded tensor. If a scalar
-      is provided, AI Platform broadcast to the same shape as the encoded
-      tensor.
-    encodedTensorName: Encoded tensor is a transformation of the input tensor.
-      Must be provided if choosing Integrated Gradients attribution or XRAI
-      attribution and the input tensor is not differentiable. An encoded
-      tensor is generated if the input tensor is encoded by a lookup table.
-    encoding: Defines how the feature is encoded into the input tensor.
-      Defaults to IDENTITY.
-    featureValueDomain: The domain details of the input feature value. Like
-      min/max, original mean or standard deviation if normalized.
-    groupName: Name of the group that the input belongs to. Features with the
-      same group name will be treated as one feature when computing
-      attributions. Features grouped together can have different shapes in
-      value. If provided, there will be one single attribution generated in
-      featureAttributions, keyed by the group name.
-    indexFeatureMapping: A list of feature names for each index in the input
-      tensor. Required when the input InputMetadata.encoding is
-      BAG_OF_FEATURES, BAG_OF_FEATURES_SPARSE, INDICATOR.
-    indicesTensorName: Specifies the index of the values of the input tensor.
-      Required when the input tensor is a sparse representation. Refer to
-      Tensorflow documentation for more details:
-      https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor.
     inputBaselines: Baseline inputs for this feature. If no baseline is
       specified, AI Platform chooses the baseline for this feature. If
       multiple baselines are specified, AI Platform returns the average
@@ -4931,222 +4904,9 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadata(_messages.Me
       feature's input in the instance[]. The schema of any single instance may
       be specified via Endpoint's DeployedModels' Model's PredictSchemata's
       instance_schema_uri.
-    inputTensorName: Name of the input tensor for this feature. Required and
-      is only applicable to AI Platform provided images for Tensorflow.
-    modality: Modality of the feature. Valid values are: numeric, image.
-      Defaults to numeric.
-    visualization: Visualization configurations for image explanation.
   """
 
-  class EncodingValueValuesEnum(_messages.Enum):
-    r"""Defines how the feature is encoded into the input tensor. Defaults to
-    IDENTITY.
-
-    Values:
-      ENCODING_UNSPECIFIED: Default value. This is the same as IDENTITY.
-      IDENTITY: The tensor represents one feature.
-      BAG_OF_FEATURES: The tensor represents a bag of features where each
-        index maps to a feature. InputMetadata.index_feature_mapping must be
-        provided for this encoding. For example: ``` input = [27, 6.0, 150]
-        index_feature_mapping = ["age", "height", "weight"] ```
-      BAG_OF_FEATURES_SPARSE: The tensor represents a bag of features where
-        each index maps to a feature. Zero values in the tensor indicates
-        feature being non-existent. InputMetadata.index_feature_mapping must
-        be provided for this encoding. For example: ``` input = [2, 0, 5, 0,
-        1] index_feature_mapping = ["a", "b", "c", "d", "e"] ```
-      INDICATOR: The tensor is a list of binaries representing whether a
-        feature exists or not (1 indicates existence).
-        InputMetadata.index_feature_mapping must be provided for this
-        encoding. For example: ``` input = [1, 0, 1, 0, 1]
-        index_feature_mapping = ["a", "b", "c", "d", "e"] ```
-      COMBINED_EMBEDDING: The tensor is encoded into a 1-dimensional array
-        represented by an encoded tensor. InputMetadata.encoded_tensor_name
-        must be provided for this encoding. For example: ``` input = ["This",
-        "is", "a", "test", "."] encoded = [0.1, 0.2, 0.3, 0.4, 0.5] ```
-      CONCAT_EMBEDDING: Select this encoding when the input tensor is encoded
-        into a 2-dimensional array represented by an encoded tensor.
-        InputMetadata.encoded_tensor_name must be provided for this encoding.
-        The first dimension of the encoded tensor's shape is the same as the
-        input tensor's shape. For example: ``` input = ["This", "is", "a",
-        "test", "."] encoded = [[0.1, 0.2, 0.3, 0.4, 0.5], [0.2, 0.1, 0.4,
-        0.3, 0.5], [0.5, 0.1, 0.3, 0.5, 0.4], [0.5, 0.3, 0.1, 0.2, 0.4], [0.4,
-        0.3, 0.2, 0.5, 0.1]] ```
-    """
-    ENCODING_UNSPECIFIED = 0
-    IDENTITY = 1
-    BAG_OF_FEATURES = 2
-    BAG_OF_FEATURES_SPARSE = 3
-    INDICATOR = 4
-    COMBINED_EMBEDDING = 5
-    CONCAT_EMBEDDING = 6
-
-  denseShapeTensorName = _messages.StringField(1)
-  encodedBaselines = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
-  encodedTensorName = _messages.StringField(3)
-  encoding = _messages.EnumField('EncodingValueValuesEnum', 4)
-  featureValueDomain = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadataFeatureValueDomain', 5)
-  groupName = _messages.StringField(6)
-  indexFeatureMapping = _messages.StringField(7, repeated=True)
-  indicesTensorName = _messages.StringField(8)
-  inputBaselines = _messages.MessageField('extra_types.JsonValue', 9, repeated=True)
-  inputTensorName = _messages.StringField(10)
-  modality = _messages.StringField(11)
-  visualization = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadataVisualization', 12)
-
-
-class GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadataFeatureValueDomain(_messages.Message):
-  r"""Domain details of input feature value. Provides numeric information
-  about the feature such as its range (min, max). If the feature has been pre-
-  processed, e.g. via z-scoring, then it also provides information about how
-  to recover the original feature. For example, if the input feature is an
-  image and it has been pre-processed to obtain 0-mean and stddev = 1 values,
-  then original_mean, and original_stddev refer to the mean and stddev of the
-  original feature (e.g. image tensor) from which input feature (with mean = 0
-  and stddev = 1) was obtained.
-
-  Fields:
-    max: The maximum permissible value for this feature.
-    min: The minimum permissible value for this feature.
-    originalMean: If this input feature has been normalized to a mean value of
-      0, the original_mean specifies the mean value of the domain prior to
-      normalization.
-    originalStddev: If this input feature has been normalized to a standard
-      deviation of 1.0, the original_stddev specifies the standard deviation
-      of the domain prior to normalization.
-  """
-
-  max = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  min = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  originalMean = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
-  originalStddev = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-
-
-class GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadataVisualization(_messages.Message):
-  r"""Visualization configurations for image explanation.
-
-  Enums:
-    ColorMapValueValuesEnum: The color scheme used for the highlighted areas.
-      Defaults to PINK_GREEN for Integrated Gradients attribution, which shows
-      positive attributions in green and negative in pink. Defaults to VIRIDIS
-      for XRAI attribution, which highlights the most influential regions in
-      yellow and the least influential in blue.
-    OverlayTypeValueValuesEnum: How the original image is displayed in the
-      visualization. Adjusting the overlay can help increase visual clarity if
-      the original image makes it difficult to view the visualization.
-      Defaults to NONE.
-    PolarityValueValuesEnum: Whether to only highlight pixels with positive
-      contributions, negative or both. Defaults to POSITIVE.
-    TypeValueValuesEnum: Type of the image visualization. Only applicable to
-      Integrated Gradients attribution. OUTLINES shows regions of attribution,
-      while PIXELS shows per-pixel attribution. Defaults to OUTLINES.
-
-  Fields:
-    clipPercentLowerbound: Excludes attributions below the specified
-      percentile, from the highlighted areas. Defaults to 35.
-    clipPercentUpperbound: Excludes attributions above the specified
-      percentile from the highlighted areas. Using the clip_percent_upperbound
-      and clip_percent_lowerbound together can be useful for filtering out
-      noise and making it easier to see areas of strong attribution. Defaults
-      to 99.9.
-    colorMap: The color scheme used for the highlighted areas. Defaults to
-      PINK_GREEN for Integrated Gradients attribution, which shows positive
-      attributions in green and negative in pink. Defaults to VIRIDIS for XRAI
-      attribution, which highlights the most influential regions in yellow and
-      the least influential in blue.
-    overlayType: How the original image is displayed in the visualization.
-      Adjusting the overlay can help increase visual clarity if the original
-      image makes it difficult to view the visualization. Defaults to NONE.
-    polarity: Whether to only highlight pixels with positive contributions,
-      negative or both. Defaults to POSITIVE.
-    type: Type of the image visualization. Only applicable to Integrated
-      Gradients attribution. OUTLINES shows regions of attribution, while
-      PIXELS shows per-pixel attribution. Defaults to OUTLINES.
-  """
-
-  class ColorMapValueValuesEnum(_messages.Enum):
-    r"""The color scheme used for the highlighted areas. Defaults to
-    PINK_GREEN for Integrated Gradients attribution, which shows positive
-    attributions in green and negative in pink. Defaults to VIRIDIS for XRAI
-    attribution, which highlights the most influential regions in yellow and
-    the least influential in blue.
-
-    Values:
-      COLOR_MAP_UNSPECIFIED: Should not be used.
-      PINK_GREEN: Positive: green. Negative: pink.
-      VIRIDIS: Viridis color map: A perceptually uniform color mapping which
-        is easier to see by those with colorblindness and progresses from
-        yellow to green to blue. Positive: yellow. Negative: blue.
-      RED: Positive: red. Negative: red.
-      GREEN: Positive: green. Negative: green.
-      RED_GREEN: Positive: green. Negative: red.
-      PINK_WHITE_GREEN: PiYG palette.
-    """
-    COLOR_MAP_UNSPECIFIED = 0
-    PINK_GREEN = 1
-    VIRIDIS = 2
-    RED = 3
-    GREEN = 4
-    RED_GREEN = 5
-    PINK_WHITE_GREEN = 6
-
-  class OverlayTypeValueValuesEnum(_messages.Enum):
-    r"""How the original image is displayed in the visualization. Adjusting
-    the overlay can help increase visual clarity if the original image makes
-    it difficult to view the visualization. Defaults to NONE.
-
-    Values:
-      OVERLAY_TYPE_UNSPECIFIED: Default value. This is the same as NONE.
-      NONE: No overlay.
-      ORIGINAL: The attributions are shown on top of the original image.
-      GRAYSCALE: The attributions are shown on top of grayscaled version of
-        the original image.
-      MASK_BLACK: The attributions are used as a mask to reveal predictive
-        parts of the image and hide the un-predictive parts.
-    """
-    OVERLAY_TYPE_UNSPECIFIED = 0
-    NONE = 1
-    ORIGINAL = 2
-    GRAYSCALE = 3
-    MASK_BLACK = 4
-
-  class PolarityValueValuesEnum(_messages.Enum):
-    r"""Whether to only highlight pixels with positive contributions, negative
-    or both. Defaults to POSITIVE.
-
-    Values:
-      POLARITY_UNSPECIFIED: Default value. This is the same as POSITIVE.
-      POSITIVE: Highlights the pixels/outlines that were most influential to
-        the model's prediction.
-      NEGATIVE: Setting polarity to negative highlights areas that does not
-        lead to the models's current prediction.
-      BOTH: Shows both positive and negative attributions.
-    """
-    POLARITY_UNSPECIFIED = 0
-    POSITIVE = 1
-    NEGATIVE = 2
-    BOTH = 3
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Type of the image visualization. Only applicable to Integrated
-    Gradients attribution. OUTLINES shows regions of attribution, while PIXELS
-    shows per-pixel attribution. Defaults to OUTLINES.
-
-    Values:
-      TYPE_UNSPECIFIED: Should not be used.
-      PIXELS: Shows which pixel contributed to the image prediction.
-      OUTLINES: Shows which region contributed to the image prediction by
-        outlining the region.
-    """
-    TYPE_UNSPECIFIED = 0
-    PIXELS = 1
-    OUTLINES = 2
-
-  clipPercentLowerbound = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  clipPercentUpperbound = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  colorMap = _messages.EnumField('ColorMapValueValuesEnum', 3)
-  overlayType = _messages.EnumField('OverlayTypeValueValuesEnum', 4)
-  polarity = _messages.EnumField('PolarityValueValuesEnum', 5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  inputBaselines = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
 
 
 class GoogleCloudAiplatformV1alpha1ExplanationMetadataOutputMetadata(_messages.Message):
@@ -5167,54 +4927,24 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadataOutputMetadata(_messages.M
       of strings. The number of dimentions must match that of the outputs to
       be explained. The Attribution.output_display_name is populated by
       locating in the mapping with Attribution.output_index.
-    outputTensorName: Name of the output tensor. Required and is only
-      applicable to AI Platform provided images for Tensorflow.
   """
 
   displayNameMappingKey = _messages.StringField(1)
   indexDisplayNameMapping = _messages.MessageField('extra_types.JsonValue', 2)
-  outputTensorName = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1alpha1ExplanationParameters(_messages.Message):
   r"""Parameters to configure explaining for Model's predictions.
 
   Fields:
-    integratedGradientsAttribution: An attribution method that computes
-      Aumann-Shapley values taking advantage of the model's fully
-      differentiable structure. Refer to this paper for more details:
-      https://arxiv.org/abs/1703.01365
-    outputIndices: If populated, only returns attributions that have
-      output_index contained in output_indices. It must be an ndarray of
-      integers, with the same shape of the output it's explaining. If not
-      populated, returns attributions for top_k indices of outputs. If neither
-      top_k nor output_indeices is populated, returns the argmax index of the
-      outputs. Only applicable to Models that predict multiple outputs (e,g,
-      multi-class Models that predict multiple classes).
     sampledShapleyAttribution: An attribution method that approximates Shapley
       values for features that contribute to the label being predicted. A
       sampling strategy is used to approximate the value rather than
       considering all subsets of features. Refer to this paper for model
       details: https://arxiv.org/abs/1306.4265.
-    topK: If populated, returns attributions for top K indices of outputs
-      (defaults to 1). Only applies to Models that predicts more than one
-      outputs (e,g, multi-class Models). When set to -1, returns explanations
-      for all outputs.
-    xraiAttribution: An attribution method that redistributes Integrated
-      Gradients attribution to segmented regions, taking advantage of the
-      model's fully differentiable structure. Refer to this paper for more
-      details: https://arxiv.org/abs/1906.02825 XRAI currently performs better
-      on natural images, like a picture of a house or an animal. If the images
-      are taken in artificial environments, like a lab or manufacturing line,
-      or from diagnostic equipment, like x-rays or quality-control cameras,
-      use Integrated Gradients instead.
   """
 
-  integratedGradientsAttribution = _messages.MessageField('GoogleCloudAiplatformV1alpha1IntegratedGradientsAttribution', 1)
-  outputIndices = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
-  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformV1alpha1SampledShapleyAttribution', 3)
-  topK = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  xraiAttribution = _messages.MessageField('GoogleCloudAiplatformV1alpha1XraiAttribution', 5)
+  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformV1alpha1SampledShapleyAttribution', 1)
 
 
 class GoogleCloudAiplatformV1alpha1ExplanationSpec(_messages.Message):
@@ -5315,35 +5045,6 @@ class GoogleCloudAiplatformV1alpha1ExportModelResponse(_messages.Message):
   r"""Response message of ModelService.ExportModel operation."""
 
 
-class GoogleCloudAiplatformV1alpha1FeatureNoiseSigma(_messages.Message):
-  r"""Noise sigma by features. Noise sigma represents the standard deviation
-  of the gaussian kernel that will be used to add noise to interpolated inputs
-  prior to computing gradients.
-
-  Fields:
-    noiseSigma: Noise sigma per feature. No noise is added to features that
-      are not set.
-  """
-
-  noiseSigma = _messages.MessageField('GoogleCloudAiplatformV1alpha1FeatureNoiseSigmaNoiseSigmaForFeature', 1, repeated=True)
-
-
-class GoogleCloudAiplatformV1alpha1FeatureNoiseSigmaNoiseSigmaForFeature(_messages.Message):
-  r"""Noise sigma for a single feature.
-
-  Fields:
-    name: The name of the input feature for which noise sigma is provided. The
-      features are defined in explanation metadata inputs.
-    sigma: This represents the standard deviation of the Gaussian kernel that
-      will be used to add noise to the feature prior to computing gradients.
-      Similar to noise_sigma but represents the noise added to the current
-      feature. Defaults to 0.1.
-  """
-
-  name = _messages.StringField(1)
-  sigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-
-
 class GoogleCloudAiplatformV1alpha1GenericOperationMetadata(_messages.Message):
   r"""Generic Metadata shared by all operations.
 
@@ -5374,27 +5075,6 @@ class GoogleCloudAiplatformV1alpha1ImportDataOperationMetadata(_messages.Message
 
 class GoogleCloudAiplatformV1alpha1ImportDataResponse(_messages.Message):
   r"""Response message for DatasetService.ImportData."""
-
-
-class GoogleCloudAiplatformV1alpha1IntegratedGradientsAttribution(_messages.Message):
-  r"""An attribution method that computes the Aumann-Shapley value taking
-  advantage of the model's fully differentiable structure. Refer to this paper
-  for more details: https://arxiv.org/abs/1703.01365
-
-  Fields:
-    smoothGradConfig: Config for SmoothGrad approximation of gradients. When
-      enabled, the gradients are approximated by averaging the gradients from
-      noisy samples in the vicinity of the inputs. Adding noise can help
-      improve the computed gradients. Refer to this paper for more details:
-      https://arxiv.org/pdf/1706.03825.pdf
-    stepCount: Required. The number of steps for approximating the path
-      integral. A good value to start is 50 and gradually increase until the
-      sum to diff property is within the desired error range. Valid range of
-      its value is [1, 100], inclusively.
-  """
-
-  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1SmoothGradConfig', 1)
-  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
@@ -6082,42 +5762,6 @@ class GoogleCloudAiplatformV1alpha1SchemaVisualInspectionMaskSavedQueryMetadata(
   colorMap = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaAnnotationSpecColor', 1, repeated=True)
 
 
-class GoogleCloudAiplatformV1alpha1SmoothGradConfig(_messages.Message):
-  r"""Config for SmoothGrad approximation of gradients. When enabled, the
-  gradients are approximated by averaging the gradients from noisy samples in
-  the vicinity of the inputs. Adding noise can help improve the computed
-  gradients. Refer to this paper for more details:
-  https://arxiv.org/pdf/1706.03825.pdf
-
-  Fields:
-    featureNoiseSigma: This is similar to noise_sigma, but provides additional
-      flexibility. A separate noise sigma can be provided for each feature,
-      which is useful if their distributions are different. No noise is added
-      to features that are not set. If this field is unset, noise_sigma will
-      be used for all features.
-    noiseSigma: This is a single float value and will be used to add noise to
-      all the features. Use this field when all features are normalized to
-      have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring,
-      where features are normalized to have 0-mean and 1-variance. Refer to
-      this doc for more details about normalization: https:
-      //developers.google.com/machine-learning // /data-
-      prep/transform/normalization. For best results the recommended value is
-      about 10% - 20% of the standard deviation of the input feature. Refer to
-      section 3.2 of the SmoothGrad paper:
-      https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
-      distribution is different per feature, set feature_noise_sigma instead
-      for each feature.
-    noisySampleCount: The number of gradient samples to use for approximation.
-      The higher this number, the more accurate the gradient is, but the
-      runtime complexity increases by this factor as well. Valid range of its
-      value is [1, 50]. Defaults to 3.
-  """
-
-  featureNoiseSigma = _messages.MessageField('GoogleCloudAiplatformV1alpha1FeatureNoiseSigma', 1)
-  noiseSigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  noisySampleCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-
-
 class GoogleCloudAiplatformV1alpha1SpecialistPool(_messages.Message):
   r"""SpecialistPool represents customers' own workforce to work on their data
   labeling jobs. It includes a group of specialist managers who are
@@ -6194,29 +5838,6 @@ class GoogleCloudAiplatformV1alpha1UploadModelResponse(_messages.Message):
   """
 
   model = _messages.StringField(1)
-
-
-class GoogleCloudAiplatformV1alpha1XraiAttribution(_messages.Message):
-  r"""An explanation method that redistributes Integrated Gradients
-  attributions to segmented regions, taking advantage of the model's fully
-  differentiable structure. Refer to this paper for more details:
-  https://arxiv.org/abs/1906.02825 Only supports image Models (modality is
-  IMAGE).
-
-  Fields:
-    smoothGradConfig: Config for SmoothGrad approximation of gradients. When
-      enabled, the gradients are approximated by averaging the gradients from
-      noisy samples in the vicinity of the inputs. Adding noise can help
-      improve the computed gradients. Refer to this paper for more details:
-      https://arxiv.org/pdf/1706.03825.pdf
-    stepCount: Required. The number of steps for approximating the path
-      integral. A good value to start is 50 and gradually increase until the
-      sum to diff property is met within the desired error range. Valid range
-      of its value is [1, 100], inclusively.
-  """
-
-  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1SmoothGradConfig', 1)
-  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1beta1Annotation(_messages.Message):
@@ -6389,6 +6010,8 @@ class GoogleCloudAiplatformV1beta1Attribution(_messages.Message):
       of the output_index list is the same as the number of dimensions of the
       output. The i-th element in output_index is the element index of the
       i-th dimension of the output vector. Indices start from 0.
+    outputName: Output only. Name of the explain output. Specified as the key
+      in ExplanationMetadata.outputs.
   """
 
   approximationError = _messages.FloatField(1)
@@ -6397,6 +6020,7 @@ class GoogleCloudAiplatformV1beta1Attribution(_messages.Message):
   instanceOutputValue = _messages.FloatField(4)
   outputDisplayName = _messages.StringField(5)
   outputIndex = _messages.IntegerField(6, repeated=True, variant=_messages.Variant.INT32)
+  outputName = _messages.StringField(7)
 
 
 class GoogleCloudAiplatformV1beta1AutomaticResources(_messages.Message):
@@ -6957,13 +6581,17 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
       AIP_MODEL_DIR = `//model/` * AIP_CHECKPOINT_DIR = `//checkpoints/` *
       AIP_TENSORBOARD_LOG_DIR = `//logs/`
     scheduling: Scheduling options for a CustomJob.
+    serviceAccount: Specifies the service account for workload run-as account.
+      Users submitting jobs must have act-as permission on this run-as
+      account.
     workerPoolSpecs: Required. The spec of the worker pools including machine
       type and Docker image.
   """
 
   baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 1)
   scheduling = _messages.MessageField('GoogleCloudAiplatformV1beta1Scheduling', 2)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1WorkerPoolSpec', 3, repeated=True)
+  serviceAccount = _messages.StringField(3)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1WorkerPoolSpec', 4, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1DataItem(_messages.Message):
@@ -7273,12 +6901,17 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
       explanation_spec is not populated, the value of the same field of
       Model.explanation_spec is inherited. The corresponding
       Model.explanation_spec must be populated, otherwise explanation for this
-      Model is not allowed. Currently, only AutoML tabular Models support
-      explanation_spec.
+      Model is not allowed.
     id: Output only. The ID of the DeployedModel.
     model: Required. The name of the Model this is the deployment of. Note
       that the Model may be in a different location than the DeployedModel's
       Endpoint.
+    serviceAccount: The service account that the DeployedModel's container
+      runs as. Specify the email address of the service account. If this
+      service account is not specified, the container runs as a service
+      account that doesn't have access to the resource project. Users
+      deploying the Model must have the `iam.serviceAccounts.actAs` permission
+      on this service account.
   """
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1beta1AutomaticResources', 1)
@@ -7290,6 +6923,7 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
   explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 7)
   id = _messages.StringField(8)
   model = _messages.StringField(9)
+  serviceAccount = _messages.StringField(10)
 
 
 class GoogleCloudAiplatformV1beta1DeployedModelRef(_messages.Message):
@@ -7475,8 +7109,7 @@ class GoogleCloudAiplatformV1beta1ExplainResponse(_messages.Message):
 
 class GoogleCloudAiplatformV1beta1Explanation(_messages.Message):
   r"""Explanation of a prediction (provided in PredictResponse.predictions)
-  produced by the Model on a given instance. Currently, only AutoML tabular
-  Models support explanation.
+  produced by the Model on a given instance.
 
   Fields:
     attributions: Output only. Feature attributions grouped by predicted
@@ -7606,8 +7239,8 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
 
 class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadata(_messages.Message):
   r"""Metadata of the input of a feature. Fields other than
-  InputMetadata.input_baselines are only applicable to Models that are using
-  AI Platform provided images for Tensorflow.
+  InputMetadata.input_baselines are applicable only for Models that are using
+  AI Platform-provided images for Tensorflow.
 
   Enums:
     EncodingValueValuesEnum: Defines how the feature is encoded into the input
@@ -7717,14 +7350,14 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadata(_messages.Mes
 
 
 class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataFeatureValueDomain(_messages.Message):
-  r"""Domain details of input feature value. Provides numeric information
-  about the feature such as its range (min, max). If the feature has been pre-
-  processed, e.g. via z-scoring, then it also provides information about how
-  to recover the original feature. For example, if the input feature is an
-  image and it has been pre-processed to obtain 0-mean and stddev = 1 values,
-  then original_mean, and original_stddev refer to the mean and stddev of the
-  original feature (e.g. image tensor) from which input feature (with mean = 0
-  and stddev = 1) was obtained.
+  r"""Domain details of the input feature value. Provides numeric information
+  about the feature, such as its range (min, max). If the feature has been
+  pre-processed, for example with z-scoring, then it provides information
+  about how to recover the original feature. For example, if the input feature
+  is an image and it has been pre-processed to obtain 0-mean and stddev = 1
+  values, then original_mean, and original_stddev refer to the mean and stddev
+  of the original feature (e.g. image tensor) from which input feature (with
+  mean = 0 and stddev = 1) was obtained.
 
   Fields:
     max: The maximum permissible value for this feature.
@@ -8459,6 +8092,15 @@ class GoogleCloudAiplatformV1beta1InputDataConfig(_messages.Message):
       that role is decided by AI Platform). A filter with same syntax as the
       one used in ListAnnotations may be used, but note here it filters across
       all Annotations of the Dataset, and not just within a single DataItem.
+    bigqueryDestination: The BigQuery project location where the training data
+      is to be written to. In the given project a new dataset is created with
+      name `dataset---` where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ
+      ISO-8601 format. All training input data will be written into that
+      dataset. In the dataset three tables will be created, `training`,
+      `validation` and `test`. * AIP_DATA_FORMAT = "bigquery". *
+      AIP_TRAINING_DATA_URI = "bigquery_destination.dataset---.training" *
+      AIP_VALIDATION_DATA_URI = "bigquery_destination.dataset---.validation" *
+      AIP_TEST_DATA_URI = "bigquery_destination.dataset---.test"
     datasetId: Required. The ID of the Dataset in the same Project and
       Location which data will be used to train the Model. The Dataset must
       use schema compatible with Model being trained, and what is compatible
@@ -8467,18 +8109,20 @@ class GoogleCloudAiplatformV1beta1InputDataConfig(_messages.Message):
       exported to training, to pick and choose from.
     filterSplit: Split based on the provided filters for each set.
     fractionSplit: Split based on fractions defining the size of each set.
-    gcsDestination: The Google Cloud Storage location where the output is to
-      be written to. In the given directory a new directory will be created
-      with name: `dataset---` where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ
-      ISO-8601 format. All training input data will be written into that
-      directory. The AI Platform environment variables representing Google
-      Cloud Storage data URIs will always be represented in the Google Cloud
-      Storage wildcard format to support sharded data. e.g.:
-      "gs://.../training-*.jsonl" * AIP_DATA_FORMAT = "jsonl". *
-      AIP_TRAINING_DATA_URI = "gcs_destination/dataset---/training-*.jsonl" *
+    gcsDestination: The Google Cloud Storage location where the training data
+      is to be written to. In the given directory a new directory will be
+      created with name: `dataset---` where timestamp is in YYYY-MM-
+      DDThh:mm:ss.sssZ ISO-8601 format. All training input data will be
+      written into that directory. The AI Platform environment variables
+      representing Google Cloud Storage data URIs will always be represented
+      in the Google Cloud Storage wildcard format to support sharded data.
+      e.g.: "gs://.../training-*.jsonl" * AIP_DATA_FORMAT = "jsonl" for non-
+      tabular data, "csv" for tabular data * AIP_TRAINING_DATA_URI =
+      "gcs_destination/dataset---/training-*.${AIP_DATA_FORMAT}" *
       AIP_VALIDATION_DATA_URI =
-      "gcs_destination/dataset---/validation-*.jsonl" * AIP_TEST_DATA_URI =
-      "gcs_destination/dataset---/test-*.jsonl"
+      "gcs_destination/dataset---/validation-*.${AIP_DATA_FORMAT}" *
+      AIP_TEST_DATA_URI =
+      "gcs_destination/dataset---/test-*.${AIP_DATA_FORMAT}"
     predefinedSplit: Supported only for tabular Datasets. Split based on a
       predefined key.
     timestampSplit: Supported only for tabular Datasets. Split based on the
@@ -8487,12 +8131,13 @@ class GoogleCloudAiplatformV1beta1InputDataConfig(_messages.Message):
 
   annotationSchemaUri = _messages.StringField(1)
   annotationsFilter = _messages.StringField(2)
-  datasetId = _messages.StringField(3)
-  filterSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1FilterSplit', 4)
-  fractionSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1FractionSplit', 5)
-  gcsDestination = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 6)
-  predefinedSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1PredefinedSplit', 7)
-  timestampSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1TimestampSplit', 8)
+  bigqueryDestination = _messages.MessageField('GoogleCloudAiplatformV1beta1BigQueryDestination', 3)
+  datasetId = _messages.StringField(4)
+  filterSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1FilterSplit', 5)
+  fractionSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1FractionSplit', 6)
+  gcsDestination = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 7)
+  predefinedSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1PredefinedSplit', 8)
+  timestampSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1TimestampSplit', 9)
 
 
 class GoogleCloudAiplatformV1beta1IntegratedGradientsAttribution(_messages.Message):
@@ -9391,7 +9036,6 @@ class GoogleCloudAiplatformV1beta1ModelEvaluationSliceSlice(_messages.Message):
 
 class GoogleCloudAiplatformV1beta1ModelExplanation(_messages.Message):
   r"""Aggregated explanation metrics for a Model over a set of instances.
-  Currently, only AutoML tabular Models support aggregated explanation.
 
   Fields:
     meanAttributions: Output only. Aggregated attributions explaning the

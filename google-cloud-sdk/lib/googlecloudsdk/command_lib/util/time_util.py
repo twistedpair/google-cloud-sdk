@@ -53,9 +53,6 @@ def IsExpired(timestamp_rfc3993_str):
     return True
   return False
 
-# Parsing code for rfc3339 timestamps, taken from Google's rfc3339.py.
-# TODO(b/36050348): Investigate opensourcing rfc3999.py
-
 
 def Strptime(rfc3339_str):
   """Converts an RFC 3339 timestamp to Unix time in seconds since the epoch.

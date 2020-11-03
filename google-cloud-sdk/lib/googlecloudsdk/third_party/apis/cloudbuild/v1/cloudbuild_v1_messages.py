@@ -1518,6 +1518,16 @@ class GitHubEnterpriseConfig(_messages.Message):
     hostUrl: The URL of the github enterprise host the configuration is for.
     name: Optional. The full resource name for the GitHubEnterpriseConfig For
       example: "projects/{$project_id}/githubEnterpriseConfig/{$config_id}"
+    peeredNetwork: Optional. The network to be used when reaching out to the
+      GitHub Enterprise server. The VPC network must be enabled for private
+      service connection. This should be set if the GitHub Enterprise server
+      is hosted on-premises and not reachable by public internet. If this
+      field is left empty, no network peering will occur and calls to the
+      GitHub Enterprise server will be made over the public internet. Must be
+      in the format `projects/{project}/global/networks/{network}`, where
+      {project} is a project number or id and {network} is the name of a VPC
+      network in the project.
+    secrets: Optional. Names of secrets in Secret Manager.
     webhookKey: Optional. The key that should be attached to webhook calls to
       the ReceiveWebhook endpoint.
   """
@@ -1527,7 +1537,29 @@ class GitHubEnterpriseConfig(_messages.Message):
   createTime = _messages.StringField(3)
   hostUrl = _messages.StringField(4)
   name = _messages.StringField(5)
-  webhookKey = _messages.StringField(6)
+  peeredNetwork = _messages.StringField(6)
+  secrets = _messages.MessageField('GitHubEnterpriseSecrets', 7)
+  webhookKey = _messages.StringField(8)
+
+
+class GitHubEnterpriseSecrets(_messages.Message):
+  r"""GitHubEnterpriseSecrets represents the names of all necessary secrets in
+  Secret Manager for a GitHub Enterprise server. Format is:
+  projects//secrets/.
+
+  Fields:
+    oauthClientIdName: The resource name for the OAuth client ID secret in
+      Secret Manager.
+    oauthSecretName: The resource name for the OAuth secret in Secret Manager.
+    privateKeyName: The resource name for the private key secret.
+    webhookSecretName: The resource name for the webhook secret in Secret
+      Manager.
+  """
+
+  oauthClientIdName = _messages.StringField(1)
+  oauthSecretName = _messages.StringField(2)
+  privateKeyName = _messages.StringField(3)
+  webhookSecretName = _messages.StringField(4)
 
 
 class GitHubEventsConfig(_messages.Message):

@@ -163,7 +163,6 @@ def main(gcloud_cli=None, credential_providers=None):
   if not platforms.PythonVersion().IsCompatible():
     sys.exit(1)
   metrics.Started(START_TIME)
-  # TODO(b/36049857): Put a real version number here
   metrics.Executions(
       'gcloud',
       local_state.InstallationState.VersionForInstalledComponent('core'))

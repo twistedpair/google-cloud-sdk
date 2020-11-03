@@ -752,13 +752,6 @@ class SecretmanagerProjectsSecretsListRequest(_messages.Message):
   r"""A SecretmanagerProjectsSecretsListRequest object.
 
   Fields:
-    filter: Optional. Filter string, adhering to the rules in [List-operation
-      sorting and filtering](https://cloud.google.com/secret-
-      manager/docs/sorting-and-filtering). List only secrets matching the
-      filter. If filter is empty, all secrets are listed.
-    orderBy: Optional. Order_by string. Use "name" or leave empty for listing
-      secrets sorted by name in the ascending order, or "~name" for listing
-      secrets sorted by name in the descending order.
     pageSize: Optional. The maximum number of results to be returned in a
       single page. If set to 0, the server decides the number of results to
       return. If the number is greater than 25000, it is capped at 25000.
@@ -768,11 +761,9 @@ class SecretmanagerProjectsSecretsListRequest(_messages.Message):
       Secrets, in the format `projects/*`.
   """
 
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class SecretmanagerProjectsSecretsPatchRequest(_messages.Message):
@@ -890,14 +881,6 @@ class SecretmanagerProjectsSecretsVersionsListRequest(_messages.Message):
   r"""A SecretmanagerProjectsSecretsVersionsListRequest object.
 
   Fields:
-    filter: Optional. Filter string, adhering to the rules in [List-operation
-      sorting and filtering](https://cloud.google.com/secret-
-      manager/docs/sorting-and-filtering). List only secret versions matching
-      the filter. If filter is empty, all secret versions are listed.
-    orderBy: Optional. Order_by string. Use "~create_time" or leave empty for
-      listing secret versions sorted by creation time starting from the
-      latest, or "create_time" for listing them sorted by creation time
-      starting from the oldest.
     pageSize: Optional. The maximum number of results to be returned in a
       single page. If set to 0, the server decides the number of results to
       return. If the number is greater than 25000, it is capped at 25000.
@@ -907,11 +890,9 @@ class SecretmanagerProjectsSecretsVersionsListRequest(_messages.Message):
       SecretVersions to list, in the format `projects/*/secrets/*`.
   """
 
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class SetIamPolicyRequest(_messages.Message):

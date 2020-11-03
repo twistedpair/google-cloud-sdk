@@ -221,6 +221,20 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class ListSchemasResponse(_messages.Message):
+  r"""Response for the `ListSchemas` method.
+
+  Fields:
+    nextPageToken: If not empty, indicates that there may be more schemas that
+      match the request; this value should be passed in a new
+      `ListSchemasRequest`.
+    schemas: The resulting schemas.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  schemas = _messages.MessageField('Schema', 2, repeated=True)
+
+
 class ListSnapshotsResponse(_messages.Message):
   r"""Response for the `ListSnapshots` method.
 
@@ -528,6 +542,91 @@ class PubsubMessage(_messages.Message):
   messageId = _messages.StringField(3)
   orderingKey = _messages.StringField(4)
   publishTime = _messages.StringField(5)
+
+
+class PubsubProjectsSchemasCreateRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasCreateRequest object.
+
+  Fields:
+    parent: Required. The name of the project in which to create the schema.
+      Format is `projects/{project-id}`.
+    schema: A Schema resource to be passed as the request body.
+    schemaId: The ID to use for the schema, which will become the final
+      component of the schema's resource name. See
+      https://cloud.google.com/pubsub/docs/admin#resource_names for resource
+      name constraints.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  schema = _messages.MessageField('Schema', 2)
+  schemaId = _messages.StringField(3)
+
+
+class PubsubProjectsSchemasDeleteRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the schema to delete. Format is
+      `projects/{project}/schemas/{schema}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class PubsubProjectsSchemasGetRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasGetRequest object.
+
+  Fields:
+    name: Required. The name of the schema to get. Format is
+      `projects/{project}/schemas/{schema}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class PubsubProjectsSchemasListRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasListRequest object.
+
+  Fields:
+    pageSize: Maximum number of schemas to return.
+    pageToken: The value returned by the last `ListSchemasResponse`; indicates
+      that this is a continuation of a prior `ListSchemas` call, and that the
+      system should return the next page of data.
+    parent: Required. The name of the project in which to list schemas. Format
+      is `projects/{project-id}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class PubsubProjectsSchemasValidateMessageRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasValidateMessageRequest object.
+
+  Fields:
+    parent: Required. The name of the project in which to validate schemas.
+      Format is `projects/{project-id}`.
+    validateMessageRequest: A ValidateMessageRequest resource to be passed as
+      the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  validateMessageRequest = _messages.MessageField('ValidateMessageRequest', 2)
+
+
+class PubsubProjectsSchemasValidateRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasValidateRequest object.
+
+  Fields:
+    parent: Required. The name of the project in which to validate schemas.
+      Format is `projects/{project-id}`.
+    validateSchemaRequest: A ValidateSchemaRequest resource to be passed as
+      the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  validateSchemaRequest = _messages.MessageField('ValidateSchemaRequest', 2)
 
 
 class PubsubProjectsSnapshotsCreateRequest(_messages.Message):
@@ -1157,6 +1256,40 @@ class RetryPolicy(_messages.Message):
   minimumBackoff = _messages.StringField(2)
 
 
+class Schema(_messages.Message):
+  r"""A schema resource.
+
+  Enums:
+    TypeValueValuesEnum: The type of the schema definition.
+
+  Fields:
+    definition: The definition of the schema. This should contain a string
+      representing the full definition of the schema that is a valid schema
+      definition of the type specified in `type`.
+    name: Required. Name of the schema. Format is
+      `projects/{project}/schemas/{schema}`.
+    type: The type of the schema definition.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of the schema definition.
+
+    Values:
+      TYPE_UNSPECIFIED: Default value. This value is unused.
+      PROTOCOL_BUFFER: A Protocol Buffer schema definition.
+      AVRO: An Avro schema definition.
+      ZETA_SQL: A ZetaSQL schema definition.
+    """
+    TYPE_UNSPECIFIED = 0
+    PROTOCOL_BUFFER = 1
+    AVRO = 2
+    ZETA_SQL = 3
+
+  definition = _messages.StringField(1)
+  name = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
 class SchemaSettings(_messages.Message):
   r"""Settings for validating messages published against a schema.
 
@@ -1598,6 +1731,57 @@ class UpdateTopicRequest(_messages.Message):
 
   topic = _messages.MessageField('Topic', 1)
   updateMask = _messages.StringField(2)
+
+
+class ValidateMessageRequest(_messages.Message):
+  r"""Request for the `ValidateMessage` method.
+
+  Enums:
+    EncodingValueValuesEnum: The encoding expected for messages
+
+  Fields:
+    encoding: The encoding expected for messages
+    message: Message to validate against the provided `schema_spec`.
+    name: Required. Name of the schema against which to validate. Format is
+      `projects/{project}/schemas/{schema}`.
+    schema: Ad-hoc schema against which to validate
+  """
+
+  class EncodingValueValuesEnum(_messages.Enum):
+    r"""The encoding expected for messages
+
+    Values:
+      ENCODING_UNSPECIFIED: Unspecified
+      JSON: JSON encoding
+      BINARY: Binary encoding, as defined by the schema type. For some schema
+        types, binary encoding may not be available.
+    """
+    ENCODING_UNSPECIFIED = 0
+    JSON = 1
+    BINARY = 2
+
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 1)
+  message = _messages.BytesField(2)
+  name = _messages.StringField(3)
+  schema = _messages.MessageField('Schema', 4)
+
+
+class ValidateMessageResponse(_messages.Message):
+  r"""Response for the `ValidateMessage` method."""
+
+
+class ValidateSchemaRequest(_messages.Message):
+  r"""Request for the `ValidateSchema` method.
+
+  Fields:
+    schema: Required. The schema object to validate.
+  """
+
+  schema = _messages.MessageField('Schema', 1)
+
+
+class ValidateSchemaResponse(_messages.Message):
+  r"""Response for the `ValidateSchema` method."""
 
 
 encoding.AddCustomJsonFieldMapping(

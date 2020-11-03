@@ -20,6 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import collections
+import re
 import time
 
 from apitools.base.py import exceptions as api_exceptions
@@ -28,6 +29,7 @@ from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.credentials import requests as creds_requests
@@ -186,6 +188,8 @@ class LogTailer(object):
         self._PrintFirstLine()
       self.cursor += len(res.body)
       decoded = encoding.Decode(res.body)
+      if decoded is not None:
+        decoded = self._ValidateScreenReader(decoded)
       self._PrintLogLine(decoded.rstrip('\n'))
 
       if is_last:
@@ -212,6 +216,13 @@ class LogTailer(object):
     headers = dict(res.headers)
     headers['status'] = res.status
     raise api_exceptions.HttpError(headers, res.body, self.url)
+
+  def _ValidateScreenReader(self, text):
+    """Modify output for better screen reader experience."""
+    screen_reader = properties.VALUES.accessibility.screen_reader.GetBool()
+    if screen_reader:
+      return re.sub('---> ', '', text)
+    return text
 
   def _PrintLogLine(self, text):
     """Testing Hook: This method enables better verification of output."""

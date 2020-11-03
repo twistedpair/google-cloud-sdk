@@ -46,7 +46,8 @@ def SetParent(unused_ref, args, request):
   version = GetApiVersion(args)
   messages = ci_client.GetMessages(version)
 
-  if not hasattr(request, 'group'):
+  group = getattr(request, 'group', None)
+  if group is None:
     request.group = messages.Group()
 
   request.group.parent = GetCustomerId(args)

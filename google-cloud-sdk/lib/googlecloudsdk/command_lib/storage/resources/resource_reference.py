@@ -83,8 +83,8 @@ class CloudResource(Resource):
     # TODO(b/168690302): Stop using string scheme in storage_url.py.
     return self.storage_url.scheme
 
-  def get_metadata_dump(self):
-    raise NotImplementedError('get_metadata_dump must be overridden.')
+  def get_json_dump(self):
+    raise NotImplementedError('get_json_dump must be overridden.')
 
 
 class BucketResource(CloudResource):
@@ -122,8 +122,8 @@ class BucketResource(CloudResource):
   def is_container(self):
     return True
 
-  def get_metadata_dump(self):
-    super(BucketResource).get_metadata_dump()
+  def get_json_dump(self):
+    super(BucketResource).get_json_dump()
 
 
 class ObjectResource(CloudResource):
@@ -178,8 +178,8 @@ class ObjectResource(CloudResource):
   def is_container(self):
     return False
 
-  def get_metadata_dump(self):
-    super(ObjectResource).get_metadata_dump()
+  def get_json_dump(self):
+    super(ObjectResource).get_json_dump()
 
 
 class PrefixResource(Resource):
@@ -206,7 +206,7 @@ class PrefixResource(Resource):
   def is_container(self):
     return True
 
-  def get_metadata_dump(self):
+  def get_json_dump(self):
     return json.dumps(collections.OrderedDict([
         ('url', self.storage_url.versionless_url_string),
         ('type', self.TYPE_STRING),

@@ -39,12 +39,185 @@ class PubsubV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_schemas = self.ProjectsSchemasService(self)
     self.projects_snapshots = self.ProjectsSnapshotsService(self)
     self.projects_subscriptions = self.ProjectsSubscriptionsService(self)
     self.projects_topics_snapshots = self.ProjectsTopicsSnapshotsService(self)
     self.projects_topics_subscriptions = self.ProjectsTopicsSubscriptionsService(self)
     self.projects_topics = self.ProjectsTopicsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsSchemasService(base_api.BaseApiService):
+    """Service class for the projects_schemas resource."""
+
+    _NAME = 'projects_schemas'
+
+    def __init__(self, client):
+      super(PubsubV1.ProjectsSchemasService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a schema.
+
+      Args:
+        request: (PubsubProjectsSchemasCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Schema) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/schemas',
+        http_method='POST',
+        method_id='pubsub.projects.schemas.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['schemaId'],
+        relative_path='v1/{+parent}/schemas',
+        request_field='schema',
+        request_type_name='PubsubProjectsSchemasCreateRequest',
+        response_type_name='Schema',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a schema.
+
+      Args:
+        request: (PubsubProjectsSchemasDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/schemas/{schemasId}',
+        http_method='DELETE',
+        method_id='pubsub.projects.schemas.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='PubsubProjectsSchemasDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a schema.
+
+      Args:
+        request: (PubsubProjectsSchemasGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Schema) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/schemas/{schemasId}',
+        http_method='GET',
+        method_id='pubsub.projects.schemas.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='PubsubProjectsSchemasGetRequest',
+        response_type_name='Schema',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists schemas in a project.
+
+      Args:
+        request: (PubsubProjectsSchemasListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSchemasResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/schemas',
+        http_method='GET',
+        method_id='pubsub.projects.schemas.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/schemas',
+        request_field='',
+        request_type_name='PubsubProjectsSchemasListRequest',
+        response_type_name='ListSchemasResponse',
+        supports_download=False,
+    )
+
+    def Validate(self, request, global_params=None):
+      r"""Validates a schema.
+
+      Args:
+        request: (PubsubProjectsSchemasValidateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateSchemaResponse) The response message.
+      """
+      config = self.GetMethodConfig('Validate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Validate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/schemas:validate',
+        http_method='POST',
+        method_id='pubsub.projects.schemas.validate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/schemas:validate',
+        request_field='validateSchemaRequest',
+        request_type_name='PubsubProjectsSchemasValidateRequest',
+        response_type_name='ValidateSchemaResponse',
+        supports_download=False,
+    )
+
+    def ValidateMessage(self, request, global_params=None):
+      r"""Validates a message against a schema.
+
+      Args:
+        request: (PubsubProjectsSchemasValidateMessageRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateMessageResponse) The response message.
+      """
+      config = self.GetMethodConfig('ValidateMessage')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ValidateMessage.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/schemas:validateMessage',
+        http_method='POST',
+        method_id='pubsub.projects.schemas.validateMessage',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/schemas:validateMessage',
+        request_field='validateMessageRequest',
+        request_type_name='PubsubProjectsSchemasValidateMessageRequest',
+        response_type_name='ValidateMessageResponse',
+        supports_download=False,
+    )
 
   class ProjectsSnapshotsService(base_api.BaseApiService):
     """Service class for the projects_snapshots resource."""

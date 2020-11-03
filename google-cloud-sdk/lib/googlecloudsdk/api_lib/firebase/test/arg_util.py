@@ -498,7 +498,7 @@ def AddAndroidBetaArgs(parser):
       The number of shards should be less than the total number of test
       cases. When one or more physical devices are selected, the number of
       shards specified must be >= 1 and <= 50. When no physical devices are
-      selected, the number of shards specified must be >= 1 and <= 250.
+      selected, the number of shards specified must be >= 1 and <= 500.
       """)
   sharding_options.add_argument(
       '--test-targets-for-shard',
@@ -509,7 +509,7 @@ def AddAndroidBetaArgs(parser):
       each shard (a group of test cases). The shards are run in parallel on
       separate devices. You can repeat this flag up to 50 times to specify
       multiple shards when one or more physical devices are selected, or up to
-      250 times when no physical devices are selected.
+      500 times when no physical devices are selected.
 
       Note: If you include the flags --environment-variable or --test-targets
       when running --test-targets-for-shard, the flags are applied to all the

@@ -271,7 +271,7 @@ class Node(_messages.Message):
       be accessed and sent work. It is recommended that runtime clients of the
       node reach out to the 0th entry in this map first.
     runtimeVersion: Required. The runtime version running in the Node.
-    schedulingConfig: A SchedulingConfig attribute.
+    schedulingConfig: The scheduling options for this node.
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the TPU node VMs. If None is specified, the default compute service
       account will be used.
@@ -570,10 +570,10 @@ class RuntimeVersion(_messages.Message):
 
 
 class SchedulingConfig(_messages.Message):
-  r"""A SchedulingConfig object.
+  r"""Sets the scheduling options for this node.
 
   Fields:
-    preemptible: A boolean attribute.
+    preemptible: Defines whether the node is preemptible.
     reserved: Whether the node is created under a reservation.
   """
 
@@ -760,7 +760,7 @@ class TpuProjectsLocationsAcceleratorTypesGetRequest(_messages.Message):
   r"""A TpuProjectsLocationsAcceleratorTypesGetRequest object.
 
   Fields:
-    name: The resource name.
+    name: Required. The resource name.
   """
 
   name = _messages.StringField(1, required=True)
@@ -775,7 +775,7 @@ class TpuProjectsLocationsAcceleratorTypesListRequest(_messages.Message):
     pageSize: The maximum number of items to return.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
-    parent: The parent resource name.
+    parent: Required. The parent resource name.
   """
 
   filter = _messages.StringField(1)
@@ -817,7 +817,7 @@ class TpuProjectsLocationsNodesCreateRequest(_messages.Message):
   Fields:
     node: A Node resource to be passed as the request body.
     nodeId: The unqualified resource name.
-    parent: The parent resource name.
+    parent: Required. The parent resource name.
   """
 
   node = _messages.MessageField('Node', 1)
@@ -829,7 +829,7 @@ class TpuProjectsLocationsNodesDeleteRequest(_messages.Message):
   r"""A TpuProjectsLocationsNodesDeleteRequest object.
 
   Fields:
-    name: The resource name.
+    name: Required. The resource name.
   """
 
   name = _messages.StringField(1, required=True)
@@ -839,7 +839,7 @@ class TpuProjectsLocationsNodesGetRequest(_messages.Message):
   r"""A TpuProjectsLocationsNodesGetRequest object.
 
   Fields:
-    name: The resource name.
+    name: Required. The resource name.
   """
 
   name = _messages.StringField(1, required=True)
@@ -852,7 +852,7 @@ class TpuProjectsLocationsNodesListRequest(_messages.Message):
     pageSize: The maximum number of items to return.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
-    parent: The parent resource name.
+    parent: Required. The parent resource name.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

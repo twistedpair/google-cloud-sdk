@@ -339,7 +339,6 @@ class Templates(object):
       'dynamicTemplate_stagingLocation': 'dynamicTemplate.stagingLocation'
   }
 
-  # TODO(b/124063772): Workaround for apitools issues with nested GET request
   # message fields.
   @staticmethod
   def ModifyDynamicTemplatesLaunchRequest(req):

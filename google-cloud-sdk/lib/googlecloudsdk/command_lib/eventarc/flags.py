@@ -44,11 +44,6 @@ def TriggerAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(name='trigger')
 
 
-def ServiceAccountAttributeConfig():
-  """Builds an AttributeConfig for the service account resource."""
-  return concepts.ResourceParameterAttributeConfig(name='service-account')
-
-
 def AddLocationResourceArg(parser, group_help_text, required=False):
   """Adds a resource argument for an Eventarc location."""
   resource_spec = concepts.ResourceSpec(
@@ -74,23 +69,12 @@ def AddTriggerResourceArg(parser, group_help_text, required=False):
   concept_parser.AddToParser(parser)
 
 
-def AddServiceAccountResourceArg(parser, required=False):
-  """Adds a resource argument for an IAM service account."""
-  resource_spec = concepts.ResourceSpec(
-      'iam.projects.serviceAccounts',
-      resource_name='service account',
-      api_version=_IAM_API_VERSION,
-      serviceAccountsId=ServiceAccountAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
-  concept_parser = concept_parsers.ConceptParser.ForResource(
+def AddServiceAccountArg(parser, required=False):
+  """Adds an argument for the trigger's service account."""
+  parser.add_argument(
       '--service-account',
-      resource_spec,
-      'The IAM service account associated with the trigger, specified with an '
-      'email address or a uniqueId. Unless a full resource name is provided, '
-      'the service account is assumed to be in the same project as the '
-      'trigger.',
-      required=required)
-  concept_parser.AddToParser(parser)
+      required=required,
+      help='The IAM service account email associated with the trigger.')
 
 
 def AddMatchingCriteriaArg(parser, required=False):

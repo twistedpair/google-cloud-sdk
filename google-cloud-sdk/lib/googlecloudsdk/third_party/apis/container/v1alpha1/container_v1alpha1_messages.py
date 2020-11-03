@@ -842,6 +842,8 @@ class ClusterUpdate(_messages.Message):
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
     desiredWorkloadIdentityConfig: Configuration for Workload Identity.
+    desiredWorkloadMonitoringEapConfig: Configuration for workload monitoring
+      EAP.
     privateClusterConfig: The desired private cluster configuration.
     securityProfile: User may change security profile during update
   """
@@ -916,8 +918,9 @@ class ClusterUpdate(_messages.Message):
   desiredTpuConfig = _messages.MessageField('TpuConfig', 38)
   desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 39)
   desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 40)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 41)
-  securityProfile = _messages.MessageField('SecurityProfile', 42)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 41)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 42)
+  securityProfile = _messages.MessageField('SecurityProfile', 43)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2815,6 +2818,8 @@ class NodeNetworkConfig(_messages.Message):
       `node_ipv4_cidr_block` if they are not specified. If neither
       `create_subnetwork` or `subnetwork` are specified, the cluster-level
       default (`ip_allocation_policy.subnetwork_name`) is used.
+    enableEndpointsliceProxying: If true, kube-proxy will read from
+      EndpointSlices instead of Endpoints. This flag only applies to GKE 1.18.
     nodeIpv4CidrBlock: The IP address range for node IPs in this node pool.
       Only applicable if `create_subnetwork` is true. Set to blank to have a
       range chosen with the default size. Set to /netmask (e.g. `/14`) to have
@@ -2840,10 +2845,11 @@ class NodeNetworkConfig(_messages.Message):
 
   createPodRange = _messages.BooleanField(1)
   createSubnetwork = _messages.BooleanField(2)
-  nodeIpv4CidrBlock = _messages.StringField(3)
-  podIpv4CidrBlock = _messages.StringField(4)
-  podRange = _messages.StringField(5)
-  subnetwork = _messages.StringField(6)
+  enableEndpointsliceProxying = _messages.BooleanField(3)
+  nodeIpv4CidrBlock = _messages.StringField(4)
+  podIpv4CidrBlock = _messages.StringField(5)
+  podRange = _messages.StringField(6)
+  subnetwork = _messages.StringField(7)
 
 
 class NodePool(_messages.Message):
@@ -4589,6 +4595,18 @@ class WorkloadMetadataConfig(_messages.Message):
 
   mode = _messages.EnumField('ModeValueValuesEnum', 1)
   nodeMetadata = _messages.EnumField('NodeMetadataValueValuesEnum', 2)
+
+
+class WorkloadMonitoringEapConfig(_messages.Message):
+  r"""WorkloadMonitoringConfig is configuration for collecting workload
+  metrics on GKE. Temporary config for EAP.
+
+  Fields:
+    enabled: Whether to send workload metrics from the cluster to Google Cloud
+      Monitoring.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

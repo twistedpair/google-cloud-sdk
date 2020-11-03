@@ -1955,6 +1955,10 @@
           "type": "string",
           "format": "byte"
         },
+        "runtimeDatabaseEncryptionKeyName": {
+          "description": "Cloud KMS key name used for encrypting the data that is stored and replicated across runtime instances. Update is not allowed after the organization is created. If not specified, a Google-Managed encryption key will be used. Valid only when [RuntimeType] is CLOUD. For example: \"projects\/foo\/locations\/us\/keyRings\/bar\/cryptoKeys\/baz\". **Note:** Not supported for Apigee hybrid.",
+          "type": "string"
+        },
         "projectId": {
           "description": "The project ID associated with the Apigee organization.",
           "type": "string"

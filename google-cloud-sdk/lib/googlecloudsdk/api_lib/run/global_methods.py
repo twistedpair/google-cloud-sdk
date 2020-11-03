@@ -49,12 +49,24 @@ def ListRegions(client):
   Returns:
     A list of str, which are regions.
   """
+  return sorted([l.locationId for l in ListLocations(client)])
+
+
+def ListLocations(client):
+  """Get the list of all available regions from control plane.
+
+  Args:
+    client: (base_api.BaseApiClient), instance of a client to use for the list
+      request.
+
+  Returns:
+    A list of location resources.
+  """
   project_resource_relname = util.ProjectPath(
       properties.VALUES.core.project.Get(required=True))
-  response = client.projects_locations.List(
+  return client.projects_locations.List(
       client.MESSAGES_MODULE.RunProjectsLocationsListRequest(
-          name=project_resource_relname, pageSize=100))
-  return sorted([l.locationId for l in response.locations])
+          name=project_resource_relname, pageSize=100)).locations
 
 
 def ListServices(client, region=_ALL_REGIONS):

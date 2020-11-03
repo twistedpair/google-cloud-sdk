@@ -100,7 +100,7 @@ class BasicFlag(BinaryCommandFlag):
 
 
 class FlagGroup(BinaryCommandFlag):
-  """Encapsulates multiple flags that can't function independently."""
+  """Encapsulates multiple flags that are logically added together."""
 
   def __init__(self, first, second, *args):
     """Create a new flag group.
@@ -322,29 +322,29 @@ class LabelsFlags(BinaryCommandFlag):
         '--clear-labels',
         default=False,
         action='store_true',
-        help='If true, removes all labels. If --update-labels is also specified then '
-        '--clear-labels is applied first.')
+        help='If true, removes all labels.')
     mutex_group.add_argument(
-        '--labels',
-        help='List of label KEY=VALUE pairs to add. An alias to --update-labels.'
-    )
-    update_group = mutex_group.add_group()
+        '--set-labels',
+        help='List of label KEY=VALUE pairs to set. '
+        'All existing labels will be removed first.')
+    update_group = mutex_group.add_group(
+        help='Only `--update-labels` and `--remove-labels` can be used together. '
+        'If both are specified, `--remove-labels` will be applied first.')
     update_group.add_argument(
         '--remove-labels',
         help='List of label keys to remove. If a label does not exist it is '
-        'silently ignored. If --update-labels is also specified then '
-        '--remove-labels is applied first.')
+        'silently ignored.')
     update_group.add_argument(
-        '--update-labels',
+        '--update-labels', '--labels',
         help='List of label KEY=VALUE pairs to update. If a label exists its '
         'value is modified, otherwise a new label is created.')
 
   def FormatFlags(self, args):
     command_flags = []
+    if args.IsSpecified('set_labels'):
+      command_flags.extend(['--set-labels', args.set_labels])
     if args.IsSpecified('clear_labels'):
       command_flags.append('--clear-labels')
-    if args.IsSpecified('labels'):
-      command_flags.extend(['--labels', args.labels])
     if args.IsSpecified('remove_labels'):
       command_flags.extend(['--remove-labels', args.remove_labels])
     if args.IsSpecified('update_labels'):

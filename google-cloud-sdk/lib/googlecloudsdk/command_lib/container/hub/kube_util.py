@@ -640,15 +640,49 @@ class KubernetesClient(object):
     return self._RunKubectl(['logs', '-n', namespace, log_target])
 
   def _WebRequest(self, method, url, headers=None):
-    _, content = http.Http().request(url, method, headers=headers)
+    """Internal method to make requests against web URLs.
+
+    Args:
+      method: request method, e.g. GET
+      url: request URL
+      headers: dictionary of request headers
+
+    Returns:
+      Response body as a string
+
+    Raises:
+      Error: If the response has a status code >= 400.
+    """
+    r, content = http.Http().request(url, method, headers=headers)
+    if r.status >= 400:
+      raise exceptions.Error(
+          'status: {}, reason: {}'.format(r.status, r.reason))
     return content
 
   def _ClusterRequest(self, method, url, headers=None):
+    """Internal method to make requests against the target cluster.
+
+    Args:
+      method: request method, e.g. GET
+      url: request URL
+      headers: dictionary of request headers
+
+    Returns:
+      Response body as a string.
+
+    Raises:
+      Error: If the response has a status code >= 400.
+    """
     r = self.cluster_pool_manager.request(method, url, headers=headers)
-    if r and hasattr(r, 'data'):
-      return r.data.decode('utf-8')
-    else:
+    if not r:
+      raise exceptions.Error('null response')
+    elif r.status >= 400:
+      raise exceptions.Error(
+          'status: {}, reason: {}'.format(r.status, r.reason))
+    elif not hasattr(r, 'data'):
       raise exceptions.Error('missing response data: {}'.format(r))
+
+    return r.data.decode('utf-8')
 
   def GetOpenIDConfiguration(self, issuer_url=None):
     """Get the OpenID Provider Configuration for the K8s API server.

@@ -62,12 +62,11 @@ def AddFlexibleCacheStepOne(parser, resource_name, update_command=False):
   The value of clientTtl cannot be set to a value greater than that of maxTtl,
   but can be equal.
 
-  Any cacheable response has its max-age/s-maxage directives and/or
-  Expires header adjusted down to the client TTL value if necessary.
+  Any cacheable response has its max-age/s-maxage directives adjusted down to
+  the client TTL value if necessary; an Expires header will be replaced with a
+  suitable max-age directive.
 
   The maximum allowed value is 86400s (1 day).
-
-  Omit this field to use the value of defaultTtl as the clientTtl.
 
   When creating a new backend with CACHE_ALL_STATIC and the field is unset, or
   when switching to that mode and the field is unset, a default value of 3600
@@ -87,7 +86,7 @@ def AddFlexibleCacheStepOne(parser, resource_name, update_command=False):
         '--no-client-ttl', action='store_true', help='Clears client TTL value.')
   default_ttl_help = """\
   Specifies the default TTL for cached content served by this origin for
-  responses that do not have an existing valid TTL (max-age or s-max-age).
+  responses that do not have an existing valid TTL (max-age or s-maxage).
 
   The default value is 3600s for cache modes that allow a default TTL to be
   defined.
@@ -156,8 +155,8 @@ def AddFlexibleCacheStepOne(parser, resource_name, update_command=False):
   the load on your origin and improve the end-user experience by reducing response
   latency.
 
-  Negative caching applies to 3xx, 4xx, and 5xx status codes that are cacheable
-  by default.
+  Negative caching applies to a set of 3xx, 4xx, and 5xx status codes that are
+  typically useful to cache.
 
   Status codes not listed here cannot have their TTL explicitly set and aren't
   cached, in order to avoid cache poisoning attacks.
@@ -167,16 +166,15 @@ def AddFlexibleCacheStepOne(parser, resource_name, update_command=False):
 
   When the cache mode is set to CACHE_ALL_STATIC or USE_ORIGIN_HEADERS, these
   values apply to responses with the specified response code that lack any
-  `cache-control`, `expires`, or `pragma: no-cache` headers.
+  `cache-control` or `expires` headers.
 
   When the cache mode is set to FORCE_CACHE_ALL, these values apply to all
   responses with the specified response code, and override any caching headers.
 
-  By default, Cloud CDN applies the following default TTLs to these status
-  codes:
+  Cloud CDN applies the following default TTLs to these status codes:
   - HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m
   - HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s
-  - HTTP 405 (Method Not Found), 414 (URI Too Long), 421 (Misdirected Request),
+  - HTTP 405 (Method Not Found), 421 (Misdirected Request),
     501 (Not Implemented): 60s
 
   These defaults can be overridden in cdnPolicy.negativeCachingPolicy
@@ -205,8 +203,8 @@ def AddFlexibleCacheStepOne(parser, resource_name, update_command=False):
   CDN doesn't apply any default negative caching when a policy exists.
 
   *CODE* is the HTTP status code to define a TTL against. Only HTTP status codes
-  300, 301, 308, 404, 405, 410, 414, 421, 451, and 501 can be specified as
-  values, and you cannot specify a status code more than once.
+  300, 301, 308, 404, 405, 410, 421, 451, and 501 can be specified as values,
+  and you cannot specify a status code more than once.
 
   TTL is the time to live (in seconds) for which to cache responses for the
   specified *CODE*. The maximum allowed value is 1800s (30 minutes), noting that

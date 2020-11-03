@@ -46,6 +46,10 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     self.projects_locations_datasets_consentStores_userDataMappings = self.ProjectsLocationsDatasetsConsentStoresUserDataMappingsService(self)
     self.projects_locations_datasets_consentStores = self.ProjectsLocationsDatasetsConsentStoresService(self)
     self.projects_locations_datasets_dataProtectionStores = self.ProjectsLocationsDatasetsDataProtectionStoresService(self)
+    self.projects_locations_datasets_dicomStores_dicomWeb_studies_series_instances = self.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesService(self)
+    self.projects_locations_datasets_dicomStores_dicomWeb_studies_series = self.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesService(self)
+    self.projects_locations_datasets_dicomStores_dicomWeb_studies = self.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesService(self)
+    self.projects_locations_datasets_dicomStores_dicomWeb = self.ProjectsLocationsDatasetsDicomStoresDicomWebService(self)
     self.projects_locations_datasets_dicomStores = self.ProjectsLocationsDatasetsDicomStoresService(self)
     self.projects_locations_datasets_fhirStores = self.ProjectsLocationsDatasetsFhirStoresService(self)
     self.projects_locations_datasets_hl7V2Stores_messages = self.ProjectsLocationsDatasetsHl7V2StoresMessagesService(self)
@@ -54,6 +58,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     self.projects_locations_datasets = self.ProjectsLocationsDatasetsService(self)
     self.projects_locations_services_dataEnclave_enclaves = self.ProjectsLocationsServicesDataEnclaveEnclavesService(self)
     self.projects_locations_services_dataEnclave = self.ProjectsLocationsServicesDataEnclaveService(self)
+    self.projects_locations_services_deidentify = self.ProjectsLocationsServicesDeidentifyService(self)
     self.projects_locations_services_nlp = self.ProjectsLocationsServicesNlpService(self)
     self.projects_locations_services = self.ProjectsLocationsServicesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -1370,6 +1375,100 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
         response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
+
+  class ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_dicomStores_dicomWeb_studies_series_instances resource."""
+
+    _NAME = 'projects_locations_datasets_dicomStores_dicomWeb_studies_series_instances'
+
+    def __init__(self, client):
+      super(HealthcareV1alpha2.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetStorageInfo(self, request, global_params=None):
+      r"""GetStorageInfo returns the storage info of the specified resource.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesGetStorageInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StorageInfo) The response message.
+      """
+      config = self.GetMethodConfig('GetStorageInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetStorageInfo.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/series/{seriesId}/instances/{instancesId}:getStorageInfo',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.instances.getStorageInfo',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha2/{+resource}:getStorageInfo',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesGetStorageInfoRequest',
+        response_type_name='StorageInfo',
+        supports_download=False,
+    )
+
+    def SetBlobStorageSettings(self, request, global_params=None):
+      r"""SetBlobStorageSettings sets the blob storage settings of the specified resources.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesSetBlobStorageSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetBlobStorageSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetBlobStorageSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/series/{seriesId}/instances/{instancesId}:setBlobStorageSettings',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.instances.setBlobStorageSettings',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha2/{+resource}:setBlobStorageSettings',
+        request_field='setBlobStorageSettingsRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesSetBlobStorageSettingsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_dicomStores_dicomWeb_studies_series resource."""
+
+    _NAME = 'projects_locations_datasets_dicomStores_dicomWeb_studies_series'
+
+    def __init__(self, client):
+      super(HealthcareV1alpha2.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationsDatasetsDicomStoresDicomWebStudiesService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_dicomStores_dicomWeb_studies resource."""
+
+    _NAME = 'projects_locations_datasets_dicomStores_dicomWeb_studies'
+
+    def __init__(self, client):
+      super(HealthcareV1alpha2.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationsDatasetsDicomStoresDicomWebService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_dicomStores_dicomWeb resource."""
+
+    _NAME = 'projects_locations_datasets_dicomStores_dicomWeb'
+
+    def __init__(self, client):
+      super(HealthcareV1alpha2.ProjectsLocationsDatasetsDicomStoresDicomWebService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsDatasetsDicomStoresService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_dicomStores resource."""
@@ -2692,6 +2791,70 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
       super(HealthcareV1alpha2.ProjectsLocationsServicesDataEnclaveService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class ProjectsLocationsServicesDeidentifyService(base_api.BaseApiService):
+    """Service class for the projects_locations_services_deidentify resource."""
+
+    _NAME = 'projects_locations_services_deidentify'
+
+    def __init__(self, client):
+      super(HealthcareV1alpha2.ProjectsLocationsServicesDeidentifyService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def DeidentifyDicomInstance(self, request, global_params=None):
+      r"""De-identify a single DICOM instance. Uses the ATTRIBUTE_CONFIDENTIALITY_BASIC_PROFILE TagFilterProfile and the REDACT_ALL_TEXT TextRedactionMode.
+
+      Args:
+        request: (HealthcareProjectsLocationsServicesDeidentifyDeidentifyDicomInstanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('DeidentifyDicomInstance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeidentifyDicomInstance.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/services/deidentify:deidentifyDicomInstance',
+        http_method='POST',
+        method_id='healthcare.projects.locations.services.deidentify.deidentifyDicomInstance',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['gcsConfigUri'],
+        relative_path='v1alpha2/{+name}:deidentifyDicomInstance',
+        request_field='httpBody',
+        request_type_name='HealthcareProjectsLocationsServicesDeidentifyDeidentifyDicomInstanceRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def DeidentifyFhirResource(self, request, global_params=None):
+      r"""De-identify a single FHIR resource.
+
+      Args:
+        request: (HealthcareProjectsLocationsServicesDeidentifyDeidentifyFhirResourceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('DeidentifyFhirResource')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeidentifyFhirResource.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/services/deidentify:deidentifyFhirResource',
+        http_method='POST',
+        method_id='healthcare.projects.locations.services.deidentify.deidentifyFhirResource',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['gcsConfigUri', 'version'],
+        relative_path='v1alpha2/{+name}:deidentifyFhirResource',
+        request_field='httpBody',
+        request_type_name='HealthcareProjectsLocationsServicesDeidentifyDeidentifyFhirResourceRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
 
   class ProjectsLocationsServicesNlpService(base_api.BaseApiService):
     """Service class for the projects_locations_services_nlp resource."""

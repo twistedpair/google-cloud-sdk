@@ -315,6 +315,10 @@
           "description": "Optional. The maintenance window is the period when Cloud Composer components may undergo maintenance. It is defined so that maintenance is not executed during peak hours or critical time periods. The system will not be under maintenance for every occurrence of this window, but when maintenance is planned, it will be scheduled during the window. The maintenance window period must encompass at least 12 hours per week. This may be split into multiple chunks, each with a size of at least 4 hours. If this value is omitted, Cloud Composer components may be subject to maintenance at any time.",
           "$ref": "MaintenanceWindow"
         },
+        "autoscalingConfig": {
+          "description": "Optional. The Autoscaling settings for GKE cluster within Composer environment. GKE cluster handles Airflow scheduler and workers workload.",
+          "$ref": "AutoscalingConfig"
+        },
         "airflowUri": {
           "description": "Output only. The URI of the Apache Airflow Web UI hosted within this environment (see [Airflow web interface](\/composer\/docs\/how-to\/accessing\/airflow-web-interface)).",
           "readOnly": true,
@@ -582,6 +586,37 @@
         "recurrence": {
           "description": "Required. Maintenance window recurrence. Format is a subset of [RFC-5545](https:\/\/tools.ietf.org\/html\/rfc5545) `RRULE`. The only allowed values for `FREQ` field are `FREQ=DAILY` and `FREQ=WEEKLY;BYDAY=...` Example values: `FREQ=WEEKLY;BYDAY=TU,WE`, `FREQ=DAILY`.",
           "type": "string"
+        }
+      }
+    },
+    "AutoscalingConfig": {
+      "id": "AutoscalingConfig",
+      "description": "The configuration settings for autoscaling for GKE cluster within Composer environment. GKE cluster handles Airflow scheduler and workers workload.",
+      "type": "object",
+      "properties": {
+        "mode": {
+          "description": "Optional. Represents information on whether autoscaling is enabled.",
+          "type": "string",
+          "enumDescriptions": [
+            "The mode of autoscaling is set to the default value by Composer.",
+            "Autoscaling is disabled.",
+            "Autoscaling is enabled."
+          ],
+          "enum": [
+            "DEFAULT",
+            "DISABLED",
+            "ENABLED"
+          ]
+        },
+        "maximumCpu": {
+          "description": "Optional. Maximum number of CPU in the environment.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maximumMemory": {
+          "description": "Optional. Memory limit in GB in the environment.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

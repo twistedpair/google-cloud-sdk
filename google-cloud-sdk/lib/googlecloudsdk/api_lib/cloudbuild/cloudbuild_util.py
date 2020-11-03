@@ -642,3 +642,40 @@ def RegionalWorkerPoolRegion(resource_name):
     return match.group(1)
   raise ValueError('The worker pool resource name must match "%s"' %
                    (REGIONAL_WORKERPOOL_NAME_MATCHER,))
+
+
+def GitHubEnterpriseConfigFromArgs(args, update=False):
+  """Construct the GitHubEnterpires resource from the command line args.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+        command invocation.
+      update: bool, if the args are for an update.
+
+  Returns:
+    A populated GitHubEnterpriseConfig message.
+  """
+  messages = GetMessagesModule()
+
+  ghe = messages.GitHubEnterpriseConfig()
+  ghe.hostUrl = args.host_uri
+  ghe.appId = args.app_id
+  if args.webhook_key is not None:
+    ghe.webhookKey = args.webhook_key
+  if not update and args.peered_network is not None:
+    ghe.peeredNetwork = args.peered_network
+  if args.gcs_bucket is not None:
+    gcs_location = messages.GCSLocation()
+    gcs_location.bucket = args.gcs_bucket
+    gcs_location.object = args.gcs_object
+    if args.generation is not None:
+      gcs_location.generation = args.generation
+    ghe.appConfigJson = gcs_location
+  else:
+    secret_location = messages.GitHubEnterpriseSecrets()
+    secret_location.privateKeyName = args.private_key_name
+    secret_location.webhookSecretName = args.webhook_secret_name
+    secret_location.oauthSecretName = args.oauth_secret_name
+    secret_location.oauthClientIdName = args.oauth_client_id_name
+    ghe.secrets = secret_location
+  return ghe

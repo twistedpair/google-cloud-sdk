@@ -140,9 +140,7 @@ class CloudRunService(_messages.Message):
       should be sent to. The value must conform to the definition of URI path
       segment (section 3.3 of RFC2396). Examples: "/route", "route",
       "route/subroute".
-    region: Optional. The region the Cloud Run service is deployed in. If not
-      set, the location of the trigger is used. For triggers in the "global"
-      location, setting this field is mandatory.
+    region: Required. The region the Cloud Run service is deployed in.
     service: Required. The name of the Cloud run service being addressed (see
       https://cloud.google.com/run/docs/reference/rest/v1/namespaces.services)
       . Only services located in the same project of the trigger object can be

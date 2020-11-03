@@ -22,6 +22,7 @@ import datetime
 import os
 import re
 import sys
+import time
 
 from apitools.base.py import list_pager
 from apitools.base.py.exceptions import HttpNotFoundError
@@ -40,6 +41,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import times
+import six
 
 
 class TPUNode(object):
@@ -526,6 +528,7 @@ class SSH(object):
 
   def __init__(self, release_track):
     holder = base_classes.ComputeApiHolder(release_track)
+    self.release_track = release_track
     self.client = holder.client
     self.resources = holder.resources
 
@@ -589,7 +592,6 @@ class SSH(object):
     external_nat = ssh_utils.GetExternalIPAddress(instance)
     log.status.Print(
         'Trying to SSH to VM with NAT IP:{}'.format(external_nat))
-    remote = ssh.Remote(external_nat, ssh.GetDefaultSshUsername())
     args.ssh_key_file = ssh.Keys.DEFAULT_KEY_FILE
 
     ssh_helper = ssh_utils.BaseSSHCLIHelper()
@@ -600,8 +602,22 @@ class SSH(object):
     host_keys = self._GetHostKeyFromInstance(args.zone, ssh_helper, instance)
     options = self._GetSSHOptions(args.name, ssh_helper,
                                   instance, host_keys)
-    self._WaitForSSHKeysToPropagate(ssh_helper, remote, identity_file, user,
-                                    instance, options)
+
+    public_key = ssh_helper.keys.GetPublicKey().ToEntry(include_comment=True)
+    user, use_oslogin = ssh.CheckForOsloginAndGetUser(
+        instance,
+        ssh_helper.GetProject(
+            self.client, properties.VALUES.core.project.Get(required=True)),
+        user,
+        public_key,
+        None,
+        self.release_track,
+        username_requested=False)
+
+    remote = ssh.Remote(external_nat, user)
+    if not use_oslogin:
+      self._WaitForSSHKeysToPropagate(ssh_helper, remote, identity_file, user,
+                                      instance, options)
 
     extra_flags = []
     # Ctpu seems to be forwarding some other ports on what
@@ -615,12 +631,31 @@ class SSH(object):
         'options': options,
         'extra_flags': extra_flags
     }
+
     cmd = ssh.SSHCommand(**ssh_cmd_args)
-    # Errors from SSH itself result in an ssh.CommandError being raised
-    return_code = cmd.Run(
-        ssh_helper.env,
-        force_connect=properties.VALUES.ssh.putty_force_connect.GetBool())
-    if return_code:
-      # This is the return code of the remote command.  Problems with SSH itself
-      # will result in ssh.CommandError being raised above.
-      sys.exit(return_code)
+    max_attempts = 10
+    sleep_interval = 30
+    # Since the instance was just created, it can take a while for the instance
+    # to be ready to accept ssh connections, therefore retry up to 5m. Doesn't
+    # need to be backed off, regular interval retry is sufficient since we
+    # aren't looking to throttle.
+    for i in range(max_attempts):
+      try:
+        log.status.Print('SSH Attempt #{}...'.format(i))
+        # Errors from SSH itself result in an ssh.CommandError being raised
+        return_code = cmd.Run(
+            ssh_helper.env,
+            force_connect=properties.VALUES.ssh.putty_force_connect.GetBool())
+        if return_code:
+          # This is the return code of the remote command.
+          # Problems with SSH itself will result in ssh.CommandError
+          # being raised above.
+          sys.exit(return_code)
+      except ssh.CommandError as e:
+        if i == max_attempts - 1:
+          raise e
+        log.status.Print(
+            'Retrying: SSH command error: {}'.format(six.text_type(e)))
+        time.sleep(sleep_interval)
+        continue
+      break

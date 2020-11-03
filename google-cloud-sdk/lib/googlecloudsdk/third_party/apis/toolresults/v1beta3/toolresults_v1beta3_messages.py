@@ -333,6 +333,10 @@ class CrashDialogError(_messages.Message):
   crashPackage = _messages.StringField(1)
 
 
+class DeviceOutOfMemory(_messages.Message):
+  r"""A warning that device ran out of memory"""
+
+
 class Duration(_messages.Message):
   r""" A Duration represents a signed, fixed-length span of time represented
   as a count of seconds and fractions of seconds at nanosecond resolution. It
@@ -2211,6 +2215,7 @@ class TestIssue(_messages.Message):
         crawl
       unityException: An uncaught Unity exception was detected (these don't
         crash apps).
+      deviceOutOfMemory: Device running out of memory was detected
     """
     unspecifiedType = 0
     fatalException = 1
@@ -2241,6 +2246,7 @@ class TestIssue(_messages.Message):
     blankScreen = 26
     overlappingUiElements = 27
     unityException = 28
+    deviceOutOfMemory = 29
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   errorMessage = _messages.StringField(2)

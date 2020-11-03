@@ -79,7 +79,7 @@ class ReleaseNotes(object):
     """
 
     try:
-      response = installers.ComponentInstaller.MakeRequest(url, command_path)
+      response = installers.MakeRequest(url, command_path)
       if not response:
         return None
       code = response.getcode()

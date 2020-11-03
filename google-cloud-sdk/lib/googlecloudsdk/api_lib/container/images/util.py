@@ -111,8 +111,7 @@ class CredentialProvider(docker_creds.Basic):
 
   @property
   def password(self):
-    cred = c_store.LoadIfEnabled()
-    return cred.access_token if cred else None
+    return c_store.GetAccessTokenIfEnabled()
 
 
 def _TimeCreatedToDateTime(time_created_ms):

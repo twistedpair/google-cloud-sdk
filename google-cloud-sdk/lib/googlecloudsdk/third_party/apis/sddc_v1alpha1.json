@@ -1090,7 +1090,7 @@
             "An approver (distinct from the requester) that has authorized this request. When used with IN, the condition indicates that one of the approvers associated with the request matches the specified principal, or is a member of the specified group. Approvers can only grant additional access, and are thus only used in a strictly positive context (e.g. ALLOW\/IN or DENY\/NOT_IN).",
             "What types of justifications have been supplied with this request. String values should match enum names from security.credentials.JustificationType, e.g. \"MANUAL_STRING\". It is not permitted to grant access based on the *absence* of a justification, so justification conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN). Multiple justifications, e.g., a Buganizer ID and a manually-entered reason, are normal and supported.",
             "What type of credentials have been supplied with this request. String values should match enum names from security_loas_l2.CredentialsType - currently, only CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access based on the *absence* of a credentials type, so the conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
-            "EXPERIMENTAL -- DO NOT USE. "
+            "EXPERIMENTAL -- DO NOT USE. The conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN)."
           ],
           "enum": [
             "NO_ATTR",
@@ -2594,6 +2594,137 @@
                   "description": "Deletes a PrivateCloud."
                 }
               }
+              ,
+              "resources": {
+                "ipAddresses": {
+                  "methods": {
+                    "list": {
+                      "id": "sddc.projects.locations.privateClouds.ipAddresses.list",
+                      "path": "v1alpha1/{+parent}/ipAddresses",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/ipAddresses",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent ClusterGroup or PrivateCloud of which the IpAddresses belong to. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of IpAddresses to return. The service may return fewer than this value.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous `ListIpAddressesRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListIpAddressesRequest` must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "List filter.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListIpAddressesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists IpAddresses in a given PrivateCloud."
+                    },
+                    "get": {
+                      "id": "sddc.projects.locations.privateClouds.ipAddresses.get",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/ipAddresses/{ipAddressesId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the IpAddress to retrieve. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/ipAddresses\/my-ip`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/ipAddresses\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "IpAddress"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the details of a single IpAddress."
+                    },
+                    "create": {
+                      "id": "sddc.projects.locations.privateClouds.ipAddresses.create",
+                      "path": "v1alpha1/{+parent}/ipAddresses",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/ipAddresses",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The ClusterGroup or PrivateCloud in which the IpAddress will be created. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "ipAddressId": {
+                          "description": "Required. The user-provided ID of the IpAddress to be created. This id must be unique among IpAddresses within the parent and will become the final token in the name URI.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "IpAddress"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new IpAddress in a given PrivateCloud. The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the cluster will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation."
+                    },
+                    "delete": {
+                      "id": "sddc.projects.locations.privateClouds.ipAddresses.delete",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/ipAddresses/{ipAddressesId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the ClusterGroupBackup to be deleted.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/ipAddresses\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes an IpAddress in a given PrivateCloud."
+                    }
+                  }
+                }
+              }
             },
             "clusterGroups": {
               "methods": {
@@ -3105,7 +3236,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent ClusterGroup of which the IpAddresses belong to. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                          "description": "Required. The parent ClusterGroup or PrivateCloud of which the IpAddresses belong to. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
@@ -3171,7 +3302,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The ClusterGroup in which the IpAddress will be created. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                          "description": "Required. The ClusterGroup or PrivateCloud in which the IpAddress will be created. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",

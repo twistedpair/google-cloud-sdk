@@ -696,6 +696,7 @@ class ClusterUpdate(_messages.Message):
     desiredDatapathProvider: The desired datapath provider for the cluster.
     desiredDefaultSnatStatus: The desired status of whether to disable default
       sNAT for this cluster.
+    desiredDnsConfig: DNSConfig contains clusterDNS config for this cluster.
     desiredEnableGvnic: Enable or disable gvnic on this cluster. This field is
       not yet used.
     desiredGkeOidcConfig: Security message for security related configuration
@@ -772,6 +773,8 @@ class ClusterUpdate(_messages.Message):
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
     desiredWorkloadIdentityConfig: Configuration for Workload Identity.
+    desiredWorkloadMonitoringEapConfig: Configuration for workload monitoring
+      EAP.
   """
 
   class DesiredDatapathProviderValueValuesEnum(_messages.Enum):
@@ -814,32 +817,34 @@ class ClusterUpdate(_messages.Message):
   desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 6)
   desiredDatapathProvider = _messages.EnumField('DesiredDatapathProviderValueValuesEnum', 7)
   desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 8)
-  desiredEnableGvnic = _messages.BooleanField(9)
-  desiredGkeOidcConfig = _messages.MessageField('GkeOidcConfig', 10)
-  desiredImage = _messages.StringField(11)
-  desiredImageProject = _messages.StringField(12)
-  desiredImageType = _messages.StringField(13)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 14)
-  desiredKubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 15)
-  desiredLocations = _messages.StringField(16, repeated=True)
-  desiredLoggingService = _messages.StringField(17)
-  desiredMaster = _messages.MessageField('Master', 18)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 19)
-  desiredMasterVersion = _messages.StringField(20)
-  desiredMonitoringService = _messages.StringField(21)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 22)
-  desiredNodePoolId = _messages.StringField(23)
-  desiredNodeVersion = _messages.StringField(24)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 25)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 26)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 27)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 28)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 29)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 30)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 31)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 32)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 33)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 34)
+  desiredDnsConfig = _messages.MessageField('DNSConfig', 9)
+  desiredEnableGvnic = _messages.BooleanField(10)
+  desiredGkeOidcConfig = _messages.MessageField('GkeOidcConfig', 11)
+  desiredImage = _messages.StringField(12)
+  desiredImageProject = _messages.StringField(13)
+  desiredImageType = _messages.StringField(14)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 15)
+  desiredKubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 16)
+  desiredLocations = _messages.StringField(17, repeated=True)
+  desiredLoggingService = _messages.StringField(18)
+  desiredMaster = _messages.MessageField('Master', 19)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 20)
+  desiredMasterVersion = _messages.StringField(21)
+  desiredMonitoringService = _messages.StringField(22)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 23)
+  desiredNodePoolId = _messages.StringField(24)
+  desiredNodeVersion = _messages.StringField(25)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 26)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 27)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 28)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 29)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 30)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 31)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 32)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 33)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 34)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 35)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 36)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1452,6 +1457,56 @@ class CustomImageConfig(_messages.Message):
   image = _messages.StringField(1)
   imageFamily = _messages.StringField(2)
   imageProject = _messages.StringField(3)
+
+
+class DNSConfig(_messages.Message):
+  r"""DNSConfig contains the desired set of options for configuring
+  clusterDNS.
+
+  Enums:
+    ClusterDnsValueValuesEnum: cluster_dns indicates which in-cluster DNS
+      provider should be used.
+    ClusterDnsScopeValueValuesEnum: cluster_dns_scope indicates the scope of
+      access to cluster DNS records.
+
+  Fields:
+    clusterDns: cluster_dns indicates which in-cluster DNS provider should be
+      used.
+    clusterDnsDomain: cluster_dns_domain is the suffix used for all cluster
+      service records.
+    clusterDnsScope: cluster_dns_scope indicates the scope of access to
+      cluster DNS records.
+  """
+
+  class ClusterDnsScopeValueValuesEnum(_messages.Enum):
+    r"""cluster_dns_scope indicates the scope of access to cluster DNS
+    records.
+
+    Values:
+      DNS_SCOPE_UNSPECIFIED: Default value, will be inferred as cluster scope.
+      CLUSTER_SCOPE: DNS records are accessible from within the cluster.
+      VPC_SCOPE: DNS records are accessible from within the VPC.
+    """
+    DNS_SCOPE_UNSPECIFIED = 0
+    CLUSTER_SCOPE = 1
+    VPC_SCOPE = 2
+
+  class ClusterDnsValueValuesEnum(_messages.Enum):
+    r"""cluster_dns indicates which in-cluster DNS provider should be used.
+
+    Values:
+      PROVIDER_UNSPECIFIED: Default value
+      PLATFORM_DEFAULT: Use GKE default DNS provider(kube-dns) for DNS
+        resolution.
+      CLOUD_DNS: Use CloudDNS for DNS resolution.
+    """
+    PROVIDER_UNSPECIFIED = 0
+    PLATFORM_DEFAULT = 1
+    CLOUD_DNS = 2
+
+  clusterDns = _messages.EnumField('ClusterDnsValueValuesEnum', 1)
+  clusterDnsDomain = _messages.StringField(2)
+  clusterDnsScope = _messages.EnumField('ClusterDnsScopeValueValuesEnum', 3)
 
 
 class DailyMaintenanceWindow(_messages.Message):
@@ -2236,6 +2291,7 @@ class NetworkConfig(_messages.Message):
       disabled. When disabled is set to false, default IP masquerade rules
       will be applied to the nodes to prevent sNAT on cluster internal
       traffic.
+    dnsConfig: DNSConfig contains clusterDNS config for this cluster.
     enableIntraNodeVisibility: Whether Intra-node visibility is enabled for
       this cluster. This makes same node pod to pod traffic visible for VPC
       network.
@@ -2289,10 +2345,11 @@ class NetworkConfig(_messages.Message):
 
   datapathProvider = _messages.EnumField('DatapathProviderValueValuesEnum', 1)
   defaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 2)
-  enableIntraNodeVisibility = _messages.BooleanField(3)
-  network = _messages.StringField(4)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 5)
-  subnetwork = _messages.StringField(6)
+  dnsConfig = _messages.MessageField('DNSConfig', 3)
+  enableIntraNodeVisibility = _messages.BooleanField(4)
+  network = _messages.StringField(5)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 6)
+  subnetwork = _messages.StringField(7)
 
 
 class NetworkPolicy(_messages.Message):
@@ -2620,6 +2677,8 @@ class NodeNetworkConfig(_messages.Message):
       `node_ipv4_cidr_block` if they are not specified. If neither
       `create_subnetwork` or `subnetwork` are specified, the cluster-level
       default (`ip_allocation_policy.subnetwork_name`) is used.
+    enableEndpointsliceProxying: If true, kube-proxy will read from
+      EndpointSlices instead of Endpoints. This flag only applies to GKE 1.18.
     nodeIpv4CidrBlock: The IP address range for node IPs in this node pool.
       Only applicable if `create_subnetwork` is true. Set to blank to have a
       range chosen with the default size. Set to /netmask (e.g. `/14`) to have
@@ -2645,10 +2704,11 @@ class NodeNetworkConfig(_messages.Message):
 
   createPodRange = _messages.BooleanField(1)
   createSubnetwork = _messages.BooleanField(2)
-  nodeIpv4CidrBlock = _messages.StringField(3)
-  podIpv4CidrBlock = _messages.StringField(4)
-  podRange = _messages.StringField(5)
-  subnetwork = _messages.StringField(6)
+  enableEndpointsliceProxying = _messages.BooleanField(3)
+  nodeIpv4CidrBlock = _messages.StringField(4)
+  podIpv4CidrBlock = _messages.StringField(5)
+  podRange = _messages.StringField(6)
+  subnetwork = _messages.StringField(7)
 
 
 class NodePool(_messages.Message):
@@ -4388,6 +4448,18 @@ class WorkloadMetadataConfig(_messages.Message):
 
   mode = _messages.EnumField('ModeValueValuesEnum', 1)
   nodeMetadata = _messages.EnumField('NodeMetadataValueValuesEnum', 2)
+
+
+class WorkloadMonitoringEapConfig(_messages.Message):
+  r"""WorkloadMonitoringConfig is configuration for collecting workload
+  metrics on GKE. Temporary config for EAP.
+
+  Fields:
+    enabled: Whether to send workload metrics from the cluster to Google Cloud
+      Monitoring.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

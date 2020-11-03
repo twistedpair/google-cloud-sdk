@@ -1596,8 +1596,6 @@ class HttpRule(_messages.Message):
     additionalBindings: Additional HTTP bindings for the selector. Nested
       bindings must not contain an `additional_bindings` field themselves
       (that is, the nesting may only be one level deep).
-    allowHalfDuplex: When this flag is set to true, HTTP requests will be
-      allowed to invoke a half-duplex streaming method.
     body: The name of the request field whose value is mapped to the HTTP
       request body, or `*` for mapping all request fields not captured by the
       path pattern to the HTTP body, or omitted for not having any HTTP
@@ -1623,16 +1621,15 @@ class HttpRule(_messages.Message):
   """
 
   additionalBindings = _messages.MessageField('HttpRule', 1, repeated=True)
-  allowHalfDuplex = _messages.BooleanField(2)
-  body = _messages.StringField(3)
-  custom = _messages.MessageField('CustomHttpPattern', 4)
-  delete = _messages.StringField(5)
-  get = _messages.StringField(6)
-  patch = _messages.StringField(7)
-  post = _messages.StringField(8)
-  put = _messages.StringField(9)
-  responseBody = _messages.StringField(10)
-  selector = _messages.StringField(11)
+  body = _messages.StringField(2)
+  custom = _messages.MessageField('CustomHttpPattern', 3)
+  delete = _messages.StringField(4)
+  get = _messages.StringField(5)
+  patch = _messages.StringField(6)
+  post = _messages.StringField(7)
+  put = _messages.StringField(8)
+  responseBody = _messages.StringField(9)
+  selector = _messages.StringField(10)
 
 
 class JwtLocation(_messages.Message):
@@ -3373,10 +3370,7 @@ class Service(_messages.Message):
     authentication: Auth configuration.
     backend: API backend configuration.
     billing: Billing configuration.
-    configVersion: The semantic version of the service configuration. The
-      config version affects the interpretation of the service configuration.
-      For example, certain features are enabled by default for certain config
-      versions. The latest config version is `3`.
+    configVersion: This field is obsolete. Its value must be set to `3`.
     context: Context configuration.
     control: Configuration for the service control plane.
     customError: Custom error configuration.
@@ -3450,28 +3444,6 @@ class Service(_messages.Message):
   title = _messages.StringField(25)
   types = _messages.MessageField('Type', 26, repeated=True)
   usage = _messages.MessageField('Usage', 27)
-
-
-class ServiceIdentity(_messages.Message):
-  r"""The per-product per-project service identity for a service. Use this
-  field to configure per-product per-project service identity. Example of a
-  service identity configuration. usage: service_identity: -
-  service_account_parent: "projects/123456789" display_name: "Cloud XXX
-  Service Agent" description: "Used as the identity of Cloud XXX to access
-  resources"
-
-  Fields:
-    description: Optional. A user-specified opaque description of the service
-      account. Must be less than or equal to 256 UTF-8 bytes.
-    displayName: Optional. A user-specified name for the service account. Must
-      be less than or equal to 100 UTF-8 bytes.
-    serviceAccountParent: A service account project that hosts the service
-      accounts. An example name would be: `projects/123456789`
-  """
-
-  description = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  serviceAccountParent = _messages.StringField(3)
 
 
 class ServicemanagementOperationsGetRequest(_messages.Message):
@@ -4486,14 +4458,11 @@ class Usage(_messages.Message):
       example 'serviceusage.googleapis.com/billing-enabled'.
     rules: A list of usage rules that apply to individual API methods.
       **NOTE:** All service configuration rules follow "last one wins" order.
-    serviceIdentity: The configuration of a per-product per-project service
-      identity.
   """
 
   producerNotificationChannel = _messages.StringField(1)
   requirements = _messages.StringField(2, repeated=True)
   rules = _messages.MessageField('UsageRule', 3, repeated=True)
-  serviceIdentity = _messages.MessageField('ServiceIdentity', 4)
 
 
 class UsageRule(_messages.Message):

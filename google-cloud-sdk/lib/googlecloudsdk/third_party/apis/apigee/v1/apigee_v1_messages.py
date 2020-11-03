@@ -4757,6 +4757,13 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     name: Output only. Name of the Apigee organization.
     projectId: The project ID associated with the Apigee organization.
     properties: Properties defined in the Apigee organization profile.
+    runtimeDatabaseEncryptionKeyName: Cloud KMS key name used for encrypting
+      the data that is stored and replicated across runtime instances. Update
+      is not allowed after the organization is created. If not specified, a
+      Google-Managed encryption key will be used. Valid only when
+      [RuntimeType] is CLOUD. For example:
+      "projects/foo/locations/us/keyRings/bar/cryptoKeys/baz". **Note:** Not
+      supported for Apigee hybrid.
     runtimeType: Required. Runtime type of the Apigee organization based on
       the Apigee subscription purchased.
     subscriptionType: Output only. Subscription type of the Apigee
@@ -4825,9 +4832,10 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   name = _messages.StringField(11)
   projectId = _messages.StringField(12)
   properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 13)
-  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 14)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  runtimeDatabaseEncryptionKeyName = _messages.StringField(14)
+  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 15)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
 
 
 class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):

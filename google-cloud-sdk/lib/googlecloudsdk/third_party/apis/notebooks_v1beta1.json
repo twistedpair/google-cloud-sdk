@@ -1484,7 +1484,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Check if a notebook instance is upgradable."
+                  "description": "Check if a notebook instance is upgradable. Deprecated. Please consider using v1."
                 },
                 "upgrade": {
                   "id": "notebooks.projects.locations.instances.upgrade",
@@ -1512,7 +1512,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Upgrades a notebook instance to the latest version."
+                  "description": "Upgrades a notebook instance to the latest version. Deprecated. Please consider using v1."
                 },
                 "upgradeInternal": {
                   "id": "notebooks.projects.locations.instances.upgradeInternal",
@@ -1540,7 +1540,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Allows notebook instances to call this endpoint to upgrade themselves. Do not use this method directly."
+                  "description": "Allows notebook instances to call this endpoint to upgrade themselves. Do not use this method directly. Deprecated. Please consider using v1."
                 },
                 "setIamPolicy": {
                   "id": "notebooks.projects.locations.instances.setIamPolicy",

@@ -359,6 +359,7 @@
           "format": "google-datetime"
         },
         "schedulingConfig": {
+          "description": "The scheduling options for this node.",
           "$ref": "SchedulingConfig"
         },
         "networkEndpoints": {
@@ -480,9 +481,11 @@
     },
     "SchedulingConfig": {
       "id": "SchedulingConfig",
+      "description": "Sets the scheduling options for this node.",
       "type": "object",
       "properties": {
         "preemptible": {
+          "description": "Defines whether the node is preemptible.",
           "type": "boolean"
         },
         "reserved": {
@@ -898,7 +901,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The parent resource name.",
+                      "description": "Required. The parent resource name.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -934,7 +937,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The resource name.",
+                      "description": "Required. The resource name.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
@@ -959,7 +962,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The parent resource name.",
+                      "description": "Required. The parent resource name.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -992,7 +995,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The resource name.",
+                      "description": "Required. The resource name.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
@@ -1111,7 +1114,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The parent resource name.",
+                      "description": "Required. The parent resource name.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1157,7 +1160,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The resource name.",
+                      "description": "Required. The resource name.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/acceleratorTypes\/[^\/]+$",

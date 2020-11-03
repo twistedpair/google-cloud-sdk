@@ -69,6 +69,11 @@ def ReadRequest(input_file):
         'Input instances are not in JSON format. '
         'See `gcloud ai endpoints predict --help` for details.')
 
+  if not isinstance(request, dict):
+    raise errors.InvalidInstancesFileError(
+        'Input instances are not in JSON format. '
+        'See `gcloud ai endpoints predict --help` for details.')
+
   if 'instances' not in request:
     raise errors.InvalidInstancesFileError(
         'Invalid JSON request: missing "instances" attribute')
@@ -100,7 +105,7 @@ def ReadInstancesFromArgs(json_request):
     return ReadRequest(f)
 
 
-def GetDefaultFormat(predictions):
+def GetDefaultFormat(predictions, key_name='predictions'):
   """Get default output format for prediction results."""
   if not isinstance(predictions, list):
     # This usually indicates some kind of error case, so surface the full API
@@ -114,10 +119,10 @@ def GetDefaultFormat(predictions):
     keys = ', '.join(sorted(predictions[0].keys()))
     return """
           table(
-              predictions:format="table(
+              {}:format="table(
                   {}
               )"
-          )""".format(keys)
+          )""".format(key_name, keys)
 
   else:
-    return 'table[no-heading](predictions)'
+    return 'table[no-heading]({})'.format(key_name)

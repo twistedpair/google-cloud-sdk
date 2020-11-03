@@ -1176,20 +1176,6 @@ class EntityMentionRelationship(_messages.Message):
   subjectId = _messages.StringField(3)
 
 
-class ErrorDetail(_messages.Message):
-  r"""Structure to describe the error encountered during batch operation on
-  one resource. This is used both for sample errors in operation response, and
-  for format of errors in error reports.
-
-  Fields:
-    error: The status of the error.
-    resource: The identifier of the resource.
-  """
-
-  error = _messages.MessageField('Status', 1)
-  resource = _messages.StringField(2)
-
-
 class EvaluateAnnotationStoreRequest(_messages.Message):
   r"""Request to evaluate an Annotation store against a ground truth
   [Annotation store].
@@ -1461,13 +1447,15 @@ class ExportDicomDataRequest(_messages.Message):
       you're exporting from. The Cloud Healthcare Service Agent requires two
       IAM roles on the BigQuery location: `roles/bigquery.dataEditor` and
       `roles/bigquery.jobUser`.
+    filterConfig: Specifies the filter configuration.
     gcsDestination: The Cloud Storage output destination. The Cloud Healthcare
       Service Agent requires the `roles/storage.objectAdmin` Cloud IAM roles
       on the Cloud Storage location.
   """
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1DicomBigQueryDestination', 1)
-  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1DicomGcsDestination', 2)
+  filterConfig = _messages.MessageField('DicomFilterConfig', 2)
+  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1DicomGcsDestination', 3)
 
 
 class ExportDicomDataResponse(_messages.Message):
@@ -5134,19 +5122,6 @@ class ImportAnnotationsResponse(_messages.Message):
   operation finishes.
   """
 
-
-
-class ImportDicomDataErrorDetails(_messages.Message):
-  r"""Deprecated. Error details are in [Cloud Logging](/healthcare/docs/how-
-  tos/logging). Returns the errors encountered during DICOM store import.
-
-  Fields:
-    sampleErrors: Deprecated. Use only for debugging purposes. Contains sample
-      errors encountered in imports of individual resources. For example, a
-      Cloud Storage object.
-  """
-
-  sampleErrors = _messages.MessageField('ErrorDetail', 1, repeated=True)
 
 
 class ImportDicomDataRequest(_messages.Message):

@@ -5,6 +5,77 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 317.0.0 (2020-11-03)
+
+### Breaking Changes
+
+*   **(App Engine Flexible Environment)** Modified deployment prerequisites such that `app.yaml` is now required for all
+  deployments and can no longer be added to `.gcloudignore` list.
+
+
+### AI
+
+* Added `gcloud beta ai endpoints explain` to send explanation requests to AI
+  Platform endpoints.
+
+### Artifact Registry
+
+* Updated Maven print-settings with service account key to use preemptive for HEAD requests.
+* Promoted `gcloud artifacts` command group to GA.
+
+### Cloud Asset Inventory
+
+* Promoted Cloud assets analysis commands `gcloud asset analyze-iam-policy` and `gcloud asset analyze-iam-policy-longrunning` to GA.
+
+### Cloud Billing
+
+* Promoted `gcloud billing budgets` to beta.
+
+### Cloud Build
+
+* Added the flag `--pack` to the command `gcloud builds submit`.
+
+### Cloud Functions
+
+*   Promoted `build-env-vars` flags of `gcloud functions` to GA.
+
+### Cloud IAM
+
+* Updated `gcloud iam service-accounts keys list` to remove the non-functional
+  `--uri` flag.
+
+### Cloud Run
+
+* Added `gcloud run regions list` command to list supported Cloud Run (fully
+  managed) regions.
+
+### Compute Engine
+
+* Enabled Patch support for target-http-proxies import command in GA.
+
+### Eventarc
+
+*   Added `gcloud beta eventarc` which manages Eventarc resources.
+
+### Firebase Test Lab
+
+* Promoted `--testing-special-entitlements` flag of `gcloud firebase test ios run` to GA.
+* Increased the maximum number of test shards from 250 to 500 when using Android virtual devices.
+
+### Identity and Access Management
+
+*   Added `gcloud beta iam workload-identity-pools create-cred-config` to create
+    a credential config file that can grant non-Google Cloud workloads access to
+    Google Cloud resources, without using a service account key.
+
+### Kubernetes Engine
+
+* Added `--ephemeral-storage` to `gcloud beta container clusters create` and `gcloud beta container node-pools create`. This flag is used to configure nodes' ephemeral storage to be backed by local SSDs.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 316.0.0 (2020-10-27)
 
 ### Breaking Changes

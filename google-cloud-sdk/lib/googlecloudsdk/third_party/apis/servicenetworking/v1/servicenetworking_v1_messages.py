@@ -146,6 +146,8 @@ class AddSubnetworkRequest(_messages.Message):
       with the IP prefix range is the CIDR range for the subnet. The range
       must be within the allocated range that is assigned to the private
       connection. If the CIDR range isn't available, the call fails.
+    secondaryIpRangeSpecs: Optional. A list of secondary IP ranges to be
+      created within the new subnetwork.
     subnetwork: Required. A name for the new subnet. For information about the
       naming requirements, see
       [subnetwork](/compute/docs/reference/rest/v1/subnetworks) in the Compute
@@ -160,8 +162,9 @@ class AddSubnetworkRequest(_messages.Message):
   ipPrefixLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   region = _messages.StringField(5)
   requestedAddress = _messages.StringField(6)
-  subnetwork = _messages.StringField(7)
-  subnetworkUsers = _messages.StringField(8, repeated=True)
+  secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 7, repeated=True)
+  subnetwork = _messages.StringField(8)
+  subnetworkUsers = _messages.StringField(9, repeated=True)
 
 
 class Api(_messages.Message):
@@ -1196,8 +1199,6 @@ class HttpRule(_messages.Message):
     additionalBindings: Additional HTTP bindings for the selector. Nested
       bindings must not contain an `additional_bindings` field themselves
       (that is, the nesting may only be one level deep).
-    allowHalfDuplex: When this flag is set to true, HTTP requests will be
-      allowed to invoke a half-duplex streaming method.
     body: The name of the request field whose value is mapped to the HTTP
       request body, or `*` for mapping all request fields not captured by the
       path pattern to the HTTP body, or omitted for not having any HTTP
@@ -1223,16 +1224,15 @@ class HttpRule(_messages.Message):
   """
 
   additionalBindings = _messages.MessageField('HttpRule', 1, repeated=True)
-  allowHalfDuplex = _messages.BooleanField(2)
-  body = _messages.StringField(3)
-  custom = _messages.MessageField('CustomHttpPattern', 4)
-  delete = _messages.StringField(5)
-  get = _messages.StringField(6)
-  patch = _messages.StringField(7)
-  post = _messages.StringField(8)
-  put = _messages.StringField(9)
-  responseBody = _messages.StringField(10)
-  selector = _messages.StringField(11)
+  body = _messages.StringField(2)
+  custom = _messages.MessageField('CustomHttpPattern', 3)
+  delete = _messages.StringField(4)
+  get = _messages.StringField(5)
+  patch = _messages.StringField(6)
+  post = _messages.StringField(7)
+  put = _messages.StringField(8)
+  responseBody = _messages.StringField(9)
+  selector = _messages.StringField(10)
 
 
 class JwtLocation(_messages.Message):
@@ -2459,6 +2459,41 @@ class SearchRangeRequest(_messages.Message):
   network = _messages.StringField(2)
 
 
+class SecondaryIpRange(_messages.Message):
+  r"""A SecondaryIpRange object.
+
+  Fields:
+    ipCidrRange: Secondary IP CIDR range in `x.x.x.x/y` format.
+    rangeName: Name of the secondary IP range.
+  """
+
+  ipCidrRange = _messages.StringField(1)
+  rangeName = _messages.StringField(2)
+
+
+class SecondaryIpRangeSpec(_messages.Message):
+  r"""A SecondaryIpRangeSpec object.
+
+  Fields:
+    ipPrefixLength: Required. The prefix length of the secondary IP range. Use
+      CIDR range notation, such as `30` to provision a secondary IP range with
+      an `x.x.x.x/30` CIDR range. The IP address range is drawn from a pool of
+      available ranges in the service consumer's allocated range.
+    rangeName: Required. A name for the secondary IP range. The name must be
+      1-63 characters long, and comply with RFC1035. The name must be unique
+      within the subnetwork.
+    requestedAddress: Optional. The starting address of a range. The address
+      must be a valid IPv4 address in the x.x.x.x format. This value combined
+      with the IP prefix range is the CIDR range for the secondary IP range.
+      The range must be within the allocated range that is assigned to the
+      private connection. If the CIDR range isn't available, the call fails.
+  """
+
+  ipPrefixLength = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  rangeName = _messages.StringField(2)
+  requestedAddress = _messages.StringField(3)
+
+
 class Service(_messages.Message):
   r"""`Service` is the root object of Google service configuration schema. It
   describes basic information about a service, such as the name and the title,
@@ -2482,10 +2517,7 @@ class Service(_messages.Message):
     authentication: Auth configuration.
     backend: API backend configuration.
     billing: Billing configuration.
-    configVersion: The semantic version of the service configuration. The
-      config version affects the interpretation of the service configuration.
-      For example, certain features are enabled by default for certain config
-      versions. The latest config version is `3`.
+    configVersion: This field is obsolete. Its value must be set to `3`.
     context: Context configuration.
     control: Configuration for the service control plane.
     customError: Custom error configuration.
@@ -2559,28 +2591,6 @@ class Service(_messages.Message):
   title = _messages.StringField(25)
   types = _messages.MessageField('Type', 26, repeated=True)
   usage = _messages.MessageField('Usage', 27)
-
-
-class ServiceIdentity(_messages.Message):
-  r"""The per-product per-project service identity for a service. Use this
-  field to configure per-product per-project service identity. Example of a
-  service identity configuration. usage: service_identity: -
-  service_account_parent: "projects/123456789" display_name: "Cloud XXX
-  Service Agent" description: "Used as the identity of Cloud XXX to access
-  resources"
-
-  Fields:
-    description: Optional. A user-specified opaque description of the service
-      account. Must be less than or equal to 256 UTF-8 bytes.
-    displayName: Optional. A user-specified name for the service account. Must
-      be less than or equal to 100 UTF-8 bytes.
-    serviceAccountParent: A service account project that hosts the service
-      accounts. An example name would be: `projects/123456789`
-  """
-
-  description = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  serviceAccountParent = _messages.StringField(3)
 
 
 class ServicenetworkingOperationsCancelRequest(_messages.Message):
@@ -3109,12 +3119,14 @@ class Subnetwork(_messages.Message):
       `projects/1234321/global/networks/host-network`
     outsideAllocation: This is a discovered subnet that is not within the
       current consumer allocated ranges.
+    secondaryIpRanges: List of secondary IP ranges in this subnetwork.
   """
 
   ipCidrRange = _messages.StringField(1)
   name = _messages.StringField(2)
   network = _messages.StringField(3)
   outsideAllocation = _messages.BooleanField(4)
+  secondaryIpRanges = _messages.MessageField('SecondaryIpRange', 5, repeated=True)
 
 
 class SystemParameter(_messages.Message):
@@ -3257,14 +3269,11 @@ class Usage(_messages.Message):
       example 'serviceusage.googleapis.com/billing-enabled'.
     rules: A list of usage rules that apply to individual API methods.
       **NOTE:** All service configuration rules follow "last one wins" order.
-    serviceIdentity: The configuration of a per-product per-project service
-      identity.
   """
 
   producerNotificationChannel = _messages.StringField(1)
   requirements = _messages.StringField(2, repeated=True)
   rules = _messages.MessageField('UsageRule', 3, repeated=True)
-  serviceIdentity = _messages.MessageField('ServiceIdentity', 4)
 
 
 class UsageRule(_messages.Message):

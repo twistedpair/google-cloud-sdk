@@ -29,6 +29,25 @@ from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.core import exceptions as core_exceptions
 
 
+def _catch_client_error_raise_s3_api_error(format_str=None):
+  """Decorator that catches botocore ClientErrors and raises S3ApiErrors.
+
+  Args:
+    format_str (str): A googlecloudsdk.api_lib.util.exceptions.HttpErrorPayload
+      format string. Note that any properties that are accessed here are on the
+      HttpErrorPayload object, not the object returned from botocore.
+
+  Returns:
+    A decorator that catches botocore.exceptions.ClientError and returns an
+      S3ApiError with a formatted error message.
+  """
+  # TODO(b/170215786): Update the docstring for the format_str attribute when an
+  # interoperable version of HttpErrorPayload is created.
+
+  return errors.catch_error_raise_cloud_api_error(
+      botocore.exceptions.ClientError, errors.S3ApiError, format_str=format_str)
+
+
 _GCS_TO_S3_PREDEFINED_ACL_TRANSLATION_DICT = {
     'authenticatedRead': 'authenticated-read',
     'bucketOwnerFullControl': 'bucket-owner-full-control',
@@ -57,81 +76,79 @@ def _translate_predefined_acl_string_to_s3(predefined_acl_string):
   return _GCS_TO_S3_PREDEFINED_ACL_TRANSLATION_DICT[predefined_acl_string]
 
 
+def _get_object_url_from_s3_response(object_dict,
+                                     bucket_name,
+                                     object_name=None):
+  """Creates storage_url.CloudUrl from S3 API response.
+
+  Args:
+    object_dict (dict): Dictionary representing S3 API response.
+    bucket_name (str): Bucket to include in URL.
+    object_name (str | None): Object to include in URL.
+
+  Returns:
+    storage_url.CloudUrl populated with data.
+  """
+  return storage_url.CloudUrl(
+      scheme=storage_url.ProviderPrefix.S3,
+      bucket_name=bucket_name,
+      object_name=object_name,
+      generation=object_dict.get('VersionId'))
+
+
+def _get_object_resource_from_s3_response(object_dict,
+                                          bucket_name,
+                                          object_name=None):
+  """Creates resource_reference.S3ObjectResource from S3 API response.
+
+  Args:
+    object_dict (dict): Dictionary representing S3 API response.
+    bucket_name (str): Bucket response is relevant to.
+    object_name (str | None): Object if relevant to query.
+
+  Returns:
+    resource_reference.S3ObjectResource populated with data.
+  """
+  object_url = _get_object_url_from_s3_response(
+      object_dict, bucket_name, object_name or object_dict['Key'])
+  etag = None
+  if 'ETag' in object_dict:
+    etag = object_dict['ETag']
+  elif 'CopyObjectResult' in object_dict:
+    etag = object_dict['CopyObjectResult']['ETag']
+  size = object_dict.get('Size')
+  if size is None:
+    size = object_dict.get('ContentLength')
+
+  return s3_resource_reference.S3ObjectResource(
+      object_url, etag=etag, metadata=object_dict, size=size)
+
+
+def _get_prefix_resource_from_s3_response(prefix_dict, bucket_name):
+  """Creates resource_reference.PrefixResource from S3 API response.
+
+  Args:
+    prefix_dict (dict): The S3 API response representing a prefix.
+    bucket_name (str): Bucket for the prefix.
+
+  Returns:
+    A resource_reference.PrefixResource instance.
+  """
+  prefix = prefix_dict['Prefix']
+  return resource_reference.PrefixResource(
+      storage_url.CloudUrl(
+          scheme=storage_url.ProviderPrefix.S3,
+          bucket_name=bucket_name,
+          object_name=prefix),
+      prefix=prefix)
+
+
 # pylint:disable=abstract-method
 class S3Api(cloud_api.CloudApi):
   """S3 Api client."""
 
   def __init__(self):
-    self.scheme = storage_url.ProviderPrefix.S3
-    self.client = boto3.client(self.scheme.value)
-
-  def _get_object_url_from_s3_response(self,
-                                       object_dict,
-                                       bucket_name,
-                                       object_name=None):
-    """Creates storage_url.CloudUrl from S3 API response.
-
-    Args:
-      object_dict (dict): Dictionary representing S3 API response.
-      bucket_name (str): Bucket to include in URL.
-      object_name (str | None): Object to include in URL.
-
-    Returns:
-      storage_url.CloudUrl populated with data.
-    """
-    object_url = storage_url.CloudUrl(
-        scheme=self.scheme, bucket_name=bucket_name, object_name=object_name)
-
-    if 'VersionId' in object_dict:
-      # botocore validates the type of the fields it returns, ensuring VersionId
-      # is a string.
-      object_url.generation = object_dict['VersionId']
-
-    return object_url
-
-  def _get_object_resource_from_s3_response(self,
-                                            object_dict,
-                                            bucket_name,
-                                            object_name=None):
-    """Creates resource_reference.S3ObjectResource from S3 API response.
-
-    Args:
-      object_dict (dict): Dictionary representing S3 API response.
-      bucket_name (str): Bucket response is relevant to.
-      object_name (str | None): Object if relevant to query.
-
-    Returns:
-      resource_reference.S3ObjectResource populated with data.
-    """
-    object_url = self._get_object_url_from_s3_response(
-        object_dict, bucket_name, object_name or object_dict['Key'])
-    etag = None
-    if 'ETag' in object_dict:
-      etag = object_dict['ETag']
-    elif 'CopyObjectResult' in object_dict:
-      etag = object_dict['CopyObjectResult']['ETag']
-    size = object_dict.get('Size')
-    if size is None:
-      size = object_dict.get('ContentLength')
-
-    return s3_resource_reference.S3ObjectResource(
-        object_url, etag=etag, metadata=object_dict, size=size)
-
-  def _get_prefix_resource_from_s3_response(self, prefix_dict, bucket_name):
-    """Creates resource_reference.PrefixResource from S3 API response.
-
-    Args:
-      prefix_dict (dict): The S3 API response representing a prefix.
-      bucket_name (str): Bucket for the prefix.
-
-    Returns:
-      A resource_reference.PrefixResource instance.
-    """
-    prefix = prefix_dict['Prefix']
-    return resource_reference.PrefixResource(
-        storage_url.CloudUrl(
-            scheme=self.scheme, bucket_name=bucket_name, object_name=prefix),
-        prefix=prefix)
+    self.client = boto3.client(storage_url.ProviderPrefix.S3.value)
 
   def get_bucket(self, bucket_name, fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
@@ -220,14 +237,14 @@ class S3Api(cloud_api.CloudApi):
                 generation=object_dict.get('VersionId'),
                 fields_scope=fields_scope)
           else:
-            yield self._get_object_resource_from_s3_response(object_dict,
-                                                             bucket_name)
+            yield _get_object_resource_from_s3_response(object_dict,
+                                                        bucket_name)
         for prefix_dict in page.get('CommonPrefixes', []):
-          yield self._get_prefix_resource_from_s3_response(
-              prefix_dict, bucket_name)
+          yield _get_prefix_resource_from_s3_response(prefix_dict, bucket_name)
     except botocore.exceptions.ClientError as error:
       core_exceptions.reraise(errors.S3ApiError(error))
 
+  @_catch_client_error_raise_s3_api_error()
   def copy_object(self,
                   source_resource,
                   destination_resource,
@@ -249,17 +266,14 @@ class S3Api(cloud_api.CloudApi):
       kwargs['ACL'] = _translate_predefined_acl_string_to_s3(
           request_config.predefined_acl_string)
 
-    try:
-      response = self.client.copy_object(**kwargs)
-      return self._get_object_resource_from_s3_response(response,
-                                                        kwargs['Bucket'],
-                                                        kwargs['Key'])
-    except botocore.exceptions.ClientError as error:
-      core_exceptions.reraise(errors.S3ApiError(error))
+    response = self.client.copy_object(**kwargs)
+    return _get_object_resource_from_s3_response(response, kwargs['Bucket'],
+                                                 kwargs['Key'])
 
     # TODO(b/161900052): Implement resumable copies.
 
   # pylint: disable=unused-argument
+  @_catch_client_error_raise_s3_api_error()
   def download_object(self,
                       bucket_name,
                       object_name,
@@ -278,17 +292,16 @@ class S3Api(cloud_api.CloudApi):
     kwargs = {'Bucket': bucket_name, 'Key': object_name}
     if generation:
       kwargs['VersionId'] = generation
-    try:
-      response = self.client.get_object(**kwargs)
-      download_stream.write(response['Body'].read())
-      return response.get('ContentEncoding', None)
-    except botocore.exceptions.ClientError as error:
-      core_exceptions.reraise(errors.S3ApiError(error))
+
+    response = self.client.get_object(**kwargs)
+    download_stream.write(response['Body'].read())
+    return response.get('ContentEncoding', None)
 
     # TODO(b/161437901): Handle resumed download.
     # TODO(b/161460749): Handle download retries.
     # pylint:enable=unused-argument
 
+  @_catch_client_error_raise_s3_api_error()
   def get_object_metadata(self,
                           bucket_name,
                           object_name,
@@ -302,10 +315,7 @@ class S3Api(cloud_api.CloudApi):
     if generation is not None:
       request['VersionId'] = generation
 
-    try:
-      object_dict = self.client.head_object(**request)
-    except botocore.exceptions.ClientError as error:
-      core_exceptions.reraise(errors.S3ApiError(error))
+    object_dict = self.client.head_object(**request)
 
     # User requested ACL's with FieldsScope.FULL.
     if fields_scope is cloud_api.FieldsScope.FULL:
@@ -316,9 +326,10 @@ class S3Api(cloud_api.CloudApi):
       except botocore.exceptions.ClientError as error:
         object_dict['ACL'] = errors.S3ApiError(error)
 
-    return self._get_object_resource_from_s3_response(
-        object_dict, bucket_name, object_name)
+    return _get_object_resource_from_s3_response(object_dict, bucket_name,
+                                                 object_name)
 
+  @_catch_client_error_raise_s3_api_error()
   def upload_object(self,
                     upload_stream,
                     upload_resource,
@@ -335,10 +346,7 @@ class S3Api(cloud_api.CloudApi):
       kwargs['ACL'] = _translate_predefined_acl_string_to_s3(
           request_config.predefined_acl_string)
 
-    try:
-      response = self.client.put_object(**kwargs)
-      return self._get_object_resource_from_s3_response(
-          response, upload_resource.storage_url.bucket_name,
-          upload_resource.storage_url.object_name)
-    except botocore.exceptions.ClientError as error:
-      core_exceptions.reraise(errors.S3ApiError(error))
+    response = self.client.put_object(**kwargs)
+    return _get_object_resource_from_s3_response(
+        response, upload_resource.storage_url.bucket_name,
+        upload_resource.storage_url.object_name)

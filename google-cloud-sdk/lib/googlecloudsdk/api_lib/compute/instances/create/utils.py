@@ -89,7 +89,8 @@ def CreateDiskMessages(args,
                        support_match_container_mount_disks=False,
                        support_create_disk_snapshots=False,
                        support_persistent_attached_disks=True,
-                       support_replica_zones=False):
+                       support_replica_zones=False,
+                       use_disk_type_uri=True):
   """Creates disk messages for a single instance."""
 
   container_mount_disk = []
@@ -125,7 +126,8 @@ def CreateDiskMessages(args,
           resource_policy=support_disk_resource_policy,
           enable_source_snapshot_csek=support_source_snapshot_csek,
           enable_image_csek=support_image_csek,
-          support_replica_zones=support_replica_zones))
+          support_replica_zones=support_replica_zones,
+          use_disk_type_uri=use_disk_type_uri))
 
   local_nvdimms = []
   if support_nvdimm:
@@ -135,7 +137,7 @@ def CreateDiskMessages(args,
 
   local_ssds = CreateLocalSsdMessages(args, resource_parser,
                                       compute_client.messages, location, scope,
-                                      project)
+                                      project, use_disk_type_uri)
   if create_boot_disk:
     boot_snapshot_uri = None
     if support_boot_snapshot_uri:
@@ -243,7 +245,8 @@ def CreatePersistentCreateDiskMessages(compute_client,
                                        resource_policy=False,
                                        enable_source_snapshot_csek=False,
                                        enable_image_csek=False,
-                                       support_replica_zones=False):
+                                       support_replica_zones=False,
+                                       use_disk_type_uri=True):
   """Returns a list of AttachedDisk messages for newly creating disks.
 
   Args:
@@ -274,6 +277,7 @@ def CreatePersistentCreateDiskMessages(compute_client,
     enable_source_snapshot_csek: True if snapshot CSK files are enabled
     enable_image_csek: True if image CSK files are enabled
     support_replica_zones: True if we allow creation of regional disks
+    use_disk_type_uri: True to use disk type URI, False if naked type.
 
   Returns:
     list of API messages for attached disks
@@ -298,11 +302,12 @@ def CreatePersistentCreateDiskMessages(compute_client,
     disk_size_gb = utils.BytesToGb(disk.get('size'))
     disk_type = disk.get('type')
     if disk_type:
-      disk_type_ref = instance_utils.ParseDiskType(resources, disk_type,
-                                                   project, location, scope)
-      disk_type_uri = disk_type_ref.SelfLink()
+      if use_disk_type_uri:
+        disk_type_ref = instance_utils.ParseDiskType(resources, disk_type,
+                                                     project, location, scope)
+        disk_type = disk_type_ref.SelfLink()
     else:
-      disk_type_uri = None
+      disk_type = None
 
     img = disk.get('image')
     img_family = disk.get('image-family')
@@ -337,7 +342,7 @@ def CreatePersistentCreateDiskMessages(compute_client,
         description=disk.get('description'),
         sourceImage=image_uri,
         diskSizeGb=disk_size_gb,
-        diskType=disk_type_uri,
+        diskType=disk_type,
         sourceImageEncryptionKey=image_key)
 
     replica_zones = disk.get('replica-zones')
@@ -407,12 +412,13 @@ def CreateDefaultBootAttachedDiskMessage(compute_client,
                                          csek_keys=None,
                                          kms_args=None,
                                          enable_kms=False,
-                                         snapshot_uri=None):
+                                         snapshot_uri=None,
+                                         use_disk_type_uri=True):
   """Returns an AttachedDisk message for creating a new boot disk."""
   messages = compute_client.messages
   compute = compute_client.apitools_client
 
-  if disk_type:
+  if disk_type and use_disk_type_uri:
     disk_type_ref = instance_utils.ParseDiskType(resources, disk_type, project,
                                                  location, scope)
     disk_type_uri = disk_type_ref.SelfLink()
@@ -544,7 +550,8 @@ def CreateLocalSsdMessages(args,
                            messages,
                            location=None,
                            scope=None,
-                           project=None):
+                           project=None,
+                           use_disk_type_uri=True):
   """Create messages representing local ssds."""
   local_ssds = []
   for local_ssd_disk in getattr(args, 'local_ssd', []) or []:
@@ -552,7 +559,7 @@ def CreateLocalSsdMessages(args,
                                        local_ssd_disk.get('device-name'),
                                        local_ssd_disk.get('interface'),
                                        local_ssd_disk.get('size'), location,
-                                       scope, project)
+                                       scope, project, use_disk_type_uri)
     local_ssds.append(local_ssd)
   return local_ssds
 
@@ -564,10 +571,11 @@ def _CreateLocalSsdMessage(resources,
                            size_bytes=None,
                            location=None,
                            scope=None,
-                           project=None):
+                           project=None,
+                           use_disk_type_uri=True):
   """Create a message representing a local ssd."""
 
-  if location:
+  if location and use_disk_type_uri:
     disk_type_ref = instance_utils.ParseDiskType(resources, 'local-ssd',
                                                  project, location, scope)
     disk_type = disk_type_ref.SelfLink()
@@ -772,7 +780,6 @@ def CreateNetworkInterfaceMessage(resources,
 
     # If the user provided an external IP, populate the access
     # config with it.
-    # TODO(b/25278937): plays poorly when creating multiple instances
     address_resource = instances_flags.ExpandAddressFlag(
         resources, compute_client, address, region)
     if address_resource:
@@ -976,6 +983,15 @@ def GetAccelerators(args, compute_client, resource_parser, project, location,
   return []
 
 
+def GetAcceleratorsForInstanceProperties(args, compute_client):
+  if args.accelerator:
+    accelerator_type = args.accelerator['type']
+    accelerator_count = int(args.accelerator.get('count', 1))
+    return CreateAcceleratorConfigMessages(compute_client.messages,
+                                           accelerator_type, accelerator_count)
+  return []
+
+
 def CreateAcceleratorConfigMessages(msgs, accelerator_type, accelerator_count):
   """Returns a list of accelerator config messages.
 
@@ -994,8 +1010,13 @@ def CreateAcceleratorConfigMessages(msgs, accelerator_type, accelerator_count):
   return [accelerator_config]
 
 
-def CreateMachineTypeUri(args, compute_client, resource_parser, project,
-                         location, scope, confidential_vm=False):
+def CreateMachineTypeUri(args,
+                         compute_client,
+                         resource_parser,
+                         project,
+                         location,
+                         scope,
+                         confidential_vm=False):
   """Create a machine type URI for given args and instance reference."""
 
   machine_type = args.machine_type

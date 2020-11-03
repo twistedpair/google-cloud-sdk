@@ -107,15 +107,13 @@ class TriggersClient(object):
     self._operation_service = client.projects_locations_operations
 
   def _BuildTriggerMessage(self, trigger_ref, matching_criteria,
-                           service_account_ref, destination_run_service,
+                           service_account, destination_run_service,
                            destination_run_path, destination_run_region):
     """Builds a Trigger message with the given data."""
     matching_criteria_messages = [] if matching_criteria is None else [
         self._messages.MatchingCriteria(attribute=key, value=value)
         for key, value in matching_criteria.items()
     ]
-    service_account_name = service_account_ref.RelativeName(
-    ) if service_account_ref else None
     service_message = self._messages.CloudRunService(
         service=destination_run_service,
         path=destination_run_path,
@@ -125,10 +123,10 @@ class TriggersClient(object):
     return self._messages.Trigger(
         name=trigger_ref.RelativeName(),
         matchingCriteria=matching_criteria_messages,
-        serviceAccount=service_account_name,
+        serviceAccount=service_account,
         destination=destination_message)
 
-  def Create(self, trigger_ref, matching_criteria, service_account_ref,
+  def Create(self, trigger_ref, matching_criteria, service_account,
              destination_run_service, destination_run_path,
              destination_run_region):
     """Creates a new Trigger.
@@ -136,7 +134,7 @@ class TriggersClient(object):
     Args:
       trigger_ref: Resource, the Trigger to create.
       matching_criteria: dict, the Trigger's matching criteria.
-      service_account_ref: Resource or None, the Trigger's service account.
+      service_account: str or None, the Trigger's service account.
       destination_run_service: str, the Trigger's destination Cloud Run service.
       destination_run_path: str or None, the path on the destination service.
       destination_run_region: str or None, the destination service's region.
@@ -148,7 +146,7 @@ class TriggersClient(object):
     destination_run_region = destination_run_region or trigger_ref.Parent(
     ).Name()
     trigger_message = self._BuildTriggerMessage(trigger_ref, matching_criteria,
-                                                service_account_ref,
+                                                service_account,
                                                 destination_run_service,
                                                 destination_run_path,
                                                 destination_run_region)
@@ -206,7 +204,7 @@ class TriggersClient(object):
         limit=limit,
         batch_size_attribute='pageSize')
 
-  def Patch(self, trigger_ref, matching_criteria, service_account_ref,
+  def Patch(self, trigger_ref, matching_criteria, service_account,
             destination_run_service, destination_run_path,
             destination_run_region, update_mask):
     """Updates a Trigger.
@@ -214,7 +212,7 @@ class TriggersClient(object):
     Args:
       trigger_ref: Resource, the Trigger to update.
       matching_criteria: dict or None, the updated matching criteria.
-      service_account_ref: Resource or None, the updated service account.
+      service_account: str or None, the updated service account.
       destination_run_service: str or None, the updated destination service.
       destination_run_path: str or None, the updated destination path.
       destination_run_region: str or None, the updated destination region.
@@ -224,7 +222,7 @@ class TriggersClient(object):
       A long-running operation for update.
     """
     trigger_message = self._BuildTriggerMessage(trigger_ref, matching_criteria,
-                                                service_account_ref,
+                                                service_account,
                                                 destination_run_service,
                                                 destination_run_path,
                                                 destination_run_region)

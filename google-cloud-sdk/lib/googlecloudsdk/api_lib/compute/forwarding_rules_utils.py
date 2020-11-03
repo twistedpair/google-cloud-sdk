@@ -131,12 +131,13 @@ def _ValidateRegionalArgs(args):
   schemes_allowing_network_fields = ['INTERNAL', 'INTERNAL_MANAGED']
 
   if (getattr(args, 'subnet', None) or
-      getattr(args, 'network', None)) and getattr(
-          args, 'load_balancing_scheme',
-          None) not in schemes_allowing_network_fields:
+      getattr(args, 'network', None)) and not getattr(
+          args, 'target_service_attachment', None) and getattr(
+              args, 'load_balancing_scheme',
+              None) not in schemes_allowing_network_fields:
     raise calliope_exceptions.ToolException(
         'You cannot specify [--subnet] or [--network] for non-internal '
-        '[--load-balancing-scheme] forwarding rule.')
+        '[--load-balancing-scheme] non-PSC forwarding rule.')
 
   if getattr(args, 'load_balancing_scheme', None) == 'INTERNAL_SELF_MANAGED':
     raise calliope_exceptions.ToolException(
@@ -148,7 +149,8 @@ def GetRegionalTarget(client,
                       resources,
                       args,
                       forwarding_rule_ref=None,
-                      include_l7_internal_load_balancing=False):
+                      include_l7_internal_load_balancing=False,
+                      include_target_service_attachment=False):
   """Return the forwarding target for a regionally scoped request."""
   _ValidateRegionalArgs(args)
   if forwarding_rule_ref:
@@ -203,6 +205,15 @@ def GetRegionalTarget(client,
   elif args.target_tcp_proxy:
     target_ref = flags.TARGET_TCP_PROXY_ARG.ResolveAsResource(args, resources)
     target_region = region_arg
+  elif include_target_service_attachment and args.target_service_attachment:
+    target_ref = flags.TargetServiceAttachmentArg().ResolveAsResource(
+        args, resources)
+    target_region = region_arg
+    if args.target_service_attachment_region and region_arg:
+      if args.target_service_attachment_region != region_arg:
+        raise calliope_exceptions.ToolException(
+            'The provided [--target-service-attachment-region] must equal '
+            'the [--region] of the forwarding rule.')
 
   return target_ref, target_region
 

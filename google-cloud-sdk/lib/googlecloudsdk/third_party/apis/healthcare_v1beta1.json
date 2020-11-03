@@ -2003,6 +2003,10 @@
         "bigqueryDestination": {
           "description": "The BigQuery output destination. You can only export to a BigQuery dataset that's in the same project as the DICOM store you're exporting from. The Cloud Healthcare Service Agent requires two IAM roles on the BigQuery location: `roles\/bigquery.dataEditor` and `roles\/bigquery.jobUser`.",
           "$ref": "GoogleCloudHealthcareV1beta1DicomBigQueryDestination"
+        },
+        "filterConfig": {
+          "description": "Specifies the filter configuration.",
+          "$ref": "DicomFilterConfig"
         }
       }
     },
@@ -3168,35 +3172,6 @@
       "description": "Contains a summary of the DeidentifyFhirStore operation.",
       "type": "object",
       "properties": {
-      }
-    },
-    "ImportDicomDataErrorDetails": {
-      "id": "ImportDicomDataErrorDetails",
-      "description": "Deprecated. Error details are in [Cloud Logging](\/healthcare\/docs\/how-tos\/logging). Returns the errors encountered during DICOM store import.",
-      "type": "object",
-      "properties": {
-        "sampleErrors": {
-          "description": "Deprecated. Use only for debugging purposes. Contains sample errors encountered in imports of individual resources. For example, a Cloud Storage object.",
-          "type": "array",
-          "items": {
-            "$ref": "ErrorDetail"
-          }
-        }
-      }
-    },
-    "ErrorDetail": {
-      "id": "ErrorDetail",
-      "description": "Structure to describe the error encountered during batch operation on one resource. This is used both for sample errors in operation response, and for format of errors in error reports.",
-      "type": "object",
-      "properties": {
-        "resource": {
-          "description": "The identifier of the resource.",
-          "type": "string"
-        },
-        "error": {
-          "description": "The status of the error.",
-          "$ref": "Status"
-        }
       }
     },
     "GoogleCloudHealthcareV1beta1FhirRestImportResourcesResponse": {

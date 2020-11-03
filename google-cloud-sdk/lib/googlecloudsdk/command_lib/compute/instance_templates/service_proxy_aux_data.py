@@ -25,6 +25,7 @@ class TracingState(str, enum.Enum):
   ON = 'ON'
   OFF = 'OFF'
 
+
 # Don't put sudo when running service-proxy-agent-bootstrap.sh, as exported
 # variables don't get passed to the script when run with sudo. It's not a
 # problem because all commands inside service-proxy-agent-bootstrap.sh
@@ -39,4 +40,11 @@ sudo gsutil cp \
     gs://gce-service-proxy/service-proxy-agent/releases/service-proxy-agent-0.2.tgz \
     ${SERVICE_PROXY_AGENT_DIRECTORY}
 sudo tar -xzf ${SERVICE_PROXY_AGENT_DIRECTORY}/service-proxy-agent-0.2.tgz -C ${SERVICE_PROXY_AGENT_DIRECTORY}
+${SERVICE_PROXY_AGENT_DIRECTORY}/service-proxy-agent/service-proxy-agent-bootstrap.sh"""
+
+startup_script_with_location_template = """#! /bin/bash
+export SERVICE_PROXY_AGENT_DIRECTORY=$(mktemp -d)
+sudo gsutil cp %s ${SERVICE_PROXY_AGENT_DIRECTORY}
+ARCHIVE_NAME=$(ls ${SERVICE_PROXY_AGENT_DIRECTORY})
+sudo tar -xzf ${SERVICE_PROXY_AGENT_DIRECTORY}/${ARCHIVE_NAME} -C ${SERVICE_PROXY_AGENT_DIRECTORY}
 ${SERVICE_PROXY_AGENT_DIRECTORY}/service-proxy-agent/service-proxy-agent-bootstrap.sh"""

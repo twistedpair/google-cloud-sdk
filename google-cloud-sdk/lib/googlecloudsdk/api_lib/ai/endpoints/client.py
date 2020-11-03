@@ -148,6 +148,22 @@ class EndpointsClient(object):
         googleCloudAiplatformV1beta1PredictRequest=predict_request)
     return self.client.projects_locations_endpoints.Predict(req)
 
+  def ExplainBeta(self, endpoint_ref, instances_json, args):
+    """Send online explanation request to an endpoint."""
+    explain_request = self.messages.GoogleCloudAiplatformV1beta1ExplainRequest(
+        instances=_ConvertPyListToMessageList(
+            extra_types.JsonValue, instances_json['instances']))
+    if 'parameters' in instances_json:
+      explain_request.parameters = encoding.PyValueToMessage(
+          extra_types.JsonValue, instances_json['parameters'])
+    if args.deployed_model_id is not None:
+      explain_request.deployedModelId = args.deployed_model_id
+
+    req = self.messages.AiplatformProjectsLocationsEndpointsExplainRequest(
+        endpoint=endpoint_ref.RelativeName(),
+        googleCloudAiplatformV1beta1ExplainRequest=explain_request)
+    return self.client.projects_locations_endpoints.Explain(req)
+
   def DeployModelBeta(self, endpoint_ref, args):
     """Deploy a model to an existing endpoint."""
     model_ref = _ParseModel(args.model, args.region)

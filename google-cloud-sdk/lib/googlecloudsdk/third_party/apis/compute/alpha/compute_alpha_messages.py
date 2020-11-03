@@ -540,13 +540,17 @@ class AccessConfig(_messages.Message):
     networkTier associated with the Address resource owning that IP.
 
     Values:
+      FIXED_STANDARD: <no description>
       PREMIUM: <no description>
       SELECT: <no description>
       STANDARD: <no description>
+      STANDARD_OVERRIDES_FIXED_STANDARD: <no description>
     """
-    PREMIUM = 0
-    SELECT = 1
-    STANDARD = 2
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    SELECT = 2
+    STANDARD = 3
+    STANDARD_OVERRIDES_FIXED_STANDARD = 4
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of configuration. The default and only option is
@@ -734,13 +738,17 @@ class Address(_messages.Message):
     PREMIUM.
 
     Values:
+      FIXED_STANDARD: <no description>
       PREMIUM: <no description>
       SELECT: <no description>
       STANDARD: <no description>
+      STANDARD_OVERRIDES_FIXED_STANDARD: <no description>
     """
-    PREMIUM = 0
-    SELECT = 1
-    STANDARD = 2
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    SELECT = 2
+    STANDARD = 3
+    STANDARD_OVERRIDES_FIXED_STANDARD = 4
 
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of this resource, which can be one of the following
@@ -1276,6 +1284,29 @@ class AliasIpRange(_messages.Message):
 
   ipCidrRange = _messages.StringField(1)
   subnetworkRangeName = _messages.StringField(2)
+
+
+class AllocationShareSettings(_messages.Message):
+  r"""A AllocationShareSettings object.
+
+  Enums:
+    ShareTypeValueValuesEnum: Type of sharing for this shared-reservation
+
+  Fields:
+    shareType: Type of sharing for this shared-reservation
+  """
+
+  class ShareTypeValueValuesEnum(_messages.Enum):
+    r"""Type of sharing for this shared-reservation
+
+    Values:
+      ORGANIZATION: <no description>
+      SHARE_TYPE_UNSPECIFIED: <no description>
+    """
+    ORGANIZATION = 0
+    SHARE_TYPE_UNSPECIFIED = 1
+
+  shareType = _messages.EnumField('ShareTypeValueValuesEnum', 1)
 
 
 class AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk(_messages.Message):
@@ -4935,9 +4966,9 @@ class BulkInsertInstanceResource(_messages.Message):
 
   Fields:
     count: The maximum number of instances to create.
-    instance: A Instance attribute.
-    instanceProperties: The instance properties for the request. Required if
-      sourceInstanceTemplate is not provided.
+    instance: The instance defining the VM instances to be created.
+    instanceProperties: The instance properties defining the VM instances to
+      be created. Required if sourceInstanceTemplate is not provided.
     locationPolicy: A LocationPolicy attribute.
     minCount: The minimum number of instances to create. If no min_count is
       specified then count is used as the default value. If min_count
@@ -23356,6 +23387,32 @@ class ComputeTargetHttpsProxiesListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(6)
 
 
+class ComputeTargetHttpsProxiesPatchRequest(_messages.Message):
+  r"""A ComputeTargetHttpsProxiesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    targetHttpsProxy: Name of the TargetHttpsProxy resource to patch.
+    targetHttpsProxyResource: A TargetHttpsProxy resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  targetHttpsProxy = _messages.StringField(3, required=True)
+  targetHttpsProxyResource = _messages.MessageField('TargetHttpsProxy', 4)
+
+
 class ComputeTargetHttpsProxiesSetCertificateMapRequest(_messages.Message):
   r"""A ComputeTargetHttpsProxiesSetCertificateMapRequest object.
 
@@ -28766,6 +28823,10 @@ class FirewallPolicyRule(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     direction: The direction in which this rule applies.
+    disabled: Denotes whether the firewall policy rule is disabled. When set
+      to true, the firewall policy rule is not enforced and traffic behaves as
+      if it did not exist. If this is unspecified, the firewall policy rule
+      will be enabled.
     enableLogging: Denotes whether to enable logging for a particular rule. If
       logging is enabled, logs will be exported to the configured export
       destination in Stackdriver. Logs may be exported to BigQuery or Pub/Sub.
@@ -28774,7 +28835,6 @@ class FirewallPolicyRule(_messages.Message):
       compute#firewallPolicyRule for firewall policy rules
     match: A match condition that incoming traffic is evaluated against. If it
       evaluates to true, the corresponding ?action? is enforced.
-    preview: If set to true, the specified action is not enforced.
     priority: An integer indicating the priority of a rule in the list. The
       priority must be a positive value between 0 and 2147483647. Rules are
       evaluated from highest to lowest priority where 0 is the highest
@@ -28801,21 +28861,19 @@ class FirewallPolicyRule(_messages.Message):
     r"""The direction in which this rule applies.
 
     Values:
-      DIRECTION_UNSPECIFIED: <no description>
       EGRESS: <no description>
       INGRESS: <no description>
     """
-    DIRECTION_UNSPECIFIED = 0
-    EGRESS = 1
-    INGRESS = 2
+    EGRESS = 0
+    INGRESS = 1
 
   action = _messages.StringField(1)
   description = _messages.StringField(2)
   direction = _messages.EnumField('DirectionValueValuesEnum', 3)
-  enableLogging = _messages.BooleanField(4)
-  kind = _messages.StringField(5, default='compute#firewallPolicyRule')
-  match = _messages.MessageField('FirewallPolicyRuleMatcher', 6)
-  preview = _messages.BooleanField(7)
+  disabled = _messages.BooleanField(4)
+  enableLogging = _messages.BooleanField(5)
+  kind = _messages.StringField(6, default='compute#firewallPolicyRule')
+  match = _messages.MessageField('FirewallPolicyRuleMatcher', 7)
   priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   ruleTupleCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   targetResources = _messages.StringField(10, repeated=True)
@@ -29203,13 +29261,17 @@ class ForwardingRule(_messages.Message):
     value must be equal to the networkTier of the Address.
 
     Values:
+      FIXED_STANDARD: <no description>
       PREMIUM: <no description>
       SELECT: <no description>
       STANDARD: <no description>
+      STANDARD_OVERRIDES_FIXED_STANDARD: <no description>
     """
-    PREMIUM = 0
-    SELECT = 1
-    STANDARD = 2
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    SELECT = 2
+    STANDARD = 3
+    STANDARD_OVERRIDES_FIXED_STANDARD = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -35841,12 +35903,45 @@ class InstancesGetEffectiveFirewallsResponse(_messages.Message):
   r"""A InstancesGetEffectiveFirewallsResponse object.
 
   Fields:
+    firewallPolicys: Effective firewalls from firewall policies.
     firewalls: Effective firewalls on the instance.
     organizationFirewalls: Effective firewalls from organization policies.
   """
 
-  firewalls = _messages.MessageField('Firewall', 1, repeated=True)
-  organizationFirewalls = _messages.MessageField('InstancesGetEffectiveFirewallsResponseOrganizationFirewallPolicy', 2, repeated=True)
+  firewallPolicys = _messages.MessageField('InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy', 1, repeated=True)
+  firewalls = _messages.MessageField('Firewall', 2, repeated=True)
+  organizationFirewalls = _messages.MessageField('InstancesGetEffectiveFirewallsResponseOrganizationFirewallPolicy', 3, repeated=True)
+
+
+class InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Message):
+  r"""A InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy object.
+
+  Enums:
+    TypeValueValuesEnum: [Output Only] The type of the firewall policy.
+
+  Fields:
+    displayName: [Output Only] The display name of the firewall policy.
+    name: [Output Only] The name of the firewall policy.
+    rules: The rules that apply to the network.
+    type: [Output Only] The type of the firewall policy.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The type of the firewall policy.
+
+    Values:
+      HIERARCHY: <no description>
+      NETWORK: <no description>
+      UNSPECIFIED: <no description>
+    """
+    HIERARCHY = 0
+    NETWORK = 1
+    UNSPECIFIED = 2
+
+  displayName = _messages.StringField(1)
+  name = _messages.StringField(2)
+  rules = _messages.MessageField('FirewallPolicyRule', 3, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class InstancesGetEffectiveFirewallsResponseOrganizationFirewallPolicy(_messages.Message):
@@ -41575,12 +41670,45 @@ class NetworksGetEffectiveFirewallsResponse(_messages.Message):
   r"""A NetworksGetEffectiveFirewallsResponse object.
 
   Fields:
+    firewallPolicys: Effective firewalls from firewall policy.
     firewalls: Effective firewalls on the network.
     organizationFirewalls: Effective firewalls from organization policies.
   """
 
-  firewalls = _messages.MessageField('Firewall', 1, repeated=True)
-  organizationFirewalls = _messages.MessageField('NetworksGetEffectiveFirewallsResponseOrganizationFirewallPolicy', 2, repeated=True)
+  firewallPolicys = _messages.MessageField('NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy', 1, repeated=True)
+  firewalls = _messages.MessageField('Firewall', 2, repeated=True)
+  organizationFirewalls = _messages.MessageField('NetworksGetEffectiveFirewallsResponseOrganizationFirewallPolicy', 3, repeated=True)
+
+
+class NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Message):
+  r"""A NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy object.
+
+  Enums:
+    TypeValueValuesEnum: [Output Only] The type of the firewall policy.
+
+  Fields:
+    displayName: [Output Only] The display name of the firewall policy.
+    name: [Output Only] The name of the firewall policy.
+    rules: The rules that apply to the network.
+    type: [Output Only] The type of the firewall policy.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The type of the firewall policy.
+
+    Values:
+      HIERARCHY: <no description>
+      NETWORK: <no description>
+      UNSPECIFIED: <no description>
+    """
+    HIERARCHY = 0
+    NETWORK = 1
+    UNSPECIFIED = 2
+
+  displayName = _messages.StringField(1)
+  name = _messages.StringField(2)
+  rules = _messages.MessageField('FirewallPolicyRule', 3, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class NetworksGetEffectiveFirewallsResponseOrganizationFirewallPolicy(_messages.Message):
@@ -45532,13 +45660,17 @@ class Project(_messages.Message):
     Initially the default network tier is PREMIUM.
 
     Values:
+      FIXED_STANDARD: <no description>
       PREMIUM: <no description>
       SELECT: <no description>
       STANDARD: <no description>
+      STANDARD_OVERRIDES_FIXED_STANDARD: <no description>
     """
-    PREMIUM = 0
-    SELECT = 1
-    STANDARD = 2
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    SELECT = 2
+    STANDARD = 3
+    STANDARD_OVERRIDES_FIXED_STANDARD = 4
 
   class XpnProjectStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The role this project has in a shared VPC configuration.
@@ -45634,13 +45766,17 @@ class ProjectsSetDefaultNetworkTierRequest(_messages.Message):
     r"""Default network tier to be set.
 
     Values:
+      FIXED_STANDARD: <no description>
       PREMIUM: <no description>
       SELECT: <no description>
       STANDARD: <no description>
+      STANDARD_OVERRIDES_FIXED_STANDARD: <no description>
     """
-    PREMIUM = 0
-    SELECT = 1
-    STANDARD = 2
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    SELECT = 2
+    STANDARD = 3
+    STANDARD_OVERRIDES_FIXED_STANDARD = 4
 
   networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 1)
 
@@ -48128,6 +48264,7 @@ class Reservation(_messages.Message):
       resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
+    shareSettings: Share-settings for shared-reservation
     specificReservation: Reservation for instances with specific machine
       shapes.
     specificReservationRequired: Indicates whether the reservation can be
@@ -48163,10 +48300,11 @@ class Reservation(_messages.Message):
   name = _messages.StringField(6)
   selfLink = _messages.StringField(7)
   selfLinkWithId = _messages.StringField(8)
-  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 9)
-  specificReservationRequired = _messages.BooleanField(10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  zone = _messages.StringField(12)
+  shareSettings = _messages.MessageField('AllocationShareSettings', 9)
+  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 10)
+  specificReservationRequired = _messages.BooleanField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  zone = _messages.StringField(13)
 
 
 class ReservationAffinity(_messages.Message):
@@ -51580,6 +51718,8 @@ class SecurityPolicy(_messages.Message):
       RFC1035. Label values may be empty.
 
   Fields:
+    adaptiveProtectionConfig: A SecurityPolicyAdaptiveProtectionConfig
+      attribute.
     associations: A list of associations that belong to this policy.
     cloudArmorConfig: A SecurityPolicyCloudArmorConfig attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -51679,23 +51819,64 @@ class SecurityPolicy(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  associations = _messages.MessageField('SecurityPolicyAssociation', 1, repeated=True)
-  cloudArmorConfig = _messages.MessageField('SecurityPolicyCloudArmorConfig', 2)
-  creationTimestamp = _messages.StringField(3)
-  description = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  fingerprint = _messages.BytesField(6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default='compute#securityPolicy')
-  labelFingerprint = _messages.BytesField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  parent = _messages.StringField(12)
-  ruleTupleCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  rules = _messages.MessageField('SecurityPolicyRule', 14, repeated=True)
-  selfLink = _messages.StringField(15)
-  selfLinkWithId = _messages.StringField(16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  adaptiveProtectionConfig = _messages.MessageField('SecurityPolicyAdaptiveProtectionConfig', 1)
+  associations = _messages.MessageField('SecurityPolicyAssociation', 2, repeated=True)
+  cloudArmorConfig = _messages.MessageField('SecurityPolicyCloudArmorConfig', 3)
+  creationTimestamp = _messages.StringField(4)
+  description = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  fingerprint = _messages.BytesField(7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default='compute#securityPolicy')
+  labelFingerprint = _messages.BytesField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  parent = _messages.StringField(13)
+  ruleTupleCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('SecurityPolicyRule', 15, repeated=True)
+  selfLink = _messages.StringField(16)
+  selfLinkWithId = _messages.StringField(17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
+
+
+class SecurityPolicyAdaptiveProtectionConfig(_messages.Message):
+  r"""Configuration options for Cloud Armor Adaptive Protection (CAAP).
+
+  Fields:
+    layer7DdosDefenseConfig: If set to true, enables Cloud Armor Machine
+      Learning.
+  """
+
+  layer7DdosDefenseConfig = _messages.MessageField('SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig', 1)
+
+
+class SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(_messages.Message):
+  r"""Configuration options for L7 DDoS detection.
+
+  Enums:
+    RuleVisibilityValueValuesEnum: Rule visibility can be one of the
+      following: STANDARD - opaque rules. (default) PREMIUM - transparent
+      rules.
+
+  Fields:
+    enable: If set to true, enables CAAP for L7 DDoS detection.
+    ruleVisibility: Rule visibility can be one of the following: STANDARD -
+      opaque rules. (default) PREMIUM - transparent rules.
+  """
+
+  class RuleVisibilityValueValuesEnum(_messages.Enum):
+    r"""Rule visibility can be one of the following: STANDARD - opaque rules.
+    (default) PREMIUM - transparent rules.
+
+    Values:
+      PREMIUM: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    STANDARD = 1
+
+  enable = _messages.BooleanField(1)
+  ruleVisibility = _messages.EnumField('RuleVisibilityValueValuesEnum', 2)
 
 
 class SecurityPolicyAssociation(_messages.Message):
@@ -51895,6 +52076,9 @@ class SecurityPolicyRule(_messages.Message):
     rateLimitOptions: Must be specified if the action is
       "rate_based_blacklist" or "throttle". Cannot be specified for any other
       actions.
+    ruleNumber: Identifier for the rule. This is only unique within the given
+      security policy. This can only be set during rule creation, if rule
+      number is not specified it will be generated by the server.
     ruleTupleCount: [Output Only] Calculation of the complexity of a single
       firewall security policy rule.
     targetResources: A list of network resource URLs to which this rule
@@ -51926,9 +52110,10 @@ class SecurityPolicyRule(_messages.Message):
   preview = _messages.BooleanField(7)
   priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 9)
-  ruleTupleCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  targetResources = _messages.StringField(11, repeated=True)
-  targetServiceAccounts = _messages.StringField(12, repeated=True)
+  ruleNumber = _messages.IntegerField(10)
+  ruleTupleCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  targetResources = _messages.StringField(12, repeated=True)
+  targetServiceAccounts = _messages.StringField(13, repeated=True)
 
 
 class SecurityPolicyRuleMatcher(_messages.Message):
@@ -53780,10 +53965,10 @@ class SslPoliciesListAvailableFeaturesResponse(_messages.Message):
 
 
 class SslPolicy(_messages.Message):
-  r"""Represents a Google Cloud Armor security policy resource.  Only external
-  backend services used by HTTP or HTTPS load balancers can reference a
-  security policy. For more information, see  Google Cloud Armor security
-  policy overview. (== resource_for {$api_version}.sslPolicies ==)
+  r"""Represents an SSL Policy resource.  Use SSL policies to control the SSL
+  features, such as versions and cipher suites, offered by an HTTPS or SSL
+  Proxy load balancer. For more information, read  SSL Policy Concepts. (==
+  resource_for {$api_version}.sslPolicies ==)
 
   Enums:
     MinTlsVersionValueValuesEnum: The minimum version of SSL protocol that can
@@ -56010,6 +56195,13 @@ class TargetHttpsProxy(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    fingerprint: Fingerprint of this resource. A hash of the contents stored
+      in this object. This field is used in optimistic locking. This field
+      will be ignored when inserting a TargetHttpsProxy. An up-to-date
+      fingerprint must be provided in order to patch the TargetHttpsProxy;
+      otherwise, the request will fail with error 412 conditionNotMet. To see
+      the latest fingerprint, make a get() request to retrieve the
+      TargetHttpsProxy.
     httpFilters: URLs to networkservices.HttpFilter resources enabled for xDS
       clients using this configuration. For example, https://networkservices.g
       oogleapis.com/beta/projects/project/locations/locationhttpFilters/httpFi
@@ -56101,19 +56293,20 @@ class TargetHttpsProxy(_messages.Message):
   certificateMap = _messages.StringField(4)
   creationTimestamp = _messages.StringField(5)
   description = _messages.StringField(6)
-  httpFilters = _messages.StringField(7, repeated=True)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default='compute#targetHttpsProxy')
-  name = _messages.StringField(10)
-  proxyBind = _messages.BooleanField(11)
-  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 12)
-  region = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  selfLinkWithId = _messages.StringField(15)
-  serverTlsPolicy = _messages.StringField(16)
-  sslCertificates = _messages.StringField(17, repeated=True)
-  sslPolicy = _messages.StringField(18)
-  urlMap = _messages.StringField(19)
+  fingerprint = _messages.BytesField(7)
+  httpFilters = _messages.StringField(8, repeated=True)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default='compute#targetHttpsProxy')
+  name = _messages.StringField(11)
+  proxyBind = _messages.BooleanField(12)
+  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 13)
+  region = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  selfLinkWithId = _messages.StringField(16)
+  serverTlsPolicy = _messages.StringField(17)
+  sslCertificates = _messages.StringField(18, repeated=True)
+  sslPolicy = _messages.StringField(19)
+  urlMap = _messages.StringField(20)
 
 
 class TargetHttpsProxyAggregatedList(_messages.Message):
@@ -57789,6 +57982,15 @@ class TargetTcpProxy(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    proxyBind: This field only applies when the forwarding rule that
+      references this target proxy has a loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED.  When this field is set to true, Envoy proxies
+      set up inbound traffic interception and bind to the IP address and port
+      specified in the forwarding rule. This is generally useful when using
+      Traffic Director to configure Envoy as a gateway or middle proxy (in
+      other words, not a sidecar proxy). The Envoy proxy listens for inbound
+      requests and handles requests when it receives them.  The default is
+      false.
     proxyHeader: Specifies the type of proxy header to append before sending
       data to the backend, either NONE or PROXY_V1. The default is NONE.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -57811,9 +58013,10 @@ class TargetTcpProxy(_messages.Message):
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(4, default='compute#targetTcpProxy')
   name = _messages.StringField(5)
-  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 6)
-  selfLink = _messages.StringField(7)
-  service = _messages.StringField(8)
+  proxyBind = _messages.BooleanField(6)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 7)
+  selfLink = _messages.StringField(8)
+  service = _messages.StringField(9)
 
 
 class TargetTcpProxyList(_messages.Message):

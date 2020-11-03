@@ -607,7 +607,8 @@
             "UI element depth is greater than the threshold",
             "Blank screen is found in the Robo crawl",
             "Overlapping UI elements are found in the Robo crawl",
-            "An uncaught Unity exception was detected (these don't crash apps)."
+            "An uncaught Unity exception was detected (these don't crash apps).",
+            "Device running out of memory was detected"
           ],
           "enum": [
             "unspecifiedType",
@@ -638,7 +639,8 @@
             "uiElementsTooDeep",
             "blankScreen",
             "overlappingUiElements",
-            "unityException"
+            "unityException",
+            "deviceOutOfMemory"
           ]
         },
         "category": {
@@ -2150,6 +2152,13 @@
           "description": "The name of the package that caused the dialog.",
           "type": "string"
         }
+      }
+    },
+    "DeviceOutOfMemory": {
+      "id": "DeviceOutOfMemory",
+      "description": "A warning that device ran out of memory",
+      "type": "object",
+      "properties": {
       }
     },
     "EncounteredLoginScreen": {

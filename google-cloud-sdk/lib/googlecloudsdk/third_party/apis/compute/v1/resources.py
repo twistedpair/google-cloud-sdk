@@ -122,6 +122,13 @@ class Collections(enum.Enum):
       ['project', 'operation'],
       True
   )
+  GLOBALORGANIZATIONOPERATIONS = (
+      'globalOrganizationOperations',
+      'locations/global/operations/{operation}',
+      {},
+      ['operation'],
+      True
+  )
   HEALTHCHECKS = (
       'healthChecks',
       'projects/{project}/global/healthChecks/{healthCheck}',

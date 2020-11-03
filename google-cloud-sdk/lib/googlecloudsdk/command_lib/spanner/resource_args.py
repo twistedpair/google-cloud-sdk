@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
@@ -55,6 +56,24 @@ def SessionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='session', help_text='The Cloud Spanner session for the {resource}.')
 
+def KmsKeyAttributeConfig():
+  # For anchor attribute, help text is generated automatically.
+  return concepts.ResourceParameterAttributeConfig(name='kms-key')
+
+
+def KmsKeyringAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='kms-keyring', help_text='KMS Keyring id of the {resource}.')
+
+
+def KmsLocationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='kms-location', help_text='Cloud Location for the {resource}.')
+
+
+def KmsProjectAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='kms-project', help_text='Cloud Project id for the {resource}.')
 
 def GetInstanceResourceSpec():
   return concepts.ResourceSpec(
@@ -72,6 +91,14 @@ def GetDatabaseResourceSpec():
       instancesId=InstanceAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
+def GetKmsKeyResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudkms.projects.locations.keyRings.cryptoKeys',
+      resource_name='key',
+      cryptoKeysId=KmsKeyAttributeConfig(),
+      keyRingsId=KmsKeyringAttributeConfig(),
+      locationsId=KmsLocationAttributeConfig(),
+      projectsId=KmsProjectAttributeConfig())
 
 def GetBackupResourceSpec():
   return concepts.ResourceSpec(
@@ -128,6 +155,28 @@ def AddDatabaseResourceArg(parser, verb, positional=True):
       GetDatabaseResourceSpec(),
       'The Cloud Spanner database {}.'.format(verb),
       required=True).AddToParser(parser)
+
+def AddKmsKeyResourceArg(parser, verb, positional=False):
+  """Add a resource argument for a KMS Key used to create a CMEK database.
+
+  Args:
+    parser: argparser, the parser for the command.
+    verb: str, the verb used to describe the resource, such as 'to create'.
+    positional: bool, optional. True if the resource arg is postional rather
+      than a flag.
+  """
+  # TODO(b/154755597): Adding this resource arg to its own group is currently
+  # the only way to hide a resource arg. When ready to publish this arg to
+  # public, remove this group and add this resource arg directly (and generate
+  # the help text).
+  group_parser = parser.add_argument_group(hidden=True)
+  name = 'kms-key' if positional else '--kms-key'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetKmsKeyResourceSpec(),
+      'Cloud KMS Key to be used {} the Cloud Spanner database.'.format(
+          verb),
+      required=False).AddToParser(group_parser)
 
 
 def AddSessionResourceArg(parser, verb, positional=True):
@@ -193,3 +242,20 @@ def AddRestoreResourceArgs(parser):
   ]
 
   concept_parsers.ConceptParser(arg_specs).AddToParser(parser)
+
+
+def GetAndValidateKmsKeyName(args):
+  """Parse the KMS key resource arg, make sure the key format is correct."""
+  kms_ref = args.CONCEPTS.kms_key.Parse()
+  if kms_ref:
+    return kms_ref.RelativeName()
+  else:
+    # If parsing failed but args were specified, raise error
+    for keyword in ['kms-key', 'kms-keyring', 'kms-location', 'kms-project']:
+      if getattr(args, keyword.replace('-', '_'), None):
+        raise exceptions.InvalidArgumentException(
+            '--kms-project --kms-location --kms-keyring --kms-key',
+            'Specify fully qualified KMS key ID with --kms-key, or use ' +
+            'combination of --kms-project, --kms-location, --kms-keyring and ' +
+            '--kms-key to specify the key ID in pieces.')
+    return None  # User didn't specify KMS key

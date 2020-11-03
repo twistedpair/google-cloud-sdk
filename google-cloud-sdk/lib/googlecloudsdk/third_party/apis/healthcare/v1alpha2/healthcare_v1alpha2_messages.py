@@ -295,6 +295,87 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class BlobStorageInfo(_messages.Message):
+  r"""BlobStorageInfo contains details about the data stored in Blob Storage
+  for the referenced resource. Note: Storage class is only valid for DICOM and
+  hence will only be populated for DICOM resources.
+
+  Enums:
+    StorageClassValueValuesEnum: The Storage class in which the Blob data is
+      stored.
+
+  Fields:
+    sizeBytes: Size in bytes of data stored in Blob Storage.
+    storageClass: The Storage class in which the Blob data is stored.
+    storageClassUpdateTime: The time at which the storage class was updated.
+      This is used to compute early deletion fees of the resource.
+  """
+
+  class StorageClassValueValuesEnum(_messages.Enum):
+    r"""The Storage class in which the Blob data is stored.
+
+    Values:
+      BLOB_STORAGE_CLASS_UNSPECIFIED: If unspecified in CreateDataset, the
+        StorageClass defaults to STANDARD. If unspecified in UpdateDataset and
+        the StorageClass is set in the field mask, an InvalidRequest error is
+        thrown.
+      STANDARD: Stores the Object in Blob Standard Storage:
+        https://cloud.google.com/storage/docs/storage-classes#standard
+      NEARLINE: Stores the Object in Blob Nearline Storage:
+        https://cloud.google.com/storage/docs/storage-classes#nearline
+      COLDLINE: Stores the Object in Blob Coldline Storage:
+        https://cloud.google.com/storage/docs/storage-classes#coldline
+      ARCHIVE: Stores the Object in Blob Archive Storage:
+        https://cloud.google.com/storage/docs/storage-classes#archive
+    """
+    BLOB_STORAGE_CLASS_UNSPECIFIED = 0
+    STANDARD = 1
+    NEARLINE = 2
+    COLDLINE = 3
+    ARCHIVE = 4
+
+  sizeBytes = _messages.IntegerField(1)
+  storageClass = _messages.EnumField('StorageClassValueValuesEnum', 2)
+  storageClassUpdateTime = _messages.StringField(3)
+
+
+class BlobStorageSettings(_messages.Message):
+  r"""Settings for data stored in Blob storage.
+
+  Enums:
+    BlobStorageClassValueValuesEnum: The Storage class in which the Blob data
+      is stored.
+
+  Fields:
+    blobStorageClass: The Storage class in which the Blob data is stored.
+  """
+
+  class BlobStorageClassValueValuesEnum(_messages.Enum):
+    r"""The Storage class in which the Blob data is stored.
+
+    Values:
+      BLOB_STORAGE_CLASS_UNSPECIFIED: If unspecified in CreateDataset, the
+        StorageClass defaults to STANDARD. If unspecified in UpdateDataset and
+        the StorageClass is set in the field mask, an InvalidRequest error is
+        thrown.
+      STANDARD: Stores the Object in Blob Standard Storage:
+        https://cloud.google.com/storage/docs/storage-classes#standard
+      NEARLINE: Stores the Object in Blob Nearline Storage:
+        https://cloud.google.com/storage/docs/storage-classes#nearline
+      COLDLINE: Stores the Object in Blob Coldline Storage:
+        https://cloud.google.com/storage/docs/storage-classes#coldline
+      ARCHIVE: Stores the Object in Blob Archive Storage:
+        https://cloud.google.com/storage/docs/storage-classes#archive
+    """
+    BLOB_STORAGE_CLASS_UNSPECIFIED = 0
+    STANDARD = 1
+    NEARLINE = 2
+    COLDLINE = 3
+    ARCHIVE = 4
+
+  blobStorageClass = _messages.EnumField('BlobStorageClassValueValuesEnum', 1)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -923,20 +1004,6 @@ class EntityMentionRelationship(_messages.Message):
   confidence = _messages.FloatField(1)
   objectId = _messages.StringField(2)
   subjectId = _messages.StringField(3)
-
-
-class ErrorDetail(_messages.Message):
-  r"""Structure to describe the error encountered during batch operation on
-  one resource. This is used both for sample errors in operation response, and
-  for format of errors in error reports.
-
-  Fields:
-    error: The status of the error.
-    resource: The identifier of the resource.
-  """
-
-  error = _messages.MessageField('Status', 1)
-  resource = _messages.StringField(2)
 
 
 class EvaluateAnnotationStoreRequest(_messages.Message):
@@ -2708,6 +2775,37 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDeleteRequest(_messages.Mess
   name = _messages.StringField(1, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesGetStorageInfoRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesIns
+  tancesGetStorageInfoRequest object.
+
+  Fields:
+    resource: Required. The path of the resource for which the storage info is
+      requested (for exaxmple for a DICOM Instance: `projects/{projectid}/data
+      sets/{datasetid}/dicomStores/{dicomStoreId}/dicomWeb/studies/{study_uid}
+      /series/{series_uid}/instances/{instance_uid}`)
+  """
+
+  resource = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesSetBlobStorageSettingsRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesIns
+  tancesSetBlobStorageSettingsRequest object.
+
+  Fields:
+    resource: Required. REQUIRED: The path of the resource to update the blob
+      storage settings e.g. in the format of `projects/{projectid}/datasets/{d
+      atasetid}/dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/
+      -/instances/-`
+    setBlobStorageSettingsRequest: A SetBlobStorageSettingsRequest resource to
+      be passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setBlobStorageSettingsRequest = _messages.MessageField('SetBlobStorageSettingsRequest', 2)
+
+
 class HealthcareProjectsLocationsDatasetsDicomStoresExportRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsDicomStoresExportRequest object.
 
@@ -3388,6 +3486,64 @@ class HealthcareProjectsLocationsServicesDataEnclaveEnclavesTestIamPermissionsRe
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class HealthcareProjectsLocationsServicesDeidentifyDeidentifyDicomInstanceRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsServicesDeidentifyDeidentifyDicomInstanceRequest
+  object.
+
+  Fields:
+    gcsConfigUri: Cloud Storage location to read the JSON DeidentifyConfig
+      from, overriding the default config. Must be of the form
+      `gs://{bucket_id}/{object_id}`. The Cloud Storage location must grant
+      the Cloud IAM role `roles/storage.objectViewer` to the project's Cloud
+      Healthcare Service Agent service account.
+    httpBody: A HttpBody resource to be passed as the request body.
+    name: The name of the service that should handle the request, of the form:
+      `projects/{project_id}/locations/{location_id}/services/deidentify`.
+  """
+
+  gcsConfigUri = _messages.StringField(1)
+  httpBody = _messages.MessageField('HttpBody', 2)
+  name = _messages.StringField(3, required=True)
+
+
+class HealthcareProjectsLocationsServicesDeidentifyDeidentifyFhirResourceRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsServicesDeidentifyDeidentifyFhirResourceRequest
+  object.
+
+  Enums:
+    VersionValueValuesEnum:
+
+  Fields:
+    gcsConfigUri: Cloud Storage location to read the JSON DeidentifyConfig
+      from.
+    httpBody: A HttpBody resource to be passed as the request body.
+    name: The name of the service that should handle the request, of the form:
+      `projects/{project_id}/locations/{location_id}/services/deidentify`.
+    version: A VersionValueValuesEnum attribute.
+  """
+
+  class VersionValueValuesEnum(_messages.Enum):
+    r"""VersionValueValuesEnum enum type.
+
+    Values:
+      VERSION_UNSPECIFIED: VERSION_UNSPECIFIED is treated as STU3.
+      DSTU2: FHIR version DSTU2.
+      STU3: FHIR version STU3.
+      R4: FHIR version R4.
+    """
+    VERSION_UNSPECIFIED = 0
+    DSTU2 = 1
+    STU3 = 2
+    R4 = 3
+
+  gcsConfigUri = _messages.StringField(1)
+  httpBody = _messages.MessageField('HttpBody', 2)
+  name = _messages.StringField(3, required=True)
+  version = _messages.EnumField('VersionValueValuesEnum', 4)
+
+
 class HealthcareProjectsLocationsServicesNlpAnalyzeEntitiesRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsServicesNlpAnalyzeEntitiesRequest object.
 
@@ -3471,6 +3627,67 @@ class Hl7V2Store(_messages.Message):
   parserConfig = _messages.MessageField('ParserConfig', 4)
 
 
+class HttpBody(_messages.Message):
+  r"""Message that represents an arbitrary HTTP body. It should only be used
+  for payload formats that can't be represented as JSON, such as raw binary or
+  an HTML page. This message can be used both in streaming and non-streaming
+  API methods in the request as well as the response. It can be used as a top-
+  level request field, which is convenient if one wants to extract parameters
+  from either the URL or HTTP template into the request fields and also want
+  access to the raw HTTP body. Example: message GetResourceRequest { // A
+  unique request id. string request_id = 1; // The raw HTTP body is bound to
+  this field. google.api.HttpBody http_body = 2; } service ResourceService {
+  rpc GetResource(GetResourceRequest) returns (google.api.HttpBody); rpc
+  UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty); }
+  Example with streaming methods: service CaldavService { rpc
+  GetCalendar(stream google.api.HttpBody) returns (stream
+  google.api.HttpBody); rpc UpdateCalendar(stream google.api.HttpBody) returns
+  (stream google.api.HttpBody); } Use of this type only changes how the
+  request and response bodies are handled, all other features will continue to
+  work unchanged.
+
+  Messages:
+    ExtensionsValueListEntry: A ExtensionsValueListEntry object.
+
+  Fields:
+    contentType: The HTTP Content-Type header value specifying the content
+      type of the body.
+    data: The HTTP request/response body as raw binary.
+    extensions: Application specific response metadata. Must be set in the
+      first response for streaming APIs.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtensionsValueListEntry(_messages.Message):
+    r"""A ExtensionsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ExtensionsValueListEntry object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtensionsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  contentType = _messages.StringField(1)
+  data = _messages.BytesField(2)
+  extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
+
+
 class Image(_messages.Message):
   r"""An image.
 
@@ -3539,19 +3756,6 @@ class ImportAnnotationsResponse(_messages.Message):
   operation finishes.
   """
 
-
-
-class ImportDicomDataErrorDetails(_messages.Message):
-  r"""Deprecated. Error details are in [Cloud Logging](/healthcare/docs/how-
-  tos/logging). Returns the errors encountered during DICOM store import.
-
-  Fields:
-    sampleErrors: Deprecated. Use only for debugging purposes. Contains sample
-      errors encountered in imports of individual resources, such as a Cloud
-      Storage object.
-  """
-
-  sampleErrors = _messages.MessageField('ErrorDetail', 1, repeated=True)
 
 
 class ImportDicomDataRequest(_messages.Message):
@@ -4414,6 +4618,24 @@ class SchemaConfig(_messages.Message):
   schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 2)
 
 
+class SetBlobStorageSettingsRequest(_messages.Message):
+  r"""Request message for `SetBlobStorageSettings` method.
+
+  Fields:
+    blobStorageSettings: The blob storage settings to update for the specified
+      resources. Only fields listed in `update_mask` are applied.
+  """
+
+  blobStorageSettings = _messages.MessageField('BlobStorageSettings', 1)
+
+
+class SetBlobStorageSettingsResponse(_messages.Message):
+  r"""Returns additional info in regards to a completed set blob storage
+  settings API.
+  """
+
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -4591,6 +4813,25 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class StorageInfo(_messages.Message):
+  r"""StorageInfo encapsulates all the storage info of a resource.
+
+  Fields:
+    blobStorageInfo: Info about the data stored in blob storage for the
+      resource.
+    referencedResource: The resource whose storage info is returned. For
+      example, to specify the resource path of a DICOM Instance: `projects/{pr
+      ojectid}/datasets/{datasetid}/dicomStores/{dicom_store_id}/dicomWeb/stud
+      i/{study_uid}/series/{series_uid}/instances/{instance_uid}`
+    structuredStorageInfo: Info about the data stored in structured storage
+      for the resource.
+  """
+
+  blobStorageInfo = _messages.MessageField('BlobStorageInfo', 1)
+  referencedResource = _messages.StringField(2)
+  structuredStorageInfo = _messages.MessageField('StructuredStorageInfo', 3)
+
+
 class StorageOptions(_messages.Message):
   r"""StorageOptions defines the options for storing datasets.
 
@@ -4678,6 +4919,17 @@ class StreamConfig(_messages.Message):
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2FhirBigQueryDestination', 1)
   resourceTypes = _messages.StringField(2, repeated=True)
+
+
+class StructuredStorageInfo(_messages.Message):
+  r"""StructuredStorageInfo contains details about the data stored in
+  Structured Storage for the referenced resource.
+
+  Fields:
+    sizeBytes: Size in bytes of data stored in structured storage.
+  """
+
+  sizeBytes = _messages.IntegerField(1)
 
 
 class TagFilterList(_messages.Message):

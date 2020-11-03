@@ -1171,8 +1171,8 @@ class TranslateTextRequest(_messages.Message):
 
   Fields:
     contents: Required. The content of the input in string format. We
-      recommend the total content be less than 30k codepoints. Use
-      BatchTranslateText for larger text.
+      recommend the total content be less than 30k codepoints. The max length
+      of this field is 1024. Use BatchTranslateText for larger text.
     glossaryConfig: Optional. Glossary to be applied. The glossary must be
       within the same region (have the same location-id) as the model,
       otherwise an INVALID_ARGUMENT (400) error is returned.

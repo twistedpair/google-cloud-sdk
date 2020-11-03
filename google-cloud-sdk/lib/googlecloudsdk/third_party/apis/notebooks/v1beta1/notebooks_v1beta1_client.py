@@ -282,7 +282,7 @@ class NotebooksV1beta1(base_api.BaseApiClient):
     )
 
     def IsUpgradeable(self, request, global_params=None):
-      r"""Check if a notebook instance is upgradable.
+      r"""Check if a notebook instance is upgradable. Deprecated. Please consider using v1.
 
       Args:
         request: (NotebooksProjectsLocationsInstancesIsUpgradeableRequest) input message
@@ -606,7 +606,7 @@ class NotebooksV1beta1(base_api.BaseApiClient):
     )
 
     def Upgrade(self, request, global_params=None):
-      r"""Upgrades a notebook instance to the latest version.
+      r"""Upgrades a notebook instance to the latest version. Deprecated. Please consider using v1.
 
       Args:
         request: (NotebooksProjectsLocationsInstancesUpgradeRequest) input message
@@ -633,7 +633,7 @@ class NotebooksV1beta1(base_api.BaseApiClient):
     )
 
     def UpgradeInternal(self, request, global_params=None):
-      r"""Allows notebook instances to call this endpoint to upgrade themselves. Do not use this method directly.
+      r"""Allows notebook instances to call this endpoint to upgrade themselves. Do not use this method directly. Deprecated. Please consider using v1.
 
       Args:
         request: (NotebooksProjectsLocationsInstancesUpgradeInternalRequest) input message

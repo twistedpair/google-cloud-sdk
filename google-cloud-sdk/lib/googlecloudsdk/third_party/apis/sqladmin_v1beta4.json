@@ -1426,6 +1426,10 @@
           "items": {
             "$ref": "DenyMaintenancePeriod"
           }
+        },
+        "insightsConfig": {
+          "description": "Insights configuration, for now relevant only for Postgres.",
+          "$ref": "InsightsConfig"
         }
       }
     },
@@ -1651,6 +1655,30 @@
         "time": {
           "description": "Time in UTC when the \"deny maintenance period\" starts on start_date and ends on end_date. The time is in format: HH:mm:SS, i.e., 00:00:00",
           "type": "string"
+        }
+      }
+    },
+    "InsightsConfig": {
+      "id": "InsightsConfig",
+      "description": "Insights configuration. This specifies when Cloud SQL Insights feature is enabled and optional configuration.",
+      "type": "object",
+      "properties": {
+        "queryInsightsEnabled": {
+          "description": "Whether Query Insights feature is enabled.",
+          "type": "boolean"
+        },
+        "recordClientAddress": {
+          "description": "Whether Query Insights will record client address when enabled.",
+          "type": "boolean"
+        },
+        "recordApplicationTags": {
+          "description": "Whether Query Insights will record application tags from query when enabled.",
+          "type": "boolean"
+        },
+        "queryStringLength": {
+          "description": "Maximum query length stored in bytes. Default value: 1024 bytes. Range: 256-4500 bytes. Query length more than this field value will be truncated to this value. When unset, query length will be the default value.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

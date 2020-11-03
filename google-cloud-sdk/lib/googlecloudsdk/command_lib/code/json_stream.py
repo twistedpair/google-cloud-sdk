@@ -18,6 +18,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import contextlib
 import json
 
 import six
@@ -41,7 +42,9 @@ def ReadJsonStream(file_obj):
 if six.PY3:
 
   def _ReadStreamingLines(file_obj):
-    return file_obj
+    with contextlib.suppress(ConnectionResetError):
+      for line in file_obj:
+        yield line
 
 elif six.PY2:
 

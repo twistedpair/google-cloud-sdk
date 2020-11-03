@@ -25,7 +25,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import abc
-import datetime
 import enum
 
 from googlecloudsdk.api_lib.storage import cloud_api
@@ -34,6 +33,7 @@ from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.command_lib.storage.resources import resource_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.core.util import scaled_integer
 
@@ -44,26 +44,12 @@ LONG_LIST_ROW_FORMAT = ('{size:>10}  {creation_time:>20}  {url}{metageneration}'
                         '{etag}')
 
 
-def _get_long_listing_creation_time_string(datetime_object):
-  """Converts datetime to UTC or 'None' string for long listing output."""
-  if not datetime_object:
-    return 'None'
-  # Can't use CloudSDK core.util.times.FormatDateTime because of:
-  # https://bugs.python.org/issue29097.
-  # Also cannot use datetime.astimezone because the function doesn't alter
-  # datetimes that have different offsets if they have the same timezone.
-  offset = datetime_object.utcoffset()
-  if offset:
-    datetime_object = (datetime_object - offset).replace(
-        tzinfo=datetime.timezone.utc)
-  return datetime_object.strftime('%Y-%m-%dT%H:%M:%SZ')
-
-
 class DisplayDetail(enum.Enum):
   """Level of detail to display about items being printed."""
   SHORT = 1
   LONG = 2
   FULL = 3
+  JSON = 4
 
 
 def _translate_display_detail_to_fields_scope(
@@ -84,7 +70,8 @@ def _translate_display_detail_to_fields_scope(
   display_detail_to_fields_scope = {
       DisplayDetail.SHORT: cloud_api.FieldsScope.SHORT,
       DisplayDetail.LONG: cloud_api.FieldsScope.NO_ACL,
-      DisplayDetail.FULL: cloud_api.FieldsScope.FULL
+      DisplayDetail.FULL: cloud_api.FieldsScope.FULL,
+      DisplayDetail.JSON: cloud_api.FieldsScope.FULL,
   }
   return display_detail_to_fields_scope[display_detail]
 
@@ -112,9 +99,8 @@ class _HeaderFormatWrapper(_BaseFormatWrapper):
 
   def __str__(self):
     url = self.resource.storage_url.versionless_url_string
-    if self._display_detail == DisplayDetail.FULL:
-      # TODO(b/169795589): We may display something other than JSON for FULL.
-      return self.resource.get_metadata_dump()
+    if self._display_detail == DisplayDetail.JSON:
+      return self.resource.get_json_dump()
     # This will print as "gs://bucket:" or "gs://bucket/prefix/:".
     return '\n{}:'.format(url)
 
@@ -145,7 +131,7 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
           url=self.resource.storage_url.url_string, metageneration='',
           etag='')
 
-    creation_time = _get_long_listing_creation_time_string(
+    creation_time = resource_util.get_formatted_timestamp_in_utc(
         self.resource.creation_time)
 
     if self._all_versions:
@@ -172,9 +158,12 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
         isinstance(self.resource, resource_reference.ObjectResource) or
         isinstance(self.resource, resource_reference.PrefixResource)):
       return self._format_for_list_long()
-    if self._display_detail == DisplayDetail.FULL:
-      # TODO(b/169795589): We may display something other than JSON for FULL.
-      return self.resource.get_metadata_dump()
+    if self._display_detail == DisplayDetail.FULL and (
+        isinstance(self.resource, resource_reference.BucketResource) or
+        isinstance(self.resource, resource_reference.ObjectResource)):
+      return self.resource.get_full_metadata_string()
+    if self._display_detail == DisplayDetail.JSON:
+      return self.resource.get_json_dump()
     if self._all_versions:
       # Include generation in URL.
       return self.resource.storage_url.url_string
@@ -306,7 +295,8 @@ class CloudListTask(task.Task):
         object_count += 1
         total_bytes += resource_wrapper.resource.size or 0
 
-    if self._display_detail == DisplayDetail.LONG:
+    if (self._display_detail in (DisplayDetail.LONG, DisplayDetail.FULL)
+        and not self._cloud_url.is_provider()):
       # Long listing needs summary line.
       print('TOTAL: {} objects, {} bytes ({})'.format(
           object_count, int(total_bytes),
@@ -338,9 +328,7 @@ class CloudListTask(task.Task):
     else:
       resources_wrappers = self._recursion_helper(resources, recursion_level=1)
 
-    if self._display_detail == DisplayDetail.FULL:
-      # TODO(b/169795589): We may display something other than JSON for FULL,
-      # and make JSON its own DisplayDetail option.
+    if self._display_detail == DisplayDetail.JSON:
       self._print_json_list(resources_wrappers)
     else:
       self._print_row_list(resources_wrappers)

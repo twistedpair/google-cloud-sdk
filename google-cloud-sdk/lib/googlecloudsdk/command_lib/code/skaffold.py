@@ -78,6 +78,11 @@ def _FindSkaffold():
   return skaffold
 
 
+def GetVersion():
+  """Get skaffold version string."""
+  return six.ensure_text(subprocess.check_output([_FindSkaffold(), 'version']))
+
+
 @contextlib.contextmanager
 def Skaffold(skaffold_config,
              context_name=None,

@@ -195,17 +195,12 @@ def UpdateDockerCredentials(server, refresh=True):
     store.Error: There was an error loading the credentials.
   """
 
-  # Loading credentials will ensure that we're logged in.
-  # And prompt/abort to 'run gcloud auth login' otherwise.
-  # Disable refreshing, since we'll do this ourself.
-  cred = store.Load(prevent_refresh=True)
-
   if refresh:
-    # Ensure our credential has a valid access token,
-    # which has the full duration available.
-    store.Refresh(cred)
+    access_token = store.GetFreshAccessToken()
+  else:
+    access_token = store.GetAccessToken()
 
-  if not cred.access_token:
+  if not access_token:
     raise exceptions.Error(
         'No access token could be obtained from the current credentials.')
 
@@ -213,7 +208,7 @@ def UpdateDockerCredentials(server, refresh=True):
     try:
       # Update the credentials stored by docker, passing the sentinel username
       # and access token.
-      DockerLogin(server, _USERNAME, cred.access_token)
+      DockerLogin(server, _USERNAME, access_token)
     except client_lib.DockerError as e:
       # Only catch docker-not-found error
       if six.text_type(e) != client_lib.DOCKER_NOT_FOUND_ERROR:
@@ -221,13 +216,13 @@ def UpdateDockerCredentials(server, refresh=True):
 
       # Fall back to the previous manual .dockercfg manipulation
       # in order to support gcloud app's docker-binaryless use case.
-      _UpdateDockerConfig(server, _USERNAME, cred.access_token)
+      _UpdateDockerConfig(server, _USERNAME, access_token)
       log.warning(
           "'docker' was not discovered on the path. Credentials have been "
           'stored, but are not guaranteed to work with the Docker client '
           ' if an external credential store is configured.')
   else:
-    _UpdateDockerConfig(server, _USERNAME, cred.access_token)
+    _UpdateDockerConfig(server, _USERNAME, access_token)
 
 
 def _UpdateDockerConfig(server, username, access_token):

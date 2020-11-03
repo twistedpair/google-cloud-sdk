@@ -210,28 +210,7 @@ def AddConfigFlags(parser):
       help='The tag to use with a "docker build" image creation. '
       'Cloud Build will run a remote "docker build -t '
       '$TAG .", where $TAG is the tag provided by this flag. The tag '
-      'must be in the gcr.io/* or *.gcr.io/* namespaces. Specify a tag '
-      'if you want Cloud Build to build using a Dockerfile '
-      'instead of a build config file. If you specify a tag in this '
-      'command, your source must include a Dockerfile. For instructions '
-      'on building using a Dockerfile see '
-      'https://cloud.google.com/cloud-build/docs/quickstart-build.')
-  build_config.add_argument(
-      '--config',
-      default='cloudbuild.yaml',  # By default, find this in the current dir
-      help='The YAML or JSON file to use as the build configuration file.')
-
-
-def AddConfigFlagsAlpha(parser):
-  """Add config flags."""
-  build_config = parser.add_mutually_exclusive_group()
-  build_config.add_argument(
-      '--tag',
-      '-t',
-      help='The tag to use with a "docker build" image creation. '
-      'Cloud Build will run a remote "docker build -t '
-      '$TAG .", where $TAG is the tag provided by this flag. The tag '
-      'must be in the gcr.io/* or *.gcr.io/* namespaces. Specify a tag '
+      'must be in the *gcr.io* or *pkd.dev* namespace. Specify a tag '
       'if you want Cloud Build to build using a Dockerfile '
       'instead of a build config file. If you specify a tag in this '
       'command, your source must include a Dockerfile. For instructions '
@@ -251,8 +230,8 @@ def AddConfigFlagsAlpha(parser):
       action='append',
       help='Uses CNCF [buildpack](https://buildpacks.io/) to create image.  '
       'The "image" key/value must be provided.  The image name must be in the '
-      'gcr.io/*, *.gcr.io, or pkg.dev namespaces. By default '
-      'gcr.io/buildpacks/builder will be used. To specify your own builder '
+      '*gcr.io* or *pkg.dev* namespace. By default '
+      '```gcr.io/buildpacks/builder``` will be used. To specify your own builder '
       'image use the optional "builder" key/value argument.  To pass '
       'environment variables to the builder use the optional "env" key/value '
       'argument where value is a list of key values using '
@@ -260,6 +239,9 @@ def AddConfigFlagsAlpha(parser):
       'if necessary.'
   )
 
+
+def AddConfigFlagsAlpha(parser):
+  """Add config flags."""
   build_cluster = parser.add_group(required=False, hidden=True)
   build_cluster.add_argument(
       '--cluster',

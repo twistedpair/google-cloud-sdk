@@ -86,10 +86,6 @@ class Revision(k8s_object.KubernetesObject):
     return self.annotations.get(AUTHOR_ANNOTATION)
 
   @property
-  def creation_timestamp(self):
-    return self._m.metadata.creationTimestamp
-
-  @property
   def gcs_location(self):
     return self._m.status.gcs.location
 

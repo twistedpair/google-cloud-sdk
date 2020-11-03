@@ -24,6 +24,7 @@ import enum
 import os
 
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.core.util import platforms
 
 import six
 
@@ -120,9 +121,17 @@ class FileUrl(StorageUrl):
     self.bucket_name = None
     self.generation = None
     if url_string.startswith('file://'):
-      self.object_name = url_string[len('file://'):]
+      filename = url_string[len('file://'):]
     else:
-      self.object_name = url_string
+      filename = url_string
+
+    # On Windows, the pathname component separator is "\" instead of "/". If we
+    # find an occurrence of "/", replace it with "\" so that other logic can
+    # rely on being able to split pathname components on `os.sep`.
+    if platforms.OperatingSystem.IsWindows():
+      self.object_name = filename.replace('/', os.sep)
+    else:
+      self.object_name = filename
 
   @property
   def delimiter(self):

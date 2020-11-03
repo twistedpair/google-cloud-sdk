@@ -74,12 +74,18 @@ class ClustersClient(util.VmwareClientBase):
         batch_size=page_size,
         field='clusters')
 
-  def AddNode(self, resource):
-    request = self.messages.SddcProjectsLocationsClusterGroupsClustersAddNodeRequest(
-        name=resource.RelativeName())
-    return self.service.AddNode(request)
+  def AddNodes(self, resource, node_count):
+    cluster = self.Get(resource)
+    request = self.messages.SddcProjectsLocationsClusterGroupsClustersAddNodesRequest(
+        cluster=resource.RelativeName(),
+        addNodesRequest=self.messages.AddNodesRequest(
+            nodeCount=cluster.nodeCount + node_count))
+    return self.service.AddNodes(request)
 
-  def RemoveNode(self, resource):
-    request = self.messages.SddcProjectsLocationsClusterGroupsClustersRemoveNodeRequest(
-        name=resource.RelativeName())
-    return self.service.RemoveNode(request)
+  def RemoveNodes(self, resource, node_count):
+    cluster = self.Get(resource)
+    request = self.messages.SddcProjectsLocationsClusterGroupsClustersRemoveNodesRequest(
+        cluster=resource.RelativeName(),
+        removeNodesRequest=self.messages.RemoveNodesRequest(
+            nodeCount=cluster.nodeCount - node_count))
+    return self.service.RemoveNodes(request)

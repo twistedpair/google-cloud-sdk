@@ -18,9 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import getpass
+
 from googlecloudsdk.api_lib.active_directory import exceptions
 from googlecloudsdk.command_lib.active_directory import util
 from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.core import log
 
 
 def CheckFieldsSpecified(unused_domain_ref, args, patch_request):
@@ -78,3 +81,46 @@ def UpdateLabels(domain_ref, args, patch_request):
     if new_labels:
       patch_request.domain.labels = new_labels
   return patch_request
+
+
+def ProcessPfxFile(domain_ref, args, request):
+  """Reads the pfx file into the LDAPSSettings proto and updates the request."""
+  log.status.Print("note: You must be safelisted for the Managed AD LDAPS Alpha in order to use this feature.")
+  if args.certificate_pfx_file:
+    if not request.lDAPSSettings:
+      messages = util.GetMessagesForResource(domain_ref)
+      settings = messages.LDAPSSettings()
+      request.lDAPSSettings = settings
+    request.lDAPSSettings.certificatePfx = args.certificate_pfx_file
+    request = AddFieldToUpdateMask('certificatePfx', request)
+    request = AddFieldToUpdateMask('certificatePassword', request)
+  return request
+
+
+def GetPfxPasssword():
+  """Prompt for user input of pfx password."""
+  cred = getpass.getpass(
+      'Please enter the password used the encrypt the pfx certificate: '
+  )
+  return cred
+
+
+def ReadPfxPasswordIfNeeded(unused_ref, args, request):
+  """Allows for the pfx password to be read from stdin if not specified."""
+  del unused_ref
+  if args.certificate_password:
+    request.lDAPSSettings.certificatePassword = args.certificate_password
+    return request
+  if args.clear_certificates:
+    return request
+  secret = GetPfxPasssword()
+  request.lDAPSSettings.certificatePassword = secret
+  return request
+
+
+def ClearCertificates(unused_ref, args, request):
+  del unused_ref
+  if args.clear_certificates:
+    request = AddFieldToUpdateMask('certificatePfx', request)
+    request = AddFieldToUpdateMask('certificatePassword', request)
+  return request

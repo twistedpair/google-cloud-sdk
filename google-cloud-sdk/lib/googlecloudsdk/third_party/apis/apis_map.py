@@ -246,7 +246,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.artifactregistry.v1beta1',
                 client_classpath='artifactregistry_v1beta1_client.ArtifactregistryV1beta1',
                 messages_modulepath='artifactregistry_v1beta1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
         'v1beta2':
@@ -254,7 +254,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.artifactregistry.v1beta2',
                 client_classpath='artifactregistry_v1beta2_client.ArtifactregistryV1beta2',
                 messages_modulepath='artifactregistry_v1beta2_messages',
-                default_version=False,
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

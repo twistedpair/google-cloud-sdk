@@ -7072,12 +7072,6 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
   source = _messages.StringField(8)
 
 
-class GoogleCloudDialogflowV3alpha1RunTestCaseMetadata(_messages.Message):
-  r"""Metadata returned for the TestCases.RunTestCase long running operation.
-  """
-
-
-
 class GoogleLongrunningListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 

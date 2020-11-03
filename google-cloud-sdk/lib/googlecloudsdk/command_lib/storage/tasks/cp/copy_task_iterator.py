@@ -47,6 +47,9 @@ class CopyTaskIterator:
     raw_destination = self._get_raw_destination()
     for source in self._source_name_iterator:
       destination_resource = self._get_copy_destination(raw_destination, source)
+      print('Copying {} to {}'.format(
+          source.resource.storage_url.versionless_url_string,
+          destination_resource.storage_url.versionless_url_string))
       yield copy_task_factory.get_copy_task(source.resource,
                                             destination_resource)
 
@@ -198,7 +201,8 @@ class CopyTaskIterator:
       (str) The suffix to be appended to the destination container.
     """
     source_prefix_to_ignore = storage_url.rstrip_one_delimiter(
-        source.expanded_url.versionless_url_string)
+        source.expanded_url.versionless_url_string,
+        source.expanded_url.delimiter)
     if (not isinstance(destination_container,
                        resource_reference.UnknownResource) and
         destination_container.is_container()):
@@ -207,6 +211,12 @@ class CopyTaskIterator:
       # Remove the leaf name so that it gets added to the destination.
       source_prefix_to_ignore = source_prefix_to_ignore.rpartition(
           source.expanded_url.delimiter)[0]
+      if not source_prefix_to_ignore:
+        # In case of Windows, the source URL might not contain any Windows
+        # delimiter if it was a single directory (e.g file://dir) and
+        # source_prefix_to_ignore will be empty. Set it to <scheme>://.
+        # TODO(b/169093672) This will not be required if we get rid of file://
+        source_prefix_to_ignore = source.expanded_url.scheme.value + '://'
 
     full_source_url = source.resource.storage_url.versionless_url_string
     suffix_for_destination = full_source_url.split(source_prefix_to_ignore)[1]

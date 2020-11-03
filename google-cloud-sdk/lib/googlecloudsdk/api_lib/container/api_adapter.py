@@ -418,12 +418,14 @@ class CreateClusterOptions(object):
       enable_cloud_monitoring=None,
       enable_stackdriver_kubernetes=None,
       enable_logging_monitoring_system_only=None,
+      enable_workload_monitoring_eap=None,
       subnetwork=None,
       addons=None,
       istio_config=None,
       cloud_run_config=None,
       local_ssd_count=None,
       local_ssd_volume_configs=None,
+      ephemeral_storage=None,
       boot_disk_kms_key=None,
       node_pool_name=None,
       tags=None,
@@ -551,12 +553,14 @@ class CreateClusterOptions(object):
     self.enable_cloud_monitoring = enable_cloud_monitoring
     self.enable_stackdriver_kubernetes = enable_stackdriver_kubernetes
     self.enable_logging_monitoring_system_only = enable_logging_monitoring_system_only
+    self.enable_workload_monitoring_eap = enable_workload_monitoring_eap,
     self.subnetwork = subnetwork
     self.addons = addons
     self.istio_config = istio_config
     self.cloud_run_config = cloud_run_config
     self.local_ssd_count = local_ssd_count
     self.local_ssd_volume_configs = local_ssd_volume_configs
+    self.ephemeral_storage = ephemeral_storage
     self.boot_disk_kms_key = boot_disk_kms_key
     self.node_pool_name = node_pool_name
     self.tags = tags
@@ -680,6 +684,7 @@ class UpdateClusterOptions(object):
                logging_service=None,
                enable_stackdriver_kubernetes=None,
                enable_logging_monitoring_system_only=None,
+               enable_workload_monitoring_eap=None,
                master_logs=None,
                no_master_logs=None,
                enable_master_metrics=None,
@@ -751,6 +756,7 @@ class UpdateClusterOptions(object):
     self.logging_service = logging_service
     self.enable_stackdriver_kubernetes = enable_stackdriver_kubernetes
     self.enable_logging_monitoring_system_only = enable_logging_monitoring_system_only
+    self.enable_workload_monitoring_eap = enable_workload_monitoring_eap
     self.no_master_logs = no_master_logs
     self.master_logs = master_logs
     self.enable_master_metrics = enable_master_metrics
@@ -847,6 +853,7 @@ class CreateNodePoolOptions(object):
                num_nodes=None,
                local_ssd_count=None,
                local_ssd_volume_configs=None,
+               ephemeral_storage=None,
                boot_disk_kms_key=None,
                tags=None,
                node_labels=None,
@@ -889,6 +896,7 @@ class CreateNodePoolOptions(object):
     self.num_nodes = num_nodes
     self.local_ssd_count = local_ssd_count
     self.local_ssd_volume_configs = local_ssd_volume_configs
+    self.ephemeral_storage = ephemeral_storage
     self.boot_disk_kms_key = boot_disk_kms_key
     self.tags = tags
     self.node_labels = node_labels
@@ -1381,6 +1389,8 @@ class APIAdapter(object):
 
     if options.local_ssd_count:
       node_config.localSsdCount = options.local_ssd_count
+    self._AddLocalSSDVolumeConfigsToNodeConfig(node_config, options)
+    self._AddEphemeralStorageToNodeConfig(node_config, options)
 
     if options.tags:
       node_config.tags = options.tags
@@ -2221,7 +2231,7 @@ class APIAdapter(object):
 
   def _AddLocalSSDVolumeConfigsToNodeConfig(self, node_config, options):
     """Add LocalSSDVolumeConfigs to nodeConfig."""
-    if options.local_ssd_volume_configs is None:
+    if not options.local_ssd_volume_configs:
       return
     format_enum = self.messages.LocalSsdVolumeConfig.FormatValueValuesEnum
     local_ssd_volume_configs_list = []
@@ -2240,6 +2250,13 @@ class APIAdapter(object):
           self.messages.LocalSsdVolumeConfig(
               count=count, type=ssd_type, format=ssd_format))
     node_config.localSsdVolumeConfigs = local_ssd_volume_configs_list
+
+  def _AddEphemeralStorageToNodeConfig(self, node_config, options):
+    if not options.ephemeral_storage:
+      return
+    config = options.ephemeral_storage
+    node_config.ephemeralStorageConfig = self.messages.EphemeralStorageConfig(
+        localSsdCount=config['local-ssd-count'])
 
   def _AddNodeTaintsToNodeConfig(self, node_config, options):
     """Add nodeTaints to nodeConfig."""
@@ -2459,8 +2476,8 @@ class APIAdapter(object):
 
     if options.local_ssd_count:
       node_config.localSsdCount = options.local_ssd_count
-    if options.local_ssd_volume_configs:
-      self._AddLocalSSDVolumeConfigsToNodeConfig(node_config, options)
+    self._AddLocalSSDVolumeConfigsToNodeConfig(node_config, options)
+    self._AddEphemeralStorageToNodeConfig(node_config, options)
     if options.boot_disk_kms_key:
       node_config.bootDiskKmsKey = options.boot_disk_kms_key
     if options.tags:
@@ -3086,6 +3103,8 @@ class V1Beta1Adapter(V1Adapter):
           workloadPool=options.workload_pool)
       if options.identity_provider:
         cluster.workloadIdentityConfig.identityProvider = options.identity_provider
+      if options.workload_identity_certificate_authority:
+        cluster.workloadIdentityConfig.issuingCertificateAuthority = options.workload_identity_certificate_authority
     if options.enable_gke_oidc:
       cluster.gkeOidcConfig = self.messages.GkeOidcConfig(
           enabled=options.enable_gke_oidc)
@@ -3111,6 +3130,9 @@ class V1Beta1Adapter(V1Adapter):
       cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED
     else:
       cluster.clusterTelemetry = None
+
+    if options.enable_workload_monitoring_eap:
+      cluster.workloadMonitoringEnabledEap = True
 
     if options.datapath_provider is not None:
       if cluster.networkConfig is None:
@@ -3165,6 +3187,15 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               workloadPool=''))
+    elif options.workload_identity_certificate_authority:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
+              issuingCertificateAuthority=options
+              .workload_identity_certificate_authority,))
+    elif options.disable_workload_identity_certificates:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
+              issuingCertificateAuthority='',))
 
     if options.enable_gke_oidc is not None:
       update = self.messages.ClusterUpdate(
@@ -3189,6 +3220,11 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredClusterTelemetry=self.messages.ClusterTelemetry(
               type=self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED))
+
+    if options.enable_workload_monitoring_eap:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadMonitoringEapConfig=self.messages
+          .WorkloadMonitoringEapConfig(enabled=True))
 
     if options.private_ipv6_google_access_type is not None:
       update = self.messages.ClusterUpdate(
@@ -3476,9 +3512,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         options.autoscaling_profile is not None):
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
           None, options, False)
-    if options.local_ssd_volume_configs:
-      for pool in cluster.nodePools:
-        self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
     if options.addons:
       # CloudRun is disabled by default.
       if CLOUDRUN in options.addons:
@@ -3561,6 +3594,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED
     else:
       cluster.clusterTelemetry = None
+
+    if options.enable_workload_monitoring_eap:
+      cluster.workloadMonitoringEnabledEap = True
 
     if options.datapath_provider is not None:
       if cluster.networkConfig is None:
@@ -3659,6 +3695,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           desiredClusterTelemetry=self.messages.ClusterTelemetry(
               type=self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED))
 
+    if options.enable_workload_monitoring_eap:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadMonitoringEapConfig=self.messages
+          .WorkloadMonitoringEapConfig(enabled=True))
+
     if options.private_ipv6_google_access_type is not None:
       update = self.messages.ClusterUpdate(
           desiredPrivateIpv6GoogleAccess=util
@@ -3726,8 +3767,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
 
   def CreateNodePool(self, node_pool_ref, options):
     pool = self.CreateNodePoolCommon(node_pool_ref, options)
-    if options.local_ssd_volume_configs:
-      self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
     if options.enable_autoprovisioning is not None:
       pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
     req = self.messages.CreateNodePoolRequest(

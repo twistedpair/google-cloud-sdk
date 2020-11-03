@@ -1323,6 +1323,41 @@
         "endpointInfo": {
           "description": "Derived from the test input. The actual source and destination endpoint where the probing was run.",
           "$ref": "EndpointInfo"
+        },
+        "probingLatency": {
+          "description": "One way probing latency distribution. The latency is measured as duration of packet traversal of Google Cloud network, from source to destination endpoint.",
+          "$ref": "LatencyDistribution"
+        }
+      }
+    },
+    "LatencyDistribution": {
+      "id": "LatencyDistribution",
+      "description": "Describes measured latency distribution.",
+      "type": "object",
+      "properties": {
+        "latencyPercentiles": {
+          "description": "Representative latency percentiles.",
+          "type": "array",
+          "items": {
+            "$ref": "LatencyPercentile"
+          }
+        }
+      }
+    },
+    "LatencyPercentile": {
+      "id": "LatencyPercentile",
+      "description": "Latency percentile rank and value.",
+      "type": "object",
+      "properties": {
+        "percent": {
+          "description": "Percentage of samples this data point applies to.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "latencyMicros": {
+          "description": "percent-th percentile of latency observed, in microseconds. Fraction of percent\/100 of samples have latency lower or equal to the value of this field.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

@@ -180,10 +180,10 @@ class AnthosCliWrapper(binary_operations.StreamingBinaryBackedOperation):
 def GetAuthToken(account, operation, impersonated=False):
   """Generate a JSON object containing the current gcloud auth token."""
   try:
-    cred = c_store.LoadFreshCredential(account,
-                                       allow_account_impersonation=impersonated)
+    access_token = c_store.GetFreshAccessToken(
+        account, allow_account_impersonation=impersonated)
     output = {
-        'auth_token': cred.access_token,
+        'auth_token': access_token,
     }
   except Exception as e:  # pylint: disable=broad-except
     raise AnthosAuthException(

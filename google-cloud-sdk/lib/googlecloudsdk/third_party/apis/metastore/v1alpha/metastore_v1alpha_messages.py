@@ -517,6 +517,13 @@ class MetadataImport(_messages.Message):
   updateTime = _messages.StringField(6)
 
 
+class MetadataIntegration(_messages.Message):
+  r"""Specifies how metastore metadata should be integrated with external
+  services.
+  """
+
+
+
 class MetastoreProjectsLocationsGetRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsGetRequest object.
 
@@ -598,8 +605,9 @@ class MetastoreProjectsLocationsServicesCreateRequest(_messages.Message):
     service: A Service resource to be passed as the request body.
     serviceId: Required. The ID of the metastore service, which is used as the
       final component of the metastore service's name.This value must be
-      between 1 and 64 characters long, begin with a letter, end with a letter
-      or number, and consist of alpha-numeric ASCII characters or hyphens.
+      between 2 and 63 characters long inclusive, begin with a letter, end
+      with a letter or number, and consist of alpha-numeric ASCII characters
+      or hyphens.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -961,33 +969,6 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
-class OperationMetadata(_messages.Message):
-  r"""Represents the metadata of a long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the caller has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources.A Policy is a collection of bindings. A
@@ -1094,6 +1075,8 @@ class Service(_messages.Message):
     maintenanceWindow: The one hour maintenance window of the metastore
       service. This specifies when the service can be restarted for
       maintenance purposes in UTC time.
+    metadataIntegration: The setting that defines how metastore metadata
+      should be integrated with external services and systems.
     name: Immutable. The relative resource name of the metastore service, of
       the form:"projects/{project_number}/locations/{location_id}/services/{se
       rvice_id}".
@@ -1181,14 +1164,15 @@ class Service(_messages.Message):
   hiveMetastoreConfig = _messages.MessageField('HiveMetastoreConfig', 4)
   labels = _messages.MessageField('LabelsValue', 5)
   maintenanceWindow = _messages.MessageField('MaintenanceWindow', 6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  port = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  stateMessage = _messages.StringField(11)
-  tier = _messages.EnumField('TierValueValuesEnum', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  metadataIntegration = _messages.MessageField('MetadataIntegration', 7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  stateMessage = _messages.StringField(12)
+  tier = _messages.EnumField('TierValueValuesEnum', 13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class SetIamPolicyRequest(_messages.Message):

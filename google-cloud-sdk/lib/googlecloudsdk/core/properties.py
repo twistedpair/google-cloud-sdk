@@ -1585,8 +1585,7 @@ class _SectionTransport(_Section):
     super(_SectionTransport, self).__init__('transport', hidden=True)
     self.disable_requests_override = self._AddBool(
         'disable_requests_override',
-        # TODO(b/170726400): Disable requests until socks has been updated
-        default=True,
+        default=False,
         hidden=True,
         help_text='Global switch to turn off using requests as a'
         'transport. Users can use it to switch back to the old '

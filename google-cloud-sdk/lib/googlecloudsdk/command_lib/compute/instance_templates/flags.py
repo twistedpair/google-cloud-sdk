@@ -116,6 +116,13 @@ def AddServiceProxyConfigArgs(parser, hide_arguments=False):
       These can be any `key=value` pairs that you want to set as proxy metadata (for example, for use with config filtering).
       You might use these flags for application and version labels: `app=review` and/or `version=canary`.
       """)
+  service_proxy_group.add_argument(
+      '--service-proxy-agent-location',
+      metavar='LOCATION',
+      hidden=True,
+      help="""\
+      GCS bucket location of service-proxy-agent. Mainly used for testing and development.
+      """)
 
 
 def ValidateServiceProxyFlags(args):

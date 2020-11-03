@@ -439,6 +439,41 @@ inclusive.
   parser.add_argument(
       '--container-health-route',
       help='HTTP path to send health checks to inside the container.')
+  # For Explanation.
+  parser.add_argument(
+      '--explanation-method',
+      help='Method used for explanation. Accepted values are `integrated-gradients`, `xrai` and `sampled-shapley`.'
+  )
+  parser.add_argument(
+      '--explanation-metadata-file',
+      help='Path to a local JSON file that contains the metadata describing the Model\'s input and output for explanation.'
+  )
+  parser.add_argument(
+      '--explanation-step-count',
+      type=int,
+      help='Number of steps to approximate the path integral for explanation.')
+  parser.add_argument(
+      '--explanation-path-count',
+      type=int,
+      help='Number of feature permutations to consider when approximating the Shapley values for explanation.'
+  )
+  parser.add_argument(
+      '--smooth-grad-noisy-sample-count',
+      type=int,
+      help='Number of gradient samples used for approximation at explanation. Only applicable to explanation method `integrated-gradients` or `xrai`.'
+  )
+  parser.add_argument(
+      '--smooth-grad-noise-sigma',
+      type=float,
+      help='Single float value used to add noise to all the features for explanation. Only applicable to explanation method `integrated-gradients` or `xrai`.'
+  )
+  parser.add_argument(
+      '--smooth-grad-noise-sigma-by-feature',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      help='Noise sigma by features for explanation. Noise sigma represents the standard deviation of the gaussian kernel that will be used to add noise to interpolated inputs prior to computing gradients. Only applicable to explanation method `integrated-gradients` or `xrai`.'
+  )
 
 
 def GetEndpointId():

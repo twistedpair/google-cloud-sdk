@@ -538,7 +538,7 @@ class GoogleCloudDatacatalogV1alpha3BucketSpec(_messages.Message):
   r"""Configuration for a crawl bucket.
 
   Fields:
-    bucket: The bucket name. For example, GCS bucket name.
+    bucket: The Google Cloud Storage bucket name.
   """
 
   bucket = _messages.StringField(1)

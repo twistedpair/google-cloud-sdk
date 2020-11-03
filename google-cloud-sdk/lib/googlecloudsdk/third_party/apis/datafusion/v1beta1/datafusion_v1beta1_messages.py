@@ -533,6 +533,7 @@ class Instance(_messages.Message):
     updateTime: Output only. The time the instance was last updated.
     version: Current version of Data Fusion.
     zone: Name of the zone in which the Data Fusion instance will be created.
+      Only DEVELOPER instances use this field.
   """
 
   class StateValueValuesEnum(_messages.Enum):

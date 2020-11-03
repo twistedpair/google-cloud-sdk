@@ -207,7 +207,8 @@ class HttpRequest(_messages.Message):
       Field Definitions
       (http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
     remoteIp: The IP address (IPv4 or IPv6) of the client that issued the HTTP
-      request. Examples: "192.168.1.1", "FE80::0202:B3FF:FE1E:8329".
+      request. This field can include port information. Examples:
+      "192.168.1.1", "10.0.0.1:80", "FE80::0202:B3FF:FE1E:8329".
     requestMethod: The request method. Examples: "GET", "HEAD", "PUT", "POST".
     requestSize: The size of the HTTP request message in bytes, including the
       request headers and the request body.
@@ -217,7 +218,8 @@ class HttpRequest(_messages.Message):
     responseSize: The size of the HTTP response message sent back to the
       client, in bytes, including the response headers and the response body.
     serverIp: The IP address (IPv4 or IPv6) of the origin server that the
-      request was sent to.
+      request was sent to. This field can include port information. Examples:
+      "192.168.1.1", "10.0.0.1:80", "FE80::0202:B3FF:FE1E:8329".
     status: The response code indicating the status of response. Examples:
       200, 404.
     userAgent: The user agent sent by the client. Example: "Mozilla/4.0

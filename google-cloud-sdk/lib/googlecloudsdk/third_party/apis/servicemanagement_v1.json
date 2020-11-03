@@ -250,7 +250,7 @@
       "type": "object",
       "properties": {
         "configVersion": {
-          "description": "The semantic version of the service configuration. The config version affects the interpretation of the service configuration. For example, certain features are enabled by default for certain config versions. The latest config version is `3`.",
+          "description": "This field is obsolete. Its value must be set to `3`.",
           "type": "integer",
           "format": "uint32"
         },
@@ -957,10 +957,6 @@
           "items": {
             "$ref": "HttpRule"
           }
-        },
-        "allowHalfDuplex": {
-          "description": "When this flag is set to true, HTTP requests will be allowed to invoke a half-duplex streaming method.",
-          "type": "boolean"
         }
       }
     },
@@ -1274,10 +1270,6 @@
         "producerNotificationChannel": {
           "description": "The full resource name of a channel used for sending notifications to the service producer. Google Service Management currently only supports [Google Cloud Pub\/Sub](https:\/\/cloud.google.com\/pubsub) as a notification channel. To use Google Cloud Pub\/Sub as the channel, this must be the name of a Cloud Pub\/Sub topic that uses the Cloud Pub\/Sub topic name format documented in https:\/\/cloud.google.com\/pubsub\/docs\/overview.",
           "type": "string"
-        },
-        "serviceIdentity": {
-          "description": "The configuration of a per-product per-project service identity.",
-          "$ref": "ServiceIdentity"
         }
       }
     },
@@ -1297,25 +1289,6 @@
         "skipServiceControl": {
           "description": "If true, the selected method should skip service control and the control plane features, such as quota and billing, will not be available. This flag is used by Google Cloud Endpoints to bypass checks for internal methods, such as service health check methods.",
           "type": "boolean"
-        }
-      }
-    },
-    "ServiceIdentity": {
-      "id": "ServiceIdentity",
-      "description": "The per-product per-project service identity for a service. Use this field to configure per-product per-project service identity. Example of a service identity configuration. usage: service_identity: - service_account_parent: \"projects\/123456789\" display_name: \"Cloud XXX Service Agent\" description: \"Used as the identity of Cloud XXX to access resources\"",
-      "type": "object",
-      "properties": {
-        "serviceAccountParent": {
-          "description": "A service account project that hosts the service accounts. An example name would be: `projects\/123456789`",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "Optional. A user-specified name for the service account. Must be less than or equal to 100 UTF-8 bytes.",
-          "type": "string"
-        },
-        "description": {
-          "description": "Optional. A user-specified opaque description of the service account. Must be less than or equal to 256 UTF-8 bytes.",
-          "type": "string"
         }
       }
     },

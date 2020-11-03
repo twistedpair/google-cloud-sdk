@@ -247,7 +247,7 @@ class KubernetesObject(object):
 
   @property
   def creation_timestamp(self):
-    return self.metaddata.creationTimestamp
+    return self.metadata.creationTimestamp
 
   @property
   def namespace(self):

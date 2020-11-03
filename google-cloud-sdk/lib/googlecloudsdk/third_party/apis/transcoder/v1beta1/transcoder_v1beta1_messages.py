@@ -225,6 +225,24 @@ class Color(_messages.Message):
   saturation = _messages.FloatField(3)
 
 
+class Crop(_messages.Message):
+  r"""Video cropping configuration.
+
+  Fields:
+    bottomPixels: The number of pixels to crop from the bottom. The default is
+      0.
+    leftPixels: The number of pixels to crop from the left. The default is 0.
+    rightPixels: The number of pixels to crop from the right. The default is
+      0.
+    topPixels: The number of pixels to crop from the top. The default is 0.
+  """
+
+  bottomPixels = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  leftPixels = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  rightPixels = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  topPixels = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class Deblock(_messages.Message):
   r"""Deblock preprocessing configuration.
 
@@ -645,14 +663,16 @@ class PreprocessingConfig(_messages.Message):
   Fields:
     audio: Audio preprocessing configuration.
     color: Color preprocessing configuration.
+    crop: Specify the video cropping configuration.
     deblock: Deblock preprocessing configuration.
     denoise: Denoise preprocessing configuration.
   """
 
   audio = _messages.MessageField('Audio', 1)
   color = _messages.MessageField('Color', 2)
-  deblock = _messages.MessageField('Deblock', 3)
-  denoise = _messages.MessageField('Denoise', 4)
+  crop = _messages.MessageField('Crop', 3)
+  deblock = _messages.MessageField('Deblock', 4)
+  denoise = _messages.MessageField('Denoise', 5)
 
 
 class Progress(_messages.Message):

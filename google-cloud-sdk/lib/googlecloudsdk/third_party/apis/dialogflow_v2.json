@@ -5126,13 +5126,6 @@
           }
         }
       }
-    },
-    "GoogleCloudDialogflowV3alpha1RunTestCaseMetadata": {
-      "id": "GoogleCloudDialogflowV3alpha1RunTestCaseMetadata",
-      "description": "Metadata returned for the TestCases.RunTestCase long running operation.",
-      "type": "object",
-      "properties": {
-      }
     }
   },
   "resources": {

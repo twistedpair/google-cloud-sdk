@@ -197,7 +197,7 @@ class ComponentSnapshot(object):
     """
     extra_repo = url if is_extra_repo else None
     try:
-      response = installers.ComponentInstaller.MakeRequest(url, command_path)
+      response = installers.MakeRequest(url, command_path)
     except (urllib.error.HTTPError, urllib.error.URLError, ssl.SSLError):
       log.debug('Could not fetch [{url}]'.format(url=url), exc_info=True)
       response = None

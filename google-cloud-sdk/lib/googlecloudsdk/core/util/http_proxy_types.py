@@ -19,7 +19,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import six
 import socks
 
 
@@ -27,10 +26,12 @@ PROXY_TYPE_MAP = {
     'socks4': socks.PROXY_TYPE_SOCKS4,
     'socks5': socks.PROXY_TYPE_SOCKS5,
     'http': socks.PROXY_TYPE_HTTP,
+    # For https requests, http_no_tunnel is equivalent to http
+    'http_no_tunnel': socks.PROXY_TYPE_HTTP,
 }
 
-# TODO(b/170117186) Move this back to PROXY_TYPE_MAP instantiation.
-if hasattr(socks, 'PROXY_TYPE_HTTP_NO_TUNNEL'):
-  PROXY_TYPE_MAP['http_no_tunnel'] = socks.PROXY_TYPE_HTTP_NO_TUNNEL
-
-REVERSE_PROXY_TYPE_MAP = dict((v, k) for k, v in six.iteritems(PROXY_TYPE_MAP))
+REVERSE_PROXY_TYPE_MAP = {
+    socks.PROXY_TYPE_SOCKS4: 'socks4',
+    socks.PROXY_TYPE_SOCKS5: 'socks5',
+    socks.PROXY_TYPE_HTTP: 'http',
+}

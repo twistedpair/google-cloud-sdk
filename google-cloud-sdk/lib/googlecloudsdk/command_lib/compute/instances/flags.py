@@ -241,6 +241,18 @@ def MakeSourceInstanceTemplateArg():
                   '`--source-instance-template` will be used instead.'))
 
 
+def MakeBulkSourceInstanceTemplateArg():
+  return compute_flags.ResourceArgument(
+      name='--source-instance-template',
+      resource_name='instance template',
+      completer=compute_completers.InstanceTemplatesCompleter,
+      required=False,
+      global_collection='compute.instanceTemplates',
+      short_help=('The name of the instance template that the instance will '
+                  'be created from. Users can override fields by specifying '
+                  'other flags.'))
+
+
 def AddMachineImageArg():
   return compute_flags.ResourceArgument(
       name='--source-machine-image',
@@ -2616,7 +2628,9 @@ def AddBulkCreateArgs(parser):
       '--count',
       type=int,
       help="""
-      Number of Compute Engine virtual machines to create. If not specified,
+      Number of Compute Engine virtual machines to create. If specified, and
+      `--predefined-names` is specified, count must equal the amount of names
+      provided to `--predefined-names`. If not specified,
       the number of virtual machines created will equal the number of names
       provided to `--predefined-names`.
     """)
@@ -2637,7 +2651,9 @@ def AddBulkCreateArgs(parser):
       required=True,
       help="""
         List of predefined names for the Compute Engine virtual machines being
-        created. If `--count` is not specified, the number of virtual machines
+        created. If `--count` is specified alongside this flag, provided count
+        must equal the amount of names provided to this flag. If `--count` is
+        not specified, the number of virtual machines
         created will equal the number of names provided.
       """)
   location = parser.add_group(required=True, mutex=True)

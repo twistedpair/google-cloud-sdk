@@ -29,9 +29,11 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import store
 
+
 DEFAULT_ENVIRONMENT_NAME = 'users/me/environments/default'
 
 MIN_CREDS_EXPIRY = datetime.timedelta(minutes=30)
+MIN_CREDS_EXPIRY_SECONDS = '{}s'.format(MIN_CREDS_EXPIRY.seconds)
 
 
 class UnsupportedPlatform(exceptions.Error):
@@ -121,13 +123,8 @@ def PrepareV1Environment(args):
 
     access_token = None
     if args.authorize_session:
-      creds = store.LoadIfEnabled()
-      if creds is not None and creds.token_expiry - creds.token_expiry.utcnow(
-      ) < MIN_CREDS_EXPIRY:
-        store.Refresh(creds)
-
-      if creds is not None:
-        access_token = creds.get_access_token().access_token
+      access_token = store.GetFreshAccessTokenIfEnabled(
+          min_expiry_duration=MIN_CREDS_EXPIRY_SECONDS)
 
     start_operation = client.users_environments.Start(
         messages.CloudshellUsersEnvironmentsStartRequest(
@@ -197,13 +194,8 @@ def PrepareEnvironment(args):
 
     access_token = None
     if args.authorize_session:
-      creds = store.LoadIfEnabled()
-      if creds is not None and creds.token_expiry - creds.token_expiry.utcnow(
-      ) < MIN_CREDS_EXPIRY:
-        store.Refresh(creds)
-
-      if creds is not None:
-        access_token = creds.get_access_token().access_token
+      access_token = store.GetFreshAccessTokenIfEnabled(
+          min_expiry_duration=MIN_CREDS_EXPIRY_SECONDS)
 
     start_operation = client.users_environments.Start(
         messages.CloudshellUsersEnvironmentsStartRequest(
@@ -243,14 +235,9 @@ def AuthorizeV1Environment():
   messages = apis.GetMessagesModule('cloudshell', 'v1')
 
   # Load creds and refresh them if they're about to expire.
-  creds = store.LoadIfEnabled()
-  if creds is not None and creds.token_expiry - creds.token_expiry.utcnow(
-  ) < MIN_CREDS_EXPIRY:
-    store.Refresh(creds)
-
-  access_token = None
-  if creds is not None:
-    access_token = creds.get_access_token().access_token
+  access_token = store.GetFreshAccessTokenIfEnabled(
+      min_expiry_duration=MIN_CREDS_EXPIRY_SECONDS)
+  if access_token:
     client.users_environments.Authorize(
         messages.CloudshellUsersEnvironmentsAuthorizeRequest(
             name=DEFAULT_ENVIRONMENT_NAME,
@@ -265,14 +252,9 @@ def AuthorizeEnvironment():
   messages = apis.GetMessagesModule('cloudshell', 'v1alpha1')
 
   # Load creds and refresh them if they're about to expire.
-  creds = store.LoadIfEnabled()
-  if creds is not None and creds.token_expiry - creds.token_expiry.utcnow(
-  ) < MIN_CREDS_EXPIRY:
-    store.Refresh(creds)
-
-  access_token = None
-  if creds is not None:
-    access_token = creds.get_access_token().access_token
+  access_token = store.GetFreshAccessTokenIfEnabled(
+      min_expiry_duration=MIN_CREDS_EXPIRY_SECONDS)
+  if access_token:
     client.users_environments.Authorize(
         messages.CloudshellUsersEnvironmentsAuthorizeRequest(
             name=DEFAULT_ENVIRONMENT_NAME,

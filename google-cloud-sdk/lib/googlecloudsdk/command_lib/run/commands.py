@@ -51,10 +51,16 @@ class List(base.ListCommand):
     Returns:
       uri: str of the resource's uri
     """
-    complete_endpoint = (
-        cls.complete_api_endpoint or connection_context.DeriveRegionalEndpoint(
-            cls.partial_api_endpoint, resource.region))
-    return '{}/{}'.format(complete_endpoint.rstrip('/'), resource.self_link)
+    complete_endpoint = cls.complete_api_endpoint
+    if not complete_endpoint:
+      try:
+        region = resource.locationId
+      except AttributeError:
+        region = resource.region
+      complete_endpoint = connection_context.DeriveRegionalEndpoint(
+          cls.partial_api_endpoint, region)
+    return '{}/{}'.format(
+        complete_endpoint.rstrip('/'), getattr(resource, 'self_link', ''))
 
   @classmethod
   def SetCompleteApiEndpoint(cls, complete_api_endpoint):

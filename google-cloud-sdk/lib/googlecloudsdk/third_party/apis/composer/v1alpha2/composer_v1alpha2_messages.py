@@ -32,6 +32,39 @@ class AllowedIpRange(_messages.Message):
   value = _messages.StringField(2)
 
 
+class AutoscalingConfig(_messages.Message):
+  r"""The configuration settings for autoscaling for GKE cluster within
+  Composer environment. GKE cluster handles Airflow scheduler and workers
+  workload.
+
+  Enums:
+    ModeValueValuesEnum: Optional. Represents information on whether
+      autoscaling is enabled.
+
+  Fields:
+    maximumCpu: Optional. Maximum number of CPU in the environment.
+    maximumMemory: Optional. Memory limit in GB in the environment.
+    mode: Optional. Represents information on whether autoscaling is enabled.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Represents information on whether autoscaling is enabled.
+
+    Values:
+      DEFAULT: The mode of autoscaling is set to the default value by
+        Composer.
+      DISABLED: Autoscaling is disabled.
+      ENABLED: Autoscaling is enabled.
+    """
+    DEFAULT = 0
+    DISABLED = 1
+    ENABLED = 2
+
+  maximumCpu = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maximumMemory = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  mode = _messages.EnumField('ModeValueValuesEnum', 3)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -429,6 +462,9 @@ class EnvironmentConfig(_messages.Message):
     airflowUri: Output only. The URI of the Apache Airflow Web UI hosted
       within this environment (see [Airflow web interface](/composer/docs/how-
       to/accessing/airflow-web-interface)).
+    autoscalingConfig: Optional. The Autoscaling settings for GKE cluster
+      within Composer environment. GKE cluster handles Airflow scheduler and
+      workers workload.
     dagGcsPrefix: Output only. The Cloud Storage prefix of the DAGs for this
       environment. Although Cloud Storage objects reside in a flat namespace,
       a hierarchical file tree can be simulated using "/"-delimited object
@@ -464,17 +500,18 @@ class EnvironmentConfig(_messages.Message):
   """
 
   airflowUri = _messages.StringField(1)
-  dagGcsPrefix = _messages.StringField(2)
-  databaseConfig = _messages.MessageField('DatabaseConfig', 3)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
-  gkeCluster = _messages.StringField(5)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 6)
-  nodeConfig = _messages.MessageField('NodeConfig', 7)
-  nodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 9)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 10)
-  webServerConfig = _messages.MessageField('WebServerConfig', 11)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 12)
+  autoscalingConfig = _messages.MessageField('AutoscalingConfig', 2)
+  dagGcsPrefix = _messages.StringField(3)
+  databaseConfig = _messages.MessageField('DatabaseConfig', 4)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 5)
+  gkeCluster = _messages.StringField(6)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 7)
+  nodeConfig = _messages.MessageField('NodeConfig', 8)
+  nodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 10)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 11)
+  webServerConfig = _messages.MessageField('WebServerConfig', 12)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 13)
 
 
 class IPAllocationPolicy(_messages.Message):

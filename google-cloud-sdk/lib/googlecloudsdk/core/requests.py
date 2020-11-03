@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
-import socket
 
 from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import log
@@ -94,14 +93,9 @@ class HTTPAdapter(requests.adapters.HTTPAdapter):
 
   See https://requests.readthedocs.io/en/master/user/advanced/
       #transport-adapters for more information about adapters.
-
-  Attributes:
-    rdns: If True, DNS queries will not be performed locally, and instead handed
-        to the proxy to resolve.
   """
 
-  def __init__(self, rdns, client_side_certificate, *args, **kwargs):
-    self.rdns = rdns
+  def __init__(self, client_side_certificate, *args, **kwargs):
     self._cert_info = client_side_certificate
     super(HTTPAdapter, self).__init__(*args, **kwargs)
 
@@ -128,22 +122,6 @@ class HTTPAdapter(requests.adapters.HTTPAdapter):
     context.load_cert_chain(self._cert_info.certfile, **cert_chain_kwargs)
 
     kwargs['ssl_context'] = context
-
-  def send(self, request, **kwargs):
-    if not self.rdns:
-      connection_pool_kwargs = self.poolmanager.connection_pool_kw
-
-      result = urllib.parse.urlparse(request.url)
-      # Resolve DNS locally using first IP
-      resolved_ip = socket.getaddrinfo(result.hostname, None)[0][4][0]
-
-      request.url = request.url.replace(result.hostname, resolved_ip, 1)
-      connection_pool_kwargs['server_hostname'] = result.hostname  # SNI
-      connection_pool_kwargs['assert_hostname'] = result.hostname
-
-      # overwrite the host header
-      request.headers['Host'] = result.hostname
-    return super(HTTPAdapter, self).send(request, **kwargs)
 
 
 def GetProxyInfo():
@@ -175,8 +153,6 @@ def GetProxyInfo():
   elif proxy_type == socks.PROXY_TYPE_SOCKS5:
     proxy_scheme = 'socks5h' if proxy_rdns else 'socks5'
   elif proxy_type == socks.PROXY_TYPE_HTTP:
-    proxy_scheme = 'https'
-  elif proxy_type == socks.PROXY_TYPE_HTTP_NO_TUNNEL:
     proxy_scheme = 'http'
   else:
     raise ValueError('Unsupported proxy type: {}'.format(proxy_type))
@@ -216,10 +192,8 @@ def Session(
     return orig_request_method(*args, **kwargs)
   session.request = WrappedRequest
 
-  proxy_rdns = True
   proxy_info = GetProxyInfo()
   if proxy_info:
-    proxy_rdns = properties.VALUES.proxy.rdns.GetBool()
     session.proxies = {
         'http': proxy_info,
         'https': proxy_info,
@@ -236,7 +210,7 @@ def Session(
   else:
     client_side_certificate = None
 
-  adapter = HTTPAdapter(proxy_rdns, client_side_certificate)
+  adapter = HTTPAdapter(client_side_certificate)
 
   if disable_ssl_certificate_validation:
     session.verify = False

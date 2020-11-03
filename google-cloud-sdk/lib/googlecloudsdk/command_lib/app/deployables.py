@@ -38,8 +38,8 @@ _FLEXIBLE_APP_YAML_URL = (
     'appengine/docs/flexible/python/configuring-your-app-with-app-yaml')
 
 APP_YAML_INSTRUCTIONS = (
-    'using the directions at {flex} (App Engine Flexible Environment) or {std} '
-    '(App Engine Standard Environment) under the tab for your language.'
+    'using the directions at {flex} (App Engine flexible environment) or {std} '
+    '(App Engine standard environment) under the tab for your language.'
 ).format(flex=_FLEXIBLE_APP_YAML_URL, std=_STANDARD_APP_YAML_URL)
 
 FINGERPRINTING_WARNING = (

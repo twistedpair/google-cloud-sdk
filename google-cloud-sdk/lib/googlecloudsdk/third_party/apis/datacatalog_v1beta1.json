@@ -953,6 +953,17 @@
           "description": "Optional. Description of this taxonomy. It must: contain only unicode characters, tabs, newlines, carriage returns and page breaks; and be at most 2000 bytes long when encoded in UTF-8. If not set, defaults to an empty description.",
           "type": "string"
         },
+        "policyTagCount": {
+          "description": "Output only. Number of policy tags contained in this taxonomy.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "taxonomyTimestamps": {
+          "description": "Output only. Timestamps about this taxonomy. Only create_time and update_time are used.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDatacatalogV1beta1SystemTimestamps"
+        },
         "activatedPolicyTypes": {
           "description": "Optional. A list of policy types that are activated for this taxonomy. If not set, defaults to an empty list.",
           "type": "array",
@@ -1081,6 +1092,21 @@
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDatacatalogV1beta1SerializedPolicyTag"
+          }
+        },
+        "activatedPolicyTypes": {
+          "description": "A list of policy types that are activated for a taxonomy.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Unspecified policy type.",
+              "Fine grained access control policy, which enables access control on tagged resources."
+            ],
+            "enum": [
+              "POLICY_TYPE_UNSPECIFIED",
+              "FINE_GRAINED_ACCESS_CONTROL"
+            ]
           }
         }
       }

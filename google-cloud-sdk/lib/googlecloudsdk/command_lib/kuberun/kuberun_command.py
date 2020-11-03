@@ -24,9 +24,11 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.kuberun import auth
 from googlecloudsdk.command_lib.kuberun import flags
 from googlecloudsdk.command_lib.kuberun import kuberuncli
+from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import transport
 from googlecloudsdk.core.console import console_io
 
 
@@ -49,6 +51,7 @@ class KubeRunCommand(base.BinaryBackedCommand):
 
     Args:
       args: the arguments passed to gcloud
+
     Returns:
       a list representing the arguments to be passed to the kuberun binary
     """
@@ -93,7 +96,11 @@ class KubeRunCommand(base.BinaryBackedCommand):
                     auth.GetAuthToken(
                         account=properties.VALUES.core.account.Get()),
                 'CLOUDSDK_PROJECT':
-                    project
+                    project,
+                'CLOUDSDK_USER_AGENT':
+                    # Cloud SDK prefix + user agent string
+                    '{} {}'.format(config.CLOUDSDK_USER_AGENT,
+                                   transport.MakeUserAgentString()),
             }),
         show_exec_error=args.show_exec_error)
     log.debug('Response: %s' % response.stdout)
