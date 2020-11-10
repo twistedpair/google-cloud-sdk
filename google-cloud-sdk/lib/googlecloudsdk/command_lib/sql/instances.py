@@ -345,6 +345,18 @@ class _BaseInstances(object):
               .deny_maintenance_period_end_date,
               deny_maintenance_period_time=args.deny_maintenance_period_time))
 
+    settings.insightsConfig = (
+        reducers.InsightsConfig(
+            sql_messages,
+            insights_config_query_insights_enabled=args
+            .insights_config_query_insights_enabled,
+            insights_config_query_string_length=args
+            .insights_config_query_string_length,
+            insights_config_record_application_tags=args
+            .insights_config_record_application_tags,
+            insights_config_record_client_address=args
+            .insights_config_record_client_address))
+
     if args.storage_type:
       settings.dataDiskType = _ParseStorageType(
           sql_messages, STORAGE_TYPE_PREFIX + args.storage_type)
@@ -434,6 +446,18 @@ class _BaseInstances(object):
               deny_maintenance_period_end_date=args
               .deny_maintenance_period_end_date,
               deny_maintenance_period_time=args.deny_maintenance_period_time))
+
+    settings.insightsConfig = (
+        reducers.InsightsConfig(
+            sql_messages,
+            insights_config_query_insights_enabled=args
+            .insights_config_query_insights_enabled,
+            insights_config_query_string_length=args
+            .insights_config_query_string_length,
+            insights_config_record_application_tags=args
+            .insights_config_record_application_tags,
+            insights_config_record_client_address=args
+            .insights_config_record_client_address))
 
     # BETA args.
     if _IsBetaOrNewer(release_track):

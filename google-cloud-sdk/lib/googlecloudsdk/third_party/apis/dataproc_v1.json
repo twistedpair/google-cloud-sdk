@@ -805,11 +805,11 @@
           "type": "boolean"
         },
         "rootPrincipalPasswordUri": {
-          "description": "Required. The Cloud Storage URI of a KMS encrypted file containing the root principal password.",
+          "description": "Optional. The Cloud Storage URI of a KMS encrypted file containing the root principal password.",
           "type": "string"
         },
         "kmsKeyUri": {
-          "description": "Required. The uri of the KMS key used to encrypt various sensitive files.",
+          "description": "Optional. The uri of the KMS key used to encrypt various sensitive files.",
           "type": "string"
         },
         "keystoreUri": {
@@ -2082,7 +2082,6 @@
           "$ref": "Expr"
         },
         "bindingId": {
-          "description": "A client-specified ID for this binding. Expected to be globally unique to support the internal bindings-by-ID API.",
           "type": "string"
         }
       }

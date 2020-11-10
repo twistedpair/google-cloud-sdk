@@ -423,7 +423,6 @@
           "$ref": "Expr"
         },
         "bindingId": {
-          "description": "A client-specified ID for this binding. Expected to be globally unique to support the internal bindings-by-ID API.",
           "type": "string"
         }
       }
@@ -965,6 +964,12 @@
                       "description": "A token identifying the page of results to return. To request the first page results, page_token must be empty. To request the next page of results, page_token must be the value of next_page_token returned from the previous call to ListQueues method. It is an error to switch the value of the filter while iterating through pages.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "readMask": {
+                      "description": "Optional. Read mask is used for a more granular control over what the API returns. If the mask is not present all fields will be returned except [Queue.stats], if the mask is set to \"*\" all fields including [Queue.stats] will be returned, otherwise only the fields explicitly specified in the mask will be returned.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
                     }
                   },
                   "parameterOrder": [

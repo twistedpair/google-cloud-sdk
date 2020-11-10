@@ -254,7 +254,7 @@ class DatacatalogV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an entry. Only entries of 'FILESET' type or user-specified type can be created. Users should enable the Data Catalog API in the project identified by the `parent` parameter (see [Data Catalog Resource Project] (https://cloud.google.com/data-catalog/docs/concepts/resource-project) for more information). A maximum of 100,000 entries may be created per entry group.
+      r"""Creates an entry. Only entries of types 'FILESET', 'CLUSTER', 'DATA_STREAM' or with a user-specified type can be created. Users should enable the Data Catalog API in the project identified by the `parent` parameter (see [Data Catalog Resource Project] (https://cloud.google.com/data-catalog/docs/concepts/resource-project) for more information). A maximum of 100,000 entries may be created per entry group.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesCreateRequest) input message

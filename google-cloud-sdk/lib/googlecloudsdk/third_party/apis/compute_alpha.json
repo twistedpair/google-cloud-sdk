@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20201023",
+ "revision": "20201030",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -3717,7 +3717,7 @@
    "properties": {
     "bindingId": {
      "type": "string",
-     "description": "A client-specified ID for this binding. Expected to be globally unique to support the internal bindings-by-ID API."
+     "description": ""
     },
     "condition": {
      "$ref": "Expr",
@@ -10149,6 +10149,13 @@
       "type": "string"
      }
     },
+    "secureTags": {
+     "type": "array",
+     "description": "Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 300.",
+     "items": {
+      "type": "string"
+     }
+    },
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
@@ -11256,6 +11263,22 @@
     "minimalAction": {
      "type": "string",
      "description": "Minimal action to be taken on an instance. You can specify either RESTART to restart existing instances or REPLACE to delete and create new instances from the target template. If you specify a RESTART, the Updater will attempt to perform that action only. However, if the Updater determines that the minimal action you specify is not enough to perform the update, it might perform a more disruptive action.",
+     "enum": [
+      "NONE",
+      "REFRESH",
+      "REPLACE",
+      "RESTART"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "mostDisruptiveAllowedAction": {
+     "type": "string",
+     "description": "Most disruptive action that is allowed to be taken on an instance. You can specify either NONE to forbid any actions, REFRESH to allow actions that do not need instance restart, RESTART to allow actions that can be applied without instance replacing or REPLACE to allow all possible actions. If the Updater determines that the minimal update action needed is more disruptive than most disruptive allowed action you specify it will not perform the update at all.",
      "enum": [
       "NONE",
       "REFRESH",
@@ -22046,6 +22069,7 @@
       "PREEMPTIBLE_NVIDIA_V100_GPUS",
       "PRIVATE_V6_ACCESS_SUBNETWORKS",
       "PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK",
+      "PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK",
       "PUBLIC_ADVERTISED_PREFIXES",
       "PUBLIC_DELEGATED_PREFIXES",
       "REGIONAL_AUTOSCALERS",
@@ -22077,6 +22101,7 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -27317,6 +27342,7 @@
    "properties": {
     "connectionPreference": {
      "type": "string",
+     "description": "The connection preference of service attachment. The value can be set to ACCEPT_AUTOMATIC. An ACCEPT_AUTOMATIC service attachment is one that always accepts the connection from consumer forwarding rules.",
      "enum": [
       "ACCEPT_AUTOMATIC",
       "CONNECTION_PREFERENCE_UNSPECIFIED"
@@ -27328,7 +27354,7 @@
     },
     "consumerForwardingRules": {
      "type": "array",
-     "description": "An array of forwarding rules for all the consumers connected to this service attachment.",
+     "description": "[Output Only] An array of forwarding rules for all the consumers connected to this service attachment.",
      "items": {
       "$ref": "ServiceAttachmentConsumerForwardingRule"
      }
@@ -62920,7 +62946,7 @@
      "id": "compute.subnetworks.patch",
      "path": "projects/{project}/regions/{region}/subnetworks/{subnetwork}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified subnetwork with the data included in the request. Only certain fields can up updated with a patch request as indicated in the field descriptions. You must specify the current fingerprint of the subnetwork resource being patched.",
+     "description": "Patches the specified subnetwork with the data included in the request. Only certain fields can be updated with a patch request as indicated in the field descriptions. You must specify the current fingerprint of the subnetwork resource being patched.",
      "parameters": {
       "drainTimeoutSeconds": {
        "type": "integer",

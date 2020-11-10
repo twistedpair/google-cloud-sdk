@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20201023",
+ "revision": "20201030",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -3446,7 +3446,7 @@
    "properties": {
     "bindingId": {
      "type": "string",
-     "description": "A client-specified ID for this binding. Expected to be globally unique to support the internal bindings-by-ID API."
+     "description": ""
     },
     "condition": {
      "$ref": "Expr",
@@ -12241,6 +12241,11 @@
      "type": "string",
      "description": "[Output Only] IPv4 address + prefix length to be configured on the customer router subinterface for this interconnect attachment."
     },
+    "dataplaneVersion": {
+     "type": "integer",
+     "description": "[Output Only] Dataplane version for this InterconnectAttachment.",
+     "format": "int32"
+    },
     "description": {
      "type": "string",
      "description": "An optional description of this resource."
@@ -19249,6 +19254,7 @@
       "PREEMPTIBLE_NVIDIA_T4_VWS_GPUS",
       "PREEMPTIBLE_NVIDIA_V100_GPUS",
       "PRIVATE_V6_ACCESS_SUBNETWORKS",
+      "PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK",
       "PUBLIC_ADVERTISED_PREFIXES",
       "PUBLIC_DELEGATED_PREFIXES",
       "REGIONAL_AUTOSCALERS",
@@ -19279,6 +19285,7 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -55192,7 +55199,7 @@
      "id": "compute.subnetworks.patch",
      "path": "projects/{project}/regions/{region}/subnetworks/{subnetwork}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified subnetwork with the data included in the request. Only certain fields can up updated with a patch request as indicated in the field descriptions. You must specify the current fingerprint of the subnetwork resource being patched.",
+     "description": "Patches the specified subnetwork with the data included in the request. Only certain fields can be updated with a patch request as indicated in the field descriptions. You must specify the current fingerprint of the subnetwork resource being patched.",
      "parameters": {
       "drainTimeoutSeconds": {
        "type": "integer",

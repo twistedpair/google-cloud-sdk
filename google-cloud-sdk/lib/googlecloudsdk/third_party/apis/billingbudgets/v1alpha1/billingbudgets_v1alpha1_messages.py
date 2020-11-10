@@ -198,6 +198,13 @@ class GoogleCloudBillingBudgetsV1alpha1Filter(_messages.Message):
       usage.
 
   Fields:
+    creditTypes: Optional. A list of credit types to be subtracted from gross
+      cost to determine the spend for threshold calculations if and only if
+      credit_types_treatment is INCLUDE_SPECIFIED_CREDITS. If
+      credit_types_treatment is not INCLUDE_SPECIFIED_CREDITS, this field must
+      be empty. See credits.type at https://cloud.google.com/billing/docs/how-
+      to/export-data-bigquery-tables#data-schema for a list of acceptable
+      credit type values in this field.
     creditTypesTreatment: Optional. If not set, default behavior is
       `INCLUDE_ALL_CREDITS`.
     labels: Optional. A single label and value pair specifying that usage from
@@ -232,10 +239,14 @@ class GoogleCloudBillingBudgetsV1alpha1Filter(_messages.Message):
         cost to determine the spend for threshold calculations.
       EXCLUDE_ALL_CREDITS: All types of credit are added to the net cost to
         determine the spend for threshold calculations.
+      INCLUDE_SPECIFIED_CREDITS: Credit types specified in the credit_types
+        field are subtracted from the gross cost to determine the spend for
+        threshold calculations.
     """
     CREDIT_TYPES_TREATMENT_UNSPECIFIED = 0
     INCLUDE_ALL_CREDITS = 1
     EXCLUDE_ALL_CREDITS = 2
+    INCLUDE_SPECIFIED_CREDITS = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -264,11 +275,12 @@ class GoogleCloudBillingBudgetsV1alpha1Filter(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  creditTypesTreatment = _messages.EnumField('CreditTypesTreatmentValueValuesEnum', 1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  projects = _messages.StringField(3, repeated=True)
-  services = _messages.StringField(4, repeated=True)
-  subaccounts = _messages.StringField(5, repeated=True)
+  creditTypes = _messages.StringField(1, repeated=True)
+  creditTypesTreatment = _messages.EnumField('CreditTypesTreatmentValueValuesEnum', 2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  projects = _messages.StringField(4, repeated=True)
+  services = _messages.StringField(5, repeated=True)
+  subaccounts = _messages.StringField(6, repeated=True)
 
 
 class GoogleCloudBillingBudgetsV1alpha1LastPeriodAmount(_messages.Message):

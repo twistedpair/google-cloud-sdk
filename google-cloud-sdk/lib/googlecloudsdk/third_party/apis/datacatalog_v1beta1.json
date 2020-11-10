@@ -856,7 +856,6 @@
           "$ref": "Expr"
         },
         "bindingId": {
-          "description": "A client-specified ID for this binding. Expected to be globally unique to support the internal bindings-by-ID API.",
           "type": "string"
         }
       }

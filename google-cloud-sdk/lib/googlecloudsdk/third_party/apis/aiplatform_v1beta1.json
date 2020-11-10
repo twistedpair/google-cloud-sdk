@@ -842,7 +842,7 @@
       "type": "object",
       "properties": {
         "noiseSigma": {
-          "description": "This is a single float value and will be used to add noise to all the features. Use this field when all features are normalized to have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring, where features are normalized to have 0-mean and 1-variance. Refer to this doc for more details about normalization: https: \/\/developers.google.com\/machine-learning \/\/ \/data-prep\/transform\/normalization. For best results the recommended value is about 10% - 20% of the standard deviation of the input feature. Refer to section 3.2 of the SmoothGrad paper: https:\/\/arxiv.org\/pdf\/1706.03825.pdf. Defaults to 0.1. If the distribution is different per feature, set feature_noise_sigma instead for each feature.",
+          "description": "This is a single float value and will be used to add noise to all the features. Use this field when all features are normalized to have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring, where features are normalized to have 0-mean and 1-variance. For more details about normalization: https:\/\/tinyurl.com\/dgc-normalization. For best results the recommended value is about 10% - 20% of the standard deviation of the input feature. Refer to section 3.2 of the SmoothGrad paper: https:\/\/arxiv.org\/pdf\/1706.03825.pdf. Defaults to 0.1. If the distribution is different per feature, set feature_noise_sigma instead for each feature.",
           "type": "number",
           "format": "float"
         },
@@ -889,7 +889,7 @@
     },
     "GoogleCloudAiplatformV1beta1XraiAttribution": {
       "id": "GoogleCloudAiplatformV1beta1XraiAttribution",
-      "description": "An explanation method that redistributes Integrated Gradients attributions to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 Only supports image Models (modality is IMAGE).",
+      "description": "An explanation method that redistributes Integrated Gradients attributions to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 Supported only by image Models.",
       "type": "object",
       "properties": {
         "stepCount": {
@@ -909,7 +909,7 @@
       "type": "object",
       "properties": {
         "inputs": {
-          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature . Once specified, featureAttributions will be keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance[].",
+          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature . Once specified, featureAttributions will be keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadata"
@@ -1302,8 +1302,12 @@
           "description": "Specifies the service account for workload run-as account. Users submitting jobs must have act-as permission on this run-as account.",
           "type": "string"
         },
+        "network": {
+          "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. Private services access must already be configured for the network. If left unspecified, the job is not peered with any network.",
+          "type": "string"
+        },
         "baseOutputDirectory": {
-          "description": "The Google Cloud Storage location to store the output of this CustomJob or HyperparameterTuningJob. For HyperparameterTuningJob, base_output_directory of each child CustomJob backing a Trial is set to a subdirectory of name id under parent HyperparameterTuningJob's base_output_directory. Following AI Platform environment variables will be passed to containers or python modules when this field is set: For CustomJob: * AIP_MODEL_DIR = `\/model\/` * AIP_CHECKPOINT_DIR = `\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/logs\/` For CustomJob backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `\/\/model\/` * AIP_CHECKPOINT_DIR = `\/\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/\/logs\/`",
+          "description": "The Cloud Storage location to store the output of this CustomJob or HyperparameterTuningJob. For HyperparameterTuningJob, the baseOutputDirectory of each child CustomJob backing a Trial is set to a subdirectory of name id under its parent HyperparameterTuningJob's baseOutputDirectory. The following AI Platform environment variables will be passed to containers or python modules when this field is set: For CustomJob: * AIP_MODEL_DIR = `\/model\/` * AIP_CHECKPOINT_DIR = `\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/logs\/` For CustomJob backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `\/\/model\/` * AIP_CHECKPOINT_DIR = `\/\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/\/logs\/`",
           "$ref": "GoogleCloudAiplatformV1beta1GcsDestination"
         }
       }
@@ -1329,6 +1333,10 @@
           "description": "Required. The number of worker replicas to use for this worker pool.",
           "type": "string",
           "format": "int64"
+        },
+        "diskSpec": {
+          "description": "Disk spec.",
+          "$ref": "GoogleCloudAiplatformV1beta1DiskSpec"
         }
       }
     },
@@ -1383,6 +1391,22 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1DiskSpec": {
+      "id": "GoogleCloudAiplatformV1beta1DiskSpec",
+      "description": "Represents the spec of disk options.",
+      "type": "object",
+      "properties": {
+        "bootDiskType": {
+          "description": "Type of the boot disk (default is \"pd-standard\"). Valid values: \"pd-ssd\" (Persistent Disk Solid State Drive) or \"pd-standard\" (Persistent Disk Hard Disk Drive).",
+          "type": "string"
+        },
+        "bootDiskSizeGb": {
+          "description": "Size in GB of the boot disk (default is 100GB).",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1637,6 +1661,13 @@
             "UNIT_LOG_SCALE",
             "UNIT_REVERSE_LOG_SCALE"
           ]
+        },
+        "conditionalParameterSpecs": {
+          "description": "A conditional parameter node is active if the parameter's value matches the conditional node's parent_value_condition. If two items in conditional_parameter_specs have the same name, they must have disjoint parent_value_condition.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpec"
+          }
         }
       }
     },
@@ -1699,6 +1730,73 @@
           "items": {
             "type": "number",
             "format": "double"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpec": {
+      "id": "GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpec",
+      "description": "Represents a parameter spec with condition from its parent parameter.",
+      "type": "object",
+      "properties": {
+        "parentDiscreteValues": {
+          "description": "The spec for matching values from a parent parameter of `DISCRETE` type.",
+          "$ref": "GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpecDiscreteValueCondition"
+        },
+        "parentIntValues": {
+          "description": "The spec for matching values from a parent parameter of `INTEGER` type.",
+          "$ref": "GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpecIntValueCondition"
+        },
+        "parentCategoricalValues": {
+          "description": "The spec for matching values from a parent parameter of `CATEGORICAL` type.",
+          "$ref": "GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpecCategoricalValueCondition"
+        },
+        "parameterSpec": {
+          "description": "Required. The spec for a conditional parameter.",
+          "$ref": "GoogleCloudAiplatformV1beta1StudySpecParameterSpec"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpecDiscreteValueCondition": {
+      "id": "GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpecDiscreteValueCondition",
+      "description": "Represents the spec to match discrete values from parent parameter.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Required. Matches values of the parent parameter of 'DISCRETE' type. All values must exist in `discrete_value_spec` of parent parameter. The Epsilon of the value matching is 1e-10.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpecIntValueCondition": {
+      "id": "GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpecIntValueCondition",
+      "description": "Represents the spec to match integer values from parent parameter.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Required. Matches values of the parent parameter of 'INTEGER' type. All values must lie in `integer_value_spec` of parent parameter.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpecCategoricalValueCondition": {
+      "id": "GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpecCategoricalValueCondition",
+      "description": "Represents the spec to match categorical values from parent parameter.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Required. Matches values of the parent parameter of 'CATEGORICAL' type. All values must exist in `categorical_value_spec` of parent parameter.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -1888,6 +1986,10 @@
         "generateExplanation": {
           "description": "Generate explanation along with the batch prediction results. When it's true, the batch prediction output will change based on the output format: * `bigquery`: output will include a column named `explanation`. The value is a struct that conforms to the Explanation object. * `jsonl`: The JSON objects on each line will include an additional entry keyed `explanation`. The value of the entry is a JSON object that conforms to the Explanation object. * `csv`: Generating explanations for CSV format is not supported.",
           "type": "boolean"
+        },
+        "explanationSpec": {
+          "description": "Explanation configuration for this BatchPredictionJob. Can only be specified if generate_explanation is set to `true`. It's invalid to specified it with generate_explanation set to false or unset. This value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of explanation_spec is not populated, the value of the same field of Model.explanation_spec is inherited. The corresponding Model.explanation_spec must be populated, otherwise explanation for this Model is not allowed.",
+          "$ref": "GoogleCloudAiplatformV1beta1ExplanationSpec"
         },
         "outputInfo": {
           "description": "Output only. Information further describing the output of this job.",
@@ -2465,7 +2567,7 @@
           "type": "any"
         },
         "supportedExportFormats": {
-          "description": "Output only. The formats in which this Model may be exported. If empty, this Model is not avaiable for export.",
+          "description": "Output only. The formats in which this Model may be exported. If empty, this Model is not available for export.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -2540,8 +2642,7 @@
           }
         },
         "explanationSpec": {
-          "description": "Output only. The default explanation specification for this Model. Model can be used for requesting explanation after being deployed iff it is populated. All fields of the explanation_spec can be overridden by explanation_spec of DeployModelRequest.deployed_model. This field is populated only for tabular AutoML Models. Specifying it with ModelService.UploadModel is not supported.",
-          "readOnly": true,
+          "description": "The default explanation specification for this Model. The Model can be used for requesting explanation after being deployed iff it is populated. The Model can be used for batch explanation iff it is populated. All fields of the explanation_spec can be overridden by explanation_spec of DeployModelRequest.deployed_model, or explanation_spec of BatchPredictionJob.",
           "$ref": "GoogleCloudAiplatformV1beta1ExplanationSpec"
         },
         "etag": {
@@ -2594,8 +2695,8 @@
             "type": "string",
             "enumDescriptions": [
               "Should not be used.",
-              "Model artifact and any of its supported files. Will be exported to the specified [ExportModelRequest.output_config.artifact_destination]",
-              "The container image that is to be used when deploying this Model. Will be exported to the specified [ExportModelRequest.output_config.image_destination]"
+              "Model artifact and any of its supported files. Will be exported to the location specified by the `artifactDestination` field of the ExportModelRequest.output_config object.",
+              "The container image that is to be used when deploying this Model. Will be exported to the location specified by the `imageDestination` field of the ExportModelRequest.output_config object."
             ],
             "enum": [
               "EXPORTABLE_CONTENT_UNSPECIFIED",
@@ -2608,47 +2709,47 @@
     },
     "GoogleCloudAiplatformV1beta1ModelContainerSpec": {
       "id": "GoogleCloudAiplatformV1beta1ModelContainerSpec",
-      "description": "Specification of a container for serving predictions. This message is a subset of the [Kubernetes Container v1 core specification](https: \/\/kubernetes.io\/docs\/reference\/generated \/\/ \/kubernetes-api\/v1.18\/#container-v1-core).",
+      "description": "Specification of a container for serving predictions. This message is a subset of the Kubernetes Container v1 core [specification](https:\/\/tinyurl.com\/k8s-io-api\/v1.18\/#container-v1-core).",
       "type": "object",
       "properties": {
         "imageUri": {
-          "description": "Required. Immutable. URI of the Docker image to be used as the custom container for serving predictions. This URI must identify an image in Artifact Registry or Container Registry. Learn more about the [container publishing requirements](https: \/\/cloud.google.com\/ai-platform-unified\/d \/\/ ocs\/predictions\/custom-container-requirements#publishing), including permissions requirements for the AI Platform Service Agent. The container image is ingested upon ModelService.UploadModel, stored internally, and this original path is afterwards not used. To learn about the requirements for the Docker image itself, read [Custom container requirements](https: \/\/cloud.google.com\/ai-platform-unified\/d \/\/ ocs\/predictions\/custom-container-requirements).",
+          "description": "Required. Immutable. URI of the Docker image to be used as the custom container for serving predictions. This URI must identify an image in Artifact Registry or Container Registry. Learn more about the container publishing requirements, including permissions requirements for the AI Platform Service Agent, [here](https:\/\/tinyurl.com\/cust-cont-reqs#publishing). The container image is ingested upon ModelService.UploadModel, stored internally, and this original path is afterwards not used. To learn about the requirements for the Docker image itself, see [Custom container requirements](https:\/\/tinyurl.com\/cust-cont-reqs).",
           "type": "string"
         },
         "command": {
-          "description": "Immutable. Specifies the command that runs when the container starts. This overrides the container's [`ENTRYPOINT`](https: \/\/docs.docker.com\/engine\/reference\/builder\/#entrypoint). Specify this field as an array of executable and arguments, similar to a Docker `ENTRYPOINT`'s \"exec\" form, not its \"shell\" form. If you do not specify this field, then the container's `ENTRYPOINT` runs, in conjunction with the args field or the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd), if either exists. If this field is not specified and the container does not have an `ENTRYPOINT`, then refer to the [Docker documentation about how `CMD` and `ENTRYPOINT` interact](https: \/\/docs.docker.com\/engine\/reference\/build \/\/ er\/#understand-how-cmd-and-entrypoint-interact). If you specify this field, then you can also specify the `args` field to provide additional arguments for this command. However, if you specify this field, then the container's `CMD` is ignored. See the [Kubernetes documentation about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`](https: \/\/kubernetes.io\/docs\/tasks\/inject-data-a \/\/ pplication\/define-command-argument-container\/#notes). In this field, you can reference [environment variables set by AI Platform](https: \/\/cloud.google.com\/ai-platform-unified\/d \/\/ ocs\/predictions\/custom-container-requirements#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $( VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `command` field of the [Kubernetes Containers v1 core API](https: \/\/kubernetes.io\/docs\/reference\/generated \/\/ \/kubernetes-api\/v1.18\/#container-v1-core).",
+          "description": "Immutable. Specifies the command that runs when the container starts. This overrides the container's [ENTRYPOINT](https:\/\/docs.docker.com\/engine\/reference\/builder\/#entrypoint). Specify this field as an array of executable and arguments, similar to a Docker `ENTRYPOINT`'s \"exec\" form, not its \"shell\" form. If you do not specify this field, then the container's `ENTRYPOINT` runs, in conjunction with the args field or the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd), if either exists. If this field is not specified and the container does not have an `ENTRYPOINT`, then refer to the Docker documentation about how `CMD` and `ENTRYPOINT` [interact](https:\/\/tinyurl.com\/h3kdcgs). If you specify this field, then you can also specify the `args` field to provide additional arguments for this command. However, if you specify this field, then the container's `CMD` is ignored. See the [Kubernetes documentation](https:\/\/tinyurl.com\/y8bvllf4) about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`. In this field, you can reference environment variables [set by AI Platform](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $(VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `command` field of the Kubernetes Containers [v1 core API](https:\/\/tinyurl.com\/k8s-io-api\/v1.18\/#container-v1-core).",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "args": {
-          "description": "Immutable. Specifies arguments for the command that runs when the container starts. This overrides the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd). Specify this field as an array of executable and arguments, similar to a Docker `CMD`'s \"default parameters\" form. If you don't specify this field but do specify the command field, then the command from the `command` field runs without any additional arguments. See the [Kubernetes documentation about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`](https: \/\/kubernetes.io\/docs\/tasks\/inject-data-a \/\/ pplication\/define-command-argument-container\/#notes). If you don't specify this field and don't specify the `command` field, then the container's [`ENTRYPOINT`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd) and `CMD` determine what runs based on their default behavior. See the [Docker documentation about how `CMD` and `ENTRYPOINT` interact](https: \/\/docs.docker.com\/engine\/reference\/build \/\/ er\/#understand-how-cmd-and-entrypoint-interact). In this field, you can reference [environment variables set by AI Platform](https: \/\/cloud.google.com\/ai-platform-unified\/d \/\/ ocs\/predictions\/custom-container-requirements#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $( VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `args` field of the [Kubernetes Containers v1 core API](https: \/\/kubernetes.io\/docs\/reference\/generated \/\/ \/kubernetes-api\/v1.18\/#container-v1-core).",
+          "description": "Immutable. Specifies arguments for the command that runs when the container starts. This overrides the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd). Specify this field as an array of executable and arguments, similar to a Docker `CMD`'s \"default parameters\" form. If you don't specify this field but do specify the command field, then the command from the `command` field runs without any additional arguments. See the [Kubernetes documentation](https:\/\/tinyurl.com\/y8bvllf4) about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`. If you don't specify this field and don't specify the `command` field, then the container's [`ENTRYPOINT`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd) and `CMD` determine what runs based on their default behavior. See the Docker documentation about how `CMD` and `ENTRYPOINT` [interact](https:\/\/tinyurl.com\/h3kdcgs). In this field, you can reference environment variables [set by AI Platform](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $(VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `args` field of the Kubernetes Containers [v1 core API](https:\/\/tinyurl.com\/k8s-io-api\/v1.18\/#container-v1-core).",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "env": {
-          "description": "Immutable. List of environment variables to set in the container. After the container starts running, code running in the container can read these environment variables. Additionally, the command and args fields can reference these variables. Later entries in this list can also reference earlier entries. For example, the following example sets the variable `VAR_2` to have the value `foo bar`: ```json [ { \"name\": \"VAR_1\", \"value\": \"foo\" }, { \"name\": \"VAR_2\", \"value\": \"$(VAR_1) bar\" } ] ``` If you switch the order of the variables in the example, then the expansion does not occur. This field corresponds to the `env` field of the [Kubernetes Containers v1 core API](https: \/\/kubernetes.io\/docs\/reference\/generated \/\/ \/kubernetes-api\/v1.18\/#container-v1-core).",
+          "description": "Immutable. List of environment variables to set in the container. After the container starts running, code running in the container can read these environment variables. Additionally, the command and args fields can reference these variables. Later entries in this list can also reference earlier entries. For example, the following example sets the variable `VAR_2` to have the value `foo bar`: ```json [ { \"name\": \"VAR_1\", \"value\": \"foo\" }, { \"name\": \"VAR_2\", \"value\": \"$(VAR_1) bar\" } ] ``` If you switch the order of the variables in the example, then the expansion does not occur. This field corresponds to the `env` field of the Kubernetes Containers [v1 core API](https:\/\/tinyurl.com\/k8s-io-api\/v1.18\/#container-v1-core).",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1beta1EnvVar"
           }
         },
         "ports": {
-          "description": "Immutable. List of ports to expose from the container. AI Platform sends any prediction requests that it receives to the first port on this list. AI Platform also sends [liveness and health checks](https: \/\/cloud.google.com\/ai-platform-unified\/d \/\/ ocs\/predictions\/custom-container-requirements#health) to this port. If you do not specify this field, it defaults to following value: ```json [ { \"containerPort\": 8080 } ] ``` AI Platform does not use ports other than the first one listed. This field corresponds to the `ports` field of the [Kubernetes Containers v1 core API](https: \/\/kubernetes.io\/docs\/reference\/generated \/\/ \/kubernetes-api\/v1.18\/#container-v1-core).",
+          "description": "Immutable. List of ports to expose from the container. AI Platform sends any prediction requests that it receives to the first port on this list. AI Platform also sends [liveness and health checks](https:\/\/tinyurl.com\/cust-cont-reqs#health) to this port. If you do not specify this field, it defaults to following value: ```json [ { \"containerPort\": 8080 } ] ``` AI Platform does not use ports other than the first one listed. This field corresponds to the `ports` field of the Kubernetes Containers [v1 core API](https:\/\/tinyurl.com\/k8s-io-api\/v1.18\/#container-v1-core).",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1beta1Port"
           }
         },
         "predictRoute": {
-          "description": "Immutable. HTTP path on the container to send prediction requests to. AI Platform forwards requests sent using projects.locations.endpoints.predict to this path on the container's IP address and port. AI Platform then returns the container's response in the API response. For example, if you set this field to `\/foo`, then when AI Platform receives a prediction request, it forwards the request body in a POST request to the following URL on the container: localhost:PORT\/foo PORT refers to the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/DEPLOYED_MODEL:predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (AI Platform makes this value available to your container code as the [`AIP_ENDPOINT_ID` environment variable](https: \/\/cloud.google.com\/ai-platform-unified\/d \/\/ ocs\/predictions\/custom-container-requirements#aip-variables).) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID` environment variable](https: \/\/cloud.google.com\/ai-platform-unified\/d \/\/ ocs\/predictions\/custom-container-requirements#aip-variables).)",
+          "description": "Immutable. HTTP path on the container to send prediction requests to. AI Platform forwards requests sent using projects.locations.endpoints.predict to this path on the container's IP address and port. AI Platform then returns the container's response in the API response. For example, if you set this field to `\/foo`, then when AI Platform receives a prediction request, it forwards the request body in a POST request to the following URL on the container: localhost:PORT\/foo PORT refers to the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/DEPLOYED_MODEL:predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (AI Platform makes this value available to your container code as the [`AIP_ENDPOINT_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID` environment variable](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables).)",
           "type": "string"
         },
         "healthRoute": {
-          "description": "Immutable. HTTP path on the container to send health checkss to. AI Platform intermittently sends GET requests to this path on the container's IP address and port to check that the container is healthy. Read more about [health checks](https: \/\/cloud.google.com\/ai-platform-unified\/d \/\/ ocs\/predictions\/custom-container-requirements#checks). For example, if you set this field to `\/bar`, then AI Platform intermittently sends a GET request to the following URL on the container: localhost:PORT\/bar PORT refers to the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/ DEPLOYED_MODEL:predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (AI Platform makes this value available to your container code as the [`AIP_ENDPOINT_ID` environment variable](https: \/\/cloud.google.com\/ai-platform-unified\/d \/\/ ocs\/predictions\/custom-container-requirements#aip-variables).) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID` environment variable](https: \/\/cloud.google.com\/ai-platform-unified\/d \/\/ ocs\/predictions\/custom-container-requirements#aip-variables).)",
+          "description": "Immutable. HTTP path on the container to send health checkss to. AI Platform intermittently sends GET requests to this path on the container's IP address and port to check that the container is healthy. Read more about [health checks](https:\/\/tinyurl.com\/cust-cont-reqs#checks). For example, if you set this field to `\/bar`, then AI Platform intermittently sends a GET request to the following URL on the container: localhost:PORT\/bar PORT refers to the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/ DEPLOYED_MODEL:predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (AI Platform makes this value available to your container code as the [`AIP_ENDPOINT_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.)",
           "type": "string"
         }
       }
@@ -2734,11 +2835,11 @@
           "type": "string"
         },
         "artifactDestination": {
-          "description": "The Google Cloud Storage location where the Model artifact is to be written to. Under the directory given as the destination a new one with name \"`model-export--`\", where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format, will be created. Inside, the Model and any of its supporting files will be written. This field should only be set when [Models.supported_export_formats.exportable_contents] contains ARTIFACT.",
+          "description": "The Cloud Storage location where the Model artifact is to be written to. Under the directory given as the destination a new one with name \"`model-export--`\", where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format, will be created. Inside, the Model and any of its supporting files will be written. This field should only be set when the `exportableContent` field of the [Model.supported_export_formats] object contains `ARTIFACT`.",
           "$ref": "GoogleCloudAiplatformV1beta1GcsDestination"
         },
         "imageDestination": {
-          "description": "The Google Container Registry or Artifact Registry uri where the Model container image will be copied to. This field should only be set when [Models.supported_export_formats.exportable_contents] contains IMAGE.",
+          "description": "The Google Container Registry or Artifact Registry uri where the Model container image will be copied to. This field should only be set when the `exportableContent` field of the [Model.supported_export_formats] object contains `IMAGE`.",
           "$ref": "GoogleCloudAiplatformV1beta1ContainerRegistryDestination"
         }
       }
@@ -2842,12 +2943,12 @@
           }
         },
         "outputDisplayName": {
-          "description": "Output only. The display name of the output identified by output_index, e.g. the predicted class name by a multi-classification Model. This field is only populated iff the Model predicts display names as a separate field along with the explained output. The predicted display name must has the same shape of the explained output, and can be located using output_index.",
+          "description": "Output only. The display name of the output identified by output_index. For example, the predicted class name by a multi-classification Model. This field is only populated iff the Model predicts display names as a separate field along with the explained output. The predicted display name must has the same shape of the explained output, and can be located using output_index.",
           "readOnly": true,
           "type": "string"
         },
         "approximationError": {
-          "description": "Output only. Error of feature_attributions caused by approximation used in the explanation method. Lower value means more precise attributions. * For Sampled Shapley attribution, increasing path_count may reduce the error. * For Integrated Gradients attribution, increasing step_count may reduce the error. * For XRAI attribution, increasing step_count may reduce the error. Refer to AI Explanations Whitepaper for more details: https: \/\/storage.googleapis.com\/cloud-ai-whitep \/\/ apers\/AI%20Explainability%20Whitepaper.pdf",
+          "description": "Output only. Error of feature_attributions caused by approximation used in the explanation method. Lower value means more precise attributions. * For Sampled Shapley attribution, increasing path_count might reduce the error. * For Integrated Gradients attribution, increasing step_count might reduce the error. * For XRAI attribution, increasing step_count might reduce the error. See [this introduction](\/ai-platform-unified\/docs\/explainable-ai\/overview) for more information.",
           "readOnly": true,
           "type": "number",
           "format": "double"
@@ -3067,11 +3168,11 @@
           "$ref": "GoogleCloudAiplatformV1beta1TimestampSplit"
         },
         "gcsDestination": {
-          "description": "The Google Cloud Storage location where the training data is to be written to. In the given directory a new directory will be created with name: `dataset---` where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. All training input data will be written into that directory. The AI Platform environment variables representing Google Cloud Storage data URIs will always be represented in the Google Cloud Storage wildcard format to support sharded data. e.g.: \"gs:\/\/...\/training-*.jsonl\" * AIP_DATA_FORMAT = \"jsonl\" for non-tabular data, \"csv\" for tabular data * AIP_TRAINING_DATA_URI = \"gcs_destination\/dataset---\/training-*.${AIP_DATA_FORMAT}\" * AIP_VALIDATION_DATA_URI = \"gcs_destination\/dataset---\/validation-*.${AIP_DATA_FORMAT}\" * AIP_TEST_DATA_URI = \"gcs_destination\/dataset---\/test-*.${AIP_DATA_FORMAT}\"",
+          "description": "The Cloud Storage location where the training data is to be written to. In the given directory a new directory is created with name: `dataset---` where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. All training input data is written into that directory. The AI Platform environment variables representing Cloud Storage data URIs are represented in the Cloud Storage wildcard format to support sharded data. e.g.: \"gs:\/\/...\/training-*.jsonl\" * AIP_DATA_FORMAT = \"jsonl\" for non-tabular data, \"csv\" for tabular data * AIP_TRAINING_DATA_URI = \"gcs_destination\/dataset---\/training-*.${AIP_DATA_FORMAT}\" * AIP_VALIDATION_DATA_URI = \"gcs_destination\/dataset---\/validation-*.${AIP_DATA_FORMAT}\" * AIP_TEST_DATA_URI = \"gcs_destination\/dataset---\/test-*.${AIP_DATA_FORMAT}\"",
           "$ref": "GoogleCloudAiplatformV1beta1GcsDestination"
         },
         "bigqueryDestination": {
-          "description": "The BigQuery project location where the training data is to be written to. In the given project a new dataset is created with name `dataset---` where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. All training input data will be written into that dataset. In the dataset three tables will be created, `training`, `validation` and `test`. * AIP_DATA_FORMAT = \"bigquery\". * AIP_TRAINING_DATA_URI = \"bigquery_destination.dataset---.training\" * AIP_VALIDATION_DATA_URI = \"bigquery_destination.dataset---.validation\" * AIP_TEST_DATA_URI = \"bigquery_destination.dataset---.test\"",
+          "description": "Only applicable to custom training with tabular Dataset with BigQuery source. The BigQuery project location where the training data is to be written to. In the given project a new dataset is created with name `dataset___` where timestamp is in YYYY_MM_DDThh_mm_ss_sssZ format. All training input data is written into that dataset. In the dataset three tables are created, `training`, `validation` and `test`. * AIP_DATA_FORMAT = \"bigquery\". * AIP_TRAINING_DATA_URI = \"bigquery_destination.dataset___.training\" * AIP_VALIDATION_DATA_URI = \"bigquery_destination.dataset___.validation\" * AIP_TEST_DATA_URI = \"bigquery_destination.dataset___.test\"",
           "$ref": "GoogleCloudAiplatformV1beta1BigQueryDestination"
         },
         "datasetId": {
@@ -3083,14 +3184,14 @@
           "type": "string"
         },
         "annotationSchemaUri": {
-          "description": "Only applicable to custom training. Google Cloud Storage URI points to a YAML file describing annotation schema. The schema is defined as an OpenAPI 3.0.2 [Schema Object]( https: \/\/github.com\/OAI\/OpenAPI-Specification\/b \/\/ lob\/master\/versions\/3.0.2.md#schema-object) The schema files that can be used here are found in gs:\/\/google-cloud-aiplatform\/schema\/dataset\/annotation\/, note that the chosen schema must be consistent with metadata of the Dataset specified by dataset_id. Only Annotations that both match this schema and belong to DataItems not ignored by the split method are used in respectively training, validation or test role, depending on the role of the DataItem they are on. When used in conjunction with annotations_filter, the Annotations used for training are filtered by both annotations_filter and annotation_schema_uri.",
+          "description": "Only applicable to custom training with unstructured Dataset. Google Cloud Storage URI points to a YAML file describing annotation schema. The schema is defined as an OpenAPI 3.0.2 [Schema Object]( https: \/\/github.com\/OAI\/OpenAPI-Specification\/b \/\/ lob\/master\/versions\/3.0.2.md#schema-object) The schema files that can be used here are found in gs:\/\/google-cloud-aiplatform\/schema\/dataset\/annotation\/, note that the chosen schema must be consistent with metadata of the Dataset specified by dataset_id. Only Annotations that both match this schema and belong to DataItems not ignored by the split method are used in respectively training, validation or test role, depending on the role of the DataItem they are on. When used in conjunction with annotations_filter, the Annotations used for training are filtered by both annotations_filter and annotation_schema_uri.",
           "type": "string"
         }
       }
     },
     "GoogleCloudAiplatformV1beta1FractionSplit": {
       "id": "GoogleCloudAiplatformV1beta1FractionSplit",
-      "description": "Assigns the input data to training, validation, and test sets as per the given fractions. Any of `training_fraction`, `validation_fraction` and `test_fraction` may optionally be provided, they must sum to up to 1. If the provided ones sum to less than 1, the remainder is assigned to sets as decided by AI Platform. If none of the fractions are set, by default roughly 80% of data will be used for training, 10% for validation, and 10% for test.",
+      "description": "Assigns the input data to training, validation, and test sets as per the given fractions. Any of `training_fraction`, `validation_fraction` and `test_fraction` may optionally be provided, they must sum to up to 1. If the provided ones sum to less than 1, the remainder is assigned to sets as decided by AI Platform. If none of the fractions are set, by default roughly 80% of data is used for training, 10% for validation, and 10% for test.",
       "type": "object",
       "properties": {
         "trainingFraction": {
@@ -3112,19 +3213,19 @@
     },
     "GoogleCloudAiplatformV1beta1FilterSplit": {
       "id": "GoogleCloudAiplatformV1beta1FilterSplit",
-      "description": "Assigns input data to training, validation, and test sets based on the given filters, data pieces not matched by any filter are ignored. Currently only supported for Datasets containing DataItems. If any of the filters in this message are to match nothing, then they can be set as '-' (the minus sign).",
+      "description": "Assigns input data to training, validation, and test sets based on the given filters, data pieces not matched by any filter are ignored. Currently only supported for Datasets containing DataItems. If any of the filters in this message are to match nothing, then they can be set as '-' (the minus sign). Supported only for unstructured Datasets. ",
       "type": "object",
       "properties": {
         "trainingFilter": {
-          "description": "Required. A filter on DataItems of the Dataset. DataItems that match this filter are used to train the Model. A filter with same syntax as the one used in DatasetService.ListDataItems may be used. If a single DataItem is matched by more than one of the FilterSplit filters, then it will be assigned to the first set that applies to it in the training, validation, test order.",
+          "description": "Required. A filter on DataItems of the Dataset. DataItems that match this filter are used to train the Model. A filter with same syntax as the one used in DatasetService.ListDataItems may be used. If a single DataItem is matched by more than one of the FilterSplit filters, then it is assigned to the first set that applies to it in the training, validation, test order.",
           "type": "string"
         },
         "validationFilter": {
-          "description": "Required. A filter on DataItems of the Dataset. DataItems that match this filter are used to validate the Model. A filter with same syntax as the one used in DatasetService.ListDataItems may be used. If a single DataItem is matched by more than one of the FilterSplit filters, then it will be assigned to the first set that applies to it in the training, validation, test order.",
+          "description": "Required. A filter on DataItems of the Dataset. DataItems that match this filter are used to validate the Model. A filter with same syntax as the one used in DatasetService.ListDataItems may be used. If a single DataItem is matched by more than one of the FilterSplit filters, then it is assigned to the first set that applies to it in the training, validation, test order.",
           "type": "string"
         },
         "testFilter": {
-          "description": "Required. A filter on DataItems of the Dataset. DataItems that match this filter are used to test the Model. A filter with same syntax as the one used in DatasetService.ListDataItems may be used. If a single DataItem is matched by more than one of the FilterSplit filters, then it will be assigned to the first set that applies to it in the training, validation, test order.",
+          "description": "Required. A filter on DataItems of the Dataset. DataItems that match this filter are used to test the Model. A filter with same syntax as the one used in DatasetService.ListDataItems may be used. If a single DataItem is matched by more than one of the FilterSplit filters, then it is assigned to the first set that applies to it in the training, validation, test order.",
           "type": "string"
         }
       }
@@ -4038,7 +4139,7 @@
       "type": "object",
       "properties": {
         "noiseSigma": {
-          "description": "This is a single float value and will be used to add noise to all the features. Use this field when all features are normalized to have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring, where features are normalized to have 0-mean and 1-variance. Refer to this doc for more details about normalization: https: \/\/developers.google.com\/machine-learning \/\/ \/data-prep\/transform\/normalization. For best results the recommended value is about 10% - 20% of the standard deviation of the input feature. Refer to section 3.2 of the SmoothGrad paper: https:\/\/arxiv.org\/pdf\/1706.03825.pdf. Defaults to 0.1. If the distribution is different per feature, set feature_noise_sigma instead for each feature.",
+          "description": "This is a single float value and will be used to add noise to all the features. Use this field when all features are normalized to have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring, where features are normalized to have 0-mean and 1-variance. For more details about normalization: https:\/\/tinyurl.com\/dgc-normalization. For best results the recommended value is about 10% - 20% of the standard deviation of the input feature. Refer to section 3.2 of the SmoothGrad paper: https:\/\/arxiv.org\/pdf\/1706.03825.pdf. Defaults to 0.1. If the distribution is different per feature, set feature_noise_sigma instead for each feature.",
           "type": "number",
           "format": "float"
         },
@@ -4085,7 +4186,7 @@
     },
     "GoogleCloudAiplatformUiXraiAttribution": {
       "id": "GoogleCloudAiplatformUiXraiAttribution",
-      "description": "An explanation method that redistributes Integrated Gradients attributions to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 Only supports image Models (modality is IMAGE).",
+      "description": "An explanation method that redistributes Integrated Gradients attributions to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 Supported only by image Models.",
       "type": "object",
       "properties": {
         "stepCount": {
@@ -4105,7 +4206,7 @@
       "type": "object",
       "properties": {
         "inputs": {
-          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature . Once specified, featureAttributions will be keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance[].",
+          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature . Once specified, featureAttributions will be keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformUiExplanationMetadataInputMetadata"
@@ -4762,6 +4863,10 @@
       "properties": {
         "maskGcsUri": {
           "description": "Google Cloud Storage URI that points to the mask image. The image must be in PNG format. It must have the same size as the DataItem's image. Each pixel in the image mask represents the AnnotationSpec which the pixel in the image DataItem belong to. Each color is mapped to one AnnotationSpec based on annotation_spec_colors.",
+          "type": "string"
+        },
+        "maskUri": {
+          "description": "Signed HTTP URI points to the mask, expires in 10 minutes.",
           "type": "string"
         },
         "annotationSpecColors": {
@@ -5738,7 +5843,7 @@
       "type": "object",
       "properties": {
         "inputs": {
-          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature . Once specified, featureAttributions will be keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance[].",
+          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature . Once specified, featureAttributions will be keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadata"
@@ -10978,7 +11083,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see [FieldMask](https: \/\/tinyurl.com\/dev-google-protobuf#google.protobuf.FieldMask). Updatable fields: * `display_name` * `description` * `labels`",
+                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see [FieldMask](https:\/\/tinyurl.com\/protobufs\/google.protobuf#fieldmask). Updatable fields: * `display_name` * `description` * `labels`",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -12167,7 +12272,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. The update mask applies to the resource.",
+                      "description": "Required. The update mask applies to the resource. See [FieldMask](https:\/\/tinyurl.com\/protobufs\/google.protobuf#fieldmask).",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -13589,7 +13694,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see [FieldMask](https: \/\/developers.google.com\/protocol-buffers \/\/ \/docs\/reference\/google.protobuf#fieldmask).",
+                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see [FieldMask](https:\/\/tinyurl.com\/protobufs\/google.protobuf#fieldmask).",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

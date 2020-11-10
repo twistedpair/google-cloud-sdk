@@ -161,6 +161,18 @@ def ForwardingRuleArgumentForRoute(required=True):
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
+def ForwardingRuleArgumentForServiceAttachment(required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='forwarding rule',
+      name='--producer-forwarding-rule',
+      completer=ForwardingRulesCompleter,
+      plural=False,
+      required=required,
+      regional_collection='compute.forwardingRules',
+      short_help='Target forwarding rule that receives forwarded traffic.',
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
+
+
 BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     name='--backend-service',
     required=False,

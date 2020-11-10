@@ -155,8 +155,10 @@ class AccessapprovalFoldersApprovalRequestsListRequest(_messages.Message):
       of the following values: * [not set]: Requests that are pending or have
       active approvals. * ALL: All requests. * PENDING: Only pending requests.
       * ACTIVE: Only active (i.e. currently approved) requests. * DISMISSED:
-      Only dismissed (including expired) requests. * HISTORY: Active and
-      dismissed (including expired) requests.
+      Only requests that have been dismissed, or requests that . are not
+      approved and past expiration. * EXPIRED: Only requests that have been
+      approved, and the approval has expired. * HISTORY: Active, dismissed and
+      expired requests.
     pageSize: Requested page size.
     pageToken: A token identifying the page of results to return.
     parent: The parent resource. This may be "projects/{project}",
@@ -258,8 +260,10 @@ class AccessapprovalOrganizationsApprovalRequestsListRequest(_messages.Message):
       of the following values: * [not set]: Requests that are pending or have
       active approvals. * ALL: All requests. * PENDING: Only pending requests.
       * ACTIVE: Only active (i.e. currently approved) requests. * DISMISSED:
-      Only dismissed (including expired) requests. * HISTORY: Active and
-      dismissed (including expired) requests.
+      Only requests that have been dismissed, or requests that . are not
+      approved and past expiration. * EXPIRED: Only requests that have been
+      approved, and the approval has expired. * HISTORY: Active, dismissed and
+      expired requests.
     pageSize: Requested page size.
     pageToken: A token identifying the page of results to return.
     parent: The parent resource. This may be "projects/{project}",
@@ -361,8 +365,10 @@ class AccessapprovalProjectsApprovalRequestsListRequest(_messages.Message):
       of the following values: * [not set]: Requests that are pending or have
       active approvals. * ALL: All requests. * PENDING: Only pending requests.
       * ACTIVE: Only active (i.e. currently approved) requests. * DISMISSED:
-      Only dismissed (including expired) requests. * HISTORY: Active and
-      dismissed (including expired) requests.
+      Only requests that have been dismissed, or requests that . are not
+      approved and past expiration. * EXPIRED: Only requests that have been
+      approved, and the approval has expired. * HISTORY: Active, dismissed and
+      expired requests.
     pageSize: Requested page size.
     pageToken: A token identifying the page of results to return.
     parent: The parent resource. This may be "projects/{project}",

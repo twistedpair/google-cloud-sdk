@@ -133,6 +133,66 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class DailyCycle(_messages.Message):
+  r"""Time window specified for daily operations.
+
+  Fields:
+    duration: Output only. Duration of the time window, set by service
+      producer.
+    startTime: Time within the day to start the operations.
+  """
+
+  duration = _messages.StringField(1)
+  startTime = _messages.MessageField('TimeOfDay', 2)
+
+
+class Date(_messages.Message):
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values * A month and day value, with a zero year, such as an
+  anniversary * A year on its own, with zero month and day values * A year and
+  month value, with a zero day, such as a credit card expiration date Related
+  types are google.type.TimeOfDay and `google.protobuf.Timestamp`.
+
+  Fields:
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
+      without a month and day.
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class DenyMaintenancePeriod(_messages.Message):
+  r"""DenyMaintenancePeriod definition. Maintenance is forbidden within the
+  deny period. The start_date must be less than the end_date.
+
+  Fields:
+    endDate: Deny period end date. This can be: * A full date, with non-zero
+      year, month and day values. * A month and day value, with a zero year.
+      Allows recurring deny periods each year. Date matching this period will
+      have to be before the end.
+    startDate: Deny period start date. This can be: * A full date, with non-
+      zero year, month and day values. * A month and day value, with a zero
+      year. Allows recurring deny periods each year. Date matching this period
+      will have to be the same or after the start.
+    time: Time in UTC when the Blackout period starts on start_date and ends
+      on end_date. This can be: * Full time. * All zeros for 00:00:00 UTC
+  """
+
+  endDate = _messages.MessageField('Date', 1)
+  startDate = _messages.MessageField('Date', 2)
+  time = _messages.MessageField('TimeOfDay', 3)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -427,11 +487,11 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     LabelsValue: Optional. Resource labels to represent user provided
       metadata. Each label is a key-value pair, where both the key and the
       value are arbitrary strings provided by the user.
-    MaintenancePolicyNamesValue: The MaintenancePolicies that have been
-      attached to the instance. The key must be of the type name of the oneof
-      policy name defined in MaintenancePolicy, and the referenced policy must
-      define the same policy type. For complete details of MaintenancePolicy,
-      please refer to go/cloud-saas-mw-ug.
+    MaintenancePolicyNamesValue: Deprecated. The MaintenancePolicies that have
+      been attached to the instance. The key must be of the type name of the
+      oneof policy name defined in MaintenancePolicy, and the referenced
+      policy must define the same policy type. For complete details of
+      MaintenancePolicy, please refer to go/cloud-saas-mw-ug.
     MaintenanceSchedulesValue: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule with same key as
       software_versions.
@@ -451,11 +511,11 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     labels: Optional. Resource labels to represent user provided metadata.
       Each label is a key-value pair, where both the key and the value are
       arbitrary strings provided by the user.
-    maintenancePolicyNames: The MaintenancePolicies that have been attached to
-      the instance. The key must be of the type name of the oneof policy name
-      defined in MaintenancePolicy, and the referenced policy must define the
-      same policy type. For complete details of MaintenancePolicy, please
-      refer to go/cloud-saas-mw-ug.
+    maintenancePolicyNames: Deprecated. The MaintenancePolicies that have been
+      attached to the instance. The key must be of the type name of the oneof
+      policy name defined in MaintenancePolicy, and the referenced policy must
+      define the same policy type. For complete details of MaintenancePolicy,
+      please refer to go/cloud-saas-mw-ug.
     maintenanceSchedules: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule with same key as
       software_versions.
@@ -534,11 +594,11 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MaintenancePolicyNamesValue(_messages.Message):
-    r"""The MaintenancePolicies that have been attached to the instance. The
-    key must be of the type name of the oneof policy name defined in
-    MaintenancePolicy, and the referenced policy must define the same policy
-    type. For complete details of MaintenancePolicy, please refer to go/cloud-
-    saas-mw-ug.
+    r"""Deprecated. The MaintenancePolicies that have been attached to the
+    instance. The key must be of the type name of the oneof policy name
+    defined in MaintenancePolicy, and the referenced policy must define the
+    same policy type. For complete details of MaintenancePolicy, please refer
+    to go/cloud-saas-mw-ug.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -688,13 +748,62 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messag
   r"""Maintenance settings associated with instance. Allows service producers
   and end users to assign settings that controls maintenance on this instance.
 
+  Messages:
+    MaintenancePoliciesValue: Optional. The MaintenancePolicies that have been
+      attached to the instance. The key must be of the type name of the oneof
+      policy name defined in MaintenancePolicy, and the embedded policy must
+      define the same policy type. For complete details of MaintenancePolicy,
+      please refer to go/cloud-saas-mw-ug. If only the name is needed (like in
+      the deprecated Instance.maintenance_policy_names field) then only
+      populate MaintenancePolicy.name.
+
   Fields:
     exclude: Optional. Exclude instance from maintenance. When true, rollout
       service will not attempt maintenance on the instance. Rollout service
       will include the instance in reported rollout progress as not attempted.
+    maintenancePolicies: Optional. The MaintenancePolicies that have been
+      attached to the instance. The key must be of the type name of the oneof
+      policy name defined in MaintenancePolicy, and the embedded policy must
+      define the same policy type. For complete details of MaintenancePolicy,
+      please refer to go/cloud-saas-mw-ug. If only the name is needed (like in
+      the deprecated Instance.maintenance_policy_names field) then only
+      populate MaintenancePolicy.name.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MaintenancePoliciesValue(_messages.Message):
+    r"""Optional. The MaintenancePolicies that have been attached to the
+    instance. The key must be of the type name of the oneof policy name
+    defined in MaintenancePolicy, and the embedded policy must define the same
+    policy type. For complete details of MaintenancePolicy, please refer to
+    go/cloud-saas-mw-ug. If only the name is needed (like in the deprecated
+    Instance.maintenance_policy_names field) then only populate
+    MaintenancePolicy.name.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        MaintenancePoliciesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MaintenancePoliciesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MaintenancePoliciesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A MaintenancePolicy attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('MaintenancePolicy', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   exclude = _messages.BooleanField(1)
+  maintenancePolicies = _messages.MessageField('MaintenancePoliciesValue', 2)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.Message):
@@ -1067,6 +1176,96 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class MaintenancePolicy(_messages.Message):
+  r"""Defines policies to service maintenance events.
+
+  Enums:
+    StateValueValuesEnum: Optional. The state of the policy.
+
+  Messages:
+    LabelsValue: Optional. Resource labels to represent user provided
+      metadata. Each label is a key-value pair, where both the key and the
+      value are arbitrary strings provided by the user.
+
+  Fields:
+    createTime: Output only. The time when the resource was created.
+    description: Optional. Description of what this policy is for.
+      Create/Update methods return INVALID_ARGUMENT if the length is greater
+      than 512.
+    labels: Optional. Resource labels to represent user provided metadata.
+      Each label is a key-value pair, where both the key and the value are
+      arbitrary strings provided by the user.
+    name: Required. MaintenancePolicy name using the form: `projects/{project_
+      id}/locations/{location_id}/maintenancePolicies/{maintenance_policy_id}`
+      where {project_id} refers to a GCP consumer project ID, {location_id}
+      refers to a GCP region/zone, {maintenance_policy_id} must be 1-63
+      characters long and match the regular expression
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`.
+    state: Optional. The state of the policy.
+    updatePolicy: Maintenance policy applicable to instance update.
+    updateTime: Output only. The time when the resource was updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Optional. The state of the policy.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      READY: Resource is ready to be used.
+      DELETING: Resource is being deleted. It can no longer be attached to
+        instances.
+    """
+    STATE_UNSPECIFIED = 0
+    READY = 1
+    DELETING = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels to represent user provided metadata. Each
+    label is a key-value pair, where both the key and the value are arbitrary
+    strings provided by the user.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 6)
+  updateTime = _messages.StringField(7)
+
+
+class MaintenanceWindow(_messages.Message):
+  r"""MaintenanceWindow definition.
+
+  Fields:
+    dailyCycle: Daily cycle.
+    weeklyCycle: Weekly cycle.
+  """
+
+  dailyCycle = _messages.MessageField('DailyCycle', 1)
+  weeklyCycle = _messages.MessageField('WeeklyCycle', 2)
+
+
 class NetworkConfig(_messages.Message):
   r"""Network configuration for the instance.
 
@@ -1256,6 +1455,47 @@ class RestoreInstanceRequest(_messages.Message):
   sourceBackup = _messages.StringField(2)
 
 
+class Schedule(_messages.Message):
+  r"""Configure the schedule.
+
+  Enums:
+    DayValueValuesEnum: Allows to define schedule that runs specified day of
+      the week.
+
+  Fields:
+    day: Allows to define schedule that runs specified day of the week.
+    duration: Output only. Duration of the time window, set by service
+      producer.
+    startTime: Time within the window to start the operations.
+  """
+
+  class DayValueValuesEnum(_messages.Enum):
+    r"""Allows to define schedule that runs specified day of the week.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  day = _messages.EnumField('DayValueValuesEnum', 1)
+  duration = _messages.StringField(2)
+  startTime = _messages.MessageField('TimeOfDay', 3)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1368,6 +1608,72 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TimeOfDay(_messages.Message):
+  r"""Represents a time of day. The date and time zone are either not
+  significant or are specified elsewhere. An API may choose to allow leap
+  seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
+
+  Fields:
+    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
+      choose to allow the value "24:00:00" for scenarios like business closing
+      time.
+    minutes: Minutes of hour of day. Must be from 0 to 59.
+    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
+    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
+      API may allow the value 60 if it allows leap-seconds.
+  """
+
+  hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class UpdatePolicy(_messages.Message):
+  r"""Maintenance policy applicable to instance updates.
+
+  Enums:
+    ChannelValueValuesEnum: Optional. Relative scheduling channel applied to
+      resource.
+
+  Fields:
+    channel: Optional. Relative scheduling channel applied to resource.
+    denyMaintenancePeriods: Deny Maintenance Period that is applied to
+      resource to indicate when maintenance is forbidden. User can specify
+      zero or more non-overlapping deny periods. For V1, Maximum number of
+      deny_maintenance_periods is expected to be one.
+    window: Optional. Maintenance window that is applied to resources covered
+      by this policy.
+  """
+
+  class ChannelValueValuesEnum(_messages.Enum):
+    r"""Optional. Relative scheduling channel applied to resource.
+
+    Values:
+      UPDATE_CHANNEL_UNSPECIFIED: Unspecified channel.
+      EARLIER: Early channel within a customer project.
+      LATER: Later channel within a customer project.
+    """
+    UPDATE_CHANNEL_UNSPECIFIED = 0
+    EARLIER = 1
+    LATER = 2
+
+  channel = _messages.EnumField('ChannelValueValuesEnum', 1)
+  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 2, repeated=True)
+  window = _messages.MessageField('MaintenanceWindow', 3)
+
+
+class WeeklyCycle(_messages.Message):
+  r"""Time window specified for weekly operations.
+
+  Fields:
+    schedule: User can specify multiple windows in a week. Minimum of 1
+      window.
+  """
+
+  schedule = _messages.MessageField('Schedule', 1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

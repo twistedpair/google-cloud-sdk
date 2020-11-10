@@ -235,8 +235,11 @@ class AnthosEventsOperations(object):
 
     self._api_version = api_version
 
-    # used for triggers and sources
+    # used for triggers
     self._client = v1beta1_client
+
+    # used for cloudsources
+    self._cloudsources_client = v1_client
 
     # used for operator
     self._operator_client = v1alpha1_client
@@ -343,6 +346,14 @@ class AnthosEventsOperations(object):
       raise exceptions.TriggerNotFound(
           'Trigger [{}] not found.'.format(trigger_ref.Name()))
 
+  def ClientFromCrd(self, source_crd):
+    """Returns the correct client for the source."""
+    if 'v1' in source_crd.getActiveSourceVersions():
+      client = self._cloudsources_client
+    else:
+      client = self._client
+    return client
+
   def _FindSourceMethod(self, source_crd, method_name):
     """Returns the given method for the given source kind.
 
@@ -359,11 +370,15 @@ class AnthosEventsOperations(object):
     Returns:
       registry.APIMethod, holds information for the requested method.
     """
+    if 'v1' in source_crd.getActiveSourceVersions():
+      source_api_version = 'v1'
+    else:
+      source_api_version = 'v1beta1'
     return registry.GetMethod(
         util.ANTHOS_SOURCE_COLLECTION_NAME.format(
             plural_kind=source_crd.source_kind_plural),
         method_name,
-        api_version=self._api_version)
+        api_version=source_api_version)
 
   def SourceGetMethod(self, source_crd):
     """Returns the request method for a Get request of this source."""
@@ -379,15 +394,18 @@ class AnthosEventsOperations(object):
 
   def GetSource(self, source_ref, source_crd):
     """Returns the referenced source."""
+    client = self.ClientFromCrd(source_crd)
+    messages = client.MESSAGES_MODULE
+
     request_method = self.SourceGetMethod(source_crd)
     request_message_type = request_method.GetRequestType()
     request = request_message_type(name=source_ref.RelativeName())
     try:
       with metrics.RecordDuration(metric_names.GET_SOURCE):
-        response = request_method.Call(request, client=self._client)
+        response = request_method.Call(request, client=client)
     except api_exceptions.HttpNotFoundError:
       return None
-    return source.Source(response, self.messages, source_crd.source_kind)
+    return source.Source(response, messages, source_crd.source_kind)
 
   def CreateSource(self, source_obj, source_crd, owner_trigger, namespace_ref,
                    broker_name, parameters):
@@ -406,10 +424,14 @@ class AnthosEventsOperations(object):
     Returns:
       source.Source of the created source.
     """
+    client = self.ClientFromCrd(source_crd)
+    messages = client.MESSAGES_MODULE
+
     source_obj.ce_overrides[trigger.SOURCE_TRIGGER_LINK_FIELD] = (
         owner_trigger.filter_attributes[trigger.SOURCE_TRIGGER_LINK_FIELD])
+
     source_obj.owners.append(
-        self.messages.OwnerReference(
+        messages.OwnerReference(
             apiVersion=owner_trigger.apiVersion,
             kind=owner_trigger.kind,
             name=owner_trigger.name,
@@ -425,12 +447,12 @@ class AnthosEventsOperations(object):
         'parent': namespace_ref.RelativeName()})
     try:
       with metrics.RecordDuration(metric_names.CREATE_SOURCE):
-        response = request_method.Call(request, client=self._client)
+        response = request_method.Call(request, client=client)
     except api_exceptions.HttpConflictError:
       raise exceptions.SourceCreationError(
           'Source [{}] already exists.'.format(source_obj.name))
 
-    return source.Source(response, self.messages, source_crd.source_kind)
+    return source.Source(response, messages, source_crd.source_kind)
 
   def PollSource(self, source_obj, event_type, tracker):
     """Wait for source to be Ready == True."""
@@ -447,12 +469,14 @@ class AnthosEventsOperations(object):
 
   def DeleteSource(self, source_ref, source_crd):
     """Deletes the referenced source."""
+    client = self.ClientFromCrd(source_crd)
+
     request_method = self.SourceDeleteMethod(source_crd)
     request_message_type = request_method.GetRequestType()
     request = request_message_type(name=source_ref.RelativeName())
     try:
       with metrics.RecordDuration(metric_names.DELETE_SOURCE):
-        request_method.Call(request, client=self._client)
+        request_method.Call(request, client=client)
     except api_exceptions.HttpNotFoundError:
       raise exceptions.SourceNotFound(
           '{} events source [{}] not found.'.format(
@@ -477,6 +501,12 @@ class AnthosEventsOperations(object):
         custom_resource_definition.SourceCustomResourceDefinition(
             item, messages) for item in response.items
     ]
+
+    # The customresourcedefinition received in listResponse is missing their
+    # apiVersion's (intended), so manually insert apiVersion from listResponse.
+    for source_crd in source_crds:
+      source_crd.setApiVersion(response.apiVersion)
+
     # Only include CRDs for source kinds that are defined in the api.
     return [s for s in source_crds if hasattr(self.messages, s.source_kind)]
 

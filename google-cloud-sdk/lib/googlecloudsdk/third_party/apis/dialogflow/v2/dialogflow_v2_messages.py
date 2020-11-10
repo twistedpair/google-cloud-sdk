@@ -7072,6 +7072,37 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
   source = _messages.StringField(8)
 
 
+class GoogleCloudKnowledgeV1alpha1OperationMetadata(_messages.Message):
+  r"""Metadata in google::longrunning::Operation.
+
+  Enums:
+    StateValueValuesEnum: Required. The current state of this operation.
+
+  Fields:
+    errorCode: The error codes from Manifold endpoints' last failures.
+    message: The failure messages from Manifold endpoints' last failures.
+    state: Required. The current state of this operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Required. The current state of this operation.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state. Should never be used.
+      PENDING: The operation has been created.
+      RUNNING: The operation is currently running.
+      DONE: The operation is done, either cancelled or completed.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    DONE = 3
+
+  errorCode = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  message = _messages.StringField(2, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
 class GoogleLongrunningListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 

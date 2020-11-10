@@ -39,7 +39,7 @@ class SparkRBase(job_base.JobBase):
         metavar='FILE',
         default=[],
         help='Comma separated list of files to be placed in the working '
-        'directory of each executor.')
+        'directory of both the app master and executors.')
     parser.add_argument(
         '--archives',
         type=arg_parsers.ArgList(),

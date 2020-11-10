@@ -215,6 +215,9 @@ class Instance(_messages.Message):
       protects the instance against zonal failures by provisioning it across
       two zones. If provided, it must be a different zone from the one
       provided in location_id.
+    authEnabled: Optional. Indicates whether OSS Redis AUTH is enabled for the
+      instance. If set to "true" AUTH is enabled on the instance. Default
+      value is "false" meaning AUTH is disabled.
     authorizedNetwork: Optional. The full name of the Google Compute Engine
       [network](https://cloud.google.com/vpc/docs/vpc) to which the instance
       is connected. If left unspecified, the `default` network will be used.
@@ -384,24 +387,35 @@ class Instance(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   alternativeLocationId = _messages.StringField(1)
-  authorizedNetwork = _messages.StringField(2)
-  connectMode = _messages.EnumField('ConnectModeValueValuesEnum', 3)
-  createTime = _messages.StringField(4)
-  currentLocationId = _messages.StringField(5)
-  displayName = _messages.StringField(6)
-  host = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  locationId = _messages.StringField(9)
-  memorySizeGb = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  name = _messages.StringField(11)
-  persistenceIamIdentity = _messages.StringField(12)
-  port = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 14)
-  redisVersion = _messages.StringField(15)
-  reservedIpRange = _messages.StringField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  statusMessage = _messages.StringField(18)
-  tier = _messages.EnumField('TierValueValuesEnum', 19)
+  authEnabled = _messages.BooleanField(2)
+  authorizedNetwork = _messages.StringField(3)
+  connectMode = _messages.EnumField('ConnectModeValueValuesEnum', 4)
+  createTime = _messages.StringField(5)
+  currentLocationId = _messages.StringField(6)
+  displayName = _messages.StringField(7)
+  host = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  locationId = _messages.StringField(10)
+  memorySizeGb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  name = _messages.StringField(12)
+  persistenceIamIdentity = _messages.StringField(13)
+  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 15)
+  redisVersion = _messages.StringField(16)
+  reservedIpRange = _messages.StringField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  statusMessage = _messages.StringField(19)
+  tier = _messages.EnumField('TierValueValuesEnum', 20)
+
+
+class InstanceAuthString(_messages.Message):
+  r"""Instance AUTH string details.
+
+  Fields:
+    authString: AUTH string set on the instance.
+  """
+
+  authString = _messages.StringField(1)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -739,6 +753,18 @@ class RedisProjectsLocationsInstancesFailoverRequest(_messages.Message):
 
   failoverInstanceRequest = _messages.MessageField('FailoverInstanceRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class RedisProjectsLocationsInstancesGetAuthStringRequest(_messages.Message):
+  r"""A RedisProjectsLocationsInstancesGetAuthStringRequest object.
+
+  Fields:
+    name: Required. Redis instance resource name using the form:
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+      where `location_id` refers to a GCP region.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class RedisProjectsLocationsInstancesGetRequest(_messages.Message):

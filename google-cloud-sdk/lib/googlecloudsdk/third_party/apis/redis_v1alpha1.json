@@ -359,7 +359,7 @@
           "type": "boolean"
         },
         "serverCaCerts": {
-          "description": "Output only. List of server CA certificates for the instance. The visibility of this data will be controlled by a GetInstanceRequest.view field once CCFE support partial view of GetInstance. https:\/\/google.aip.dev\/157.",
+          "description": "Output only. List of server CA certificates for the instance.",
           "readOnly": true,
           "type": "array",
           "items": {

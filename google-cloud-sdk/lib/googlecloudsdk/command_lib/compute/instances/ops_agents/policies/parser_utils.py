@@ -365,8 +365,11 @@ def _AddGroupLabelsArgument(parser):
 
       Optional. The ``--group-labels'' flag needs to be quoted. Each label map
       item in the list are separated by ```;```. To manage instance labels,
-      refer to the ```gcloud beta compute instances add-labels``` and the
-      ```gcloud beta compute instances remove-labels``` commands.
+      refer to:
+
+        $ gcloud beta compute instances add-labels
+
+        $ gcloud beta compute instances remove-labels
 
       Each label map item in the ``--group-labels'' list is a map in the format
       of ``LABEL_NAME=LABEL_VALUE,LABEL_NAME=LABEL_VALUE,...''. An instance has

@@ -113,7 +113,7 @@
   "schemas": {
     "Operation": {
       "id": "Operation",
-      "description": "An Operation resource. For successful operations that return an Operation resource, only the fields relevant to the operation are populated in the resource.",
+      "description": "An Operation resource. For successful operations that return an Operation resource, only the fields relevant to the operation are populated in the resource. Next field: 18",
       "type": "object",
       "properties": {
         "kind": {
@@ -247,6 +247,10 @@
         "exportContext": {
           "description": "The context for export operation, if applicable.",
           "$ref": "ExportContext"
+        },
+        "backupContext": {
+          "description": "The context for backup operation, if applicable.",
+          "$ref": "BackupContext"
         },
         "name": {
           "description": "An identifier that uniquely identifies the operation. You can use this identifier to retrieve the Operations resource that has information about the operation.",
@@ -459,6 +463,22 @@
         "offload": {
           "description": "Option for export offload.",
           "type": "boolean"
+        }
+      }
+    },
+    "BackupContext": {
+      "id": "BackupContext",
+      "description": "Backup context.",
+      "type": "object",
+      "properties": {
+        "backupId": {
+          "description": "The identifier of the backup.",
+          "type": "string",
+          "format": "int64"
+        },
+        "kind": {
+          "description": "This is always *sql#backupContext*.",
+          "type": "string"
         }
       }
     },
@@ -3852,7 +3872,7 @@
                   "type": "string"
                 },
                 "syncMode": {
-                  "description": "External sync mode",
+                  "description": "External sync mode.",
                   "location": "query",
                   "type": "string",
                   "enumDescriptions": [

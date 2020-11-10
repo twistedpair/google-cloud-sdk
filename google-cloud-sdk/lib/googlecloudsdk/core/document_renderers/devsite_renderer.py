@@ -90,6 +90,7 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
     self._blank = True
     if not self._example:
       self._example = True
+      self._in_command_block = False
       self._fill = 2
       if not self._lang:
         self._out.write('<pre class="prettyprint lang-sh">\n')
@@ -100,25 +101,27 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
             lang=self._lang))
     indent = len(line)
     line = line.lstrip()
-    indent -= len(line)
-    terminal_pattern = re.compile(r'\A\$\s+')
+    indent -= len(line.lstrip())
     last_char = line[-1:]
-    last_char_is_backslash = last_char == '\\'
-    if last_char_is_backslash:  # get backslashes out of multiline commands
-      line = line[:-1]
-    if terminal_pattern.match(line):  # if start of command in line open tag
+    command_pattern = re.compile(r'\A\$\s+')
+    if command_pattern.match(line):
+      self._in_command_block = True
+      self._command_block_indent = indent
       self._out.write('<code class="devsite-terminal">')
-      self._opentag = True
-      self._out.write(terminal_pattern.sub('', line))
+      line = command_pattern.sub('', line)
+    if self._in_command_block:
+      if indent > self._command_block_indent:
+        self._out.write(' ')
+      if last_char == '\\':
+        self._out.write(line[:-1])
+      else:
+        self._in_command_block = False
+        self._out.write(line)
+        self._out.write('</code>\n')
     else:
-      if not self._opentag:
-        self._out.write(' ' * (self._fill + indent))  # indent non-commands
+      self._out.write(' ' * (self._fill + indent))
       self._out.write(line)
-    if not last_char_is_backslash:  # if end of command in line close tag
-      if self._opentag:
-        self._out.write('</code>')
-        self._opentag = False
-      self._out.write('\n')  # if last char is backslash don't newline
+      self._out.write('\n')
 
   def Link(self, target, text):
     """Renders an anchor.

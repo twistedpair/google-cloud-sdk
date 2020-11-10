@@ -2616,6 +2616,27 @@
       "properties": {
       }
     },
+    "GoogleCloudMlV1__ListOptimalTrialsRequest": {
+      "id": "GoogleCloudMlV1__ListOptimalTrialsRequest",
+      "description": "The request message for the ListTrials service method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudMlV1__ListOptimalTrialsResponse": {
+      "id": "GoogleCloudMlV1__ListOptimalTrialsResponse",
+      "description": "The response message for the ListOptimalTrials method.",
+      "type": "object",
+      "properties": {
+        "trials": {
+          "description": "The pareto-optimal trials for multiple objective study or the optimal trial for single objective study. The definition of pareto-optimal can be checked in wiki page. https:\/\/en.wikipedia.org\/wiki\/Pareto_efficiency",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudMlV1__Trial"
+          }
+        }
+      }
+    },
     "GoogleIamV1__SetIamPolicyRequest": {
       "id": "GoogleIamV1__SetIamPolicyRequest",
       "description": "Request message for `SetIamPolicy` method.",
@@ -2684,7 +2705,6 @@
           "$ref": "GoogleType__Expr"
         },
         "bindingId": {
-          "description": "A client-specified ID for this binding. Expected to be globally unique to support the internal bindings-by-ID API.",
           "type": "string"
         }
       }
@@ -3778,6 +3798,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Stops a trial."
+                    },
+                    "listOptimalTrials": {
+                      "id": "ml.projects.locations.studies.trials.listOptimalTrials",
+                      "path": "v1/{+parent}/trials:listOptimalTrials",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials:listOptimalTrials",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The name of the study that the pareto-optimal trial belongs to.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudMlV1__ListOptimalTrialsRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudMlV1__ListOptimalTrialsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists the pareto-optimal trials for multi-objective study or the optimal trials for single-objective study. The definition of pareto-optimal can be checked in wiki page. https:\/\/en.wikipedia.org\/wiki\/Pareto_efficiency"
                     }
                   }
                 }

@@ -271,15 +271,12 @@ class CloudApi(object):
     raise NotImplementedError('copy_object must be overridden')
 
   def download_object(self,
-                      bucket_name,
-                      object_name,
+                      cloud_resource,
                       download_stream,
                       compressed_encoding=False,
                       decryption_wrapper=None,
                       digesters=None,
                       download_strategy=DownloadStrategy.ONE_SHOT,
-                      generation=None,
-                      object_size=None,
                       progress_callback=None,
                       serialization_data=None,
                       start_byte=0,
@@ -287,8 +284,8 @@ class CloudApi(object):
     """Gets object data.
 
     Args:
-      bucket_name (str): Bucket containing the object.
-      object_name (str): Object name.
+      cloud_resource (resource_reference.ObjectResource): Contains
+          metadata and information about object being downloaded.
       download_stream (stream): Stream to send the object data to.
       compressed_encoding (bool): If true, object is stored with a compressed
           encoding.
@@ -302,8 +299,6 @@ class CloudApi(object):
           successfully digested on-the-fly.
       download_strategy (DownloadStrategy): Cloud API download strategy to use
           for download.
-      generation (string): Generation of the object to retrieve.
-      object_size (int): Total size of the object being downloaded.
       progress_callback (function): Optional callback function for progress
           notifications. Receives calls with arguments
           (bytes_transferred, total_size).
@@ -327,16 +322,16 @@ class CloudApi(object):
     raise NotImplementedError('download_object must be overridden.')
 
   def upload_object(self,
-                    upload_stream,
-                    upload_resource,
+                    source_stream,
+                    destination_resource,
                     progress_callback=None,
                     request_config=None):
     """Uploads object data and metadata.
 
     Args:
-      upload_stream (stream): Seekable stream of object data.
-      upload_resource (resource_reference.FileObjectResource): Resource
-          containing the correct metadata to upload.
+      source_stream (stream): Seekable stream of object data.
+      destination_resource  (resource_reference.ObjectResource|UnknownResource):
+          Contains the correct metadata to upload.
       progress_callback (function): Callback function for progress
           notifications. Receives calls with arguments (bytes_transferred,
           total_size).

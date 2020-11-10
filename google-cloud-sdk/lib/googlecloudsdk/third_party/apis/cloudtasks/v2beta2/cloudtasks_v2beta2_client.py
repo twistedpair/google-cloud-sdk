@@ -434,7 +434,7 @@ class CloudtasksV2beta2(base_api.BaseApiClient):
         method_id='cloudtasks.projects.locations.queues.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'readMask'],
         relative_path='v2beta2/{+parent}/queues',
         request_field='',
         request_type_name='CloudtasksProjectsLocationsQueuesListRequest',

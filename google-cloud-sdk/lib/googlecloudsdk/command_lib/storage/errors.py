@@ -22,5 +22,9 @@ from __future__ import unicode_literals
 from googlecloudsdk.core import exceptions as core_exceptions
 
 
+class HashMismatchError(core_exceptions.Error):
+  """Error raised when hashes don't match after operation."""
+
+
 class InvalidUrlError(core_exceptions.Error):
   """Error raised when the url string is not in the expected format."""

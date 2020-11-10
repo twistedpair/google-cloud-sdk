@@ -718,9 +718,9 @@ class AiplatformProjectsLocationsDatasetsPatchRequest(_messages.Message):
       request body.
     name: Output only. The resource name of the Dataset.
     updateMask: Required. The update mask applies to the resource. For the
-      `FieldMask` definition, see [FieldMask](https: //tinyurl.com/dev-google-
-      protobuf#google.protobuf.FieldMask). Updatable fields: * `display_name`
-      * `description` * `labels`
+      `FieldMask` definition, see
+      [FieldMask](https://tinyurl.com/protobufs/google.protobuf#fieldmask).
+      Updatable fields: * `display_name` * `description` * `labels`
   """
 
   googleCloudAiplatformV1alpha1Dataset = _messages.MessageField('GoogleCloudAiplatformV1alpha1Dataset', 1)
@@ -963,7 +963,8 @@ class AiplatformProjectsLocationsEndpointsPatchRequest(_messages.Message):
       GoogleCloudAiplatformV1alpha1Endpoint resource to be passed as the
       request body.
     name: Output only. The resource name of the Endpoint.
-    updateMask: Required. The update mask applies to the resource.
+    updateMask: Required. The update mask applies to the resource. See
+      [FieldMask](https://tinyurl.com/protobufs/google.protobuf#fieldmask).
   """
 
   googleCloudAiplatformV1alpha1Endpoint = _messages.MessageField('GoogleCloudAiplatformV1alpha1Endpoint', 1)
@@ -3022,7 +3023,7 @@ class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
       Platform provided Tensorflow images, the key can be any friendly name of
       the feature . Once specified, featureAttributions will be keyed by this
       key (if not grouped with another feature). For custom images, the key
-      must match with the key in instance[].
+      must match with the key in instance.
     OutputsValue: Required. Map from output names to output metadata. For AI
       Platform provided Tensorflow images, keys can be any string user
       defines. For custom images, keys are the name of the output field in the
@@ -3045,7 +3046,7 @@ class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
       Platform provided Tensorflow images, the key can be any friendly name of
       the feature . Once specified, featureAttributions will be keyed by this
       key (if not grouped with another feature). For custom images, the key
-      must match with the key in instance[].
+      must match with the key in instance.
     outputs: Required. Map from output names to output metadata. For AI
       Platform provided Tensorflow images, keys can be any string user
       defines. For custom images, keys are the name of the output field in the
@@ -3062,7 +3063,7 @@ class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
     Tensorflow images, the key can be any friendly name of the feature . Once
     specified, featureAttributions will be keyed by this key (if not grouped
     with another feature). For custom images, the key must match with the key
-    in instance[].
+    in instance.
 
     Messages:
       AdditionalProperty: An additional property for a InputsValue object.
@@ -4012,10 +4013,12 @@ class GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationMaskAnnotation(_me
       DataItem's image. Each pixel in the image mask represents the
       AnnotationSpec which the pixel in the image DataItem belong to. Each
       color is mapped to one AnnotationSpec based on annotation_spec_colors.
+    maskUri: Signed HTTP URI points to the mask, expires in 10 minutes.
   """
 
   annotationSpecColors = _messages.MessageField('GoogleCloudAiplatformUiSchemaAnnotationSpecColor', 1, repeated=True)
   maskGcsUri = _messages.StringField(2)
+  maskUri = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationPolygonAnnotation(_messages.Message):
@@ -4486,13 +4489,11 @@ class GoogleCloudAiplatformUiSmoothGradConfig(_messages.Message):
     noiseSigma: This is a single float value and will be used to add noise to
       all the features. Use this field when all features are normalized to
       have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring,
-      where features are normalized to have 0-mean and 1-variance. Refer to
-      this doc for more details about normalization: https:
-      //developers.google.com/machine-learning // /data-
-      prep/transform/normalization. For best results the recommended value is
-      about 10% - 20% of the standard deviation of the input feature. Refer to
-      section 3.2 of the SmoothGrad paper:
-      https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
+      where features are normalized to have 0-mean and 1-variance. For more
+      details about normalization: https://tinyurl.com/dgc-normalization. For
+      best results the recommended value is about 10% - 20% of the standard
+      deviation of the input feature. Refer to section 3.2 of the SmoothGrad
+      paper: https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
       distribution is different per feature, set feature_noise_sigma instead
       for each feature.
     noisySampleCount: The number of gradient samples to use for approximation.
@@ -4591,8 +4592,7 @@ class GoogleCloudAiplatformUiXraiAttribution(_messages.Message):
   r"""An explanation method that redistributes Integrated Gradients
   attributions to segmented regions, taking advantage of the model's fully
   differentiable structure. Refer to this paper for more details:
-  https://arxiv.org/abs/1906.02825 Only supports image Models (modality is
-  IMAGE).
+  https://arxiv.org/abs/1906.02825 Supported only by image Models.
 
   Fields:
     smoothGradConfig: Config for SmoothGrad approximation of gradients. When
@@ -4735,11 +4735,11 @@ class GoogleCloudAiplatformV1alpha1Attribution(_messages.Message):
     approximationError: Output only. Error of feature_attributions caused by
       approximation used in the explanation method. Lower value means more
       precise attributions. * For Sampled Shapley attribution, increasing
-      path_count may reduce the error. * For Integrated Gradients attribution,
-      increasing step_count may reduce the error. * For XRAI attribution,
-      increasing step_count may reduce the error. Refer to AI Explanations
-      Whitepaper for more details: https: //storage.googleapis.com/cloud-ai-
-      whitep // apers/AI%20Explainability%20Whitepaper.pdf
+      path_count might reduce the error. * For Integrated Gradients
+      attribution, increasing step_count might reduce the error. * For XRAI
+      attribution, increasing step_count might reduce the error. See [this
+      introduction](/ai-platform-unified/docs/explainable-ai/overview) for
+      more information.
     baselineOutputValue: Output only. Model predicted output if the input
       instance is constructed from the baselines of all the features defined
       in ExplanationMetadata.inputs. The field name of the output is
@@ -4769,11 +4769,11 @@ class GoogleCloudAiplatformV1alpha1Attribution(_messages.Message):
       predicted output has multiple dimensions, this is the value in the
       output located by output_index.
     outputDisplayName: Output only. The display name of the output identified
-      by output_index, e.g. the predicted class name by a multi-classification
-      Model. This field is only populated iff the Model predicts display names
-      as a separate field along with the explained output. The predicted
-      display name must has the same shape of the explained output, and can be
-      located using output_index.
+      by output_index. For example, the predicted class name by a multi-
+      classification Model. This field is only populated iff the Model
+      predicts display names as a separate field along with the explained
+      output. The predicted display name must has the same shape of the
+      explained output, and can be located using output_index.
     outputIndex: Output only. The index that locates the explained prediction
       output. If the prediction output is a scalar value, output_index is not
       populated. If the prediction output has multiple dimensions, the length
@@ -5857,7 +5857,7 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
       Platform provided Tensorflow images, the key can be any friendly name of
       the feature . Once specified, featureAttributions will be keyed by this
       key (if not grouped with another feature). For custom images, the key
-      must match with the key in instance[].
+      must match with the key in instance.
     OutputsValue: Required. Map from output names to output metadata. For AI
       Platform provided Tensorflow images, keys can be any string user
       defines. For custom images, keys are the name of the output field in the
@@ -5880,7 +5880,7 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
       Platform provided Tensorflow images, the key can be any friendly name of
       the feature . Once specified, featureAttributions will be keyed by this
       key (if not grouped with another feature). For custom images, the key
-      must match with the key in instance[].
+      must match with the key in instance.
     outputs: Required. Map from output names to output metadata. For AI
       Platform provided Tensorflow images, keys can be any string user
       defines. For custom images, keys are the name of the output field in the
@@ -5897,7 +5897,7 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
     Tensorflow images, the key can be any friendly name of the feature . Once
     specified, featureAttributions will be keyed by this key (if not grouped
     with another feature). For custom images, the key must match with the key
-    in instance[].
+    in instance.
 
     Messages:
       AdditionalProperty: An additional property for a InputsValue object.
@@ -6212,27 +6212,27 @@ class GoogleCloudAiplatformV1alpha1FilterSplit(_messages.Message):
   given filters, data pieces not matched by any filter are ignored. Currently
   only supported for Datasets containing DataItems. If any of the filters in
   this message are to match nothing, then they can be set as '-' (the minus
-  sign).
+  sign). Supported only for unstructured Datasets.
 
   Fields:
     testFilter: Required. A filter on DataItems of the Dataset. DataItems that
       match this filter are used to test the Model. A filter with same syntax
       as the one used in DatasetService.ListDataItems may be used. If a single
       DataItem is matched by more than one of the FilterSplit filters, then it
-      will be assigned to the first set that applies to it in the training,
+      is assigned to the first set that applies to it in the training,
       validation, test order.
     trainingFilter: Required. A filter on DataItems of the Dataset. DataItems
       that match this filter are used to train the Model. A filter with same
       syntax as the one used in DatasetService.ListDataItems may be used. If a
       single DataItem is matched by more than one of the FilterSplit filters,
-      then it will be assigned to the first set that applies to it in the
-      training, validation, test order.
+      then it is assigned to the first set that applies to it in the training,
+      validation, test order.
     validationFilter: Required. A filter on DataItems of the Dataset.
       DataItems that match this filter are used to validate the Model. A
       filter with same syntax as the one used in DatasetService.ListDataItems
       may be used. If a single DataItem is matched by more than one of the
-      FilterSplit filters, then it will be assigned to the first set that
-      applies to it in the training, validation, test order.
+      FilterSplit filters, then it is assigned to the first set that applies
+      to it in the training, validation, test order.
   """
 
   testFilter = _messages.StringField(1)
@@ -6246,7 +6246,7 @@ class GoogleCloudAiplatformV1alpha1FractionSplit(_messages.Message):
   `test_fraction` may optionally be provided, they must sum to up to 1. If the
   provided ones sum to less than 1, the remainder is assigned to sets as
   decided by AI Platform. If none of the fractions are set, by default roughly
-  80% of data will be used for training, 10% for validation, and 10% for test.
+  80% of data is used for training, 10% for validation, and 10% for test.
 
   Fields:
     testFraction: The fraction of the input data that is to be used to
@@ -7067,12 +7067,12 @@ class GoogleCloudAiplatformV1alpha1Model(_messages.Message):
       to 128 characters long and can be consist of any UTF-8 characters.
     etag: Used to perform consistent read-modify-write updates. If not set, a
       blind "overwrite" update happens.
-    explanationSpec: Output only. The default explanation specification for
-      this Model. Model can be used for requesting explanation after being
-      deployed iff it is populated. All fields of the explanation_spec can be
-      overridden by explanation_spec of DeployModelRequest.deployed_model.
-      This field is populated only for tabular AutoML Models. Specifying it
-      with ModelService.UploadModel is not supported.
+    explanationSpec: The default explanation specification for this Model. The
+      Model can be used for requesting explanation after being deployed iff it
+      is populated. The Model can be used for batch explanation iff it is
+      populated. All fields of the explanation_spec can be overridden by
+      explanation_spec of DeployModelRequest.deployed_model, or
+      explanation_spec of BatchPredictionJob.
     labels: The labels with user-defined metadata to organize your Models.
       Label keys and values can be no longer than 64 characters (Unicode
       codepoints), can only contain lowercase letters, numeric characters,
@@ -7107,7 +7107,7 @@ class GoogleCloudAiplatformV1alpha1Model(_messages.Message):
       one entry each in supported_input_storage_formats and
       supported_output_storage_formats.
     supportedExportFormats: Output only. The formats in which this Model may
-      be exported. If empty, this Model is not avaiable for export.
+      be exported. If empty, this Model is not available for export.
     supportedInputStorageFormats: Output only. The formats this Model supports
       in BatchPredictionJob.input_config. If
       PredictSchemata.instance_schema_uri exists, the instances should be
@@ -7211,9 +7211,8 @@ class GoogleCloudAiplatformV1alpha1Model(_messages.Message):
 
 class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
   r"""Specification of a container for serving predictions. This message is a
-  subset of the [Kubernetes Container v1 core specification](https:
-  //kubernetes.io/docs/reference/generated // /kubernetes-
-  api/v1.18/#container-v1-core).
+  subset of the Kubernetes Container v1 core
+  [specification](https://tinyurl.com/k8s-io-api/v1.18/#container-v1-core).
 
   Fields:
     args: Immutable. Specifies arguments for the command that runs when the
@@ -7222,61 +7221,54 @@ class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
       this field as an array of executable and arguments, similar to a Docker
       `CMD`'s "default parameters" form. If you don't specify this field but
       do specify the command field, then the command from the `command` field
-      runs without any additional arguments. See the [Kubernetes documentation
-      about how the `command` and `args` fields interact with a container's
-      `ENTRYPOINT` and `CMD`](https: //kubernetes.io/docs/tasks/inject-data-a
-      // pplication/define-command-argument-container/#notes). If you don't
-      specify this field and don't specify the `command` field, then the
+      runs without any additional arguments. See the [Kubernetes
+      documentation](https://tinyurl.com/y8bvllf4) about how the `command` and
+      `args` fields interact with a container's `ENTRYPOINT` and `CMD`. If you
+      don't specify this field and don't specify the `command` field, then the
       container's
       [`ENTRYPOINT`](https://docs.docker.com/engine/reference/builder/#cmd)
       and `CMD` determine what runs based on their default behavior. See the
-      [Docker documentation about how `CMD` and `ENTRYPOINT` interact](https:
-      //docs.docker.com/engine/reference/build // er/#understand-how-cmd-and-
-      entrypoint-interact). In this field, you can reference [environment
-      variables set by AI Platform](https: //cloud.google.com/ai-platform-
-      unified/d // ocs/predictions/custom-container-requirements#aip-
-      variables) and environment variables set in the env field. You cannot
-      reference environment variables set in the Docker image. In order for
-      environment variables to be expanded, reference them by using the
-      following syntax: $( VARIABLE_NAME) Note that this differs from Bash
-      variable expansion, which does not use parentheses. If a variable cannot
-      be resolved, the reference in the input string is used unchanged. To
-      avoid variable expansion, you can escape this syntax with `$$`; for
-      example: $$(VARIABLE_NAME) This field corresponds to the `args` field of
-      the [Kubernetes Containers v1 core API](https:
-      //kubernetes.io/docs/reference/generated // /kubernetes-
+      Docker documentation about how `CMD` and `ENTRYPOINT`
+      [interact](https://tinyurl.com/h3kdcgs). In this field, you can
+      reference environment variables [set by AI
+      Platform](https://tinyurl.com/cust-cont-reqs#aip-variables) and
+      environment variables set in the env field. You cannot reference
+      environment variables set in the Docker image. In order for environment
+      variables to be expanded, reference them by using the following syntax:
+      $(VARIABLE_NAME) Note that this differs from Bash variable expansion,
+      which does not use parentheses. If a variable cannot be resolved, the
+      reference in the input string is used unchanged. To avoid variable
+      expansion, you can escape this syntax with `$$`; for example:
+      $$(VARIABLE_NAME) This field corresponds to the `args` field of the
+      Kubernetes Containers [v1 core API](https://tinyurl.com/k8s-io-
       api/v1.18/#container-v1-core).
     command: Immutable. Specifies the command that runs when the container
-      starts. This overrides the container's [`ENTRYPOINT`](https:
-      //docs.docker.com/engine/reference/builder/#entrypoint). Specify this
-      field as an array of executable and arguments, similar to a Docker
-      `ENTRYPOINT`'s "exec" form, not its "shell" form. If you do not specify
-      this field, then the container's `ENTRYPOINT` runs, in conjunction with
-      the args field or the container's
+      starts. This overrides the container's [ENTRYPOINT](https://docs.docker.
+      com/engine/reference/builder/#entrypoint). Specify this field as an
+      array of executable and arguments, similar to a Docker `ENTRYPOINT`'s
+      "exec" form, not its "shell" form. If you do not specify this field,
+      then the container's `ENTRYPOINT` runs, in conjunction with the args
+      field or the container's
       [`CMD`](https://docs.docker.com/engine/reference/builder/#cmd), if
       either exists. If this field is not specified and the container does not
-      have an `ENTRYPOINT`, then refer to the [Docker documentation about how
-      `CMD` and `ENTRYPOINT` interact](https:
-      //docs.docker.com/engine/reference/build // er/#understand-how-cmd-and-
-      entrypoint-interact). If you specify this field, then you can also
-      specify the `args` field to provide additional arguments for this
-      command. However, if you specify this field, then the container's `CMD`
-      is ignored. See the [Kubernetes documentation about how the `command`
-      and `args` fields interact with a container's `ENTRYPOINT` and
-      `CMD`](https: //kubernetes.io/docs/tasks/inject-data-a //
-      pplication/define-command-argument-container/#notes). In this field, you
-      can reference [environment variables set by AI Platform](https:
-      //cloud.google.com/ai-platform-unified/d // ocs/predictions/custom-
-      container-requirements#aip-variables) and environment variables set in
-      the env field. You cannot reference environment variables set in the
-      Docker image. In order for environment variables to be expanded,
-      reference them by using the following syntax: $( VARIABLE_NAME) Note
-      that this differs from Bash variable expansion, which does not use
-      parentheses. If a variable cannot be resolved, the reference in the
-      input string is used unchanged. To avoid variable expansion, you can
-      escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field
-      corresponds to the `command` field of the [Kubernetes Containers v1 core
-      API](https: //kubernetes.io/docs/reference/generated // /kubernetes-
+      have an `ENTRYPOINT`, then refer to the Docker documentation about how
+      `CMD` and `ENTRYPOINT` [interact](https://tinyurl.com/h3kdcgs). If you
+      specify this field, then you can also specify the `args` field to
+      provide additional arguments for this command. However, if you specify
+      this field, then the container's `CMD` is ignored. See the [Kubernetes
+      documentation](https://tinyurl.com/y8bvllf4) about how the `command` and
+      `args` fields interact with a container's `ENTRYPOINT` and `CMD`. In
+      this field, you can reference environment variables [set by AI
+      Platform](https://tinyurl.com/cust-cont-reqs#aip-variables) and
+      environment variables set in the env field. You cannot reference
+      environment variables set in the Docker image. In order for environment
+      variables to be expanded, reference them by using the following syntax:
+      $(VARIABLE_NAME) Note that this differs from Bash variable expansion,
+      which does not use parentheses. If a variable cannot be resolved, the
+      reference in the input string is used unchanged. To avoid variable
+      expansion, you can escape this syntax with `$$`; for example:
+      $$(VARIABLE_NAME) This field corresponds to the `command` field of the
+      Kubernetes Containers [v1 core API](https://tinyurl.com/k8s-io-
       api/v1.18/#container-v1-core).
     env: Immutable. List of environment variables to set in the container.
       After the container starts running, code running in the container can
@@ -7287,16 +7279,14 @@ class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
       "VAR_1", "value": "foo" }, { "name": "VAR_2", "value": "$(VAR_1) bar" }
       ] ``` If you switch the order of the variables in the example, then the
       expansion does not occur. This field corresponds to the `env` field of
-      the [Kubernetes Containers v1 core API](https:
-      //kubernetes.io/docs/reference/generated // /kubernetes-
+      the Kubernetes Containers [v1 core API](https://tinyurl.com/k8s-io-
       api/v1.18/#container-v1-core).
     healthRoute: Immutable. HTTP path on the container to send health checkss
       to. AI Platform intermittently sends GET requests to this path on the
       container's IP address and port to check that the container is healthy.
-      Read more about [health checks](https: //cloud.google.com/ai-platform-
-      unified/d // ocs/predictions/custom-container-requirements#checks). For
-      example, if you set this field to `/bar`, then AI Platform
-      intermittently sends a GET request to the following URL on the
+      Read more about [health checks](https://tinyurl.com/cust-cont-
+      reqs#checks). For example, if you set this field to `/bar`, then AI
+      Platform intermittently sends a GET request to the following URL on the
       container: localhost:PORT/bar PORT refers to the first value of this
       `ModelContainerSpec`'s ports field. If you don't specify this field, it
       defaults to the following value when you deploy this Model to an
@@ -7304,36 +7294,32 @@ class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
       The placeholders in this value are replaced as follows: * ENDPOINT: The
       last segment (following `endpoints/`)of the Endpoint.name][] field of
       the Endpoint where this Model has been deployed. (AI Platform makes this
-      value available to your container code as the [`AIP_ENDPOINT_ID`
-      environment variable](https: //cloud.google.com/ai-platform-unified/d //
-      ocs/predictions/custom-container-requirements#aip-variables).) *
-      DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform
-      makes this value available to your container code as the
-      [`AIP_DEPLOYED_MODEL_ID` environment variable](https:
-      //cloud.google.com/ai-platform-unified/d // ocs/predictions/custom-
-      container-requirements#aip-variables).)
+      value available to your container code as the
+      [`AIP_ENDPOINT_ID`](https://tinyurl.com/cust-cont-reqs#aip-variables)
+      environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the
+      `DeployedModel`. (AI Platform makes this value available to your
+      container code as the
+      [`AIP_DEPLOYED_MODEL_ID`](https://tinyurl.com/cust-cont-reqs#aip-
+      variables) environment variable.)
     imageUri: Required. Immutable. URI of the Docker image to be used as the
       custom container for serving predictions. This URI must identify an
       image in Artifact Registry or Container Registry. Learn more about the
-      [container publishing requirements](https: //cloud.google.com/ai-
-      platform-unified/d // ocs/predictions/custom-container-
-      requirements#publishing), including permissions requirements for the AI
-      Platform Service Agent. The container image is ingested upon
+      container publishing requirements, including permissions requirements
+      for the AI Platform Service Agent, [here](https://tinyurl.com/cust-cont-
+      reqs#publishing). The container image is ingested upon
       ModelService.UploadModel, stored internally, and this original path is
       afterwards not used. To learn about the requirements for the Docker
-      image itself, read [Custom container requirements](https:
-      //cloud.google.com/ai-platform-unified/d // ocs/predictions/custom-
-      container-requirements).
+      image itself, see [Custom container
+      requirements](https://tinyurl.com/cust-cont-reqs).
     ports: Immutable. List of ports to expose from the container. AI Platform
       sends any prediction requests that it receives to the first port on this
-      list. AI Platform also sends [liveness and health checks](https:
-      //cloud.google.com/ai-platform-unified/d // ocs/predictions/custom-
-      container-requirements#health) to this port. If you do not specify this
-      field, it defaults to following value: ```json [ { "containerPort": 8080
-      } ] ``` AI Platform does not use ports other than the first one listed.
-      This field corresponds to the `ports` field of the [Kubernetes
-      Containers v1 core API](https: //kubernetes.io/docs/reference/generated
-      // /kubernetes-api/v1.18/#container-v1-core).
+      list. AI Platform also sends [liveness and health
+      checks](https://tinyurl.com/cust-cont-reqs#health) to this port. If you
+      do not specify this field, it defaults to following value: ```json [ {
+      "containerPort": 8080 } ] ``` AI Platform does not use ports other than
+      the first one listed. This field corresponds to the `ports` field of the
+      Kubernetes Containers [v1 core API](https://tinyurl.com/k8s-io-
+      api/v1.18/#container-v1-core).
     predictRoute: Immutable. HTTP path on the container to send prediction
       requests to. AI Platform forwards requests sent using
       projects.locations.endpoints.predict to this path on the container's IP
@@ -7348,14 +7334,12 @@ class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
       The placeholders in this value are replaced as follows: * ENDPOINT: The
       last segment (following `endpoints/`)of the Endpoint.name][] field of
       the Endpoint where this Model has been deployed. (AI Platform makes this
-      value available to your container code as the [`AIP_ENDPOINT_ID`
-      environment variable](https: //cloud.google.com/ai-platform-unified/d //
-      ocs/predictions/custom-container-requirements#aip-variables).) *
-      DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform
-      makes this value available to your container code as the
-      [`AIP_DEPLOYED_MODEL_ID` environment variable](https:
-      //cloud.google.com/ai-platform-unified/d // ocs/predictions/custom-
-      container-requirements#aip-variables).)
+      value available to your container code as the
+      [`AIP_ENDPOINT_ID`](https://tinyurl.com/cust-cont-reqs#aip-variables)
+      environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the
+      `DeployedModel`. (AI Platform makes this value available to your
+      container code as the [`AIP_DEPLOYED_MODEL_ID` environment
+      variable](https://tinyurl.com/cust-cont-reqs#aip-variables).)
   """
 
   args = _messages.StringField(1, repeated=True)
@@ -8948,7 +8932,7 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
       Platform provided Tensorflow images, the key can be any friendly name of
       the feature . Once specified, featureAttributions will be keyed by this
       key (if not grouped with another feature). For custom images, the key
-      must match with the key in instance[].
+      must match with the key in instance.
     OutputsValue: Required. Map from output names to output metadata. For AI
       Platform provided Tensorflow images, keys can be any string user
       defines. For custom images, keys are the name of the output field in the
@@ -8971,7 +8955,7 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
       Platform provided Tensorflow images, the key can be any friendly name of
       the feature . Once specified, featureAttributions will be keyed by this
       key (if not grouped with another feature). For custom images, the key
-      must match with the key in instance[].
+      must match with the key in instance.
     outputs: Required. Map from output names to output metadata. For AI
       Platform provided Tensorflow images, keys can be any string user
       defines. For custom images, keys are the name of the output field in the
@@ -8988,7 +8972,7 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
     Tensorflow images, the key can be any friendly name of the feature . Once
     specified, featureAttributions will be keyed by this key (if not grouped
     with another feature). For custom images, the key must match with the key
-    in instance[].
+    in instance.
 
     Messages:
       AdditionalProperty: An additional property for a InputsValue object.
@@ -11875,13 +11859,11 @@ class GoogleCloudAiplatformV1beta1SmoothGradConfig(_messages.Message):
     noiseSigma: This is a single float value and will be used to add noise to
       all the features. Use this field when all features are normalized to
       have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring,
-      where features are normalized to have 0-mean and 1-variance. Refer to
-      this doc for more details about normalization: https:
-      //developers.google.com/machine-learning // /data-
-      prep/transform/normalization. For best results the recommended value is
-      about 10% - 20% of the standard deviation of the input feature. Refer to
-      section 3.2 of the SmoothGrad paper:
-      https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
+      where features are normalized to have 0-mean and 1-variance. For more
+      details about normalization: https://tinyurl.com/dgc-normalization. For
+      best results the recommended value is about 10% - 20% of the standard
+      deviation of the input feature. Refer to section 3.2 of the SmoothGrad
+      paper: https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
       distribution is different per feature, set feature_noise_sigma instead
       for each feature.
     noisySampleCount: The number of gradient samples to use for approximation.
@@ -11977,8 +11959,7 @@ class GoogleCloudAiplatformV1beta1XraiAttribution(_messages.Message):
   r"""An explanation method that redistributes Integrated Gradients
   attributions to segmented regions, taking advantage of the model's fully
   differentiable structure. Refer to this paper for more details:
-  https://arxiv.org/abs/1906.02825 Only supports image Models (modality is
-  IMAGE).
+  https://arxiv.org/abs/1906.02825 Supported only by image Models.
 
   Fields:
     smoothGradConfig: Config for SmoothGrad approximation of gradients. When

@@ -184,8 +184,6 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A client-specified ID for this binding. Expected to be globally
-      unique to support the internal bindings-by-ID API.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -229,10 +227,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class BindingDelta(_messages.Message):
@@ -1940,10 +1937,13 @@ class ServiceAccountKey(_messages.Message):
   System-managed keys are automatically rotated by Google, and are used for
   signing for a maximum of two weeks. The rotation process is probabilistic,
   and usage of the new key will gradually ramp up and down over the key's
-  lifetime. We recommend caching the public key set for a service account for
-  no more than 24 hours to ensure you have access to the latest keys. Public
-  keys for all service accounts are also published at the OAuth2 Service
-  Account API.
+  lifetime. If you cache the public key set for a service account, we
+  recommend that you update the cache every 15 minutes. User-managed keys can
+  be added and removed at any time, so it is important to update the cache
+  frequently. For Google-managed keys, Google will publish a key at least 6
+  hours before it is first used for signing and will keep publishing it for at
+  least 6 hours after it was last used for signing. Public keys for all
+  service accounts are also published at the OAuth2 Service Account API.
 
   Enums:
     KeyAlgorithmValueValuesEnum: Specifies the algorithm (and possibly key

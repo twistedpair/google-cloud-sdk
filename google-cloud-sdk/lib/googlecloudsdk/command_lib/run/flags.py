@@ -43,6 +43,7 @@ from googlecloudsdk.command_lib.run import pretty_print
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.command_lib.util.args import repeated
+from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -726,6 +727,20 @@ def AddArgsFlag(parser):
       'To reset this field to its default, pass an empty string.')
 
 
+def AddClientNameAndVersionFlags(parser):
+  """Add flags for specifying the client name and version annotations."""
+  parser.add_argument(
+      '--client-name',
+      hidden=True,
+      help="Name of the client handling the deployment. Defaults to ``global'' "
+      'if this and --client-version are both unspecified.')
+  parser.add_argument(
+      '--client-version',
+      hidden=True,
+      help='Version of the client handling the deployment. Defaults to the '
+      'current gcloud version if this and --client-name are both unspecified.')
+
+
 def _PortValue(value):
   """Returns True if port value is an int within range or 'default'."""
   try:
@@ -1028,6 +1043,16 @@ def GetConfigurationChanges(args):
   """Returns a list of changes to Configuration, based on the flags set."""
   changes = []
 
+  # Set client name and version regardless of whether or not it was specified.
+  if 'client_name' in args:
+    is_either_specified = (
+        args.IsSpecified('client_name') or args.IsSpecified('client_version'))
+    changes.append(
+        config_changes.SetClientNameAndVersionAnnotationChange(
+            args.client_name if is_either_specified else 'gcloud',
+            args.client_version
+            if is_either_specified else config.CLOUD_SDK_VERSION))
+
   # FlagIsExplicitlySet can't be used here because args.image is also set from
   # code in deploy.py.
   if hasattr(args, 'image') and args.image is not None:
@@ -1247,21 +1272,21 @@ def GetKubeconfig(args):
   if encoding.GetEncodedValue(os.environ, 'KUBECONFIG'):
     config_paths = encoding.GetEncodedValue(os.environ,
                                             'KUBECONFIG').split(os.pathsep)
-    config = None
+    kube_config = None
     # Merge together all valid paths into single config
     for path in config_paths:
       try:
         other_config = kubeconfig.Kubeconfig.LoadFromFile(
             files.ExpandHomeDir(path))
-        if not config:
-          config = other_config
+        if not kube_config:
+          kube_config = other_config
         else:
-          config.Merge(other_config)
+          kube_config.Merge(other_config)
       except kubeconfig.Error:
         pass
-    if not config:
+    if not kube_config:
       raise KubeconfigError('No valid file paths found in $KUBECONFIG')
-    return config
+    return kube_config
   return kubeconfig.Kubeconfig.LoadFromFile(
       files.ExpandHomeDir(_DEFAULT_KUBECONFIG_PATH))
 
@@ -1329,12 +1354,15 @@ def VerifyOnePlatformFlags(args, release_track, product):
             platform=PLATFORM_GKE,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
 
-  if FlagIsExplicitlySet(args, 'use_http2'):
+  if FlagIsExplicitlySet(
+      args, 'use_http2') and release_track != base.ReleaseTrack.ALPHA:
     raise serverless_exceptions.ConfigurationError(
-        error_msg.format(
-            flag='--[no-]-use-http2',
-            platform=PLATFORM_GKE,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+        'The `--use-http2` flag is only supported in the alpha release '
+        'track on the fully managed version of Cloud Run. Use `gcloud alpha` '
+        'to set `--use-http2` on Cloud Run (fully managed). Alternatively, '
+        'specify `--platform gke` or run '
+        '`gcloud config set run/platform gke`.'
+    )
 
   if FlagIsExplicitlySet(args, 'broker'):
     raise serverless_exceptions.ConfigurationError(

@@ -5,6 +5,57 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 318.0.0 (2020-11-10)
+
+### AI
+
+* Updated `--min-replica-count` in `gcloud beta ai endpoints deploy-model` to be
+  a non-required flag.
+* Added `--enable-access-logging`, `--enable-container-logging`, and
+  `--service-account` flags to `gcloud beta ai endpoints deploy-model`.
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.83.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+* Promoted `gcloud app services update` to GA.
+
+### App Engine Flexible Environment
+
+* Promoted `gcloud app services update` to GA.
+
+### Artifact Registry
+
+* Added `--show-occurrences` flag to `gcloud artifacts docker images list` command that enables showing metadata from Container Analysis API.
+
+### Cloud SQL
+
+* Added following flags of `gcloud sql instances create` and
+  `gcloud sql instances update` to GA:
+   * `--insights-config-query-insights-enabled`
+   * `--insights-config-query-string-length`
+   * `--insights-config-record-application-tags`
+   * `--insights-config-record-client-address`
+
+### Compute Engine
+
+* Added `--chain-name` to flag `gcloud compute disks snapshot`.
+* Added `PRIVATE_SERVICE_CONNECT` as a global address purpose to `gcloud beta compute forwarding-rules create`.
+* Added `--target-google-apis-bundle` to `gcloud beta compute forwarding-rules create`.
+* Added `--no-address` flag to `gcloud beta compute instances import`.
+
+### Kpt
+
+* Updated kpt from v0.35.0 to v0.36.1.
+* Updated import of cli-utils from v0.21.0 to v0.20.6.
+* Updated import of kyaml from v0.9.2 to v0.9.3.
+* Updated import of cmd/config from v0.8.3 to v0.8.4.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 317.0.0 (2020-11-03)
 
 ### Breaking Changes

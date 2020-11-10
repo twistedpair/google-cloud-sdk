@@ -1176,6 +1176,23 @@ class GoogleCloudMlV1ListModelsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudMlV1ListOptimalTrialsRequest(_messages.Message):
+  r"""The request message for the ListTrials service method."""
+
+
+class GoogleCloudMlV1ListOptimalTrialsResponse(_messages.Message):
+  r"""The response message for the ListOptimalTrials method.
+
+  Fields:
+    trials: The pareto-optimal trials for multiple objective study or the
+      optimal trial for single objective study. The definition of pareto-
+      optimal can be checked in wiki page.
+      https://en.wikipedia.org/wiki/Pareto_efficiency
+  """
+
+  trials = _messages.MessageField('GoogleCloudMlV1Trial', 1, repeated=True)
+
+
 class GoogleCloudMlV1ListStudiesResponse(_messages.Message):
   r"""A GoogleCloudMlV1ListStudiesResponse object.
 
@@ -3238,8 +3255,7 @@ class GoogleIamV1Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A client-specified ID for this binding. Expected to be globally
-      unique to support the internal bindings-by-ID API.
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -3955,6 +3971,21 @@ class MlProjectsLocationsStudiesTrialsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class MlProjectsLocationsStudiesTrialsListOptimalTrialsRequest(_messages.Message):
+  r"""A MlProjectsLocationsStudiesTrialsListOptimalTrialsRequest object.
+
+  Fields:
+    googleCloudMlV1ListOptimalTrialsRequest: A
+      GoogleCloudMlV1ListOptimalTrialsRequest resource to be passed as the
+      request body.
+    parent: Required. The name of the study that the pareto-optimal trial
+      belongs to.
+  """
+
+  googleCloudMlV1ListOptimalTrialsRequest = _messages.MessageField('GoogleCloudMlV1ListOptimalTrialsRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class MlProjectsLocationsStudiesTrialsListRequest(_messages.Message):

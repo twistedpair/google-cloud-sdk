@@ -2882,6 +2882,12 @@
                   "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
                   "location": "query",
                   "type": "string"
+                },
+                "resourceNames": {
+                  "description": "Optional. The resource name that owns the logs: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be: \"projects\/PROJECT_ID\" \"organizations\/ORGANIZATION_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\" \"folders\/FOLDER_ID\"",
+                  "location": "query",
+                  "repeated": true,
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -3928,6 +3934,12 @@
                   "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
                   "location": "query",
                   "type": "string"
+                },
+                "resourceNames": {
+                  "description": "Optional. The resource name that owns the logs: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be: \"projects\/PROJECT_ID\" \"organizations\/ORGANIZATION_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\" \"folders\/FOLDER_ID\"",
+                  "location": "query",
+                  "repeated": true,
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -4826,6 +4838,12 @@
                 "pageToken": {
                   "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
                   "location": "query",
+                  "type": "string"
+                },
+                "resourceNames": {
+                  "description": "Optional. The resource name that owns the logs: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be: \"projects\/PROJECT_ID\" \"organizations\/ORGANIZATION_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\" \"folders\/FOLDER_ID\"",
+                  "location": "query",
+                  "repeated": true,
                   "type": "string"
                 }
               },
@@ -6180,6 +6198,12 @@
                   "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
                   "location": "query",
                   "type": "string"
+                },
+                "resourceNames": {
+                  "description": "Optional. The resource name that owns the logs: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be: \"projects\/PROJECT_ID\" \"organizations\/ORGANIZATION_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\" \"folders\/FOLDER_ID\"",
+                  "location": "query",
+                  "repeated": true,
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -6250,6 +6274,12 @@
             "pageToken": {
               "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
               "location": "query",
+              "type": "string"
+            },
+            "resourceNames": {
+              "description": "Optional. The resource name that owns the logs: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be: \"projects\/PROJECT_ID\" \"organizations\/ORGANIZATION_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\" \"folders\/FOLDER_ID\"",
+              "location": "query",
+              "repeated": true,
               "type": "string"
             }
           },

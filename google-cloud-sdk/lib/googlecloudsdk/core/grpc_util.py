@@ -35,17 +35,15 @@ if six.PY2:
 class _MetadataPlugin(object):
   """Callable class to transform metadata for gRPC requests.
 
-  credentials: oauth2client.client.OAuth2Credentials, The OAuth2 Credentials to
-    use for creating access tokens.
+  access_token: The access token to authorize the request.
   """
 
-  def __init__(self, credentials):
-    self._credentials = credentials
+  def __init__(self, access_token):
+    self._access_token = access_token
 
   def __call__(self, unused_context, callback):
-    access_token = self._credentials.get_access_token().access_token
     headers = [
-        ('authorization', 'Bearer ' + access_token),
+        ('authorization', 'Bearer ' + self._access_token),
     ]
     callback(headers, None)
 
@@ -61,11 +59,11 @@ def MakeSecureChannel(target):
     grpc.secure channel.
   """
 
-  credentials = cred_store.Load()
+  access_token = cred_store.GetFreshAccessToken()
   # ssl_channel_credentials() loads root certificates from
   # `grpc/_adapter/credentials/roots.pem`.
   transport_creds = grpc.ssl_channel_credentials()
-  custom_metadata_plugin = _MetadataPlugin(credentials)
+  custom_metadata_plugin = _MetadataPlugin(access_token)
   auth_creds = grpc.metadata_call_credentials(
       custom_metadata_plugin, name='google_creds')
   channel_creds = grpc.composite_channel_credentials(

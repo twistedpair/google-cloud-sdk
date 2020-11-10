@@ -4625,8 +4625,7 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A client-specified ID for this binding. Expected to be globally
-      unique to support the internal bindings-by-ID API.
+    bindingId:
     condition: The condition that is associated with this binding.  If the
       condition evaluates to `true`, then this binding applies to the current
       request.  If the condition evaluates to `false`, then this binding does
@@ -32833,6 +32832,8 @@ class InterconnectAttachment(_messages.Message):
     customerRouterIpAddress: [Output Only] IPv4 address + prefix length to be
       configured on the customer router subinterface for this interconnect
       attachment.
+    dataplaneVersion: [Output Only] Dataplane version for this
+      InterconnectAttachment.
     description: An optional description of this resource.
     edgeAvailabilityDomain: Desired availability domain for the attachment.
       Only available for type PARTNER, at creation time, and can take one of
@@ -33077,26 +33078,27 @@ class InterconnectAttachment(_messages.Message):
   cloudRouterIpAddress = _messages.StringField(4)
   creationTimestamp = _messages.StringField(5)
   customerRouterIpAddress = _messages.StringField(6)
-  description = _messages.StringField(7)
-  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 8)
-  googleReferenceId = _messages.StringField(9)
-  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
-  interconnect = _messages.StringField(11)
-  kind = _messages.StringField(12, default='compute#interconnectAttachment')
-  labelFingerprint = _messages.BytesField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  name = _messages.StringField(15)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 16)
-  pairingKey = _messages.StringField(17)
-  partnerAsn = _messages.IntegerField(18)
-  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 19)
-  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 20)
-  region = _messages.StringField(21)
-  router = _messages.StringField(22)
-  selfLink = _messages.StringField(23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  type = _messages.EnumField('TypeValueValuesEnum', 25)
-  vlanTag8021q = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  dataplaneVersion = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  description = _messages.StringField(8)
+  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 9)
+  googleReferenceId = _messages.StringField(10)
+  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  interconnect = _messages.StringField(12)
+  kind = _messages.StringField(13, default='compute#interconnectAttachment')
+  labelFingerprint = _messages.BytesField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  name = _messages.StringField(16)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 17)
+  pairingKey = _messages.StringField(18)
+  partnerAsn = _messages.IntegerField(19)
+  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 20)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 21)
+  region = _messages.StringField(22)
+  router = _messages.StringField(23)
+  selfLink = _messages.StringField(24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  type = _messages.EnumField('TypeValueValuesEnum', 26)
+  vlanTag8021q = _messages.IntegerField(27, variant=_messages.Variant.INT32)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -40992,6 +40994,7 @@ class Quota(_messages.Message):
       PREEMPTIBLE_NVIDIA_T4_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
       PRIVATE_V6_ACCESS_SUBNETWORKS: <no description>
+      PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK: <no description>
       PUBLIC_ADVERTISED_PREFIXES: <no description>
       PUBLIC_DELEGATED_PREFIXES: <no description>
       REGIONAL_AUTOSCALERS: <no description>
@@ -41101,34 +41104,35 @@ class Quota(_messages.Message):
     PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 77
     PREEMPTIBLE_NVIDIA_V100_GPUS = 78
     PRIVATE_V6_ACCESS_SUBNETWORKS = 79
-    PUBLIC_ADVERTISED_PREFIXES = 80
-    PUBLIC_DELEGATED_PREFIXES = 81
-    REGIONAL_AUTOSCALERS = 82
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 83
-    RESERVATIONS = 84
-    RESOURCE_POLICIES = 85
-    ROUTERS = 86
-    ROUTES = 87
-    SECURITY_POLICIES = 88
-    SECURITY_POLICY_CEVAL_RULES = 89
-    SECURITY_POLICY_RULES = 90
-    SNAPSHOTS = 91
-    SSD_TOTAL_GB = 92
-    SSL_CERTIFICATES = 93
-    STATIC_ADDRESSES = 94
-    STATIC_BYOIP_ADDRESSES = 95
-    SUBNETWORKS = 96
-    TARGET_HTTPS_PROXIES = 97
-    TARGET_HTTP_PROXIES = 98
-    TARGET_INSTANCES = 99
-    TARGET_POOLS = 100
-    TARGET_SSL_PROXIES = 101
-    TARGET_TCP_PROXIES = 102
-    TARGET_VPN_GATEWAYS = 103
-    URL_MAPS = 104
-    VPN_GATEWAYS = 105
-    VPN_TUNNELS = 106
-    XPN_SERVICE_PROJECTS = 107
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 80
+    PUBLIC_ADVERTISED_PREFIXES = 81
+    PUBLIC_DELEGATED_PREFIXES = 82
+    REGIONAL_AUTOSCALERS = 83
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 84
+    RESERVATIONS = 85
+    RESOURCE_POLICIES = 86
+    ROUTERS = 87
+    ROUTES = 88
+    SECURITY_POLICIES = 89
+    SECURITY_POLICY_CEVAL_RULES = 90
+    SECURITY_POLICY_RULES = 91
+    SNAPSHOTS = 92
+    SSD_TOTAL_GB = 93
+    SSL_CERTIFICATES = 94
+    STATIC_ADDRESSES = 95
+    STATIC_BYOIP_ADDRESSES = 96
+    SUBNETWORKS = 97
+    TARGET_HTTPS_PROXIES = 98
+    TARGET_HTTP_PROXIES = 99
+    TARGET_INSTANCES = 100
+    TARGET_POOLS = 101
+    TARGET_SSL_PROXIES = 102
+    TARGET_TCP_PROXIES = 103
+    TARGET_VPN_GATEWAYS = 104
+    URL_MAPS = 105
+    VPN_GATEWAYS = 106
+    VPN_TUNNELS = 107
+    XPN_SERVICE_PROJECTS = 108
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

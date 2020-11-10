@@ -229,6 +229,13 @@ def GetMetadataFilterFlag():
             'qualified image reference.'))
 
 
+def GetShowOccurrencesFlag():
+  return base.Argument(
+      '--show-occurrences',
+      action='store_true',
+      help='Show summaries of the various Occurrence types.')
+
+
 def GetShowOccurrencesFromFlag():
   return base.Argument(
       '--show-occurrences-from',

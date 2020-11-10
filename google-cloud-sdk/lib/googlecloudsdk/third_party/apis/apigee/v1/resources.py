@@ -97,6 +97,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_DATACOLLECTORS = (
+      'organizations.datacollectors',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/datacollectors/'
+              '{datacollectorsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_DEVELOPERS = (
       'organizations.developers',
       '{+name}',
@@ -349,6 +360,17 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/instances/{instancesId}/'
               'attachments/{attachmentsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_INSTANCES_CANARYEVALUATIONS = (
+      'organizations.instances.canaryevaluations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/instances/{instancesId}/'
+              'canaryevaluations/{canaryevaluationsId}',
       },
       ['name'],
       True

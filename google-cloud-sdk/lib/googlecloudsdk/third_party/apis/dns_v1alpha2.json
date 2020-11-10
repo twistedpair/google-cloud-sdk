@@ -307,6 +307,12 @@
         }
       }
     },
+    "ResourceRecordSetsDeleteResponse": {
+      "id": "ResourceRecordSetsDeleteResponse",
+      "type": "object",
+      "properties": {
+      }
+    },
     "PeeringZonesListResponse": {
       "id": "PeeringZonesListResponse",
       "type": "object",
@@ -1757,6 +1763,197 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
           "description": "Fetch the representation of an existing Project."
+        }
+      }
+      ,
+      "resources": {
+        "managedZones": {
+          "resources": {
+            "rrsets": {
+              "methods": {
+                "create": {
+                  "id": "dns.projects.managedZones.rrsets.create",
+                  "path": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/rrsets",
+                  "flatPath": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/rrsets",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "project": {
+                      "description": "Identifies the project addressed by this request.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "managedZone": {
+                      "description": "Identifies the managed zone addressed by this request. Can be the managed zone name or ID.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clientOperationId": {
+                      "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "project",
+                    "managedZone"
+                  ],
+                  "request": {
+                    "$ref": "ResourceRecordSet"
+                  },
+                  "response": {
+                    "$ref": "ResourceRecordSet"
+                  },
+                  "description": "Create a new ResourceRecordSet."
+                },
+                "get": {
+                  "id": "dns.projects.managedZones.rrsets.get",
+                  "path": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
+                  "flatPath": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "project": {
+                      "description": "Identifies the project addressed by this request.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "managedZone": {
+                      "description": "Identifies the managed zone addressed by this request. Can be the managed zone name or ID.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "Fully qualified domain name.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "RRSet type.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clientOperationId": {
+                      "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "project",
+                    "managedZone",
+                    "name",
+                    "type"
+                  ],
+                  "response": {
+                    "$ref": "ResourceRecordSet"
+                  },
+                  "description": "Fetch the representation of an existing ResourceRecordSet."
+                },
+                "delete": {
+                  "id": "dns.projects.managedZones.rrsets.delete",
+                  "path": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
+                  "flatPath": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "project": {
+                      "description": "Identifies the project addressed by this request.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "managedZone": {
+                      "description": "Identifies the managed zone addressed by this request. Can be the managed zone name or ID.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "Fully qualified domain name.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "RRSet type.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clientOperationId": {
+                      "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "project",
+                    "managedZone",
+                    "name",
+                    "type"
+                  ],
+                  "response": {
+                    "$ref": "ResourceRecordSetsDeleteResponse"
+                  },
+                  "description": "Delete a previously created ResourceRecordSet."
+                },
+                "patch": {
+                  "id": "dns.projects.managedZones.rrsets.patch",
+                  "path": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
+                  "flatPath": "dns/v1alpha2/projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "project": {
+                      "description": "Identifies the project addressed by this request.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "managedZone": {
+                      "description": "Identifies the managed zone addressed by this request. Can be the managed zone name or ID.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "Fully qualified domain name.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "RRSet type.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clientOperationId": {
+                      "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "project",
+                    "managedZone",
+                    "name",
+                    "type"
+                  ],
+                  "request": {
+                    "$ref": "ResourceRecordSet"
+                  },
+                  "response": {
+                    "$ref": "ResourceRecordSet"
+                  },
+                  "description": "Apply a partial update to an existing ResourceRecordSet."
+                }
+              }
+            }
+          }
         }
       }
     },

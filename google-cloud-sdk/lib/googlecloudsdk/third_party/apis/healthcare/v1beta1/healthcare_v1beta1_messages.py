@@ -351,6 +351,7 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -394,9 +395,10 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class BoundingPoly(_messages.Message):
@@ -1588,10 +1590,10 @@ class FhirStore(_messages.Message):
   r"""Represents a FHIR store.
 
   Enums:
-    VersionValueValuesEnum: The FHIR specification version that this FHIR
-      store supports natively. This field is immutable after store creation.
-      Requests are rejected if they contain FHIR resources of a different
-      version. Version is required for every FHIR store.
+    VersionValueValuesEnum: Immutable. The FHIR specification version that
+      this FHIR store supports natively. This field is immutable after store
+      creation. Requests are rejected if they contain FHIR resources of a
+      different version. Version is required for every FHIR store.
 
   Messages:
     LabelsValue: User-supplied key-value pairs used to organize FHIR stores.
@@ -1611,21 +1613,22 @@ class FhirStore(_messages.Message):
       search parameters. The handling can always be changed from the default
       on an individual API call by setting the HTTP header `Prefer:
       handling=strict` or `Prefer: handling=lenient`.
-    disableReferentialIntegrity: Whether to disable referential integrity in
-      this FHIR store. This field is immutable after FHIR store creation. The
-      default value is false, meaning that the API enforces referential
-      integrity and fails the requests that result in inconsistent state in
-      the FHIR store. When this field is set to true, the API skips
+    disableReferentialIntegrity: Immutable. Whether to disable referential
+      integrity in this FHIR store. This field is immutable after FHIR store
+      creation. The default value is false, meaning that the API enforces
+      referential integrity and fails the requests that result in inconsistent
+      state in the FHIR store. When this field is set to true, the API skips
       referential integrity checks. Consequently, operations that rely on
       references, such as GetPatientEverything, do not return all the results
       if broken references exist.
-    disableResourceVersioning: Whether to disable resource versioning for this
-      FHIR store. This field can not be changed after the creation of FHIR
-      store. If set to false, which is the default behavior, all write
-      operations cause historical versions to be recorded automatically. The
-      historical versions can be fetched through the history APIs, but cannot
-      be updated. If set to true, no historical versions are kept. The server
-      sends errors for attempts to read the historical versions.
+    disableResourceVersioning: Immutable. Whether to disable resource
+      versioning for this FHIR store. This field can not be changed after the
+      creation of FHIR store. If set to false, which is the default behavior,
+      all write operations cause historical versions to be recorded
+      automatically. The historical versions can be fetched through the
+      history APIs, but cannot be updated. If set to true, no historical
+      versions are kept. The server sends errors for attempts to read the
+      historical versions.
     enableUpdateCreate: Whether this FHIR store has the [updateCreate
       capability](https://www.hl7.org/fhir/capabilitystatement-
       definitions.html#CapabilityStatement.rest.resource.updateCreate). This
@@ -1664,17 +1667,17 @@ class FhirStore(_messages.Message):
       account](https://cloud.google.com/iam/docs/service-accounts). Some lag
       (typically on the order of dozens of seconds) is expected before the
       results show up in the streaming destination.
-    version: The FHIR specification version that this FHIR store supports
-      natively. This field is immutable after store creation. Requests are
-      rejected if they contain FHIR resources of a different version. Version
-      is required for every FHIR store.
+    version: Immutable. The FHIR specification version that this FHIR store
+      supports natively. This field is immutable after store creation.
+      Requests are rejected if they contain FHIR resources of a different
+      version. Version is required for every FHIR store.
   """
 
   class VersionValueValuesEnum(_messages.Enum):
-    r"""The FHIR specification version that this FHIR store supports natively.
-    This field is immutable after store creation. Requests are rejected if
-    they contain FHIR resources of a different version. Version is required
-    for every FHIR store.
+    r"""Immutable. The FHIR specification version that this FHIR store
+    supports natively. This field is immutable after store creation. Requests
+    are rejected if they contain FHIR resources of a different version.
+    Version is required for every FHIR store.
 
     Values:
       VERSION_UNSPECIFIED: VERSION_UNSPECIFIED is treated as STU3 to

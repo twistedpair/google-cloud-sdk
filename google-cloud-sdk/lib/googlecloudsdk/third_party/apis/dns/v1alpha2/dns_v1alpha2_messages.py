@@ -749,6 +749,92 @@ class DnsProjectsGetRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class DnsProjectsManagedZonesRrsetsCreateRequest(_messages.Message):
+  r"""A DnsProjectsManagedZonesRrsetsCreateRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    managedZone: Identifies the managed zone addressed by this request. Can be
+      the managed zone name or ID.
+    project: Identifies the project addressed by this request.
+    resourceRecordSet: A ResourceRecordSet resource to be passed as the
+      request body.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  managedZone = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  resourceRecordSet = _messages.MessageField('ResourceRecordSet', 4)
+
+
+class DnsProjectsManagedZonesRrsetsDeleteRequest(_messages.Message):
+  r"""A DnsProjectsManagedZonesRrsetsDeleteRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    managedZone: Identifies the managed zone addressed by this request. Can be
+      the managed zone name or ID.
+    name: Fully qualified domain name.
+    project: Identifies the project addressed by this request.
+    type: RRSet type.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  managedZone = _messages.StringField(2, required=True)
+  name = _messages.StringField(3, required=True)
+  project = _messages.StringField(4, required=True)
+  type = _messages.StringField(5, required=True)
+
+
+class DnsProjectsManagedZonesRrsetsGetRequest(_messages.Message):
+  r"""A DnsProjectsManagedZonesRrsetsGetRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    managedZone: Identifies the managed zone addressed by this request. Can be
+      the managed zone name or ID.
+    name: Fully qualified domain name.
+    project: Identifies the project addressed by this request.
+    type: RRSet type.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  managedZone = _messages.StringField(2, required=True)
+  name = _messages.StringField(3, required=True)
+  project = _messages.StringField(4, required=True)
+  type = _messages.StringField(5, required=True)
+
+
+class DnsProjectsManagedZonesRrsetsPatchRequest(_messages.Message):
+  r"""A DnsProjectsManagedZonesRrsetsPatchRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    managedZone: Identifies the managed zone addressed by this request. Can be
+      the managed zone name or ID.
+    name: Fully qualified domain name.
+    project: Identifies the project addressed by this request.
+    resourceRecordSet: A ResourceRecordSet resource to be passed as the
+      request body.
+    type: RRSet type.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  managedZone = _messages.StringField(2, required=True)
+  name = _messages.StringField(3, required=True)
+  project = _messages.StringField(4, required=True)
+  resourceRecordSet = _messages.MessageField('ResourceRecordSet', 5)
+  type = _messages.StringField(6, required=True)
+
+
 class DnsResourceRecordSetsListRequest(_messages.Message):
   r"""A DnsResourceRecordSetsListRequest object.
 
@@ -1609,6 +1695,10 @@ class ResourceRecordSet(_messages.Message):
   signatureRrdatas = _messages.StringField(5, repeated=True)
   ttl = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   type = _messages.StringField(7)
+
+
+class ResourceRecordSetsDeleteResponse(_messages.Message):
+  r"""A ResourceRecordSetsDeleteResponse object."""
 
 
 class ResourceRecordSetsListResponse(_messages.Message):

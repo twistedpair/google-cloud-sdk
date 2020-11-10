@@ -24,6 +24,7 @@ import botocore
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage import util
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -33,16 +34,14 @@ def _catch_client_error_raise_s3_api_error(format_str=None):
   """Decorator that catches botocore ClientErrors and raises S3ApiErrors.
 
   Args:
-    format_str (str): A googlecloudsdk.api_lib.util.exceptions.HttpErrorPayload
+    format_str (str): A googlecloudsdk.api_lib.storage.errors.S3ErrorPayload
       format string. Note that any properties that are accessed here are on the
-      HttpErrorPayload object, not the object returned from botocore.
+      S3ErrorPayload object, not the object returned from botocore.
 
   Returns:
     A decorator that catches botocore.exceptions.ClientError and returns an
       S3ApiError with a formatted error message.
   """
-  # TODO(b/170215786): Update the docstring for the format_str attribute when an
-  # interoperable version of HttpErrorPayload is created.
 
   return errors.catch_error_raise_cloud_api_error(
       botocore.exceptions.ClientError, errors.S3ApiError, format_str=format_str)
@@ -275,23 +274,20 @@ class S3Api(cloud_api.CloudApi):
   # pylint: disable=unused-argument
   @_catch_client_error_raise_s3_api_error()
   def download_object(self,
-                      bucket_name,
-                      object_name,
+                      cloud_resource,
                       download_stream,
                       compressed_encoding=False,
                       decryption_wrapper=None,
                       digesters=None,
                       download_strategy=cloud_api.DownloadStrategy.ONE_SHOT,
-                      generation=None,
-                      object_size=None,
                       progress_callback=None,
                       serialization_data=None,
                       start_byte=0,
                       end_byte=None):
     """See super class."""
-    kwargs = {'Bucket': bucket_name, 'Key': object_name}
-    if generation:
-      kwargs['VersionId'] = generation
+    kwargs = {'Bucket': cloud_resource.bucket, 'Key': cloud_resource.name}
+    if cloud_resource.generation:
+      kwargs['VersionId'] = cloud_resource.generation
 
     response = self.client.get_object(**kwargs)
     download_stream.write(response['Body'].read())
@@ -331,22 +327,28 @@ class S3Api(cloud_api.CloudApi):
 
   @_catch_client_error_raise_s3_api_error()
   def upload_object(self,
-                    upload_stream,
-                    upload_resource,
+                    source_stream,
+                    destination_resource,
                     progress_callback=None,
                     request_config=None):
     """See super class."""
     # TODO(b/160998556): Implement resumable upload.
     del progress_callback
 
-    kwargs = {'Bucket': upload_resource.storage_url.bucket_name,
-              'Key': upload_resource.storage_url.object_name,
-              'Body': upload_stream.read()}
+    md5_hash = util.get_hash_digest_from_file_stream(source_stream,
+                                                     util.HashAlgorithms.MD5)
+
+    kwargs = {
+        'Bucket': destination_resource.storage_url.bucket_name,
+        'Key': destination_resource.storage_url.object_name,
+        'Body': source_stream.read(),
+        'ContentMD5': md5_hash,
+    }
     if request_config and request_config.predefined_acl_string:
       kwargs['ACL'] = _translate_predefined_acl_string_to_s3(
           request_config.predefined_acl_string)
 
     response = self.client.put_object(**kwargs)
     return _get_object_resource_from_s3_response(
-        response, upload_resource.storage_url.bucket_name,
-        upload_resource.storage_url.object_name)
+        response, destination_resource.storage_url.bucket_name,
+        destination_resource.storage_url.object_name)

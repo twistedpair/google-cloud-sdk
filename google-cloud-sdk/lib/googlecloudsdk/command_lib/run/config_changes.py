@@ -195,6 +195,28 @@ class SetLaunchStageAnnotationChange(ConfigChanger):
       return resource
 
 
+class SetClientNameAndVersionAnnotationChange(ConfigChanger):
+  """Sets the client name and version annotations."""
+
+  def __init__(self, client_name, client_version):
+    super(SetClientNameAndVersionAnnotationChange, self).__init__()
+    self._client_name = client_name
+    self._client_version = client_version
+
+  def Adjust(self, resource):
+    if self._client_name is not None:
+      resource.annotations[
+          k8s_object.CLIENT_NAME_ANNOTATION] = self._client_name
+      resource.template.annotations[
+          k8s_object.CLIENT_NAME_ANNOTATION] = self._client_name
+    if self._client_version is not None:
+      resource.annotations[
+          k8s_object.CLIENT_VERSION_ANNOTATION] = self._client_version
+      resource.template.annotations[
+          k8s_object.CLIENT_VERSION_ANNOTATION] = self._client_version
+    return resource
+
+
 class VpcConnectorChange(ConfigChanger):
   """Sets a VPC connector annotation on the service."""
 

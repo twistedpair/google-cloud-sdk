@@ -286,6 +286,10 @@
           "description": "Feature for Service Directory.",
           "$ref": "ServiceDirectoryFeatureSpec"
         },
+        "identityserviceFeatureSpec": {
+          "description": "The specification for the Anthos Identity Service Feature.",
+          "$ref": "IdentityServiceFeatureSpec"
+        },
         "featureState": {
           "description": "Output only. State of the resource itself.",
           "readOnly": true,
@@ -631,6 +635,104 @@
       "properties": {
       }
     },
+    "IdentityServiceFeatureSpec": {
+      "id": "IdentityServiceFeatureSpec",
+      "description": "Spec for Annthos Identity Service.",
+      "type": "object",
+      "properties": {
+        "memberConfigs": {
+          "description": "A map between member ids to their configurations. The ID needs to be the full path to the membership e.g., \/projects\/p\/locations\/l\/memberships\/m.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "MemberConfig"
+          }
+        }
+      }
+    },
+    "MemberConfig": {
+      "id": "MemberConfig",
+      "description": "The configuration for a member\/cluster",
+      "type": "object",
+      "properties": {
+        "authMethods": {
+          "description": "A member may support multiple auth methods.",
+          "type": "array",
+          "items": {
+            "$ref": "AuthMethod"
+          }
+        }
+      }
+    },
+    "AuthMethod": {
+      "id": "AuthMethod",
+      "description": "Configuration of an auth method for a member\/cluster. Only one authentication method (e.g., OIDC and LDAP) can be set per AuthMethod.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Identifier for auth config.",
+          "type": "string"
+        },
+        "proxy": {
+          "description": "Proxy server address to use for auth method.",
+          "type": "string"
+        },
+        "oidcConfig": {
+          "description": "OIDC specific configuration.",
+          "$ref": "OidcConfig"
+        }
+      }
+    },
+    "OidcConfig": {
+      "id": "OidcConfig",
+      "description": "Configuration for OIDC Auth flow.",
+      "type": "object",
+      "properties": {
+        "clientId": {
+          "description": "ID for OIDC client application.",
+          "type": "string"
+        },
+        "certificateAuthorityData": {
+          "description": "PEM-encoded CA for OIDC provider.",
+          "type": "string"
+        },
+        "issuerUri": {
+          "description": "URI for the OIDC provider. This should point to the level below .well-known\/openid-configuration.",
+          "type": "string"
+        },
+        "kubectlRedirectUri": {
+          "description": "Registered redirect uri to redirect users going through OAuth flow using kubectl plugin.",
+          "type": "string"
+        },
+        "scopes": {
+          "description": "Comma-separated list of identifiers.",
+          "type": "string"
+        },
+        "extraParams": {
+          "description": "Comma-separated list of key-value pairs.",
+          "type": "string"
+        },
+        "userClaim": {
+          "description": "Claim in OIDC ID token that holds username.",
+          "type": "string"
+        },
+        "userPrefix": {
+          "description": "Prefix to prepend to user name.",
+          "type": "string"
+        },
+        "groupsClaim": {
+          "description": "Claim in OIDC ID token that holds group information.",
+          "type": "string"
+        },
+        "groupPrefix": {
+          "description": "Prefix to prepend to group name.",
+          "type": "string"
+        },
+        "deployCloudConsoleProxy": {
+          "description": "Flag to denote if reverse proxy is used to connect to auth provider. This flag should be set to true when provider is not reachable by Google Cloud Console.",
+          "type": "boolean"
+        }
+      }
+    },
     "FeatureState": {
       "id": "FeatureState",
       "description": "FeatureState describes the status of any feature.",
@@ -740,6 +842,10 @@
           "description": "State for the Service Directory Feature.",
           "$ref": "ServiceDirectoryFeatureState"
         },
+        "identityserviceFeatureState": {
+          "description": "State for the AIS Feature.",
+          "$ref": "IdentityServiceFeatureState"
+        },
         "updateTime": {
           "description": "The last update time of this status by the controllers",
           "type": "string",
@@ -794,7 +900,7 @@
     },
     "ServiceMeshAnalysisMessageBase": {
       "id": "ServiceMeshAnalysisMessageBase",
-      "description": "AnalysisMessageBase describes some common information that is needed for all messages.",
+      "description": "ServiceMeshAnalysisMessageBase describes some common information that is needed for all messages.",
       "type": "object",
       "properties": {
         "type": {
@@ -825,11 +931,11 @@
     },
     "Type": {
       "id": "Type",
-      "description": "A unique identifier for the type of message. Name is intended to be human-readable, code is intended to be machine readable. There should be a one-to-one mapping between name and code. (i.e. do not re-use names or codes between message types.) See istio.analysis.v1alpha1.AnalysisMessageBase.Type",
+      "description": "A unique identifier for the type of message. Display_name is intended to be human-readable, code is intended to be machine readable. There should be a one-to-one mapping between display_name and code. (i.e. do not re-use display_names or codes between message types.) See istio.analysis.v1alpha1.AnalysisMessageBase.Type",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "A human-readable name for the message type. e.g. \"InternalError\", \"PodMissingProxy\". This should be the same for all messages of the same type.",
+        "displayName": {
+          "description": "A human-readable name for the message type. e.g. \"InternalError\", \"PodMissingProxy\". This should be the same for all messages of the same type. (This corresponds to the `name` field in open-source Istio.)",
           "type": "string"
         },
         "code": {
@@ -1326,6 +1432,35 @@
       "properties": {
       }
     },
+    "IdentityServiceFeatureState": {
+      "id": "IdentityServiceFeatureState",
+      "description": "State for Anthos Identity Service",
+      "type": "object",
+      "properties": {
+        "installedVersion": {
+          "description": "Installed AIS version. This is the AIS version installed on this member. The values makes sense iff state is OK.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Deployment state on this member",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state",
+            "deployment succeeds",
+            "Failure with error."
+          ],
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "OK",
+            "ERROR"
+          ]
+        },
+        "failureReason": {
+          "description": "The reason of the failure.",
+          "type": "string"
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -1444,6 +1579,9 @@
         "condition": {
           "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "$ref": "Expr"
+        },
+        "bindingId": {
+          "type": "string"
         }
       }
     },

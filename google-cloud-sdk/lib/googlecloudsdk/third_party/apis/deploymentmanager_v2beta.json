@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager V2Beta",
  "version": "v2beta",
- "revision": "20201023",
+ "revision": "20201030",
  "title": "Google Cloud Deployment Manager API V2Beta Methods",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -204,7 +204,7 @@
    "properties": {
     "bindingId": {
      "type": "string",
-     "description": "A client-specified ID for this binding. Expected to be globally unique to support the internal bindings-by-ID API."
+     "description": ""
     },
     "condition": {
      "$ref": "Expr",

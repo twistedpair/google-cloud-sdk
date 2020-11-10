@@ -69,6 +69,20 @@ def SubnetworkArgumentForRouter(required=False, operation_type='added'):
           'If not specified it will be set to the region of the router.'))
 
 
+def SubnetworkArgumentForServiceAttachment(required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='subnetwork',
+      name='--nat-subnets',
+      completer=SubnetworksCompleter,
+      plural=True,
+      required=required,
+      regional_collection='compute.subnetworks',
+      short_help='The subnetworks provided by service producer to use for NAT',
+      region_explanation=(
+          'If not specified, it will be set to the region of the service '
+          'attachment.'))
+
+
 def SubnetworkResolver():
   return compute_flags.ResourceResolver.FromMap(
       'subnetwork', {compute_scope.ScopeEnum.REGION: 'compute.subnetworks'})

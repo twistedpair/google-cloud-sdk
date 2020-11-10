@@ -3119,8 +3119,6 @@ class V1Beta1Adapter(V1Adapter):
               enabled=options.enable_master_global_access)
     _AddNotificationConfigToCluster(cluster, options, self.messages)
 
-    cluster.loggingService = None
-    cluster.monitoringService = None
     cluster.clusterTelemetry = self.messages.ClusterTelemetry()
     if options.enable_stackdriver_kubernetes:
       cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.ENABLED
@@ -3130,6 +3128,10 @@ class V1Beta1Adapter(V1Adapter):
       cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED
     else:
       cluster.clusterTelemetry = None
+
+    if cluster.clusterTelemetry:
+      cluster.loggingService = None
+      cluster.monitoringService = None
 
     if options.enable_workload_monitoring_eap:
       cluster.workloadMonitoringEnabledEap = True
@@ -3583,8 +3585,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.costManagementConfig = self.messages.CostManagementConfig(
           enabled=True)
 
-    cluster.loggingService = None
-    cluster.monitoringService = None
     cluster.clusterTelemetry = self.messages.ClusterTelemetry()
     if options.enable_stackdriver_kubernetes:
       cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.ENABLED
@@ -3594,6 +3594,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED
     else:
       cluster.clusterTelemetry = None
+
+    if cluster.clusterTelemetry:
+      cluster.loggingService = None
+      cluster.monitoringService = None
 
     if options.enable_workload_monitoring_eap:
       cluster.workloadMonitoringEnabledEap = True

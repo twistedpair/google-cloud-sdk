@@ -793,7 +793,7 @@ def AddCreateDiskArgs(parser,
         * https://www.googleapis.com/compute/v1/projects/myproject/global/snapshots/snapshot
         * snapshot
 
-      *source-snapshot-csek-key-file::: Path to a Customer-Supplied Encryption
+      *source-snapshot-csek-key-file*::: Path to a Customer-Supplied Encryption
       Key (CSEK) key file for the source snapshot. Must be specified with
       `source-snapshot-csek-required`.
       """

@@ -541,6 +541,10 @@ apis:
       resources:
         projects.locations.memberships:
           path: projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}
+  gsuiteaddons:
+    v1:
+      discovery_doc: gsuiteaddons_v1.json
+      default: true
   healthcare:
     v1alpha2:
       discovery_doc: healthcare_v1alpha2.json
@@ -837,9 +841,6 @@ apis:
       discovery_doc: spanner_v1.json
       enable_mtls: true
       default: true
-    v1alpha:
-      discovery_doc: spanner_v1alpha.json
-      default: false
   speech:
     v1:
       discovery_doc: speech_v1.json

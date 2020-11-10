@@ -35,7 +35,7 @@ def AddChainArg(parser):
   parser.add_argument(
       '--chain-name',
       help=(
-          """Creates the new snapshot in the snapshot chain labeled with the specified name.
+          """Create the new snapshot in the snapshot chain labeled with the specified name.
           The chain name must be 1-63 characters long and comply with RFC1035.
           Use this flag only if you are an advanced service owner who needs
           to create separate snapshot chains, for example, for chargeback tracking.

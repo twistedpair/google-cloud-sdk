@@ -3,6 +3,7 @@
   "discoveryVersion": "v1",
   "id": "dataflow:v1b3",
   "name": "dataflow",
+  "canonicalName": "Dataflow",
   "version": "v1b3",
   "revision": "0",
   "title": "Dataflow API",

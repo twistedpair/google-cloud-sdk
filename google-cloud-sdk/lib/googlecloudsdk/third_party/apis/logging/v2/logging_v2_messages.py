@@ -1633,11 +1633,20 @@ class LoggingBillingAccountsLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+    resourceNames: Optional. The resource name that owns the logs:
+      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_I
+      D organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
+      iews/VIEW_ID billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/bu
+      ckets/BUCKET_ID/views/VIEW_ID folders/FOLDER_ID/locations/LOCATION_ID/bu
+      ckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it could also
+      be: "projects/PROJECT_ID" "organizations/ORGANIZATION_ID"
+      "billingAccounts/BILLING_ACCOUNT_ID" "folders/FOLDER_ID"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  resourceNames = _messages.StringField(4, repeated=True)
 
 
 class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
@@ -2244,11 +2253,20 @@ class LoggingFoldersLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+    resourceNames: Optional. The resource name that owns the logs:
+      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_I
+      D organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
+      iews/VIEW_ID billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/bu
+      ckets/BUCKET_ID/views/VIEW_ID folders/FOLDER_ID/locations/LOCATION_ID/bu
+      ckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it could also
+      be: "projects/PROJECT_ID" "organizations/ORGANIZATION_ID"
+      "billingAccounts/BILLING_ACCOUNT_ID" "folders/FOLDER_ID"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  resourceNames = _messages.StringField(4, repeated=True)
 
 
 class LoggingFoldersSinksCreateRequest(_messages.Message):
@@ -2692,11 +2710,20 @@ class LoggingLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+    resourceNames: Optional. The resource name that owns the logs:
+      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_I
+      D organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
+      iews/VIEW_ID billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/bu
+      ckets/BUCKET_ID/views/VIEW_ID folders/FOLDER_ID/locations/LOCATION_ID/bu
+      ckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it could also
+      be: "projects/PROJECT_ID" "organizations/ORGANIZATION_ID"
+      "billingAccounts/BILLING_ACCOUNT_ID" "folders/FOLDER_ID"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  resourceNames = _messages.StringField(4, repeated=True)
 
 
 class LoggingMonitoredResourceDescriptorsListRequest(_messages.Message):
@@ -3091,11 +3118,20 @@ class LoggingOrganizationsLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+    resourceNames: Optional. The resource name that owns the logs:
+      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_I
+      D organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
+      iews/VIEW_ID billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/bu
+      ckets/BUCKET_ID/views/VIEW_ID folders/FOLDER_ID/locations/LOCATION_ID/bu
+      ckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it could also
+      be: "projects/PROJECT_ID" "organizations/ORGANIZATION_ID"
+      "billingAccounts/BILLING_ACCOUNT_ID" "folders/FOLDER_ID"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  resourceNames = _messages.StringField(4, repeated=True)
 
 
 class LoggingOrganizationsSinksCreateRequest(_messages.Message):
@@ -3636,11 +3672,20 @@ class LoggingProjectsLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+    resourceNames: Optional. The resource name that owns the logs:
+      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_I
+      D organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
+      iews/VIEW_ID billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/bu
+      ckets/BUCKET_ID/views/VIEW_ID folders/FOLDER_ID/locations/LOCATION_ID/bu
+      ckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it could also
+      be: "projects/PROJECT_ID" "organizations/ORGANIZATION_ID"
+      "billingAccounts/BILLING_ACCOUNT_ID" "folders/FOLDER_ID"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  resourceNames = _messages.StringField(4, repeated=True)
 
 
 class LoggingProjectsMetricsCreateRequest(_messages.Message):

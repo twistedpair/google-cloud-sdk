@@ -181,8 +181,10 @@ class EndpointsClient(object):
 
       dedicated_resources =\
           self.messages.GoogleCloudAiplatformV1beta1DedicatedResources(
-              machineSpec=machine_spec,
-              minReplicaCount=args.min_replica_count)
+              machineSpec=machine_spec)
+      # min-replica-count is required and must be >= 1 if models use dedicated
+      # resources. Default to 1 if not specified.
+      dedicated_resources.minReplicaCount = args.min_replica_count or 1
       if args.max_replica_count is not None:
         dedicated_resources.maxReplicaCount = args.max_replica_count
 
@@ -194,8 +196,9 @@ class EndpointsClient(object):
     else:
       # automatic resources
       automatic_resources =\
-          self.messages.GoogleCloudAiplatformV1beta1AutomaticResources(
-              minReplicaCount=args.min_replica_count)
+          self.messages.GoogleCloudAiplatformV1beta1AutomaticResources()
+      if args.min_replica_count is not None:
+        automatic_resources.minReplicaCount = args.min_replica_count
       if args.max_replica_count is not None:
         automatic_resources.maxReplicaCount = args.max_replica_count
 
@@ -203,6 +206,12 @@ class EndpointsClient(object):
           automaticResources=automatic_resources,
           displayName=args.display_name,
           model=model_ref.RelativeName())
+
+    deployed_model.enableAccessLogging = args.enable_access_logging
+    deployed_model.enableContainerLogging = args.enable_container_logging
+
+    if args.IsSpecified('service_account'):
+      deployed_model.serviceAccount = args.service_account
 
     deployed_model_req =\
         self.messages.GoogleCloudAiplatformV1beta1DeployModelRequest(

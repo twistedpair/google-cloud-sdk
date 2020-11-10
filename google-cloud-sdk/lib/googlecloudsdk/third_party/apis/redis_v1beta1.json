@@ -416,6 +416,59 @@
         "authEnabled": {
           "description": "Optional. Indicates whether OSS Redis AUTH is enabled for the instance. If set to \"true\" AUTH is enabled on the instance. Default value is \"false\" meaning AUTH is disabled.",
           "type": "boolean"
+        },
+        "serverCaCerts": {
+          "description": "Output only. List of server CA certificates for the instance.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "TlsCertificate"
+          }
+        },
+        "transitEncryptionMode": {
+          "description": "Optional. The In-transit encryption mode of Redis instance. If not provided, in-transit encryption is disabled for instance.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "In-transit encryption enabled with server authentication",
+            "In-transit encryption is disabled for instance."
+          ],
+          "enum": [
+            "TRANSIT_ENCRYPTION_MODE_UNSPECIFIED",
+            "SERVER_AUTHENTICATION",
+            "DISABLED"
+          ]
+        }
+      }
+    },
+    "TlsCertificate": {
+      "id": "TlsCertificate",
+      "description": "TlsCertificate Resource",
+      "type": "object",
+      "properties": {
+        "serialNumber": {
+          "description": "Serial number, as extracted from the certificate.",
+          "type": "string"
+        },
+        "cert": {
+          "description": "PEM representation.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the certificate was created in [RFC 3339](https:\/\/tools.ietf.org\/html\/rfc3339) format, for example `2020-05-18T00:00:00.094Z`.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "expireTime": {
+          "description": "Output only. The time when the certificate expires in [RFC 3339](https:\/\/tools.ietf.org\/html\/rfc3339) format, for example `2020-05-18T00:00:00.094Z`.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "sha1Fingerprint": {
+          "description": "Sha1 Fingerprint of the certificate.",
+          "type": "string"
         }
       }
     },

@@ -105,6 +105,9 @@ class Asset(_messages.Message):
       policy](https://cloud.google.com/resource-manager/docs/organization-
       policy/overview#organization_policy). There can be more than one
       organization policy with different constraints set on a given resource.
+    osInventory: A representation of runtime OS Inventory information. See
+      [this topic](https://cloud.google.com/compute/docs/instances/os-
+      inventory-management) for more information.
     resource: A representation of the resource.
     servicePerimeter: Please also refer to the [service perimeter user
       guide](https://cloud.google.com/vpc-service-controls/docs/overview).
@@ -119,9 +122,10 @@ class Asset(_messages.Message):
   iamPolicy = _messages.MessageField('Policy', 5)
   name = _messages.StringField(6)
   orgPolicy = _messages.MessageField('GoogleCloudOrgpolicyV1Policy', 7, repeated=True)
-  resource = _messages.MessageField('Resource', 8)
-  servicePerimeter = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 9)
-  updateTime = _messages.StringField(10)
+  osInventory = _messages.MessageField('Inventory', 8)
+  resource = _messages.MessageField('Resource', 9)
+  servicePerimeter = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 10)
+  updateTime = _messages.StringField(11)
 
 
 class AuditConfig(_messages.Message):
@@ -264,6 +268,7 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -307,9 +312,10 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class CloudassetAnalyzeIamPolicyLongrunningRequest(_messages.Message):
@@ -473,12 +479,14 @@ class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
       IAM_POLICY: The actual IAM policy set on a resource.
       ORG_POLICY: The Cloud Organization Policy set on an asset.
       ACCESS_POLICY: The Cloud Access context manager Policy set on an asset.
+      OS_INVENTORY: The runtime OS Inventory information.
     """
     CONTENT_TYPE_UNSPECIFIED = 0
     RESOURCE = 1
     IAM_POLICY = 2
     ORG_POLICY = 3
     ACCESS_POLICY = 4
+    OS_INVENTORY = 5
 
   assetNames = _messages.StringField(1, repeated=True)
   contentType = _messages.EnumField('ContentTypeValueValuesEnum', 2)
@@ -837,12 +845,14 @@ class ExportAssetsRequest(_messages.Message):
       IAM_POLICY: The actual IAM policy set on a resource.
       ORG_POLICY: The Cloud Organization Policy set on an asset.
       ACCESS_POLICY: The Cloud Access context manager Policy set on an asset.
+      OS_INVENTORY: The runtime OS Inventory information.
     """
     CONTENT_TYPE_UNSPECIFIED = 0
     RESOURCE = 1
     IAM_POLICY = 2
     ORG_POLICY = 3
     ACCESS_POLICY = 4
+    OS_INVENTORY = 5
 
   assetTypes = _messages.StringField(1, repeated=True)
   contentType = _messages.EnumField('ContentTypeValueValuesEnum', 2)
@@ -940,12 +950,14 @@ class Feed(_messages.Message):
       IAM_POLICY: The actual IAM policy set on a resource.
       ORG_POLICY: The Cloud Organization Policy set on an asset.
       ACCESS_POLICY: The Cloud Access context manager Policy set on an asset.
+      OS_INVENTORY: The runtime OS Inventory information.
     """
     CONTENT_TYPE_UNSPECIFIED = 0
     RESOURCE = 1
     IAM_POLICY = 2
     ORG_POLICY = 3
     ACCESS_POLICY = 4
+    OS_INVENTORY = 5
 
   assetNames = _messages.StringField(1, repeated=True)
   assetTypes = _messages.StringField(2, repeated=True)
@@ -2025,6 +2037,107 @@ class IdentitySelector(_messages.Message):
   identity = _messages.StringField(1)
 
 
+class Inventory(_messages.Message):
+  r"""The inventory details of a VM.
+
+  Messages:
+    ItemsValue: Inventory items related to the VM keyed by an opaque unique
+      identifier for each inventory item. The identifier is unique to each
+      distinct and addressable inventory item and will change, when there is a
+      new package version.
+
+  Fields:
+    items: Inventory items related to the VM keyed by an opaque unique
+      identifier for each inventory item. The identifier is unique to each
+      distinct and addressable inventory item and will change, when there is a
+      new package version.
+    osInfo: Base level operating system information for the VM.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    r"""Inventory items related to the VM keyed by an opaque unique identifier
+    for each inventory item. The identifier is unique to each distinct and
+    addressable inventory item and will change, when there is a new package
+    version.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ItemsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Item attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Item', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  items = _messages.MessageField('ItemsValue', 1)
+  osInfo = _messages.MessageField('OsInfo', 2)
+
+
+class Item(_messages.Message):
+  r"""A single piece of inventory on a VM.
+
+  Enums:
+    OriginTypeValueValuesEnum: The origin of this inventory item.
+    TypeValueValuesEnum: The specific type of inventory, correlating to its
+      specific details.
+
+  Fields:
+    availablePackage: Software package available to be installed on the VM
+      instance.
+    createTime: When this inventory item was first detected.
+    id: Identifier for this item, unique across items for this VM.
+    installedPackage: Software package present on the VM instance.
+    originType: The origin of this inventory item.
+    type: The specific type of inventory, correlating to its specific details.
+    updateTime: When this inventory item was last modified.
+  """
+
+  class OriginTypeValueValuesEnum(_messages.Enum):
+    r"""The origin of this inventory item.
+
+    Values:
+      ORIGIN_TYPE_UNSPECIFIED: Invalid. An origin type must be specified.
+      INVENTORY_REPORT: This inventory item was discovered as the result of
+        the agent reporting inventory via the reporting API.
+    """
+    ORIGIN_TYPE_UNSPECIFIED = 0
+    INVENTORY_REPORT = 1
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The specific type of inventory, correlating to its specific details.
+
+    Values:
+      TYPE_UNSPECIFIED: Invalid. An type must be specified.
+      INSTALLED_PACKAGE: This represents a package that is installed on the
+        VM.
+      AVAILABLE_PACKAGE: This represents an update that is available for a
+        package.
+    """
+    TYPE_UNSPECIFIED = 0
+    INSTALLED_PACKAGE = 1
+    AVAILABLE_PACKAGE = 2
+
+  availablePackage = _messages.MessageField('SoftwarePackage', 1)
+  createTime = _messages.StringField(2)
+  id = _messages.StringField(3)
+  installedPackage = _messages.MessageField('SoftwarePackage', 4)
+  originType = _messages.EnumField('OriginTypeValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+
+
 class ListFeedsResponse(_messages.Message):
   r"""A ListFeedsResponse object.
 
@@ -2206,6 +2319,33 @@ class Options(_messages.Message):
   expandRoles = _messages.BooleanField(4)
   outputGroupEdges = _messages.BooleanField(5)
   outputResourceEdges = _messages.BooleanField(6)
+
+
+class OsInfo(_messages.Message):
+  r"""Operating system information for the VM.
+
+  Fields:
+    architecture: The system architecture of the operating system.
+    hostname: The VM hostname.
+    kernelRelease: The kernel release of the operating system.
+    kernelVersion: The kernel version of the operating system.
+    longName: The operating system long name. For example 'Debian GNU/Linux 9'
+      or 'Microsoft Window Server 2019 Datacenter'.
+    osconfigAgentVersion: The current version of the OS Config agent running
+      on the VM.
+    shortName: The operating system short name. For example, 'windows' or
+      'debian'.
+    version: The version of the operating system.
+  """
+
+  architecture = _messages.StringField(1)
+  hostname = _messages.StringField(2)
+  kernelRelease = _messages.StringField(3)
+  kernelVersion = _messages.StringField(4)
+  longName = _messages.StringField(5)
+  osconfigAgentVersion = _messages.StringField(6)
+  shortName = _messages.StringField(7)
+  version = _messages.StringField(8)
 
 
 class OutputConfig(_messages.Message):
@@ -2629,6 +2769,39 @@ class SearchAllResourcesResponse(_messages.Message):
   results = _messages.MessageField('ResourceSearchResult', 2, repeated=True)
 
 
+class SoftwarePackage(_messages.Message):
+  r"""Software package information of the operating system.
+
+  Fields:
+    aptPackage: Details of an APT package. For details about the apt package
+      manager, see https://wiki.debian.org/Apt.
+    googetPackage: Details of a Googet package. For details about the googet
+      package manager, see https://github.com/google/googet.
+    qfePackage: Details of a Windows Quick Fix engineering package. See
+      https://docs.microsoft.com/en-
+      us/windows/win32/cimwin32prov/win32-quickfixengineering for info in
+      Windows Quick Fix Engineering.
+    wuaPackage: Details of a Windows Update package. See
+      https://docs.microsoft.com/en-us/windows/win32/api/_wua/ for information
+      about Windows Update.
+    yumPackage: Yum package info. For details about the yum package manager,
+      see https://access.redhat.com/documentation/en-
+      us/red_hat_enterprise_linux/6/html/deployment_guide/ch-yum.
+    zypperPackage: Details of a Zypper package. For details about the Zypper
+      package manager, see https://en.opensuse.org/SDB:Zypper_manual.
+    zypperPatch: Details of a Zypper patch. For details about the Zypper
+      package manager, see https://en.opensuse.org/SDB:Zypper_manual.
+  """
+
+  aptPackage = _messages.MessageField('VersionedPackage', 1)
+  googetPackage = _messages.MessageField('VersionedPackage', 2)
+  qfePackage = _messages.MessageField('WindowsQuickFixEngineeringPackage', 3)
+  wuaPackage = _messages.MessageField('WindowsUpdatePackage', 4)
+  yumPackage = _messages.MessageField('VersionedPackage', 5)
+  zypperPackage = _messages.MessageField('VersionedPackage', 6)
+  zypperPatch = _messages.MessageField('ZypperPatch', 7)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -2812,6 +2985,104 @@ class UpdateFeedRequest(_messages.Message):
 
   feed = _messages.MessageField('Feed', 1)
   updateMask = _messages.StringField(2)
+
+
+class VersionedPackage(_messages.Message):
+  r"""Information related to the a standard versioned package. This includes
+  package info for APT, Yum, Zypper, and Googet package managers.
+
+  Fields:
+    architecture: The system architecture this package is intended for.
+    packageName: The name of the package.
+    version: The version of the package.
+  """
+
+  architecture = _messages.StringField(1)
+  packageName = _messages.StringField(2)
+  version = _messages.StringField(3)
+
+
+class WindowsQuickFixEngineeringPackage(_messages.Message):
+  r"""Information related to a Quick Fix Engineering package. Fields are taken
+  from Windows QuickFixEngineering Interface and match the source names:
+  https://docs.microsoft.com/en-
+  us/windows/win32/cimwin32prov/win32-quickfixengineering
+
+  Fields:
+    caption: A short textual description of the QFE update.
+    description: A textual description of the QFE update.
+    hotFixId: Unique identifier associated with a particular QFE update.
+    installTime: Date that the QFE update was installed. Mapped from
+      installed_on field.
+  """
+
+  caption = _messages.StringField(1)
+  description = _messages.StringField(2)
+  hotFixId = _messages.StringField(3)
+  installTime = _messages.StringField(4)
+
+
+class WindowsUpdateCategory(_messages.Message):
+  r"""Categories specified by the Windows Update.
+
+  Fields:
+    id: The identifier of the windows update category.
+    name: The name of the windows update category.
+  """
+
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class WindowsUpdatePackage(_messages.Message):
+  r"""Details related to a Windows Update package. Field data and names are
+  taken from Windows Update API IUpdate Interface:
+  https://docs.microsoft.com/en-us/windows/win32/api/_wua/ Descriptive fields
+  like title, and description are localized based on the locale of the VM
+  being updated.
+
+  Fields:
+    categories: The categories that are associated with this update package.
+    description: The localized description of the update package.
+    kbArticleIds: A collection of Microsoft Knowledge Base article IDs that
+      are associated with the update package.
+    lastDeploymentChangeTime: The last published date of the update, in (UTC)
+      date and time.
+    moreInfoUrls: A collection of URLs that provide more information about the
+      update package.
+    revisionNumber: The revision number of this update package.
+    supportUrl: A hyperlink to the language-specific support information for
+      the update.
+    title: The localized title of the update package.
+    updateId: Gets the identifier of an update package. Stays the same across
+      revisions.
+  """
+
+  categories = _messages.MessageField('WindowsUpdateCategory', 1, repeated=True)
+  description = _messages.StringField(2)
+  kbArticleIds = _messages.StringField(3, repeated=True)
+  lastDeploymentChangeTime = _messages.StringField(4)
+  moreInfoUrls = _messages.StringField(5, repeated=True)
+  revisionNumber = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  supportUrl = _messages.StringField(7)
+  title = _messages.StringField(8)
+  updateId = _messages.StringField(9)
+
+
+class ZypperPatch(_messages.Message):
+  r"""Details related to a Zypper Patch.
+
+  Fields:
+    category: The category of the patch.
+    patchName: The name of the patch.
+    severity: The severity specified for this patch
+    summary: Any summary information provided about this patch.
+  """
+
+  category = _messages.StringField(1)
+  patchName = _messages.StringField(2)
+  severity = _messages.StringField(3)
+  summary = _messages.StringField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

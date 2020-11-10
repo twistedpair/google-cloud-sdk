@@ -40,4 +40,27 @@ class Task(six.with_metaclass(abc.ABCMeta, object)):
 
   @abc.abstractmethod
   def execute(self, callback=None):
+    """Performs some work based on class attributes.
+
+    Args:
+      callback (Callable): Called after execute completes.
+
+    Returns:
+      An Optional[Iterable[Iterable[Task]]], which should be executed such that
+      all tasks in each Iterable[Task] are executed before any tasks
+      in the next Iterable[Task] can begin. Tasks within each Iterable[Task] are
+      unordered. For example, if the execute method returned the following:
+
+      [
+        [UploadObjectTask(), UploadObjectTask(), UploadObjectTask()],
+        [ComposeObjectsTask()]
+      ]
+
+      All UploadObjectTasks should be completed before the ComposeObjectTask
+      can begin, but the UploadObjectTasks can be executed in parallel.
+
+      Note that because the results of execute are sent between processes, the
+      return value has to be picklable, which means execute cannot return a
+      generator.
+    """
     pass

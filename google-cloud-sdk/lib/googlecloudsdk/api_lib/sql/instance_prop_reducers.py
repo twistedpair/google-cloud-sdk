@@ -282,6 +282,53 @@ def ValidateDate(s):
           None, 'Invalid date value. The format should be yyyy-mm-dd or mm-dd.')
 
 
+def InsightsConfig(sql_messages,
+                   insights_config_query_insights_enabled=None,
+                   insights_config_query_string_length=None,
+                   insights_config_record_application_tags=None,
+                   insights_config_record_client_address=None):
+  """Generates the insights config for the instance.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    insights_config_query_insights_enabled: boolean, True if query insights
+      should be enabled.
+    insights_config_query_string_length: number, length of the query string to
+      be stored.
+    insights_config_record_application_tags: boolean, True if application tags
+      should be recorded.
+    insights_config_record_client_address: boolean, True if client address
+      should be recorded.
+
+  Returns:
+    sql_messages.InsightsConfig or None
+  """
+
+  should_generate_config = any([
+      insights_config_query_insights_enabled is not None,
+      insights_config_query_string_length is not None,
+      insights_config_record_application_tags is not None,
+      insights_config_record_client_address is not None,
+  ])
+  if not should_generate_config:
+    return None
+
+  # Config exists, generate insights config.
+  insights_config = sql_messages.InsightsConfig()
+  if insights_config_query_insights_enabled is not None:
+    insights_config.queryInsightsEnabled = (
+        insights_config_query_insights_enabled)
+  if insights_config_query_string_length is not None:
+    insights_config.queryStringLength = insights_config_query_string_length
+  if insights_config_record_application_tags is not None:
+    insights_config.recordApplicationTags = (
+        insights_config_record_application_tags)
+  if insights_config_record_client_address is not None:
+    insights_config.recordClientAddress = insights_config_record_client_address
+
+  return insights_config
+
+
 def _CustomMachineTypeString(cpu, memory_mib):
   """Creates a custom machine type from the CPU and memory specs.
 

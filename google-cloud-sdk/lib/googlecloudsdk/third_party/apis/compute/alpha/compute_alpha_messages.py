@@ -4910,8 +4910,7 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A client-specified ID for this binding. Expected to be globally
-      unique to support the internal bindings-by-ID API.
+    bindingId:
     condition: The condition that is associated with this binding.  If the
       condition evaluates to `true`, then this binding applies to the current
       request.  If the condition evaluates to `false`, then this binding does
@@ -32857,6 +32856,9 @@ class Instance(_messages.Message):
     secureLabels: Secure labels to apply to this instance. These can be later
       modified by the update method. Maximum number of secure labels allowed
       is 300.
+    secureTags: Secure tags to apply to this instance. These can be later
+      modified by the update method. Maximum number of secure tags allowed is
+      300.
     selfLink: [Output Only] Server-defined URL for this resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
@@ -33007,21 +33009,22 @@ class Instance(_messages.Message):
   satisfiesPzs = _messages.BooleanField(32)
   scheduling = _messages.MessageField('Scheduling', 33)
   secureLabels = _messages.StringField(34, repeated=True)
-  selfLink = _messages.StringField(35)
-  selfLinkWithId = _messages.StringField(36)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 37, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 38)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 39)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 40)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 41)
-  sourceMachineImage = _messages.StringField(42)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 43)
-  startRestricted = _messages.BooleanField(44)
-  status = _messages.EnumField('StatusValueValuesEnum', 45)
-  statusMessage = _messages.StringField(46)
-  tags = _messages.MessageField('Tags', 47)
-  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 48)
-  zone = _messages.StringField(49)
+  secureTags = _messages.StringField(35, repeated=True)
+  selfLink = _messages.StringField(36)
+  selfLinkWithId = _messages.StringField(37)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 38, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 39)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 40)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 41)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 42)
+  sourceMachineImage = _messages.StringField(43)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 44)
+  startRestricted = _messages.BooleanField(45)
+  status = _messages.EnumField('StatusValueValuesEnum', 46)
+  statusMessage = _messages.StringField(47)
+  tags = _messages.MessageField('Tags', 48)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 49)
+  zone = _messages.StringField(50)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -34157,6 +34160,14 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       However, if the Updater determines that the minimal action you specify
       is not enough to perform the update, it might perform a more disruptive
       action.
+    MostDisruptiveAllowedActionValueValuesEnum: Most disruptive action that is
+      allowed to be taken on an instance. You can specify either NONE to
+      forbid any actions, REFRESH to allow actions that do not need instance
+      restart, RESTART to allow actions that can be applied without instance
+      replacing or REPLACE to allow all possible actions. If the Updater
+      determines that the minimal update action needed is more disruptive than
+      most disruptive allowed action you specify it will not perform the
+      update at all.
     ReplacementMethodValueValuesEnum: What action should be used to replace
       instances. See minimal_action.REPLACE
     TypeValueValuesEnum: The type of update process. You can specify either
@@ -34199,6 +34210,13 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       the Updater will attempt to perform that action only. However, if the
       Updater determines that the minimal action you specify is not enough to
       perform the update, it might perform a more disruptive action.
+    mostDisruptiveAllowedAction: Most disruptive action that is allowed to be
+      taken on an instance. You can specify either NONE to forbid any actions,
+      REFRESH to allow actions that do not need instance restart, RESTART to
+      allow actions that can be applied without instance replacing or REPLACE
+      to allow all possible actions. If the Updater determines that the
+      minimal update action needed is more disruptive than most disruptive
+      allowed action you specify it will not perform the update at all.
     replacementMethod: What action should be used to replace instances. See
       minimal_action.REPLACE
     type: The type of update process. You can specify either PROACTIVE so that
@@ -34228,6 +34246,26 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     will attempt to perform that action only. However, if the Updater
     determines that the minimal action you specify is not enough to perform
     the update, it might perform a more disruptive action.
+
+    Values:
+      NONE: <no description>
+      REFRESH: <no description>
+      REPLACE: <no description>
+      RESTART: <no description>
+    """
+    NONE = 0
+    REFRESH = 1
+    REPLACE = 2
+    RESTART = 3
+
+  class MostDisruptiveAllowedActionValueValuesEnum(_messages.Enum):
+    r"""Most disruptive action that is allowed to be taken on an instance. You
+    can specify either NONE to forbid any actions, REFRESH to allow actions
+    that do not need instance restart, RESTART to allow actions that can be
+    applied without instance replacing or REPLACE to allow all possible
+    actions. If the Updater determines that the minimal update action needed
+    is more disruptive than most disruptive allowed action you specify it will
+    not perform the update at all.
 
     Values:
       NONE: <no description>
@@ -34270,8 +34308,9 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
   maxUnavailable = _messages.MessageField('FixedOrPercent', 3)
   minReadySec = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 5)
-  replacementMethod = _messages.EnumField('ReplacementMethodValueValuesEnum', 6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 6)
+  replacementMethod = _messages.EnumField('ReplacementMethodValueValuesEnum', 7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
 
 
 class InstanceGroupManagerVersion(_messages.Message):
@@ -46652,6 +46691,7 @@ class Quota(_messages.Message):
       PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
       PRIVATE_V6_ACCESS_SUBNETWORKS: <no description>
       PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK: <no description>
+      PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK: <no description>
       PUBLIC_ADVERTISED_PREFIXES: <no description>
       PUBLIC_DELEGATED_PREFIXES: <no description>
       REGIONAL_AUTOSCALERS: <no description>
@@ -46771,35 +46811,36 @@ class Quota(_messages.Message):
     PREEMPTIBLE_NVIDIA_V100_GPUS = 86
     PRIVATE_V6_ACCESS_SUBNETWORKS = 87
     PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 88
-    PUBLIC_ADVERTISED_PREFIXES = 89
-    PUBLIC_DELEGATED_PREFIXES = 90
-    REGIONAL_AUTOSCALERS = 91
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 92
-    RESERVATIONS = 93
-    RESOURCE_POLICIES = 94
-    ROUTERS = 95
-    ROUTES = 96
-    SECURITY_POLICIES = 97
-    SECURITY_POLICY_CEVAL_RULES = 98
-    SECURITY_POLICY_RULES = 99
-    SNAPSHOTS = 100
-    SSD_TOTAL_GB = 101
-    SSL_CERTIFICATES = 102
-    STATIC_ADDRESSES = 103
-    STATIC_BYOIP_ADDRESSES = 104
-    SUBNETWORKS = 105
-    SUBNET_RANGES_PER_NETWORK = 106
-    TARGET_HTTPS_PROXIES = 107
-    TARGET_HTTP_PROXIES = 108
-    TARGET_INSTANCES = 109
-    TARGET_POOLS = 110
-    TARGET_SSL_PROXIES = 111
-    TARGET_TCP_PROXIES = 112
-    TARGET_VPN_GATEWAYS = 113
-    URL_MAPS = 114
-    VPN_GATEWAYS = 115
-    VPN_TUNNELS = 116
-    XPN_SERVICE_PROJECTS = 117
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 89
+    PUBLIC_ADVERTISED_PREFIXES = 90
+    PUBLIC_DELEGATED_PREFIXES = 91
+    REGIONAL_AUTOSCALERS = 92
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 93
+    RESERVATIONS = 94
+    RESOURCE_POLICIES = 95
+    ROUTERS = 96
+    ROUTES = 97
+    SECURITY_POLICIES = 98
+    SECURITY_POLICY_CEVAL_RULES = 99
+    SECURITY_POLICY_RULES = 100
+    SNAPSHOTS = 101
+    SSD_TOTAL_GB = 102
+    SSL_CERTIFICATES = 103
+    STATIC_ADDRESSES = 104
+    STATIC_BYOIP_ADDRESSES = 105
+    SUBNETWORKS = 106
+    SUBNET_RANGES_PER_NETWORK = 107
+    TARGET_HTTPS_PROXIES = 108
+    TARGET_HTTP_PROXIES = 109
+    TARGET_INSTANCES = 110
+    TARGET_POOLS = 111
+    TARGET_SSL_PROXIES = 112
+    TARGET_TCP_PROXIES = 113
+    TARGET_VPN_GATEWAYS = 114
+    URL_MAPS = 115
+    VPN_GATEWAYS = 116
+    VPN_TUNNELS = 117
+    XPN_SERVICE_PROJECTS = 118
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -52447,12 +52488,18 @@ class ServiceAttachment(_messages.Message):
   producers uses to represent the consumers connecting to the service.
 
   Enums:
-    ConnectionPreferenceValueValuesEnum:
+    ConnectionPreferenceValueValuesEnum: The connection preference of service
+      attachment. The value can be set to ACCEPT_AUTOMATIC. An
+      ACCEPT_AUTOMATIC service attachment is one that always accepts the
+      connection from consumer forwarding rules.
 
   Fields:
-    connectionPreference: A ConnectionPreferenceValueValuesEnum attribute.
-    consumerForwardingRules: An array of forwarding rules for all the
-      consumers connected to this service attachment.
+    connectionPreference: The connection preference of service attachment. The
+      value can be set to ACCEPT_AUTOMATIC. An ACCEPT_AUTOMATIC service
+      attachment is one that always accepts the connection from consumer
+      forwarding rules.
+    consumerForwardingRules: [Output Only] An array of forwarding rules for
+      all the consumers connected to this service attachment.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -52482,7 +52529,9 @@ class ServiceAttachment(_messages.Message):
   """
 
   class ConnectionPreferenceValueValuesEnum(_messages.Enum):
-    r"""ConnectionPreferenceValueValuesEnum enum type.
+    r"""The connection preference of service attachment. The value can be set
+    to ACCEPT_AUTOMATIC. An ACCEPT_AUTOMATIC service attachment is one that
+    always accepts the connection from consumer forwarding rules.
 
     Values:
       ACCEPT_AUTOMATIC: <no description>

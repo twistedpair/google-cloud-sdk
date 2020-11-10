@@ -51,6 +51,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_apis_revisions = self.OrganizationsApisRevisionsService(self)
     self.organizations_apis = self.OrganizationsApisService(self)
     self.organizations_apps = self.OrganizationsAppsService(self)
+    self.organizations_datacollectors = self.OrganizationsDatacollectorsService(self)
     self.organizations_deployments = self.OrganizationsDeploymentsService(self)
     self.organizations_developers_apps_attributes = self.OrganizationsDevelopersAppsAttributesService(self)
     self.organizations_developers_apps_keys_apiproducts = self.OrganizationsDevelopersAppsKeysApiproductsService(self)
@@ -87,6 +88,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_environments_targetservers = self.OrganizationsEnvironmentsTargetserversService(self)
     self.organizations_environments = self.OrganizationsEnvironmentsService(self)
     self.organizations_instances_attachments = self.OrganizationsInstancesAttachmentsService(self)
+    self.organizations_instances_canaryevaluations = self.OrganizationsInstancesCanaryevaluationsService(self)
     self.organizations_instances = self.OrganizationsInstancesService(self)
     self.organizations_keyvaluemaps = self.OrganizationsKeyvaluemapsService(self)
     self.organizations_operations = self.OrganizationsOperationsService(self)
@@ -367,7 +369,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the value of an API product attribute.
+      r"""Gets the value of an API product attribute.
 
       Args:
         request: (ApigeeOrganizationsApiproductsAttributesGetRequest) input message
@@ -394,7 +396,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns a list of all API product attributes.
+      r"""Lists all API product attributes.
 
       Args:
         request: (ApigeeOrganizationsApiproductsAttributesListRequest) input message
@@ -421,7 +423,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def UpdateApiProductAttribute(self, request, global_params=None):
-      r"""Updates the value of an API product attribute. Limitations are: OAuth access tokens and Key Management Service (KMS) entities (apps, developers, and API products) are cached for 180 seconds (current default). Any custom attributes associated with entities also get cached for at least 180 seconds after entity is accessed during runtime. In this case, the `ExpiresIn` element on the OAuthV2 policy won't be able to expire an access token in less than 180 seconds.
+      r"""Updates the value of an API product attribute. **Note**: OAuth access tokens and Key Management Service (KMS) entities (apps, developers, and API products) are cached for 180 seconds (current default). Any custom attributes associated with entities also get cached for at least 180 seconds after entity is accessed during runtime. In this case, the `ExpiresIn` element on the OAuthV2 policy won't be able to expire an access token in less than 180 seconds.
 
       Args:
         request: (GoogleCloudApigeeV1Attribute) input message
@@ -458,7 +460,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Attributes(self, request, global_params=None):
-      r"""Updates or creates API product attributes. This API **replaces** the current list of attributes with the attributes specified in the request body. In this way, you can update existing attributes, add new attributes, or delete existing attributes by omitting them from the request body. OAuth access tokens and Key Management Service (KMS) entities (apps, developers, and API products) are cached for 180 seconds (current default). Any custom attributes associated with entities also get cached for at least 180 seconds after entity is accessed during runtime. In this case, the `ExpiresIn` element on the OAuthV2 policy won't be able to expire an access token in less than 180 seconds.
+      r"""Updates or creates API product attributes. This API **replaces** the current list of attributes with the attributes specified in the request body. In this way, you can update existing attributes, add new attributes, or delete existing attributes by omitting them from the request body. **Note**: OAuth access tokens and Key Management Service (KMS) entities (apps, developers, and API products) are cached for 180 seconds (current default). Any custom attributes associated with entities also get cached for at least 180 seconds after entity is accessed during runtime. In this case, the `ExpiresIn` element on the OAuthV2 policy won't be able to expire an access token in less than 180 seconds.
 
       Args:
         request: (ApigeeOrganizationsApiproductsAttributesRequest) input message
@@ -485,7 +487,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates an API product in an organization. You create API products after you have proxied backend services using API proxies. An API product is a collection of API resources combined with quota settings and metadata that you can use to deliver customized and productized API bundles to your developer community. This metadata can include: - Scope - Environments - API proxies - Extensible profile API products enable you repackage APIs on-the-fly, without having to do any additional coding or configuration. Apigee recommends that you start with a simple API product including only required elements. You then provision credentials to apps to enable them to start testing your APIs. After you have authentication and authorization working against a simple API product, you can iterate to create finer grained API products, defining different sets of API resources for each API product. *WARNING:* - If you don't specify an API proxy in the request body, *any* app associated with the product can make calls to *any* API in your entire organization. - If you don't specify an environment in the request body, the product allows access to all environments. For more information, see {{what_api_product}}.
+      r"""Creates an API product in an organization. You create API products after you have proxied backend services using API proxies. An API product is a collection of API resources combined with quota settings and metadata that you can use to deliver customized and productized API bundles to your developer community. This metadata can include: - Scope - Environments - API proxies - Extensible profile API products enable you repackage APIs on-the-fly, without having to do any additional coding or configuration. Apigee recommends that you start with a simple API product including only required elements. You then provision credentials to apps to enable them to start testing your APIs. After you have authentication and authorization working against a simple API product, you can iterate to create finer grained API products, defining different sets of API resources for each API product. **WARNING:** - If you don't specify an API proxy in the request body, *any* app associated with the product can make calls to *any* API in your entire organization. - If you don't specify an environment in the request body, the product allows access to all environments. For more information, see What is an API product?.
 
       Args:
         request: (ApigeeOrganizationsApiproductsCreateRequest) input message
@@ -1027,6 +1029,151 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApigeeOrganizationsAppsListRequest',
         response_type_name='GoogleCloudApigeeV1ListAppsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsDatacollectorsService(base_api.BaseApiService):
+    """Service class for the organizations_datacollectors resource."""
+
+    _NAME = 'organizations_datacollectors'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsDatacollectorsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new data collector.
+
+      Args:
+        request: (ApigeeOrganizationsDatacollectorsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1DataCollector) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/datacollectors',
+        http_method='POST',
+        method_id='apigee.organizations.datacollectors.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['dataCollectorId'],
+        relative_path='v1/{+parent}/datacollectors',
+        request_field='googleCloudApigeeV1DataCollector',
+        request_type_name='ApigeeOrganizationsDatacollectorsCreateRequest',
+        response_type_name='GoogleCloudApigeeV1DataCollector',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a data collector.
+
+      Args:
+        request: (ApigeeOrganizationsDatacollectorsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/datacollectors/{datacollectorsId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.datacollectors.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsDatacollectorsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a data collector.
+
+      Args:
+        request: (ApigeeOrganizationsDatacollectorsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1DataCollector) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/datacollectors/{datacollectorsId}',
+        http_method='GET',
+        method_id='apigee.organizations.datacollectors.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsDatacollectorsGetRequest',
+        response_type_name='GoogleCloudApigeeV1DataCollector',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all data collectors.
+
+      Args:
+        request: (ApigeeOrganizationsDatacollectorsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListDataCollectorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/datacollectors',
+        http_method='GET',
+        method_id='apigee.organizations.datacollectors.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/datacollectors',
+        request_field='',
+        request_type_name='ApigeeOrganizationsDatacollectorsListRequest',
+        response_type_name='GoogleCloudApigeeV1ListDataCollectorsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a data collector.
+
+      Args:
+        request: (ApigeeOrganizationsDatacollectorsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1DataCollector) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/datacollectors/{datacollectorsId}',
+        http_method='PATCH',
+        method_id='apigee.organizations.datacollectors.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1DataCollector',
+        request_type_name='ApigeeOrganizationsDatacollectorsPatchRequest',
+        response_type_name='GoogleCloudApigeeV1DataCollector',
         supports_download=False,
     )
 
@@ -4411,6 +4558,70 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApigeeOrganizationsInstancesAttachmentsListRequest',
         response_type_name='GoogleCloudApigeeV1ListInstanceAttachmentsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsInstancesCanaryevaluationsService(base_api.BaseApiService):
+    """Service class for the organizations_instances_canaryevaluations resource."""
+
+    _NAME = 'organizations_instances_canaryevaluations'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsInstancesCanaryevaluationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new canary evaluation for an organization.
+
+      Args:
+        request: (ApigeeOrganizationsInstancesCanaryevaluationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/instances/{instancesId}/canaryevaluations',
+        http_method='POST',
+        method_id='apigee.organizations.instances.canaryevaluations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/canaryevaluations',
+        request_field='googleCloudApigeeV1CanaryEvaluation',
+        request_type_name='ApigeeOrganizationsInstancesCanaryevaluationsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a CanaryEvaluation for an organization.
+
+      Args:
+        request: (ApigeeOrganizationsInstancesCanaryevaluationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1CanaryEvaluation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/instances/{instancesId}/canaryevaluations/{canaryevaluationsId}',
+        http_method='GET',
+        method_id='apigee.organizations.instances.canaryevaluations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsInstancesCanaryevaluationsGetRequest',
+        response_type_name='GoogleCloudApigeeV1CanaryEvaluation',
         supports_download=False,
     )
 

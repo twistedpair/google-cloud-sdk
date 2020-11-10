@@ -153,9 +153,8 @@ def AddCommonArgs(parser,
       """
   else:
     source_ranges_help += """
-      If neither --source-ranges nor --source-tags is provided, then this
-      flag will default to 0.0.0.0/0, allowing all sources. Multiple IP
-      address blocks can be specified if they are separated by commas.
+      Multiple IP address blocks can be specified if they are separated by
+      commas.
       """
   parser.add_argument(
       '--source-ranges',

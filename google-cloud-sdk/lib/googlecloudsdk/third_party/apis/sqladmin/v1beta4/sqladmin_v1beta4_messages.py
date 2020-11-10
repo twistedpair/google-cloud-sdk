@@ -86,6 +86,18 @@ class BackupConfiguration(_messages.Message):
   transactionLogRetentionDays = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
+class BackupContext(_messages.Message):
+  r"""Backup context.
+
+  Fields:
+    backupId: The identifier of the backup.
+    kind: This is always *sql#backupContext*.
+  """
+
+  backupId = _messages.IntegerField(1)
+  kind = _messages.StringField(2)
+
+
 class BackupRetentionSettings(_messages.Message):
   r"""We currently only support backup retention by specifying the number of
   backups we will retain.
@@ -1415,7 +1427,7 @@ class OnPremisesConfiguration(_messages.Message):
 class Operation(_messages.Message):
   r"""An Operation resource. For successful operations that return an
   Operation resource, only the fields relevant to the operation are populated
-  in the resource.
+  in the resource. Next field: 18
 
   Enums:
     OperationTypeValueValuesEnum: The type of the operation. Valid values are:
@@ -1426,6 +1438,7 @@ class Operation(_messages.Message):
       *PENDING* *RUNNING* *DONE* *SQL_OPERATION_STATUS_UNSPECIFIED*
 
   Fields:
+    backupContext: The context for backup operation, if applicable.
     endTime: The time this operation finished in UTC timezone in RFC 3339
       format, for example *2012-11-15T16:19:00.094Z*.
     error: If errors occurred during processing of this operation, this field
@@ -1553,21 +1566,22 @@ class Operation(_messages.Message):
     RUNNING = 2
     DONE = 3
 
-  endTime = _messages.StringField(1)
-  error = _messages.MessageField('OperationErrors', 2)
-  exportContext = _messages.MessageField('ExportContext', 3)
-  importContext = _messages.MessageField('ImportContext', 4)
-  insertTime = _messages.StringField(5)
-  kind = _messages.StringField(6)
-  name = _messages.StringField(7)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 8)
-  selfLink = _messages.StringField(9)
-  startTime = _messages.StringField(10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  targetId = _messages.StringField(12)
-  targetLink = _messages.StringField(13)
-  targetProject = _messages.StringField(14)
-  user = _messages.StringField(15)
+  backupContext = _messages.MessageField('BackupContext', 1)
+  endTime = _messages.StringField(2)
+  error = _messages.MessageField('OperationErrors', 3)
+  exportContext = _messages.MessageField('ExportContext', 4)
+  importContext = _messages.MessageField('ImportContext', 5)
+  insertTime = _messages.StringField(6)
+  kind = _messages.StringField(7)
+  name = _messages.StringField(8)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 9)
+  selfLink = _messages.StringField(10)
+  startTime = _messages.StringField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  targetId = _messages.StringField(13)
+  targetLink = _messages.StringField(14)
+  targetProject = _messages.StringField(15)
+  user = _messages.StringField(16)
 
 
 class OperationError(_messages.Message):
@@ -2517,16 +2531,16 @@ class SqlProjectsInstancesStartExternalSyncRequest(_messages.Message):
   r"""A SqlProjectsInstancesStartExternalSyncRequest object.
 
   Enums:
-    SyncModeValueValuesEnum: External sync mode
+    SyncModeValueValuesEnum: External sync mode.
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: ID of the project that contains the instance.
-    syncMode: External sync mode
+    syncMode: External sync mode.
   """
 
   class SyncModeValueValuesEnum(_messages.Enum):
-    r"""External sync mode
+    r"""External sync mode.
 
     Values:
       EXTERNAL_SYNC_MODE_UNSPECIFIED: Unknown external sync mode, will be

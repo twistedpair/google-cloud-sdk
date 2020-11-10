@@ -538,6 +538,33 @@ class MlV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListOptimalTrials(self, request, global_params=None):
+      r"""Lists the pareto-optimal trials for multi-objective study or the optimal trials for single-objective study. The definition of pareto-optimal can be checked in wiki page. https://en.wikipedia.org/wiki/Pareto_efficiency.
+
+      Args:
+        request: (MlProjectsLocationsStudiesTrialsListOptimalTrialsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudMlV1ListOptimalTrialsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListOptimalTrials')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListOptimalTrials.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials:listOptimalTrials',
+        http_method='POST',
+        method_id='ml.projects.locations.studies.trials.listOptimalTrials',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/trials:listOptimalTrials',
+        request_field='googleCloudMlV1ListOptimalTrialsRequest',
+        request_type_name='MlProjectsLocationsStudiesTrialsListOptimalTrialsRequest',
+        response_type_name='GoogleCloudMlV1ListOptimalTrialsResponse',
+        supports_download=False,
+    )
+
     def Stop(self, request, global_params=None):
       r"""Stops a trial.
 

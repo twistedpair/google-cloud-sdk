@@ -367,7 +367,10 @@ class Platform(object):
     else:
       # Killing a group leader kills the whole group.
       # Create a new session with the new process the group leader.
-      args['preexec_fn'] = os.setsid
+      if sys.version_info[0] == 3 and sys.version_info[1] == 9:
+        args['start_new_session'] = True
+      else:
+        args['preexec_fn'] = os.setsid
       args['close_fds'] = True  # This closes all FDs _except_ 0, 1, 2 on *nix.
       args['stdin'] = subprocess.PIPE
       args['stdout'] = subprocess.PIPE

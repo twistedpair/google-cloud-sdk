@@ -107,6 +107,11 @@ class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
   # we'll set them ourselves, or because they're not meant to be set.
   _PRIVATE_PROPERTY_FIELDS = frozenset({'sink', 'ceOverrides'})
 
+  # The list of crds within the CustomResourceDefinitionList response
+  # lacks their apiVersions (intended behavior), so manually set it.
+  def setApiVersion(self, api_version):  # pylint: disable=invalid-name
+    self._m.apiVersion = api_version
+
   @property
   def source_kind(self):
     return self._m.spec.names.kind
@@ -127,6 +132,10 @@ class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
     except AttributeError:
       return _SOURCE_CUSTOM_RESOURCE_DEFINITION_VERSION
 
+  def getActiveSourceVersions(self):
+    """Returns list of active api versions for the source."""
+    return [version.name for version in self._m.spec.versions if version.served]
+
   @property
   def schema(self):
     """Returns the SourceCustomResourceDefinition schema.
@@ -134,9 +143,7 @@ class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
     Returns:
       k8s_object.ListAsReadOnlyDictionaryWrapper
     """
-    # CustomResourceDefinition validation only exists in v1alpha1 and v1beta1
-    # Under v1, validation now exists under spec.versions
-    if self.source_version == 'v1alpha1' or self.source_version == 'v1beta1':
+    if self.apiVersion != 'apiextensions.k8s.io/v1':
       return JsonSchemaPropsWrapper(self._m.spec.validation.openAPIV3Schema)
 
     # While the list CustomResourceDefinition is v1, the source itself could be
@@ -152,7 +159,15 @@ class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
 
   @property
   def event_types(self):
-    """Returns List[EventType] from the registry annotation json string."""
+    """Returns List[EventType] from the registry annotation json string.
+
+    Where metadata.annotations."registry.knative.dev/eventTypes" holds an array
+    of {
+      type: str, The event type.
+      schema: str, The url defining the schema.
+      description: str, The description of the event type.
+    }
+    """
     if _EVENT_TYPE_REGISTRY_KEY not in self.annotations:
       return []
     event_types = json.loads(self.annotations[_EVENT_TYPE_REGISTRY_KEY])

@@ -33,12 +33,11 @@ class StoredCredentials(credentials.Credentials):
   def __init__(self,
                enable_resource_quota=True,
                force_resource_quota=False,
-               allow_account_impersonation=True,
-               use_google_auth=False):
+               allow_account_impersonation=True):
     super(StoredCredentials, self).__init__()
     self.stored_credentials = store.LoadIfEnabled(
         allow_account_impersonation=allow_account_impersonation,
-        use_google_auth=use_google_auth)
+        use_google_auth=True)
     if self.stored_credentials is None:
       raise MissingStoredCredentialsError()
     if creds.IsOauth2ClientCredentials(self.stored_credentials):

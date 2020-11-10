@@ -32,11 +32,6 @@ class Connector(_messages.Message):
       `projects/*/locations/*/connectors/*`.
     network: Name of a VPC network.
     state: Output only. State of the VPC access connector.
-    subnet: The subnet in which to house the connector. If present, this field
-      will take priority over `ip_cidr_range` and `network`. Format:
-      `projects/[HOST_PROJECT_ID]/regions/*/subnetworks/*`. If the subnet is
-      from the same project as the connector, this path does not need to be
-      fully qualified.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -64,7 +59,6 @@ class Connector(_messages.Message):
   name = _messages.StringField(5)
   network = _messages.StringField(6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
-  subnet = _messages.StringField(8)
 
 
 class ListConnectorsResponse(_messages.Message):

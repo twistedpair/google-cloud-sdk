@@ -49,6 +49,9 @@ INTERNAL_GROUPS = (
 
 REGION_LABEL = GOOGLE_GROUP + '/location'
 
+CLIENT_NAME_ANNOTATION = RUN_GROUP + '/client-name'
+CLIENT_VERSION_ANNOTATION = RUN_GROUP + '/client-version'
+
 
 def Meta(m):
   """Metadta class from messages module."""

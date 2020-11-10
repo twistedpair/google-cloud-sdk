@@ -274,10 +274,14 @@ def AddPredictionResourcesArgs(parser, version):
   """Add arguments for prediction resources."""
   base.Argument(
       '--min-replica-count',
-      required=True,
       type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
-      help=('Minimum number of machine replicas the deployed model will be '
-            'always deployed on.')
+      help=("""\
+Minimum number of machine replicas the deployed model will be always deployed
+on. If specified, the value must be equal to or larger than 1.
+
+If not specified and the uploaded models use dedicated resources, the default
+value is 1.
+""")
   ).AddToParser(parser)
 
   base.Argument(
@@ -317,6 +321,46 @@ For example:
 `--accelerator=type=nvidia-tesla-k80,count=1`""".format(', '.join([
     "'{}'".format(c) for c in GetAcceleratorTypeMapper(version).choices
   ]))).AddToParser(parser)
+
+
+def GetEnableAccessLoggingArg():
+  return base.Argument(
+      '--enable-access-logging',
+      action='store_true',
+      default=False,
+      required=False,
+      help="""\
+If true, online prediction access logs are sent to Cloud Logging.
+
+These logs are standard server access logs, containing information like
+timestamp and latency for each prediction request.
+""")
+
+
+def GetEnableContainerLoggingArg():
+  return base.Argument(
+      '--enable-container-logging',
+      action='store_true',
+      default=False,
+      required=False,
+      help="""\
+If true, the container of the deployed model instances will send `stderr` and
+`stdout` streams to Cloud Logging.
+
+Currently, only supported for custom-trained Models and AutoML Tables Models.
+""")
+
+
+def GetServiceAccountArg():
+  return base.Argument(
+      '--service-account',
+      required=False,
+      help="""\
+Service account that the deployed model's container runs as. Specify the
+email address of the service account. If this service account is not
+specified, the container runs as a service account that doesn't have access
+to the resource project.
+""")
 
 
 def RegionAttributeConfig():

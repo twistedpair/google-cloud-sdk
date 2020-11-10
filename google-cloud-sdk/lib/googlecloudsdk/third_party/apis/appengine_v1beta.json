@@ -1679,7 +1679,7 @@
             "The instance is unreachable i.e. a connection to the application health checking endpoint cannot be established, or the server does not respond within the specified timeout."
           ],
           "enum": [
-            "STATE_UNSPECIFIED",
+            "LIVENESS_STATE_UNSPECIFIED",
             "UNKNOWN",
             "HEALTHY",
             "UNHEALTHY",

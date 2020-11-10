@@ -28,12 +28,11 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.credentials import devshell as c_devshell
+from googlecloudsdk.core.credentials import creds as c_creds
 from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.third_party.appengine.datastore import datastore_index
 from googlecloudsdk.third_party.appengine.tools import appengine_rpc_httplib2
-from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
 import six
 import six.moves.urllib.error
@@ -68,10 +67,13 @@ class AppengineClient(object):
     project: The appengine application in use.
     oauth2_access_token: An existing OAuth2 access token to use.
     oauth2_refresh_token: An existing OAuth2 refresh token to use.
+    oauth_scopes: The required scope of credentials to call app engine.
     authenticate_service_account: Authenticate using the default service account
       for the Google Compute Engine VM in which gcloud is being called.
     ignore_bad_certs: Whether to ignore certificate errors when talking to the
       server.
+    client_id: Client ID of the credentials to use.
+    client_secret: Client secret of the credentials to use.
   """
 
   _PREPARE_TIMEOUT_RETIRES = 15
@@ -88,32 +90,46 @@ class AppengineClient(object):
     self.client_id = None
     self.client_secret = None
 
-    credentials = c_store.LoadFreshCredential()
+    credentials = c_store.LoadFreshCredential(use_google_auth=True)
     if credentials:
-      if isinstance(credentials, service_account.ServiceAccountCredentials):
-        self.oauth2_access_token = credentials.access_token
-        self.client_id = credentials.client_id
-        self.client_secret = credentials.client_secret
-      elif isinstance(credentials, c_devshell.DevshellCredentials):
-        # TODO(b/36057357): This passes the access token to use for API calls to
-        # appcfg which means that commands that are longer than the lifetime
-        # of the access token may fail - e.g. some long deployments.  The proper
-        # solution is to integrate appcfg closer with the Cloud SDK libraries,
-        # this code will go away then and the standard credentials flow will be
-        # used.
-        self.oauth2_access_token = credentials.access_token
-        self.client_id = None
-        self.client_secret = None
-      elif isinstance(credentials, oauth2client_gce.AppAssertionCredentials):
-        # If we are on GCE, use the service account
-        self.authenticate_service_account = True
-        self.client_id = None
-        self.client_secret = None
-      else:
-        # Otherwise use a stored refresh token
-        self.oauth2_refresh_token = credentials.refresh_token
-        self.client_id = credentials.client_id
-        self.client_secret = credentials.client_secret
+      self._InitCredentials(credentials)
+
+  def _InitCredentials(self, credentials):
+    if c_creds.IsGoogleAuthCredentials(credentials):
+      self._InitGoogleAuthCreds(credentials)
+    else:
+      self._InitOauth2clientCreds(credentials)
+
+  def _InitGoogleAuthCreds(self, credentials):
+    """Initializes the object with a given google-auth credentials."""
+    creds_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(credentials)
+    if creds_type in (c_creds.CredentialTypeGoogleAuth.SERVICE_ACCOUNT,
+                      c_creds.CredentialTypeGoogleAuth.P12_SERVICE_ACCOUNT,
+                      c_creds.CredentialTypeGoogleAuth.DEVSHELL):
+      self.oauth2_access_token = credentials.token
+    elif creds_type == c_creds.CredentialTypeGoogleAuth.GCE:
+      self.authenticate_service_account = True
+    elif creds_type == c_creds.CredentialTypeGoogleAuth.USER_ACCOUNT:
+      self.oauth2_access_token = credentials.token
+      self.oauth2_refresh_token = credentials.refresh_token
+      self.client_id = credentials.client_id
+      self.client_secret = credentials.client_secret
+
+  def _InitOauth2clientCreds(self, credentials):
+    """Initializes the object with a given oauth2client credentials."""
+    creds_type = c_creds.CredentialType.FromCredentials(credentials)
+
+    if creds_type in (c_creds.CredentialType.SERVICE_ACCOUNT,
+                      c_creds.CredentialType.P12_SERVICE_ACCOUNT,
+                      c_creds.CredentialType.DEVSHELL):
+      self.oauth2_access_token = credentials.access_token
+    elif creds_type == c_creds.CredentialType.GCE:
+      self.authenticate_service_account = True
+    elif creds_type == c_creds.CredentialType.USER_ACCOUNT:
+      self.oauth2_access_token = credentials.access_token
+      self.oauth2_refresh_token = credentials.refresh_token
+      self.client_id = credentials.client_id
+      self.client_secret = credentials.client_secret
 
   def CleanupIndexes(self, index_yaml):
     """Removes unused datastore indexes.

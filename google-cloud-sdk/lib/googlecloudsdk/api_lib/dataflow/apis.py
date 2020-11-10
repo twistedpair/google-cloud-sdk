@@ -735,7 +735,7 @@ class Templates(object):
       build_config = submit_util.CreateBuildConfig(
           image_gcr_path, False, messages, None,
           'cloudbuild.yaml', True, False, temp_dir, None, None, None,
-          None, None, None)
+          None, None, None, None)
       log.status.Print('Pushing flex template container image to GCR...')
 
       submit_util.Build(messages, False, build_config)

@@ -29,8 +29,7 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A client-specified ID for this binding. Expected to be globally
-      unique to support the internal bindings-by-ID API.
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -316,12 +315,9 @@ class MessageStoragePolicy(_messages.Message):
       outside of GCP altogether) will be routed for storage in one of the
       allowed regions. An empty list means that no regions are allowed, and is
       not a valid configuration.
-    satisfiesPzs: Reserved for future use. This field is set only in responses
-      from the server; it is ignored if it is set in any requests.
   """
 
   allowedPersistenceRegions = _messages.StringField(1, repeated=True)
-  satisfiesPzs = _messages.BooleanField(2)
 
 
 class ModifyAckDeadlineRequest(_messages.Message):
@@ -576,16 +572,45 @@ class PubsubProjectsSchemasDeleteRequest(_messages.Message):
 class PubsubProjectsSchemasGetRequest(_messages.Message):
   r"""A PubsubProjectsSchemasGetRequest object.
 
+  Enums:
+    ViewValueValuesEnum: The set of fields to return in the response. If not
+      set, returns a Schema with `name` and `type`, but not `definition`. Set
+      to `FULL` to retrieve all fields.
+
   Fields:
     name: Required. The name of the schema to get. Format is
       `projects/{project}/schemas/{schema}`.
+    view: The set of fields to return in the response. If not set, returns a
+      Schema with `name` and `type`, but not `definition`. Set to `FULL` to
+      retrieve all fields.
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The set of fields to return in the response. If not set, returns a
+    Schema with `name` and `type`, but not `definition`. Set to `FULL` to
+    retrieve all fields.
+
+    Values:
+      SCHEMA_VIEW_UNSPECIFIED: The default / unset value. The API will default
+        to the BASIC view.
+      BASIC: Include the name and type of the schema, but not the definition.
+      FULL: Include all Schema object fields.
+    """
+    SCHEMA_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
   name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class PubsubProjectsSchemasListRequest(_messages.Message):
   r"""A PubsubProjectsSchemasListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: The set of Schema fields to return in the response.
+      If not set, returns Schemas with `name` and `type`, but not
+      `definition`. Set to `FULL` to retrieve all fields.
 
   Fields:
     pageSize: Maximum number of schemas to return.
@@ -594,11 +619,30 @@ class PubsubProjectsSchemasListRequest(_messages.Message):
       system should return the next page of data.
     parent: Required. The name of the project in which to list schemas. Format
       is `projects/{project-id}`.
+    view: The set of Schema fields to return in the response. If not set,
+      returns Schemas with `name` and `type`, but not `definition`. Set to
+      `FULL` to retrieve all fields.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The set of Schema fields to return in the response. If not set,
+    returns Schemas with `name` and `type`, but not `definition`. Set to
+    `FULL` to retrieve all fields.
+
+    Values:
+      SCHEMA_VIEW_UNSPECIFIED: The default / unset value. The API will default
+        to the BASIC view.
+      BASIC: Include the name and type of the schema, but not the definition.
+      FULL: Include all Schema object fields.
+    """
+    SCHEMA_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
 class PubsubProjectsSchemasValidateMessageRequest(_messages.Message):
@@ -1654,6 +1698,8 @@ class Topic(_messages.Message):
       (`-`), underscores (`_`), periods (`.`), tildes (`~`), plus (`+`) or
       percent signs (`%`). It must be between 3 and 255 characters in length,
       and it must not start with `"goog"`.
+    satisfiesPzs: Reserved for future use. This field is set only in responses
+      from the server; it is ignored if it is set in any requests.
     schemaSettings: Settings for validating messages published against a
       schema.
   """
@@ -1687,7 +1733,8 @@ class Topic(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   messageStoragePolicy = _messages.MessageField('MessageStoragePolicy', 3)
   name = _messages.StringField(4)
-  schemaSettings = _messages.MessageField('SchemaSettings', 5)
+  satisfiesPzs = _messages.BooleanField(5)
+  schemaSettings = _messages.MessageField('SchemaSettings', 6)
 
 
 class UpdateSnapshotRequest(_messages.Message):

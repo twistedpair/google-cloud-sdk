@@ -1136,6 +1136,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'gsuiteaddons': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.gsuiteaddons.v1',
+                client_classpath='gsuiteaddons_v1_client.GsuiteaddonsV1',
+                messages_modulepath='gsuiteaddons_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'healthcare': {
         'v1':
             APIDef(
@@ -1844,14 +1854,6 @@ MAP = {
                 messages_modulepath='spanner_v1_messages',
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override=''),
-        'v1alpha':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.spanner.v1alpha',
-                client_classpath='spanner_v1alpha_client.SpannerV1alpha',
-                messages_modulepath='spanner_v1alpha_messages',
-                default_version=False,
-                enable_mtls=False,
                 mtls_endpoint_override=''),
     },
     'speech': {

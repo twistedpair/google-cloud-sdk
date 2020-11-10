@@ -147,8 +147,7 @@ class Binding(_messages.Message):
   r"""Associates members with a role.
 
   Fields:
-    bindingId: A client-specified ID for this binding. Expected to be globally
-      unique to support the internal bindings-by-ID API.
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding.If the
       condition evaluates to true, then this binding applies to the current
       request.If the condition evaluates to false, then this binding does not
@@ -2804,11 +2803,11 @@ class KerberosConfig(_messages.Message):
     keystoreUri: Optional. The Cloud Storage URI of the keystore file used for
       SSL encryption. If not provided, Dataproc will provide a self-signed
       certificate.
-    kmsKeyUri: Required. The uri of the KMS key used to encrypt various
+    kmsKeyUri: Optional. The uri of the KMS key used to encrypt various
       sensitive files.
     realm: Optional. The name of the on-cluster Kerberos realm. If not
       specified, the uppercased domain of hostnames will be the realm.
-    rootPrincipalPasswordUri: Required. The Cloud Storage URI of a KMS
+    rootPrincipalPasswordUri: Optional. The Cloud Storage URI of a KMS
       encrypted file containing the root principal password.
     tgtLifetimeHours: Optional. The lifetime of the ticket granting ticket, in
       hours. If not specified, or user specifies 0, then default value 10 will

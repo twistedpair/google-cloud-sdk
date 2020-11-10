@@ -187,10 +187,10 @@ def GenerateQuery(unused_ref, args, request):
   Returns:
     The updated request.
   """
-  customer_id = ConvertOrgIdToObfuscatedCustomerId(args.organization)
+  customer_id = GetCustomerId(args)
   labels = FilterLabels(args.labels)
   labels_str = ','.join(labels)
-  request.query = 'parent==\"customerId/{0}\" && \"{1}\" in labels'.format(
+  request.query = 'parent==\"{0}\" && \"{1}\" in labels'.format(
       customer_id, labels_str)
 
   return request

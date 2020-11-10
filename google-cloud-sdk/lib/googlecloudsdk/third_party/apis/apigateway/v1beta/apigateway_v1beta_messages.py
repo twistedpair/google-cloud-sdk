@@ -94,11 +94,8 @@ class ApigatewayApi(_messages.Message):
 
 
 class ApigatewayApiConfig(_messages.Message):
-  r"""An API Configuration is an association of an API Controller Config and a
-  Gateway Config. For APIs with a Managed Service API Controller, this
-  resource is associated with one or more Service Configs and a Service
-  Rollout. Initially, this resource will extract the Gateway Config from the
-  API Controller Config.
+  r"""An API Configuration is a combination of settings for both the Managed
+  Service and Gateways serving this API Config.
 
   Enums:
     StateValueValuesEnum: Output only. State of the API Config.
@@ -330,6 +327,7 @@ class ApigatewayBinding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -373,9 +371,10 @@ class ApigatewayBinding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('ApigatewayExpr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('ApigatewayExpr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class ApigatewayCancelOperationRequest(_messages.Message):

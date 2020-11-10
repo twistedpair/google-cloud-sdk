@@ -493,6 +493,49 @@ def AddDenyMaintenancePeriodTime(parser):
        that is ``05:00:00".''')
 
 
+def AddInsightsConfigQueryInsightsEnabled(parser, show_negated_in_help=False):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--insights-config-query-insights-enabled',
+      required=False,
+      help="""Enable query insights feature to provide query and query plan
+        analytics. To disable this feature, use
+        `--no-insights-config-query-insights-enabled` instead.""",
+      **kwargs)
+
+
+def AddInsightsConfigQueryStringLength(parser):
+  parser.add_argument(
+      '--insights-config-query-string-length',
+      required=False,
+      type=arg_parsers.BoundedInt(lower_bound=256, upper_bound=4500),
+      help="""Query string length in bytes to be stored by the query insights
+        feature. Default length is 1024 bytes. Allowed range: 256 to 4500
+        bytes.""")
+
+
+def AddInsightsConfigRecordApplicationTags(parser, show_negated_in_help=False):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--insights-config-record-application-tags',
+      required=False,
+      help="""Allow application tags to be recorded by the query insights
+        feature. To disable application tag recording, use
+        `--no-insights-record-application-tags` flag instead.""",
+      **kwargs)
+
+
+def AddInsightsConfigRecordClientAddress(parser, show_negated_in_help=False):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--insights-config-record-client-address',
+      required=False,
+      help="""Allow the client address to be recorded by the query insights
+        feature. To disable client address recording, use
+        `--no-insights-config-record-client-address` instead.""",
+      **kwargs)
+
+
 def AddMemory(parser):
   parser.add_argument(
       '--memory',

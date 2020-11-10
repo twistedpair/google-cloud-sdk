@@ -349,8 +349,7 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A client-specified ID for this binding. Expected to be globally
-      unique to support the internal bindings-by-ID API.
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -560,12 +559,18 @@ class CloudtasksProjectsLocationsQueuesListRequest(_messages.Message):
       switch the value of the filter while iterating through pages.
     parent: Required. The location name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID`
+    readMask: Optional. Read mask is used for a more granular control over
+      what the API returns. If the mask is not present all fields will be
+      returned except [Queue.stats], if the mask is set to "*" all fields
+      including [Queue.stats] will be returned, otherwise only the fields
+      explicitly specified in the mask will be returned.
   """
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+  readMask = _messages.StringField(5)
 
 
 class CloudtasksProjectsLocationsQueuesPatchRequest(_messages.Message):

@@ -659,3 +659,75 @@ class SSH(object):
         time.sleep(sleep_interval)
         continue
       break
+
+
+class ResourceManager(object):
+  """Helper to interact with Cloud Resource Manager and related ACLs."""
+
+  logging_role = 'roles/logging.logWriter'
+  storage_role = 'roles/storage.admin'  # Note storage.objectAdmin does not work
+  # in certain cases, and thus we need
+  # roles/storage.admin.
+  tpu_service_agent = 'roles/tpu.serviceAgent'
+
+  def __init__(self):
+    self._api_version = 'v1'
+    self.client = apis.GetClientInstance(
+        'cloudresourcemanager', self._api_version)
+    self.messages = apis.GetMessagesModule(
+        'cloudresourcemanager', self._api_version)
+
+  def AddTpuUserAgent(self, tpu_user_agent):
+    """AddTPUUserAgent adds the TPU user agent to enable Cloud Storage access and send logging."""
+    project = properties.VALUES.core.project.Get(required=True)
+    get_iam_policy_request = self.messages.CloudresourcemanagerProjectsGetIamPolicyRequest(
+        resource=project)
+    policy = self.client.projects.GetIamPolicy(get_iam_policy_request)
+    policy = self._AddAgentToPolicy(policy, tpu_user_agent)
+    if policy is None:
+      log.status.Print('TPU Service account:{} has already been enabled'
+                       .format(tpu_user_agent))
+    else:
+      set_iam_policy_request = self.messages.CloudresourcemanagerProjectsSetIamPolicyRequest(
+          resource=project,
+          setIamPolicyRequest=self.messages.SetIamPolicyRequest(
+              policy=policy
+              ))
+      self.client.projects.SetIamPolicy(set_iam_policy_request)
+      log.status.Print(
+          'Added Storage and Logging permissions to TPU Service Account:{}'
+          .format(tpu_user_agent))
+
+  def _AddAgentToPolicy(self, policy, tpu_user_agent):
+    """Adds the tpuUserAgent to the policy and return it."""
+    logging_binding = None
+    storage_binding = None
+    tpu_member_str = 'serviceAccount:{}'.format(tpu_user_agent)
+
+    for binding in policy.bindings:
+      if binding.role == self.logging_role:
+        logging_binding = binding
+      if binding.role == self.storage_role:
+        storage_binding = binding
+
+      # Skip checking bindings if this is the tpuServiceAgent role.
+      if binding.role != self.tpu_service_agent:
+        # Check if the tpuMemberStr is already in a binding.
+        for member in binding.members:
+          if member == tpu_member_str:
+            # The TPU service account has already been enabled. Make no
+            # modifications.
+            return None
+
+    if logging_binding is None:
+      logging_binding = self.messages.Binding(role=self.logging_role)
+      policy.bindings.append(logging_binding)
+
+    if storage_binding is None:
+      storage_binding = self.messages.Binding(role=self.storage_role)
+      policy.bindings.append(storage_binding)
+
+    logging_binding.members.append(tpu_member_str)
+    storage_binding.members.append(tpu_member_str)
+
+    return policy

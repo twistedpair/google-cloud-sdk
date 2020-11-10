@@ -165,6 +165,7 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -208,9 +209,10 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class Distribution(_messages.Message):
@@ -2430,7 +2432,7 @@ class ResourceInfo(_messages.Message):
 
 
 class RouterApplianceInstance(_messages.Message):
-  r"""RouterAppliance represents a router appliance which is specified by a VM
+  r"""RouterAppliance represents a Router appliance which is specified by a VM
   URI and a NIC address.
 
   Fields:
@@ -2464,7 +2466,7 @@ class SetIamPolicyRequest(_messages.Message):
 class Spoke(_messages.Message):
   r"""A Spoke is an abstraction of a network attachment being attached to a
   Hub. A Spoke can be underlying a VPN tunnel, a VLAN (interconnect)
-  attachment, a Router Appliance (SD-WAN), etc.
+  attachment, a Router appliance, etc.
 
   Messages:
     LabelsValue: User-defined labels.
@@ -2476,7 +2478,7 @@ class Spoke(_messages.Message):
     labels: User-defined labels.
     linkedInterconnectAttachments: The URIs of linked interconnect attachment
       resources
-    linkedRouterApplianceInstances: The URIs of linked router appliance
+    linkedRouterApplianceInstances: The URIs of linked Router appliance
       resources
     linkedVpnTunnels: The URIs of linked VPN tunnel resources
     name: Immutable. The name of a Spoke resource.

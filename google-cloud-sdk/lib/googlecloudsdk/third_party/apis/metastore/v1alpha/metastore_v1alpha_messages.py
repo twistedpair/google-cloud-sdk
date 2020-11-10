@@ -82,6 +82,7 @@ class Binding(_messages.Message):
   r"""Associates members with a role.
 
   Fields:
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding.If the
       condition evaluates to true, then this binding applies to the current
       request.If the condition evaluates to false, then this binding does not
@@ -123,9 +124,10 @@ class Binding(_messages.Message):
       roles/editor, or roles/owner.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class DatabaseDump(_messages.Message):
@@ -201,6 +203,33 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class GoogleCloudMetastoreV1alphaOperationMetadata(_messages.Message):
+  r"""Represents the metadata of a long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the caller has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
 
 
 class HiveMetastoreConfig(_messages.Message):

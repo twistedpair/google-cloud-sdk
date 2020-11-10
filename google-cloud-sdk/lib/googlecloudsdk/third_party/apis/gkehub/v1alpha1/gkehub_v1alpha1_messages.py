@@ -132,6 +132,21 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AuthMethod(_messages.Message):
+  r"""Configuration of an auth method for a member/cluster. Only one
+  authentication method (e.g., OIDC and LDAP) can be set per AuthMethod.
+
+  Fields:
+    name: Identifier for auth config.
+    oidcConfig: OIDC specific configuration.
+    proxy: Proxy server address to use for auth method.
+  """
+
+  name = _messages.StringField(1)
+  oidcConfig = _messages.MessageField('OidcConfig', 2)
+  proxy = _messages.StringField(3)
+
+
 class AuthorizerFeatureSpec(_messages.Message):
   r"""AuthorizerFeatureSpec contains options and specifications for the
   Authorizer Feature.
@@ -199,6 +214,7 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -242,9 +258,10 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -540,6 +557,8 @@ class Feature(_messages.Message):
     featureState: Output only. State of the resource itself.
     helloworldFeatureSpec: A hello world feature to act as an example in
       codelab and to test our feature lifecycle code.
+    identityserviceFeatureSpec: The specification for the Anthos Identity
+      Service Feature.
     labels: GCP labels for this feature.
     meteringFeatureSpec: The specification for the metering feature.
     multiclusteringressFeatureSpec: The specification for the Ingress for
@@ -587,14 +606,15 @@ class Feature(_messages.Message):
   description = _messages.StringField(8)
   featureState = _messages.MessageField('FeatureState', 9)
   helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 12)
-  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 13)
-  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 14)
-  name = _messages.StringField(15)
-  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 16)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 17)
-  updateTime = _messages.StringField(18)
+  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 13)
+  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 14)
+  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 15)
+  name = _messages.StringField(16)
+  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 17)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 18)
+  updateTime = _messages.StringField(19)
 
 
 class FeatureState(_messages.Message):
@@ -695,6 +715,7 @@ class FeatureStateDetails(_messages.Message):
     configmanagementFeatureState: State for the Config Management Feature.
     description: Human readable description of the issue.
     helloworldFeatureState: State for the Hello World Feature.
+    identityserviceFeatureState: State for the AIS Feature.
     meteringFeatureState: State for the Metering Feature.
     multiclusteringressFeatureState: State for the Ingress for Anthos Feature.
     multiclusterservicediscoveryFeatureState: State for the Multi-cluster
@@ -727,12 +748,13 @@ class FeatureStateDetails(_messages.Message):
   configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 6)
   description = _messages.StringField(7)
   helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 8)
-  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 9)
-  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 10)
-  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 11)
-  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 12)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 13)
-  updateTime = _messages.StringField(14)
+  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 9)
+  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 10)
+  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 11)
+  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 12)
+  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 13)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 14)
+  updateTime = _messages.StringField(15)
 
 
 class FeatureTest(_messages.Message):
@@ -1215,6 +1237,80 @@ class HelloWorldFeatureState(_messages.Message):
 
 
 
+class IdentityServiceFeatureSpec(_messages.Message):
+  r"""Spec for Annthos Identity Service.
+
+  Messages:
+    MemberConfigsValue: A map between member ids to their configurations. The
+      ID needs to be the full path to the membership e.g.,
+      /projects/p/locations/l/memberships/m.
+
+  Fields:
+    memberConfigs: A map between member ids to their configurations. The ID
+      needs to be the full path to the membership e.g.,
+      /projects/p/locations/l/memberships/m.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MemberConfigsValue(_messages.Message):
+    r"""A map between member ids to their configurations. The ID needs to be
+    the full path to the membership e.g.,
+    /projects/p/locations/l/memberships/m.
+
+    Messages:
+      AdditionalProperty: An additional property for a MemberConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type MemberConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MemberConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A MemberConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('MemberConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  memberConfigs = _messages.MessageField('MemberConfigsValue', 1)
+
+
+class IdentityServiceFeatureState(_messages.Message):
+  r"""State for Anthos Identity Service
+
+  Enums:
+    StateValueValuesEnum: Deployment state on this member
+
+  Fields:
+    failureReason: The reason of the failure.
+    installedVersion: Installed AIS version. This is the AIS version installed
+      on this member. The values makes sense iff state is OK.
+    state: Deployment state on this member
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Deployment state on this member
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Unspecified state
+      OK: deployment succeeds
+      ERROR: Failure with error.
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    OK = 1
+    ERROR = 2
+
+  failureReason = _messages.StringField(1)
+  installedVersion = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
 class InstallError(_messages.Message):
   r"""Errors pertaining to the installation of ACM
 
@@ -1346,6 +1442,16 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class MemberConfig(_messages.Message):
+  r"""The configuration for a member/cluster
+
+  Fields:
+    authMethods: A member may support multiple auth methods.
+  """
+
+  authMethods = _messages.MessageField('AuthMethod', 1, repeated=True)
+
+
 class MembershipConfig(_messages.Message):
   r"""Configuration for a single cluster. Intended to parallel the
   ConfigManagement CR.
@@ -1436,6 +1542,40 @@ class MultiClusterServiceDiscoveryFeatureState(_messages.Message):
   required since FeatureStateDetails requires a state.
   """
 
+
+
+class OidcConfig(_messages.Message):
+  r"""Configuration for OIDC Auth flow.
+
+  Fields:
+    certificateAuthorityData: PEM-encoded CA for OIDC provider.
+    clientId: ID for OIDC client application.
+    deployCloudConsoleProxy: Flag to denote if reverse proxy is used to
+      connect to auth provider. This flag should be set to true when provider
+      is not reachable by Google Cloud Console.
+    extraParams: Comma-separated list of key-value pairs.
+    groupPrefix: Prefix to prepend to group name.
+    groupsClaim: Claim in OIDC ID token that holds group information.
+    issuerUri: URI for the OIDC provider. This should point to the level below
+      .well-known/openid-configuration.
+    kubectlRedirectUri: Registered redirect uri to redirect users going
+      through OAuth flow using kubectl plugin.
+    scopes: Comma-separated list of identifiers.
+    userClaim: Claim in OIDC ID token that holds username.
+    userPrefix: Prefix to prepend to user name.
+  """
+
+  certificateAuthorityData = _messages.StringField(1)
+  clientId = _messages.StringField(2)
+  deployCloudConsoleProxy = _messages.BooleanField(3)
+  extraParams = _messages.StringField(4)
+  groupPrefix = _messages.StringField(5)
+  groupsClaim = _messages.StringField(6)
+  issuerUri = _messages.StringField(7)
+  kubectlRedirectUri = _messages.StringField(8)
+  scopes = _messages.StringField(9)
+  userClaim = _messages.StringField(10)
+  userPrefix = _messages.StringField(11)
 
 
 class Operation(_messages.Message):
@@ -1793,8 +1933,8 @@ class ServiceMeshAnalysisMessage(_messages.Message):
 
 
 class ServiceMeshAnalysisMessageBase(_messages.Message):
-  r"""AnalysisMessageBase describes some common information that is needed for
-  all messages.
+  r"""ServiceMeshAnalysisMessageBase describes some common information that is
+  needed for all messages.
 
   Enums:
     LevelValueValuesEnum: Represents how severe a message is.
@@ -2015,22 +2155,24 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class Type(_messages.Message):
-  r"""A unique identifier for the type of message. Name is intended to be
-  human-readable, code is intended to be machine readable. There should be a
-  one-to-one mapping between name and code. (i.e. do not re-use names or codes
-  between message types.) See istio.analysis.v1alpha1.AnalysisMessageBase.Type
+  r"""A unique identifier for the type of message. Display_name is intended to
+  be human-readable, code is intended to be machine readable. There should be
+  a one-to-one mapping between display_name and code. (i.e. do not re-use
+  display_names or codes between message types.) See
+  istio.analysis.v1alpha1.AnalysisMessageBase.Type
 
   Fields:
     code: A 7 character code matching `^IST[0-9]{4}$` or `^ASM[0-9]{4}$`,
       intended to uniquely identify the message type. (e.g. "IST0001" is
       mapped to the "InternalError" message type.)
-    name: A human-readable name for the message type. e.g. "InternalError",
-      "PodMissingProxy". This should be the same for all messages of the same
-      type.
+    displayName: A human-readable name for the message type. e.g.
+      "InternalError", "PodMissingProxy". This should be the same for all
+      messages of the same type. (This corresponds to the `name` field in
+      open-source Istio.)
   """
 
   code = _messages.StringField(1)
-  name = _messages.StringField(2)
+  displayName = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

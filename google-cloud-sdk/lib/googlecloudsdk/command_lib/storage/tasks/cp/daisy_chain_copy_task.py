@@ -74,7 +74,5 @@ class DaisyChainCopyTask(task.Task):
     # TODO(b/168489606): Buffer transfer to avoid holding entire download in
     # memory at once.
     with io.BytesIO() as daisy_chain_stream:
-      client.download_object(self._source_resource.storage_url.bucket_name,
-                             self._source_resource.storage_url.object_name,
-                             daisy_chain_stream)
+      client.download_object(self._source_resource, daisy_chain_stream)
       client.upload_object(daisy_chain_stream, self._destination_resource)

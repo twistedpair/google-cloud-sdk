@@ -54,10 +54,13 @@ def _ExecuteTasksSequential(task_iterator):
   """Executes task objects sequentially.
 
   Args:
-    task_iterator: An iterator for task objects.
+    task_iterator (Iterable[Task]): An iterator for task objects.
   """
   for task in task_iterator:
-    task.execute()
+    additional_task_iterators = task.execute()
+    if additional_task_iterators is not None:
+      for new_task_iterator in additional_task_iterators:
+        _ExecuteTasksSequential(new_task_iterator)
 
 
 def ExecuteTasks(task_iterator, is_parallel=False):

@@ -189,6 +189,33 @@ class RedisV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetAuthString(self, request, global_params=None):
+      r"""Gets the AUTH string for a Redis instance. If AUTH is not enabled for the instance the response will be empty. This information is not included in the details returned to GetInstance.
+
+      Args:
+        request: (RedisProjectsLocationsInstancesGetAuthStringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceAuthString) The response message.
+      """
+      config = self.GetMethodConfig('GetAuthString')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAuthString.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/authString',
+        http_method='GET',
+        method_id='redis.projects.locations.instances.getAuthString',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}/authString',
+        request_field='',
+        request_type_name='RedisProjectsLocationsInstancesGetAuthStringRequest',
+        response_type_name='InstanceAuthString',
+        supports_download=False,
+    )
+
     def Import(self, request, global_params=None):
       r"""Import a Redis RDB snapshot file from Cloud Storage into a Redis instance. Redis may stop serving during this operation. Instance state will be IMPORTING for entire operation. When complete, the instance will contain only data from the imported file. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
 

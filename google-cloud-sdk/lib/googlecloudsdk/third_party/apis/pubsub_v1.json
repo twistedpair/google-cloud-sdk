@@ -167,7 +167,6 @@
           "$ref": "Expr"
         },
         "bindingId": {
-          "description": "A client-specified ID for this binding. Expected to be globally unique to support the internal bindings-by-ID API.",
           "type": "string"
         }
       }
@@ -365,6 +364,10 @@
         "schemaSettings": {
           "description": "Settings for validating messages published against a schema.",
           "$ref": "SchemaSettings"
+        },
+        "satisfiesPzs": {
+          "description": "Reserved for future use. This field is set only in responses from the server; it is ignored if it is set in any requests.",
+          "type": "boolean"
         }
       }
     },
@@ -379,10 +382,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "satisfiesPzs": {
-          "description": "Reserved for future use. This field is set only in responses from the server; it is ignored if it is set in any requests.",
-          "type": "boolean"
         }
       }
     },
@@ -1984,6 +1983,21 @@
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/schemas\/[^\/]+$",
                   "type": "string"
+                },
+                "view": {
+                  "description": "The set of fields to return in the response. If not set, returns a Schema with `name` and `type`, but not `definition`. Set to `FULL` to retrieve all fields.",
+                  "location": "query",
+                  "type": "string",
+                  "enumDescriptions": [
+                    "The default \/ unset value. The API will default to the BASIC view.",
+                    "Include the name and type of the schema, but not the definition.",
+                    "Include all Schema object fields."
+                  ],
+                  "enum": [
+                    "SCHEMA_VIEW_UNSPECIFIED",
+                    "BASIC",
+                    "FULL"
+                  ]
                 }
               },
               "parameterOrder": [
@@ -2010,6 +2024,21 @@
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
                   "type": "string"
+                },
+                "view": {
+                  "description": "The set of Schema fields to return in the response. If not set, returns Schemas with `name` and `type`, but not `definition`. Set to `FULL` to retrieve all fields.",
+                  "location": "query",
+                  "type": "string",
+                  "enumDescriptions": [
+                    "The default \/ unset value. The API will default to the BASIC view.",
+                    "Include the name and type of the schema, but not the definition.",
+                    "Include all Schema object fields."
+                  ],
+                  "enum": [
+                    "SCHEMA_VIEW_UNSPECIFIED",
+                    "BASIC",
+                    "FULL"
+                  ]
                 },
                 "pageSize": {
                   "description": "Maximum number of schemas to return.",

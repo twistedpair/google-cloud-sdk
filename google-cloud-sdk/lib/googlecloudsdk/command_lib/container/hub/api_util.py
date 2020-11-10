@@ -384,6 +384,8 @@ def UpdateMembership(name,
 
   if issuer_url:
     request.membership.authority = messages.Authority(issuer=issuer_url)
+  elif release_track is not base.ReleaseTrack.GA:
+    request.membership.authority = None
   if external_id:
     request.membership.externalId = external_id
   op = client.projects_locations_memberships.Patch(request)

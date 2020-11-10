@@ -1498,8 +1498,9 @@ class Instance(_messages.Message):
     applicable for instances in App Engine flexible environment.
 
     Values:
-      STATE_UNSPECIFIED: There is no liveness health check for the instance.
-        Only applicable for instances in App Engine standard environment.
+      LIVENESS_STATE_UNSPECIFIED: There is no liveness health check for the
+        instance. Only applicable for instances in App Engine standard
+        environment.
       UNKNOWN: The health checking system is aware of the instance but its
         health is not known at the moment.
       HEALTHY: The instance is reachable i.e. a connection to the application
@@ -1513,7 +1514,7 @@ class Instance(_messages.Message):
         application health checking endpoint cannot be established, or the
         server does not respond within the specified timeout.
     """
-    STATE_UNSPECIFIED = 0
+    LIVENESS_STATE_UNSPECIFIED = 0
     UNKNOWN = 1
     HEALTHY = 2
     UNHEALTHY = 3

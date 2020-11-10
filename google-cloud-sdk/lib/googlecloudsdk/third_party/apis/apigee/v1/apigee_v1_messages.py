@@ -110,8 +110,9 @@ class ApigeeOrganizationsApiproductsAttributesDeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsApiproductsAttributesDeleteRequest object.
 
   Fields:
-    name: **Required.** API product name in the following form: organizations/
-      organization_ID/apiproducts/api_product_name/attributes/attribute_name
+    name: Required. Name of the API product attribute. Use the following
+      structure in your request:
+      `organizations/{org}/apiproducts/{apiproduct}/attributes/{attribute}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -121,8 +122,9 @@ class ApigeeOrganizationsApiproductsAttributesGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsApiproductsAttributesGetRequest object.
 
   Fields:
-    name: **Required.** API product name in the following form: organizations/
-      organization_ID/apiproducts/api_product_name/attributes/attribute_name
+    name: Required. Name of the API product attribute. Use the following
+      structure in your request:
+      `organizations/{org}/apiproducts/{apiproduct}/attributes/{attribute}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -132,8 +134,8 @@ class ApigeeOrganizationsApiproductsAttributesListRequest(_messages.Message):
   r"""A ApigeeOrganizationsApiproductsAttributesListRequest object.
 
   Fields:
-    parent: Required. The parent organization name. Must be in the following
-      form: organizations/organization_ID/apiproducts/api_product_name
+    parent: Required. Name of the API product. Use the following structure in
+      your request: `organizations/{org}/apiproducts/{apiproduct}`
   """
 
   parent = _messages.StringField(1, required=True)
@@ -145,8 +147,8 @@ class ApigeeOrganizationsApiproductsAttributesRequest(_messages.Message):
   Fields:
     googleCloudApigeeV1Attributes: A GoogleCloudApigeeV1Attributes resource to
       be passed as the request body.
-    name: **Required.** API product name in the following form:
-      organizations/organization_ID/apiproducts/api_product_name
+    name: Required. Name of the API product. Use the following structure in
+      your request: `organizations/{org}/apiproducts/{apiproduct}`
   """
 
   googleCloudApigeeV1Attributes = _messages.MessageField('GoogleCloudApigeeV1Attributes', 1)
@@ -159,9 +161,9 @@ class ApigeeOrganizationsApiproductsCreateRequest(_messages.Message):
   Fields:
     googleCloudApigeeV1ApiProduct: A GoogleCloudApigeeV1ApiProduct resource to
       be passed as the request body.
-    parent: Required. The parent organization name under which the API product
-      will be created. Must be in the following form:
-      organizations/organization_ID
+    parent: Required. Name of the organization in which the API product will
+      be created. Use the following structure in your request:
+      `organizations/{org}`
   """
 
   googleCloudApigeeV1ApiProduct = _messages.MessageField('GoogleCloudApigeeV1ApiProduct', 1)
@@ -172,8 +174,8 @@ class ApigeeOrganizationsApiproductsDeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsApiproductsDeleteRequest object.
 
   Fields:
-    name: Required. API product name in the following form:
-      organizations/organization_ID/apiproducts/api_product_name
+    name: Required. Name of the API product. Use the following structure in
+      your request: `organizations/{org}/apiproducts/{apiproduct}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -183,8 +185,8 @@ class ApigeeOrganizationsApiproductsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsApiproductsGetRequest object.
 
   Fields:
-    name: **Required.** API product name in the following form:
-      organizations/organization_ID/apiproducts/api_product_name
+    name: Required. Name of the API product. Use the following structure in
+      your request: `organizations/{org}/apiproducts/{apiproduct}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -194,13 +196,14 @@ class ApigeeOrganizationsApiproductsListRequest(_messages.Message):
   r"""A ApigeeOrganizationsApiproductsListRequest object.
 
   Fields:
-    attributename: The name of the attribute to search.
-    attributevalue: The value of the attribute.
+    attributename: Name of the attribute used to filter the search.
+    attributevalue: Value of the attribute used to filter the search.
     count: Enter the number of API products you want returned in the API call.
       The limit is 1000.
-    expand: Set to `true` to get expanded details about each API.
-    parent: **Required.** The parent organization name in the following form:
-      organizations/organization_ID
+    expand: Flag that specifies whether to expand the results. Set to `true`
+      to get expanded details about each API.
+    parent: Required. Name of the organization. Use the following structure in
+      your request: `organizations/{org}`
     startKey: Gets a list of API products starting with a specific API product
       in the list. For example, if you're returning 50 API products at a time
       (using the `count` query parameter), you can view products 50-99 by
@@ -429,6 +432,78 @@ class ApigeeOrganizationsCreateRequest(_messages.Message):
 
   googleCloudApigeeV1Organization = _messages.MessageField('GoogleCloudApigeeV1Organization', 1)
   parent = _messages.StringField(2)
+
+
+class ApigeeOrganizationsDatacollectorsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsDatacollectorsCreateRequest object.
+
+  Fields:
+    dataCollectorId: ID of the Data Collector. Overrides any ID in the Data
+      Collector resource.
+    googleCloudApigeeV1DataCollector: A GoogleCloudApigeeV1DataCollector
+      resource to be passed as the request body.
+    parent: Required. Name of the organization in which to create the Data
+      Collector in the following format: `organizations/{org}`.
+  """
+
+  dataCollectorId = _messages.StringField(1)
+  googleCloudApigeeV1DataCollector = _messages.MessageField('GoogleCloudApigeeV1DataCollector', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsDatacollectorsDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsDatacollectorsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the Data Collector in the following format:
+      `organizations/{org}/datacollectors/{data_collector_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsDatacollectorsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsDatacollectorsGetRequest object.
+
+  Fields:
+    name: Required. Name of the Data Collector in the following format:
+      `organizations/{org}/datacollectors/{data_collector_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsDatacollectorsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsDatacollectorsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of Data Collectors to return. The page size
+      defaults to 25.
+    pageToken: Page token, returned from a previous ListDataCollectors call,
+      that you can use to retrieve the next page.
+    parent: Required. Name of the organization for which to list Data
+      Collectors in the following format: `organizations/{org}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsDatacollectorsPatchRequest(_messages.Message):
+  r"""A ApigeeOrganizationsDatacollectorsPatchRequest object.
+
+  Fields:
+    googleCloudApigeeV1DataCollector: A GoogleCloudApigeeV1DataCollector
+      resource to be passed as the request body.
+    name: Required. Name of the Data Collector in the following format:
+      `organizations/{org}/datacollectors/{data_collector_id}`.
+    updateMask: List of fields to be updated.
+  """
+
+  googleCloudApigeeV1DataCollector = _messages.MessageField('GoogleCloudApigeeV1DataCollector', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ApigeeOrganizationsDeploymentsListRequest(_messages.Message):
@@ -2162,6 +2237,32 @@ class ApigeeOrganizationsInstancesAttachmentsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class ApigeeOrganizationsInstancesCanaryevaluationsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesCanaryevaluationsCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1CanaryEvaluation: A GoogleCloudApigeeV1CanaryEvaluation
+      resource to be passed as the request body.
+    parent: Required. Name of the organization. Use the following structure in
+      your request: `organizations/{org}/instances/{instance}`.
+  """
+
+  googleCloudApigeeV1CanaryEvaluation = _messages.MessageField('GoogleCloudApigeeV1CanaryEvaluation', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsInstancesCanaryevaluationsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesCanaryevaluationsGetRequest object.
+
+  Fields:
+    name: Required. Name of the CanaryEvaluation. Use the following structure
+      in your request:
+      `organizations/{org}/instances/*/canaryevaluations/{evaluation}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApigeeOrganizationsInstancesCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsInstancesCreateRequest object.
 
@@ -2181,7 +2282,7 @@ class ApigeeOrganizationsInstancesDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the instance. Use the following structure in your
-      request: `organizations/{org}/instance/{instance}`.
+      request: `organizations/{org}/instances/{instance}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2765,30 +2866,14 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
   r"""A GoogleCloudApigeeV1ApiProduct object.
 
   Fields:
-    apiResources: Comma-separated list of API resources to be bundled in the
-      API Product. By default, the resource paths are mapped from the
-      `proxy.pathsuffix` variable. The proxy path suffix is defined as the URI
-      fragment following the ProxyEndpoint base path. For example, if the
-      `apiResources` element is defined to be `/forecastrss` and the base path
-      defined for the API proxy is `/weather`, then only requests to
-      `/weather/forecastrss` are permitted by the API product. You can select
-      a specific path, or you can select all subpaths with the following
-      wildcard: - /**: Indicates that all sub-URIs are included. - /* :
-      Indicates that only URIs one level down are included. By default, /
-      supports the same resources as /** as well as the base path defined by
-      the API proxy. For example, if the base path of the API proxy is
-      `/v1/weatherapikey`, then the API product supports requests to
-      `/v1/weatherapikey` and to any sub-URIs, such as
-      `/v1/weatherapikey/forecastrss`, `/v1/weatherapikey/region/CA`, and so
-      on. For more information, see: - Manage API products - Managing a
-      transaction recording policy using the API
-    approvalType: Specifies how API keys are approved to access the APIs
-      defined by the API product. If set to `manual`, the consumer key is
+    apiResources: A string attribute.
+    approvalType: Flag that specifies how API keys are approved to access the
+      APIs defined by the API product. If set to `manual`, the consumer key is
       generated and returned in "pending" state. In this case, the API keys
       won't work until they have been explicitly approved. If set to `auto`,
       the consumer key is generated and returned in "approved" state and can
-      be used immediately. *NOTE:* Typically, `auto` is used to provide access
-      to free or trial API products that provide limited quota or
+      be used immediately. **Note:** Typically, `auto` is used to provide
+      access to free or trial API products that provide limited quota or
       capabilities.
     attributes: Array of attributes that may be used to extend the default API
       product profile with customer-specific metadata. You can specify a
@@ -2798,56 +2883,67 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
       developer portal. For example, you can set a product to `internal` while
       it is in development and then change access to `public` when it is ready
       to release on the portal. API products marked as `private` do not appear
-      on the portal but can be accessed by external developers. For
-      monetization, you can use the attributes field to: - Specify transaction
-      success criteria - Specify custom attributes on which you base rate plan
-      charges.
+      on the portal, but can be accessed by external developers.
     createdAt: Response only. Creation time of this environment as
       milliseconds since epoch.
-    description: An overview of the API product. Include key information about
-      the API product that is not captured by other fields.
-    displayName: The name to be displayed in the UI or developer portal to
-      developers registering for API access.
-    environments: A comma-separated list of environment names to which the API
+    description: Description of the API product. Include key information about
+      the API product that is not captured by other fields. Comma-separated
+      list of API resources to be bundled in the API product. By default, the
+      resource paths are mapped from the `proxy.pathsuffix` variable. The
+      proxy path suffix is defined as the URI fragment following the
+      ProxyEndpoint base path. For example, if the `apiResources` element is
+      defined to be `/forecastrss` and the base path defined for the API proxy
+      is `/weather`, then only requests to `/weather/forecastrss` are
+      permitted by the API product. You can select a specific path, or you can
+      select all subpaths with the following wildcard: - `/**`: Indicates that
+      all sub-URIs are included. - `/*` : Indicates that only URIs one level
+      down are included. By default, / supports the same resources as /** as
+      well as the base path defined by the API proxy. For example, if the base
+      path of the API proxy is `/v1/weatherapikey`, then the API product
+      supports requests to `/v1/weatherapikey` and to any sub-URIs, such as
+      `/v1/weatherapikey/forecastrss`, `/v1/weatherapikey/region/CA`, and so
+      on. For more information, see Managing API products.
+    displayName: Name displayed in the UI or developer portal to developers
+      registering for API access.
+    environments: Comma-separated list of environment names to which the API
       product is bound. Requests to environments that are not listed are
       rejected. By specifying one or more environments, you can bind the
       resources listed in the API product to a specific environment,
       preventing developers from accessing those resources through API proxies
       deployed in another environment. This setting is used, for example, to
-      prevent resources associated with API proxies in 'prod' from being
-      accessed by API proxies deployed in 'test'.
+      prevent resources associated with API proxies in `prod` from being
+      accessed by API proxies deployed in `test`.
     lastModifiedAt: Response only. Modified time of this environment as
       milliseconds since epoch.
-    name: The internal name of the API Product. Characters you can use in the
-      name are restricted to: A-Z0-9._\-$ %. *NOTE:* The internal name cannot
+    name: Internal name of the API product. Characters you can use in the name
+      are restricted to: `A-Z0-9._\-$ %`. **Note:** The internal name cannot
       be edited when updating the API product.
-    operationGroup: The operation_group enables api product creators to group
-      Apigee proxies or remote services with resources, method types and
-      quotas. The resource refers to the resource URI(excluding the base
-      path). With this grouping, API product creator is able to finetune and
-      give precise control over which REST methods have access to which
-      resources, and how many such calls can be made (via Quota). Note that
-      api_resources cannot be specified at both the API product level as well
-      as within the operation_group. If configured that way, the call will
-      fail. Please refer go/api-product-with-methods for additional details.
-    proxies: A comma-separated list of API proxy names to which this API
-      product is bound. By specifying API proxies, you can associate resources
-      in the API product with specific API proxies, preventing developers from
-      accessing those resources through other API proxies. Edge rejects
-      requests to API proxies that are not listed. *NOTE:* The API proxy names
-      must already exist in the specified environment as they will be
+    operationGroup: Configuration used to group Apigee proxies or remote
+      services with resources, method types, and quotas. The resource refers
+      to the resource URI (excluding the base path). With this grouping, the
+      API product creator is able to fine-tune and give precise control over
+      which REST methods have access to specific resources and how many calls
+      can be made (using the `quota` setting). **Note:** The `api_resources`
+      setting cannot be specified for both the API product and operation
+      group; otherwise the call will fail.
+    proxies: Comma-separated list of API proxy names to which this API product
+      is bound. By specifying API proxies, you can associate resources in the
+      API product with specific API proxies, preventing developers from
+      accessing those resources through other API proxies. Apigee rejects
+      requests to API proxies that are not listed. **Note:** The API proxy
+      names must already exist in the specified environment as they will be
       validated upon creation.
-    quota: The number of request messages permitted per app by this API
-      product for the specified `quotaInterval` and `quotaTimeUnit`. For
-      example, a `quota` of 50, for a `quotaInterval` of 12 and a
-      `quotaTimeUnit` of hours means 50 requests are allowed every 12 hours.
-    quotaInterval: The time interval over which the number of request messages
-      is calculated.
-    quotaTimeUnit: The time unit defined for the `quotaInterval`. Valid values
-      include minute, hour, day, or month.
-    scopes: A comma-separated list of OAuth scopes that are validated at
-      runtime. Edge validates that the scopes in any access token presented
-      match the scopes defined in the OAuth policy assoicated with the API
+    quota: Number of request messages permitted per app by this API product
+      for the specified `quotaInterval` and `quotaTimeUnit`. For example, a
+      `quota` of 50, for a `quotaInterval` of 12 and a `quotaTimeUnit` of
+      hours means 50 requests are allowed every 12 hours.
+    quotaInterval: Time interval over which the number of request messages is
+      calculated.
+    quotaTimeUnit: Time unit defined for the `quotaInterval`. Valid values
+      include `minute`, `hour`, `day`, or `month`.
+    scopes: Comma-separated list of OAuth scopes that are validated at
+      runtime. Apigee validates that the scopes in any access token presented
+      match the scopes defined in the OAuth policy associated with the API
       product.
   """
 
@@ -3126,6 +3222,83 @@ class GoogleCloudApigeeV1Attributes(_messages.Message):
   attribute = _messages.MessageField('GoogleCloudApigeeV1Attribute', 1, repeated=True)
 
 
+class GoogleCloudApigeeV1CanaryEvaluation(_messages.Message):
+  r"""CanaryEvaluation represents the canary analysis between two versions of
+  the runtime that is serving requests.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the canary
+      evaluation.
+    VerdictValueValuesEnum: Output only. The resulting verdict of the canary
+      evaluations: NONE, PASS, or FAIL.
+
+  Fields:
+    control: Required. The stable version that is serving requests.
+    createTime: Output only. Create time of the canary evaluation.
+    endTime: Required. End time for the evaluation's analysis.
+    metricLabels: Required. Labels used to filter the metrics used for a
+      canary evaluation.
+    name: Output only. Name of the canary evalution.
+    startTime: Required. Start time for the canary evaluation's analysis.
+    state: Output only. The current state of the canary evaluation.
+    treatment: Required. The newer version that is serving requests.
+    verdict: Output only. The resulting verdict of the canary evaluations:
+      NONE, PASS, or FAIL.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the canary evaluation.
+
+    Values:
+      STATE_UNSPECIFIED: No state has been specified.
+      RUNNING: The canary evaluation is still in progress.
+      SUCCEEDED: The canary evaluation has finished.
+    """
+    STATE_UNSPECIFIED = 0
+    RUNNING = 1
+    SUCCEEDED = 2
+
+  class VerdictValueValuesEnum(_messages.Enum):
+    r"""Output only. The resulting verdict of the canary evaluations: NONE,
+    PASS, or FAIL.
+
+    Values:
+      VERDICT_UNSPECIFIED: Verdict is not available yet.
+      NONE: No verdict reached.
+      FAIL: Evaluation is not good.
+      PASS: Evaluation is good.
+    """
+    VERDICT_UNSPECIFIED = 0
+    NONE = 1
+    FAIL = 2
+    PASS = 3
+
+  control = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  metricLabels = _messages.MessageField('GoogleCloudApigeeV1CanaryEvaluationMetricLabels', 4)
+  name = _messages.StringField(5)
+  startTime = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  treatment = _messages.StringField(8)
+  verdict = _messages.EnumField('VerdictValueValuesEnum', 9)
+
+
+class GoogleCloudApigeeV1CanaryEvaluationMetricLabels(_messages.Message):
+  r"""Labels that can be used to filter Apigee metrics.
+
+  Fields:
+    env: The environment ID associated with the metrics.
+    instance_id: Required. The instance ID associated with the metrics. In
+      Apigee Hybrid, the value is configured during installation.
+    location: Required. The location associated with the metrics.
+  """
+
+  env = _messages.StringField(1)
+  instance_id = _messages.StringField(2)
+  location = _messages.StringField(3)
+
+
 class GoogleCloudApigeeV1CertInfo(_messages.Message):
   r"""An X.509 certificate as defined in RFC 5280.
 
@@ -3292,6 +3465,48 @@ class GoogleCloudApigeeV1CustomReportMetric(_messages.Message):
 
   function = _messages.StringField(1)
   name = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1DataCollector(_messages.Message):
+  r"""Data Collector configuration.
+
+  Enums:
+    TypeValueValuesEnum: Immutable. The type of data this DataCollector will
+      collect.
+
+  Fields:
+    createdAt: Output only. The time at which the Data Collector was created
+      in milliseconds since the epoch.
+    description: A description of the Data Collector.
+    lastModifiedAt: Output only. The time at which the Data Collector was last
+      updated in milliseconds since the epoch.
+    name: ID of the Data Collector.
+    type: Immutable. The type of data this DataCollector will collect.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The type of data this DataCollector will collect.
+
+    Values:
+      TYPE_UNSPECIFIED: For future compatibility.
+      INTEGER: For integer values.
+      FLOAT: For float values.
+      STRING: For string values.
+      BOOLEAN: For boolean values.
+      DATETIME: For datetime values.
+    """
+    TYPE_UNSPECIFIED = 0
+    INTEGER = 1
+    FLOAT = 2
+    STRING = 3
+    BOOLEAN = 4
+    DATETIME = 5
+
+  createdAt = _messages.IntegerField(1)
+  description = _messages.StringField(2)
+  lastModifiedAt = _messages.IntegerField(3)
+  name = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class GoogleCloudApigeeV1DataCollectorConfig(_messages.Message):
@@ -4359,6 +4574,20 @@ class GoogleCloudApigeeV1ListCustomReportsResponse(_messages.Message):
   qualifier = _messages.MessageField('GoogleCloudApigeeV1CustomReport', 1, repeated=True)
 
 
+class GoogleCloudApigeeV1ListDataCollectorsResponse(_messages.Message):
+  r"""Response for ListDataCollectors.
+
+  Fields:
+    dataCollectors: Data Collectors in the specified organization.
+    nextPageToken: Page token that you can include in a ListDataCollectors
+      request to retrieve the next page. If omitted, no subsequent pages
+      exist.
+  """
+
+  dataCollectors = _messages.MessageField('GoogleCloudApigeeV1DataCollector', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudApigeeV1ListDatastoresResponse(_messages.Message):
   r"""The response for ListDatastores
 
@@ -4575,17 +4804,16 @@ class GoogleCloudApigeeV1OperationConfig(_messages.Message):
   the allowed REST methods and its associated quota enforcement.
 
   Fields:
-    apiSource: Required. api_source represents either a proxy or remote
-      service name for which the resources, methods and quota are associated
-      with.
-    attributes: custom attribute associated with the operation.
-    operations: operations is the list of resource/methods pair, belonging to
-      proxy/remote service, upon which quota will applied on. Note that
-      currently we allow only a single operation. The call will fail if more
-      than one is provided.
+    apiSource: Required. API proxy or remote service name with which the
+      resources, methods, and quota are associated.
+    attributes: Custom attributes associated with the operation.
+    operations: List of resource/method pairs for the proxy/remote service,
+      upon which quota will applied. **Note**: Currently, you can specify only
+      a single resource/method pair. The call will fail if more than one
+      resource/method pair is provided.
     quota: Quota parameters to be enforced for the resources, methods,
-      api_source combination. If none specified, quota enforcement will not be
-      done.
+      api_source combination. If none are specified, quota enforcement will
+      not be done.
   """
 
   apiSource = _messages.StringField(1)
@@ -4595,20 +4823,19 @@ class GoogleCloudApigeeV1OperationConfig(_messages.Message):
 
 
 class GoogleCloudApigeeV1OperationGroup(_messages.Message):
-  r"""The OperationGroup contains a list of configuration details associated
-  with Apigee proxies or Remote services. Remote services are non-Apigee Edge
-  proxies. eg, Istio-Envoy.
+  r"""List of operation configuration details associated with Apigee API
+  proxies or remote services. Remote services are non-Apigee proxies, such as
+  Istio-Envoy.
 
   Fields:
-    operationConfigType: Identfies whether the configuration is for Apigee
-      proxy or a remote service. Possible values are "proxy" and
-      "remoteservice". If none specified, the default is "proxy". "proxy" is
-      used when Apigee proxies are associated with the API product.
-      "remoteservice" is used when non-Apigee proxy like Envoy is used, and is
-      associated with the API product.
-    operationConfigs: Required. A list of OperationConfig for either Apigee
-      proxies or other other remote services, that are associated with this
-      API product.
+    operationConfigType: Flag that specifes whether the configuration is for
+      Apigee API proxy or a remote service. Valid values are `proxy` or
+      `remoteservice`. Defaults to `proxy`. Set to `proxy` when Apigee API
+      proxies are associated with the API product. Set to `remoteservice` when
+      non-Apigee proxies like Istio-Envoy are associated with the API product.
+    operationConfigs: Required. List of operation configurations for either
+      Apigee API proxies or other remote services that are associated with
+      this API product.
   """
 
   operationConfigType = _messages.StringField(1)
@@ -5047,14 +5274,13 @@ class GoogleCloudApigeeV1Quota(_messages.Message):
   requests from exceeding the provisioned parameters.
 
   Fields:
-    interval: Required. The time interval over which the number of request
+    interval: Required. Time interval over which the number of request
       messages is calculated.
-    limit: Required. Limit represents the upper bound count allowed for the
-      time interval and time unit specified. Requests exceeding this limit
-      will get rejected.
-    timeUnit: The time unit defined for the `interval`. Valid values include
-      minute, hour, day, or month. The default value is empty. If limit and
-      interval are valid, the default value is "hour".
+    limit: Required. Upper limit allowed for the time interval and time unit
+      specified. Requests exceeding this limit will be rejected.
+    timeUnit: Time unit defined for the `interval`. Valid values include
+      `minute`, `hour`, `day`, or `month`. If `limit` and `interval` are
+      valid, the default value is `hour`; otherwise, the default is null.
   """
 
   interval = _messages.StringField(1)
@@ -5616,13 +5842,14 @@ class GoogleCloudApigeeV1SyncAuthorization(_messages.Message):
   Fields:
     etag: Entity tag (ETag) used for optimistic concurrency control as a way
       to help prevent simultaneous updates from overwriting each other. For
-      example, when you call [getSyncAuthorization](getSyncAuthorization) an
-      ETag is returned in the response. Pass that ETag when calling the
-      [setSyncAuthorization](setSyncAuthorization) to ensure that you are
-      updating the correct version. If you don't pass the ETag in the call to
-      `setSyncAuthorization`, then the existing authorization is overwritten
-      indiscriminately. **Note**: We strongly recommend that you use the ETag
-      in the read-modify-write cycle to avoid race conditions.
+      example, when you call
+      [getSyncAuthorization](organizations/getSyncAuthorization) an ETag is
+      returned in the response. Pass that ETag when calling the
+      [setSyncAuthorization](organizations/setSyncAuthorization) to ensure
+      that you are updating the correct version. If you don't pass the ETag in
+      the call to `setSyncAuthorization`, then the existing authorization is
+      overwritten indiscriminately. **Note**: We strongly recommend that you
+      use the ETag in the read-modify-write cycle to avoid race conditions.
     identities: Required. Array of service accounts to grant access to control
       plane resources, each specified using the following format:
       `serviceAccount:` service-account-name. The service-account-name is
@@ -5982,6 +6209,7 @@ class GoogleIamV1Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -6025,9 +6253,10 @@ class GoogleIamV1Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('GoogleTypeExpr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('GoogleTypeExpr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class GoogleIamV1Policy(_messages.Message):

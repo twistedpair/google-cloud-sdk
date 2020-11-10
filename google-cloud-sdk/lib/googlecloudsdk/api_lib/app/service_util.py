@@ -82,7 +82,6 @@ class Service(object):
                                    'Expected <project>/<service>.')
     return cls(*parts)
 
-  # TODO(b/25662075): convert to use functools.total_ordering
   def __lt__(self, other):
     return (self.project, self.id) < (other.project, other.id)
 

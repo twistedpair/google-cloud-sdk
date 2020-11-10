@@ -45,7 +45,6 @@ from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import name_generator
 from googlecloudsdk.command_lib.run import resource_name_conversion
 from googlecloudsdk.command_lib.run import stages
-from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -484,22 +483,6 @@ class _SwitchToDigestChange(config_changes_mod.ConfigChanger):
     resource.template.annotations[revision.USER_IMAGE_ANNOTATION] = (
         self._base_revision.image)
     resource.template.image = self._base_revision.image_digest
-    return resource
-
-_CLIENT_NAME_ANNOTATION = 'run.googleapis.com/client-name'
-_CLIENT_NAME = 'gcloud'
-_CLIENT_VERSION_ANNOTATION = 'run.googleapis.com/client-version'
-
-
-class _SetClientNameAndVersion(config_changes_mod.ConfigChanger):
-  """Sets the client name and version annotations."""
-
-  def Adjust(self, resource):
-    resource.annotations[_CLIENT_NAME_ANNOTATION] = _CLIENT_NAME
-    resource.template.annotations[_CLIENT_NAME_ANNOTATION] = _CLIENT_NAME
-    resource.annotations[_CLIENT_VERSION_ANNOTATION] = config.CLOUD_SDK_VERSION
-    resource.template.annotations[
-        _CLIENT_VERSION_ANNOTATION] = config.CLOUD_SDK_VERSION
     return resource
 
 
@@ -1080,7 +1063,6 @@ class ServerlessOperations(object):
       if serv and not with_image:
         # Avoid changing the running code by making the new revision by digest
         self._EnsureImageDigest(serv, config_changes)
-    config_changes = [_SetClientNameAndVersion()] + config_changes
 
     created_or_updated_service = self._UpdateOrCreateService(
         service_ref, config_changes, with_image, serv)

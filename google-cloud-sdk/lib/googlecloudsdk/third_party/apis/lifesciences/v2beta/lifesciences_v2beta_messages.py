@@ -855,6 +855,17 @@ class Mount(_messages.Message):
   readOnly = _messages.BooleanField(3)
 
 
+class NFSMount(_messages.Message):
+  r"""Configuration for an `NFSMount` to be attached to the VM.
+
+  Fields:
+    target: A target NFS mount. The target must be specified as
+      `address:/mount".
+  """
+
+  target = _messages.StringField(1)
+
+
 class Network(_messages.Message):
   r"""VM networking options.
 
@@ -1422,6 +1433,7 @@ class Volume(_messages.Message):
 
   Fields:
     existingDisk: Configuration for a existing disk.
+    nfsMount: Configuration for an NFS mount.
     persistentDisk: Configuration for a persistent disk.
     volume: A user-supplied name for the volume. Used when mounting the volume
       into `Actions`. The name must contain only upper and lowercase
@@ -1429,8 +1441,9 @@ class Volume(_messages.Message):
   """
 
   existingDisk = _messages.MessageField('ExistingDisk', 1)
-  persistentDisk = _messages.MessageField('PersistentDisk', 2)
-  volume = _messages.StringField(3)
+  nfsMount = _messages.MessageField('NFSMount', 2)
+  persistentDisk = _messages.MessageField('PersistentDisk', 3)
+  volume = _messages.StringField(4)
 
 
 class WorkerAssignedEvent(_messages.Message):
