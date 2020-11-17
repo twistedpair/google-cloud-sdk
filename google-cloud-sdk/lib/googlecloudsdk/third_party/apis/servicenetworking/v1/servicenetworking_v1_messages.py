@@ -257,9 +257,9 @@ class AuthProvider(_messages.Message):
       JWT. See [OpenID Discovery](https://openid.net/specs/openid-connect-
       discovery-1_0.html#ProviderMetadata). Optional if the key set document:
       - can be retrieved from [OpenID
-      Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html of
-      the issuer. - can be inferred from the email domain of the issuer (e.g.
-      a Google service account). Example:
+      Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html)
+      of the issuer. - can be inferred from the email domain of the issuer
+      (e.g. a Google service account). Example:
       https://www.googleapis.com/oauth2/v1/certs
     jwtLocations: Defines the locations to extract the JWT. JWT locations can
       be either from HTTP headers or URL query parameters. The rule is that
@@ -2833,6 +2833,23 @@ class ServicenetworkingServicesEnableVpcServiceControlsRequest(_messages.Message
   parent = _messages.StringField(2, required=True)
 
 
+class ServicenetworkingServicesProjectsGlobalNetworksGetRequest(_messages.Message):
+  r"""A ServicenetworkingServicesProjectsGlobalNetworksGetRequest object.
+
+  Fields:
+    name: Required. Name of the consumer config to retrieve in the format:
+      `services/{service}/projects/{project}/global/networks/{network}`.
+      {service} is the peering service that is managing connectivity for the
+      service producer's organization. For Google services that support this
+      functionality, this value is `servicenetworking.googleapis.com`.
+      {project} is a project number e.g. `12345` that contains the service
+      consumer's VPC network. {network} is the name of the service consumer's
+      VPC network.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ServicenetworkingServicesProjectsGlobalNetworksPeeredDnsDomainsCreateRequest(_messages.Message):
   r"""A
   ServicenetworkingServicesProjectsGlobalNetworksPeeredDnsDomainsCreateRequest
@@ -2894,6 +2911,29 @@ class ServicenetworkingServicesProjectsGlobalNetworksPeeredDnsDomainsListRequest
   """
 
   parent = _messages.StringField(1, required=True)
+
+
+class ServicenetworkingServicesProjectsGlobalNetworksUpdateConsumerConfigRequest(_messages.Message):
+  r"""A
+  ServicenetworkingServicesProjectsGlobalNetworksUpdateConsumerConfigRequest
+  object.
+
+  Fields:
+    parent: Required. Parent resource identifying the connection for which the
+      consumer config is being updated in the format:
+      `services/{service}/projects/{project}/global/networks/{network}`
+      {service} is the peering service that is managing connectivity for the
+      service producer's organization. For Google services that support this
+      functionality, this value is `servicenetworking.googleapis.com`.
+      {project} is the number of the project that contains the service
+      consumer's VPC network e.g. `12345`. {network} is the name of the
+      service consumer's VPC network.
+    updateConsumerConfigRequest: A UpdateConsumerConfigRequest resource to be
+      passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  updateConsumerConfigRequest = _messages.MessageField('UpdateConsumerConfigRequest', 2)
 
 
 class ServicenetworkingServicesRolesAddRequest(_messages.Message):
@@ -3220,6 +3260,18 @@ class Type(_messages.Message):
   options = _messages.MessageField('Option', 4, repeated=True)
   sourceContext = _messages.MessageField('SourceContext', 5)
   syntax = _messages.EnumField('SyntaxValueValuesEnum', 6)
+
+
+class UpdateConsumerConfigRequest(_messages.Message):
+  r"""Request to update the configuration of a service networking connection
+  including the import/export of custom routes and subnetwork routes with
+  public IP.
+
+  Fields:
+    consumerConfig: Required. The updated peering config.
+  """
+
+  consumerConfig = _messages.MessageField('ConsumerConfig', 1)
 
 
 class UpdateDnsRecordSetMetadata(_messages.Message):

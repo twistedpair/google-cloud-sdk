@@ -200,6 +200,9 @@ class Instance(_messages.Message):
       DIRECT_PEERING.
     StateValueValuesEnum: Output only. The current state of this instance.
     TierValueValuesEnum: Required. The service tier of the instance.
+    TransitEncryptionModeValueValuesEnum: Optional. The In-transit encryption
+      mode of Redis instance. If not provided, in-transit encryption is
+      disabled for instance.
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata
@@ -268,10 +271,15 @@ class Instance(_messages.Message):
       unused /29 block, for example, 10.0.0.0/29 or 192.168.0.0/29. Ranges
       must be unique and non-overlapping with existing subnets in an
       authorized network.
+    serverCaCerts: Output only. List of server CA certificates for the
+      instance.
     state: Output only. The current state of this instance.
     statusMessage: Output only. Additional information about the current
       status of this instance, if available.
     tier: Required. The service tier of the instance.
+    transitEncryptionMode: Optional. The In-transit encryption mode of Redis
+      instance. If not provided, in-transit encryption is disabled for
+      instance.
   """
 
   class ConnectModeValueValuesEnum(_messages.Enum):
@@ -331,6 +339,20 @@ class Instance(_messages.Message):
     TIER_UNSPECIFIED = 0
     BASIC = 1
     STANDARD_HA = 2
+
+  class TransitEncryptionModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The In-transit encryption mode of Redis instance. If not
+    provided, in-transit encryption is disabled for instance.
+
+    Values:
+      TRANSIT_ENCRYPTION_MODE_UNSPECIFIED: Not set.
+      SERVER_AUTHENTICATION: Client to Server traffic encryption enabled with
+        server authentication.
+      DISABLED: In-transit encryption is disabled for instance.
+    """
+    TRANSIT_ENCRYPTION_MODE_UNSPECIFIED = 0
+    SERVER_AUTHENTICATION = 1
+    DISABLED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -403,9 +425,11 @@ class Instance(_messages.Message):
   redisConfigs = _messages.MessageField('RedisConfigsValue', 15)
   redisVersion = _messages.StringField(16)
   reservedIpRange = _messages.StringField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  statusMessage = _messages.StringField(19)
-  tier = _messages.EnumField('TierValueValuesEnum', 20)
+  serverCaCerts = _messages.MessageField('TlsCertificate', 18, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  statusMessage = _messages.StringField(20)
+  tier = _messages.EnumField('TierValueValuesEnum', 21)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 22)
 
 
 class InstanceAuthString(_messages.Message):
@@ -1028,6 +1052,28 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TlsCertificate(_messages.Message):
+  r"""TlsCertificate Resource
+
+  Fields:
+    cert: PEM representation.
+    createTime: Output only. The time when the certificate was created in [RFC
+      3339](https://tools.ietf.org/html/rfc3339) format, for example
+      `2020-05-18T00:00:00.094Z`.
+    expireTime: Output only. The time when the certificate expires in [RFC
+      3339](https://tools.ietf.org/html/rfc3339) format, for example
+      `2020-05-18T00:00:00.094Z`.
+    serialNumber: Serial number, as extracted from the certificate.
+    sha1Fingerprint: Sha1 Fingerprint of the certificate.
+  """
+
+  cert = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  expireTime = _messages.StringField(3)
+  serialNumber = _messages.StringField(4)
+  sha1Fingerprint = _messages.StringField(5)
 
 
 class UpgradeInstanceRequest(_messages.Message):

@@ -375,7 +375,7 @@
           "type": "string",
           "enumDescriptions": [
             "Not set.",
-            "In-transit encryption enabled with server authentication",
+            "Client to Server traffic encryption enabled with server authentication.",
             "In-transit encryption is disabled for instance."
           ],
           "enum": [

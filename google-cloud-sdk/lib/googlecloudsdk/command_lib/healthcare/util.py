@@ -31,3 +31,15 @@ def InsertEmptyFhirConfig(api_version):
     messages = apis.GetMessagesModule('healthcare', api_version)
     return messages.FhirConfig()
   return VersionedInsertEmptyFhirConfig
+
+
+# Returns a function that inserts an AnnotationConfig in DeidentifyConfig with
+# 'store_quote' field set to True.
+def InsertAnnotationConfig(api_version):
+  def VersionedInsertAnnotationConfig(annotation_store):
+    if not annotation_store:
+      return None
+    messages = apis.GetMessagesModule('healthcare', api_version)
+    return messages.AnnotationConfig(
+        annotationStoreName=annotation_store, storeQuote=True)
+  return VersionedInsertAnnotationConfig

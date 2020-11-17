@@ -122,13 +122,12 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  NAMESPACES_CUSTOMRESOURCEDEFINITIONS = (
-      'namespaces.customresourcedefinitions',
+  CUSTOMRESOURCEDEFINITIONS = (
+      'customresourcedefinitions',
       '{+name}',
       {
           '':
-              'namespaces/{namespacesId}/customresourcedefinitions/'
-              '{customresourcedefinitionsId}',
+              'customresourcedefinitions/{customresourcedefinitionsId}',
       },
       ['name'],
       True

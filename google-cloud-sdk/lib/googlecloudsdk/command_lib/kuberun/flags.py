@@ -65,6 +65,23 @@ class StringFlag(BinaryCommandFlag):
     return []
 
 
+class StringListFlag(BinaryCommandFlag):
+  """A flag that takes in a string list value passed directly through to the binary."""
+
+  def __init__(self, name, *args, **kwargs):
+    super(StringListFlag, self).__init__()
+    self.arg = base.Argument(name, *args, type=arg_parsers.ArgList(), **kwargs)
+
+  def AddToParser(self, parser):
+    return self.arg.AddToParser(parser)
+
+  def FormatFlags(self, args):
+    dest_name = _GetDestNameForFlag(self.arg.name)
+    if args.IsSpecified(dest_name):
+      return [self.arg.name, ','.join(getattr(args, dest_name))]
+    return []
+
+
 class BooleanFlag(BinaryCommandFlag):
   """Encapsulates a boolean flag that can be either --<flag> or --no-<flag>."""
 
@@ -287,15 +304,17 @@ def ConcurrencyFlag():
 
 def EntrypointFlags():
   """Encapsulate flags for customizing container command."""
-  args_flag = StringFlag(
+  args_flag = StringListFlag(
       '--args',
+      metavar='ARG',
       help='Comma-separated arguments passed to the command run by the '
       "container image. If not specified and no '--command' is provided, the "
       "container image's default Cmd is used. Otherwise, if not specified, no "
       'arguments are passed. To reset this field to its default, pass an empty '
       'string.')
-  command_flag = StringFlag(
+  command_flag = StringListFlag(
       '--command',
+      metavar='COMMAND',
       help='Entrypoint for the container image. If not specified, the '
       "container image's default Entrypoint is run. To reset this field to its "
       'default, pass an empty string.')
@@ -317,11 +336,12 @@ def ScalingFlags():
 class ResourceListFlagGroup(BinaryCommandFlag):
   """Encapsulates create/set/update/remove key-value flags."""
 
-  def __init__(self,
-               name,
-               help=None,  # pylint: disable=redefined-builtin
-               help_name=None,
-               set_flag_only=False):
+  def __init__(
+      self,
+      name,
+      help=None,  # pylint: disable=redefined-builtin
+      help_name=None,
+      set_flag_only=False):
     """Create a new resource list flag group.
 
     Args:
@@ -332,63 +352,58 @@ class ResourceListFlagGroup(BinaryCommandFlag):
     """
     super(ResourceListFlagGroup, self).__init__()
     self.set_flag_only = set_flag_only
-    self.name = name
     self.help = help if not help else help + '\n\n'
-    self.help_name = name if help_name is None else help_name
-    self.clear_flag = '--clear-{}'.format(name)
-    self.set_flag = '--set-{}'.format(name)
-    self.remove_flag = '--remove-{}'.format(name)
-    self.update_flag = '--update-{}'.format(name)
+    help_name = name if help_name is None else help_name
+
+    pairs_help = 'List of key-value pairs to set as {}.'.format(help_name)
+    set_help = pairs_help
+    if set_flag_only:
+      if help:
+        set_help += '\n\n' + help
+    else:
+      set_help += ' All existing {} will be removed first.'.format(help_name)
+
+    self.clear_flag = BasicFlag(
+        '--clear-{}'.format(name),
+        help='If true, removes all {}.'.format(help_name))
+    self.set_flag = StringListFlag(
+        '--set-{}'.format(name), metavar='KEY=VALUE', help=set_help)
+    self.remove_flag = StringListFlag(
+        '--remove-{}'.format(name),
+        metavar='KEY',
+        help='List of {} to be removed.'.format(help_name))
+    update_aliases = []
+    if name == 'labels':
+      # Added for compatibility reasons with gcloud run services update
+      update_aliases.append('--labels')
+    self.update_flag = StringListFlag(
+        '--update-{}'.format(name),
+        *update_aliases,
+        metavar='KEY=VALUE',
+        help=pairs_help)
 
   def AddToParser(self, parser):
-    pairs_help = 'List of KEY=VALUE pairs to set as {}.'.format(self.help_name)
-    set_help = pairs_help
     if self.set_flag_only:
-      if self.help:
-        set_help += '\n\n' + self.help
-      parser.add_argument(self.set_flag, help=set_help)
+      self.set_flag.AddToParser(parser)
       return
 
-    set_help += ' All existing {} will be removed first.'.format(self.help_name)
     mutex_group = parser.add_mutually_exclusive_group(help=self.help)
-    mutex_group.add_argument(
-        self.clear_flag,
-        default=False,
-        action='store_true',
-        help='If true, removes all {}.'.format(self.help_name))
-    mutex_group.add_argument(self.set_flag, help=set_help)
+    self.clear_flag.AddToParser(mutex_group)
+    self.set_flag.AddToParser(mutex_group)
     update_group = mutex_group.add_group(
         help='Only `{update}` and `{remove}` can be used together. '
         'If both are specified, `{remove}` will be applied first.'.format(
-            update=self.update_flag, remove=self.remove_flag))
-    update_group.add_argument(
-        self.remove_flag,
-        help='List of {} to be removed.'.format(self.help_name))
-    update_aliases = []
-    if self.name == 'labels':
-      # Added for compatibility reasons with gcloud run services update
-      update_aliases.append('--labels')
-    update_group.add_argument(
-        self.update_flag,
-        *update_aliases,
-        help=pairs_help)
+            update=self.update_flag.arg.name, remove=self.remove_flag.arg.name))
+    self.remove_flag.AddToParser(update_group)
+    self.update_flag.AddToParser(update_group)
 
   def FormatFlags(self, args):
-    command_flags = []
-    set_dest = _GetDestNameForFlag(self.set_flag)
-    if args.IsSpecified(set_dest):
-      command_flags.extend([self.set_flag, getattr(args, set_dest)])
-
     if self.set_flag_only:
-      return command_flags
-
-    if args.IsSpecified(_GetDestNameForFlag(self.clear_flag)):
-      command_flags.append(self.clear_flag)
-    for flag in [self.remove_flag, self.update_flag]:
-      dest = _GetDestNameForFlag(flag)
-      if args.IsSpecified(dest):
-        command_flags.extend([flag, getattr(args, dest)])
-    return command_flags
+      return self.set_flag.FormatFlags(args)
+    return (self.clear_flag.FormatFlags(args) +
+            self.set_flag.FormatFlags(args) +
+            self.remove_flag.FormatFlags(args) +
+            self.update_flag.FormatFlags(args))
 
 
 def LabelsFlags(set_flag_only=False):

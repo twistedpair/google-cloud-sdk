@@ -325,6 +325,8 @@ class _Sections(object):
     test: Section, The section containing test properties for the Cloud SDK.
     transport: Section, The section containing transport properties for the
       Cloud SDK.
+    transcoder: Section, The section containing transcoder properties for the
+      Cloud SDK.
     vmware: Section, The section containing vmware properties for the Cloud SDK.
     workflows: Section, The section containing workflows properties for the
       Cloud SDK.
@@ -388,6 +390,7 @@ class _Sections(object):
     self.survey = _SectionSurvey()
     self.test = _SectionTest()
     self.transport = _SectionTransport()
+    self.transcoder = _SectionTranscoder()
     self.vmware = _SectionVmware()
     self.workflows = _SectionWorkflows()
 
@@ -442,6 +445,7 @@ class _Sections(object):
         self.survey,
         self.test,
         self.transport,
+        self.transcoder,
         self.vmware,
         self.workflows,
     ]
@@ -1971,7 +1975,6 @@ class _SectionApiEndpointOverrides(_Section):
     self.servicemanagement = self._Add('servicemanagement')
     self.serviceregistry = self._Add('serviceregistry')
     self.serviceusage = self._Add('serviceusage')
-    self.serviceuser = self._Add('serviceuser')
     self.source = self._Add('source')
     self.sourcerepo = self._Add('sourcerepo')
     self.secrets = self._Add('secretmanager')
@@ -2206,6 +2209,19 @@ class _SectionSurvey(_Section):
         default=False,
         help_text='If True, gcloud will not prompt you to take periodic usage '
         'experience surveys.')
+
+
+class _SectionTranscoder(_Section):
+  """Contains the properties for the 'transcoder' section."""
+
+  def __init__(self):
+    super(_SectionTranscoder, self).__init__('transcoder', hidden=True)
+    self.location = self._Add(
+        'location',
+        help_text=(
+            'Transcoder location to use. This parameter corresponds to the '
+            '/locations/<location> segment of the Transcoder resource URIs '
+            'being referenced.'))
 
 
 class _SectionWorkflows(_Section):

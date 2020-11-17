@@ -92,23 +92,6 @@ class ArtifactregistryProjectsLocationsRepositoriesDeleteRequest(_messages.Messa
   name = _messages.StringField(1, required=True)
 
 
-class ArtifactregistryProjectsLocationsRepositoriesDockerimagesListRequest(_messages.Message):
-  r"""A ArtifactregistryProjectsLocationsRepositoriesDockerimagesListRequest
-  object.
-
-  Fields:
-    pageSize: The maximum number of artifacts to return.
-    pageToken: The next_page_token value returned from a previous list
-      request, if any.
-    parent: Required. The name of the parent resource whose docker images will
-      be listed.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
 class ArtifactregistryProjectsLocationsRepositoriesFilesGetRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsRepositoriesFilesGetRequest object.
 
@@ -496,37 +479,6 @@ class Binding(_messages.Message):
   role = _messages.StringField(4)
 
 
-class DockerImage(_messages.Message):
-  r"""DockerImage represents a docker artifact.
-
-  Fields:
-    imageSizeBytes: Calculated size of the image.
-    mediaType: Media type of this image, e.g.
-      "application/vnd.docker.distribution.manifest.v2+json".
-    name: Required. registry_location, project_id, repository_name and image
-      id forms a unique image
-      name:`projects//locations//repository//dockerimages/`. For example,
-      "projects/test-project/locations/us-west4/repositories/test-
-      repo/dockerimages/ nginx@sha256:e9954c1fc875017be1c3e36eca16be2d9e9bccc4
-      bf072163515467d6a823c7cf", where "us-west4" is the registry_location,
-      "test-project" is the project_id, "test-repo" is the repository_name and
-      "nginx@sha256:e9954c1fc875017be1c3e36eca16be2d9e9bccc4bf072163515467d6a8
-      23c7cf" is the image's digest.
-    tags: Tags attached to this image.
-    uploadTime: Time the image was uploaded.
-    uri: Required. URL to access the image. Example: us-
-      west4-docker.pkg.dev/test-project/test-repo/nginx@sha256:e9954c1fc875017
-      be1c3e36eca16be2d9e9bccc4bf072163515467d6a823c7cf
-  """
-
-  imageSizeBytes = _messages.IntegerField(1)
-  mediaType = _messages.StringField(2)
-  name = _messages.StringField(3)
-  tags = _messages.StringField(4, repeated=True)
-  uploadTime = _messages.StringField(5)
-  uri = _messages.StringField(6)
-
-
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -673,19 +625,6 @@ class Hash(_messages.Message):
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)
-
-
-class ListDockerImagesResponse(_messages.Message):
-  r"""The response from listing docker images.
-
-  Fields:
-    dockerImages: The docker images returned.
-    nextPageToken: The token to retrieve the next page of artifacts, or empty
-      if there are no more artifacts to return.
-  """
-
-  dockerImages = _messages.MessageField('DockerImage', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
 
 
 class ListFilesResponse(_messages.Message):

@@ -6,7 +6,7 @@
   "canonicalName": "Gsuiteaddons",
   "version": "v1",
   "revision": "0",
-  "title": "G Suite Add-ons API",
+  "title": "Google Workspace Add-ons API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://docs.google.com/document/d/1BesXz8IkeK2ECau84X9PzfJVlM0ATCm4zI-k-oAbMbY/edit",
+  "documentationLink": "https://developers.google.com/gsuite/add-ons/guides/alternate-runtimes-overview",
   "protocol": "rest",
   "rootUrl": "https://gsuiteaddons.googleapis.com/",
   "mtlsRootUrl": "https://gsuiteaddons.mtls.googleapis.com/",
@@ -282,7 +282,8 @@
               "Styled buttons include filled buttons and disabled buttons.",
               "Persistent forms allow persisting form values during actions.",
               "Fixed footer in card.",
-              "Update the subject and recipients of a draft."
+              "Update the subject and recipients of a draft.",
+              "The grid widget."
             ],
             "enum": [
               "WIDGET_TYPE_UNSPECIFIED",
@@ -290,7 +291,8 @@
               "STYLED_BUTTONS",
               "PERSISTENT_FORMS",
               "FIXED_FOOTER",
-              "UPDATE_SUBJECT_AND_RECIPIENTS"
+              "UPDATE_SUBJECT_AND_RECIPIENTS",
+              "GRID_WIDGET"
             ]
           }
         }

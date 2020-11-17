@@ -289,8 +289,8 @@ class Instance(_messages.Message):
 
     Values:
       TRANSIT_ENCRYPTION_MODE_UNSPECIFIED: Not set.
-      SERVER_AUTHENTICATION: In-transit encryption enabled with server
-        authentication
+      SERVER_AUTHENTICATION: Client to Server traffic encryption enabled with
+        server authentication.
       DISABLED: In-transit encryption is disabled for instance.
     """
     TRANSIT_ENCRYPTION_MODE_UNSPECIFIED = 0

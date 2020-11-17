@@ -438,7 +438,10 @@ class AnthosEventsOperations(object):
             uid=owner_trigger.uid,
             controller=True))
     source_obj.set_sink(broker_name, self._api_version)
-    arg_utils.ParseStaticFieldsIntoMessage(source_obj.spec, parameters)
+
+    # Parse parameters flags into source's spec
+    source.ParseDynamicFieldsIntoMessage(source_obj.spec, parameters)
+    source.SourceFix(source_obj)
 
     request_method = self.SourceCreateMethod(source_crd)
     request_message_type = request_method.GetRequestType()

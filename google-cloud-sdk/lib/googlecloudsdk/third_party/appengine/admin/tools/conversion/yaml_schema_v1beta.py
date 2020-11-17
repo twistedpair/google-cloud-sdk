@@ -26,6 +26,7 @@ SCHEMA = s.Message(
         auth_fail_action=s.Value(converter=c.EnumConverter('AUTH_FAIL_ACTION')),
         script=s.Value(converter=c.ToJsonString)),
     api_version=s.Value('runtime_api_version', converter=c.ToJsonString),
+    app_engine_apis=s.Value(),
     auto_id_policy=s.Value('beta_settings',
                            lambda val: {'auto_id_policy': val}),
     automatic_scaling=s.Message(

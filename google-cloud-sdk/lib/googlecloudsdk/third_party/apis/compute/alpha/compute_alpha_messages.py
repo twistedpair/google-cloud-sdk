@@ -40460,7 +40460,8 @@ class NetworkEndpointGroup(_messages.Message):
   r"""Represents a collection of network endpoints.  A network endpoint group
   (NEG) defines how a set of endpoints should be reached, whether they are
   reachable, and where they are located. For more information about using
-  NEGs, see  Setting up internet NEGs,  Setting up zonal NEGs, or  Setting up
+  NEGs, see  Setting up external HTTP(S) Load Balancing with internet NEGs,
+  Setting up zonal NEGs, or  Setting up external HTTP(S) Load Balancing with
   serverless NEGs. (== resource_for {$api_version}.networkEndpointGroups ==)
   (== resource_for {$api_version}.globalNetworkEndpointGroups ==) (==
   resource_for {$api_version}.regionNetworkEndpointGroups ==)
@@ -41319,6 +41320,10 @@ class NetworkInterface(_messages.Message):
   r"""A network interface resource attached to an instance.
 
   Enums:
+    Ipv6AccessTypeValueValuesEnum: [Output Only] One of EXTERNAL, INTERNAL to
+      indicate whether the IP can be accessed from the Internet. This field is
+      always inherited from its subnetwork.  Valid only if stackType is
+      IPV4_IPV6.
     NicTypeValueValuesEnum: The type of vNIC to be used on this interface.
       This may be gVNIC or VirtioNet.
     StackTypeValueValuesEnum: The stack type for this network interface to
@@ -41344,6 +41349,9 @@ class NetworkInterface(_messages.Message):
       interface. Currently, only one IPv6 access config, DIRECT_IPV6, is
       supported. If there is no ipv6AccessConfig specified, then this instance
       will have no external IPv6 Internet access.
+    ipv6AccessType: [Output Only] One of EXTERNAL, INTERNAL to indicate
+      whether the IP can be accessed from the Internet. This field is always
+      inherited from its subnetwork.  Valid only if stackType is IPV4_IPV6.
     ipv6Address: [Output Only] An IPv6 internal network address for this
       network interface.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
@@ -41380,6 +41388,20 @@ class NetworkInterface(_messages.Message):
       bnetworks/subnetwork  - regions/region/subnetworks/subnetwork
   """
 
+  class Ipv6AccessTypeValueValuesEnum(_messages.Enum):
+    r"""[Output Only] One of EXTERNAL, INTERNAL to indicate whether the IP can
+    be accessed from the Internet. This field is always inherited from its
+    subnetwork.  Valid only if stackType is IPV4_IPV6.
+
+    Values:
+      EXTERNAL: <no description>
+      INTERNAL: <no description>
+      UNSPECIFIED_IPV6_ACCESS_TYPE: <no description>
+    """
+    EXTERNAL = 0
+    INTERNAL = 1
+    UNSPECIFIED_IPV6_ACCESS_TYPE = 2
+
   class NicTypeValueValuesEnum(_messages.Enum):
     r"""The type of vNIC to be used on this interface. This may be gVNIC or
     VirtioNet.
@@ -41413,15 +41435,16 @@ class NetworkInterface(_messages.Message):
   fingerprint = _messages.BytesField(3)
   internalIpv6PrefixLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   ipv6AccessConfigs = _messages.MessageField('AccessConfig', 5, repeated=True)
-  ipv6Address = _messages.StringField(6)
-  kind = _messages.StringField(7, default='compute#networkInterface')
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  networkIP = _messages.StringField(10)
-  nicType = _messages.EnumField('NicTypeValueValuesEnum', 11)
-  queueCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 13)
-  subnetwork = _messages.StringField(14)
+  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 6)
+  ipv6Address = _messages.StringField(7)
+  kind = _messages.StringField(8, default='compute#networkInterface')
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  networkIP = _messages.StringField(11)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 12)
+  queueCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 14)
+  subnetwork = _messages.StringField(15)
 
 
 class NetworkList(_messages.Message):
@@ -42212,13 +42235,17 @@ class NodeGroupMaintenanceWindow(_messages.Message):
   Fields:
     duration: [Output only] A predetermined duration for the window,
       automatically chosen to be the smallest possible in the given scenario.
+    maintenanceDuration: [Output only] A predetermined duration for the
+      window, automatically chosen to be the smallest possible in the given
+      scenario.
     startTime: Start time of the window. This must be in UTC format that
       resolves to one of 00:00, 04:00, 08:00, 12:00, 16:00, or 20:00. For
       example, both 13:00-5 and 08:00 are valid.
   """
 
   duration = _messages.StringField(1)
-  startTime = _messages.StringField(2)
+  maintenanceDuration = _messages.MessageField('Duration', 2)
+  startTime = _messages.StringField(3)
 
 
 class NodeGroupNode(_messages.Message):
@@ -51556,12 +51583,12 @@ class ScalingScheduleStatus(_messages.Message):
   Fields:
     lastStartTime: [Output Only] The last time the scaling schedule became
       active. Note: this is a timestamp when a schedule actually became
-      active, not when it was planned to do so. The timestamp is an RFC3339
-      string in RFC3339 text format.
+      active, not when it was planned to do so. The timestamp is in RFC3339
+      text format.
     nextStartTime: [Output Only] The next time the scaling schedule will
       become active. Note: this is a timestamp when a schedule is planned to
       run, but the actual time might be slightly different. The timestamp is
-      an RFC3339 string in RFC3339 text format.
+      in RFC3339 text format.
     state: [Output Only] The current state of a scaling schedule.
   """
 
@@ -52113,7 +52140,7 @@ class SecurityPolicyRule(_messages.Message):
     priority: An integer indicating the priority of a rule in the list. The
       priority must be a positive value between 0 and 2147483647. Rules are
       evaluated from highest to lowest priority where 0 is the highest
-      priority and 2147483647 is the lowest prority.
+      priority and 2147483647 is the lowest priority.
     rateLimitOptions: Must be specified if the action is
       "rate_based_blacklist" or "throttle". Cannot be specified for any other
       actions.

@@ -28,3 +28,7 @@ class HashMismatchError(core_exceptions.Error):
 
 class InvalidUrlError(core_exceptions.Error):
   """Error raised when the url string is not in the expected format."""
+
+
+class ValueCannotBeDeterminedError(core_exceptions.Error):
+  """Error raised when attempting to access unknown information."""

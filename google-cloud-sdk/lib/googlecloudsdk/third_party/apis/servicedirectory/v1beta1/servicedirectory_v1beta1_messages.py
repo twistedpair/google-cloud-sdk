@@ -405,18 +405,42 @@ class Endpoint(_messages.Message):
 
   Messages:
     MetadataValue: Optional. Metadata for the endpoint. This data can be
-      consumed by service clients. The entire metadata dictionary may contain
-      up to 512 characters, spread accoss all key-value pairs. Metadata that
-      goes beyond any these limits will be rejected.
+      consumed by service clients. Restrictions: - The entire metadata
+      dictionary may contain up to 512 characters, spread accoss all key-value
+      pairs. Metadata that goes beyond any these limits will be rejected. -
+      Valid metadata keys have two segments: an optional prefix and name,
+      separated by a slash (/). The name segment is required and must be 63
+      characters or less, beginning and ending with an alphanumeric character
+      ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
+      alphanumerics between. The prefix is optional. If specified, the prefix
+      must be a DNS subdomain: a series of DNS labels separated by dots (.),
+      not longer than 253 characters in total, followed by a slash (/).
+      Metadata that fails to meet these requirements will be rejected. - The
+      '(*.)google.com/' and '(*.)googleapis.com/' prefixes are reserved for
+      system metadata managed by Service Directory. If the user tries to write
+      to these keyspaces, those entries will be silently ignored by the
+      system.
 
   Fields:
     address: Optional. An IPv4 or IPv6 address. Service Directory will reject
       bad addresses like: "8.8.8" "8.8.8.8:53" "test:bad:address" "[::1]"
       "[::1]:8080" Limited to 45 characters.
     metadata: Optional. Metadata for the endpoint. This data can be consumed
-      by service clients. The entire metadata dictionary may contain up to 512
-      characters, spread accoss all key-value pairs. Metadata that goes beyond
-      any these limits will be rejected.
+      by service clients. Restrictions: - The entire metadata dictionary may
+      contain up to 512 characters, spread accoss all key-value pairs.
+      Metadata that goes beyond any these limits will be rejected. - Valid
+      metadata keys have two segments: an optional prefix and name, separated
+      by a slash (/). The name segment is required and must be 63 characters
+      or less, beginning and ending with an alphanumeric character
+      ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
+      alphanumerics between. The prefix is optional. If specified, the prefix
+      must be a DNS subdomain: a series of DNS labels separated by dots (.),
+      not longer than 253 characters in total, followed by a slash (/).
+      Metadata that fails to meet these requirements will be rejected. - The
+      '(*.)google.com/' and '(*.)googleapis.com/' prefixes are reserved for
+      system metadata managed by Service Directory. If the user tries to write
+      to these keyspaces, those entries will be silently ignored by the
+      system.
     name: Immutable. The resource name for the endpoint in the format
       'projects/*/locations/*/namespaces/*/services/*/endpoints/*'.
     network: Immutable. Specifies the Google Compute Engine Network (VPC) of
@@ -432,9 +456,20 @@ class Endpoint(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
     r"""Optional. Metadata for the endpoint. This data can be consumed by
-    service clients. The entire metadata dictionary may contain up to 512
-    characters, spread accoss all key-value pairs. Metadata that goes beyond
-    any these limits will be rejected.
+    service clients. Restrictions: - The entire metadata dictionary may
+    contain up to 512 characters, spread accoss all key-value pairs. Metadata
+    that goes beyond any these limits will be rejected. - Valid metadata keys
+    have two segments: an optional prefix and name, separated by a slash (/).
+    The name segment is required and must be 63 characters or less, beginning
+    and ending with an alphanumeric character ([a-z0-9A-Z]) with dashes (-),
+    underscores (_), dots (.), and alphanumerics between. The prefix is
+    optional. If specified, the prefix must be a DNS subdomain: a series of
+    DNS labels separated by dots (.), not longer than 253 characters in total,
+    followed by a slash (/). Metadata that fails to meet these requirements
+    will be rejected. - The '(*.)google.com/' and '(*.)googleapis.com/'
+    prefixes are reserved for system metadata managed by Service Directory. If
+    the user tries to write to these keyspaces, those entries will be silently
+    ignored by the system.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -897,9 +932,21 @@ class Service(_messages.Message):
 
   Messages:
     MetadataValue: Optional. Metadata for the service. This data can be
-      consumed by service clients. The entire metadata dictionary may contain
-      up to 2000 characters, spread across all key-value pairs. Metadata that
-      goes beyond any these limits will be rejected.
+      consumed by service clients. Restrictions: - The entire metadata
+      dictionary may contain up to 2000 characters, spread accoss all key-
+      value pairs. Metadata that goes beyond any these limits will be
+      rejected. - Valid metadata keys have two segments: an optional prefix
+      and name, separated by a slash (/). The name segment is required and
+      must be 63 characters or less, beginning and ending with an alphanumeric
+      character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
+      alphanumerics between. The prefix is optional. If specified, the prefix
+      must be a DNS subdomain: a series of DNS labels separated by dots (.),
+      not longer than 253 characters in total, followed by a slash (/).
+      Metadata that fails to meet these requirements will be rejected. - The
+      '(*.)google.com/' and '(*.)googleapis.com/' prefixes are reserved for
+      system metadata managed by Service Directory. If the user tries to write
+      to these keyspaces, those entries will be silently ignored by the
+      system.
 
   Fields:
     endpoints: Output only. Endpoints associated with this service. Returned
@@ -912,9 +959,21 @@ class Service(_messages.Message):
       Example: `service.example.com` Limits: Field limited to 255 ASCII
       characters per https://www.ietf.org/rfc/rfc1035.txt
     metadata: Optional. Metadata for the service. This data can be consumed by
-      service clients. The entire metadata dictionary may contain up to 2000
-      characters, spread across all key-value pairs. Metadata that goes beyond
-      any these limits will be rejected.
+      service clients. Restrictions: - The entire metadata dictionary may
+      contain up to 2000 characters, spread accoss all key-value pairs.
+      Metadata that goes beyond any these limits will be rejected. - Valid
+      metadata keys have two segments: an optional prefix and name, separated
+      by a slash (/). The name segment is required and must be 63 characters
+      or less, beginning and ending with an alphanumeric character
+      ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
+      alphanumerics between. The prefix is optional. If specified, the prefix
+      must be a DNS subdomain: a series of DNS labels separated by dots (.),
+      not longer than 253 characters in total, followed by a slash (/).
+      Metadata that fails to meet these requirements will be rejected. - The
+      '(*.)google.com/' and '(*.)googleapis.com/' prefixes are reserved for
+      system metadata managed by Service Directory. If the user tries to write
+      to these keyspaces, those entries will be silently ignored by the
+      system.
     name: Immutable. The resource name for the service in the format
       'projects/*/locations/*/namespaces/*/services/*'.
     serviceIdentities: Optional. Authorized Service Identities. If provided,
@@ -927,9 +986,20 @@ class Service(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
     r"""Optional. Metadata for the service. This data can be consumed by
-    service clients. The entire metadata dictionary may contain up to 2000
-    characters, spread across all key-value pairs. Metadata that goes beyond
-    any these limits will be rejected.
+    service clients. Restrictions: - The entire metadata dictionary may
+    contain up to 2000 characters, spread accoss all key-value pairs. Metadata
+    that goes beyond any these limits will be rejected. - Valid metadata keys
+    have two segments: an optional prefix and name, separated by a slash (/).
+    The name segment is required and must be 63 characters or less, beginning
+    and ending with an alphanumeric character ([a-z0-9A-Z]) with dashes (-),
+    underscores (_), dots (.), and alphanumerics between. The prefix is
+    optional. If specified, the prefix must be a DNS subdomain: a series of
+    DNS labels separated by dots (.), not longer than 253 characters in total,
+    followed by a slash (/). Metadata that fails to meet these requirements
+    will be rejected. - The '(*.)google.com/' and '(*.)googleapis.com/'
+    prefixes are reserved for system metadata managed by Service Directory. If
+    the user tries to write to these keyspaces, those entries will be silently
+    ignored by the system.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.

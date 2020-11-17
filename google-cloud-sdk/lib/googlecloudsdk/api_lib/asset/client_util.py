@@ -102,6 +102,14 @@ def GetClient(version=DEFAULT_API_VERSION):
 
 
 def ContentTypeTranslation(content_type):
+  """Translate content type from gcloud format to API format.
+
+  Args:
+    content_type: the gcloud format of content_type
+
+  Returns:
+    cloudasset API format of content_type.
+  """
   if content_type == 'resource':
     return 'RESOURCE'
   if content_type == 'iam-policy':
@@ -110,6 +118,8 @@ def ContentTypeTranslation(content_type):
     return 'ORG_POLICY'
   if content_type == 'access-policy':
     return 'ACCESS_POLICY'
+  if content_type == 'os-inventory':
+    return 'OS_INVENTORY'
   return 'CONTENT_TYPE_UNSPECIFIED'
 
 

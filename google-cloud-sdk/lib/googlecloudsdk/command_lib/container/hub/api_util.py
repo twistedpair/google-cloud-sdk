@@ -93,7 +93,11 @@ def _CreateBucketIfNotExists(storage_client, bucket_name, project):
   The bucket will be created with a Uniform Bucket Level Access policy, so that
   access can be configured with IAM.
 
-  Does not raise any exceptions if the bucket already exists.
+  Does not raise any exceptions if the bucket already exists. Note that
+  ownership is not checked by this method (an existing bucket could belong to a
+  malicious user, so callers should either check that the bucket is contained in
+  the project, or ensure that the bucket name can't be guessed and claimed of
+  time).
 
   Args:
     storage_client: v1 storage client
@@ -353,7 +357,8 @@ def UpdateMembership(name,
                      update_mask,
                      release_track,
                      external_id=None,
-                     issuer_url=None):
+                     issuer_url=None,
+                     oidc_jwks=None):
   """UpdateMembership updates membership resource in the GKE Hub API.
 
   Args:
@@ -366,6 +371,9 @@ def UpdateMembership(name,
       or None if it is not available.
     issuer_url: The discovery URL for the cluster's service account token
       issuer.
+    oidc_jwks: The JSON Web Key Set string containing public keys for validating
+      service account tokens. Set to None if the issuer_url is
+      publicly-reachable. Still requires issuer_url to be set.
 
   Returns:
     The updated Membership resource.
@@ -382,10 +390,20 @@ def UpdateMembership(name,
       updateMask=update_mask
   )
 
-  if issuer_url:
-    request.membership.authority = messages.Authority(issuer=issuer_url)
-  elif release_track is not base.ReleaseTrack.GA:
-    request.membership.authority = None
+  if release_track is not base.ReleaseTrack.GA:
+    if issuer_url:
+      request.membership.authority = messages.Authority(issuer=issuer_url)
+      if release_track is base.ReleaseTrack.ALPHA:
+        if oidc_jwks:
+          request.membership.authority.oidcJwks = oidc_jwks.encode('utf-8')
+        else:
+          # If oidc_jwks is None, unset membership.oidc_jwks, and let the API
+          # determine when that's an error, not the client, to avoid problems
+          # like cl/339713504 fixed (see unsetting membership.authority, below).
+          request.membership.authority.oidcJwks = None
+    else:  # if issuer_url is None, unset membership.authority to disable WI.
+      request.membership.authority = None
+
   if external_id:
     request.membership.externalId = external_id
   op = client.projects_locations_memberships.Patch(request)
@@ -403,7 +421,8 @@ def CreateMembership(project,
                      gke_cluster_self_link=None,
                      external_id=None,
                      release_track=None,
-                     issuer_url=None):
+                     issuer_url=None,
+                     oidc_jwks=None):
   """Creates a Membership resource in the GKE Hub API.
 
   Args:
@@ -418,6 +437,9 @@ def CreateMembership(project,
       or None if it is not available.
     issuer_url: the discovery URL for the cluster's service account token
       issuer. Set to None to skip enabling Workload Identity.
+    oidc_jwks: the JSON Web Key Set containing public keys for validating
+      service account tokens. Set to None if the issuer_url is
+      publicly-routable. Still requires issuer_url to be set.
 
   Returns:
     the created Membership resource.
@@ -442,6 +464,8 @@ def CreateMembership(project,
     request.membership.externalId = external_id
   if issuer_url:
     request.membership.authority = messages.Authority(issuer=issuer_url)
+    if oidc_jwks:
+      request.membership.authority.oidcJwks = oidc_jwks
   op = client.projects_locations_memberships.Create(request)
   op_resource = resources.REGISTRY.ParseRelativeName(
       op.name, collection='gkehub.projects.locations.operations')

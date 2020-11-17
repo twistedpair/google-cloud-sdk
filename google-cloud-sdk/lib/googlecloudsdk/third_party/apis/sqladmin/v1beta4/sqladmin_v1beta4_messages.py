@@ -768,14 +768,17 @@ class ExportContext(_messages.Message):
 
   Enums:
     FileTypeValueValuesEnum: The file type for the specified uri. *SQL*: The
-      file contains SQL statements. *CSV*: The file contains CSV data.
+      file contains SQL statements. *CSV*: The file contains CSV data. *BAK*:
+      The file contains backup data for a SQL Server instance.
 
   Messages:
-    CsvExportOptionsValue: Options for exporting data as CSV.
+    CsvExportOptionsValue: Options for exporting data as CSV. *MySQL* and
+      *PostgreSQL* instances only.
     SqlExportOptionsValue: Options for exporting data as SQL statements.
 
   Fields:
-    csvExportOptions: Options for exporting data as CSV.
+    csvExportOptions: Options for exporting data as CSV. *MySQL* and
+      *PostgreSQL* instances only.
     databases: Databases to be exported. *MySQL instances:* If *fileType* is
       *SQL* and no database is specified, all databases are exported, except
       for the *mysql* system database. If *fileType* is *CSV*, you can specify
@@ -785,7 +788,8 @@ class ExportContext(_messages.Message):
       be exported. If *fileType* is *CSV*, this database must match the one
       specified in the *csvExportOptions.selectQuery* property.
     fileType: The file type for the specified uri. *SQL*: The file contains
-      SQL statements. *CSV*: The file contains CSV data.
+      SQL statements. *CSV*: The file contains CSV data. *BAK*: The file
+      contains backup data for a SQL Server instance.
     kind: This is always *sql#exportContext*.
     offload: Option for export offload.
     sqlExportOptions: Options for exporting data as SQL statements.
@@ -798,7 +802,8 @@ class ExportContext(_messages.Message):
 
   class FileTypeValueValuesEnum(_messages.Enum):
     r"""The file type for the specified uri. *SQL*: The file contains SQL
-    statements. *CSV*: The file contains CSV data.
+    statements. *CSV*: The file contains CSV data. *BAK*: The file contains
+    backup data for a SQL Server instance.
 
     Values:
       SQL_FILE_TYPE_UNSPECIFIED: Unknown file type.
@@ -812,7 +817,8 @@ class ExportContext(_messages.Message):
     BAK = 3
 
   class CsvExportOptionsValue(_messages.Message):
-    r"""Options for exporting data as CSV.
+    r"""Options for exporting data as CSV. *MySQL* and *PostgreSQL* instances
+    only.
 
     Fields:
       selectQuery: The select query used to extract the data.
@@ -840,9 +846,10 @@ class ExportContext(_messages.Message):
       Fields:
         masterData: Option to include SQL statement required to set up
           replication. If set to *1*, the dump file includes a CHANGE MASTER
-          TO statement with the binary log coordinates. If set to *2*, the
-          CHANGE MASTER TO statement is written as a SQL comment, and has no
-          effect. All other values are ignored.
+          TO statement with the binary log coordinates, and --set-gtid-purged
+          is set to ON. If set to *2*, the CHANGE MASTER TO statement is
+          written as a SQL comment and has no effect. If set to any value
+          other than *1*, --set-gtid-purged is set to OFF.
       """
 
       masterData = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2134,6 +2141,8 @@ class SqlExternalSyncSettingError(_messages.Message):
       SQLSERVER_AGENT_NOT_RUNNING: SQL Server Agent is not running.
       UNSUPPORTED_TABLE_DEFINITION: The table definition is not support due to
         missing primary key or replica identity, applicable for postgres.
+      UNSUPPORTED_DEFINER: The customer has a definer that will break EM
+        setup.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -2156,6 +2165,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     UNSUPPORTED_GTID_MODE = 18
     SQLSERVER_AGENT_NOT_RUNNING = 19
     UNSUPPORTED_TABLE_DEFINITION = 20
+    UNSUPPORTED_DEFINER = 21
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)

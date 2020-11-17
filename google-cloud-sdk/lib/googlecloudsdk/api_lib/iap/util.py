@@ -288,16 +288,27 @@ class BackendServices(IapIamResource):
   """IAP IAM backend services resource.
   """
 
+  def __init__(self, release_track, project, region_id):
+    super(BackendServices, self).__init__(release_track, project)
+    self.region_id = region_id
+
   def _Name(self):
     return 'backend services'
 
+  def _IapWebId(self):
+    if self.region_id:
+      return '%s-%s' % (BACKEND_SERVICES, self.region_id)
+    else:
+      return BACKEND_SERVICES
+
   def _Parse(self):
     project = _GetProject(self.project)
+    iap_web_id = self._IapWebId()
     return self.registry.Parse(
         None,
         params={
             'project': project.projectNumber,
-            'iapWebId': BACKEND_SERVICES,
+            'iapWebId': iap_web_id,
         },
         collection=IAP_WEB_COLLECTION)
 
@@ -306,20 +317,28 @@ class BackendService(IapIamResource):
   """IAP IAM backend service resource.
   """
 
-  def __init__(self, release_track, project, service_id):
+  def __init__(self, release_track, project, region_id, service_id):
     super(BackendService, self).__init__(release_track, project)
+    self.region_id = region_id
     self.service_id = service_id
 
   def _Name(self):
     return 'backend service'
 
+  def _IapWebId(self):
+    if self.region_id:
+      return '%s-%s' % (BACKEND_SERVICES, self.region_id)
+    else:
+      return BACKEND_SERVICES
+
   def _Parse(self):
     project = _GetProject(self.project)
+    iap_web_id = self._IapWebId()
     return self.registry.Parse(
         None,
         params={
             'project': project.projectNumber,
-            'iapWebId': BACKEND_SERVICES,
+            'iapWebId': iap_web_id,
             'serviceId': self.service_id,
         },
         collection=IAP_WEB_SERVICES_COLLECTION)

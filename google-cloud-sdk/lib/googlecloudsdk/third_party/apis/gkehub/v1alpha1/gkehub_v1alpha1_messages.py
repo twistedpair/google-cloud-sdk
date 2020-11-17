@@ -214,7 +214,6 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -258,10 +257,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -701,8 +699,10 @@ class FeatureStateDetails(_messages.Message):
   declarative resource in the API.
 
   Enums:
-    CodeValueValuesEnum: The code indicates machine-interpretable status code
-      of the feature. It also allows for an interpretation of the details.
+    CodeValueValuesEnum: The code describes, at a high level, if the Feature
+      is operating correctly. Non-`OK` codes should have details in the
+      `description` describing what actions (if any) need to be taken to
+      return the Feature to `OK`.
 
   Fields:
     apigeeFeatureState: State for the Apigee Feature.
@@ -710,8 +710,10 @@ class FeatureStateDetails(_messages.Message):
     authorizerFeatureState: State for the Authorizer Feature.
     cloudauditloggingFeatureState: The state of the Anthos Cloud Audit Logging
       feature.
-    code: The code indicates machine-interpretable status code of the feature.
-      It also allows for an interpretation of the details.
+    code: The code describes, at a high level, if the Feature is operating
+      correctly. Non-`OK` codes should have details in the `description`
+      describing what actions (if any) need to be taken to return the Feature
+      to `OK`.
     configmanagementFeatureState: State for the Config Management Feature.
     description: Human readable description of the issue.
     helloworldFeatureState: State for the Hello World Feature.
@@ -726,14 +728,20 @@ class FeatureStateDetails(_messages.Message):
   """
 
   class CodeValueValuesEnum(_messages.Enum):
-    r"""The code indicates machine-interpretable status code of the feature.
-    It also allows for an interpretation of the details.
+    r"""The code describes, at a high level, if the Feature is operating
+    correctly. Non-`OK` codes should have details in the `description`
+    describing what actions (if any) need to be taken to return the Feature to
+    `OK`.
 
     Values:
       CODE_UNSPECIFIED: Not set.
-      OK: <no description>
-      FAILED: <no description>
-      WARNING: <no description>
+      OK: No error.
+      FAILED: The Feature has encountered an issue that blocks all, or a
+        significant portion, of its normal operation. See the `description`
+        for more details.
+      WARNING: The Feature is in a state, or has encountered an issue, that
+        impacts its normal operation. This state may or may not require
+        intervention to resolve, see the `description` for more details.
     """
     CODE_UNSPECIFIED = 0
     OK = 1

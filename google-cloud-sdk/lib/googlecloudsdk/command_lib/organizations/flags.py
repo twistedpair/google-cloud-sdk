@@ -27,4 +27,4 @@ def IdArg(description):
       'id',
       metavar='ORGANIZATION_ID',
       completer=completers.OrganizationCompleter,
-      help='ID for the organization {0}'.format(description))
+      help='ID or domain for the organization {0}'.format(description))

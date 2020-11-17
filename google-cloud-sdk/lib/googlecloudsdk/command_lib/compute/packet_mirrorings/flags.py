@@ -366,10 +366,8 @@ def _AddFilterDirectionArg(parser):
       choices=['both', 'egress', 'ingress'],
       metavar='DIRECTION',
       help="""\
-        DIRECTION must be one of INGRESS, EGRESS, BOTH.
-        For INGRESS, only ingress traffic is mirrored.
-        For EGRESS, only egress traffic is mirrored.
-        For BOTH (or in case the filter-direction option is not specified),
-        both directions are mirrored. This is the default option.
+        - For `ingress`, only ingress traffic is mirrored.
+        - For `egress`, only egress traffic is mirrored.
+        - For `both` (default), both directions are mirrored.
         """,
   )

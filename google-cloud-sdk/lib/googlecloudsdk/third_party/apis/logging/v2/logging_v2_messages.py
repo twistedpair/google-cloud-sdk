@@ -293,7 +293,7 @@ class Linear(_messages.Message):
 
 
 class ListBucketsResponse(_messages.Message):
-  r"""The response from ListBuckets (Beta).
+  r"""The response from ListBuckets.
 
   Fields:
     buckets: A list of buckets.
@@ -565,7 +565,7 @@ class Location(_messages.Message):
 
 
 class LogBucket(_messages.Message):
-  r"""Describes a repository of logs (Beta).
+  r"""Describes a repository of logs.
 
   Enums:
     LifecycleStateValueValuesEnum: Output only. The bucket lifecycle state.
@@ -583,11 +583,11 @@ class LogBucket(_messages.Message):
       they are empty.
     logLink: Configures a linked dataset in BigQuery corresponding to this log
       bucket. Requires analytics_enabled to be True.
-    name: The resource name of the bucket. For example: "projects/my-project-
-      id/locations/my-location/buckets/my-bucket-id The supported locations
-      are: "global"For the location of global it is unspecified where logs are
-      actually stored. Once a bucket has been created, the location can not be
-      changed.
+    name: Output only. The resource name of the bucket. For example:
+      "projects/my-project-id/locations/my-location/buckets/my-bucket-id The
+      supported locations are: "global"For the location of global it is
+      unspecified where logs are actually stored. Once a bucket has been
+      created, the location can not be changed.
     retentionDays: Logs will be retained by default for this amount of time,
       after which they will automatically be deleted. The minimum retention
       period is 1 day. If this value is set to zero at bucket creation time,
@@ -1262,7 +1262,8 @@ class LogView(_messages.Message):
     filter: Filter that restricts which log entries in a bucket are visible in
       this view. Filters are restricted to be a logical AND of ==/!= of any of
       the following: originating project/folder/organization/billing account.
-      resource type log id
+      resource type log id Example: SOURCE("projects/myproject") AND
+      resource.type = "gce_instance" AND LOG_ID("stdout")
     name: The resource name of the view. For example "projects/my-project-
       id/locations/my-location/buckets/my-bucket-id/views/my-view
     updateTime: Output only. The last update timestamp of the view.
@@ -4742,6 +4743,87 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class SuppressionInfo(_messages.Message):
+  r"""Information about entries that were omitted from the session.
+
+  Enums:
+    ReasonValueValuesEnum: The reason that entries were omitted from the
+      session.
+
+  Fields:
+    reason: The reason that entries were omitted from the session.
+    suppressedCount: A lower bound on the count of entries omitted due to
+      reason.
+  """
+
+  class ReasonValueValuesEnum(_messages.Enum):
+    r"""The reason that entries were omitted from the session.
+
+    Values:
+      REASON_UNSPECIFIED: Unexpected default.
+      RATE_LIMIT: Indicates suppression occurred due to relevant entries being
+        received in excess of rate limits.
+      NOT_CONSUMED: Indicates suppression occurred due to the client not
+        consuming responses quickly enough.
+    """
+    REASON_UNSPECIFIED = 0
+    RATE_LIMIT = 1
+    NOT_CONSUMED = 2
+
+  reason = _messages.EnumField('ReasonValueValuesEnum', 1)
+  suppressedCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class TailLogEntriesRequest(_messages.Message):
+  r"""The parameters to TailLogEntries.
+
+  Fields:
+    bufferWindow: Optional. The amount of time to buffer log entries at the
+      server before being returned to prevent out of order results due to late
+      arriving log entries. Valid values are between 0-60000 milliseconds.
+      Defaults to 2000 milliseconds.
+    filter: Optional. A filter that chooses which log entries to return. See
+      Advanced Logs Filters
+      (https://cloud.google.com/logging/docs/view/advanced_filters). Only log
+      entries that match the filter are returned. An empty filter matches all
+      log entries in the resources listed in resource_names. Referencing a
+      parent resource that is not in resource_names will cause the filter to
+      return no results. The maximum length of the filter is 20000 characters.
+    resourceNames: Required. Name of a parent resource from which to retrieve
+      log entries: "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" May
+      alternatively be one or more views: "projects/PROJECT_ID/locations/LOCAT
+      ION_ID/buckets/BUCKET_ID/views/VIEW_ID" "organization/ORGANIZATION_ID/lo
+      cations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID" "billingAccounts/BI
+      LLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID"
+      "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID
+      "
+  """
+
+  bufferWindow = _messages.StringField(1)
+  filter = _messages.StringField(2)
+  resourceNames = _messages.StringField(3, repeated=True)
+
+
+class TailLogEntriesResponse(_messages.Message):
+  r"""Result returned from TailLogEntries.
+
+  Fields:
+    entries: A list of log entries. Each response in the stream will order
+      entries with increasing values of LogEntry.timestamp. Ordering is not
+      guaranteed between separate responses.
+    suppressionInfo: If entries that otherwise would have been included in the
+      session were not sent back to the client, counts of relevant entries
+      omitted from the session with the reason that they were not included.
+      There will be at most one of each reason per response. The counts
+      represent the number of suppressed entries since the last streamed
+      response.
+  """
+
+  entries = _messages.MessageField('LogEntry', 1, repeated=True)
+  suppressionInfo = _messages.MessageField('SuppressionInfo', 2, repeated=True)
 
 
 class UndeleteBucketRequest(_messages.Message):

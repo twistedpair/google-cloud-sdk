@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20201030",
+ "revision": "20201106",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -16562,7 +16562,7 @@
   "NetworkEndpointGroup": {
    "id": "NetworkEndpointGroup",
    "type": "object",
-   "description": "Represents a collection of network endpoints.\n\nA network endpoint group (NEG) defines how a set of endpoints should be reached, whether they are reachable, and where they are located. For more information about using NEGs, see  Setting up internet NEGs,  Setting up zonal NEGs, or  Setting up serverless NEGs. (== resource_for {$api_version}.networkEndpointGroups ==) (== resource_for {$api_version}.globalNetworkEndpointGroups ==) (== resource_for {$api_version}.regionNetworkEndpointGroups ==)",
+   "description": "Represents a collection of network endpoints.\n\nA network endpoint group (NEG) defines how a set of endpoints should be reached, whether they are reachable, and where they are located. For more information about using NEGs, see  Setting up external HTTP(S) Load Balancing with internet NEGs,  Setting up zonal NEGs, or  Setting up external HTTP(S) Load Balancing with serverless NEGs. (== resource_for {$api_version}.networkEndpointGroups ==) (== resource_for {$api_version}.globalNetworkEndpointGroups ==) (== resource_for {$api_version}.regionNetworkEndpointGroups ==)",
    "properties": {
     "annotations": {
      "type": "object",
@@ -17313,6 +17313,20 @@
      "items": {
       "$ref": "AccessConfig"
      }
+    },
+    "ipv6AccessType": {
+     "type": "string",
+     "description": "[Output Only] One of EXTERNAL, INTERNAL to indicate whether the IP can be accessed from the Internet. This field is always inherited from its subnetwork.\n\nValid only if stackType is IPV4_IPV6.",
+     "enum": [
+      "EXTERNAL",
+      "INTERNAL",
+      "UNSPECIFIED_IPV6_ACCESS_TYPE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     },
     "ipv6Address": {
      "type": "string",
@@ -18082,6 +18096,10 @@
    "properties": {
     "duration": {
      "type": "string",
+     "description": "[Output only] A predetermined duration for the window, automatically chosen to be the smallest possible in the given scenario."
+    },
+    "maintenanceDuration": {
+     "$ref": "Duration",
      "description": "[Output only] A predetermined duration for the window, automatically chosen to be the smallest possible in the given scenario."
     },
     "startTime": {
@@ -26512,11 +26530,11 @@
    "properties": {
     "lastStartTime": {
      "type": "string",
-     "description": "[Output Only] The last time the scaling schedule became active. Note: this is a timestamp when a schedule actually became active, not when it was planned to do so. The timestamp is an RFC3339 string in RFC3339 text format."
+     "description": "[Output Only] The last time the scaling schedule became active. Note: this is a timestamp when a schedule actually became active, not when it was planned to do so. The timestamp is in RFC3339 text format."
     },
     "nextStartTime": {
      "type": "string",
-     "description": "[Output Only] The next time the scaling schedule will become active. Note: this is a timestamp when a schedule is planned to run, but the actual time might be slightly different. The timestamp is an RFC3339 string in RFC3339 text format."
+     "description": "[Output Only] The next time the scaling schedule will become active. Note: this is a timestamp when a schedule is planned to run, but the actual time might be slightly different. The timestamp is in RFC3339 text format."
     },
     "state": {
      "type": "string",
@@ -27009,7 +27027,7 @@
     },
     "priority": {
      "type": "integer",
-     "description": "An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest prority.",
+     "description": "An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest priority.",
      "format": "int32"
     },
     "rateLimitOptions": {
@@ -61146,7 +61164,7 @@
      "id": "compute.securityPolicies.patch",
      "path": "projects/{project}/global/securityPolicies/{securityPolicy}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified policy with the data included in the request.",
+     "description": "Patches the specified policy with the data included in the request. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.",
      "parameters": {
       "project": {
        "type": "string",

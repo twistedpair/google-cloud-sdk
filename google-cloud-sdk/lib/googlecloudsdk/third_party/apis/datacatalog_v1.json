@@ -235,12 +235,14 @@
           "enumDescriptions": [
             "Default unknown system.",
             "BigQuery.",
-            "Cloud Pub\/Sub."
+            "Cloud Pub\/Sub.",
+            "Dataproc Metastore - Managed Hive Metastore."
           ],
           "enum": [
             "INTEGRATED_SYSTEM_UNSPECIFIED",
             "BIGQUERY",
-            "CLOUD_PUBSUB"
+            "CLOUD_PUBSUB",
+            "DPMS"
           ]
         },
         "userSpecifiedSystem": {
@@ -363,12 +365,14 @@
           "enumDescriptions": [
             "Default unknown system.",
             "BigQuery.",
-            "Cloud Pub\/Sub."
+            "Cloud Pub\/Sub.",
+            "Dataproc Metastore - Managed Hive Metastore."
           ],
           "enum": [
             "INTEGRATED_SYSTEM_UNSPECIFIED",
             "BIGQUERY",
-            "CLOUD_PUBSUB"
+            "CLOUD_PUBSUB",
+            "DPMS"
           ]
         },
         "userSpecifiedSystem": {

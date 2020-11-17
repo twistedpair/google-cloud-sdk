@@ -141,7 +141,7 @@
           "format": "int32"
         },
         "originUri": {
-          "description": "Output only. The origin URI.",
+          "description": "Output only. The origin URI. *Note*: This feature is not yet available.",
           "readOnly": true,
           "$ref": "OriginUri"
         },
@@ -165,7 +165,7 @@
           ]
         },
         "progress": {
-          "description": "Output only. Estimated fractional progress, from `0` to `1` for each step.",
+          "description": "Output only. Estimated fractional progress, from `0` to `1` for each step. *Note*: This feature is not yet available.",
           "readOnly": true,
           "$ref": "Progress"
         },
@@ -175,7 +175,7 @@
           "type": "string"
         },
         "failureDetails": {
-          "description": "Output only. List of failure details. This property may contain additional information about the failure when `failure_reason` is present.",
+          "description": "Output only. List of failure details. This property may contain additional information about the failure when `failure_reason` is present. *Note*: This feature is not yet available.",
           "readOnly": true,
           "type": "array",
           "items": {

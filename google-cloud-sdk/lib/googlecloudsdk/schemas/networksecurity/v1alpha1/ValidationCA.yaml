@@ -30,6 +30,11 @@ properties:
       The path to the file holding the CA certificate to validate the client or
       server certificate.
     type: string
+  certificateProviderInstance:
+    description: |-
+      The certificate provider instance specification that will be passed to the
+      data plane, which will be used to load necessary credential information.
+    $ref: CertificateProviderInstance.yaml
   grpcEndpoint:
     description: |-
       gRPC specific configuration to access the gRPC server to obtain the CA

@@ -209,8 +209,7 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A client-specified ID for this binding. Expected to be globally
-      unique to support the internal bindings-by-ID API.
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -1330,10 +1329,10 @@ class LinearBuckets(_messages.Message):
 
 
 class ListClusterGroupBackupsResponse(_messages.Message):
-  r"""A ListClusterGroupBackupsResponse object.
+  r"""A list of SDDC cluster group backups.
 
   Fields:
-    clusterGroupBackups: A list of SDDC cluster group backups.
+    clusterGroupBackups: A ClusterGroupBackup attribute.
     nextPageToken: A token, which can be send as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
     unreachable: List of Locations that could not be reached.
@@ -1398,6 +1397,21 @@ class ListLocationsResponse(_messages.Message):
 
   locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListPrivateCloudBackupsResponse(_messages.Message):
+  r"""Response containing a list of SDDC private cloud backups.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    privateCloudBackups: A list of SDDC private cloud backup resources
+    unreachable: List of Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  privateCloudBackups = _messages.MessageField('PrivateCloudBackup', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListPrivateCloudsResponse(_messages.Message):
@@ -2299,6 +2313,85 @@ class PrivateCloud(_messages.Message):
   vcenter = _messages.MessageField('Vcenter', 9)
 
 
+class PrivateCloudBackup(_messages.Message):
+  r"""Backup resource of the PrivateCloud.
+
+  Messages:
+    LabelsValue: Labels are a way to attach lightweight metadata to resources
+      for filtering and querying resource data. No more than 64 user labels
+      can be associated with each resource. Label keys and values can be no
+      longer than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
+
+  Fields:
+    createTime: Output only. Creation time of the resource.
+    labels: Labels are a way to attach lightweight metadata to resources for
+      filtering and querying resource data. No more than 64 user labels can be
+      associated with each resource. Label keys and values can be no longer
+      than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
+    name: Output only. The resource name of this PrivateCloudBackup. Resource
+      names are schemeless URI's that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names For example,
+      `projects/my-project/locations/us-central1/privateCloudBackups/my-
+      backup`
+    privateCloudId: Identity of the private cloud of which this resource is a
+      backup.
+    updateTime: Output only. Update time of the resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels are a way to attach lightweight metadata to resources for
+    filtering and querying resource data. No more than 64 user labels can be
+    associated with each resource. Label keys and values can be no longer than
+    63 characters, can only contain lowercase letters, numeric characters,
+    underscores and dashes, where label keys must start with a letter and
+    international characters are allowed. The empty string is a valid value.
+    Labels are set on creation and updated like any other field. Specifically,
+    to add a new label, you would need to provide all of the existing labels
+    along with the new label. If you only provide a map with the new label,
+    all of the old labels will be removed (probably not what is desired).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  privateCloudId = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+
+
 class QuotaProperties(_messages.Message):
   r"""Represents the properties needed for quota operations.
 
@@ -2935,6 +3028,197 @@ class SddcProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class SddcProjectsLocationsPrivateCloudBackupsCreateRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudBackupsCreateRequest object.
+
+  Fields:
+    parent: Required. The location(region) and project where the new
+      PrivateCloudBackup will be created. For example: `projects/my-
+      project/locations/us-central1`
+    privateCloudBackup: A PrivateCloudBackup resource to be passed as the
+      request body.
+    privateCloudBackupId: Required. The user-provided id of the
+      PrivateCloudBackup to be created. This id must be unique among
+      PrivateCloudBackups within the parent and will become the final token in
+      the name URI.
+    requestId: UUID of this invocation for idempotent operation.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  privateCloudBackup = _messages.MessageField('PrivateCloudBackup', 2)
+  privateCloudBackupId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class SddcProjectsLocationsPrivateCloudBackupsDeleteRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudBackupsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the PrivateCloudBackup to be deleted.
+    requestId: UUID of this invocation for idempotent operation.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class SddcProjectsLocationsPrivateCloudBackupsGetRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudBackupsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the PrivateCloudBackup to retrieve.
+      Resource names are schemeless URI's that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names For example,
+      `projects/my-project/locations/us-central1/privateCloudBackups/my-
+      backup`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SddcProjectsLocationsPrivateCloudBackupsListRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudBackupsListRequest object.
+
+  Fields:
+    filter: List filter.
+    pageSize: The maximum number of privateCloudBackups to return. The service
+      may return fewer than this value. default page size is 500
+    pageToken: A page token, received from a previous
+      `ListPrivateCloudBackupsRequest` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListPrivateCloudBackupsRequest` must match the call that provided the
+      page token.
+    parent: Required. The location and project which will be queried for data
+      centers. For example: `projects/my-project/locations/us-central1`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class SddcProjectsLocationsPrivateCloudsClustersAddNodesRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudsClustersAddNodesRequest object.
+
+  Fields:
+    addNodesRequest: A AddNodesRequest resource to be passed as the request
+      body.
+    cluster: Required. The resource name of the Cluster to perform add nodes.
+      Resource names are schemeless URI's that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names For example,
+      `projects/my-project/locations/us-central1/clusterGroups/my-
+      group/clusters/my-cluster`
+  """
+
+  addNodesRequest = _messages.MessageField('AddNodesRequest', 1)
+  cluster = _messages.StringField(2, required=True)
+
+
+class SddcProjectsLocationsPrivateCloudsClustersCreateRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudsClustersCreateRequest object.
+
+  Fields:
+    cluster: A Cluster resource to be passed as the request body.
+    clusterId: Required. The user-provided id of the new Cluster. This id must
+      be unique among Clusters within the parent and will become the final
+      token in the name URI.
+    managementCluster: Required. Deprecated. Use the management property in
+      the Cluster resource. Whether the cluster is the management cluster.
+    parent: Required. The ClusterGroup in where the new Cluster will be
+      created. For example: `projects/my-project/locations/us-
+      central1/clusterGroups/my-group`
+  """
+
+  cluster = _messages.MessageField('Cluster', 1)
+  clusterId = _messages.StringField(2)
+  managementCluster = _messages.BooleanField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class SddcProjectsLocationsPrivateCloudsClustersDeleteRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudsClustersDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the Cluster to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SddcProjectsLocationsPrivateCloudsClustersGetRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudsClustersGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the Cluster to retrieve. Resource
+      names are schemeless URI's that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names For example,
+      `projects/my-project/locations/us-central1/clusterGroups/my-
+      group/clusters/my-cluster`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SddcProjectsLocationsPrivateCloudsClustersListRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudsClustersListRequest object.
+
+  Fields:
+    filter: List filter.
+    pageSize: The maximum number of clusters to return. The service may return
+      fewer than this value.
+    pageToken: A page token, received from a previous `ListClustersRequest`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListClustersRequest` must match the call
+      that provided the page token.
+    parent: Required. The project, location and cluster group which will be
+      queried for clusters. For example: `projects/my-project/locations/us-
+      central1/clusterGroups/my-group`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class SddcProjectsLocationsPrivateCloudsClustersPatchRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudsClustersPatchRequest object.
+
+  Fields:
+    cluster: A Cluster resource to be passed as the request body.
+    name: Output only. The resource name of this Cluster. Resource names are
+      schemeless URI's that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names For example,
+      `projects/my-project/locations/us-central1/clusterGroups/my-
+      group/clusters/my-cluster`
+    updateMask: Mask of fields to update. At least one path must be supplied
+      in this field. The elements of the repeated paths field may only include
+      these fields: "labels"
+  """
+
+  cluster = _messages.MessageField('Cluster', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class SddcProjectsLocationsPrivateCloudsClustersRemoveNodesRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudsClustersRemoveNodesRequest object.
+
+  Fields:
+    cluster: Required. The resource name of the Cluster to perform remove
+      nodes. Resource names are schemeless URI's that follow the conventions
+      in https://cloud.google.com/apis/design/resource_names For example,
+      `projects/my-project/locations/us-central1/clusterGroups/my-
+      group/clusters/my-cluster`
+    removeNodesRequest: A RemoveNodesRequest resource to be passed as the
+      request body.
+  """
+
+  cluster = _messages.StringField(1, required=True)
+  removeNodesRequest = _messages.MessageField('RemoveNodesRequest', 2)
 
 
 class SddcProjectsLocationsPrivateCloudsCreateRequest(_messages.Message):

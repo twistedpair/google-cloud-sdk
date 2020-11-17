@@ -22,10 +22,10 @@ import collections
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 
-from googlecloudsdk.api_lib.cloudresourcemanager import organizations
 from googlecloudsdk.api_lib.identity import cloudidentity_client as ci_client
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.organizations import org_utils
 import six
 
 
@@ -339,11 +339,11 @@ def ReformatLabels(args, labels):
 
 
 # private methods
-def ConvertOrgIdToObfuscatedCustomerId(org_id):
-  """Convert organization id to obfuscated customer id.
+def ConvertOrgArgToObfuscatedCustomerId(org_arg):
+  """Convert organization argument to obfuscated customer id.
 
   Args:
-    org_id: organization id
+    org_arg: organization argument
 
   Returns:
     Obfuscated customer id
@@ -357,9 +357,11 @@ def ConvertOrgIdToObfuscatedCustomerId(org_id):
       }
     }
   """
-
-  organization_obj = organizations.Client().Get(org_id)
-  return organization_obj.owner.directoryCustomerId
+  organization_obj = org_utils.GetOrganization(org_arg)
+  if organization_obj:
+    return organization_obj.owner.directoryCustomerId
+  else:
+    raise org_utils.UnknownOrganizationError(org_arg, metavar='ORGANIZATION')
 
 
 def ConvertEmailToResourceName(version, email, arg_name):
@@ -473,9 +475,10 @@ def GetCustomerId(args):
   """
 
   if hasattr(args, 'customer') and args.IsSpecified('customer'):
-    return 'customerId/' + args.customer
+    customer_id = args.customer
   elif hasattr(args, 'organization') and args.IsSpecified('organization'):
-    return 'customerId/' + ConvertOrgIdToObfuscatedCustomerId(args.organization)
+    customer_id = ConvertOrgArgToObfuscatedCustomerId(args.organization)
+  return 'customerId/' + customer_id
 
 
 class UnsupportedReleaseTrackError(Exception):

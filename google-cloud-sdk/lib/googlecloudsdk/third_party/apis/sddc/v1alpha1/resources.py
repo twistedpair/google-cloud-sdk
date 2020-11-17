@@ -96,6 +96,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PRIVATECLOUDBACKUPS = (
+      'projects.locations.privateCloudBackups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'privateCloudBackups/{privateCloudBackupsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_PRIVATECLOUDS = (
       'projects.locations.privateClouds',
       '{+name}',
@@ -103,6 +114,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/privateClouds/'
               '{privateCloudsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_PRIVATECLOUDS_CLUSTERS = (
+      'projects.locations.privateClouds.clusters',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/privateClouds/'
+              '{privateCloudsId}/clusters/{clustersId}',
       },
       ['name'],
       True

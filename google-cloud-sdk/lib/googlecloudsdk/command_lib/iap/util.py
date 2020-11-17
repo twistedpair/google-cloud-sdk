@@ -39,12 +39,13 @@ SETTING_RESOURCE_TYPE_ENUM = (APP_ENGINE_RESOURCE_TYPE, WEB_RESOURCE_TYPE,
                               FOLDER_RESOURCE_TYPE)
 
 
-def AddIapIamResourceArgs(parser):
+def AddIapIamResourceArgs(parser, use_region_arg=False):
   """Adds flags for an IAP IAM resource.
 
   Args:
     parser: An argparse.ArgumentParser-like object. It is mocked out in order to
       capture some information, but behaves like an ArgumentParser.
+    use_region_arg: Whether or not to show and accept the region argument.
   """
   group = parser.add_group()
   group.add_argument(
@@ -54,6 +55,11 @@ def AddIapIamResourceArgs(parser):
   group.add_argument(
       '--service',
       help='Service name.')
+  if use_region_arg:
+    group.add_argument(
+        '--region',
+        help='Region name. Should only be specified with `--resource-type=backend-services`.'
+    )
   group.add_argument(
       '--version',
       help='Service version. Should only be specified with '
@@ -229,6 +235,10 @@ def ParseIapIamResource(release_track, args):
       raise calliope_exc.InvalidArgumentException(
           '--service',
           '`--service` cannot be specified without `--resource-type`.')
+    if release_track == base.ReleaseTrack.ALPHA and args.region:
+      raise calliope_exc.InvalidArgumentException(
+          '--region',
+          '`--region` cannot be specified without `--resource-type`.')
     if args.version:
       raise calliope_exc.InvalidArgumentException(
           '--version',
@@ -237,6 +247,10 @@ def ParseIapIamResource(release_track, args):
         release_track,
         project)
   elif args.resource_type == APP_ENGINE_RESOURCE_TYPE:
+    if release_track == base.ReleaseTrack.ALPHA and args.region:
+      raise calliope_exc.InvalidArgumentException(
+          '--region', '`--region` cannot be specified for '
+          '`--resource-type=app-engine`.')
     if args.service and args.version:
       return iap_api.AppEngineServiceVersion(
           release_track,
@@ -258,17 +272,17 @@ def ParseIapIamResource(release_track, args):
   elif args.resource_type == BACKEND_SERVICES_RESOURCE_TYPE:
     if args.version:
       raise calliope_exc.InvalidArgumentException(
-          '--version',
-          '`--version` cannot be specified for '
+          '--version', '`--version` cannot be specified for '
           '`--resource-type=backend-services`.')
-    if args.service:
-      return iap_api.BackendService(
-          release_track,
-          project,
-          args.service)
-    return iap_api.BackendServices(
-        release_track,
-        project)
+    if release_track == base.ReleaseTrack.ALPHA and args.region:
+      if args.service:
+        return iap_api.BackendService(release_track, project, args.region,
+                                      args.service)
+      else:
+        return iap_api.BackendServices(release_track, project, args.region)
+    elif args.service:
+      return iap_api.BackendService(release_track, project, None, args.service)
+    return iap_api.BackendServices(release_track, project, None)
 
   # This shouldn't be reachable, based on the IAP IAM resource parsing logic.
   raise iap_exc.InvalidIapIamResourceError('Could not parse IAP IAM resource.')
@@ -308,10 +322,7 @@ def ParseIapResource(release_track, args):
             '--service',
             '`--service` must be specified for '
             '`--resource-type=backend-services`.')
-      return iap_api.BackendService(
-          release_track,
-          project,
-          args.service)
+      return iap_api.BackendService(release_track, project, None, args.service)
 
   raise iap_exc.InvalidIapIamResourceError('Could not parse IAP resource.')
 

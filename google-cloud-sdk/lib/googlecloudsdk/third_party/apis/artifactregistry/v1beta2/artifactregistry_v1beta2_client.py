@@ -40,7 +40,6 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
-    self.projects_locations_repositories_dockerimages = self.ProjectsLocationsRepositoriesDockerimagesService(self)
     self.projects_locations_repositories_files = self.ProjectsLocationsRepositoriesFilesService(self)
     self.projects_locations_repositories_packages_tags = self.ProjectsLocationsRepositoriesPackagesTagsService(self)
     self.projects_locations_repositories_packages_versions = self.ProjectsLocationsRepositoriesPackagesVersionsService(self)
@@ -110,43 +109,6 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
         request_field='',
         request_type_name='ArtifactregistryProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsRepositoriesDockerimagesService(base_api.BaseApiService):
-    """Service class for the projects_locations_repositories_dockerimages resource."""
-
-    _NAME = 'projects_locations_repositories_dockerimages'
-
-    def __init__(self, client):
-      super(ArtifactregistryV1beta2.ProjectsLocationsRepositoriesDockerimagesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists docker images.
-
-      Args:
-        request: (ArtifactregistryProjectsLocationsRepositoriesDockerimagesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListDockerImagesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/dockerimages',
-        http_method='GET',
-        method_id='artifactregistry.projects.locations.repositories.dockerimages.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v1beta2/{+parent}/dockerimages',
-        request_field='',
-        request_type_name='ArtifactregistryProjectsLocationsRepositoriesDockerimagesListRequest',
-        response_type_name='ListDockerImagesResponse',
         supports_download=False,
     )
 

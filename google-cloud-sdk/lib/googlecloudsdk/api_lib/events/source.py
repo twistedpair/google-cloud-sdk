@@ -18,7 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
+
 from googlecloudsdk.api_lib.run import k8s_object
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 _BROKER_API_CATEGORY = 'eventing.knative.dev'
 _BROKER_KIND = 'Broker'
@@ -70,3 +73,41 @@ class Source(k8s_object.KubernetesObject):
         self._m.spec.ceOverrides.extensions.additionalProperties,
         self._messages.CloudEventOverrides.ExtensionsValue.AdditionalProperty,
         key_field='key')
+
+
+def ParseDynamicFieldsIntoMessage(message, parameters):
+  """Set fields in message corresponding to a dict of usually static fields.
+
+  For repeated fields interpreted as json.
+
+  Args:
+    message: The source spec.
+    parameters: dict of fields to values. The values are by default interpreted
+      as raw string, but values are interpreted as a nested data structure,
+      depending on the whitelist.
+  """
+  parameters = parameters or {}
+  for field_path, value in parameters.items():
+    field = arg_utils.GetFieldFromMessage(message, field_path)
+
+    if field.repeated and not isinstance(value, list):
+      value = arg_utils.ConvertValue(field, value, processor=JSONProcessor)
+    value = arg_utils.ConvertValue(field, value)
+
+    arg_utils.SetFieldInMessage(message, field_path, value)
+
+
+def JSONProcessor(value):
+  """Convert string into python dictionary and lists based on json format."""
+  return json.loads(value)
+
+
+def SourceFix(source):
+  """Set spec.owner field to None if both subfields are None."""
+  # TODO(b/168572978) replace with a more generalized solution for clearing
+  # undesired None fields from Source spec
+  if source.kind == 'ApiServerSource':
+    owner = source.spec.owner
+    if owner.apiVersion is None and owner.kind is None:
+      source.spec.owner = None
+  return source

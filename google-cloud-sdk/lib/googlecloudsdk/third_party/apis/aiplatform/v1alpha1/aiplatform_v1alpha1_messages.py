@@ -3242,8 +3242,8 @@ class GoogleCloudAiplatformUiExplanationMetadataInputMetadataFeatureValueDomain(
   mean = 0 and stddev = 1) was obtained.
 
   Fields:
-    max: The maximum permissible value for this feature.
-    min: The minimum permissible value for this feature.
+    maxValue: The maximum permissible value for this feature.
+    minValue: The minimum permissible value for this feature.
     originalMean: If this input feature has been normalized to a mean value of
       0, the original_mean specifies the mean value of the domain prior to
       normalization.
@@ -3252,8 +3252,8 @@ class GoogleCloudAiplatformUiExplanationMetadataInputMetadataFeatureValueDomain(
       of the domain prior to normalization.
   """
 
-  max = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  min = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  maxValue = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  minValue = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   originalMean = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
   originalStddev = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
@@ -9151,8 +9151,8 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataFeatureValueDo
   mean = 0 and stddev = 1) was obtained.
 
   Fields:
-    max: The maximum permissible value for this feature.
-    min: The minimum permissible value for this feature.
+    maxValue: The maximum permissible value for this feature.
+    minValue: The minimum permissible value for this feature.
     originalMean: If this input feature has been normalized to a mean value of
       0, the original_mean specifies the mean value of the domain prior to
       normalization.
@@ -9161,8 +9161,8 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataFeatureValueDo
       of the domain prior to normalization.
   """
 
-  max = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  min = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  maxValue = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  minValue = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   originalMean = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
   originalStddev = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
@@ -9984,6 +9984,572 @@ class GoogleCloudAiplatformV1beta1SchemaImageSegmentationPredictionParams(_messa
   """
 
   confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageClassificationPredictionInstance(_messages.Message):
+  r"""Prediction input format for Image Classification.
+
+  Fields:
+    content: The image bytes or GCS URI to make the prediction on.
+    mimeType: The MIME type of the content of the image. Only the images in
+      below listed MIME types are supported. - image/jpeg - image/gif -
+      image/png - image/webp - image/bmp - image/tiff -
+      image/vnd.microsoft.icon
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageObjectDetectionPredictionInstance(_messages.Message):
+  r"""Prediction input format for Image Object Detection.
+
+  Fields:
+    content: The image bytes or GCS URI to make the prediction on.
+    mimeType: The MIME type of the content of the image. Only the images in
+      below listed MIME types are supported. - image/jpeg - image/gif -
+      image/png - image/webp - image/bmp - image/tiff -
+      image/vnd.microsoft.icon
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageSegmentationPredictionInstance(_messages.Message):
+  r"""Prediction input format for Image Segmentation.
+
+  Fields:
+    content: The image bytes to make the predictions on.
+    mimeType: The MIME type of the content of the image. Only the images in
+      below listed MIME types are supported. - image/jpeg - image/png
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextClassificationPredictionInstance(_messages.Message):
+  r"""Prediction input format for Text Classification.
+
+  Fields:
+    content: The text snippet to make the predictions on.
+    mimeType: The MIME type of the text snippet. The supported MIME types are
+      listed below. - text/plain
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextExtractionPredictionInstance(_messages.Message):
+  r"""Prediction input format for Text Extraction.
+
+  Fields:
+    content: The text snippet to make the predictions on.
+    key: This field is only used for batch prediction. If a key is provided,
+      the batch prediction result will by mapped to this key. If omitted, then
+      the batch prediction result will contain the entire input instance. AI
+      Platform will not check if keys in the request are duplicates, so it is
+      up to the caller to ensure the keys are unique.
+    mimeType: The MIME type of the text snippet. The supported MIME types are
+      listed below. - text/plain
+  """
+
+  content = _messages.StringField(1)
+  key = _messages.StringField(2)
+  mimeType = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextSentimentPredictionInstance(_messages.Message):
+  r"""Prediction input format for Text Sentiment.
+
+  Fields:
+    content: The text snippet to make the predictions on.
+    mimeType: The MIME type of the text snippet. The supported MIME types are
+      listed below. - text/plain
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceVideoActionRecognitionPredictionInstance(_messages.Message):
+  r"""Prediction input format for Video Action Recognition.
+
+  Fields:
+    content: The Google Cloud Storage location of the video on which to
+      perform the prediction.
+    mimeType: The MIME type of the content of the video. Only the following
+      are supported: video/mp4 video/avi video/quicktime
+    timeSegmentEnd: The end, exclusive, of the video's time segment on which
+      to perform the prediction. Expressed as a number of seconds as measured
+      from the start of the video, with "s" appended at the end. Fractions are
+      allowed, up to a microsecond precision, and "Infinity" is allowed, which
+      means the end of the video.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment on
+      which to perform the prediction. Expressed as a number of seconds as
+      measured from the start of the video, with "s" appended at the end.
+      Fractions are allowed, up to a microsecond precision.
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+  timeSegmentEnd = _messages.StringField(3)
+  timeSegmentStart = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceVideoClassificationPredictionInstance(_messages.Message):
+  r"""Prediction input format for Video Classification.
+
+  Fields:
+    content: The Google Cloud Storage location of the video on which to
+      perform the prediction.
+    mimeType: The MIME type of the content of the video. Only the following
+      are supported: video/mp4 video/avi video/quicktime
+    timeSegmentEnd: The end, exclusive, of the video's time segment on which
+      to perform the prediction. Expressed as a number of seconds as measured
+      from the start of the video, with "s" appended at the end. Fractions are
+      allowed, up to a microsecond precision, and "Infinity" is allowed, which
+      means the end of the video.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment on
+      which to perform the prediction. Expressed as a number of seconds as
+      measured from the start of the video, with "s" appended at the end.
+      Fractions are allowed, up to a microsecond precision.
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+  timeSegmentEnd = _messages.StringField(3)
+  timeSegmentStart = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceVideoObjectTrackingPredictionInstance(_messages.Message):
+  r"""Prediction input format for Video Object Tracking.
+
+  Fields:
+    content: The Google Cloud Storage location of the video on which to
+      perform the prediction.
+    mimeType: The MIME type of the content of the video. Only the following
+      are supported: video/mp4 video/avi video/quicktime
+    timeSegmentEnd: The end, exclusive, of the video's time segment on which
+      to perform the prediction. Expressed as a number of seconds as measured
+      from the start of the video, with "s" appended at the end. Fractions are
+      allowed, up to a microsecond precision, and "Infinity" is allowed, which
+      means the end of the video.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment on
+      which to perform the prediction. Expressed as a number of seconds as
+      measured from the start of the video, with "s" appended at the end.
+      Fractions are allowed, up to a microsecond precision.
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+  timeSegmentEnd = _messages.StringField(3)
+  timeSegmentStart = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictParamsImageClassificationPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Image Classification.
+
+  Fields:
+    confidenceThreshold: The Model only returns predictions with at least this
+      confidence score. Default value is 0.0
+    maxPredictions: The Model only returns up to that many top, by confidence
+      score, predictions per instance. If this number is very high, the Model
+      may return fewer predictions. Default value is 10.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxPredictions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictParamsImageObjectDetectionPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Image Object Detection.
+
+  Fields:
+    confidenceThreshold: The Model only returns predictions with at least this
+      confidence score. Default value is 0.0
+    maxPredictions: The Model only returns up to that many top, by confidence
+      score, predictions per instance. Note that number of returned
+      predictions is also limited by metadata's predictionsLimit. Default
+      value is 10.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxPredictions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictParamsImageSegmentationPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Image Segmentation.
+
+  Fields:
+    confidenceThreshold: When the model predicts category of pixels of the
+      image, it will only provide predictions for pixels that it is at least
+      this much confident about. All other pixels will be classified as
+      background. Default value is 0.5.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictParamsVideoActionRecognitionPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Video Action Recognition.
+
+  Fields:
+    confidenceThreshold: The Model only returns predictions with at least this
+      confidence score. Default value is 0.0
+    maxPredictions: The model only returns up to that many top, by confidence
+      score, predictions per frame of the video. If this number is very high,
+      the Model may return fewer predictions per frame. Default value is 50.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxPredictions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictParamsVideoClassificationPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Video Classification.
+
+  Fields:
+    confidenceThreshold: The Model only returns predictions with at least this
+      confidence score. Default value is 0.0
+    maxPredictions: The Model only returns up to that many top, by confidence
+      score, predictions per instance. If this number is very high, the Model
+      may return fewer predictions. Default value is 10,000.
+    oneSecIntervalClassification: Set to true to request classification for a
+      video at one-second intervals. AI Platform returns labels and their
+      confidence scores for each second of the entire time segment of the
+      video that user specified in the input WARNING: Model evaluation is not
+      done for this classification type, the quality of it depends on the
+      training data, but there are no metrics provided to describe that
+      quality. Default value is false
+    segmentClassification: Set to true to request segment-level
+      classification. AI Platform returns labels and their confidence scores
+      for the entire time segment of the video that user specified in the
+      input instance. Default value is true
+    shotClassification: Set to true to request shot-level classification. AI
+      Platform determines the boundaries for each camera shot in the entire
+      time segment of the video that user specified in the input instance. AI
+      Platform then returns labels and their confidence scores for each
+      detected shot, along with the start and end time of the shot. WARNING:
+      Model evaluation is not done for this classification type, the quality
+      of it depends on the training data, but there are no metrics provided to
+      describe that quality. Default value is false
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxPredictions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  oneSecIntervalClassification = _messages.BooleanField(3)
+  segmentClassification = _messages.BooleanField(4)
+  shotClassification = _messages.BooleanField(5)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictParamsVideoObjectTrackingPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Video Object Tracking.
+
+  Fields:
+    confidenceThreshold: The Model only returns predictions with at least this
+      confidence score. Default value is 0.0
+    maxPredictions: The model only returns up to that many top, by confidence
+      score, predictions per frame of the video. If this number is very high,
+      the Model may return fewer predictions per frame. Default value is 50.
+    minBoundingBoxSize: Only bounding boxes with shortest edge at least that
+      long as a relative value of video frame size are returned. Default value
+      is 0.0.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxPredictions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minBoundingBoxSize = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionClassificationPredictionResult(_messages.Message):
+  r"""Prediction output format for Image and Text Classification.
+
+  Fields:
+    confidences: The Model's confidences in correctness of the predicted IDs,
+      higher value means higher confidence. Order matches the Ids.
+    displayNames: The display names of the AnnotationSpecs that had been
+      identified, order matches the IDs.
+    ids: The resource IDs of the AnnotationSpecs that had been identified,
+      ordered by the confidence score descendingly.
+  """
+
+  confidences = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
+  displayNames = _messages.StringField(2, repeated=True)
+  ids = _messages.IntegerField(3, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionImageObjectDetectionPredictionResult(_messages.Message):
+  r"""Prediction output format for Image Object Detection.
+
+  Messages:
+    BboxesValueListEntry: Single entry in a BboxesValue.
+
+  Fields:
+    bboxes: Bounding boxes, i.e. the rectangles over the image, that pinpoint
+      the found AnnotationSpecs. Given in order that matches the IDs. Each
+      bounding box is an array of 4 numbers `xMin`, `xMax`, `yMin`, and
+      `yMax`, which represent the extremal coordinates of the box. They are
+      relative to the image size, and the point 0,0 is in the top left of the
+      image.
+    confidences: The Model's confidences in correctness of the predicted IDs,
+      higher value means higher confidence. Order matches the Ids.
+    displayNames: The display names of the AnnotationSpecs that had been
+      identified, order matches the IDs.
+    ids: The resource IDs of the AnnotationSpecs that had been identified,
+      ordered by the confidence score descendingly.
+  """
+
+  class BboxesValueListEntry(_messages.Message):
+    r"""Single entry in a BboxesValue.
+
+    Fields:
+      entry: A extra_types.JsonValue attribute.
+    """
+
+    entry = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
+
+  bboxes = _messages.MessageField('BboxesValueListEntry', 1, repeated=True)
+  confidences = _messages.FloatField(2, repeated=True, variant=_messages.Variant.FLOAT)
+  displayNames = _messages.StringField(3, repeated=True)
+  ids = _messages.IntegerField(4, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionImageSegmentationPredictionResult(_messages.Message):
+  r"""Prediction output format for Image Segmentation.
+
+  Fields:
+    categoryMask: A PNG image where each pixel in the mask represents the
+      category in which the pixel in the original image was predicted to
+      belong to. The size of this image will be the same as the original
+      image. The mapping between the AnntoationSpec and the color can be found
+      in model's metadata. The model will choose the most likely category and
+      if none of the categories reach the confidence threshold, the pixel will
+      be marked as background.
+    confidenceMask: A one channel image which is encoded as an 8bit lossless
+      PNG. The size of the image will be the same as the original image. For a
+      specific pixel, darker color means less confidence in correctness of the
+      cateogry in the categoryMask for the corresponding pixel. Black means no
+      confidence and white means complete confidence.
+  """
+
+  categoryMask = _messages.BytesField(1)
+  confidenceMask = _messages.BytesField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTabularClassificationPredictionResult(_messages.Message):
+  r"""Prediction output format for Tabular Classification.
+
+  Fields:
+    classes: The name of the classes being classified, contains all possible
+      values of the target column.
+    scores: The model's confidence in each class being correct, higher value
+      means higher confidence. The N-th score corresponds to the N-th class in
+      classes.
+  """
+
+  classes = _messages.StringField(1, repeated=True)
+  scores = _messages.FloatField(2, repeated=True, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTabularRegressionPredictionResult(_messages.Message):
+  r"""Prediction output format for Tabular Regression.
+
+  Fields:
+    lowerBound: The lower bound of the prediction interval.
+    upperBound: The upper bound of the prediction interval.
+    value: The regression value.
+  """
+
+  lowerBound = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  upperBound = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  value = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextExtractionPredictionResult(_messages.Message):
+  r"""Prediction output format for Text Extraction.
+
+  Fields:
+    confidences: The Model's confidences in correctness of the predicted IDs,
+      higher value means higher confidence. Order matches the Ids.
+    displayNames: The display names of the AnnotationSpecs that had been
+      identified, order matches the IDs.
+    ids: The resource IDs of the AnnotationSpecs that had been identified,
+      ordered by the confidence score descendingly.
+    textSegmentEndOffsets: The end offsets, inclusive, of the text segment in
+      which the AnnotationSpec has been identified. Expressed as a zero-based
+      number of characters as measured from the start of the text snippet.
+    textSegmentStartOffsets: The start offsets, inclusive, of the text segment
+      in which the AnnotationSpec has been identified. Expressed as a zero-
+      based number of characters as measured from the start of the text
+      snippet.
+  """
+
+  confidences = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
+  displayNames = _messages.StringField(2, repeated=True)
+  ids = _messages.IntegerField(3, repeated=True)
+  textSegmentEndOffsets = _messages.IntegerField(4, repeated=True)
+  textSegmentStartOffsets = _messages.IntegerField(5, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResult(_messages.Message):
+  r"""Represents a line of JSONL in the text sentiment batch prediction output
+  file. This is a hack to allow printing of integer values.
+
+  Fields:
+    instance: User's input instance.
+    prediction: The prediction result.
+  """
+
+  instance = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextSentimentPredictionInstance', 1)
+  prediction = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction', 2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction(_messages.Message):
+  r"""Prediction output format for Text Sentiment.
+
+  Fields:
+    sentiment: The integer sentiment labels between 0 (inclusive) and
+      sentimentMax label (inclusive), while 0 maps to the least positive
+      sentiment and sentimentMax maps to the most positive one. The higher the
+      score is, the more positive the sentiment in the text snippet is. Note:
+      sentimentMax is an integer value between 1 (inclusive) and 10
+      (inclusive).
+  """
+
+  sentiment = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTimeSeriesForecastingPredictionResult(_messages.Message):
+  r"""Prediction output format for Time Series Forecasting.
+
+  Fields:
+    lowerBound: The lower bound of the prediction interval.
+    upperBound: The upper bound of the prediction interval.
+    value: The regression value.
+  """
+
+  lowerBound = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  upperBound = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  value = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoActionRecognitionPredictionResult(_messages.Message):
+  r"""Prediction output format for Video Action Recognition.
+
+  Fields:
+    confidence: The Model's confidence in correction of this prediction,
+      higher value means higher confidence.
+    displayName: The display name of the AnnotationSpec that had been
+      identified.
+    id: The resource ID of the AnnotationSpec that had been identified.
+    timeSegmentEnd: The end, exclusive, of the video's time segment in which
+      the AnnotationSpec has been identified. Expressed as a number of seconds
+      as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment in
+      which the AnnotationSpec has been identified. Expressed as a number of
+      seconds as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  displayName = _messages.StringField(2)
+  id = _messages.StringField(3)
+  timeSegmentEnd = _messages.StringField(4)
+  timeSegmentStart = _messages.StringField(5)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoClassificationPredictionResult(_messages.Message):
+  r"""Prediction output format for Video Classification.
+
+  Fields:
+    confidence: The Model's confidence in correction of this prediction,
+      higher value means higher confidence.
+    displayName: The display name of the AnnotationSpec that had been
+      identified.
+    id: The resource ID of the AnnotationSpec that had been identified.
+    timeSegmentEnd: The end, exclusive, of the video's time segment in which
+      the AnnotationSpec has been identified. Expressed as a number of seconds
+      as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end. Note that for
+      'segment-classification' prediction type, this equals the original
+      'timeSegmentEnd' from the input instance, for other types it is the end
+      of a shot or a 1 second interval respectively.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment in
+      which the AnnotationSpec has been identified. Expressed as a number of
+      seconds as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end. Note that for
+      'segment-classification' prediction type, this equals the original
+      'timeSegmentStart' from the input instance, for other types it is the
+      start of a shot or a 1 second interval respectively.
+    type: The type of the prediction. The requested types can be configured
+      via parameters. This will be one of - segment-classification - shot-
+      classification - one-sec-interval-classification
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  displayName = _messages.StringField(2)
+  id = _messages.StringField(3)
+  timeSegmentEnd = _messages.StringField(4)
+  timeSegmentStart = _messages.StringField(5)
+  type = _messages.StringField(6)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoObjectTrackingPredictionResult(_messages.Message):
+  r"""Prediction output format for Video Object Tracking.
+
+  Fields:
+    confidence: The Model's confidence in correction of this prediction,
+      higher value means higher confidence.
+    displayName: The display name of the AnnotationSpec that had been
+      identified.
+    frames: All of the frames of the video in which a single object instance
+      has been detected. The bounding boxes in the frames identify the same
+      object.
+    id: The resource ID of the AnnotationSpec that had been identified.
+    timeSegmentEnd: The end, inclusive, of the video's time segment in which
+      the object instance has been detected. Expressed as a number of seconds
+      as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment in
+      which the object instance has been detected. Expressed as a number of
+      seconds as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  displayName = _messages.StringField(2)
+  frames = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoObjectTrackingPredictionResultFrame', 3, repeated=True)
+  id = _messages.StringField(4)
+  timeSegmentEnd = _messages.StringField(5)
+  timeSegmentStart = _messages.StringField(6)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoObjectTrackingPredictionResultFrame(_messages.Message):
+  r"""The fields `xMin`, `xMax`, `yMin`, and `yMax` refer to a bounding box,
+  i.e. the rectangle over the video frame pinpointing the found
+  AnnotationSpec. The coordinates are relative to the frame size, and the
+  point 0,0 is in the top left of the frame.
+
+  Fields:
+    timeOffset: A time (frame) of a video in which the object has been
+      detected. Expressed as a number of seconds as measured from the start of
+      the video, with fractions up to a microsecond precision, and with "s"
+      appended at the end.
+    xMax: The rightmost coordinate of the bounding box.
+    xMin: The leftmost coordinate of the bounding box.
+    yMax: The bottommost coordinate of the bounding box.
+    yMin: The topmost coordinate of the bounding box.
+  """
+
+  timeOffset = _messages.StringField(1)
+  xMax = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  xMin = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  yMax = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  yMin = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1beta1SchemaPredictionResult(_messages.Message):

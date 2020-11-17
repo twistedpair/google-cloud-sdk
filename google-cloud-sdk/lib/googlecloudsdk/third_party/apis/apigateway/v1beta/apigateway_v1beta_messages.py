@@ -327,7 +327,6 @@ class ApigatewayBinding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -371,10 +370,9 @@ class ApigatewayBinding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('ApigatewayExpr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('ApigatewayExpr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class ApigatewayCancelOperationRequest(_messages.Message):

@@ -47,9 +47,15 @@ class TaxonomiesClient(object):
   def Import(self, project, location, req_body):
     """Parses import args into the request."""
     parent = 'projects/' + project + '/locations/' + location
-    import_request = self.messages.DatacatalogProjectsLocationsTaxonomiesImportRequest(
-        parent=parent,
-        googleCloudDatacatalogV1beta1ImportTaxonomiesRequest=req_body,
-    )
+    if self.version_label == 'v1':
+      import_request = self.messages.DatacatalogProjectsLocationsTaxonomiesImportRequest(
+          parent=parent,
+          googleCloudDatacatalogV1ImportTaxonomiesRequest=req_body,
+      )
+    else:
+      import_request = self.messages.DatacatalogProjectsLocationsTaxonomiesImportRequest(
+          parent=parent,
+          googleCloudDatacatalogV1beta1ImportTaxonomiesRequest=req_body,
+      )
 
     return self.service.Import(import_request)

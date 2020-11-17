@@ -51,7 +51,6 @@ class AnthoseventsV1(base_api.BaseApiClient):
     self.namespaces_cloudpubsubsources = self.NamespacesCloudpubsubsourcesService(self)
     self.namespaces_cloudschedulersources = self.NamespacesCloudschedulersourcesService(self)
     self.namespaces_cloudstoragesources = self.NamespacesCloudstoragesourcesService(self)
-    self.namespaces_customresourcedefinitions = self.NamespacesCustomresourcedefinitionsService(self)
     self.namespaces_triggers = self.NamespacesTriggersService(self)
     self.namespaces = self.NamespacesService(self)
     self.project_serviceaccounts = self.ProjectServiceaccountsService(self)
@@ -645,6 +644,33 @@ class AnthoseventsV1(base_api.BaseApiClient):
       super(AnthoseventsV1.CustomresourcedefinitionsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a CustomResourceDefinition.
+
+      Args:
+        request: (AnthoseventsCustomresourcedefinitionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CustomResourceDefinition) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/apiextensions.k8s.io/v1/customresourcedefinitions/{customresourcedefinitionsId}',
+        http_method='GET',
+        method_id='anthosevents.customresourcedefinitions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='apis/apiextensions.k8s.io/v1/{+name}',
+        request_field='',
+        request_type_name='AnthoseventsCustomresourcedefinitionsGetRequest',
+        response_type_name='CustomResourceDefinition',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       r"""Rpc to list custom resource definitions.
@@ -1367,43 +1393,6 @@ class AnthoseventsV1(base_api.BaseApiClient):
         request_field='cloudStorageSource',
         request_type_name='AnthoseventsNamespacesCloudstoragesourcesReplaceCloudStorageSourceRequest',
         response_type_name='CloudStorageSource',
-        supports_download=False,
-    )
-
-  class NamespacesCustomresourcedefinitionsService(base_api.BaseApiService):
-    """Service class for the namespaces_customresourcedefinitions resource."""
-
-    _NAME = 'namespaces_customresourcedefinitions'
-
-    def __init__(self, client):
-      super(AnthoseventsV1.NamespacesCustomresourcedefinitionsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Rpc to get information about a CustomResourceDefinition.
-
-      Args:
-        request: (AnthoseventsNamespacesCustomresourcedefinitionsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CustomResourceDefinition) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='apis/apiextensions.k8s.io/v1/namespaces/{namespacesId}/customresourcedefinitions/{customresourcedefinitionsId}',
-        http_method='GET',
-        method_id='anthosevents.namespaces.customresourcedefinitions.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='apis/apiextensions.k8s.io/v1/{+name}',
-        request_field='',
-        request_type_name='AnthoseventsNamespacesCustomresourcedefinitionsGetRequest',
-        response_type_name='CustomResourceDefinition',
         supports_download=False,
     )
 

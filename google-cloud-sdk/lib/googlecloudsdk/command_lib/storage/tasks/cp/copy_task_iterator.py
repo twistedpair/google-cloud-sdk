@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
@@ -29,19 +30,29 @@ from googlecloudsdk.command_lib.storage.tasks.cp import copy_task_factory
 class CopyTaskIterator:
   """Iterates over each expanded source and creates an appropriate copy task."""
 
-  def __init__(self, source_name_iterator, destination_string):
+  def __init__(self,
+               source_name_iterator,
+               destination_string,
+               custom_md5_digest=None):
     """Initializes a CopyTaskIterator instance.
 
     Args:
       source_name_iterator (name_expansion.NameExpansionIterator):
         yields resource_reference.Resource objects with expanded source URLs.
       destination_string (str): The copy destination path/url.
+      custom_md5_digest (str|None): User-added MD5 hash output to send to server
+          for validating a single resource upload.
     """
     self._source_name_iterator = (
         plurality_checkable_iterator.PluralityCheckableIterator(
             source_name_iterator))
     self._multiple_sources = self._source_name_iterator.is_plural()
     self._destination_string = destination_string
+    self._custom_md5_digest = custom_md5_digest
+
+    if self._multiple_sources and self._custom_md5_digest:
+      raise ValueError('Received multiple objects to upload, but only one'
+                       'custom MD5 digest is allowed.')
 
   def __iter__(self):
     raw_destination = self._get_raw_destination()
@@ -50,6 +61,8 @@ class CopyTaskIterator:
       print('Copying {} to {}'.format(
           source.resource.storage_url.versionless_url_string,
           destination_resource.storage_url.versionless_url_string))
+      if self._custom_md5_digest:
+        source.resource.md5_hash = self._custom_md5_digest
       yield copy_task_factory.get_copy_task(source.resource,
                                             destination_resource)
 
@@ -128,7 +141,7 @@ class CopyTaskIterator:
   def _destination_is_container(self, destination):
     try:
       return destination.is_container()
-    except NotImplementedError:
+    except errors.ValueCannotBeDeterminedError:
       # Some resource classes are not clearly containers. In these cases we need
       # to use the storage_url attribute to infer how to treat them.
       destination_url = destination.storage_url

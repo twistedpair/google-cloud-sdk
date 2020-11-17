@@ -181,9 +181,9 @@ class AuthProvider(_messages.Message):
       JWT. See [OpenID Discovery](https://openid.net/specs/openid-connect-
       discovery-1_0.html#ProviderMetadata). Optional if the key set document:
       - can be retrieved from [OpenID
-      Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html of
-      the issuer. - can be inferred from the email domain of the issuer (e.g.
-      a Google service account). Example:
+      Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html)
+      of the issuer. - can be inferred from the email domain of the issuer
+      (e.g. a Google service account). Example:
       https://www.googleapis.com/oauth2/v1/certs
     jwtLocations: Defines the locations to extract the JWT. JWT locations can
       be either from HTTP headers or URL query parameters. The rule is that
@@ -416,7 +416,6 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -460,10 +459,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class ChangeReport(_messages.Message):

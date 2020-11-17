@@ -2046,7 +2046,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The update mask that applies to the resource. See the [FieldMask definition] (https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask) for more details.",
+                      "description": "Optional. The update mask that applies to the resource. See the [FieldMask definition] (https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask) for more details.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

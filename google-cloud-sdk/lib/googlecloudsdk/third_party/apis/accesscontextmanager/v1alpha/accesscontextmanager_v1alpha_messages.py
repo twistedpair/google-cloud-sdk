@@ -512,6 +512,10 @@ class ApiOperation(_messages.Message):
     actions: API actions to allow for the service specified by service_name
       field. A single ApiAction entry with wildcard `*` for `ApiAction.action`
       field will allow all actions for service specified in `service_name`.
+    methodSelectors: API methods or permissions to allow for the service
+      specified by `service_name` field. A single MethodSelector entry with
+      wildcard `*` for `MethodSelector.name` field will allow all methods or
+      permissions for service specified in `service_name`.
     serviceName: The API service that this ApiOperation relates to. An empty
       list of services is not allowed. Set this field to `*` to authorize
       access to all services. The actions field will be ignored if this field
@@ -519,7 +523,8 @@ class ApiOperation(_messages.Message):
   """
 
   actions = _messages.MessageField('ApiAction', 1, repeated=True)
-  serviceName = _messages.StringField(2)
+  methodSelectors = _messages.MessageField('MethodSelector', 2, repeated=True)
+  serviceName = _messages.StringField(3)
 
 
 class BasicLevel(_messages.Message):
@@ -730,11 +735,18 @@ class EgressFrom(_messages.Message):
     AllowedIdentityValueValuesEnum: Specifies the identities that are allowed
       through the EgressPolicy. Currently, only `ANY_IDENTITY` (everything is
       allowed) is supported.
+    IdentityTypeValueValuesEnum: Specifies the type of identities that are
+      allowed access from outside the perimeter.
 
   Fields:
     allowedIdentity: Specifies the identities that are allowed through the
       EgressPolicy. Currently, only `ANY_IDENTITY` (everything is allowed) is
       supported.
+    identities: A list of identities that are allowed access through this
+      [EgressPolicy]. Should be in the format of email address. The email
+      address should represent individual user or service account only.
+    identityType: Specifies the type of identities that are allowed access
+      from outside the perimeter.
   """
 
   class AllowedIdentityValueValuesEnum(_messages.Enum):
@@ -754,7 +766,27 @@ class EgressFrom(_messages.Message):
     ANY_USER = 2
     ANY_SERVICE_ACCOUNT = 3
 
+  class IdentityTypeValueValuesEnum(_messages.Enum):
+    r"""Specifies the type of identities that are allowed access from outside
+    the perimeter.
+
+    Values:
+      IDENTITY_TYPE_UNSPECIFIED: No blanket identity group specified.
+      ANY_IDENTITY: Authorize access from all identities outside the
+        perimeter.
+      ANY_USER_ACCOUNT: Authorize access from all human users outside the
+        perimeter.
+      ANY_SERVICE_ACCOUNT: Authorize access from all service accounts outside
+        the perimeter.
+    """
+    IDENTITY_TYPE_UNSPECIFIED = 0
+    ANY_IDENTITY = 1
+    ANY_USER_ACCOUNT = 2
+    ANY_SERVICE_ACCOUNT = 3
+
   allowedIdentity = _messages.EnumField('AllowedIdentityValueValuesEnum', 1)
+  identities = _messages.StringField(2, repeated=True)
+  identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 3)
 
 
 class EgressPolicy(_messages.Message):
@@ -882,6 +914,8 @@ class IngressFrom(_messages.Message):
       `ANY_SERVICE_ACCOUNT` (all service accounts), or
       `ALLOWED_IDENTITY_UNSPECIFIED` (only the specified emails in the
       `identities` field are able to access).
+    IdentityTypeValueValuesEnum: Specifies the type of identities that are
+      allowed access from outside the perimeter.
 
   Fields:
     allowedIdentity: Specifies the identities that are allowed access from
@@ -892,6 +926,8 @@ class IngressFrom(_messages.Message):
     identities: A list of identities that are allowed access through this
       ingress policy. Should be in the format of email address. The email
       address should represent individual user or service account only.
+    identityType: Specifies the type of identities that are allowed access
+      from outside the perimeter.
     sources: Sources that this ingress policy authorizes access from.
   """
 
@@ -915,9 +951,28 @@ class IngressFrom(_messages.Message):
     ANY_USER = 2
     ANY_SERVICE_ACCOUNT = 3
 
+  class IdentityTypeValueValuesEnum(_messages.Enum):
+    r"""Specifies the type of identities that are allowed access from outside
+    the perimeter.
+
+    Values:
+      IDENTITY_TYPE_UNSPECIFIED: No blanket identity group specified.
+      ANY_IDENTITY: Authorize access from all identities outside the
+        perimeter.
+      ANY_USER_ACCOUNT: Authorize access from all human users outside the
+        perimeter.
+      ANY_SERVICE_ACCOUNT: Authorize access from all service accounts outside
+        the perimeter.
+    """
+    IDENTITY_TYPE_UNSPECIFIED = 0
+    ANY_IDENTITY = 1
+    ANY_USER_ACCOUNT = 2
+    ANY_SERVICE_ACCOUNT = 3
+
   allowedIdentity = _messages.EnumField('AllowedIdentityValueValuesEnum', 1)
   identities = _messages.StringField(2, repeated=True)
-  sources = _messages.MessageField('IngressSource', 3, repeated=True)
+  identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 3)
+  sources = _messages.MessageField('IngressSource', 4, repeated=True)
 
 
 class IngressPolicy(_messages.Message):
@@ -976,9 +1031,16 @@ class IngressTo(_messages.Message):
   Fields:
     operations: A list of ApiOperations the sources specified in corresponding
       IngressFrom are allowed to perform in this ServicePerimeter.
+    resources: A list of resources, currently only projects in the form
+      `projects/`, that match this to stanza. A request matches if it contains
+      a resource in this list. If `*` is specified for resources, then this
+      IngressTo rule will authorize access to all resources inside the
+      perimeter, provided that the request also matches the `operations`
+      field.
   """
 
   operations = _messages.MessageField('ApiOperation', 1, repeated=True)
+  resources = _messages.StringField(2, repeated=True)
 
 
 class ListAccessLevelsResponse(_messages.Message):
@@ -1031,6 +1093,21 @@ class ListServicePerimetersResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   servicePerimeters = _messages.MessageField('ServicePerimeter', 2, repeated=True)
+
+
+class MethodSelector(_messages.Message):
+  r"""An allowed method or permission of a service specified in ApiOperation.
+
+  Fields:
+    method: Value for `method` should be a valid method name for the
+      corresponding `service_name` in ApiOperation. If `*` used as value for
+      `method`, then ALL methods and permissions are allowed.
+    permission: Value for `permission` should be a valid Cloud IAM permission
+      for the corresponding `service_name` in ApiOperation.
+  """
+
+  method = _messages.StringField(1)
+  permission = _messages.StringField(2)
 
 
 class Operation(_messages.Message):

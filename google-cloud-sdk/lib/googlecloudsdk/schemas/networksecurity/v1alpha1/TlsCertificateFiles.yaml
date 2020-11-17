@@ -30,7 +30,7 @@ properties:
       type: string
   certificatePath:
     description: |-
-      The path to the file that has the certificate containing the public key.
+      The path to the file that has the certificate containing public key.
     type: string
   privateKeyPath:
     description: The path to the file that has the private key.

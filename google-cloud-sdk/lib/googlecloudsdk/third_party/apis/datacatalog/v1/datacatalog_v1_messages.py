@@ -1208,10 +1208,12 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
+      DPMS: Dataproc Metastore - Managed Hive Metastore.
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
     CLOUD_PUBSUB = 2
+    DPMS = 3
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the entry. Only used for Entries with types in the
@@ -1683,10 +1685,12 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
       INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
+      DPMS: Dataproc Metastore - Managed Hive Metastore.
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
     CLOUD_PUBSUB = 2
+    DPMS = 3
 
   class SearchResultTypeValueValuesEnum(_messages.Enum):
     r"""Type of the search result. This field can be used to determine which

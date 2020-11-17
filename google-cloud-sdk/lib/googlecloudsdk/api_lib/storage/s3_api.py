@@ -24,7 +24,6 @@ import botocore
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.command_lib.storage import storage_url
-from googlecloudsdk.command_lib.storage import util
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -335,18 +334,19 @@ class S3Api(cloud_api.CloudApi):
     # TODO(b/160998556): Implement resumable upload.
     del progress_callback
 
-    md5_hash = util.get_hash_digest_from_file_stream(source_stream,
-                                                     util.HashAlgorithms.MD5)
+    if request_config is None:
+      request_config = cloud_api.RequestConfig()
 
     kwargs = {
         'Bucket': destination_resource.storage_url.bucket_name,
         'Key': destination_resource.storage_url.object_name,
         'Body': source_stream.read(),
-        'ContentMD5': md5_hash,
     }
-    if request_config and request_config.predefined_acl_string:
+    if request_config.predefined_acl_string:
       kwargs['ACL'] = _translate_predefined_acl_string_to_s3(
           request_config.predefined_acl_string)
+    if request_config.md5_hash:
+      kwargs['ContentMD5'] = request_config.md5_hash
 
     response = self.client.put_object(**kwargs)
     return _get_object_resource_from_s3_response(

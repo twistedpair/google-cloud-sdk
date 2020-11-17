@@ -41,7 +41,8 @@ def CreateBetaAssuredWorkload(display_name=None,
                               next_rotation_time=None,
                               rotation_period=None,
                               labels=None,
-                              etag=None):
+                              etag=None,
+                              provisioned_resources_parent=None):
   """Construct an Assured Workload message for Assured Workloads Beta API requests.
 
   Args:
@@ -56,6 +57,8 @@ def CreateBetaAssuredWorkload(display_name=None,
     labels: dict, dictionary of label keys and values of the Assured Workloads
       environment.
     etag: str, the etag of the Assured Workloads environment.
+    provisioned_resources_parent: str, parent of the provisioned projects,
+      for example: folders/{FOLDER_ID}
 
   Returns:
     A populated Assured Workloads message for the Assured Workloads Beta API.
@@ -103,6 +106,8 @@ def CreateBetaAssuredWorkload(display_name=None,
                                                    next_rotation_time,
                                                    rotation_period)
       workload.il4Settings = settings
+  if provisioned_resources_parent:
+    workload.provisionedResourcesParent = provisioned_resources_parent
   return workload
 
 

@@ -203,6 +203,11 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
     name: Optional. The resource name of the workload. Format:
       organizations/{organization}/locations/{location}/workloads/{workload}
       Read-only.
+    provisionedResourcesParent: Input only. The parent resource for the
+      resources managed by this Assured Workload. May be either an
+      organization or a folder. Must be the same or a child of the Workload
+      parent. If not specified all resources are created under the Workload
+      parent. Formats: folders/{folder_id} organizations/{organization_id}
     resources: Output only. The resources associated with this workload. These
       resources will be created when creating the workload. If any of the
       projects already exist, the workload creation will fail. Always read
@@ -260,7 +265,8 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
   il4Settings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadIL4Settings', 9)
   labels = _messages.MessageField('LabelsValue', 10)
   name = _messages.StringField(11)
-  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceInfo', 12, repeated=True)
+  provisionedResourcesParent = _messages.StringField(12)
+  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceInfo', 13, repeated=True)
 
 
 class GoogleCloudAssuredworkloadsV1WorkloadCJISSettings(_messages.Message):
@@ -441,6 +447,11 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     name: Optional. The resource name of the workload. Format:
       organizations/{organization}/locations/{location}/workloads/{workload}
       Read-only.
+    provisionedResourcesParent: Input only. The parent resource for the
+      resources managed by this Assured Workload. May be either an
+      organization or a folder. Must be the same or a child of the Workload
+      parent. If not specified all resources are created under the Workload
+      parent. Formats: folders/{folder_id} organizations/{organization_id}
     resources: Output only. The resources associated with this workload. These
       resources will be created when creating the workload. If any of the
       projects already exist, the workload creation will fail. Always read
@@ -498,7 +509,8 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
   il4Settings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadIL4Settings', 9)
   labels = _messages.MessageField('LabelsValue', 10)
   name = _messages.StringField(11)
-  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 12, repeated=True)
+  provisionedResourcesParent = _messages.StringField(12)
+  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 13, repeated=True)
 
 
 class GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings(_messages.Message):

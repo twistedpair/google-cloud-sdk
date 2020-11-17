@@ -23945,6 +23945,7 @@ class GuestOsFeature(_messages.Message):
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
+      GVNIC: <no description>
       MULTI_IP_SUBNET: <no description>
       SECURE_BOOT: <no description>
       SEV_CAPABLE: <no description>
@@ -23953,12 +23954,13 @@ class GuestOsFeature(_messages.Message):
       WINDOWS: <no description>
     """
     FEATURE_TYPE_UNSPECIFIED = 0
-    MULTI_IP_SUBNET = 1
-    SECURE_BOOT = 2
-    SEV_CAPABLE = 3
-    UEFI_COMPATIBLE = 4
-    VIRTIO_SCSI_MULTIQUEUE = 5
-    WINDOWS = 6
+    GVNIC = 1
+    MULTI_IP_SUBNET = 2
+    SECURE_BOOT = 3
+    SEV_CAPABLE = 4
+    UEFI_COMPATIBLE = 5
+    VIRTIO_SCSI_MULTIQUEUE = 6
+    WINDOWS = 7
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -32468,7 +32470,8 @@ class NetworkEndpointGroup(_messages.Message):
   r"""Represents a collection of network endpoints.  A network endpoint group
   (NEG) defines how a set of endpoints should be reached, whether they are
   reachable, and where they are located. For more information about using
-  NEGs, see  Setting up internet NEGs,  Setting up zonal NEGs, or  Setting up
+  NEGs, see  Setting up external HTTP(S) Load Balancing with internet NEGs,
+  Setting up zonal NEGs, or  Setting up external HTTP(S) Load Balancing with
   serverless NEGs. (== resource_for {$api_version}.networkEndpointGroups ==)
   (== resource_for {$api_version}.globalNetworkEndpointGroups ==) (==
   resource_for {$api_version}.regionNetworkEndpointGroups ==)
@@ -33266,6 +33269,10 @@ class NetworkEndpointWithHealthStatus(_messages.Message):
 class NetworkInterface(_messages.Message):
   r"""A network interface resource attached to an instance.
 
+  Enums:
+    NicTypeValueValuesEnum: The type of vNIC to be used on this interface.
+      This may be gVNIC or VirtioNet.
+
   Fields:
     accessConfigs: An array of configurations for this interface. Currently,
       only one access config, ONE_TO_ONE_NAT, is supported. If there are no
@@ -33295,6 +33302,8 @@ class NetworkInterface(_messages.Message):
     networkIP: An IPv4 internal IP address to assign to the instance for this
       network interface. If not specified by the user, an unused internal IP
       is assigned by the system.
+    nicType: The type of vNIC to be used on this interface. This may be gVNIC
+      or VirtioNet.
     subnetwork: The URL of the Subnetwork resource for this instance. If the
       network resource is in legacy mode, do not specify this field. If the
       network is in auto subnet mode, specifying the subnetwork is optional.
@@ -33305,6 +33314,19 @@ class NetworkInterface(_messages.Message):
       bnetworks/subnetwork  - regions/region/subnetworks/subnetwork
   """
 
+  class NicTypeValueValuesEnum(_messages.Enum):
+    r"""The type of vNIC to be used on this interface. This may be gVNIC or
+    VirtioNet.
+
+    Values:
+      GVNIC: <no description>
+      UNSPECIFIED_NIC_TYPE: <no description>
+      VIRTIO_NET: <no description>
+    """
+    GVNIC = 0
+    UNSPECIFIED_NIC_TYPE = 1
+    VIRTIO_NET = 2
+
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
   aliasIpRanges = _messages.MessageField('AliasIpRange', 2, repeated=True)
   fingerprint = _messages.BytesField(3)
@@ -33313,7 +33335,8 @@ class NetworkInterface(_messages.Message):
   name = _messages.StringField(6)
   network = _messages.StringField(7)
   networkIP = _messages.StringField(8)
-  subnetwork = _messages.StringField(9)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 9)
+  subnetwork = _messages.StringField(10)
 
 
 class NetworkList(_messages.Message):
@@ -33636,6 +33659,7 @@ class NodeGroup(_messages.Message):
       group undergoes maintenance. Set to one of: DEFAULT, RESTART_IN_PLACE,
       or MIGRATE_WITHIN_NODE_GROUP. The default value is DEFAULT. For more
       information, see  Maintenance policies.
+    maintenanceWindow: A NodeGroupMaintenanceWindow attribute.
     name: The name of the resource, provided by the client when initially
       creating the resource. The resource name must be 1-63 characters long,
       and comply with RFC1035. Specifically, the name must be 1-63 characters
@@ -33689,12 +33713,13 @@ class NodeGroup(_messages.Message):
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(6, default='compute#nodeGroup')
   maintenancePolicy = _messages.EnumField('MaintenancePolicyValueValuesEnum', 7)
-  name = _messages.StringField(8)
-  nodeTemplate = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  size = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  zone = _messages.StringField(13)
+  maintenanceWindow = _messages.MessageField('NodeGroupMaintenanceWindow', 8)
+  name = _messages.StringField(9)
+  nodeTemplate = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  size = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  zone = _messages.StringField(14)
 
 
 class NodeGroupAggregatedList(_messages.Message):
@@ -34016,6 +34041,23 @@ class NodeGroupList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class NodeGroupMaintenanceWindow(_messages.Message):
+  r"""Time window specified for daily maintenance operations. GCE's internal
+  maintenance will be performed within this window.
+
+  Fields:
+    maintenanceDuration: [Output only] A predetermined duration for the
+      window, automatically chosen to be the smallest possible in the given
+      scenario.
+    startTime: Start time of the window. This must be in UTC format that
+      resolves to one of 00:00, 04:00, 08:00, 12:00, 16:00, or 20:00. For
+      example, both 13:00-5 and 08:00 are valid.
+  """
+
+  maintenanceDuration = _messages.MessageField('Duration', 1)
+  startTime = _messages.StringField(2)
 
 
 class NodeGroupNode(_messages.Message):
@@ -42024,7 +42066,7 @@ class SecurityPolicyRule(_messages.Message):
     priority: An integer indicating the priority of a rule in the list. The
       priority must be a positive value between 0 and 2147483647. Rules are
       evaluated from highest to lowest priority where 0 is the highest
-      priority and 2147483647 is the lowest prority.
+      priority and 2147483647 is the lowest priority.
   """
 
   action = _messages.StringField(1)

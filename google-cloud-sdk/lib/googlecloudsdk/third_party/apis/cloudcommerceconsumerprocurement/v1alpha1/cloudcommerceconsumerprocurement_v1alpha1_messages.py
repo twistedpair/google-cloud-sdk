@@ -358,8 +358,8 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsPatch
     name: Output only. The resource name of the allocation. This field is of
       the form: `billingAccounts/{billing-account-id}/orders/{order-
       id}/orderAllocations/{order-allocation-id}`.
-    updateMask: The update mask that applies to the resource. See the
-      [FieldMask definition] (https://developers.google.com/protocol-
+    updateMask: Optional. The update mask that applies to the resource. See
+      the [FieldMask definition] (https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask) for more details.
   """
 

@@ -265,6 +265,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "provisionedResourcesParent": {
+          "description": "Input only. The parent resource for the resources managed by this Assured Workload. May be either an organization or a folder. Must be the same or a child of the Workload parent. If not specified all resources are created under the Workload parent. Formats: folders\/{folder_id} organizations\/{organization_id}",
+          "type": "string"
         }
       }
     },
@@ -493,6 +497,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "provisionedResourcesParent": {
+          "description": "Input only. The parent resource for the resources managed by this Assured Workload. May be either an organization or a folder. Must be the same or a child of the Workload parent. If not specified all resources are created under the Workload parent. Formats: folders\/{folder_id} organizations\/{organization_id}",
+          "type": "string"
         }
       }
     },

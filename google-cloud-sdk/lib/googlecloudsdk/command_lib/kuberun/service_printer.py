@@ -31,7 +31,7 @@ SERVICE_PRINTER_FORMAT = 'service'
 _INGRESS_UNSPECIFIED = '-'
 
 
-class ServicePrinter(k8s_object_printer.K8sObjectPrinter):
+class ServicePrinter(cp.CustomPrinterBase):
   """Prints the run Service in a custom human-readable format.
 
   Format specific to Cloud Run services. Only available on Cloud Run commands
@@ -54,21 +54,22 @@ class ServicePrinter(k8s_object_printer.K8sObjectPrinter):
     """Adds printers for the revision."""
     return cp.Lines([
         self._GetRevisionHeader(record),
-        self._GetLabels(record.template.labels),
+        k8s_object_printer.GetLabels(record.template.labels),
         revision_printer.RevisionPrinter().TransformSpec(record.template),
     ])
 
   def Transform(self, record):
     """Transform a service into the output structure of marker classes."""
     fmt = cp.Lines([
-        self._GetHeader(record),
-        self._GetLabels(record.labels), ' ',
+        k8s_object_printer.GetHeader(record),
+        k8s_object_printer.GetLabels(record.labels), ' ',
         cp.Section([
             traffic_printer.TransformTraffic(record),
-            cp.Labeled([('Ingress', self._GetIngress(record))]), ' ',
+            cp.Labeled([('Ingress', self._GetIngress(record))]),
+            ' ',
         ], max_column_width=60),
-        cp.Labeled([(self._GetLastUpdated(record),
+        cp.Labeled([(k8s_object_printer.GetLastUpdated(record),
                      self._RevisionPrinters(record))]),
-        self._GetReadyMessage(record)
+        k8s_object_printer.GetReadyMessage(record)
     ])
     return fmt

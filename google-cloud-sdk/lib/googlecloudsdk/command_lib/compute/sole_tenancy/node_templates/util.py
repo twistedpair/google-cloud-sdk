@@ -32,10 +32,7 @@ def _ParseNodeAffinityLabels(affinity_labels, messages):
 
 def CreateNodeTemplate(node_template_ref,
                        args,
-                       project,
-                       region,
                        messages,
-                       resource_parser,
                        enable_disk=False,
                        enable_accelerator=False):
   """Creates a Node Template message from args."""
@@ -76,9 +73,7 @@ def CreateNodeTemplate(node_template_ref,
     node_template.cpuOvercommitType = overcommit_type
 
   if enable_accelerator:
-    node_template.accelerators = GetAccelerators(args, messages,
-                                                 resource_parser, project,
-                                                 region)
+    node_template.accelerators = GetAccelerators(args, messages)
 
   server_binding_flag = flags.GetServerBindingMapperFlag(messages)
   server_binding = messages.ServerBinding(
@@ -88,14 +83,11 @@ def CreateNodeTemplate(node_template_ref,
   return node_template
 
 
-def GetAccelerators(args, messages, resource_parser, project, region):
+def GetAccelerators(args, messages):
   """Returns list of messages with accelerators for the instance."""
   if args.accelerator:
-    accelerator_type_name = args.accelerator['type']
-    accelerator_type = ParseAcceleratorType(
-        accelerator_type_name, resource_parser, project, region)
-    # Accelerator count is default to 1.
-    accelerator_count = int(args.accelerator.get('count', 1))
+    accelerator_type = args.accelerator['type']
+    accelerator_count = int(args.accelerator.get('count', 4))
     return CreateAcceleratorConfigMessages(messages, accelerator_type,
                                            accelerator_count)
   return []

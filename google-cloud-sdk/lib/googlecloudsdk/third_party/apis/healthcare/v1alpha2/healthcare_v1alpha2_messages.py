@@ -42,6 +42,26 @@ class AnalyzeEntitiesResponse(_messages.Message):
   relationships = _messages.MessageField('EntityMentionRelationship', 3, repeated=True)
 
 
+class AnnotationConfig(_messages.Message):
+  r"""Specifies how to store annotations during de-identification operations.
+
+  Fields:
+    annotationStoreName: The name of the annotation store, in the form `projec
+      ts/{project_id}/locations/{location_id}/datasets/{dataset_id}/annotation
+      Stores/{annotation_store_id}`. * The destination annotation store must
+      be in the same project and location as the source data. De-identifying
+      data across multiple projects or locations is not supported. * The
+      destination annotation store must exist when using DeidentifyDicomStore
+      or DeidentifyFhirStore. DeidentifyDataset automatically creates the
+      destination annotation store.
+    storeQuote: If set to true, sensitive text is included in
+      SensitiveTextAnnotation of Annotation.
+  """
+
+  annotationStoreName = _messages.StringField(1)
+  storeQuote = _messages.BooleanField(2)
+
+
 class AnnotationStore(_messages.Message):
   r"""An Annotation store that can store annotation resources such as labels
   and tags for text, image and audio.
@@ -247,7 +267,6 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -291,10 +310,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class BlobStorageInfo(_messages.Message):
@@ -776,6 +794,9 @@ class DeidentifyConfig(_messages.Message):
   media type or subtype. Configs are applied in a nested manner at runtime.
 
   Fields:
+    annotation: Configures how annotations (such as the location and infoTypes
+      of sensitive information) are created during de-identification. If
+      unspecified, no annotations are created.
     dicom: Configures de-id of application/DICOM content.
     fhir: Configures de-id of application/FHIR content.
     image: Configures the de-identification of image pixels in the
@@ -783,10 +804,11 @@ class DeidentifyConfig(_messages.Message):
     text: Configures the de-identification of text in `source_dataset`.
   """
 
-  dicom = _messages.MessageField('DicomConfig', 1)
-  fhir = _messages.MessageField('FhirConfig', 2)
-  image = _messages.MessageField('ImageConfig', 3)
-  text = _messages.MessageField('TextConfig', 4)
+  annotation = _messages.MessageField('AnnotationConfig', 1)
+  dicom = _messages.MessageField('DicomConfig', 2)
+  fhir = _messages.MessageField('FhirConfig', 3)
+  image = _messages.MessageField('ImageConfig', 4)
+  text = _messages.MessageField('TextConfig', 5)
 
 
 class DeidentifyDatasetRequest(_messages.Message):

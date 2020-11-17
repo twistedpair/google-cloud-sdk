@@ -303,6 +303,11 @@
         "gkeCluster": {
           "description": "Optional. If this Membership is a Kubernetes API server hosted on GKE, this field will be populated and contain GKE-specific information.",
           "$ref": "GkeCluster"
+        },
+        "kubernetesMetadata": {
+          "description": "Output only. For Memberships that point to Kubernetes Endpoints, this field provides useful metadata.",
+          "readOnly": true,
+          "$ref": "KubernetesMetadata"
         }
       }
     },
@@ -314,6 +319,47 @@
         "resourceLink": {
           "description": "Immutable. Self-link of the GCP resource for the GKE cluster. For example: \/\/container.googleapis.com\/projects\/my-project\/locations\/us-west1-a\/clusters\/my-cluster Using \"zones\" instead of \"locations\" is also valid. It can be at the most 1000 characters in length.",
           "type": "string"
+        }
+      }
+    },
+    "KubernetesMetadata": {
+      "id": "KubernetesMetadata",
+      "description": "KubernetesMetadata provides informational metadata for Memberships that are created from Kubernetes Endpoints (currently, these are equivalent to Kubernetes clusters).",
+      "type": "object",
+      "properties": {
+        "kubernetesApiServerVersion": {
+          "description": "Output only. Kubernetes API server version string as reported by '\/version'.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "nodeProviderId": {
+          "description": "Output only. Node providerID as reported by the first node in the list of nodes on the Kubernetes endpoint. It should be noted that some Kubernetes platforms (like GKE-on-GCP) support zero-node clusters. For these platforms, the node_count will be zero and the node_provider_id will be empty.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "nodeCount": {
+          "description": "Output only. Node count as reported by Kubernetes nodes resources.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "vcpuCount": {
+          "description": "Output only. vCPU count as reported by Kubernetes nodes resources.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "memoryMb": {
+          "description": "Output only. The total memory capacity as reported by the sum of all Kubernetes nodes resources, defined in MB.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "updateTime": {
+          "description": "Output only. The time at which these details were last updated. This update_time is different from the Membership-level update_time since EndpointDetails are updated internally for API consumers.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -507,9 +553,6 @@
         "condition": {
           "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "$ref": "Expr"
-        },
-        "bindingId": {
-          "type": "string"
         }
       }
     },

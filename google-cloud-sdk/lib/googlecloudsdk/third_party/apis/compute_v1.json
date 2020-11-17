@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20201030",
+ "revision": "20201106",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -6176,6 +6176,7 @@
      "description": "The ID of a supported feature. Read  Enabling guest operating system features to see a list of available options.",
      "enum": [
       "FEATURE_TYPE_UNSPECIFIED",
+      "GVNIC",
       "MULTI_IP_SUBNET",
       "SECURE_BOOT",
       "SEV_CAPABLE",
@@ -6184,6 +6185,7 @@
       "WINDOWS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -13468,7 +13470,7 @@
   "NetworkEndpointGroup": {
    "id": "NetworkEndpointGroup",
    "type": "object",
-   "description": "Represents a collection of network endpoints.\n\nA network endpoint group (NEG) defines how a set of endpoints should be reached, whether they are reachable, and where they are located. For more information about using NEGs, see  Setting up internet NEGs,  Setting up zonal NEGs, or  Setting up serverless NEGs. (== resource_for {$api_version}.networkEndpointGroups ==) (== resource_for {$api_version}.globalNetworkEndpointGroups ==) (== resource_for {$api_version}.regionNetworkEndpointGroups ==)",
+   "description": "Represents a collection of network endpoints.\n\nA network endpoint group (NEG) defines how a set of endpoints should be reached, whether they are reachable, and where they are located. For more information about using NEGs, see  Setting up external HTTP(S) Load Balancing with internet NEGs,  Setting up zonal NEGs, or  Setting up external HTTP(S) Load Balancing with serverless NEGs. (== resource_for {$api_version}.networkEndpointGroups ==) (== resource_for {$api_version}.globalNetworkEndpointGroups ==) (== resource_for {$api_version}.regionNetworkEndpointGroups ==)",
    "properties": {
     "annotations": {
      "type": "object",
@@ -14167,6 +14169,20 @@
      "type": "string",
      "description": "An IPv4 internal IP address to assign to the instance for this network interface. If not specified by the user, an unused internal IP is assigned by the system."
     },
+    "nicType": {
+     "type": "string",
+     "description": "The type of vNIC to be used on this interface. This may be gVNIC or VirtioNet.",
+     "enum": [
+      "GVNIC",
+      "UNSPECIFIED_NIC_TYPE",
+      "VIRTIO_NET"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
     "subnetwork": {
      "type": "string",
      "description": "The URL of the Subnetwork resource for this instance. If the network resource is in legacy mode, do not specify this field. If the network is in auto subnet mode, specifying the subnetwork is optional. If the network is in custom subnet mode, specifying the subnetwork is required. If you specify this field, you can specify the subnetwork as a full or partial URL. For example, the following are all valid URLs:  \n- https://www.googleapis.com/compute/v1/projects/project/regions/region/subnetworks/subnetwork \n- regions/region/subnetworks/subnetwork"
@@ -14460,6 +14476,9 @@
       "",
       ""
      ]
+    },
+    "maintenanceWindow": {
+     "$ref": "NodeGroupMaintenanceWindow"
     },
     "name": {
      "type": "string",
@@ -14767,6 +14786,21 @@
        "description": "[Output Only] A human-readable description of the warning code."
       }
      }
+    }
+   }
+  },
+  "NodeGroupMaintenanceWindow": {
+   "id": "NodeGroupMaintenanceWindow",
+   "type": "object",
+   "description": "Time window specified for daily maintenance operations. GCE's internal maintenance will be performed within this window.",
+   "properties": {
+    "maintenanceDuration": {
+     "$ref": "Duration",
+     "description": "[Output only] A predetermined duration for the window, automatically chosen to be the smallest possible in the given scenario."
+    },
+    "startTime": {
+     "type": "string",
+     "description": "Start time of the window. This must be in UTC format that resolves to one of 00:00, 04:00, 08:00, 12:00, 16:00, or 20:00. For example, both 13:00-5 and 08:00 are valid."
     }
    }
   },
@@ -21887,7 +21921,7 @@
     },
     "priority": {
      "type": "integer",
-     "description": "An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest prority.",
+     "description": "An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest priority.",
      "format": "int32"
     }
    }
@@ -48919,7 +48953,7 @@
      "id": "compute.securityPolicies.patch",
      "path": "projects/{project}/global/securityPolicies/{securityPolicy}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified policy with the data included in the request.",
+     "description": "Patches the specified policy with the data included in the request. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.",
      "parameters": {
       "project": {
        "type": "string",

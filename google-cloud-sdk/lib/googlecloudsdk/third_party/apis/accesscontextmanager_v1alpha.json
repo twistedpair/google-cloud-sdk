@@ -636,6 +636,22 @@
           "items": {
             "type": "string"
           }
+        },
+        "identityType": {
+          "description": "Specifies the type of identities that are allowed access from outside the perimeter.",
+          "type": "string",
+          "enumDescriptions": [
+            "No blanket identity group specified.",
+            "Authorize access from all identities outside the perimeter.",
+            "Authorize access from all human users outside the perimeter.",
+            "Authorize access from all service accounts outside the perimeter."
+          ],
+          "enum": [
+            "IDENTITY_TYPE_UNSPECIFIED",
+            "ANY_IDENTITY",
+            "ANY_USER_ACCOUNT",
+            "ANY_SERVICE_ACCOUNT"
+          ]
         }
       }
     },
@@ -665,6 +681,13 @@
           "items": {
             "$ref": "ApiOperation"
           }
+        },
+        "resources": {
+          "description": "A list of resources, currently only projects in the form `projects\/`, that match this to stanza. A request matches if it contains a resource in this list. If `*` is specified for resources, then this IngressTo rule will authorize access to all resources inside the perimeter, provided that the request also matches the `operations` field.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -682,6 +705,13 @@
           "type": "array",
           "items": {
             "$ref": "ApiAction"
+          }
+        },
+        "methodSelectors": {
+          "description": "API methods or permissions to allow for the service specified by `service_name` field. A single MethodSelector entry with wildcard `*` for `MethodSelector.name` field will allow all methods or permissions for service specified in `service_name`.",
+          "type": "array",
+          "items": {
+            "$ref": "MethodSelector"
           }
         }
       }
@@ -707,6 +737,21 @@
         },
         "action": {
           "description": "The API method name or Cloud IAM permission name to allow. If `METHOD` is chosen for `action_type`, then a valid method name for the corresponding `service_name` in ApiOperation must be provided (e.g. method name `TableDataService.List` for the service `bigquery.googelapis.com`). If `PERMISSION` is chosen for `action_type`, then a valid Cloud IAM permission for the corresponding `service_name` in ApiOperation must be provided (e.g. `bigquery.jobs.update` for the service `bigquery.googleapis.com`). If `action_type` is not set or set to `ACTION_TYPE_UNSPECIFIED`, and action is `*`, then ALL actions are allowed.",
+          "type": "string"
+        }
+      }
+    },
+    "MethodSelector": {
+      "id": "MethodSelector",
+      "description": "An allowed method or permission of a service specified in ApiOperation.",
+      "type": "object",
+      "properties": {
+        "method": {
+          "description": "Value for `method` should be a valid method name for the corresponding `service_name` in ApiOperation. If `*` used as value for `method`, then ALL methods and permissions are allowed.",
+          "type": "string"
+        },
+        "permission": {
+          "description": "Value for `permission` should be a valid Cloud IAM permission for the corresponding `service_name` in ApiOperation.",
           "type": "string"
         }
       }
@@ -744,6 +789,29 @@
             "ALLOWED_IDENTITY_UNSPECIFIED",
             "ANY_IDENTITY",
             "ANY_USER",
+            "ANY_SERVICE_ACCOUNT"
+          ]
+        },
+        "identities": {
+          "description": "A list of identities that are allowed access through this [EgressPolicy]. Should be in the format of email address. The email address should represent individual user or service account only.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "identityType": {
+          "description": "Specifies the type of identities that are allowed access from outside the perimeter.",
+          "type": "string",
+          "enumDescriptions": [
+            "No blanket identity group specified.",
+            "Authorize access from all identities outside the perimeter.",
+            "Authorize access from all human users outside the perimeter.",
+            "Authorize access from all service accounts outside the perimeter."
+          ],
+          "enum": [
+            "IDENTITY_TYPE_UNSPECIFIED",
+            "ANY_IDENTITY",
+            "ANY_USER_ACCOUNT",
             "ANY_SERVICE_ACCOUNT"
           ]
         }

@@ -3720,6 +3720,7 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
 
   Fields:
     createTime: Timestamp when finding was detected.
+    findingId: The unique finding id.
     infoType: The type of content that might have been found. Provided if
       `excluded_types` is false.
     jobCreateTime: Time the job started that produced this finding.
@@ -3798,17 +3799,18 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 2)
-  jobCreateTime = _messages.StringField(3)
-  jobName = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  likelihood = _messages.EnumField('LikelihoodValueValuesEnum', 6)
-  location = _messages.MessageField('GooglePrivacyDlpV2Location', 7)
-  name = _messages.StringField(8)
-  quote = _messages.StringField(9)
-  quoteInfo = _messages.MessageField('GooglePrivacyDlpV2QuoteInfo', 10)
-  resourceName = _messages.StringField(11)
-  triggerName = _messages.StringField(12)
+  findingId = _messages.StringField(2)
+  infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 3)
+  jobCreateTime = _messages.StringField(4)
+  jobName = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  likelihood = _messages.EnumField('LikelihoodValueValuesEnum', 7)
+  location = _messages.MessageField('GooglePrivacyDlpV2Location', 8)
+  name = _messages.StringField(9)
+  quote = _messages.StringField(10)
+  quoteInfo = _messages.MessageField('GooglePrivacyDlpV2QuoteInfo', 11)
+  resourceName = _messages.StringField(12)
+  triggerName = _messages.StringField(13)
 
 
 class GooglePrivacyDlpV2FindingLimits(_messages.Message):

@@ -21,6 +21,8 @@ from __future__ import unicode_literals
 import collections
 import json
 
+from googlecloudsdk.command_lib.storage import errors
+
 
 class Resource(object):
   """Base class for a reference to one fully expanded iterator result.
@@ -219,8 +221,19 @@ class PrefixResource(Resource):
 
 
 class FileObjectResource(Resource):
-  """Wrapper for a filesystem file."""
+  """Wrapper for a filesystem file.
+
+  Attributes:
+    TYPE_STRING (str): String representing the resource's content type.
+    storage_url (StorageUrl): A StorageUrl object representing the resource.
+    md5_hash (bytes): Base64-encoded digest of md5 hash.
+  """
   TYPE_STRING = 'file_object'
+
+  def __init__(self, storage_url_object, md5_hash=None):
+    """Initializes resource. Args are a subset of attributes."""
+    super(FileObjectResource, self).__init__(storage_url_object)
+    self.md5_hash = md5_hash
 
   def is_container(self):
     return False
@@ -237,3 +250,7 @@ class FileDirectoryResource(Resource):
 class UnknownResource(Resource):
   """Represents a resource that may or may not exist."""
   TYPE_STRING = 'unknown'
+
+  def is_container(self):
+    raise errors.ValueCannotBeDeterminedError(
+        'Unknown whether or not UnknownResource is a container.')

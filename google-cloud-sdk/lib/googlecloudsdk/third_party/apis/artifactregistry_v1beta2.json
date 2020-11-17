@@ -640,60 +640,6 @@
         }
       }
     },
-    "ListDockerImagesResponse": {
-      "id": "ListDockerImagesResponse",
-      "description": "The response from listing docker images.",
-      "type": "object",
-      "properties": {
-        "dockerImages": {
-          "description": "The docker images returned.",
-          "type": "array",
-          "items": {
-            "$ref": "DockerImage"
-          }
-        },
-        "nextPageToken": {
-          "description": "The token to retrieve the next page of artifacts, or empty if there are no more artifacts to return.",
-          "type": "string"
-        }
-      }
-    },
-    "DockerImage": {
-      "id": "DockerImage",
-      "description": "DockerImage represents a docker artifact.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Required. registry_location, project_id, repository_name and image id forms a unique image name:`projects\/\/locations\/\/repository\/\/dockerimages\/`. For example, \"projects\/test-project\/locations\/us-west4\/repositories\/test-repo\/dockerimages\/ nginx@sha256:e9954c1fc875017be1c3e36eca16be2d9e9bccc4bf072163515467d6a823c7cf\", where \"us-west4\" is the registry_location, \"test-project\" is the project_id, \"test-repo\" is the repository_name and \"nginx@sha256:e9954c1fc875017be1c3e36eca16be2d9e9bccc4bf072163515467d6a823c7cf\" is the image's digest.",
-          "type": "string"
-        },
-        "uri": {
-          "description": "Required. URL to access the image. Example: us-west4-docker.pkg.dev\/test-project\/test-repo\/nginx@sha256:e9954c1fc875017be1c3e36eca16be2d9e9bccc4bf072163515467d6a823c7cf",
-          "type": "string"
-        },
-        "tags": {
-          "description": "Tags attached to this image.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "imageSizeBytes": {
-          "description": "Calculated size of the image.",
-          "type": "string",
-          "format": "int64"
-        },
-        "uploadTime": {
-          "description": "Time the image was uploaded.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "mediaType": {
-          "description": "Media type of this image, e.g. \"application\/vnd.docker.distribution.manifest.v2+json\".",
-          "type": "string"
-        }
-      }
-    },
     "GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsResponse": {
       "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsResponse",
       "description": "The response message from importing artifacts.",
@@ -1626,47 +1572,6 @@
                         "https://www.googleapis.com/auth/cloud-platform.read-only"
                       ],
                       "description": "Gets a file."
-                    }
-                  }
-                },
-                "dockerimages": {
-                  "methods": {
-                    "list": {
-                      "id": "artifactregistry.projects.locations.repositories.dockerimages.list",
-                      "path": "v1beta2/{+parent}/dockerimages",
-                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/dockerimages",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The name of the parent resource whose docker images will be listed.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The maximum number of artifacts to return.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "The next_page_token value returned from a previous list request, if any.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListDockerImagesResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform",
-                        "https://www.googleapis.com/auth/cloud-platform.read-only"
-                      ],
-                      "description": "Lists docker images."
                     }
                   }
                 }

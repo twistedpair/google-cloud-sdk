@@ -12,7 +12,7 @@ class StorageV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = 'https://storage.googleapis.com/storage/v1/'
-  MTLS_BASE_URL = ''
+  MTLS_BASE_URL = 'https://storage.mtls.googleapis.com/storage/v1/'
 
   _PACKAGE = 'storage'
   _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only', 'https://www.googleapis.com/auth/devstorage.full_control', 'https://www.googleapis.com/auth/devstorage.read_only', 'https://www.googleapis.com/auth/devstorage.read_write']

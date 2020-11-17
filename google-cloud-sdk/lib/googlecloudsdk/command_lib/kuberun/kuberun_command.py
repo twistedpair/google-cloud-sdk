@@ -65,8 +65,10 @@ class KubeRunCommand(base.BinaryBackedCommand):
     """Returns the supported kuberun command including all command groups."""
     pass
 
+  @abc.abstractmethod
   def OperationResponseHandler(self, response, args):
-    return self._DefaultOperationResponseHandler(response)
+    """Process the result of the operation."""
+    pass
 
   def CommandExecutor(self):
     return kuberuncli.KubeRunCli()
@@ -116,6 +118,20 @@ class KubeRunStreamingCommand(KubeRunCommand):
 
   def CommandExecutor(self):
     return kuberuncli.KubeRunStreamingCli()
+
+  def OperationResponseHandler(self, response, args):
+    if response.failed:
+      if response.stderr:
+        log.error(response.stderr)
+      raise exceptions.Error('Command execution failed')
+
+    if response.stderr:
+      log.status.Print(response.stderr)
+
+    if response.stdout:
+      log.Print(response.stdout)
+
+    return response.stdout
 
 
 class KubeRunCommandWithOutput(KubeRunCommand):

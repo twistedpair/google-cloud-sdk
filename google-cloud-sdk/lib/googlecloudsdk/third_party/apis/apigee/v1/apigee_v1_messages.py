@@ -879,6 +879,8 @@ class ApigeeOrganizationsDevelopersListRequest(_messages.Message):
   r"""A ApigeeOrganizationsDevelopersListRequest object.
 
   Fields:
+    app: Optional. List only Developers that are associated with the app. Note
+      that start_key, count are not applicable for this filter criteria.
     count: Optional. Number of developers to return in the API call. Use with
       the `startKey` parameter to provide more targeted filtering. The limit
       is 1000.
@@ -898,12 +900,13 @@ class ApigeeOrganizationsDevelopersListRequest(_messages.Message):
       fezzik@example.com buttercup@example.com ```
   """
 
-  count = _messages.IntegerField(1)
-  expand = _messages.BooleanField(2)
-  ids = _messages.StringField(3)
-  includeCompany = _messages.BooleanField(4)
-  parent = _messages.StringField(5, required=True)
-  startKey = _messages.StringField(6)
+  app = _messages.StringField(1)
+  count = _messages.IntegerField(2)
+  expand = _messages.BooleanField(3)
+  ids = _messages.StringField(4)
+  includeCompany = _messages.BooleanField(5)
+  parent = _messages.StringField(6, required=True)
+  startKey = _messages.StringField(7)
 
 
 class ApigeeOrganizationsDevelopersSetDeveloperStatusRequest(_messages.Message):
@@ -2181,6 +2184,135 @@ class ApigeeOrganizationsGetSyncAuthorizationRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class ApigeeOrganizationsHostQueriesCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsHostQueriesCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1Query: A GoogleCloudApigeeV1Query resource to be passed
+      as the request body.
+    parent: Required. The parent resource name. Must be of the form
+      `organizations/{org}`.
+  """
+
+  googleCloudApigeeV1Query = _messages.MessageField('GoogleCloudApigeeV1Query', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsHostQueriesGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsHostQueriesGetRequest object.
+
+  Fields:
+    name: Required. Name of the asynchronous query to get. Must be of the form
+      `organizations/{org}/queries/{queryId}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsHostQueriesGetResultRequest(_messages.Message):
+  r"""A ApigeeOrganizationsHostQueriesGetResultRequest object.
+
+  Fields:
+    name: Required. Name of the asynchronous query result to get. Must be of
+      the form `organizations/{org}/queries/{queryId}/result`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsHostQueriesGetResultViewRequest(_messages.Message):
+  r"""A ApigeeOrganizationsHostQueriesGetResultViewRequest object.
+
+  Fields:
+    name: Required. Name of the asynchronous query result view to get. Must be
+      of the form `organizations/{org}/queries/{queryId}/resultView`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsHostQueriesListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsHostQueriesListRequest object.
+
+  Fields:
+    dataset: Filter response list by dataset. Example: `api`, `mint`
+    envgroupHostname: Required. Filter response list by hostname.
+    from_: Filter response list by returning asynchronous queries that created
+      after this date time. Time must be in ISO date-time format like
+      '2011-12-03T10:15:30Z'.
+    inclQueriesWithoutReport: Flag to include asynchronous queries that don't
+      have a report denifition.
+    parent: Required. The parent resource name. Must be of the form
+      `organizations/{org}`.
+    status: Filter response list by asynchronous query status.
+    submittedBy: Filter response list by user who submitted queries.
+    to: Filter response list by returning asynchronous queries that created
+      before this date time. Time must be in ISO date-time format like
+      '2011-12-03T10:16:30Z'.
+  """
+
+  dataset = _messages.StringField(1)
+  envgroupHostname = _messages.StringField(2)
+  from_ = _messages.StringField(3)
+  inclQueriesWithoutReport = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  status = _messages.StringField(6)
+  submittedBy = _messages.StringField(7)
+  to = _messages.StringField(8)
+
+
+class ApigeeOrganizationsHostStatsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsHostStatsGetRequest object.
+
+  Fields:
+    accuracy: Legacy field: not used anymore.
+    envgroupHostname: Required. The hostname for which the interactive query
+      will be executed.
+    filter: Enables drill-down on specific dimension values.
+    limit: This parameter is used to limit the number of result items. Default
+      and the max value is 14400.
+    name: Required. The resource name for which the interactive query will be
+      executed. Must be of the form
+      `organizations/{organization_id}/stats/{dimensions}`. Dimensions let you
+      view metrics in meaningful groupings. E.g. apiproxy, target_host. The
+      value of dimensions should be comma separated list as shown below
+      `organizations/{org}/stats/apiproxy,request_verb`
+    offset: Use offset with limit to enable pagination of results. For
+      example, to display results 11-20, set limit to '10' and offset to '10'.
+    realtime: Legacy field: not used anymore.
+    select: The select parameter contains a comma separated list of metrics.
+      E.g. sum(message_count),sum(error_count)
+    sort: This parameter specifies if the sort order should be ascending or
+      descending Supported values are DESC and ASC.
+    sortby: Comma separated list of columns to sort the final result.
+    timeRange: Time interval for the interactive query. Time range is
+      specified as start~end E.g. 04/15/2017 00:00~05/15/2017 23:59
+    timeUnit: A value of second, minute, hour, day, week, month. Time Unit
+      specifies the granularity of metrics returned.
+    topk: Take 'top k' results from results, for example, to return the top 5
+      results 'topk=5'.
+    tsAscending: Lists timestamps in ascending order if set to true. Recommend
+      setting this value to true if you are using sortby with sort=DESC.
+    tzo: This parameters contains the timezone offset value.
+  """
+
+  accuracy = _messages.StringField(1)
+  envgroupHostname = _messages.StringField(2)
+  filter = _messages.StringField(3)
+  limit = _messages.StringField(4)
+  name = _messages.StringField(5, required=True)
+  offset = _messages.StringField(6)
+  realtime = _messages.BooleanField(7)
+  select = _messages.StringField(8)
+  sort = _messages.StringField(9)
+  sortby = _messages.StringField(10)
+  timeRange = _messages.StringField(11)
+  timeUnit = _messages.StringField(12)
+  topk = _messages.StringField(13)
+  tsAscending = _messages.BooleanField(14)
+  tzo = _messages.StringField(15)
+
+
 class ApigeeOrganizationsInstancesAttachmentsCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsInstancesAttachmentsCreateRequest object.
 
@@ -2391,6 +2523,58 @@ class ApigeeOrganizationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class ApigeeOrganizationsOptimizedHostStatsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsOptimizedHostStatsGetRequest object.
+
+  Fields:
+    accuracy: Legacy field: not used anymore.
+    envgroupHostname: Required. The hostname for which the interactive query
+      will be executed.
+    filter: Enables drill-down on specific dimension values.
+    limit: This parameter is used to limit the number of result items. Default
+      and the max value is 14400.
+    name: Required. The resource name for which the interactive query will be
+      executed. Must be of the form
+      `organizations/{organization_id}/stats/{dimensions}`. Dimensions let you
+      view metrics in meaningful groupings. E.g. apiproxy, target_host. The
+      value of dimensions should be comma separated list as shown below
+      `organizations/{org}/stats/apiproxy,request_verb`
+    offset: Use offset with limit to enable pagination of results. For
+      example, to display results 11-20, set limit to '10' and offset to '10'.
+    realtime: Legacy field: not used anymore.
+    select: Required. The select parameter contains a comma separated list of
+      metrics. E.g. sum(message_count),sum(error_count)
+    sort: This parameter specifies if the sort order should be ascending or
+      descending Supported values are DESC and ASC.
+    sortby: Comma separated list of columns to sort the final result.
+    timeRange: Required. Time interval for the interactive query. Time range
+      is specified as start~end. E.g 04/15/2017 00:00~05/15/2017 23:59.
+    timeUnit: A value of second, minute, hour, day, week, month. Time Unit
+      specifies the granularity of metrics returned.
+    topk: Take 'top k' results from results, for example, to return the top 5
+      results 'topk=5'.
+    tsAscending: Lists timestamps in ascending order if set to true. Recommend
+      setting this value to true if you are using sortby with sort=DESC.
+    tzo: This parameters contains the timezone offset value.
+  """
+
+  accuracy = _messages.StringField(1)
+  envgroupHostname = _messages.StringField(2)
+  filter = _messages.StringField(3)
+  limit = _messages.StringField(4)
+  name = _messages.StringField(5, required=True)
+  offset = _messages.StringField(6)
+  realtime = _messages.BooleanField(7)
+  select = _messages.StringField(8)
+  sort = _messages.StringField(9)
+  sortby = _messages.StringField(10)
+  timeRange = _messages.StringField(11)
+  timeUnit = _messages.StringField(12)
+  topk = _messages.StringField(13)
+  tsAscending = _messages.BooleanField(14)
+  tzo = _messages.StringField(15)
 
 
 class ApigeeOrganizationsReportsCreateRequest(_messages.Message):
@@ -3156,6 +3340,8 @@ class GoogleCloudApigeeV1AsyncQuery(_messages.Message):
 
   Fields:
     created: Creation time of the query.
+    envgroupHostname: Hostname is available only when query is executed at
+      host level.
     error: Error is set when query fails.
     executionTime: ExecutionTime is available only after the query is
       completed.
@@ -3168,23 +3354,26 @@ class GoogleCloudApigeeV1AsyncQuery(_messages.Message):
       completed.
     resultRows: ResultRows is available only after the query is completed.
     self: Self link of the query. Example: `/organizations/myorg/environments/
-      myenv/queries/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd`
+      myenv/queries/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd` or following format
+      if query is running at host level:
+      `/organizations/myorg/hostQueries/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd`
     state: Query state could be "enqueued", "running", "completed", "failed".
     updated: Last updated timestamp for the query.
   """
 
   created = _messages.StringField(1)
-  error = _messages.StringField(2)
-  executionTime = _messages.StringField(3)
-  name = _messages.StringField(4)
-  queryParams = _messages.MessageField('GoogleCloudApigeeV1QueryMetadata', 5)
-  reportDefinitionId = _messages.StringField(6)
-  result = _messages.MessageField('GoogleCloudApigeeV1AsyncQueryResult', 7)
-  resultFileSize = _messages.StringField(8)
-  resultRows = _messages.IntegerField(9)
-  self = _messages.StringField(10)
-  state = _messages.StringField(11)
-  updated = _messages.StringField(12)
+  envgroupHostname = _messages.StringField(2)
+  error = _messages.StringField(3)
+  executionTime = _messages.StringField(4)
+  name = _messages.StringField(5)
+  queryParams = _messages.MessageField('GoogleCloudApigeeV1QueryMetadata', 6)
+  reportDefinitionId = _messages.StringField(7)
+  result = _messages.MessageField('GoogleCloudApigeeV1AsyncQueryResult', 8)
+  resultFileSize = _messages.StringField(9)
+  resultRows = _messages.IntegerField(10)
+  self = _messages.StringField(11)
+  state = _messages.StringField(12)
+  updated = _messages.StringField(13)
 
 
 class GoogleCloudApigeeV1AsyncQueryResult(_messages.Message):
@@ -3193,11 +3382,33 @@ class GoogleCloudApigeeV1AsyncQueryResult(_messages.Message):
   Fields:
     expires: Query result will be unaccessable after this time.
     self: Self link of the query results. Example: `/organizations/myorg/envir
-      onments/myenv/queries/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd/result`
+      onments/myenv/queries/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd/result` or
+      following format if query is running at host level: `/organizations/myor
+      g/hostQueries/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd/result`
   """
 
   expires = _messages.StringField(1)
   self = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1AsyncQueryResultView(_messages.Message):
+  r"""A GoogleCloudApigeeV1AsyncQueryResultView object.
+
+  Fields:
+    code: Error code when there is a failure.
+    error: Error message when there is a failure.
+    metadata: Metadata contains information like metrics, dimenstions etc of
+      the AsyncQuery.
+    rows: Rows of query result. Each row is a JSON object. Example:
+      {sum(message_count): 1, developer_app: "(not set)",...}
+    state: State of retrieving ResultView.
+  """
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  error = _messages.StringField(2)
+  metadata = _messages.MessageField('GoogleCloudApigeeV1QueryMetadata', 3)
+  rows = _messages.MessageField('extra_types.JsonValue', 4, repeated=True)
+  state = _messages.StringField(5)
 
 
 class GoogleCloudApigeeV1Attribute(_messages.Message):
@@ -5184,6 +5395,10 @@ class GoogleCloudApigeeV1Query(_messages.Message):
       characters include comma (`,`), pipe (`|`), and tab (`\t`).
     dimensions: A list of dimensions. https://docs.apigee.com/api-
       platform/analytics/analytics-reference#dimensions
+    envgroupHostname: Hostname needs to be specified if query intends to run
+      at host level. This field is only allowed when query is submitted by
+      CreateHostAsyncQuery where analytics data will be grouped by
+      organization and hostname.
     filter: Boolean expression that can be used to filter data. Filter
       expressions can be combined using AND/OR terms and should be fully
       parenthesized to avoid ambiguity. See Analytics metrics, dimensions, and
@@ -5216,14 +5431,15 @@ class GoogleCloudApigeeV1Query(_messages.Message):
 
   csvDelimiter = _messages.StringField(1)
   dimensions = _messages.StringField(2, repeated=True)
-  filter = _messages.StringField(3)
-  groupByTimeUnit = _messages.StringField(4)
-  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  metrics = _messages.MessageField('GoogleCloudApigeeV1QueryMetric', 6, repeated=True)
-  name = _messages.StringField(7)
-  outputFormat = _messages.StringField(8)
-  reportDefinitionId = _messages.StringField(9)
-  timeRange = _messages.MessageField('extra_types.JsonValue', 10)
+  envgroupHostname = _messages.StringField(3)
+  filter = _messages.StringField(4)
+  groupByTimeUnit = _messages.StringField(5)
+  limit = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  metrics = _messages.MessageField('GoogleCloudApigeeV1QueryMetric', 7, repeated=True)
+  name = _messages.StringField(8)
+  outputFormat = _messages.StringField(9)
+  reportDefinitionId = _messages.StringField(10)
+  timeRange = _messages.MessageField('extra_types.JsonValue', 11)
 
 
 class GoogleCloudApigeeV1QueryMetadata(_messages.Message):
@@ -5493,18 +5709,18 @@ class GoogleCloudApigeeV1RoutingRule(_messages.Message):
       will only update if the the environment_id changes. It is used to
       determine if the runtime is up to date with respect to this rule. This
       field is omitted from the IngressConfig unless the
-      GetDeployedIngressConfig API is called with debug=true.
+      GetDeployedIngressConfig API is called with view=FULL.
     environment: Name of an environment bound to the environment group in the
       following format: `organizations/{org}/environments/{env}`.
     receiver: The resource name of the proxy revision that is receiving this
       basepath in the following format:
       `organizations/{org}/apis/{api}/revisions/{rev}`. This field is omitted
       from the IngressConfig unless the GetDeployedIngressConfig API is called
-      with debug=true.
+      with view=FULL.
     updateTime: The unix timestamp when this rule was updated. This is updated
       whenever env_group_revision is updated. This field is omitted from the
       IngressConfig unless the GetDeployedIngressConfig API is called with
-      debug=true.
+      view=FULL.
   """
 
   basepath = _messages.StringField(1)
@@ -5792,11 +6008,13 @@ class GoogleCloudApigeeV1Stats(_messages.Message):
   Fields:
     environments: This field contains a list of query results on environment
       level.
+    hosts: This field contains a list of query results grouped by host.
     metaData: This field contains the metadata information.
   """
 
   environments = _messages.MessageField('GoogleCloudApigeeV1StatsEnvironmentStats', 1, repeated=True)
-  metaData = _messages.MessageField('GoogleCloudApigeeV1Metadata', 2)
+  hosts = _messages.MessageField('GoogleCloudApigeeV1StatsHostStats', 2, repeated=True)
+  metaData = _messages.MessageField('GoogleCloudApigeeV1Metadata', 3)
 
 
 class GoogleCloudApigeeV1StatsEnvironmentStats(_messages.Message):
@@ -5818,6 +6036,32 @@ class GoogleCloudApigeeV1StatsEnvironmentStats(_messages.Message):
       { "name": "sum(message_count)", "values": [ "2.19026331E8" ] } ],
       "name": "prod" } ] This field contains the list of metric values.
     name: A string attribute.
+  """
+
+  dimensions = _messages.MessageField('GoogleCloudApigeeV1DimensionMetric', 1, repeated=True)
+  metrics = _messages.MessageField('GoogleCloudApigeeV1Metric', 2, repeated=True)
+  name = _messages.StringField(3)
+
+
+class GoogleCloudApigeeV1StatsHostStats(_messages.Message):
+  r"""This message type encapsulates the hostname wrapper: "hosts": [ {
+  "metrics": [ { "name": "sum(message_count)", "values": [ "2.52056245E8" ] }
+  ], "name": "example.com" } ]
+
+  Fields:
+    dimensions: This field contains the list of metrics grouped under
+      dimensions.
+    metrics: In the final response, only one of the following fields will be
+      present based on the dimensions provided. If no dimensions are provided,
+      then only a top level metrics is provided. If dimensions are included,
+      then there will be a top level dimensions field under hostnames which
+      will contain metrics values and the dimension name. Example: "hosts": [
+      { "dimensions": [ { "metrics": [ { "name": "sum(message_count)",
+      "values": [ "2.14049521E8" ] } ], "name": "nit_proxy" } ], "name":
+      "example.com" } ] OR "hosts": [ { "metrics": [ { "name":
+      "sum(message_count)", "values": [ "2.19026331E8" ] } ], "name":
+      "example.com" } ] This field contains the list of metric values.
+    name: This field contains the hostname used in query.
   """
 
   dimensions = _messages.MessageField('GoogleCloudApigeeV1DimensionMetric', 1, repeated=True)
@@ -6209,7 +6453,6 @@ class GoogleIamV1Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -6253,10 +6496,9 @@ class GoogleIamV1Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('GoogleTypeExpr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('GoogleTypeExpr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class GoogleIamV1Policy(_messages.Message):

@@ -36,14 +36,9 @@ from six.moves import range  # pylint: disable=redefined-builtin
 import uritemplate
 
 
-# This regular expression is used to extract the URL of the 'origin' remote by
-# scraping 'git remote show origin'.
-_ORIGIN_URL_RE = re.compile(r'remote origin\n.*Fetch URL: (?P<url>.+)\n', re.M)
 # This is the minimum version of git required to use credential helpers.
 _HELPER_MIN = (2, 0, 1)
 _WINDOWS_HELPER_MIN = (2, 15, 0)
-
-_TRAILING_SPACES = re.compile(r'(^|^.*[^\\ ]|^.*\\ ) *$')
 
 
 class Error(exceptions.Error):

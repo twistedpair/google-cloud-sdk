@@ -80,7 +80,6 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -124,10 +123,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -523,6 +521,39 @@ class GoogleRpcStatus(_messages.Message):
   message = _messages.StringField(3)
 
 
+class KubernetesMetadata(_messages.Message):
+  r"""KubernetesMetadata provides informational metadata for Memberships that
+  are created from Kubernetes Endpoints (currently, these are equivalent to
+  Kubernetes clusters).
+
+  Fields:
+    kubernetesApiServerVersion: Output only. Kubernetes API server version
+      string as reported by '/version'.
+    memoryMb: Output only. The total memory capacity as reported by the sum of
+      all Kubernetes nodes resources, defined in MB.
+    nodeCount: Output only. Node count as reported by Kubernetes nodes
+      resources.
+    nodeProviderId: Output only. Node providerID as reported by the first node
+      in the list of nodes on the Kubernetes endpoint. It should be noted that
+      some Kubernetes platforms (like GKE-on-GCP) support zero-node clusters.
+      For these platforms, the node_count will be zero and the
+      node_provider_id will be empty.
+    updateTime: Output only. The time at which these details were last
+      updated. This update_time is different from the Membership-level
+      update_time since EndpointDetails are updated internally for API
+      consumers.
+    vcpuCount: Output only. vCPU count as reported by Kubernetes nodes
+      resources.
+  """
+
+  kubernetesApiServerVersion = _messages.StringField(1)
+  memoryMb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  nodeProviderId = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+  vcpuCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -732,9 +763,12 @@ class MembershipEndpoint(_messages.Message):
     gkeCluster: Optional. If this Membership is a Kubernetes API server hosted
       on GKE, this field will be populated and contain GKE-specific
       information.
+    kubernetesMetadata: Output only. For Memberships that point to Kubernetes
+      Endpoints, this field provides useful metadata.
   """
 
   gkeCluster = _messages.MessageField('GkeCluster', 1)
+  kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 2)
 
 
 class MembershipState(_messages.Message):

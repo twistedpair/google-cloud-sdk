@@ -246,6 +246,32 @@ def AddBackupLocation(parser, allow_empty):
   parser.add_argument('--backup-location', required=False, help=help_text)
 
 
+# Currently, MAX_BACKUP_RETENTION_COUNT=365, and MIN_BACKUP_RETENTION_COUNT=1.
+def AddRetainedBackupsCount(parser):
+  help_text = (
+      'How many backups to keep. The valid range is between 1 and 365. The '
+      'default value is 7 if not specified. Applicable only if --no-backups is '
+      'not specified.')
+  parser.add_argument(
+      '--retained-backups-count',
+      type=arg_parsers.BoundedInt(1, 365, unlimited=False),
+      help=help_text)
+
+
+# Currently, MAX_TRANSACTION_LOG_RETENTION_DAYS=7, and
+# MIN_TRANSACTION_LOG_RETENTION_DAYS=1.
+def AddRetainedTransactionLogDays(parser):
+  help_text = (
+      'How many days of transaction logs to keep. The valid range is between '
+      '1 and 7. The default value is 7 if not specified. Only valid when '
+      'point in time recovery is enabled. Keeping more days of transaction '
+      'logs requires bigger storage size')
+  parser.add_argument(
+      '--retained-transaction-log-days',
+      type=arg_parsers.BoundedInt(1, 7, unlimited=False),
+      help=help_text)
+
+
 def AddDatabaseFlags(parser, update=False):
   """Adds the `--database-flags` flag."""
   help_ = ('Comma-separated list of database flags to set on the '

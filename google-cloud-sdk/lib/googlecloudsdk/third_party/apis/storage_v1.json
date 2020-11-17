@@ -3,6 +3,7 @@
  "version": "v1",
  "id": "storage:v1",
  "rootUrl": "https://storage.googleapis.com/",
+ "mtlsRootUrl": "https://storage.mtls.googleapis.com/",
  "baseUrl": "https://storage.googleapis.com/storage/v1/",
  "basePath": "/storage/v1/",
  "servicePath": "storage/v1/",

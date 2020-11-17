@@ -652,20 +652,23 @@ class OutputConfig(_messages.Message):
       content to output. Once a row is present in index.csv, the input/output
       matching never changes. Callers should also expect all the content in
       input_file are processed and ready to be consumed (that is, no partial
-      output file is written). The format of translations_file (for target
-      language code 'trg') is:
-      gs://translation_test/a_b_c_'trg'_translations.[extension] If the input
-      file extension is tsv, the output has the following columns: Column 1:
-      ID of the request provided in the input, if it's not provided in the
-      input, then the input row number is used (0-based). Column 2: source
-      sentence. Column 3: translation without applying a glossary. Empty
-      string if there is an error. Column 4 (only present if a glossary is
-      provided in the request): translation after applying the glossary. Empty
-      string if there is an error applying the glossary. Could be same string
-      as column 3 if there is no glossary applied. If input file extension is
-      a txt or html, the translation is directly written to the output file.
-      If glossary is requested, a separate glossary_translations_file has
-      format of
+      output file is written). Since index.csv will be keeping updated during
+      the process, please make sure there is no custom retention policy
+      applied on the output bucket that may avoid file updating.
+      (https://cloud.google.com/storage/docs/bucket-lock?hl=en#retention-
+      policy) The format of translations_file (for target language code 'trg')
+      is: gs://translation_test/a_b_c_'trg'_translations.[extension] If the
+      input file extension is tsv, the output has the following columns:
+      Column 1: ID of the request provided in the input, if it's not provided
+      in the input, then the input row number is used (0-based). Column 2:
+      source sentence. Column 3: translation without applying a glossary.
+      Empty string if there is an error. Column 4 (only present if a glossary
+      is provided in the request): translation after applying the glossary.
+      Empty string if there is an error applying the glossary. Could be same
+      string as column 3 if there is no glossary applied. If input file
+      extension is a txt or html, the translation is directly written to the
+      output file. If glossary is requested, a separate
+      glossary_translations_file has format of
       gs://translation_test/a_b_c_'trg'_glossary_translations.[extension] The
       format of errors file (for target language code 'trg') is:
       gs://translation_test/a_b_c_'trg'_errors.[extension] If the input file

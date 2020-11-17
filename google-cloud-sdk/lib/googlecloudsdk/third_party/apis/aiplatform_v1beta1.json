@@ -711,7 +711,7 @@
       "type": "object",
       "properties": {
         "machineType": {
-          "description": "Immutable. The type of the machine. Following machine types are supported: * `n1-standard-2` * `n1-standard-4` * `n1-standard-8` * `n1-standard-16` * `n1-standard-32` * `n1-highmem-2` * `n1-highmem-4` * `n1-highmem-8` * `n1-highmem-16` * `n1-highmem-32` * `n1-highcpu-2` * `n1-highcpu-4` * `n1-highcpu-8` * `n1-highcpu-16` * `n1-highcpu-32` When used for DeployedMode this field is optional and the default value is `n1-standard-2`. If used for BatchPredictionJob or as part of WorkerPoolSpec this field is required.",
+          "description": "Immutable. The type of the machine. For the machine types supported for prediction, see https:\/\/tinyurl.com\/aip-docs\/predictions\/machine-types. For machine types supported for creating a custom training job, see https:\/\/tinyurl.com\/aip-docs\/training\/configure-compute. For DeployedModel this field is optional, and the default value is `n1-standard-2`. For BatchPredictionJob or as part of WorkerPoolSpec this field is required.",
           "type": "string"
         },
         "acceleratorType": {
@@ -909,7 +909,7 @@
       "type": "object",
       "properties": {
         "inputs": {
-          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature . Once specified, featureAttributions will be keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
+          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature. Once specified, featureAttributions are keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadata"
@@ -1015,12 +1015,12 @@
       "description": "Domain details of the input feature value. Provides numeric information about the feature, such as its range (min, max). If the feature has been pre-processed, for example with z-scoring, then it provides information about how to recover the original feature. For example, if the input feature is an image and it has been pre-processed to obtain 0-mean and stddev = 1 values, then original_mean, and original_stddev refer to the mean and stddev of the original feature (e.g. image tensor) from which input feature (with mean = 0 and stddev = 1) was obtained.",
       "type": "object",
       "properties": {
-        "min": {
+        "minValue": {
           "description": "The minimum permissible value for this feature.",
           "type": "number",
           "format": "float"
         },
-        "max": {
+        "maxValue": {
           "description": "The maximum permissible value for this feature.",
           "type": "number",
           "format": "float"
@@ -1593,6 +1593,20 @@
             "GRID_SEARCH",
             "RANDOM_SEARCH"
           ]
+        },
+        "observationNoise": {
+          "description": "The observation noise level of the study. Currently only supported by the Optimizer service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default noise level chosen by the AI Platform service.",
+            "AI Platform Optimizer assumes that the objective function is (nearly) perfectly reproducible, and will never repeat the same Trial parameters.",
+            "AI Platform Optimizer will estimate the amount of noise in metric evaluations, it may repeat the same Trial parameters more than once."
+          ],
+          "enum": [
+            "OBSERVATION_NOISE_UNSPECIFIED",
+            "LOW",
+            "HIGH"
+          ]
         }
       }
     },
@@ -1984,11 +1998,11 @@
           "$ref": "GoogleCloudAiplatformV1beta1ManualBatchTuningParameters"
         },
         "generateExplanation": {
-          "description": "Generate explanation along with the batch prediction results. When it's true, the batch prediction output will change based on the output format: * `bigquery`: output will include a column named `explanation`. The value is a struct that conforms to the Explanation object. * `jsonl`: The JSON objects on each line will include an additional entry keyed `explanation`. The value of the entry is a JSON object that conforms to the Explanation object. * `csv`: Generating explanations for CSV format is not supported.",
+          "description": "Generate explanation with the batch prediction results. When set to `true`, the batch prediction output changes based on the `predictions_format` field of the BatchPredictionJob.output_config object: * `bigquery`: output includes a column named `explanation`. The value is a struct that conforms to the Explanation object. * `jsonl`: The JSON objects on each line include an additional entry keyed `explanation`. The value of the entry is a JSON object that conforms to the Explanation object. * `csv`: Generating explanations for CSV format is not supported. If this field is set to true, the Model.explanation_spec must be populated.",
           "type": "boolean"
         },
         "explanationSpec": {
-          "description": "Explanation configuration for this BatchPredictionJob. Can only be specified if generate_explanation is set to `true`. It's invalid to specified it with generate_explanation set to false or unset. This value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of explanation_spec is not populated, the value of the same field of Model.explanation_spec is inherited. The corresponding Model.explanation_spec must be populated, otherwise explanation for this Model is not allowed.",
+          "description": "Explanation configuration for this BatchPredictionJob. Can be specified only if generate_explanation is set to `true`. This value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of the explanation_spec object is not populated, the corresponding field of the Model.explanation_spec object is inherited.",
           "$ref": "GoogleCloudAiplatformV1beta1ExplanationSpec"
         },
         "outputInfo": {
@@ -2085,7 +2099,7 @@
       "type": "object",
       "properties": {
         "gcsSource": {
-          "description": "The Google Cloud Storage location for the input instances.",
+          "description": "The Cloud Storage location for the input instances.",
           "$ref": "GoogleCloudAiplatformV1beta1GcsSource"
         },
         "bigquerySource": {
@@ -2115,7 +2129,7 @@
       "type": "object",
       "properties": {
         "gcsDestination": {
-          "description": "The Google Cloud Storage location of the directory where the output is to be written to. In the given directory a new directory is created. Its name is `prediction--`, where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. Inside of it files `predictions_0001.`, `predictions_0002.`, ..., `predictions_N.` are created where `` depends on chosen predictions_format, and N may equal 0001 and depends on the total number of successfully predicted instances. If the Model has both instance and prediction schemata defined then each such file contains predictions as per the predictions_format. If prediction for any instance failed (partially or completely), then an additional `errors_0001.`, `errors_0002.`,..., `errors_N.` files are created (N depends on total number of failed predictions). These files contain the failed instances, as per their schema, followed by an additional `error` field which as value has [`google.rpc.Status`](Status) containing only `code` and `message` fields.",
+          "description": "The Cloud Storage location of the directory where the output is to be written to. In the given directory a new directory is created. Its name is `prediction--`, where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. Inside of it files `predictions_0001.`, `predictions_0002.`, ..., `predictions_N.` are created where `` depends on chosen predictions_format, and N may equal 0001 and depends on the total number of successfully predicted instances. If the Model has both instance and prediction schemata defined then each such file contains predictions as per the predictions_format. If prediction for any instance failed (partially or completely), then an additional `errors_0001.`, `errors_0002.`,..., `errors_N.` files are created (N depends on total number of failed predictions). These files contain the failed instances, as per their schema, followed by an additional `error` field which as value has [`google.rpc.Status`](Status) containing only `code` and `message` fields.",
           "$ref": "GoogleCloudAiplatformV1beta1GcsDestination"
         },
         "bigqueryDestination": {
@@ -2178,7 +2192,7 @@
       "type": "object",
       "properties": {
         "gcsOutputDirectory": {
-          "description": "Output only. The full path of the Google Cloud Storage directory created, into which the prediction output is written.",
+          "description": "Output only. The full path of the Cloud Storage directory created, into which the prediction output is written.",
           "readOnly": true,
           "type": "string"
         },
@@ -3078,7 +3092,7 @@
           "type": "any"
         },
         "modelToUpload": {
-          "description": "Describes the Model that may be uploaded (via ModelService.UploadMode) by this TrainingPipeline. The TrainingPipeline's training_task_definition should make clear whether this Model description should be populated, and if there are any special requirements regarding how it should be filled. If nothing is mentioned in the training_task_definition, then it should be assumed that this field should not be filled and the training task either uploads the Model without a need of this information, or that training task does not support uploading a Model as part of the pipeline. When the Pipeline's state becomes `PIPELINE_STATE_SUCCEEDED` and the trained Model had been uploaded into AI Platform, then the model_to_upload's resource name is populated. The Model is always uploaded into the Project and Location in which this pipeline is.",
+          "description": "Describes the Model that may be uploaded (via ModelService.UploadModel) by this TrainingPipeline. The TrainingPipeline's training_task_definition should make clear whether this Model description should be populated, and if there are any special requirements regarding how it should be filled. If nothing is mentioned in the training_task_definition, then it should be assumed that this field should not be filled and the training task either uploads the Model without a need of this information, or that training task does not support uploading a Model as part of the pipeline. When the Pipeline's state becomes `PIPELINE_STATE_SUCCEEDED` and the trained Model had been uploaded into AI Platform, then the model_to_upload's resource name is populated. The Model is always uploaded into the Project and Location in which this pipeline is.",
           "$ref": "GoogleCloudAiplatformV1beta1Model"
         },
         "state": {
@@ -3180,11 +3194,11 @@
           "type": "string"
         },
         "annotationsFilter": {
-          "description": "Only applicable to Datasets that have DataItems and Annotations. A filter on Annotations of the Dataset. Only Annotations that both match this filter and belong to DataItems not ignored by the split method are used in respectively training, validation or test role, depending on the role of the DataItem they are on (for the auto-assigned that role is decided by AI Platform). A filter with same syntax as the one used in ListAnnotations may be used, but note here it filters across all Annotations of the Dataset, and not just within a single DataItem.",
+          "description": "Applicable only to Datasets that have DataItems and Annotations. A filter on Annotations of the Dataset. Only Annotations that both match this filter and belong to DataItems not ignored by the split method are used in respectively training, validation or test role, depending on the role of the DataItem they are on (for the auto-assigned that role is decided by AI Platform). A filter with same syntax as the one used in ListAnnotations may be used, but note here it filters across all Annotations of the Dataset, and not just within a single DataItem.",
           "type": "string"
         },
         "annotationSchemaUri": {
-          "description": "Only applicable to custom training with unstructured Dataset. Google Cloud Storage URI points to a YAML file describing annotation schema. The schema is defined as an OpenAPI 3.0.2 [Schema Object]( https: \/\/github.com\/OAI\/OpenAPI-Specification\/b \/\/ lob\/master\/versions\/3.0.2.md#schema-object) The schema files that can be used here are found in gs:\/\/google-cloud-aiplatform\/schema\/dataset\/annotation\/, note that the chosen schema must be consistent with metadata of the Dataset specified by dataset_id. Only Annotations that both match this schema and belong to DataItems not ignored by the split method are used in respectively training, validation or test role, depending on the role of the DataItem they are on. When used in conjunction with annotations_filter, the Annotations used for training are filtered by both annotations_filter and annotation_schema_uri.",
+          "description": "Applicable only to custom training with Datasets that have DataItems and Annotations. Cloud Storage URI that points to a YAML file describing the annotation schema. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/tinyurl.com\/y538mdwt#schema-object). The schema files that can be used here are found in gs:\/\/google-cloud-aiplatform\/schema\/dataset\/annotation\/ , note that the chosen schema must be consistent with metadata of the Dataset specified by dataset_id. Only Annotations that both match this schema and belong to DataItems not ignored by the split method are used in respectively training, validation or test role, depending on the role of the DataItem they are on. When used in conjunction with annotations_filter, the Annotations used for training are filtered by both annotations_filter and annotation_schema_uri.",
           "type": "string"
         }
       }
@@ -3441,6 +3455,398 @@
         "nextPageToken": {
           "description": "The standard List next-page token.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalCreateHumanInTheLoopOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalCreateHumanInTheLoopOperationMetadata",
+      "description": "Runtime operation information for HumanInTheLoopService.CreateHumanInTheLoop.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalGenericOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalGenericOperationMetadata",
+      "description": "Generic Metadata shared by all operations.",
+      "type": "object",
+      "properties": {
+        "partialFailures": {
+          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard GCP error details.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleRpcStatus"
+          }
+        },
+        "createTime": {
+          "description": "Output only. Time when the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time when the operation was updated for the last time. If the operation has finished (successfully or not), this is the finish time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalHumanInTheLoop": {
+      "id": "GoogleCloudAiplatformInternalHumanInTheLoop",
+      "description": "A human in the loop configuration describing how to trigger a human labeling job in a prediction process and properties of the human labeling job. Next id: 23",
+      "type": "object",
+      "properties": {
+        "documentCriteria": {
+          "description": "Required. Criteria for triggering a document labeling job.",
+          "$ref": "GoogleCloudAiplatformInternalDocumentCriteria"
+        },
+        "documentMetadata": {
+          "description": "Metadata for document labeling.",
+          "$ref": "GoogleCloudAiplatformInternalDocumentMetadata"
+        },
+        "name": {
+          "description": "Output only. The resource name of the human in the loop configuration.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "State of the human in the loop feature.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Feature is disabled;",
+            "Feature is enabled."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "DISABLED",
+            "ENABLED"
+          ]
+        },
+        "displayName": {
+          "description": "Required. The user-defined name of the Human in the Loop. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "type": "string"
+        },
+        "specialistPool": {
+          "description": "Resource names of the specialist pools used in this configuration.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "googleSpecialistRegion": {
+          "description": "Residency of Google in-house specialists. If users select to use Google in-house specialists to do the human review, Indian specialists are used by default; otherwise, users need to specify the Google specialist region here. If users select to use customized specialists, the Google specialist region here will be ignored.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Google specialist residented in IN.",
+            "Google specialist residented in US.",
+            "Google specialist residented in EU."
+          ],
+          "enum": [
+            "GOOGLE_SPECIALIST_REGION_UNSPECIFIED",
+            "IN",
+            "US",
+            "EU"
+          ]
+        },
+        "replicaCount": {
+          "description": "Required. Number of labelers to work on each DataItem.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "instructionUri": {
+          "description": "Required. The Google Cloud Storage location of the instruction pdf. This pdf is shared with labelers, and provides detailed description on how to label DataItems in Datasets.",
+          "type": "string"
+        },
+        "dataLabelingJobInputsSchemaUri": {
+          "description": "Required. Points to a YAML file stored on Google Cloud Storage describing the configuration for a specific type of DataLabelingJob created from this configuration.",
+          "type": "string"
+        },
+        "dataLabelingJobParameters": {
+          "description": "Required. Input configuration parameters for the DataLabelingJob created from this configuration.",
+          "type": "any"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this configuration was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this configuration was updated most recently.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "outputPath": {
+          "description": "Cloud Storage path the labeling answer will be written to.",
+          "type": "string"
+        },
+        "completedDataLabelingJobsCount": {
+          "description": "Output only. Number of completed data labeling jobs from this human in the loop configuration.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "completedDataItemsCount": {
+          "description": "Output only. Number of labeled data items from this human in the loop configuration.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "runningDataLabelingJobsCount": {
+          "description": "Output only. Number of currently running data labeling jobs from this human in the loop configuration.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "runningDataItemsCount": {
+          "description": "Output only. Number of data items that belongs to the current running data labeling jobs from this human in the loop configuration.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "pendingDataItemsCount": {
+          "description": "Output only. Number of data items that are collected but not yet sent to human review.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "batchConfig": {
+          "description": "Batching configuration of this human in the loop configuration.",
+          "$ref": "GoogleCloudAiplatformInternalBatchConfig"
+        },
+        "labels": {
+          "description": "The labels with user-defined metadata to organize your human in the loop configuration. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. See https:\/\/goo.gl\/xmQnxf for more information and examples of labels. System reserved label keys are prefixed with \"aiplatform.googleapis.com\/\" and are immutable. Following system labels exist for each HumanInTheLoop: * \"aiplatform.googleapis.com\/schema\": - output only, its value is the inputs_schema's title.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDocumentCriteria": {
+      "id": "GoogleCloudAiplatformInternalDocumentCriteria",
+      "description": "Describes the triggering criteria of the human in the loop configuration for document AI.",
+      "type": "object",
+      "properties": {
+        "randomSampling": {
+          "description": "Randomly sample the documents for human review.",
+          "$ref": "GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling"
+        },
+        "documentLevelCriteria": {
+          "description": "Document level criteria configuration.",
+          "$ref": "GoogleCloudAiplatformInternalDocumentCriteriaDocumentLevelCriteria"
+        },
+        "fieldCriteria": {
+          "description": "The list of field criteria user added.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformInternalDocumentCriteriaFieldLevelCriteria"
+          }
+        },
+        "criteriaType": {
+          "description": "The current enabled criteria.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified criteria type.",
+            "Randomly sample the document for human review.",
+            "Configuration for the whole document fields\/entities.",
+            "Configuration for each field\/entity.",
+            "Criteria is disabled."
+          ],
+          "enum": [
+            "CRITERIA_TYPE_UNSPECIFIED",
+            "RANDOM_SAMPLING",
+            "DOCUMENT_LEVEL",
+            "FIELD_LEVEL",
+            "CRITERIA_DISABLED"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling": {
+      "id": "GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling",
+      "description": "Describe the random sampling parameters for triggering human in the loop.",
+      "type": "object",
+      "properties": {
+        "rate": {
+          "description": "Sampling rate: (0,1]",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDocumentCriteriaDocumentLevelCriteria": {
+      "id": "GoogleCloudAiplatformInternalDocumentCriteriaDocumentLevelCriteria",
+      "description": "The general criteria for all the entities\/fields in one document.",
+      "type": "object",
+      "properties": {
+        "confidenceThreshold": {
+          "description": "Confidence Threshold, between 0 - 1.0.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDocumentCriteriaFieldLevelCriteria": {
+      "id": "GoogleCloudAiplatformInternalDocumentCriteriaFieldLevelCriteria",
+      "description": "Criteria for each field\/entity interested.",
+      "type": "object",
+      "properties": {
+        "fieldName": {
+          "description": "Field\/Entity Name.",
+          "type": "string"
+        },
+        "confidenceThreshold": {
+          "description": "Confidence threshold, between 0 - 1.0.",
+          "type": "number",
+          "format": "double"
+        },
+        "occurrenceType": {
+          "description": "The expected OccurrenceType for the field\/entity.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified occurrence type.",
+            "The entity type will appear zero times or once.",
+            "The entity type will appear zero or multiple times.",
+            "The entity type will only appear exactly once.",
+            "The entity type will appear once or more times."
+          ],
+          "enum": [
+            "OCCURRENCE_TYPE_UNSPECIFIED",
+            "OPTIONAL_ONCE",
+            "OPTIONAL_MULTIPLE",
+            "REQUIRED_ONCE",
+            "REQUIRED_MULTIPLE"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDocumentMetadata": {
+      "id": "GoogleCloudAiplatformInternalDocumentMetadata",
+      "description": "Metadata for the document AI human in the loop configuration.",
+      "type": "object",
+      "properties": {
+        "processorVersion": {
+          "description": "The Atlas processor version name that creates this human in the loop configuration.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalBatchConfig": {
+      "id": "GoogleCloudAiplatformInternalBatchConfig",
+      "description": "Configurations describing how to construct labeling tasks from collected prediction results.",
+      "type": "object",
+      "properties": {
+        "batchCount": {
+          "description": "A new labeling task will be generated once batch_count number of data items are collected.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pendingDuration": {
+          "description": "A new labeling task will be generated once the oldest collected data item is pending for longer than pending_duration.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalSendHumanInTheLoopEntryOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalSendHumanInTheLoopEntryOperationMetadata",
+      "description": "Runtime operation information for HumanInTheLoopService.SendHumanInTheLoopEntry",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        },
+        "labelingProgress": {
+          "description": "Output only. Current labeling job progress percentage scaled in interval [0, 100], indicating the percentage of DataItems that has been finished.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalSendHumanInTheLoopEntryResponse": {
+      "id": "GoogleCloudAiplatformInternalSendHumanInTheLoopEntryResponse",
+      "description": "Response message for HumanInTheLoopService.SendHumanInTheLoopEntry",
+      "type": "object",
+      "properties": {
+        "currentSpend": {
+          "description": "Output only. Estimated cost(in US dollars) that the DataLabelingJob has incurred to date.",
+          "readOnly": true,
+          "$ref": "GoogleTypeMoney"
+        },
+        "dataItemCount": {
+          "description": "Output only. The number of data items that are labeled in this operation.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "annotationSpecCount": {
+          "description": "Output only. The number of annotation specs used in this operation.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "state": {
+          "description": "Output only. State of the sent entries.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default, shall not be used.",
+            "The entry is being enqueued to a batch.",
+            "The entry is in a batch waiting for a labeling job to be created.",
+            "The entry is in a labeling job and being labeled.",
+            "The entry is labeled and the annotations are being collected and exported.",
+            "The entry is labeled and the annotations are exported.",
+            "The entry failed."
+          ],
+          "enum": [
+            "HUMAN_IN_THE_LOOP_ENTRY_STATE_UNSPECIFIED",
+            "ENQUEUEING",
+            "WAITING_FOR_LABELING",
+            "LABELING",
+            "FINISHING",
+            "FINISHED",
+            "FAILED"
+          ]
+        },
+        "exportedFiles": {
+          "description": "Output only. All of the files that are exported from export dataset.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleTypeMoney": {
+      "id": "GoogleTypeMoney",
+      "description": "Represents an amount of money with its currency type.",
+      "type": "object",
+      "properties": {
+        "currencyCode": {
+          "description": "The three-letter currency code defined in ISO 4217.",
+          "type": "string"
+        },
+        "units": {
+          "description": "The whole units of the amount. For example if `currencyCode` is `\"USD\"`, then 1 unit is one US dollar.",
+          "type": "string",
+          "format": "int64"
+        },
+        "nanos": {
+          "description": "Number of nano (10^-9) units of the amount. The value must be between -999,999,999 and +999,999,999 inclusive. If `units` is positive, `nanos` must be positive or zero. If `units` is zero, `nanos` can be positive, zero, or negative. If `units` is negative, `nanos` must be negative or zero. For example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -4008,7 +4414,7 @@
       "type": "object",
       "properties": {
         "machineType": {
-          "description": "Immutable. The type of the machine. Following machine types are supported: * `n1-standard-2` * `n1-standard-4` * `n1-standard-8` * `n1-standard-16` * `n1-standard-32` * `n1-highmem-2` * `n1-highmem-4` * `n1-highmem-8` * `n1-highmem-16` * `n1-highmem-32` * `n1-highcpu-2` * `n1-highcpu-4` * `n1-highcpu-8` * `n1-highcpu-16` * `n1-highcpu-32` When used for DeployedMode this field is optional and the default value is `n1-standard-2`. If used for BatchPredictionJob or as part of WorkerPoolSpec this field is required.",
+          "description": "Immutable. The type of the machine. For the machine types supported for prediction, see https:\/\/tinyurl.com\/aip-docs\/predictions\/machine-types. For machine types supported for creating a custom training job, see https:\/\/tinyurl.com\/aip-docs\/training\/configure-compute. For DeployedModel this field is optional, and the default value is `n1-standard-2`. For BatchPredictionJob or as part of WorkerPoolSpec this field is required.",
           "type": "string"
         },
         "acceleratorType": {
@@ -4206,7 +4612,7 @@
       "type": "object",
       "properties": {
         "inputs": {
-          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature . Once specified, featureAttributions will be keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
+          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature. Once specified, featureAttributions are keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformUiExplanationMetadataInputMetadata"
@@ -4312,12 +4718,12 @@
       "description": "Domain details of the input feature value. Provides numeric information about the feature, such as its range (min, max). If the feature has been pre-processed, for example with z-scoring, then it provides information about how to recover the original feature. For example, if the input feature is an image and it has been pre-processed to obtain 0-mean and stddev = 1 values, then original_mean, and original_stddev refer to the mean and stddev of the original feature (e.g. image tensor) from which input feature (with mean = 0 and stddev = 1) was obtained.",
       "type": "object",
       "properties": {
-        "min": {
+        "minValue": {
           "description": "The minimum permissible value for this feature.",
           "type": "number",
           "format": "float"
         },
-        "max": {
+        "maxValue": {
           "description": "The maximum permissible value for this feature.",
           "type": "number",
           "format": "float"
@@ -5748,7 +6154,7 @@
       "type": "object",
       "properties": {
         "machineType": {
-          "description": "Immutable. The type of the machine. Following machine types are supported: * `n1-standard-2` * `n1-standard-4` * `n1-standard-8` * `n1-standard-16` * `n1-standard-32` * `n1-highmem-2` * `n1-highmem-4` * `n1-highmem-8` * `n1-highmem-16` * `n1-highmem-32` * `n1-highcpu-2` * `n1-highcpu-4` * `n1-highcpu-8` * `n1-highcpu-16` * `n1-highcpu-32` When used for DeployedMode this field is optional and the default value is `n1-standard-2`. If used for BatchPredictionJob or as part of WorkerPoolSpec this field is required.",
+          "description": "Immutable. The type of the machine. For the machine types supported for prediction, see https:\/\/tinyurl.com\/aip-docs\/predictions\/machine-types. For machine types supported for creating a custom training job, see https:\/\/tinyurl.com\/aip-docs\/training\/configure-compute. For DeployedModel this field is optional, and the default value is `n1-standard-2`. For BatchPredictionJob or as part of WorkerPoolSpec this field is required.",
           "type": "string"
         },
         "acceleratorType": {
@@ -5843,7 +6249,7 @@
       "type": "object",
       "properties": {
         "inputs": {
-          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature . Once specified, featureAttributions will be keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
+          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature. Once specified, featureAttributions are keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadata"
@@ -6948,6 +7354,642 @@
         "model": {
           "description": "The name of the uploaded Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageClassificationPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageClassificationPredictionInstance",
+      "description": "Prediction input format for Image Classification.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The image bytes or GCS URI to make the prediction on.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the content of the image. Only the images in below listed MIME types are supported. - image\/jpeg - image\/gif - image\/png - image\/webp - image\/bmp - image\/tiff - image\/vnd.microsoft.icon",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageObjectDetectionPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageObjectDetectionPredictionInstance",
+      "description": "Prediction input format for Image Object Detection.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The image bytes or GCS URI to make the prediction on.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the content of the image. Only the images in below listed MIME types are supported. - image\/jpeg - image\/gif - image\/png - image\/webp - image\/bmp - image\/tiff - image\/vnd.microsoft.icon",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageSegmentationPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageSegmentationPredictionInstance",
+      "description": "Prediction input format for Image Segmentation.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The image bytes to make the predictions on.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the content of the image. Only the images in below listed MIME types are supported. - image\/jpeg - image\/png",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextClassificationPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextClassificationPredictionInstance",
+      "description": "Prediction input format for Text Classification.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The text snippet to make the predictions on.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the text snippet. The supported MIME types are listed below. - text\/plain",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextExtractionPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextExtractionPredictionInstance",
+      "description": "Prediction input format for Text Extraction.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The text snippet to make the predictions on.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the text snippet. The supported MIME types are listed below. - text\/plain",
+          "type": "string"
+        },
+        "key": {
+          "description": "This field is only used for batch prediction. If a key is provided, the batch prediction result will by mapped to this key. If omitted, then the batch prediction result will contain the entire input instance. AI Platform will not check if keys in the request are duplicates, so it is up to the caller to ensure the keys are unique.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextSentimentPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextSentimentPredictionInstance",
+      "description": "Prediction input format for Text Sentiment.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The text snippet to make the predictions on.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the text snippet. The supported MIME types are listed below. - text\/plain",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictInstanceVideoActionRecognitionPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictInstanceVideoActionRecognitionPredictionInstance",
+      "description": "Prediction input format for Video Action Recognition.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The Google Cloud Storage location of the video on which to perform the prediction.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the content of the video. Only the following are supported: video\/mp4 video\/avi video\/quicktime",
+          "type": "string"
+        },
+        "timeSegmentStart": {
+          "description": "The beginning, inclusive, of the video's time segment on which to perform the prediction. Expressed as a number of seconds as measured from the start of the video, with \"s\" appended at the end. Fractions are allowed, up to a microsecond precision.",
+          "type": "string"
+        },
+        "timeSegmentEnd": {
+          "description": "The end, exclusive, of the video's time segment on which to perform the prediction. Expressed as a number of seconds as measured from the start of the video, with \"s\" appended at the end. Fractions are allowed, up to a microsecond precision, and \"Infinity\" is allowed, which means the end of the video.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictInstanceVideoClassificationPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictInstanceVideoClassificationPredictionInstance",
+      "description": "Prediction input format for Video Classification.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The Google Cloud Storage location of the video on which to perform the prediction.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the content of the video. Only the following are supported: video\/mp4 video\/avi video\/quicktime",
+          "type": "string"
+        },
+        "timeSegmentStart": {
+          "description": "The beginning, inclusive, of the video's time segment on which to perform the prediction. Expressed as a number of seconds as measured from the start of the video, with \"s\" appended at the end. Fractions are allowed, up to a microsecond precision.",
+          "type": "string"
+        },
+        "timeSegmentEnd": {
+          "description": "The end, exclusive, of the video's time segment on which to perform the prediction. Expressed as a number of seconds as measured from the start of the video, with \"s\" appended at the end. Fractions are allowed, up to a microsecond precision, and \"Infinity\" is allowed, which means the end of the video.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictInstanceVideoObjectTrackingPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictInstanceVideoObjectTrackingPredictionInstance",
+      "description": "Prediction input format for Video Object Tracking.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The Google Cloud Storage location of the video on which to perform the prediction.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the content of the video. Only the following are supported: video\/mp4 video\/avi video\/quicktime",
+          "type": "string"
+        },
+        "timeSegmentStart": {
+          "description": "The beginning, inclusive, of the video's time segment on which to perform the prediction. Expressed as a number of seconds as measured from the start of the video, with \"s\" appended at the end. Fractions are allowed, up to a microsecond precision.",
+          "type": "string"
+        },
+        "timeSegmentEnd": {
+          "description": "The end, exclusive, of the video's time segment on which to perform the prediction. Expressed as a number of seconds as measured from the start of the video, with \"s\" appended at the end. Fractions are allowed, up to a microsecond precision, and \"Infinity\" is allowed, which means the end of the video.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictParamsImageClassificationPredictionParams": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictParamsImageClassificationPredictionParams",
+      "description": "Prediction model parameters for Image Classification.",
+      "type": "object",
+      "properties": {
+        "confidenceThreshold": {
+          "description": "The Model only returns predictions with at least this confidence score. Default value is 0.0",
+          "type": "number",
+          "format": "float"
+        },
+        "maxPredictions": {
+          "description": "The Model only returns up to that many top, by confidence score, predictions per instance. If this number is very high, the Model may return fewer predictions. Default value is 10.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictParamsImageObjectDetectionPredictionParams": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictParamsImageObjectDetectionPredictionParams",
+      "description": "Prediction model parameters for Image Object Detection.",
+      "type": "object",
+      "properties": {
+        "confidenceThreshold": {
+          "description": "The Model only returns predictions with at least this confidence score. Default value is 0.0",
+          "type": "number",
+          "format": "float"
+        },
+        "maxPredictions": {
+          "description": "The Model only returns up to that many top, by confidence score, predictions per instance. Note that number of returned predictions is also limited by metadata's predictionsLimit. Default value is 10.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictParamsImageSegmentationPredictionParams": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictParamsImageSegmentationPredictionParams",
+      "description": "Prediction model parameters for Image Segmentation.",
+      "type": "object",
+      "properties": {
+        "confidenceThreshold": {
+          "description": "When the model predicts category of pixels of the image, it will only provide predictions for pixels that it is at least this much confident about. All other pixels will be classified as background. Default value is 0.5.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictParamsVideoActionRecognitionPredictionParams": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictParamsVideoActionRecognitionPredictionParams",
+      "description": "Prediction model parameters for Video Action Recognition.",
+      "type": "object",
+      "properties": {
+        "confidenceThreshold": {
+          "description": "The Model only returns predictions with at least this confidence score. Default value is 0.0",
+          "type": "number",
+          "format": "float"
+        },
+        "maxPredictions": {
+          "description": "The model only returns up to that many top, by confidence score, predictions per frame of the video. If this number is very high, the Model may return fewer predictions per frame. Default value is 50.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictParamsVideoClassificationPredictionParams": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictParamsVideoClassificationPredictionParams",
+      "description": "Prediction model parameters for Video Classification.",
+      "type": "object",
+      "properties": {
+        "confidenceThreshold": {
+          "description": "The Model only returns predictions with at least this confidence score. Default value is 0.0",
+          "type": "number",
+          "format": "float"
+        },
+        "maxPredictions": {
+          "description": "The Model only returns up to that many top, by confidence score, predictions per instance. If this number is very high, the Model may return fewer predictions. Default value is 10,000.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "segmentClassification": {
+          "description": "Set to true to request segment-level classification. AI Platform returns labels and their confidence scores for the entire time segment of the video that user specified in the input instance. Default value is true",
+          "type": "boolean"
+        },
+        "shotClassification": {
+          "description": "Set to true to request shot-level classification. AI Platform determines the boundaries for each camera shot in the entire time segment of the video that user specified in the input instance. AI Platform then returns labels and their confidence scores for each detected shot, along with the start and end time of the shot. WARNING: Model evaluation is not done for this classification type, the quality of it depends on the training data, but there are no metrics provided to describe that quality. Default value is false",
+          "type": "boolean"
+        },
+        "oneSecIntervalClassification": {
+          "description": "Set to true to request classification for a video at one-second intervals. AI Platform returns labels and their confidence scores for each second of the entire time segment of the video that user specified in the input WARNING: Model evaluation is not done for this classification type, the quality of it depends on the training data, but there are no metrics provided to describe that quality. Default value is false",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictParamsVideoObjectTrackingPredictionParams": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictParamsVideoObjectTrackingPredictionParams",
+      "description": "Prediction model parameters for Video Object Tracking.",
+      "type": "object",
+      "properties": {
+        "confidenceThreshold": {
+          "description": "The Model only returns predictions with at least this confidence score. Default value is 0.0",
+          "type": "number",
+          "format": "float"
+        },
+        "maxPredictions": {
+          "description": "The model only returns up to that many top, by confidence score, predictions per frame of the video. If this number is very high, the Model may return fewer predictions per frame. Default value is 50.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "minBoundingBoxSize": {
+          "description": "Only bounding boxes with shortest edge at least that long as a relative value of video frame size are returned. Default value is 0.0.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionClassificationPredictionResult": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionClassificationPredictionResult",
+      "description": "Prediction output format for Image and Text Classification.",
+      "type": "object",
+      "properties": {
+        "ids": {
+          "description": "The resource IDs of the AnnotationSpecs that had been identified, ordered by the confidence score descendingly.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "displayNames": {
+          "description": "The display names of the AnnotationSpecs that had been identified, order matches the IDs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confidences": {
+          "description": "The Model's confidences in correctness of the predicted IDs, higher value means higher confidence. Order matches the Ids.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionImageObjectDetectionPredictionResult": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionImageObjectDetectionPredictionResult",
+      "description": "Prediction output format for Image Object Detection.",
+      "type": "object",
+      "properties": {
+        "ids": {
+          "description": "The resource IDs of the AnnotationSpecs that had been identified, ordered by the confidence score descendingly.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "displayNames": {
+          "description": "The display names of the AnnotationSpecs that had been identified, order matches the IDs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confidences": {
+          "description": "The Model's confidences in correctness of the predicted IDs, higher value means higher confidence. Order matches the Ids.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "bboxes": {
+          "description": "Bounding boxes, i.e. the rectangles over the image, that pinpoint the found AnnotationSpecs. Given in order that matches the IDs. Each bounding box is an array of 4 numbers `xMin`, `xMax`, `yMin`, and `yMax`, which represent the extremal coordinates of the box. They are relative to the image size, and the point 0,0 is in the top left of the image.",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "any"
+            }
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionImageSegmentationPredictionResult": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionImageSegmentationPredictionResult",
+      "description": "Prediction output format for Image Segmentation.",
+      "type": "object",
+      "properties": {
+        "categoryMask": {
+          "description": "A PNG image where each pixel in the mask represents the category in which the pixel in the original image was predicted to belong to. The size of this image will be the same as the original image. The mapping between the AnntoationSpec and the color can be found in model's metadata. The model will choose the most likely category and if none of the categories reach the confidence threshold, the pixel will be marked as background.",
+          "type": "string",
+          "format": "byte"
+        },
+        "confidenceMask": {
+          "description": "A one channel image which is encoded as an 8bit lossless PNG. The size of the image will be the same as the original image. For a specific pixel, darker color means less confidence in correctness of the cateogry in the categoryMask for the corresponding pixel. Black means no confidence and white means complete confidence.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTabularClassificationPredictionResult": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTabularClassificationPredictionResult",
+      "description": "Prediction output format for Tabular Classification.",
+      "type": "object",
+      "properties": {
+        "classes": {
+          "description": "The name of the classes being classified, contains all possible values of the target column.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "scores": {
+          "description": "The model's confidence in each class being correct, higher value means higher confidence. The N-th score corresponds to the N-th class in classes.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTabularRegressionPredictionResult": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTabularRegressionPredictionResult",
+      "description": "Prediction output format for Tabular Regression.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "The regression value.",
+          "type": "number",
+          "format": "float"
+        },
+        "lowerBound": {
+          "description": "The lower bound of the prediction interval.",
+          "type": "number",
+          "format": "float"
+        },
+        "upperBound": {
+          "description": "The upper bound of the prediction interval.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextExtractionPredictionResult": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextExtractionPredictionResult",
+      "description": "Prediction output format for Text Extraction.",
+      "type": "object",
+      "properties": {
+        "ids": {
+          "description": "The resource IDs of the AnnotationSpecs that had been identified, ordered by the confidence score descendingly.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "displayNames": {
+          "description": "The display names of the AnnotationSpecs that had been identified, order matches the IDs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "textSegmentStartOffsets": {
+          "description": "The start offsets, inclusive, of the text segment in which the AnnotationSpec has been identified. Expressed as a zero-based number of characters as measured from the start of the text snippet.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "textSegmentEndOffsets": {
+          "description": "The end offsets, inclusive, of the text segment in which the AnnotationSpec has been identified. Expressed as a zero-based number of characters as measured from the start of the text snippet.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "confidences": {
+          "description": "The Model's confidences in correctness of the predicted IDs, higher value means higher confidence. Order matches the Ids.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResult": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResult",
+      "description": "Represents a line of JSONL in the text sentiment batch prediction output file. This is a hack to allow printing of integer values.",
+      "type": "object",
+      "properties": {
+        "instance": {
+          "description": "User's input instance.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextSentimentPredictionInstance"
+        },
+        "prediction": {
+          "description": "The prediction result.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction",
+      "description": "Prediction output format for Text Sentiment.",
+      "type": "object",
+      "properties": {
+        "sentiment": {
+          "description": "The integer sentiment labels between 0 (inclusive) and sentimentMax label (inclusive), while 0 maps to the least positive sentiment and sentimentMax maps to the most positive one. The higher the score is, the more positive the sentiment in the text snippet is. Note: sentimentMax is an integer value between 1 (inclusive) and 10 (inclusive).",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTimeSeriesForecastingPredictionResult": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTimeSeriesForecastingPredictionResult",
+      "description": "Prediction output format for Time Series Forecasting.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "The regression value.",
+          "type": "number",
+          "format": "float"
+        },
+        "lowerBound": {
+          "description": "The lower bound of the prediction interval.",
+          "type": "number",
+          "format": "float"
+        },
+        "upperBound": {
+          "description": "The upper bound of the prediction interval.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoActionRecognitionPredictionResult": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoActionRecognitionPredictionResult",
+      "description": "Prediction output format for Video Action Recognition.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The resource ID of the AnnotationSpec that had been identified.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that had been identified.",
+          "type": "string"
+        },
+        "timeSegmentStart": {
+          "description": "The beginning, inclusive, of the video's time segment in which the AnnotationSpec has been identified. Expressed as a number of seconds as measured from the start of the video, with fractions up to a microsecond precision, and with \"s\" appended at the end.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "timeSegmentEnd": {
+          "description": "The end, exclusive, of the video's time segment in which the AnnotationSpec has been identified. Expressed as a number of seconds as measured from the start of the video, with fractions up to a microsecond precision, and with \"s\" appended at the end.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "confidence": {
+          "description": "The Model's confidence in correction of this prediction, higher value means higher confidence.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoClassificationPredictionResult": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoClassificationPredictionResult",
+      "description": "Prediction output format for Video Classification.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The resource ID of the AnnotationSpec that had been identified.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that had been identified.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of the prediction. The requested types can be configured via parameters. This will be one of - segment-classification - shot-classification - one-sec-interval-classification",
+          "type": "string"
+        },
+        "timeSegmentStart": {
+          "description": "The beginning, inclusive, of the video's time segment in which the AnnotationSpec has been identified. Expressed as a number of seconds as measured from the start of the video, with fractions up to a microsecond precision, and with \"s\" appended at the end. Note that for 'segment-classification' prediction type, this equals the original 'timeSegmentStart' from the input instance, for other types it is the start of a shot or a 1 second interval respectively.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "timeSegmentEnd": {
+          "description": "The end, exclusive, of the video's time segment in which the AnnotationSpec has been identified. Expressed as a number of seconds as measured from the start of the video, with fractions up to a microsecond precision, and with \"s\" appended at the end. Note that for 'segment-classification' prediction type, this equals the original 'timeSegmentEnd' from the input instance, for other types it is the end of a shot or a 1 second interval respectively.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "confidence": {
+          "description": "The Model's confidence in correction of this prediction, higher value means higher confidence.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoObjectTrackingPredictionResult": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoObjectTrackingPredictionResult",
+      "description": "Prediction output format for Video Object Tracking.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The resource ID of the AnnotationSpec that had been identified.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that had been identified.",
+          "type": "string"
+        },
+        "timeSegmentStart": {
+          "description": "The beginning, inclusive, of the video's time segment in which the object instance has been detected. Expressed as a number of seconds as measured from the start of the video, with fractions up to a microsecond precision, and with \"s\" appended at the end.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "timeSegmentEnd": {
+          "description": "The end, inclusive, of the video's time segment in which the object instance has been detected. Expressed as a number of seconds as measured from the start of the video, with fractions up to a microsecond precision, and with \"s\" appended at the end.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "confidence": {
+          "description": "The Model's confidence in correction of this prediction, higher value means higher confidence.",
+          "type": "number",
+          "format": "float"
+        },
+        "frames": {
+          "description": "All of the frames of the video in which a single object instance has been detected. The bounding boxes in the frames identify the same object.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoObjectTrackingPredictionResultFrame"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoObjectTrackingPredictionResultFrame": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoObjectTrackingPredictionResultFrame",
+      "description": "The fields `xMin`, `xMax`, `yMin`, and `yMax` refer to a bounding box, i.e. the rectangle over the video frame pinpointing the found AnnotationSpec. The coordinates are relative to the frame size, and the point 0,0 is in the top left of the frame.",
+      "type": "object",
+      "properties": {
+        "timeOffset": {
+          "description": "A time (frame) of a video in which the object has been detected. Expressed as a number of seconds as measured from the start of the video, with fractions up to a microsecond precision, and with \"s\" appended at the end.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "xMin": {
+          "description": "The leftmost coordinate of the bounding box.",
+          "type": "number",
+          "format": "float"
+        },
+        "xMax": {
+          "description": "The rightmost coordinate of the bounding box.",
+          "type": "number",
+          "format": "float"
+        },
+        "yMin": {
+          "description": "The topmost coordinate of the bounding box.",
+          "type": "number",
+          "format": "float"
+        },
+        "yMax": {
+          "description": "The bottommost coordinate of the bounding box.",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -9604,161 +10646,6 @@
                           }
                         }
                       }
-                    }
-                  }
-                }
-              }
-            },
-            "humanInTheLoops": {
-              "resources": {
-                "operations": {
-                  "methods": {
-                    "list": {
-                      "id": "aiplatform.projects.locations.humanInTheLoops.operations.list",
-                      "path": "v1beta1/{+name}/operations",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/humanInTheLoops/{humanInTheLoopsId}/operations",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation's parent resource.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/humanInTheLoops\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "The standard list filter.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The standard list page size.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "The standard list page token.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningListOperationsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
-                    },
-                    "get": {
-                      "id": "aiplatform.projects.locations.humanInTheLoops.operations.get",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/humanInTheLoops/{humanInTheLoopsId}/operations/{operationsId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/humanInTheLoops\/[^\/]+\/operations\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
-                    },
-                    "delete": {
-                      "id": "aiplatform.projects.locations.humanInTheLoops.operations.delete",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/humanInTheLoops/{humanInTheLoopsId}/operations/{operationsId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource to be deleted.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/humanInTheLoops\/[^\/]+\/operations\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleProtobufEmpty"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
-                    },
-                    "cancel": {
-                      "id": "aiplatform.projects.locations.humanInTheLoops.operations.cancel",
-                      "path": "v1beta1/{+name}:cancel",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/humanInTheLoops/{humanInTheLoopsId}/operations/{operationsId}:cancel",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource to be cancelled.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/humanInTheLoops\/[^\/]+\/operations\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleProtobufEmpty"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
-                    },
-                    "wait": {
-                      "id": "aiplatform.projects.locations.humanInTheLoops.operations.wait",
-                      "path": "v1beta1/{+name}:wait",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/humanInTheLoops/{humanInTheLoopsId}/operations/{operationsId}:wait",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource to wait on.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/humanInTheLoops\/[^\/]+\/operations\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "timeout": {
-                          "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-duration"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Waits for the specified long-running operation until it is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
                     }
                   }
                 }

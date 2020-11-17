@@ -176,7 +176,7 @@
     },
     "ListBucketsResponse": {
       "id": "ListBucketsResponse",
-      "description": "The response from ListBuckets (Beta).",
+      "description": "The response from ListBuckets.",
       "type": "object",
       "properties": {
         "buckets": {
@@ -194,11 +194,12 @@
     },
     "LogBucket": {
       "id": "LogBucket",
-      "description": "Describes a repository of logs (Beta).",
+      "description": "Describes a repository of logs.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the bucket. For example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id The supported locations are: \"global\"For the location of global it is unspecified where logs are actually stored. Once a bucket has been created, the location can not be changed.",
+          "description": "Output only. The resource name of the bucket. For example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id The supported locations are: \"global\"For the location of global it is unspecified where logs are actually stored. Once a bucket has been created, the location can not be changed.",
+          "readOnly": true,
           "type": "string"
         },
         "description": {
@@ -330,7 +331,7 @@
           "format": "google-datetime"
         },
         "filter": {
-          "description": "Filter that restricts which log entries in a bucket are visible in this view. Filters are restricted to be a logical AND of ==\/!= of any of the following: originating project\/folder\/organization\/billing account. resource type log id",
+          "description": "Filter that restricts which log entries in a bucket are visible in this view. Filters are restricted to be a logical AND of ==\/!= of any of the following: originating project\/folder\/organization\/billing account. resource type log id Example: SOURCE(\"projects\/myproject\") AND resource.type = \"gce_instance\" AND LOG_ID(\"stdout\")",
           "type": "string"
         }
       }
@@ -1028,6 +1029,76 @@
         }
       }
     },
+    "TailLogEntriesRequest": {
+      "id": "TailLogEntriesRequest",
+      "description": "The parameters to TailLogEntries.",
+      "type": "object",
+      "properties": {
+        "resourceNames": {
+          "description": "Required. Name of a parent resource from which to retrieve log entries: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" May alternatively be one or more views: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID\" \"organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID\"",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "filter": {
+          "description": "Optional. A filter that chooses which log entries to return. See Advanced Logs Filters (https:\/\/cloud.google.com\/logging\/docs\/view\/advanced_filters). Only log entries that match the filter are returned. An empty filter matches all log entries in the resources listed in resource_names. Referencing a parent resource that is not in resource_names will cause the filter to return no results. The maximum length of the filter is 20000 characters.",
+          "type": "string"
+        },
+        "bufferWindow": {
+          "description": "Optional. The amount of time to buffer log entries at the server before being returned to prevent out of order results due to late arriving log entries. Valid values are between 0-60000 milliseconds. Defaults to 2000 milliseconds.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "TailLogEntriesResponse": {
+      "id": "TailLogEntriesResponse",
+      "description": "Result returned from TailLogEntries.",
+      "type": "object",
+      "properties": {
+        "entries": {
+          "description": "A list of log entries. Each response in the stream will order entries with increasing values of LogEntry.timestamp. Ordering is not guaranteed between separate responses.",
+          "type": "array",
+          "items": {
+            "$ref": "LogEntry"
+          }
+        },
+        "suppressionInfo": {
+          "description": "If entries that otherwise would have been included in the session were not sent back to the client, counts of relevant entries omitted from the session with the reason that they were not included. There will be at most one of each reason per response. The counts represent the number of suppressed entries since the last streamed response.",
+          "type": "array",
+          "items": {
+            "$ref": "SuppressionInfo"
+          }
+        }
+      }
+    },
+    "SuppressionInfo": {
+      "id": "SuppressionInfo",
+      "description": "Information about entries that were omitted from the session.",
+      "type": "object",
+      "properties": {
+        "reason": {
+          "description": "The reason that entries were omitted from the session.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unexpected default.",
+            "Indicates suppression occurred due to relevant entries being received in excess of rate limits.",
+            "Indicates suppression occurred due to the client not consuming responses quickly enough."
+          ],
+          "enum": [
+            "REASON_UNSPECIFIED",
+            "RATE_LIMIT",
+            "NOT_CONSUMED"
+          ]
+        },
+        "suppressedCount": {
+          "description": "A lower bound on the count of entries omitted due to reason.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "ListLogMetricsResponse": {
       "id": "ListLogMetricsResponse",
       "description": "Result returned from ListLogMetrics.",
@@ -1687,7 +1758,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Lists buckets (Beta)."
+              "description": "Lists buckets."
             },
             "get": {
               "id": "logging.locations.buckets.get",
@@ -1715,7 +1786,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Gets a bucket (Beta)."
+              "description": "Gets a bucket."
             },
             "create": {
               "id": "logging.locations.buckets.create",
@@ -1784,7 +1855,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created. This method is in Beta."
+              "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
             },
             "delete": {
               "id": "logging.locations.buckets.delete",
@@ -1883,7 +1954,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists views on a bucket.."
+                  "description": "Lists views on a bucket."
                 },
                 "get": {
                   "id": "logging.locations.buckets.views.get",
@@ -2132,7 +2203,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists buckets (Beta)."
+                  "description": "Lists buckets."
                 },
                 "get": {
                   "id": "logging.projects.locations.buckets.get",
@@ -2160,7 +2231,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Gets a bucket (Beta)."
+                  "description": "Gets a bucket."
                 },
                 "create": {
                   "id": "logging.projects.locations.buckets.create",
@@ -2229,7 +2300,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created. This method is in Beta."
+                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
                 },
                 "delete": {
                   "id": "logging.projects.locations.buckets.delete",
@@ -2328,7 +2399,7 @@
                         "https://www.googleapis.com/auth/logging.admin",
                         "https://www.googleapis.com/auth/logging.read"
                       ],
-                      "description": "Lists views on a bucket.."
+                      "description": "Lists views on a bucket."
                     },
                     "get": {
                       "id": "logging.projects.locations.buckets.views.get",
@@ -3184,7 +3255,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists buckets (Beta)."
+                  "description": "Lists buckets."
                 },
                 "get": {
                   "id": "logging.folders.locations.buckets.get",
@@ -3212,7 +3283,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Gets a bucket (Beta)."
+                  "description": "Gets a bucket."
                 },
                 "create": {
                   "id": "logging.folders.locations.buckets.create",
@@ -3281,7 +3352,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created. This method is in Beta."
+                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
                 },
                 "delete": {
                   "id": "logging.folders.locations.buckets.delete",
@@ -3380,7 +3451,7 @@
                         "https://www.googleapis.com/auth/logging.admin",
                         "https://www.googleapis.com/auth/logging.read"
                       ],
-                      "description": "Lists views on a bucket.."
+                      "description": "Lists views on a bucket."
                     },
                     "get": {
                       "id": "logging.folders.locations.buckets.views.get",
@@ -4078,7 +4149,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists buckets (Beta)."
+                  "description": "Lists buckets."
                 },
                 "create": {
                   "id": "logging.billingAccounts.locations.buckets.create",
@@ -4147,7 +4218,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created. This method is in Beta."
+                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
                 },
                 "delete": {
                   "id": "logging.billingAccounts.locations.buckets.delete",
@@ -4246,7 +4317,7 @@
                         "https://www.googleapis.com/auth/logging.admin",
                         "https://www.googleapis.com/auth/logging.read"
                       ],
-                      "description": "Lists views on a bucket.."
+                      "description": "Lists views on a bucket."
                     },
                     "create": {
                       "id": "logging.billingAccounts.locations.buckets.views.create",
@@ -4377,7 +4448,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Gets a bucket (Beta)."
+              "description": "Gets a bucket."
             }
           }
           ,
@@ -5448,7 +5519,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists buckets (Beta)."
+                  "description": "Lists buckets."
                 },
                 "get": {
                   "id": "logging.organizations.locations.buckets.get",
@@ -5476,7 +5547,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Gets a bucket (Beta)."
+                  "description": "Gets a bucket."
                 },
                 "create": {
                   "id": "logging.organizations.locations.buckets.create",
@@ -5545,7 +5616,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created. This method is in Beta."
+                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
                 },
                 "delete": {
                   "id": "logging.organizations.locations.buckets.delete",
@@ -5644,7 +5715,7 @@
                         "https://www.googleapis.com/auth/logging.admin",
                         "https://www.googleapis.com/auth/logging.read"
                       ],
-                      "description": "Lists views on a bucket.."
+                      "description": "Lists views on a bucket."
                     },
                     "get": {
                       "id": "logging.organizations.locations.buckets.views.get",
@@ -6345,6 +6416,29 @@
             "https://www.googleapis.com/auth/logging.read"
           ],
           "description": "Lists log entries. Use this method to retrieve log entries that originated from a project\/folder\/organization\/billing account. For ways to export log entries, see Exporting Logs (https:\/\/cloud.google.com\/logging\/docs\/export)."
+        },
+        "tail": {
+          "id": "logging.entries.tail",
+          "path": "v2/entries:tail",
+          "flatPath": "v2/entries:tail",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "TailLogEntriesRequest"
+          },
+          "response": {
+            "$ref": "TailLogEntriesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
+          ],
+          "description": "Streaming read of log entries as they are ingested. Until the stream is terminated, it will continue reading logs."
         }
       }
     },

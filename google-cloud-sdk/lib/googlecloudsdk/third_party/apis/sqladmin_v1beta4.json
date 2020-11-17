@@ -21,6 +21,7 @@
   "servicePath": "",
   "baseUrl": "https://sqladmin.googleapis.com/",
   "batchPath": "batch",
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -426,7 +427,7 @@
               "type": "object",
               "properties": {
                 "masterData": {
-                  "description": "Option to include SQL statement required to set up replication. If set to *1*, the dump file includes a CHANGE MASTER TO statement with the binary log coordinates. If set to *2*, the CHANGE MASTER TO statement is written as a SQL comment, and has no effect. All other values are ignored.",
+                  "description": "Option to include SQL statement required to set up replication. If set to *1*, the dump file includes a CHANGE MASTER TO statement with the binary log coordinates, and --set-gtid-purged is set to ON. If set to *2*, the CHANGE MASTER TO statement is written as a SQL comment and has no effect. If set to any value other than *1*, --set-gtid-purged is set to OFF.",
                   "type": "integer",
                   "format": "int32"
                 }
@@ -435,7 +436,7 @@
           }
         },
         "csvExportOptions": {
-          "description": "Options for exporting data as CSV.",
+          "description": "Options for exporting data as CSV. *MySQL* and *PostgreSQL* instances only.",
           "type": "object",
           "properties": {
             "selectQuery": {
@@ -445,7 +446,7 @@
           }
         },
         "fileType": {
-          "description": "The file type for the specified uri. *SQL*: The file contains SQL statements. *CSV*: The file contains CSV data.",
+          "description": "The file type for the specified uri. *SQL*: The file contains SQL statements. *CSV*: The file contains CSV data. *BAK*: The file contains backup data for a SQL Server instance.",
           "type": "string",
           "enumDescriptions": [
             "Unknown file type.",
@@ -2182,7 +2183,8 @@
             "The primary instance database parameter setup doesn't allow EM sync.",
             "The gtid_mode is not supported, applicable for MySQL.",
             "SQL Server Agent is not running.",
-            "The table definition is not support due to missing primary key or replica identity, applicable for postgres."
+            "The table definition is not support due to missing primary key or replica identity, applicable for postgres.",
+            "The customer has a definer that will break EM setup."
           ],
           "enum": [
             "SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED",
@@ -2205,7 +2207,8 @@
             "INVALID_DB_PARAM",
             "UNSUPPORTED_GTID_MODE",
             "SQLSERVER_AGENT_NOT_RUNNING",
-            "UNSUPPORTED_TABLE_DEFINITION"
+            "UNSUPPORTED_TABLE_DEFINITION",
+            "UNSUPPORTED_DEFINER"
           ]
         },
         "detail": {

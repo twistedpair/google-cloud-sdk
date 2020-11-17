@@ -279,25 +279,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_HUMANINTHELOOPS = (
-      'projects.locations.humanInTheLoops',
-      'projects/{projectsId}/locations/{locationsId}/humanInTheLoops/'
-      '{humanInTheLoopsId}',
-      {},
-      ['projectsId', 'locationsId', 'humanInTheLoopsId'],
-      True
-  )
-  PROJECTS_LOCATIONS_HUMANINTHELOOPS_OPERATIONS = (
-      'projects.locations.humanInTheLoops.operations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/humanInTheLoops/'
-              '{humanInTheLoopsId}/operations/{operationsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_HYPERPARAMETERTUNINGJOBS = (
       'projects.locations.hyperparameterTuningJobs',
       '{+name}',

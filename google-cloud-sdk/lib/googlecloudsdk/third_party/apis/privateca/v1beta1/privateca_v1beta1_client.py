@@ -57,33 +57,6 @@ class PrivatecaV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Create(self, request, global_params=None):
-      r"""Create a new CertificateRevocationList in a given Project, Location for a particular CertificateAuthority.
-
-      Args:
-        request: (PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}/certificateRevocationLists',
-        http_method='POST',
-        method_id='privateca.projects.locations.certificateAuthorities.certificateRevocationLists.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['certificateRevocationListId', 'requestId'],
-        relative_path='v1beta1/{+parent}/certificateRevocationLists',
-        request_field='certificateRevocationList',
-        request_type_name='PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationListsCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Returns a CertificateRevocationList.
 

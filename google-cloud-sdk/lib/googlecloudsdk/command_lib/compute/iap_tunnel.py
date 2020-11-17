@@ -76,8 +76,7 @@ def AddSshTunnelArgs(parser, tunnel_through_iap_scope):
       forwarding.
 
       To learn more, see the
-      [IAP for TCP forwarding documentation](
-      https://cloud.google.com/iap/docs/tcp-forwarding-overview).
+      [IAP for TCP forwarding documentation](https://cloud.google.com/iap/docs/tcp-forwarding-overview).
       """)
 
 

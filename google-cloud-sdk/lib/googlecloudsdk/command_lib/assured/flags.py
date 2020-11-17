@@ -99,6 +99,10 @@ def AddCreateWorkloadFlags(parser):
       metavar='KEY=VALUE',
       help=('The labels of the new Assured Workloads environment, for example, '
             'LabelKey1=LabelValue1,LabelKey2=LabelValue2'))
+  parser.add_argument(
+      '--provisioned-resources-parent',
+      help=('The parent of the provisioned projects, for example, '
+            'folders/{FOLDER_ID}'))
 
 
 def AddDeleteWorkloadFlags(parser):

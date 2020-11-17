@@ -1201,10 +1201,12 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
       INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
+      DPMS: Dataproc Metastore - Managed Hive Metastore.
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
     CLOUD_PUBSUB = 2
+    DPMS = 3
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the entry. Only used for Entries with types in the
@@ -1313,17 +1315,8 @@ class GoogleCloudDatacatalogV1beta1FieldTypeEnumType(_messages.Message):
   r"""A GoogleCloudDatacatalogV1beta1FieldTypeEnumType object.
 
   Fields:
-    allowedValues: The set of allowed values for this enum. This set must not
-      be empty, the display names of the values in this set must not be empty
-      and the display names of the values must be case-insensitively unique
-      within this set. The order of items in this list is preserved. This
-      field can be used to Required on create; optional on update. The set of
-      allowed values for this enum. This set must not be empty, the display
-      names of the values in this set must not be empty and the display names
-      of the values must be case-insensitively unique within this set.
-      Currently, enum values can only be added to the list of allowed values.
-      Deletion and renaming of enum values are not supported. Can have up to
-      500 allowed values.
+    allowedValues: A GoogleCloudDatacatalogV1beta1FieldTypeEnumTypeEnumValue
+      attribute.
   """
 
   allowedValues = _messages.MessageField('GoogleCloudDatacatalogV1beta1FieldTypeEnumTypeEnumValue', 1, repeated=True)

@@ -52,7 +52,7 @@ def FormatConfigMapVolumeSource(v):
     return v.name
 
 
-class RevisionPrinter(k8s_object_printer.K8sObjectPrinter):
+class RevisionPrinter(cp.CustomPrinterBase):
   """Prints the run Revision in a custom human-readable format.
 
   Format specific to Cloud Run revisions. Only available on Cloud Run commands
@@ -62,11 +62,11 @@ class RevisionPrinter(k8s_object_printer.K8sObjectPrinter):
   def Transform(self, record):
     """Transform a revision into the output structure of marker classes."""
     fmt = cp.Lines([
-        self._GetHeader(record),
-        self._GetLabels(record.labels),
-        ' ',
+        k8s_object_printer.GetHeader(record),
+        k8s_object_printer.GetLabels(record.labels), ' ',
         self.TransformSpec(record),
-        self._GetReadyMessage(record)])
+        k8s_object_printer.GetReadyMessage(record)
+    ])
     return fmt
 
   def GetLimits(self, rev):

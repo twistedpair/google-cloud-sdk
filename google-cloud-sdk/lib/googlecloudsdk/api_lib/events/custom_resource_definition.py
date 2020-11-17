@@ -143,7 +143,9 @@ class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
     Returns:
       k8s_object.ListAsReadOnlyDictionaryWrapper
     """
-    if self.apiVersion != 'apiextensions.k8s.io/v1':
+    # CustomResourceDefinition validation only exists in v1alpha1 and v1beta1
+    # Under v1, validation now exists under spec.versions
+    if self.source_version == 'v1alpha1' or self.source_version == 'v1beta1':
       return JsonSchemaPropsWrapper(self._m.spec.validation.openAPIV3Schema)
 
     # While the list CustomResourceDefinition is v1, the source itself could be
@@ -163,9 +165,9 @@ class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
 
     Where metadata.annotations."registry.knative.dev/eventTypes" holds an array
     of {
-      type: str, The event type.
-      schema: str, The url defining the schema.
-      description: str, The description of the event type.
+      type: string of the event type,
+      schema: string holding url to github proto defined,
+      description: string describing the event type.
     }
     """
     if _EVENT_TYPE_REGISTRY_KEY not in self.annotations:

@@ -90,8 +90,9 @@ def AddContentTypeArgs(parser, required):
         'Asset content type. Specifying `resource` will export resource '
         'metadata, specifying `iam-policy` will export the IAM policy for each '
         'child asset, specifying `org-policy` will export the Org Policy set on'
-        ' child assets, and specifying `access-policy` will export the Access '
-        'Policy set on child assets.')
+        ' child assets, specifying `access-policy` will export the Access '
+        'Policy set on child assets, and specifying `os-inventory` will export '
+        'the OS inventory of VM instances.')
   else:
     help_text = (
         'Asset content type. If specified, only content matching the '
@@ -99,13 +100,17 @@ def AddContentTypeArgs(parser, required):
         'asset name will be returned. Specifying `resource` will export '
         'resource metadata, specifying `iam-policy` will export the IAM policy '
         'for each child asset, specifying `org-policy` will export the Org '
-        'Policy set on child assets, and specifying `access-policy` will '
-        'export the Access Policy set on child assets.')
+        'Policy set on child assets, specifying `access-policy` will '
+        'export the Access Policy set on child assets, and specifying '
+        '`os-inventory` will export the OS inventory of VM instances.')
 
   parser.add_argument(
       '--content-type',
       required=required,
-      choices=['resource', 'iam-policy', 'org-policy', 'access-policy'],
+      choices=[
+          'resource', 'iam-policy', 'org-policy', 'access-policy',
+          'os-inventory'
+      ],
       help=help_text)
 
 
@@ -297,7 +302,10 @@ def AddFeedCriteriaArgs(parser):
 def FeedContentTypeArgs(parser, help_text):
   parser.add_argument(
       '--content-type',
-      choices=['resource', 'iam-policy', 'org-policy', 'access-policy'],
+      choices=[
+          'resource', 'iam-policy', 'org-policy', 'access-policy',
+          'os-inventory'
+      ],
       help=help_text)
 
 

@@ -44,11 +44,40 @@ class RequestConfig(object):
   """Arguments object for parameters shared between cloud providers.
 
   Attributes:
+      md5_hash (str): MD5 digest to use for validation.
       predefined_acl_string (str): ACL to be set on the object.
   """
 
-  def __init__(self, predefined_acl_string=None):
+  def __init__(self, md5_hash=None, predefined_acl_string=None):
+    self.md5_hash = md5_hash
     self.predefined_acl_string = predefined_acl_string
+
+  def __eq__(self, other):
+    return (isinstance(self, type(other)) and
+            isinstance(other, RequestConfig) and
+            self.md5_hash == other.md5_hash and
+            self.predefined_acl_string == other.predefined_acl_string)
+
+
+# TODO(b/172849424) Refactor RequestConfigs as a whole to avoid this.
+def convert_to_provider_request_config(generic_request_config,
+                                       provider_request_config_type):
+  """Converts RequestConfig to provider-specific version (ex: GcsRequestConfig).
+
+  Args:
+    generic_request_config (RequestConfig|None): This object's properties will
+      be carried over to the specified provider type.
+    provider_request_config_type (RequestConfig): Uninitialized reference to the
+      class of a RequestConfig child type.
+
+  Returns:
+    RequestConfig child class with properties carried over from parent version.
+  """
+  if not generic_request_config:
+    return provider_request_config_type()
+  return provider_request_config_type(
+      md5_hash=generic_request_config.md5_hash,
+      predefined_acl_string=generic_request_config.predefined_acl_string)
 
 
 class CloudApi(object):

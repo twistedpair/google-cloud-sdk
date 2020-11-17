@@ -60,6 +60,16 @@ class UploadError(Error):
   """Error raised when there are problems uploading files."""
 
 
+class BucketInWrongProjectError(Error):
+  """Error raised when a bucket exists in a project the user doesn't own.
+
+  Specifically, this applies when a command creates a bucket if it doesn't
+  exist, or returns the existing bucket otherwise. If the bucket exists but is
+  owned by a different project, it could belong to a malicious user squatting on
+  the bucket name.
+  """
+
+
 def _GetMimetype(local_path):
   mime_type, _ = mimetypes.guess_type(local_path)
   return mime_type or 'application/octet-stream'
@@ -330,25 +340,29 @@ class StorageClient(object):
       # Bucket doesn't exist, we'll try to create it.
       raise BucketNotFoundError('Bucket [{}] does not exist.'.format(bucket))
 
-  def CreateBucketIfNotExists(self, bucket, project=None, location=None):
+  def CreateBucketIfNotExists(
+      self, bucket, project=None, location=None, check_ownership=True):
     """Create a bucket if it does not already exist.
 
     If it already exists and is accessible by the current user, this method
     returns.
-
-    Note that ownership is not checked by this method (an existing
-    bucket could belong to a malicious user so the client code needs to perform
-    ownership check if appropriate).
 
     Args:
       bucket: str, The storage bucket to be created.
       project: str, The project to use for the API request. If None, current
           Cloud SDK project is used.
       location: str, The bucket location/region.
+      check_ownership: bool, Whether to check that the resulting bucket belongs
+          to the given project. DO NOT SET THIS TO FALSE if the bucket name can
+          be guessed and claimed ahead of time by another user as it enables a
+          name squatting exploit.
 
     Raises:
       api_exceptions.HttpError: If the bucket is not able to be created or is
         not accessible due to permissions.
+      BucketInWrongProjectError: If the bucket already exists in a different
+        project. This could belong to a malicious user squatting on the bucket
+        name.
     """
     project = project or properties.VALUES.core.project.Get(required=True)
 
@@ -379,6 +393,21 @@ class StorageClient(object):
         self.client.buckets.Get(self.messages.StorageBucketsGetRequest(
             bucket=bucket,
         ))
+      else:
+        # We just created the bucket ourselves; no need to check for ownership.
+        return
+
+    if not check_ownership:
+      return
+    # Check that the bucket is in the user's project to prevent bucket squatting
+    # exploit (see b/33046325, b/169171543).
+    bucket_list_req = self.messages.StorageBucketsListRequest(
+        project=project, prefix=bucket)
+    bucket_list = self.client.buckets.List(bucket_list_req)
+    if not any(b.id == bucket for b in bucket_list.items):
+      raise BucketInWrongProjectError(
+          'Unable to create bucket [{}] as it already exists in another '
+          'project.'.format(bucket))
 
   def GetBucketLocationForFile(self, object_path):
     """Returns the location of the bucket for a file.

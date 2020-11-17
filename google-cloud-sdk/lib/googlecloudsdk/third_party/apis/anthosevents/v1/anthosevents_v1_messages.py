@@ -317,6 +317,17 @@ class AnthoseventsApiV1NamespacesServiceaccountsReplaceServiceAccountRequest(_me
   serviceAccount = _messages.MessageField('ServiceAccount', 2)
 
 
+class AnthoseventsCustomresourcedefinitionsGetRequest(_messages.Message):
+  r"""A AnthoseventsCustomresourcedefinitionsGetRequest object.
+
+  Fields:
+    name: The name of the CustomResourceDefinition being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AnthoseventsCustomresourcedefinitionsListRequest(_messages.Message):
   r"""A AnthoseventsCustomresourcedefinitionsListRequest object.
 
@@ -763,17 +774,6 @@ class AnthoseventsNamespacesCloudstoragesourcesReplaceCloudStorageSourceRequest(
 
   cloudStorageSource = _messages.MessageField('CloudStorageSource', 1)
   name = _messages.StringField(2, required=True)
-
-
-class AnthoseventsNamespacesCustomresourcedefinitionsGetRequest(_messages.Message):
-  r"""A AnthoseventsNamespacesCustomresourcedefinitionsGetRequest object.
-
-  Fields:
-    name: The name of the CustomResourceDefinition being retrieved. If needed,
-      replace {namespace_id} with the project ID.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class AnthoseventsNamespacesTriggersCreateRequest(_messages.Message):

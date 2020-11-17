@@ -1816,16 +1816,6 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
-    'serviceuser': {
-        'v1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.serviceuser.v1',
-                client_classpath='serviceuser_v1_client.ServiceuserV1',
-                messages_modulepath='serviceuser_v1_messages',
-                default_version=True,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
-    },
     'source': {
         'v1':
             APIDef(

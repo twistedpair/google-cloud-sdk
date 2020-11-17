@@ -40,11 +40,15 @@ def ProcessTaxonomiesFromYAML(inline_source, version_label):
     InvalidInlineSourceError: If the inline source is invalid.
   """
   messages = api_util.GetMessagesModule(version_label)
+  if version_label == 'v1':
+    request = messages.GoogleCloudDatacatalogV1ImportTaxonomiesRequest
+  else:
+    request = messages.GoogleCloudDatacatalogV1beta1ImportTaxonomiesRequest
 
   try:
     import_request_message = encoding.DictToMessage(
         {'inlineSource': inline_source},
-        messages.GoogleCloudDatacatalogV1beta1ImportTaxonomiesRequest)
+        request)
   except AttributeError:
     raise InvalidInlineSourceError('An error occurred while parsing the '
                                    'serialized taxonomy. Please check your '
@@ -55,7 +59,6 @@ def ProcessTaxonomiesFromYAML(inline_source, version_label):
                        'unrecognized:']
     error_msg_lines += unrecognized_field_paths
     raise InvalidInlineSourceError('\n'.join(error_msg_lines))
-
   return import_request_message
 
 

@@ -1490,8 +1490,44 @@ class YAMLFileContents(object):
     if not (yaml.dict_like(yaml_data) or yaml.list_like(yaml_data)):
       raise ArgumentTypeError('Invalid YAML/JSON Data [{}]'.format(yaml_data))
 
+  def _LoadSingleYamlDocument(self, name):
+    """Returns the yaml data for a file or from stdin for a single document.
+
+    YAML allows multiple documents in a single file by using `---` as a
+    separator between documents. See https://yaml.org/spec/1.1/#id857577.
+    However, some YAML-generating tools generate a single document followed by
+    this separator before ending the file.
+
+    This method supports the case of a single document in a file that contains
+    superfluous document separators, but still throws if multiple documents are
+    actually found.
+
+    Args:
+      name: str, The file path to the file or "-" to read from stdin.
+
+    Returns:
+      The contents of the file parsed as a YAML data object.
+    """
+    if name == '-':
+      stdin = console_io.ReadStdin()  # Save to potentially reuse below
+      yaml_data = yaml.load_all(stdin)
+    else:
+      yaml_data = yaml.load_all_path(name)
+    yaml_data = [d for d in yaml_data if d is not None]  # Remove empty docs
+
+    # Return the single document if only 1 is found.
+    if len(yaml_data) == 1:
+      return yaml_data[0]
+
+    # Multiple (or 0) documents found. Try to parse again with single-document
+    # loader so its error is propagated rather than creating our own.
+    if name == '-':
+      return yaml.load(stdin)
+    else:
+      return yaml.load_path(name)
+
   def __call__(self, name):
-    """Load YAML data from file path (name).
+    """Load YAML data from file path (name) or stdin.
 
     If name is "-", stdin is read until EOF. Otherwise, the named file is read.
     If self.validator is set, call it on the yaml data once it is loaded.
@@ -1508,10 +1544,7 @@ class YAMLFileContents(object):
       ValueError: If file content fails validation.
     """
     try:
-      if name == '-':
-        yaml_data = yaml.load(console_io.ReadStdin())
-      else:
-        yaml_data = yaml.load_path(name)
+      yaml_data = self._LoadSingleYamlDocument(name)
       self._AssertJsonLike(yaml_data)
       if self.validator:
         if not self.validator(yaml_data):

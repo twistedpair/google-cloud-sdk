@@ -400,7 +400,7 @@ class Job(_messages.Message):
     endTime: Output only. The time the transcoding finished.
     failureDetails: Output only. List of failure details. This property may
       contain additional information about the failure when `failure_reason`
-      is present.
+      is present. *Note*: This feature is not yet available.
     failureReason: Output only. A description of the reason for the failure.
       This property is always present when `state` is `FAILED`.
     inputUri: Input only. Specify the `input_uri` to populate empty `uri`
@@ -410,7 +410,8 @@ class Job(_messages.Message):
       `gs://bucket/inputs/file.mp4`.
     name: The resource name of the job. Format:
       `projects/{project}/locations/{location}/jobs/{job}`
-    originUri: Output only. The origin URI.
+    originUri: Output only. The origin URI. *Note*: This feature is not yet
+      available.
     outputUri: Input only. Specify the `output_uri` to populate an empty
       `Job.config.output.uri` or `JobTemplate.config.output.uri` when using
       template. URI for the output file(s). For example, `gs://my-
@@ -419,7 +420,7 @@ class Job(_messages.Message):
       100, where 0 is the lowest priority and 100 is the highest priority. The
       default is 0.
     progress: Output only. Estimated fractional progress, from `0` to `1` for
-      each step.
+      each step. *Note*: This feature is not yet available.
     startTime: Output only. The time the transcoding started.
     state: Output only. The current state of the job.
     templateId: Input only. Specify the `template_id` to use for populating

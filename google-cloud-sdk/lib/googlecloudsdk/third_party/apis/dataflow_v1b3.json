@@ -2385,7 +2385,7 @@
       "type": "object",
       "properties": {
         "jobName": {
-          "description": "Required. The job name to use for the created job.",
+          "description": "Required. The job name to use for the created job. For update job request, job name should be same as the existing running job.",
           "type": "string"
         },
         "containerSpec": {
@@ -2413,6 +2413,17 @@
         "environment": {
           "description": "The runtime environment for the FlexTemplate job",
           "$ref": "FlexTemplateRuntimeEnvironment"
+        },
+        "update": {
+          "description": "Set this to true if you are sending a request to update a running streaming job. When set, the job name should be the same as the running job.",
+          "type": "boolean"
+        },
+        "transformNameMappings": {
+          "description": "Users need to set transform_name_mappings Ex:{\"oldTransformName\":\"newTransformName\",...}'",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

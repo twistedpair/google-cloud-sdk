@@ -1222,71 +1222,6 @@ class AiplatformProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class AiplatformProjectsLocationsHumanInTheLoopsOperationsCancelRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsHumanInTheLoopsOperationsCancelRequest
-  object.
-
-  Fields:
-    name: The name of the operation resource to be cancelled.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class AiplatformProjectsLocationsHumanInTheLoopsOperationsDeleteRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsHumanInTheLoopsOperationsDeleteRequest
-  object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class AiplatformProjectsLocationsHumanInTheLoopsOperationsGetRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsHumanInTheLoopsOperationsGetRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class AiplatformProjectsLocationsHumanInTheLoopsOperationsListRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsHumanInTheLoopsOperationsListRequest
-  object.
-
-  Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
-class AiplatformProjectsLocationsHumanInTheLoopsOperationsWaitRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsHumanInTheLoopsOperationsWaitRequest
-  object.
-
-  Fields:
-    name: The name of the operation resource to wait on.
-    timeout: The maximum duration to wait before timing out. If left blank,
-      the wait will be at most the time permitted by the underlying HTTP/RPC
-      protocol. If RPC context deadline is also specified, the shorter one
-      will be used.
-  """
-
-  name = _messages.StringField(1, required=True)
-  timeout = _messages.StringField(2)
-
-
 class AiplatformProjectsLocationsHyperparameterTuningJobsCancelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsHyperparameterTuningJobsCancelRequest
   object.
@@ -2653,6 +2588,378 @@ class AiplatformProjectsLocationsTrainingPipelinesOperationsWaitRequest(_message
   timeout = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformInternalBatchConfig(_messages.Message):
+  r"""Configurations describing how to construct labeling tasks from collected
+  prediction results.
+
+  Fields:
+    batchCount: A new labeling task will be generated once batch_count number
+      of data items are collected.
+    pendingDuration: A new labeling task will be generated once the oldest
+      collected data item is pending for longer than pending_duration.
+  """
+
+  batchCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pendingDuration = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformInternalCreateHumanInTheLoopOperationMetadata(_messages.Message):
+  r"""Runtime operation information for
+  HumanInTheLoopService.CreateHumanInTheLoop.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalDocumentCriteria(_messages.Message):
+  r"""Describes the triggering criteria of the human in the loop configuration
+  for document AI.
+
+  Enums:
+    CriteriaTypeValueValuesEnum: The current enabled criteria.
+
+  Fields:
+    criteriaType: The current enabled criteria.
+    documentLevelCriteria: Document level criteria configuration.
+    fieldCriteria: The list of field criteria user added.
+    randomSampling: Randomly sample the documents for human review.
+  """
+
+  class CriteriaTypeValueValuesEnum(_messages.Enum):
+    r"""The current enabled criteria.
+
+    Values:
+      CRITERIA_TYPE_UNSPECIFIED: Unspecified criteria type.
+      RANDOM_SAMPLING: Randomly sample the document for human review.
+      DOCUMENT_LEVEL: Configuration for the whole document fields/entities.
+      FIELD_LEVEL: Configuration for each field/entity.
+      CRITERIA_DISABLED: Criteria is disabled.
+    """
+    CRITERIA_TYPE_UNSPECIFIED = 0
+    RANDOM_SAMPLING = 1
+    DOCUMENT_LEVEL = 2
+    FIELD_LEVEL = 3
+    CRITERIA_DISABLED = 4
+
+  criteriaType = _messages.EnumField('CriteriaTypeValueValuesEnum', 1)
+  documentLevelCriteria = _messages.MessageField('GoogleCloudAiplatformInternalDocumentCriteriaDocumentLevelCriteria', 2)
+  fieldCriteria = _messages.MessageField('GoogleCloudAiplatformInternalDocumentCriteriaFieldLevelCriteria', 3, repeated=True)
+  randomSampling = _messages.MessageField('GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling', 4)
+
+
+class GoogleCloudAiplatformInternalDocumentCriteriaDocumentLevelCriteria(_messages.Message):
+  r"""The general criteria for all the entities/fields in one document.
+
+  Fields:
+    confidenceThreshold: Confidence Threshold, between 0 - 1.0.
+  """
+
+  confidenceThreshold = _messages.FloatField(1)
+
+
+class GoogleCloudAiplatformInternalDocumentCriteriaFieldLevelCriteria(_messages.Message):
+  r"""Criteria for each field/entity interested.
+
+  Enums:
+    OccurrenceTypeValueValuesEnum: The expected OccurrenceType for the
+      field/entity.
+
+  Fields:
+    confidenceThreshold: Confidence threshold, between 0 - 1.0.
+    fieldName: Field/Entity Name.
+    occurrenceType: The expected OccurrenceType for the field/entity.
+  """
+
+  class OccurrenceTypeValueValuesEnum(_messages.Enum):
+    r"""The expected OccurrenceType for the field/entity.
+
+    Values:
+      OCCURRENCE_TYPE_UNSPECIFIED: Unspecified occurrence type.
+      OPTIONAL_ONCE: The entity type will appear zero times or once.
+      OPTIONAL_MULTIPLE: The entity type will appear zero or multiple times.
+      REQUIRED_ONCE: The entity type will only appear exactly once.
+      REQUIRED_MULTIPLE: The entity type will appear once or more times.
+    """
+    OCCURRENCE_TYPE_UNSPECIFIED = 0
+    OPTIONAL_ONCE = 1
+    OPTIONAL_MULTIPLE = 2
+    REQUIRED_ONCE = 3
+    REQUIRED_MULTIPLE = 4
+
+  confidenceThreshold = _messages.FloatField(1)
+  fieldName = _messages.StringField(2)
+  occurrenceType = _messages.EnumField('OccurrenceTypeValueValuesEnum', 3)
+
+
+class GoogleCloudAiplatformInternalDocumentMetadata(_messages.Message):
+  r"""Metadata for the document AI human in the loop configuration.
+
+  Fields:
+    processorVersion: The Atlas processor version name that creates this human
+      in the loop configuration.
+  """
+
+  processorVersion = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformInternalGenericOperationMetadata(_messages.Message):
+  r"""Generic Metadata shared by all operations.
+
+  Fields:
+    createTime: Output only. Time when the operation was created.
+    partialFailures: Output only. Partial failures encountered. E.g. single
+      files that couldn't be read. This field should never exceed 20 entries.
+      Status details field will contain standard GCP error details.
+    updateTime: Output only. Time when the operation was updated for the last
+      time. If the operation has finished (successfully or not), this is the
+      finish time.
+  """
+
+  createTime = _messages.StringField(1)
+  partialFailures = _messages.MessageField('GoogleRpcStatus', 2, repeated=True)
+  updateTime = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
+  r"""A human in the loop configuration describing how to trigger a human
+  labeling job in a prediction process and properties of the human labeling
+  job. Next id: 23
+
+  Enums:
+    GoogleSpecialistRegionValueValuesEnum: Residency of Google in-house
+      specialists. If users select to use Google in-house specialists to do
+      the human review, Indian specialists are used by default; otherwise,
+      users need to specify the Google specialist region here. If users select
+      to use customized specialists, the Google specialist region here will be
+      ignored.
+    StateValueValuesEnum: State of the human in the loop feature.
+
+  Messages:
+    LabelsValue: The labels with user-defined metadata to organize your human
+      in the loop configuration. Label keys and values can be no longer than
+      64 characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels. System reserved label keys are prefixed with
+      "aiplatform.googleapis.com/" and are immutable. Following system labels
+      exist for each HumanInTheLoop: * "aiplatform.googleapis.com/schema": -
+      output only, its value is the inputs_schema's title.
+
+  Fields:
+    batchConfig: Batching configuration of this human in the loop
+      configuration.
+    completedDataItemsCount: Output only. Number of labeled data items from
+      this human in the loop configuration.
+    completedDataLabelingJobsCount: Output only. Number of completed data
+      labeling jobs from this human in the loop configuration.
+    createTime: Output only. Timestamp when this configuration was created.
+    dataLabelingJobInputsSchemaUri: Required. Points to a YAML file stored on
+      Google Cloud Storage describing the configuration for a specific type of
+      DataLabelingJob created from this configuration.
+    dataLabelingJobParameters: Required. Input configuration parameters for
+      the DataLabelingJob created from this configuration.
+    displayName: Required. The user-defined name of the Human in the Loop. The
+      name can be up to 128 characters long and can be consist of any UTF-8
+      characters. This field should be unique on project-level.
+    documentCriteria: Required. Criteria for triggering a document labeling
+      job.
+    documentMetadata: Metadata for document labeling.
+    googleSpecialistRegion: Residency of Google in-house specialists. If users
+      select to use Google in-house specialists to do the human review, Indian
+      specialists are used by default; otherwise, users need to specify the
+      Google specialist region here. If users select to use customized
+      specialists, the Google specialist region here will be ignored.
+    instructionUri: Required. The Google Cloud Storage location of the
+      instruction pdf. This pdf is shared with labelers, and provides detailed
+      description on how to label DataItems in Datasets.
+    labels: The labels with user-defined metadata to organize your human in
+      the loop configuration. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels. System reserved label keys are prefixed with
+      "aiplatform.googleapis.com/" and are immutable. Following system labels
+      exist for each HumanInTheLoop: * "aiplatform.googleapis.com/schema": -
+      output only, its value is the inputs_schema's title.
+    name: Output only. The resource name of the human in the loop
+      configuration.
+    outputPath: Cloud Storage path the labeling answer will be written to.
+    pendingDataItemsCount: Output only. Number of data items that are
+      collected but not yet sent to human review.
+    replicaCount: Required. Number of labelers to work on each DataItem.
+    runningDataItemsCount: Output only. Number of data items that belongs to
+      the current running data labeling jobs from this human in the loop
+      configuration.
+    runningDataLabelingJobsCount: Output only. Number of currently running
+      data labeling jobs from this human in the loop configuration.
+    specialistPool: Resource names of the specialist pools used in this
+      configuration.
+    state: State of the human in the loop feature.
+    updateTime: Output only. Timestamp when this configuration was updated
+      most recently.
+  """
+
+  class GoogleSpecialistRegionValueValuesEnum(_messages.Enum):
+    r"""Residency of Google in-house specialists. If users select to use
+    Google in-house specialists to do the human review, Indian specialists are
+    used by default; otherwise, users need to specify the Google specialist
+    region here. If users select to use customized specialists, the Google
+    specialist region here will be ignored.
+
+    Values:
+      GOOGLE_SPECIALIST_REGION_UNSPECIFIED: Unspecified.
+      IN: Google specialist residented in IN.
+      US: Google specialist residented in US.
+      EU: Google specialist residented in EU.
+    """
+    GOOGLE_SPECIALIST_REGION_UNSPECIFIED = 0
+    IN = 1
+    US = 2
+    EU = 3
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the human in the loop feature.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified.
+      DISABLED: Feature is disabled;
+      ENABLED: Feature is enabled.
+    """
+    STATE_UNSPECIFIED = 0
+    DISABLED = 1
+    ENABLED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels with user-defined metadata to organize your human in the
+    loop configuration. Label keys and values can be no longer than 64
+    characters (Unicode codepoints), can only contain lowercase letters,
+    numeric characters, underscores and dashes. International characters are
+    allowed. See https://goo.gl/xmQnxf for more information and examples of
+    labels. System reserved label keys are prefixed with
+    "aiplatform.googleapis.com/" and are immutable. Following system labels
+    exist for each HumanInTheLoop: * "aiplatform.googleapis.com/schema": -
+    output only, its value is the inputs_schema's title.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  batchConfig = _messages.MessageField('GoogleCloudAiplatformInternalBatchConfig', 1)
+  completedDataItemsCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  completedDataLabelingJobsCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(4)
+  dataLabelingJobInputsSchemaUri = _messages.StringField(5)
+  dataLabelingJobParameters = _messages.MessageField('extra_types.JsonValue', 6)
+  displayName = _messages.StringField(7)
+  documentCriteria = _messages.MessageField('GoogleCloudAiplatformInternalDocumentCriteria', 8)
+  documentMetadata = _messages.MessageField('GoogleCloudAiplatformInternalDocumentMetadata', 9)
+  googleSpecialistRegion = _messages.EnumField('GoogleSpecialistRegionValueValuesEnum', 10)
+  instructionUri = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  name = _messages.StringField(13)
+  outputPath = _messages.StringField(14)
+  pendingDataItemsCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  replicaCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  runningDataItemsCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  runningDataLabelingJobsCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  specialistPool = _messages.StringField(19, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  updateTime = _messages.StringField(21)
+
+
+class GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling(_messages.Message):
+  r"""Describe the random sampling parameters for triggering human in the
+  loop.
+
+  Fields:
+    rate: Sampling rate: (0,1]
+  """
+
+  rate = _messages.FloatField(1)
+
+
+class GoogleCloudAiplatformInternalSendHumanInTheLoopEntryOperationMetadata(_messages.Message):
+  r"""Runtime operation information for
+  HumanInTheLoopService.SendHumanInTheLoopEntry
+
+  Fields:
+    genericMetadata: The operation generic information.
+    labelingProgress: Output only. Current labeling job progress percentage
+      scaled in interval [0, 100], indicating the percentage of DataItems that
+      has been finished.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+  labelingProgress = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformInternalSendHumanInTheLoopEntryResponse(_messages.Message):
+  r"""Response message for HumanInTheLoopService.SendHumanInTheLoopEntry
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the sent entries.
+
+  Fields:
+    annotationSpecCount: Output only. The number of annotation specs used in
+      this operation.
+    currentSpend: Output only. Estimated cost(in US dollars) that the
+      DataLabelingJob has incurred to date.
+    dataItemCount: Output only. The number of data items that are labeled in
+      this operation.
+    exportedFiles: Output only. All of the files that are exported from export
+      dataset.
+    state: Output only. State of the sent entries.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the sent entries.
+
+    Values:
+      HUMAN_IN_THE_LOOP_ENTRY_STATE_UNSPECIFIED: Default, shall not be used.
+      ENQUEUEING: The entry is being enqueued to a batch.
+      WAITING_FOR_LABELING: The entry is in a batch waiting for a labeling job
+        to be created.
+      LABELING: The entry is in a labeling job and being labeled.
+      FINISHING: The entry is labeled and the annotations are being collected
+        and exported.
+      FINISHED: The entry is labeled and the annotations are exported.
+      FAILED: The entry failed.
+    """
+    HUMAN_IN_THE_LOOP_ENTRY_STATE_UNSPECIFIED = 0
+    ENQUEUEING = 1
+    WAITING_FOR_LABELING = 2
+    LABELING = 3
+    FINISHING = 4
+    FINISHED = 5
+    FAILED = 6
+
+  annotationSpecCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  currentSpend = _messages.MessageField('GoogleTypeMoney', 2)
+  dataItemCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  exportedFiles = _messages.StringField(4, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
 class GoogleCloudAiplatformUiAnnotationSpecStats(_messages.Message):
   r"""Stats of DataItems annotated by the specified AnnotationSpec and
   Annotations with the AnnotationSpec in a SavedQuery.
@@ -3025,9 +3332,9 @@ class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
       which has the name specified as the key in ExplanationMetadata.inputs.
       The baseline of the empty feature is chosen by AI Platform. For AI
       Platform provided Tensorflow images, the key can be any friendly name of
-      the feature . Once specified, featureAttributions will be keyed by this
-      key (if not grouped with another feature). For custom images, the key
-      must match with the key in instance.
+      the feature. Once specified, featureAttributions are keyed by this key
+      (if not grouped with another feature). For custom images, the key must
+      match with the key in instance.
     OutputsValue: Required. Map from output names to output metadata. For AI
       Platform provided Tensorflow images, keys can be any string user
       defines. For custom images, keys are the name of the output field in the
@@ -3048,9 +3355,9 @@ class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
       which has the name specified as the key in ExplanationMetadata.inputs.
       The baseline of the empty feature is chosen by AI Platform. For AI
       Platform provided Tensorflow images, the key can be any friendly name of
-      the feature . Once specified, featureAttributions will be keyed by this
-      key (if not grouped with another feature). For custom images, the key
-      must match with the key in instance.
+      the feature. Once specified, featureAttributions are keyed by this key
+      (if not grouped with another feature). For custom images, the key must
+      match with the key in instance.
     outputs: Required. Map from output names to output metadata. For AI
       Platform provided Tensorflow images, keys can be any string user
       defines. For custom images, keys are the name of the output field in the
@@ -3064,10 +3371,10 @@ class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
     empty InputMetadata is valid. It describes a text feature which has the
     name specified as the key in ExplanationMetadata.inputs. The baseline of
     the empty feature is chosen by AI Platform. For AI Platform provided
-    Tensorflow images, the key can be any friendly name of the feature . Once
-    specified, featureAttributions will be keyed by this key (if not grouped
-    with another feature). For custom images, the key must match with the key
-    in instance.
+    Tensorflow images, the key can be any friendly name of the feature. Once
+    specified, featureAttributions are keyed by this key (if not grouped with
+    another feature). For custom images, the key must match with the key in
+    instance.
 
     Messages:
       AdditionalProperty: An additional property for a InputsValue object.
@@ -3246,8 +3553,8 @@ class GoogleCloudAiplatformUiExplanationMetadataInputMetadataFeatureValueDomain(
   mean = 0 and stddev = 1) was obtained.
 
   Fields:
-    max: The maximum permissible value for this feature.
-    min: The minimum permissible value for this feature.
+    maxValue: The maximum permissible value for this feature.
+    minValue: The minimum permissible value for this feature.
     originalMean: If this input feature has been normalized to a mean value of
       0, the original_mean specifies the mean value of the domain prior to
       normalization.
@@ -3256,8 +3563,8 @@ class GoogleCloudAiplatformUiExplanationMetadataInputMetadataFeatureValueDomain(
       of the domain prior to normalization.
   """
 
-  max = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  min = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  maxValue = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  minValue = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   originalMean = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
   originalStddev = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
@@ -3702,14 +4009,13 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
     acceleratorCount: The number of accelerators to attach to the machine.
     acceleratorType: Immutable. The type of accelerator(s) that may be
       attached to the machine as per accelerator_count.
-    machineType: Immutable. The type of the machine. Following machine types
-      are supported: * `n1-standard-2` * `n1-standard-4` * `n1-standard-8` *
-      `n1-standard-16` * `n1-standard-32` * `n1-highmem-2` * `n1-highmem-4` *
-      `n1-highmem-8` * `n1-highmem-16` * `n1-highmem-32` * `n1-highcpu-2` *
-      `n1-highcpu-4` * `n1-highcpu-8` * `n1-highcpu-16` * `n1-highcpu-32` When
-      used for DeployedMode this field is optional and the default value is
-      `n1-standard-2`. If used for BatchPredictionJob or as part of
-      WorkerPoolSpec this field is required.
+    machineType: Immutable. The type of the machine. For the machine types
+      supported for prediction, see https://tinyurl.com/aip-
+      docs/predictions/machine-types. For machine types supported for creating
+      a custom training job, see https://tinyurl.com/aip-
+      docs/training/configure-compute. For DeployedModel this field is
+      optional, and the default value is `n1-standard-2`. For
+      BatchPredictionJob or as part of WorkerPoolSpec this field is required.
   """
 
   class AcceleratorTypeValueValuesEnum(_messages.Enum):
@@ -4787,9 +5093,9 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
       which has the name specified as the key in ExplanationMetadata.inputs.
       The baseline of the empty feature is chosen by AI Platform. For AI
       Platform provided Tensorflow images, the key can be any friendly name of
-      the feature . Once specified, featureAttributions will be keyed by this
-      key (if not grouped with another feature). For custom images, the key
-      must match with the key in instance.
+      the feature. Once specified, featureAttributions are keyed by this key
+      (if not grouped with another feature). For custom images, the key must
+      match with the key in instance.
     OutputsValue: Required. Map from output names to output metadata. For AI
       Platform provided Tensorflow images, keys can be any string user
       defines. For custom images, keys are the name of the output field in the
@@ -4810,9 +5116,9 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
       which has the name specified as the key in ExplanationMetadata.inputs.
       The baseline of the empty feature is chosen by AI Platform. For AI
       Platform provided Tensorflow images, the key can be any friendly name of
-      the feature . Once specified, featureAttributions will be keyed by this
-      key (if not grouped with another feature). For custom images, the key
-      must match with the key in instance.
+      the feature. Once specified, featureAttributions are keyed by this key
+      (if not grouped with another feature). For custom images, the key must
+      match with the key in instance.
     outputs: Required. Map from output names to output metadata. For AI
       Platform provided Tensorflow images, keys can be any string user
       defines. For custom images, keys are the name of the output field in the
@@ -4826,10 +5132,10 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
     empty InputMetadata is valid. It describes a text feature which has the
     name specified as the key in ExplanationMetadata.inputs. The baseline of
     the empty feature is chosen by AI Platform. For AI Platform provided
-    Tensorflow images, the key can be any friendly name of the feature . Once
-    specified, featureAttributions will be keyed by this key (if not grouped
-    with another feature). For custom images, the key must match with the key
-    in instance.
+    Tensorflow images, the key can be any friendly name of the feature. Once
+    specified, featureAttributions are keyed by this key (if not grouped with
+    another feature). For custom images, the key must match with the key in
+    instance.
 
     Messages:
       AdditionalProperty: An additional property for a InputsValue object.
@@ -5087,14 +5393,13 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
     acceleratorCount: The number of accelerators to attach to the machine.
     acceleratorType: Immutable. The type of accelerator(s) that may be
       attached to the machine as per accelerator_count.
-    machineType: Immutable. The type of the machine. Following machine types
-      are supported: * `n1-standard-2` * `n1-standard-4` * `n1-standard-8` *
-      `n1-standard-16` * `n1-standard-32` * `n1-highmem-2` * `n1-highmem-4` *
-      `n1-highmem-8` * `n1-highmem-16` * `n1-highmem-32` * `n1-highcpu-2` *
-      `n1-highcpu-4` * `n1-highcpu-8` * `n1-highcpu-16` * `n1-highcpu-32` When
-      used for DeployedMode this field is optional and the default value is
-      `n1-standard-2`. If used for BatchPredictionJob or as part of
-      WorkerPoolSpec this field is required.
+    machineType: Immutable. The type of the machine. For the machine types
+      supported for prediction, see https://tinyurl.com/aip-
+      docs/predictions/machine-types. For machine types supported for creating
+      a custom training job, see https://tinyurl.com/aip-
+      docs/training/configure-compute. For DeployedModel this field is
+      optional, and the default value is `n1-standard-2`. For
+      BatchPredictionJob or as part of WorkerPoolSpec this field is required.
   """
 
   class AcceleratorTypeValueValuesEnum(_messages.Enum):
@@ -6131,22 +6436,21 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
     error: Output only. Only populated when the job's state is
       JOB_STATE_FAILED or JOB_STATE_CANCELLED.
     explanationSpec: Explanation configuration for this BatchPredictionJob.
-      Can only be specified if generate_explanation is set to `true`. It's
-      invalid to specified it with generate_explanation set to false or unset.
-      This value overrides the value of Model.explanation_spec. All fields of
-      explanation_spec are optional in the request. If a field of
-      explanation_spec is not populated, the value of the same field of
-      Model.explanation_spec is inherited. The corresponding
-      Model.explanation_spec must be populated, otherwise explanation for this
-      Model is not allowed.
-    generateExplanation: Generate explanation along with the batch prediction
-      results. When it's true, the batch prediction output will change based
-      on the output format: * `bigquery`: output will include a column named
-      `explanation`. The value is a struct that conforms to the Explanation
-      object. * `jsonl`: The JSON objects on each line will include an
+      Can be specified only if generate_explanation is set to `true`. This
+      value overrides the value of Model.explanation_spec. All fields of
+      explanation_spec are optional in the request. If a field of the
+      explanation_spec object is not populated, the corresponding field of the
+      Model.explanation_spec object is inherited.
+    generateExplanation: Generate explanation with the batch prediction
+      results. When set to `true`, the batch prediction output changes based
+      on the `predictions_format` field of the
+      BatchPredictionJob.output_config object: * `bigquery`: output includes a
+      column named `explanation`. The value is a struct that conforms to the
+      Explanation object. * `jsonl`: The JSON objects on each line include an
       additional entry keyed `explanation`. The value of the entry is a JSON
       object that conforms to the Explanation object. * `csv`: Generating
-      explanations for CSV format is not supported.
+      explanations for CSV format is not supported. If this field is set to
+      true, the Model.explanation_spec must be populated.
     inputConfig: Required. Input configuration of the instances on which
       predictions are performed. The schema of any single instance may be
       specified via the Model's PredictSchemata's instance_schema_uri.
@@ -6274,7 +6578,7 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJobInputConfig(_messages.Messag
       the table should be in the format described by the given context OpenAPI
       Schema, if one is provided. The table may contain additional columns
       that are not described by the schema, and they will be ignored.
-    gcsSource: The Google Cloud Storage location for the input instances.
+    gcsSource: The Cloud Storage location for the input instances.
     instancesFormat: Required. The format in which instances are given, must
       be one of the Model's supported_input_storage_formats.
   """
@@ -6304,9 +6608,9 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJobOutputConfig(_messages.Messa
       per the instance schema, followed by a single "errors" column, which as
       values has [`google.rpc.Status`](Status) represented as a STRUCT, and
       containing only `code` and `message`.
-    gcsDestination: The Google Cloud Storage location of the directory where
-      the output is to be written to. In the given directory a new directory
-      is created. Its name is `prediction--`, where timestamp is in YYYY-MM-
+    gcsDestination: The Cloud Storage location of the directory where the
+      output is to be written to. In the given directory a new directory is
+      created. Its name is `prediction--`, where timestamp is in YYYY-MM-
       DDThh:mm:ss.sssZ ISO-8601 format. Inside of it files
       `predictions_0001.`, `predictions_0002.`, ..., `predictions_N.` are
       created where `` depends on chosen predictions_format, and N may equal
@@ -6337,7 +6641,7 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJobOutputInfo(_messages.Message
     bigqueryOutputDataset: Output only. The path of the BigQuery dataset
       created, in `bq://projectId.bqDatasetId` format, into which the
       prediction output is written.
-    gcsOutputDirectory: Output only. The full path of the Google Cloud Storage
+    gcsOutputDirectory: Output only. The full path of the Cloud Storage
       directory created, into which the prediction output is written.
   """
 
@@ -7172,9 +7476,9 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
       which has the name specified as the key in ExplanationMetadata.inputs.
       The baseline of the empty feature is chosen by AI Platform. For AI
       Platform provided Tensorflow images, the key can be any friendly name of
-      the feature . Once specified, featureAttributions will be keyed by this
-      key (if not grouped with another feature). For custom images, the key
-      must match with the key in instance.
+      the feature. Once specified, featureAttributions are keyed by this key
+      (if not grouped with another feature). For custom images, the key must
+      match with the key in instance.
     OutputsValue: Required. Map from output names to output metadata. For AI
       Platform provided Tensorflow images, keys can be any string user
       defines. For custom images, keys are the name of the output field in the
@@ -7195,9 +7499,9 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
       which has the name specified as the key in ExplanationMetadata.inputs.
       The baseline of the empty feature is chosen by AI Platform. For AI
       Platform provided Tensorflow images, the key can be any friendly name of
-      the feature . Once specified, featureAttributions will be keyed by this
-      key (if not grouped with another feature). For custom images, the key
-      must match with the key in instance.
+      the feature. Once specified, featureAttributions are keyed by this key
+      (if not grouped with another feature). For custom images, the key must
+      match with the key in instance.
     outputs: Required. Map from output names to output metadata. For AI
       Platform provided Tensorflow images, keys can be any string user
       defines. For custom images, keys are the name of the output field in the
@@ -7211,10 +7515,10 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
     empty InputMetadata is valid. It describes a text feature which has the
     name specified as the key in ExplanationMetadata.inputs. The baseline of
     the empty feature is chosen by AI Platform. For AI Platform provided
-    Tensorflow images, the key can be any friendly name of the feature . Once
-    specified, featureAttributions will be keyed by this key (if not grouped
-    with another feature). For custom images, the key must match with the key
-    in instance.
+    Tensorflow images, the key can be any friendly name of the feature. Once
+    specified, featureAttributions are keyed by this key (if not grouped with
+    another feature). For custom images, the key must match with the key in
+    instance.
 
     Messages:
       AdditionalProperty: An additional property for a InputsValue object.
@@ -7393,8 +7697,8 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataFeatureValueDo
   mean = 0 and stddev = 1) was obtained.
 
   Fields:
-    max: The maximum permissible value for this feature.
-    min: The minimum permissible value for this feature.
+    maxValue: The maximum permissible value for this feature.
+    minValue: The minimum permissible value for this feature.
     originalMean: If this input feature has been normalized to a mean value of
       0, the original_mean specifies the mean value of the domain prior to
       normalization.
@@ -7403,8 +7707,8 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataFeatureValueDo
       of the domain prior to normalization.
   """
 
-  max = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  min = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  maxValue = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  minValue = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   originalMean = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
   originalStddev = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
@@ -8103,21 +8407,20 @@ class GoogleCloudAiplatformV1beta1InputDataConfig(_messages.Message):
   possibly evaluating, the Model.
 
   Fields:
-    annotationSchemaUri: Only applicable to custom training with unstructured
-      Dataset. Google Cloud Storage URI points to a YAML file describing
-      annotation schema. The schema is defined as an OpenAPI 3.0.2 [Schema
-      Object]( https: //github.com/OAI/OpenAPI-Specification/b //
-      lob/master/versions/3.0.2.md#schema-object) The schema files that can be
-      used here are found in gs://google-cloud-
-      aiplatform/schema/dataset/annotation/, note that the chosen schema must
-      be consistent with metadata of the Dataset specified by dataset_id. Only
-      Annotations that both match this schema and belong to DataItems not
-      ignored by the split method are used in respectively training,
-      validation or test role, depending on the role of the DataItem they are
-      on. When used in conjunction with annotations_filter, the Annotations
-      used for training are filtered by both annotations_filter and
-      annotation_schema_uri.
-    annotationsFilter: Only applicable to Datasets that have DataItems and
+    annotationSchemaUri: Applicable only to custom training with Datasets that
+      have DataItems and Annotations. Cloud Storage URI that points to a YAML
+      file describing the annotation schema. The schema is defined as an
+      OpenAPI 3.0.2 [Schema Object](https://tinyurl.com/y538mdwt#schema-
+      object). The schema files that can be used here are found in
+      gs://google-cloud-aiplatform/schema/dataset/annotation/ , note that the
+      chosen schema must be consistent with metadata of the Dataset specified
+      by dataset_id. Only Annotations that both match this schema and belong
+      to DataItems not ignored by the split method are used in respectively
+      training, validation or test role, depending on the role of the DataItem
+      they are on. When used in conjunction with annotations_filter, the
+      Annotations used for training are filtered by both annotations_filter
+      and annotation_schema_uri.
+    annotationsFilter: Applicable only to Datasets that have DataItems and
       Annotations. A filter on Annotations of the Dataset. Only Annotations
       that both match this filter and belong to DataItems not ignored by the
       split method are used in respectively training, validation or test role,
@@ -8364,14 +8667,13 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
     acceleratorCount: The number of accelerators to attach to the machine.
     acceleratorType: Immutable. The type of accelerator(s) that may be
       attached to the machine as per accelerator_count.
-    machineType: Immutable. The type of the machine. Following machine types
-      are supported: * `n1-standard-2` * `n1-standard-4` * `n1-standard-8` *
-      `n1-standard-16` * `n1-standard-32` * `n1-highmem-2` * `n1-highmem-4` *
-      `n1-highmem-8` * `n1-highmem-16` * `n1-highmem-32` * `n1-highcpu-2` *
-      `n1-highcpu-4` * `n1-highcpu-8` * `n1-highcpu-16` * `n1-highcpu-32` When
-      used for DeployedMode this field is optional and the default value is
-      `n1-standard-2`. If used for BatchPredictionJob or as part of
-      WorkerPoolSpec this field is required.
+    machineType: Immutable. The type of the machine. For the machine types
+      supported for prediction, see https://tinyurl.com/aip-
+      docs/predictions/machine-types. For machine types supported for creating
+      a custom training job, see https://tinyurl.com/aip-
+      docs/training/configure-compute. For DeployedModel this field is
+      optional, and the default value is `n1-standard-2`. For
+      BatchPredictionJob or as part of WorkerPoolSpec this field is required.
   """
 
   class AcceleratorTypeValueValuesEnum(_messages.Enum):
@@ -9567,6 +9869,572 @@ class GoogleCloudAiplatformV1beta1SchemaImageSegmentationPredictionParams(_messa
   """
 
   confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageClassificationPredictionInstance(_messages.Message):
+  r"""Prediction input format for Image Classification.
+
+  Fields:
+    content: The image bytes or GCS URI to make the prediction on.
+    mimeType: The MIME type of the content of the image. Only the images in
+      below listed MIME types are supported. - image/jpeg - image/gif -
+      image/png - image/webp - image/bmp - image/tiff -
+      image/vnd.microsoft.icon
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageObjectDetectionPredictionInstance(_messages.Message):
+  r"""Prediction input format for Image Object Detection.
+
+  Fields:
+    content: The image bytes or GCS URI to make the prediction on.
+    mimeType: The MIME type of the content of the image. Only the images in
+      below listed MIME types are supported. - image/jpeg - image/gif -
+      image/png - image/webp - image/bmp - image/tiff -
+      image/vnd.microsoft.icon
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageSegmentationPredictionInstance(_messages.Message):
+  r"""Prediction input format for Image Segmentation.
+
+  Fields:
+    content: The image bytes to make the predictions on.
+    mimeType: The MIME type of the content of the image. Only the images in
+      below listed MIME types are supported. - image/jpeg - image/png
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextClassificationPredictionInstance(_messages.Message):
+  r"""Prediction input format for Text Classification.
+
+  Fields:
+    content: The text snippet to make the predictions on.
+    mimeType: The MIME type of the text snippet. The supported MIME types are
+      listed below. - text/plain
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextExtractionPredictionInstance(_messages.Message):
+  r"""Prediction input format for Text Extraction.
+
+  Fields:
+    content: The text snippet to make the predictions on.
+    key: This field is only used for batch prediction. If a key is provided,
+      the batch prediction result will by mapped to this key. If omitted, then
+      the batch prediction result will contain the entire input instance. AI
+      Platform will not check if keys in the request are duplicates, so it is
+      up to the caller to ensure the keys are unique.
+    mimeType: The MIME type of the text snippet. The supported MIME types are
+      listed below. - text/plain
+  """
+
+  content = _messages.StringField(1)
+  key = _messages.StringField(2)
+  mimeType = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextSentimentPredictionInstance(_messages.Message):
+  r"""Prediction input format for Text Sentiment.
+
+  Fields:
+    content: The text snippet to make the predictions on.
+    mimeType: The MIME type of the text snippet. The supported MIME types are
+      listed below. - text/plain
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceVideoActionRecognitionPredictionInstance(_messages.Message):
+  r"""Prediction input format for Video Action Recognition.
+
+  Fields:
+    content: The Google Cloud Storage location of the video on which to
+      perform the prediction.
+    mimeType: The MIME type of the content of the video. Only the following
+      are supported: video/mp4 video/avi video/quicktime
+    timeSegmentEnd: The end, exclusive, of the video's time segment on which
+      to perform the prediction. Expressed as a number of seconds as measured
+      from the start of the video, with "s" appended at the end. Fractions are
+      allowed, up to a microsecond precision, and "Infinity" is allowed, which
+      means the end of the video.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment on
+      which to perform the prediction. Expressed as a number of seconds as
+      measured from the start of the video, with "s" appended at the end.
+      Fractions are allowed, up to a microsecond precision.
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+  timeSegmentEnd = _messages.StringField(3)
+  timeSegmentStart = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceVideoClassificationPredictionInstance(_messages.Message):
+  r"""Prediction input format for Video Classification.
+
+  Fields:
+    content: The Google Cloud Storage location of the video on which to
+      perform the prediction.
+    mimeType: The MIME type of the content of the video. Only the following
+      are supported: video/mp4 video/avi video/quicktime
+    timeSegmentEnd: The end, exclusive, of the video's time segment on which
+      to perform the prediction. Expressed as a number of seconds as measured
+      from the start of the video, with "s" appended at the end. Fractions are
+      allowed, up to a microsecond precision, and "Infinity" is allowed, which
+      means the end of the video.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment on
+      which to perform the prediction. Expressed as a number of seconds as
+      measured from the start of the video, with "s" appended at the end.
+      Fractions are allowed, up to a microsecond precision.
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+  timeSegmentEnd = _messages.StringField(3)
+  timeSegmentStart = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictInstanceVideoObjectTrackingPredictionInstance(_messages.Message):
+  r"""Prediction input format for Video Object Tracking.
+
+  Fields:
+    content: The Google Cloud Storage location of the video on which to
+      perform the prediction.
+    mimeType: The MIME type of the content of the video. Only the following
+      are supported: video/mp4 video/avi video/quicktime
+    timeSegmentEnd: The end, exclusive, of the video's time segment on which
+      to perform the prediction. Expressed as a number of seconds as measured
+      from the start of the video, with "s" appended at the end. Fractions are
+      allowed, up to a microsecond precision, and "Infinity" is allowed, which
+      means the end of the video.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment on
+      which to perform the prediction. Expressed as a number of seconds as
+      measured from the start of the video, with "s" appended at the end.
+      Fractions are allowed, up to a microsecond precision.
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+  timeSegmentEnd = _messages.StringField(3)
+  timeSegmentStart = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictParamsImageClassificationPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Image Classification.
+
+  Fields:
+    confidenceThreshold: The Model only returns predictions with at least this
+      confidence score. Default value is 0.0
+    maxPredictions: The Model only returns up to that many top, by confidence
+      score, predictions per instance. If this number is very high, the Model
+      may return fewer predictions. Default value is 10.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxPredictions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictParamsImageObjectDetectionPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Image Object Detection.
+
+  Fields:
+    confidenceThreshold: The Model only returns predictions with at least this
+      confidence score. Default value is 0.0
+    maxPredictions: The Model only returns up to that many top, by confidence
+      score, predictions per instance. Note that number of returned
+      predictions is also limited by metadata's predictionsLimit. Default
+      value is 10.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxPredictions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictParamsImageSegmentationPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Image Segmentation.
+
+  Fields:
+    confidenceThreshold: When the model predicts category of pixels of the
+      image, it will only provide predictions for pixels that it is at least
+      this much confident about. All other pixels will be classified as
+      background. Default value is 0.5.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictParamsVideoActionRecognitionPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Video Action Recognition.
+
+  Fields:
+    confidenceThreshold: The Model only returns predictions with at least this
+      confidence score. Default value is 0.0
+    maxPredictions: The model only returns up to that many top, by confidence
+      score, predictions per frame of the video. If this number is very high,
+      the Model may return fewer predictions per frame. Default value is 50.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxPredictions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictParamsVideoClassificationPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Video Classification.
+
+  Fields:
+    confidenceThreshold: The Model only returns predictions with at least this
+      confidence score. Default value is 0.0
+    maxPredictions: The Model only returns up to that many top, by confidence
+      score, predictions per instance. If this number is very high, the Model
+      may return fewer predictions. Default value is 10,000.
+    oneSecIntervalClassification: Set to true to request classification for a
+      video at one-second intervals. AI Platform returns labels and their
+      confidence scores for each second of the entire time segment of the
+      video that user specified in the input WARNING: Model evaluation is not
+      done for this classification type, the quality of it depends on the
+      training data, but there are no metrics provided to describe that
+      quality. Default value is false
+    segmentClassification: Set to true to request segment-level
+      classification. AI Platform returns labels and their confidence scores
+      for the entire time segment of the video that user specified in the
+      input instance. Default value is true
+    shotClassification: Set to true to request shot-level classification. AI
+      Platform determines the boundaries for each camera shot in the entire
+      time segment of the video that user specified in the input instance. AI
+      Platform then returns labels and their confidence scores for each
+      detected shot, along with the start and end time of the shot. WARNING:
+      Model evaluation is not done for this classification type, the quality
+      of it depends on the training data, but there are no metrics provided to
+      describe that quality. Default value is false
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxPredictions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  oneSecIntervalClassification = _messages.BooleanField(3)
+  segmentClassification = _messages.BooleanField(4)
+  shotClassification = _messages.BooleanField(5)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictParamsVideoObjectTrackingPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Video Object Tracking.
+
+  Fields:
+    confidenceThreshold: The Model only returns predictions with at least this
+      confidence score. Default value is 0.0
+    maxPredictions: The model only returns up to that many top, by confidence
+      score, predictions per frame of the video. If this number is very high,
+      the Model may return fewer predictions per frame. Default value is 50.
+    minBoundingBoxSize: Only bounding boxes with shortest edge at least that
+      long as a relative value of video frame size are returned. Default value
+      is 0.0.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxPredictions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minBoundingBoxSize = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionClassificationPredictionResult(_messages.Message):
+  r"""Prediction output format for Image and Text Classification.
+
+  Fields:
+    confidences: The Model's confidences in correctness of the predicted IDs,
+      higher value means higher confidence. Order matches the Ids.
+    displayNames: The display names of the AnnotationSpecs that had been
+      identified, order matches the IDs.
+    ids: The resource IDs of the AnnotationSpecs that had been identified,
+      ordered by the confidence score descendingly.
+  """
+
+  confidences = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
+  displayNames = _messages.StringField(2, repeated=True)
+  ids = _messages.IntegerField(3, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionImageObjectDetectionPredictionResult(_messages.Message):
+  r"""Prediction output format for Image Object Detection.
+
+  Messages:
+    BboxesValueListEntry: Single entry in a BboxesValue.
+
+  Fields:
+    bboxes: Bounding boxes, i.e. the rectangles over the image, that pinpoint
+      the found AnnotationSpecs. Given in order that matches the IDs. Each
+      bounding box is an array of 4 numbers `xMin`, `xMax`, `yMin`, and
+      `yMax`, which represent the extremal coordinates of the box. They are
+      relative to the image size, and the point 0,0 is in the top left of the
+      image.
+    confidences: The Model's confidences in correctness of the predicted IDs,
+      higher value means higher confidence. Order matches the Ids.
+    displayNames: The display names of the AnnotationSpecs that had been
+      identified, order matches the IDs.
+    ids: The resource IDs of the AnnotationSpecs that had been identified,
+      ordered by the confidence score descendingly.
+  """
+
+  class BboxesValueListEntry(_messages.Message):
+    r"""Single entry in a BboxesValue.
+
+    Fields:
+      entry: A extra_types.JsonValue attribute.
+    """
+
+    entry = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
+
+  bboxes = _messages.MessageField('BboxesValueListEntry', 1, repeated=True)
+  confidences = _messages.FloatField(2, repeated=True, variant=_messages.Variant.FLOAT)
+  displayNames = _messages.StringField(3, repeated=True)
+  ids = _messages.IntegerField(4, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionImageSegmentationPredictionResult(_messages.Message):
+  r"""Prediction output format for Image Segmentation.
+
+  Fields:
+    categoryMask: A PNG image where each pixel in the mask represents the
+      category in which the pixel in the original image was predicted to
+      belong to. The size of this image will be the same as the original
+      image. The mapping between the AnntoationSpec and the color can be found
+      in model's metadata. The model will choose the most likely category and
+      if none of the categories reach the confidence threshold, the pixel will
+      be marked as background.
+    confidenceMask: A one channel image which is encoded as an 8bit lossless
+      PNG. The size of the image will be the same as the original image. For a
+      specific pixel, darker color means less confidence in correctness of the
+      cateogry in the categoryMask for the corresponding pixel. Black means no
+      confidence and white means complete confidence.
+  """
+
+  categoryMask = _messages.BytesField(1)
+  confidenceMask = _messages.BytesField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTabularClassificationPredictionResult(_messages.Message):
+  r"""Prediction output format for Tabular Classification.
+
+  Fields:
+    classes: The name of the classes being classified, contains all possible
+      values of the target column.
+    scores: The model's confidence in each class being correct, higher value
+      means higher confidence. The N-th score corresponds to the N-th class in
+      classes.
+  """
+
+  classes = _messages.StringField(1, repeated=True)
+  scores = _messages.FloatField(2, repeated=True, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTabularRegressionPredictionResult(_messages.Message):
+  r"""Prediction output format for Tabular Regression.
+
+  Fields:
+    lowerBound: The lower bound of the prediction interval.
+    upperBound: The upper bound of the prediction interval.
+    value: The regression value.
+  """
+
+  lowerBound = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  upperBound = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  value = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextExtractionPredictionResult(_messages.Message):
+  r"""Prediction output format for Text Extraction.
+
+  Fields:
+    confidences: The Model's confidences in correctness of the predicted IDs,
+      higher value means higher confidence. Order matches the Ids.
+    displayNames: The display names of the AnnotationSpecs that had been
+      identified, order matches the IDs.
+    ids: The resource IDs of the AnnotationSpecs that had been identified,
+      ordered by the confidence score descendingly.
+    textSegmentEndOffsets: The end offsets, inclusive, of the text segment in
+      which the AnnotationSpec has been identified. Expressed as a zero-based
+      number of characters as measured from the start of the text snippet.
+    textSegmentStartOffsets: The start offsets, inclusive, of the text segment
+      in which the AnnotationSpec has been identified. Expressed as a zero-
+      based number of characters as measured from the start of the text
+      snippet.
+  """
+
+  confidences = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
+  displayNames = _messages.StringField(2, repeated=True)
+  ids = _messages.IntegerField(3, repeated=True)
+  textSegmentEndOffsets = _messages.IntegerField(4, repeated=True)
+  textSegmentStartOffsets = _messages.IntegerField(5, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResult(_messages.Message):
+  r"""Represents a line of JSONL in the text sentiment batch prediction output
+  file. This is a hack to allow printing of integer values.
+
+  Fields:
+    instance: User's input instance.
+    prediction: The prediction result.
+  """
+
+  instance = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextSentimentPredictionInstance', 1)
+  prediction = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction', 2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction(_messages.Message):
+  r"""Prediction output format for Text Sentiment.
+
+  Fields:
+    sentiment: The integer sentiment labels between 0 (inclusive) and
+      sentimentMax label (inclusive), while 0 maps to the least positive
+      sentiment and sentimentMax maps to the most positive one. The higher the
+      score is, the more positive the sentiment in the text snippet is. Note:
+      sentimentMax is an integer value between 1 (inclusive) and 10
+      (inclusive).
+  """
+
+  sentiment = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTimeSeriesForecastingPredictionResult(_messages.Message):
+  r"""Prediction output format for Time Series Forecasting.
+
+  Fields:
+    lowerBound: The lower bound of the prediction interval.
+    upperBound: The upper bound of the prediction interval.
+    value: The regression value.
+  """
+
+  lowerBound = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  upperBound = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  value = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoActionRecognitionPredictionResult(_messages.Message):
+  r"""Prediction output format for Video Action Recognition.
+
+  Fields:
+    confidence: The Model's confidence in correction of this prediction,
+      higher value means higher confidence.
+    displayName: The display name of the AnnotationSpec that had been
+      identified.
+    id: The resource ID of the AnnotationSpec that had been identified.
+    timeSegmentEnd: The end, exclusive, of the video's time segment in which
+      the AnnotationSpec has been identified. Expressed as a number of seconds
+      as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment in
+      which the AnnotationSpec has been identified. Expressed as a number of
+      seconds as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  displayName = _messages.StringField(2)
+  id = _messages.StringField(3)
+  timeSegmentEnd = _messages.StringField(4)
+  timeSegmentStart = _messages.StringField(5)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoClassificationPredictionResult(_messages.Message):
+  r"""Prediction output format for Video Classification.
+
+  Fields:
+    confidence: The Model's confidence in correction of this prediction,
+      higher value means higher confidence.
+    displayName: The display name of the AnnotationSpec that had been
+      identified.
+    id: The resource ID of the AnnotationSpec that had been identified.
+    timeSegmentEnd: The end, exclusive, of the video's time segment in which
+      the AnnotationSpec has been identified. Expressed as a number of seconds
+      as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end. Note that for
+      'segment-classification' prediction type, this equals the original
+      'timeSegmentEnd' from the input instance, for other types it is the end
+      of a shot or a 1 second interval respectively.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment in
+      which the AnnotationSpec has been identified. Expressed as a number of
+      seconds as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end. Note that for
+      'segment-classification' prediction type, this equals the original
+      'timeSegmentStart' from the input instance, for other types it is the
+      start of a shot or a 1 second interval respectively.
+    type: The type of the prediction. The requested types can be configured
+      via parameters. This will be one of - segment-classification - shot-
+      classification - one-sec-interval-classification
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  displayName = _messages.StringField(2)
+  id = _messages.StringField(3)
+  timeSegmentEnd = _messages.StringField(4)
+  timeSegmentStart = _messages.StringField(5)
+  type = _messages.StringField(6)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoObjectTrackingPredictionResult(_messages.Message):
+  r"""Prediction output format for Video Object Tracking.
+
+  Fields:
+    confidence: The Model's confidence in correction of this prediction,
+      higher value means higher confidence.
+    displayName: The display name of the AnnotationSpec that had been
+      identified.
+    frames: All of the frames of the video in which a single object instance
+      has been detected. The bounding boxes in the frames identify the same
+      object.
+    id: The resource ID of the AnnotationSpec that had been identified.
+    timeSegmentEnd: The end, inclusive, of the video's time segment in which
+      the object instance has been detected. Expressed as a number of seconds
+      as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment in
+      which the object instance has been detected. Expressed as a number of
+      seconds as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  displayName = _messages.StringField(2)
+  frames = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoObjectTrackingPredictionResultFrame', 3, repeated=True)
+  id = _messages.StringField(4)
+  timeSegmentEnd = _messages.StringField(5)
+  timeSegmentStart = _messages.StringField(6)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoObjectTrackingPredictionResultFrame(_messages.Message):
+  r"""The fields `xMin`, `xMax`, `yMin`, and `yMax` refer to a bounding box,
+  i.e. the rectangle over the video frame pinpointing the found
+  AnnotationSpec. The coordinates are relative to the frame size, and the
+  point 0,0 is in the top left of the frame.
+
+  Fields:
+    timeOffset: A time (frame) of a video in which the object has been
+      detected. Expressed as a number of seconds as measured from the start of
+      the video, with fractions up to a microsecond precision, and with "s"
+      appended at the end.
+    xMax: The rightmost coordinate of the bounding box.
+    xMin: The leftmost coordinate of the bounding box.
+    yMax: The bottommost coordinate of the bounding box.
+    yMin: The topmost coordinate of the bounding box.
+  """
+
+  timeOffset = _messages.StringField(1)
+  xMax = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  xMin = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  yMax = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  yMin = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1beta1SchemaPredictionResult(_messages.Message):
@@ -11520,10 +12388,16 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
 
   Enums:
     AlgorithmValueValuesEnum: The search algorithm specified for the Study.
+    ObservationNoiseValueValuesEnum: The observation noise level of the study.
+      Currently only supported by the Optimizer service. Not supported by
+      HyperparamterTuningJob or TrainingPipeline.
 
   Fields:
     algorithm: The search algorithm specified for the Study.
     metrics: Required. Metric specs for the Study.
+    observationNoise: The observation noise level of the study. Currently only
+      supported by the Optimizer service. Not supported by
+      HyperparamterTuningJob or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
   """
 
@@ -11542,9 +12416,28 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
     GRID_SEARCH = 1
     RANDOM_SEARCH = 2
 
+  class ObservationNoiseValueValuesEnum(_messages.Enum):
+    r"""The observation noise level of the study. Currently only supported by
+    the Optimizer service. Not supported by HyperparamterTuningJob or
+    TrainingPipeline.
+
+    Values:
+      OBSERVATION_NOISE_UNSPECIFIED: The default noise level chosen by the AI
+        Platform service.
+      LOW: AI Platform Optimizer assumes that the objective function is
+        (nearly) perfectly reproducible, and will never repeat the same Trial
+        parameters.
+      HIGH: AI Platform Optimizer will estimate the amount of noise in metric
+        evaluations, it may repeat the same Trial parameters more than once.
+    """
+    OBSERVATION_NOISE_UNSPECIFIED = 0
+    LOW = 1
+    HIGH = 2
+
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   metrics = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecMetricSpec', 2, repeated=True)
-  parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpec', 3, repeated=True)
+  observationNoise = _messages.EnumField('ObservationNoiseValueValuesEnum', 3)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpec', 4, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1StudySpecMetricSpec(_messages.Message):
@@ -11790,7 +12683,7 @@ class GoogleCloudAiplatformV1beta1TrainingPipeline(_messages.Message):
       allowed. See https://goo.gl/xmQnxf for more information and examples of
       labels.
     modelToUpload: Describes the Model that may be uploaded (via
-      ModelService.UploadMode) by this TrainingPipeline. The
+      ModelService.UploadModel) by this TrainingPipeline. The
       TrainingPipeline's training_task_definition should make clear whether
       this Model description should be populated, and if there are any special
       requirements regarding how it should be filled. If nothing is mentioned
@@ -12487,6 +13380,26 @@ class GoogleTypeColor(_messages.Message):
   blue = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   green = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
   red = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class GoogleTypeMoney(_messages.Message):
+  r"""Represents an amount of money with its currency type.
+
+  Fields:
+    currencyCode: The three-letter currency code defined in ISO 4217.
+    nanos: Number of nano (10^-9) units of the amount. The value must be
+      between -999,999,999 and +999,999,999 inclusive. If `units` is positive,
+      `nanos` must be positive or zero. If `units` is zero, `nanos` can be
+      positive, zero, or negative. If `units` is negative, `nanos` must be
+      negative or zero. For example $-1.75 is represented as `units`=-1 and
+      `nanos`=-750,000,000.
+    units: The whole units of the amount. For example if `currencyCode` is
+      `"USD"`, then 1 unit is one US dollar.
+  """
+
+  currencyCode = _messages.StringField(1)
+  nanos = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  units = _messages.IntegerField(3)
 
 
 class StandardQueryParameters(_messages.Message):

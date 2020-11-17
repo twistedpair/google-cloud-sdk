@@ -81,7 +81,6 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -125,10 +124,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CallFunctionRequest(_messages.Message):
@@ -758,11 +756,32 @@ class GenerateUploadUrlResponse(_messages.Message):
 class HttpsTrigger(_messages.Message):
   r"""Describes HttpsTrigger, could be used to connect web hooks to function.
 
+  Enums:
+    SecurityLevelValueValuesEnum: The security level for the function.
+
   Fields:
+    securityLevel: The security level for the function.
     url: Output only. The deployed url for the function.
   """
 
-  url = _messages.StringField(1)
+  class SecurityLevelValueValuesEnum(_messages.Enum):
+    r"""The security level for the function.
+
+    Values:
+      SECURITY_LEVEL_UNSPECIFIED: Unspecified.
+      SECURE_ALWAYS: Requests for a URL that match this handler that do not
+        use HTTPS are automatically redirected to the HTTPS URL with the same
+        path. Query parameters are reserved for the redirect.
+      SECURE_OPTIONAL: Both HTTP and HTTPS requests with URLs that match the
+        handler succeed without redirects. The application can examine the
+        request to determine which protocol was used and respond accordingly.
+    """
+    SECURITY_LEVEL_UNSPECIFIED = 0
+    SECURE_ALWAYS = 1
+    SECURE_OPTIONAL = 2
+
+  securityLevel = _messages.EnumField('SecurityLevelValueValuesEnum', 1)
+  url = _messages.StringField(2)
 
 
 class ListFunctionsResponse(_messages.Message):

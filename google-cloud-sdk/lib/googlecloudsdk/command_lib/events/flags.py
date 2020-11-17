@@ -214,6 +214,59 @@ def _ParseSecretParameters(args):
   return secret_params
 
 
+_RESOURCES_FLAG_NAME = 'resources'
+
+
+def AddResourcesFlag(parser):
+  """Adds resources flag."""
+  parser.add_argument(
+      '--{}'.format(_RESOURCES_FLAG_NAME),
+      action='append',
+      help='Comma-separated list of secret parameter names and secrets. '
+      'Specify secret parameters and the secret name and key to '
+      'reference. Parameter names must be one of the secret parameters shown '
+      'when describing the event type.',
+      metavar='PARAMETER=NAME:KEY')
+
+
+def _ParseResourcesParameters(args):
+  """Parses --resources flag."""
+
+  resources_flag = getattr(args, _RESOURCES_FLAG_NAME)
+
+  if resources_flag is None:
+    return {}
+
+  result = []
+  for api_version_kind_string in resources_flag:
+    avk_selector = api_version_kind_string.split(':')
+    if len(avk_selector) != 3 and len(avk_selector) != 2:
+      raise run_flags.ArgumentError('parameter flag resources expects Kind:'
+                                    'ApiVersion:LabelName=value, notation.')
+    elif len(avk_selector) == 2:
+      result.append({
+          'kind': avk_selector[0],
+          'apiVersion': avk_selector[1],
+      })
+    elif len(avk_selector) == 3:
+      match_labels_obj = {}
+      for match_labels_string in avk_selector[2].split(','):
+        key, value = match_labels_string.split('=')
+        match_labels_obj[key] = value
+      result.append({
+          'kind': avk_selector[0],
+          'apiVersion': avk_selector[1],
+          'selector': {
+              'matchLabels': match_labels_obj,
+          }
+      })
+
+  resources_params = {}
+  if result:
+    resources_params['resources'] = result
+  return resources_params
+
+
 def _CheckUnknownParameters(event_type, known_params, given_params):
   """Raises an error if any given params are unknown."""
   unknown_parameters = (
@@ -256,6 +309,10 @@ def GetAndValidateParameters(args, event_type):
     parameters.update(getattr(args, from_file_flag))
   if args.IsSpecified(_PARAMETERS_FLAG_NAME):
     parameters.update(getattr(args, _PARAMETERS_FLAG_NAME))
+
+  resource_parameters = _ParseResourcesParameters(args)
+  parameters.update(resource_parameters)
+
   _ValidateParameters(event_type, parameters)
 
   # Check the passed secret parameters for unknown keys or missing required keys

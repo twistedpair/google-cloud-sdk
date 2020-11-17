@@ -71,6 +71,10 @@ class LocalServerCreationError(Error):
   """Exception for when a local server cannot be created."""
 
 
+class LocalServerTimeoutError(Error):
+  """Exception for when the local server timeout before receiving request."""
+
+
 def RaiseProxyError(source_exc):
   six.raise_from(AuthRequestFailedError(
       'Could not reach the login server. A potential cause of this could be '
@@ -360,6 +364,10 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
     Returns:
         google.oauth2.credentials.Credentials: The OAuth 2.0 credentials
           for the user.
+
+    Raises:
+      LocalServerTimeoutError: If the local server handling redirection timeout
+        before receiving the request.
     """
 
     wsgi_app = _RedirectWSGIApp()
@@ -376,6 +384,9 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
 
     local_server.handle_request()
 
+    if not wsgi_app.last_request_uri:
+      raise LocalServerTimeoutError(
+          'Local server timed out before receiving the redirection request.')
     # Note: using https here because oauthlib requires that
     # OAuth 2.0 should only occur over https.
     authorization_response = wsgi_app.last_request_uri.replace(

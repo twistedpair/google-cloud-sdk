@@ -34,21 +34,3 @@ def GetDefaultStagingBucket():
                   .replace('google', 'elgoog'))
 
   return safe_project + '_cloudbuild'
-
-
-def BucketIsInProject(gcs_client, bucket_name):
-  """Returns true if the provided bucket is in the user's project, else False.
-
-  Args:
-    gcs_client: Client used to make calls to GCS.
-    bucket_name: Bucket name to check.
-
-  Returns:
-    True or False.
-  """
-  project = properties.VALUES.core.project.Get(required=True)
-  bucket_list_req = gcs_client.messages.StorageBucketsListRequest(
-      project=project, prefix=bucket_name)
-  bucket_list = gcs_client.client.buckets.List(bucket_list_req)
-  return any(
-      bucket.id == bucket_name for bucket in bucket_list.items)

@@ -26,6 +26,11 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  certificateProviderInstance:
+    description: |-
+      The certificate provider instance specification that will be passed to the
+      data plane, which will be used to load necessary credential information.
+    $ref: CertificateProviderInstance.yaml
   grpcEndpoint:
     description: |-
       gRPC specific configuration to access the gRPC server to obtain the cert

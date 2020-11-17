@@ -827,9 +827,6 @@ apis:
     v1:
       discovery_doc: serviceusage_v1.json
       default: true
-  serviceuser:
-    v1:
-      discovery_doc: serviceuser_v1.json
   source:
     v1:
       discovery_doc: source_v1.json

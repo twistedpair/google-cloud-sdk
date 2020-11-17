@@ -44,6 +44,8 @@ class SddcV1alpha1(base_api.BaseApiClient):
     self.projects_locations_clusterGroups_ipAddresses = self.ProjectsLocationsClusterGroupsIpAddressesService(self)
     self.projects_locations_clusterGroups = self.ProjectsLocationsClusterGroupsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_privateCloudBackups = self.ProjectsLocationsPrivateCloudBackupsService(self)
+    self.projects_locations_privateClouds_clusters = self.ProjectsLocationsPrivateCloudsClustersService(self)
     self.projects_locations_privateClouds_ipAddresses = self.ProjectsLocationsPrivateCloudsIpAddressesService(self)
     self.projects_locations_privateClouds = self.ProjectsLocationsPrivateCloudsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -852,6 +854,323 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='SddcProjectsLocationsOperationsListRequest',
         response_type_name='GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPrivateCloudBackupsService(base_api.BaseApiService):
+    """Service class for the projects_locations_privateCloudBackups resource."""
+
+    _NAME = 'projects_locations_privateCloudBackups'
+
+    def __init__(self, client):
+      super(SddcV1alpha1.ProjectsLocationsPrivateCloudBackupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new PrivateCloudBackup in a given project and location(region). The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the new PrivateCloudBackup will be functional. Completed longrunning.Operation will contain the new PrivateCloudBackup object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
+
+      Args:
+        request: (SddcProjectsLocationsPrivateCloudBackupsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/privateCloudBackups',
+        http_method='POST',
+        method_id='sddc.projects.locations.privateCloudBackups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['privateCloudBackupId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/privateCloudBackups',
+        request_field='privateCloudBackup',
+        request_type_name='SddcProjectsLocationsPrivateCloudBackupsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a PrivateCloudBackup.
+
+      Args:
+        request: (SddcProjectsLocationsPrivateCloudBackupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/privateCloudBackups/{privateCloudBackupsId}',
+        http_method='DELETE',
+        method_id='sddc.projects.locations.privateCloudBackups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='SddcProjectsLocationsPrivateCloudBackupsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single PrivateCloudBackup.
+
+      Args:
+        request: (SddcProjectsLocationsPrivateCloudBackupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PrivateCloudBackup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/privateCloudBackups/{privateCloudBackupsId}',
+        http_method='GET',
+        method_id='sddc.projects.locations.privateCloudBackups.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='SddcProjectsLocationsPrivateCloudBackupsGetRequest',
+        response_type_name='PrivateCloudBackup',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists PrivateCloudBackups in a given project and location(region).
+
+      Args:
+        request: (SddcProjectsLocationsPrivateCloudBackupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPrivateCloudBackupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/privateCloudBackups',
+        http_method='GET',
+        method_id='sddc.projects.locations.privateCloudBackups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/privateCloudBackups',
+        request_field='',
+        request_type_name='SddcProjectsLocationsPrivateCloudBackupsListRequest',
+        response_type_name='ListPrivateCloudBackupsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPrivateCloudsClustersService(base_api.BaseApiService):
+    """Service class for the projects_locations_privateClouds_clusters resource."""
+
+    _NAME = 'projects_locations_privateClouds_clusters'
+
+    def __init__(self, client):
+      super(SddcV1alpha1.ProjectsLocationsPrivateCloudsClustersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AddNodes(self, request, global_params=None):
+      r"""Add bare metal nodes to a cluster.
+
+      Args:
+        request: (SddcProjectsLocationsPrivateCloudsClustersAddNodesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('AddNodes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddNodes.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}:addNodes',
+        http_method='POST',
+        method_id='sddc.projects.locations.privateClouds.clusters.addNodes',
+        ordered_params=['cluster'],
+        path_params=['cluster'],
+        query_params=[],
+        relative_path='v1alpha1/{+cluster}:addNodes',
+        request_field='addNodesRequest',
+        request_type_name='SddcProjectsLocationsPrivateCloudsClustersAddNodesRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new cluster in a given private cloud. .
+
+      Args:
+        request: (SddcProjectsLocationsPrivateCloudsClustersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters',
+        http_method='POST',
+        method_id='sddc.projects.locations.privateClouds.clusters.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['clusterId', 'managementCluster'],
+        relative_path='v1alpha1/{+parent}/clusters',
+        request_field='cluster',
+        request_type_name='SddcProjectsLocationsPrivateCloudsClustersCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Cluster.
+
+      Args:
+        request: (SddcProjectsLocationsPrivateCloudsClustersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}',
+        http_method='DELETE',
+        method_id='sddc.projects.locations.privateClouds.clusters.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='SddcProjectsLocationsPrivateCloudsClustersDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Cluster.
+
+      Args:
+        request: (SddcProjectsLocationsPrivateCloudsClustersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Cluster) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}',
+        http_method='GET',
+        method_id='sddc.projects.locations.privateClouds.clusters.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='SddcProjectsLocationsPrivateCloudsClustersGetRequest',
+        response_type_name='Cluster',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Clusters in a given private cloud. .
+
+      Args:
+        request: (SddcProjectsLocationsPrivateCloudsClustersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListClustersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters',
+        http_method='GET',
+        method_id='sddc.projects.locations.privateClouds.clusters.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/clusters',
+        request_field='',
+        request_type_name='SddcProjectsLocationsPrivateCloudsClustersListRequest',
+        response_type_name='ListClustersResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates labels of a specific cluster.
+
+      Args:
+        request: (SddcProjectsLocationsPrivateCloudsClustersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}',
+        http_method='PATCH',
+        method_id='sddc.projects.locations.privateClouds.clusters.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='cluster',
+        request_type_name='SddcProjectsLocationsPrivateCloudsClustersPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def RemoveNodes(self, request, global_params=None):
+      r"""Remove bare metal nodes from a cluster.
+
+      Args:
+        request: (SddcProjectsLocationsPrivateCloudsClustersRemoveNodesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveNodes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveNodes.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}:removeNodes',
+        http_method='POST',
+        method_id='sddc.projects.locations.privateClouds.clusters.removeNodes',
+        ordered_params=['cluster'],
+        path_params=['cluster'],
+        query_params=[],
+        relative_path='v1alpha1/{+cluster}:removeNodes',
+        request_field='removeNodesRequest',
+        request_type_name='SddcProjectsLocationsPrivateCloudsClustersRemoveNodesRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

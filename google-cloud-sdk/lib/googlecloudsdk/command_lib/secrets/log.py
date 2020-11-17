@@ -28,7 +28,7 @@ class Logger(object):
     self.log = log_ or log
 
   def Print(self, *msg):
-    self.log.Print(*msg)
+    self.log.status.Print(*msg)
 
 
 class Secrets(Logger):

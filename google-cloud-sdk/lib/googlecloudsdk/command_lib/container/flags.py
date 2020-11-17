@@ -1732,7 +1732,9 @@ def AddDiskTypeFlag(parser):
 Type of the node VM boot disk. Defaults to pd-standard.
 """
   parser.add_argument(
-      '--disk-type', help=help_text, choices=['pd-standard', 'pd-ssd'])
+      '--disk-type',
+      help=help_text,
+      choices=['pd-standard', 'pd-ssd', 'pd-balanced'])
 
 
 def AddIpAliasCoreFlag(parser):

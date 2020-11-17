@@ -245,16 +245,13 @@ def _SetSource(build_config, messages, is_specified_source, no_source, source,
     gcs_source_staging_dir = resources.REGISTRY.Parse(
         gcs_source_staging_dir, collection='storage.objects')
 
-    # We create the bucket (if it does not exist) first. If we do an existence
-    # check and then create the bucket ourselves, it would be possible for an
-    # attacker to get lucky and beat us to creating the bucket. Block on this
-    # creation to avoid this race condition.
-    gcs_client.CreateBucketIfNotExists(gcs_source_staging_dir.bucket)
-
-    # If no bucket is specified (for the source `default_gcs_source`), check
-    # that the default bucket is also owned by the project (b/33046325).
-    if default_gcs_source and not staging_bucket_util.BucketIsInProject(
-        gcs_client, default_bucket_name):
+    try:
+      gcs_client.CreateBucketIfNotExists(
+          gcs_source_staging_dir.bucket,
+          check_ownership=default_gcs_source)
+    except storage_api.BucketInWrongProjectError:
+      # If we're using the default bucket but it already exists in a different
+      # project, then it could belong to a malicious attacker (b/33046325).
       raise c_exceptions.RequiredArgumentException(
           'gcs-source-staging-dir',
           'A bucket with name {} already exists and is owned by '
@@ -368,10 +365,12 @@ def _SetWorkerPool(build_config, messages, arg_worker_pool):
   if arg_worker_pool is not None:
     # Only regional pools are supported here
     worker_pool = resources.REGISTRY.Parse(
-        arg_worker_pool, collection='projects.locations.workerPools')
+        arg_worker_pool,
+        api_version='v1beta1',
+        collection='cloudbuild.projects.locations.workerPools')
     if not build_config.options:
       build_config.options = messages.BuildOptions()
-    build_config.options.workerPool = six.text_type(worker_pool)
+    build_config.options.workerPool = worker_pool.RelativeName()
 
   return build_config
 
@@ -463,10 +462,15 @@ def Build(messages, async_, build_config, hide_logs=False, build_region=None):
   json = encoding.MessageToJson(op.metadata)
   build = encoding.JsonToMessage(messages.BuildOperationMetadata, json).build
 
-  build_ref = resources.REGISTRY.Create(
+  # Need to set the default version to 'v1'
+  build_ref = resources.REGISTRY.Parse(
+      None,
       collection='cloudbuild.projects.builds',
-      projectId=build.projectId,
-      id=build.id)
+      api_version='v1',
+      params={
+          'projectId': build.projectId,
+          'id': build.id,
+      })
 
   if not hide_logs:
     log.CreatedResource(build_ref)

@@ -343,6 +343,26 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_HOSTQUERIES = (
+      'organizations.hostQueries',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/hostQueries/{hostQueriesId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_HOSTSTATS = (
+      'organizations.hostStats',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/hostStats/{hostStatsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_INSTANCES = (
       'organizations.instances',
       '{+name}',
@@ -381,6 +401,17 @@ class Collections(enum.Enum):
       {
           '':
               'organizations/{organizationsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_OPTIMIZEDHOSTSTATS = (
+      'organizations.optimizedHostStats',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/optimizedHostStats/'
+              '{optimizedHostStatsId}',
       },
       ['name'],
       True

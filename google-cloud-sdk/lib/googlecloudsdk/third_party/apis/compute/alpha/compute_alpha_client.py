@@ -15636,7 +15636,7 @@ For more information, see [Invalidating cached content](/cdn/docs/invalidating-c
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified policy with the data included in the request.
+      r"""Patches the specified policy with the data included in the request. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
 
       Args:
         request: (ComputeSecurityPoliciesPatchRequest) input message

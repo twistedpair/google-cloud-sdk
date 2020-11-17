@@ -25,15 +25,20 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from apitools.base.py import transfer as apitools_transfer
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
+# pylint: disable=unused-import
+# Applies pickling patches:
+from googlecloudsdk.api_lib.storage import patch_gcs_messages
+# pylint: enable=unused-import
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.command_lib.storage import storage_url
-from googlecloudsdk.command_lib.storage import util
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -44,6 +49,8 @@ from googlecloudsdk.core.credentials import transports
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 # TODO(b/161346648) Retrieve number of retries from Boto config file.
 DEFAULT_NUM_RETRIES = 23
+# 100 MB in bytes.
+DEFAULT_UPLOAD_CHUNK_SIZE = 104857600
 
 
 def _catch_http_error_raise_gcs_api_error(format_str=None):
@@ -125,6 +132,7 @@ class GcsRequestConfig(cloud_api.RequestConfig):
           upload.
       max_bytes_per_call (int): Integer describing maximum number of bytes
           to write per service call.
+      md5_hash (str): MD5 digest to use for validation.
       precondition_generation_match (int): Perform request only if generation of
           target object matches the given integer. Ignored for bucket requests.
       precondition_metageneration_match (int): Perform request only if
@@ -138,12 +146,13 @@ class GcsRequestConfig(cloud_api.RequestConfig):
                encryption_wrapper=None,
                gzip_encoded=False,
                max_bytes_per_call=None,
+               md5_hash=None,
                precondition_generation_match=None,
                precondition_metageneration_match=None,
                predefined_acl_string=None,
                size=None):
     super(GcsRequestConfig, self).__init__(
-        predefined_acl_string=predefined_acl_string)
+        md5_hash=md5_hash, predefined_acl_string=predefined_acl_string)
     self.decryption_wrapper = decryption_wrapper
     self.encryption_wrapper = encryption_wrapper
     self.gzip_encoded = gzip_encoded
@@ -151,6 +160,17 @@ class GcsRequestConfig(cloud_api.RequestConfig):
     self.precondition_generation_match = precondition_generation_match
     self.precondition_metageneration_match = precondition_metageneration_match
     self.size = size
+
+  def __eq__(self, other):
+    return (super(GcsRequestConfig, self).__eq__(other) and
+            self.decryption_wrapper == other.decryption_wrapper and
+            self.encryption_wrapper == other.encryption_wrapper and
+            self.gzip_encoded == other.gzip_encoded and
+            self.max_bytes_per_call == other.max_bytes_per_call and
+            self.precondition_generation_match ==
+            other.precondition_generation_match and
+            self.precondition_metageneration_match ==
+            other.precondition_metageneration_match and self.size == other.size)
 
 
 class GcsApi(cloud_api.CloudApi):
@@ -593,12 +613,11 @@ class GcsApi(cloud_api.CloudApi):
       apitools_upload = apitools_transfer.Upload(
           source_stream,
           content_type,
-          total_size=request_config.size,
           auto_transfer=True,
+          chunksize=DEFAULT_UPLOAD_CHUNK_SIZE,
+          gzip_encoded=request_config.gzip_encoded,
           num_retries=DEFAULT_NUM_RETRIES,
-          gzip_encoded=request_config.gzip_encoded)
-      # Not settable through the Apitools Upload class constructor.
-      apitools_upload.strategy = apitools_strategy
+          total_size=request_config.size)
 
       result_object_metadata = self.client.objects.Insert(
           request, upload=apitools_upload)
@@ -617,21 +636,23 @@ class GcsApi(cloud_api.CloudApi):
     """See CloudApi class for function doc strings."""
     # Doing this as a default argument above can lead to unexpected bugs:
     # https://docs.python-guide.org/writing/gotchas/#mutable-default-arguments
-    if request_config is None:
-      request_config = GcsRequestConfig()
-
-    md5_hash = util.get_hash_digest_from_file_stream(source_stream,
-                                                     util.HashAlgorithms.MD5)
+    if isinstance(request_config, GcsRequestConfig):
+      validated_request_config = request_config
+    else:
+      validated_request_config = cloud_api.convert_to_provider_request_config(
+          request_config, GcsRequestConfig)
+    # Calculate size, so apitools_transfer can pick optimal upload strategy.
+    validated_request_config.size = os.path.getsize(source_stream.name)
 
     object_metadata = self.messages.Object(
         name=destination_resource.storage_url.object_name,
         bucket=destination_resource.storage_url.bucket_name,
-        md5Hash=md5_hash)
+        md5Hash=validated_request_config.md5_hash)
 
     return self._upload_object(
         source_stream,
         object_metadata,
         apitools_strategy=apitools_transfer.SIMPLE_UPLOAD,
         progress_callback=progress_callback,
-        request_config=request_config,
+        request_config=validated_request_config,
         serialization_data=None)

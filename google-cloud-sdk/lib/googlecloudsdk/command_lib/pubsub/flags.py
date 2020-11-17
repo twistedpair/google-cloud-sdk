@@ -230,15 +230,12 @@ def ParseExpirationPeriodWithNeverSentinel(value):
   return util.FormatDuration(arg_parsers.Duration()(value))
 
 
-def AddSubscriptionSettingsFlags(parser,
-                                 is_update=False,
-                                 support_filtering=False):
+def AddSubscriptionSettingsFlags(parser, is_update=False):
   """Adds the flags for creating or updating a subscription.
 
   Args:
     parser: The argparse parser.
     is_update: Whether or not this is for the update operation (vs. create).
-    support_filtering: Whether or not flags for filtering should be added.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(parser)
@@ -251,7 +248,7 @@ def AddSubscriptionSettingsFlags(parser,
         help="""Whether to receive messages with the same ordering key in order.
             If set, messages with the same ordering key are sent to subscribers
             in the order that Pub/Sub receives them.""")
-  if support_filtering and not is_update:
+  if not is_update:
     parser.add_argument(
         '--message-filter',
         type=str,

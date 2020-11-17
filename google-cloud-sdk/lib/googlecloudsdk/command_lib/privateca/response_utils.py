@@ -26,7 +26,6 @@ def GetFieldAndLogUnreachable(message, attribute):
   """Response callback to log unreachable while generating fields of the message."""
   if message.unreachable:
     log.warning(
-        'The following locations were fully or partially unreachable '
-        ': %s. If you continue encountering this error, contact certificate-authority-service-alpha-external@google.com for help resolving the issue.'
-        % ', '.join(message.unreachable))
+        'The following locations were fully or partially unreachable: {}.'
+        .format(', '.join(message.unreachable)))
   return getattr(message, attribute)
