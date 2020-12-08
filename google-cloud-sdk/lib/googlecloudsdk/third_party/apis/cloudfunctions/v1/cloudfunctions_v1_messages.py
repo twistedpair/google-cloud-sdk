@@ -233,6 +233,16 @@ class CloudFunction(_messages.Message):
       a new function, optional when updating an existing function. For a
       complete list of possible choices, see the [`gcloud` command
       reference](/sdk/gcloud/reference/functions/deploy#--runtime).
+    secretEnvironmentVariables: Secret environment variables config to fetch
+      the secret values from secret manager and expose it as environment
+      variables available during function execution. The values are fetched
+      every time a new container is started, so any secret value changes in
+      between are not reflected.
+    secretVolumes: Secret volume mount config to mount references to secret
+      values at the requested paths within the GCF application container.
+      Every filesystem read performs a lookup in secret manager, so the latest
+      value for a version is always available regardless of when the
+      application container was started.
     serviceAccountEmail: The email of the function's service account. If
       empty, defaults to `{project_id}@appspot.gserviceaccount.com`.
     sourceArchiveUrl: The Google Cloud Storage URL, starting with gs://,
@@ -402,16 +412,18 @@ class CloudFunction(_messages.Message):
   name = _messages.StringField(13)
   network = _messages.StringField(14)
   runtime = _messages.StringField(15)
-  serviceAccountEmail = _messages.StringField(16)
-  sourceArchiveUrl = _messages.StringField(17)
-  sourceRepository = _messages.MessageField('SourceRepository', 18)
-  sourceUploadUrl = _messages.StringField(19)
-  status = _messages.EnumField('StatusValueValuesEnum', 20)
-  timeout = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
-  versionId = _messages.IntegerField(23)
-  vpcConnector = _messages.StringField(24)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 25)
+  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 16, repeated=True)
+  secretVolumes = _messages.MessageField('SecretVolume', 17, repeated=True)
+  serviceAccountEmail = _messages.StringField(18)
+  sourceArchiveUrl = _messages.StringField(19)
+  sourceRepository = _messages.MessageField('SourceRepository', 20)
+  sourceUploadUrl = _messages.StringField(21)
+  status = _messages.EnumField('StatusValueValuesEnum', 22)
+  timeout = _messages.StringField(23)
+  updateTime = _messages.StringField(24)
+  versionId = _messages.IntegerField(25)
+  vpcConnector = _messages.StringField(26)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 27)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
@@ -1028,6 +1040,7 @@ class OperationMetadataV1(_messages.Message):
     buildId: The Cloud Build ID of the function created or updated by an API
       call. This field is only populated for Create and Update operations.
     request: The original request that started the operation.
+    sourceToken: A field for Firebase function deployments
     target: Target of the operation - for example
       projects/project-1/locations/region-1/functions/function-1
     type: Type of operation.
@@ -1077,10 +1090,11 @@ class OperationMetadataV1(_messages.Message):
 
   buildId = _messages.StringField(1)
   request = _messages.MessageField('RequestValue', 2)
-  target = _messages.StringField(3)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
-  updateTime = _messages.StringField(5)
-  versionId = _messages.IntegerField(6)
+  sourceToken = _messages.StringField(3)
+  target = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  updateTime = _messages.StringField(6)
+  versionId = _messages.IntegerField(7)
 
 
 class Policy(_messages.Message):
@@ -1162,6 +1176,54 @@ class Retry(_messages.Message):
   Retried execution is charged as any other execution.
   """
 
+
+
+class SecretEnvVar(_messages.Message):
+  r"""Configuration for a secret environment variable.
+
+  Fields:
+    key: Name of the environment variable.
+    projectId: Project whose secret manager data is being referenced.
+    secret: Name of the secret in secret manager (not the full resource name).
+    version: Version of the secret (version number or the string 'latest').
+  """
+
+  key = _messages.StringField(1)
+  projectId = _messages.StringField(2)
+  secret = _messages.StringField(3)
+  version = _messages.StringField(4)
+
+
+class SecretVersion(_messages.Message):
+  r"""Configuration for a single version.
+
+  Fields:
+    path: Path to the file under mount_path where the secret value for this
+      version has to be mounted.
+    version: Version of the secret (version number or the string 'latest').
+  """
+
+  path = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
+class SecretVolume(_messages.Message):
+  r"""Configuration for a secret volume.
+
+  Fields:
+    mountPath: The path within the container to mount the volume.
+    projectId: Project whose secret manager data is being referenced.
+    secret: Name of the secret in secret manager (not the full resource name).
+    versions: List of secret versions to mount for this secret. If the list is
+      empty, then all versions of the secret will be fetched and mounted under
+      the mount_path with the secret files named after their corresponding
+      versions.
+  """
+
+  mountPath = _messages.StringField(1)
+  projectId = _messages.StringField(2)
+  secret = _messages.StringField(3)
+  versions = _messages.MessageField('SecretVersion', 4, repeated=True)
 
 
 class SetIamPolicyRequest(_messages.Message):

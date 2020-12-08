@@ -100,6 +100,51 @@ def GetListRequestFromArgs(args, parent_resource, is_insight_api):
   return get_request
 
 
+def GetDescribeRequestFromArgs(args, parent_resource, is_insight_api):
+  """Returns the describe request from the user-specified arguments.
+
+  Args:
+    args: argparse.Namespace, An object that contains the values for the
+      arguments specified in the Args method.
+    parent_resource: resource url string, the flags are already defined in
+      argparse namespace, including project, billing-account, folder,
+      organization, etc.
+    is_insight_api: boolean value specifying whether this is a insight api,
+      otherwise treat as a recommender service api and return related list
+      request message.
+  """
+
+  messages = recommender_service.RecommenderMessages()
+  if is_insight_api:
+    if args.project:
+      request = messages.RecommenderProjectsLocationsInsightTypesInsightsGetRequest(
+          name=parent_resource)
+    elif args.billing_account:
+      request = messages.RecommenderBillingAccountsLocationsInsightTypesInsightsGetRequest(
+          name=parent_resource)
+    elif args.organization:
+      request = messages.RecommenderOrganizationsLocationsInsightTypesInsightsGetRequest(
+          name=parent_resource)
+    elif args.folder:
+      request = messages.RecommenderFoldersLocationsInsightTypesInsightsGetRequest(
+          name=parent_resource)
+  else:
+    if args.project:
+      request = messages.RecommenderProjectsLocationsRecommendersRecommendationsGetRequest(
+          name=parent_resource)
+    elif args.billing_account:
+      request = messages.RecommenderBillingAccountsLocationsRecommendersRecommendationsGetRequest(
+          name=parent_resource)
+    elif args.organization:
+      request = messages.RecommenderOrganizationsLocationsRecommendersRecommendationsGetRequest(
+          name=parent_resource)
+    elif args.folder:
+      request = messages.RecommenderFoldersLocationsRecommendersRecommendationsGetRequest(
+          name=parent_resource)
+
+  return request
+
+
 def GetMarkActiveRequestFromArgs(args, parent_resource, is_insight_api):
   """Returns the mark active request from the user-specified arguments.
 

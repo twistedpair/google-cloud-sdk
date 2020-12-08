@@ -333,6 +333,15 @@ def AddStateFlag(parser):
   parser.add_argument('--state', dest='state', help='State of the key version.')
 
 
+def AddSkipIntegrityVerification(parser):
+  parser.add_argument(
+      '--skip-integrity-verification',
+      default=None,
+      action='store_true',
+      dest='skip_integrity_verification',
+      help=('Skip integrity verification on request and response API fields.'))
+
+
 # Arguments
 def AddKeyRingArgument(parser, help_action):
   parser.add_argument(

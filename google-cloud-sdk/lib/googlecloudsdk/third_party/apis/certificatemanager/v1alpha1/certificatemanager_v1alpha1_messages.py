@@ -924,6 +924,32 @@ class CounterOptions(_messages.Message):
   metric = _messages.StringField(3)
 
 
+class CreateReferenceRequest(_messages.Message):
+  r"""The CreateReferenceRequest request.
+
+  Fields:
+    parent: Required. The parent resource name (target_resource of this
+      reference) For example: `projects/{my-
+      project}/locations/{location}/instances/{my-instance}`.
+    reference: Required. The reference to be created.
+    referenceId: The unique id of this resource. Can be any arbitrary string,
+      either GUID or any other string. Must be unique within a scope of a
+      target resource, but does not have to be globally unique. Reference ID
+      is part of resource name of the reference. Resource name is generated in
+      the following way: {parent}/references/{reference_id}. Reference ID
+      field is currently required but id auto generation might be added in the
+      future.
+    requestId: Optional. Request ID is an idempotency ID of the request. It
+      must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
+      is not supported.
+  """
+
+  parent = _messages.StringField(1)
+  reference = _messages.MessageField('Reference', 2)
+  referenceId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
 class CustomField(_messages.Message):
   r"""Custom fields. These can be used to create a counter with arbitrary
   field/value pairs. See: go/rpcsp-custom-fields.
@@ -971,6 +997,23 @@ class DataAccessOptions(_messages.Message):
     LOG_FAIL_CLOSED = 1
 
   logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
+
+
+class DeleteReferenceRequest(_messages.Message):
+  r"""The DeleteReferenceRequest request.
+
+  Fields:
+    name: Required. Resource name of the reference, in the following format:
+      `{target_resource}/references/{reference_id}`. For example:
+      `projects/{my-project}/locations/{location}/instances/{my-
+      instance}/references/{xyz}`.
+    requestId: Optional. Request ID is an idempotency ID of the request. It
+      must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
+      is not supported.
+  """
+
+  name = _messages.StringField(1)
+  requestId = _messages.StringField(2)
 
 
 class Empty(_messages.Message):
@@ -1034,6 +1077,19 @@ class GclbTarget(_messages.Message):
 
   ipConfig = _messages.MessageField('IpConfig', 1, repeated=True)
   targetProxy = _messages.StringField(2)
+
+
+class GetReferenceRequest(_messages.Message):
+  r"""The GetReferenceRequest request.
+
+  Fields:
+    name: Required. Resource name of the reference, in the following format:
+      `{target_resource}/references/{reference_id}`. For example:
+      `projects/{my-project}/locations/{location}/instances/{my-
+      instance}/references/{xyz}`.
+  """
+
+  name = _messages.StringField(1)
 
 
 class IpConfig(_messages.Message):
@@ -1433,6 +1489,61 @@ class Policy(_messages.Message):
   iamOwned = _messages.BooleanField(4)
   rules = _messages.MessageField('Rule', 5, repeated=True)
   version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
+class Reference(_messages.Message):
+  r"""Represents a reference to a resource.
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    createTime: Output only. The creation time.
+    details: Details of the reference type with no implied semantics.
+      Cumulative size of the field must not be more than 1KiB.
+    name: Output only. Resource name of the reference. Includes target
+      resource as a parent and reference uid
+      `{target_resource}/references/{reference_id}`. For example,
+      `projects/{my-project}/locations/{location}/instances/{my-
+      instance}/references/{xyz}`.
+    sourceResource: Required. Full resource name of the resource which refers
+      the target resource. For example:
+      //tpu.googleapis.com/projects/myproject/nodes/mynode
+    type: Required. Type of the reference. A service might impose limits on
+      number of references of a specific type.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  name = _messages.StringField(3)
+  sourceResource = _messages.StringField(4)
+  type = _messages.StringField(5)
 
 
 class Rule(_messages.Message):

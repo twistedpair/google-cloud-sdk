@@ -37,9 +37,9 @@ def GetOrCreate(project_ref):
     Email address of the Private CA P4SA for the given project.
   """
   service_name = privateca_base.GetServiceName()
-  email, _ = serviceusage.GenerateServiceIdentity(project_ref.Name(),
+  response = serviceusage.GenerateServiceIdentity(project_ref.Name(),
                                                   service_name)
-  return email
+  return response['email']
 
 
 def AddResourceRoleBindings(p4sa_email, kms_key_ref=None, bucket_ref=None):

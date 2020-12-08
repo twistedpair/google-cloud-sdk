@@ -347,6 +347,60 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsListR
   parent = _messages.StringField(3, required=True)
 
 
+class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsCancelRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsO
+  perationsCancelRequest object.
+
+  Fields:
+    googleLongrunningCancelOperationRequest: A
+      GoogleLongrunningCancelOperationRequest resource to be passed as the
+      request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsDeleteRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsO
+  perationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsGetRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsO
+  perationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsOperationsListRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsO
+  perationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsPatchRequest(_messages.Message):
   r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsP
   atchRequest object.
@@ -1148,9 +1202,11 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest(_messages
       this modify request is based on. Validation checking will only happen if
       the invoker supplies this field.
     modifications: Optional. Modifications for an existing Order created by an
-      Offer. Required when Offer based Order is being modified.
-    modifyProductsOrderRequest: Required. Modifies an existing order for non-
-      quote products.
+      Offer. Required when Offer based Order is being modified, except for
+      when going from an offer to a public plan.
+    modifyProductsOrderRequest: Required. Modifies an existing non-quote
+      order. Should only be used for offer-based orders when going from an
+      offer to a public plan.
     modifyQuoteOrderRequest: Required. Modifies an existing order for quote.
   """
 

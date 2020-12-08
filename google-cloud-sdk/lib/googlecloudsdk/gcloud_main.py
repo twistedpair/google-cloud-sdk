@@ -30,7 +30,6 @@ import errno
 import os
 import sys
 
-from googlecloudsdk.api_lib.iamcredentials import util as iamcred_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import cli
 from googlecloudsdk.command_lib import crash_handling
@@ -39,7 +38,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.credentials import store as creds_store
+from googlecloudsdk.core.credentials import creds_context_managers
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.survey import survey_check
 from googlecloudsdk.core.updater import local_state
@@ -169,69 +168,58 @@ def main(gcloud_cli=None, credential_providers=None):
   if gcloud_cli is None:
     gcloud_cli = CreateCLI([])
 
-  # Register some other sources for credentials and project.
-  credential_providers = credential_providers or [
-      creds_store.DevShellCredentialProvider(),
-      creds_store.GceCredentialProvider(),
-  ]
-  for provider in credential_providers:
-    provider.Register()
-  # Register support for service account impersonation.
-  creds_store.IMPERSONATION_TOKEN_PROVIDER = (
-      iamcred_util.ImpersonationAccessTokenProvider())
-
-  try:
+  with creds_context_managers.CredentialProvidersManager(credential_providers):
     try:
-      gcloud_cli.Execute()
-      # Flush stdout so that if we've received a SIGPIPE we handle the broken
-      # pipe within this try block, instead of potentially during interpreter
-      # shutdown.
-      sys.stdout.flush()
-    except IOError as err:
-      # We want to ignore EPIPE IOErrors (as of Python 3.3 these can be caught
-      # specifically with BrokenPipeError, but we do it this way for Python 2
-      # compatibility).
-      #
-      # By default, Python ignores SIGPIPE (see
-      # http://utcc.utoronto.ca/~cks/space/blog/python/SignalExceptionSurprise).
-      # This means that attempting to write any output to a closed pipe (e.g. in
-      # the case of output piped to `head` or `grep -q`) will result in an
-      # IOError, which gets reported as a gcloud crash. We don't want this
-      # behavior, so we ignore EPIPE (it's not a real error; it's a normal thing
-      # to occur).
-      #
-      # Before, we restored the SIGPIPE signal handler, but that caused issues
-      # with scripts/programs that wrapped gcloud.
-      if err.errno == errno.EPIPE:
-        # At this point we've caught the broken pipe, but since Python flushes
-        # standard streams on exit, it's still possible for a broken pipe error
-        # to happen during interpreter shutdown. The interpreter will catch this
-        # but in Python 3 it still prints a warning to stderr saying that the
-        # exception was ignored (see https://bugs.python.org/issue11380):
+      try:
+        gcloud_cli.Execute()
+        # Flush stdout so that if we've received a SIGPIPE we handle the broken
+        # pipe within this try block, instead of potentially during interpreter
+        # shutdown.
+        sys.stdout.flush()
+      except IOError as err:
+        # We want to ignore EPIPE IOErrors (as of Python 3.3 these can be caught
+        # specifically with BrokenPipeError, but we do it this way for Python 2
+        # compatibility).
         #
-        # Exception ignored in: <_io.TextIOWrapper name='<stdout>' mode='w'
-        # encoding='UTF-8'>
-        # BrokenPipeError: [Errno 32] Broken pipe
+        # By default, Python ignores SIGPIPE (see
+        # http://utcc.utoronto.ca/~cks/space/blog/python/SignalExceptionSurprise
+        # ).
+        # This means that attempting to write any output to a closed pipe (e.g.
+        # in the case of output piped to `head` or `grep -q`) will result in an
+        # IOError, which gets reported as a gcloud crash. We don't want this
+        # behavior, so we ignore EPIPE (it's not a real error; it's a normal
+        # thing to occur).
         #
-        # To prevent this from happening, we redirect any remaining output to
-        # devnull as recommended here:
-        # https://docs.python.org/3/library/signal.html#note-on-sigpipe.
-        devnull = os.open(os.devnull, os.O_WRONLY)
-        os.dup2(devnull, sys.stdout.fileno())
-      else:
+        # Before, we restored the SIGPIPE signal handler, but that caused issues
+        # with scripts/programs that wrapped gcloud.
+        if err.errno == errno.EPIPE:
+          # At this point we've caught the broken pipe, but since Python flushes
+          # standard streams on exit, it's still possible for a broken pipe
+          # error to happen during interpreter shutdown. The interpreter will
+          # catch this but in Python 3 it still prints a warning to stderr
+          # saying that the exception was ignored
+          # (see https://bugs.python.org/issue11380):
+          #
+          # Exception ignored in: <_io.TextIOWrapper name='<stdout>' mode='w'
+          # encoding='UTF-8'>
+          # BrokenPipeError: [Errno 32] Broken pipe
+          #
+          # To prevent this from happening, we redirect any remaining output to
+          # devnull as recommended here:
+          # https://docs.python.org/3/library/signal.html#note-on-sigpipe.
+          devnull = os.open(os.devnull, os.O_WRONLY)
+          os.dup2(devnull, sys.stdout.fileno())
+        else:
+          raise
+    except Exception as err:  # pylint:disable=broad-except
+      crash_handling.HandleGcloudCrash(err)
+      if properties.VALUES.core.print_unhandled_tracebacks.GetBool():
+        # We want to see the traceback as normally handled by Python
         raise
-  except Exception as err:  # pylint:disable=broad-except
-    crash_handling.HandleGcloudCrash(err)
-    if properties.VALUES.core.print_unhandled_tracebacks.GetBool():
-      # We want to see the traceback as normally handled by Python
-      raise
-    else:
-      # This is the case for most non-Cloud SDK developers. They shouldn't see
-      # the full stack trace, but just the nice "gcloud crashed" message.
-      sys.exit(1)
-  finally:
-    for provider in credential_providers:
-      provider.UnRegister()
+      else:
+        # This is the case for most non-Cloud SDK developers. They shouldn't see
+        # the full stack trace, but just the nice "gcloud crashed" message.
+        sys.exit(1)
 
 
 if __name__ == '__main__':

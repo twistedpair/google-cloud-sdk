@@ -115,7 +115,6 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -159,10 +158,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -429,6 +427,19 @@ class DatafusionProjectsLocationsVersionsListRequest(_messages.Message):
   parent = _messages.StringField(4, required=True)
 
 
+class DatafusionProjectsRemoveIamPolicyRequest(_messages.Message):
+  r"""A DatafusionProjectsRemoveIamPolicyRequest object.
+
+  Fields:
+    removeIAMPolicyRequest: A RemoveIAMPolicyRequest resource to be passed as
+      the request body.
+    resource: The resource on which IAM policy to be removed is attached to.
+  """
+
+  removeIAMPolicyRequest = _messages.MessageField('RemoveIAMPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -572,7 +583,7 @@ class Instance(_messages.Message):
         support for streaming pipelines, etc.
       ENTERPRISE: Enterprise Data Fusion instance. In Enterprise type, the
         user will have all features available, such as support for streaming
-        pipelines, higher number of concurrent pipelines, etc.
+        pipelines, unlimited number of concurrent pipelines, etc.
       DEVELOPER: Developer Data Fusion instance. In Developer type, the user
         will have all features available but with restrictive capabilities.
         This is to help enterprises design and develop their data ingestion
@@ -1021,6 +1032,14 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class RemoveIAMPolicyRequest(_messages.Message):
+  r"""Request message for RemoveIAMPolicy method."""
+
+
+class RemoveIAMPolicyResponse(_messages.Message):
+  r"""Response message for RemoveIAMPolicy method."""
 
 
 class RestartInstanceRequest(_messages.Message):

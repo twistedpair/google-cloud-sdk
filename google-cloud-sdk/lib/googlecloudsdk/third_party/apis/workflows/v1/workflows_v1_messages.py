@@ -51,6 +51,21 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListWorkflowsResponse(_messages.Message):
+  r"""Response for the ListWorkflows method.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Unreachable resources.
+    workflows: The workflows which match the request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  workflows = _messages.MessageField('Workflow', 3, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -239,6 +254,24 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: API version used to start the operation.
+    createTime: The time the operation was created.
+    endTime: The time the operation finished running.
+    target: Server-defined resource path for the target of the operation.
+    verb: Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  target = _messages.StringField(4)
+  verb = _messages.StringField(5)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -353,6 +386,101 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class Workflow(_messages.Message):
+  r"""Workflow program to be executed by Workflows.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the workflow deployment.
+
+  Messages:
+    LabelsValue: Labels associated with this workflow. Labels can contain at
+      most 64 entries. Keys and values can be no longer than 63 characters and
+      can only contain lowercase letters, numeric characters, underscores and
+      dashes. Label keys must start with a letter. International characters
+      are allowed.
+
+  Fields:
+    createTime: Output only. The timestamp of when the workflow was created.
+    description: Description of the workflow provided by the user. Must be at
+      most 1000 unicode characters long.
+    labels: Labels associated with this workflow. Labels can contain at most
+      64 entries. Keys and values can be no longer than 63 characters and can
+      only contain lowercase letters, numeric characters, underscores and
+      dashes. Label keys must start with a letter. International characters
+      are allowed.
+    name: The resource name of the workflow. Format:
+      projects/{project}/locations/{location}/workflows/{workflow}
+    revisionCreateTime: Output only. The timestamp that the latest revision of
+      the workflow was created.
+    revisionId: Output only. The revision of the workflow. A new revision of a
+      workflow is created as a result of updating the following fields of a
+      workflow: - `source_code` - `service_account` The format is
+      "000001-a4d", where the first 6 characters define the zero-padded
+      revision ordinal number. They are followed by a hyphen and 3 hexadecimal
+      random characters.
+    serviceAccount: Name of the service account associated with the latest
+      workflow version. This service account represents the identity of the
+      workflow and determines what permissions the workflow has. Format:
+      projects/{project}/serviceAccounts/{account} Using `-` as a wildcard for
+      the `{project}` will infer the project from the account. The `{account}`
+      value can be the `email` address or the `unique_id` of the service
+      account. If not provided, workflow will use the project's default
+      service account. Modifying this field for an existing workflow results
+      in a new workflow revision.
+    sourceContents: Workflow code to be executed. The size limit is 32KB.
+    state: Output only. State of the workflow deployment.
+    updateTime: Output only. The last update timestamp of the workflow.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the workflow deployment.
+
+    Values:
+      STATE_UNSPECIFIED: Invalid state.
+      ACTIVE: The workflow has been deployed successfully and is serving.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels associated with this workflow. Labels can contain at most 64
+    entries. Keys and values can be no longer than 63 characters and can only
+    contain lowercase letters, numeric characters, underscores and dashes.
+    Label keys must start with a letter. International characters are allowed.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  revisionCreateTime = _messages.StringField(5)
+  revisionId = _messages.StringField(6)
+  serviceAccount = _messages.StringField(7)
+  sourceContents = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
+
+
 class WorkflowsProjectsLocationsGetRequest(_messages.Message):
   r"""A WorkflowsProjectsLocationsGetRequest object.
 
@@ -413,6 +541,92 @@ class WorkflowsProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class WorkflowsProjectsLocationsWorkflowsCreateRequest(_messages.Message):
+  r"""A WorkflowsProjectsLocationsWorkflowsCreateRequest object.
+
+  Fields:
+    parent: Required. Project and location in which the workflow should be
+      created. Format: projects/{project}/locations/{location}
+    workflow: A Workflow resource to be passed as the request body.
+    workflowId: Required. The ID of the workflow to be created. It has to
+      fulfill the following requirements: * Must contain only letters,
+      numbers, underscores and hyphens. * Must start with a letter. * Must be
+      between 1-64 characters. * Must end with a number or a letter. * Must be
+      unique within the customer project and location.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  workflow = _messages.MessageField('Workflow', 2)
+  workflowId = _messages.StringField(3)
+
+
+class WorkflowsProjectsLocationsWorkflowsDeleteRequest(_messages.Message):
+  r"""A WorkflowsProjectsLocationsWorkflowsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the workflow to be deleted. Format:
+      projects/{project}/locations/{location}/workflows/{workflow}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class WorkflowsProjectsLocationsWorkflowsGetRequest(_messages.Message):
+  r"""A WorkflowsProjectsLocationsWorkflowsGetRequest object.
+
+  Fields:
+    name: Required. Name of the workflow which information should be
+      retrieved. Format:
+      projects/{project}/locations/{location}/workflows/{workflow}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class WorkflowsProjectsLocationsWorkflowsListRequest(_messages.Message):
+  r"""A WorkflowsProjectsLocationsWorkflowsListRequest object.
+
+  Fields:
+    filter: Filter to restrict results to specific workflows.
+    orderBy: Comma-separated list of fields that that specify the order of the
+      results. Default sorting order for a field is ascending. To specify
+      descending order for a field, append a " desc" suffix. If not specified,
+      the results will be returned in an unspecified order.
+    pageSize: Maximum number of workflows to return per call. The service may
+      return fewer than this value. If the value is not specified, a default
+      value of 500 will be used. The maximum permitted value is 1000 and
+      values greater than 1000 will be coerced down to 1000.
+    pageToken: A page token, received from a previous `ListWorkflows` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListWorkflows` must match the call that provided
+      the page token.
+    parent: Required. Project and location from which the workflows should be
+      listed. Format: projects/{project}/locations/{location}
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class WorkflowsProjectsLocationsWorkflowsPatchRequest(_messages.Message):
+  r"""A WorkflowsProjectsLocationsWorkflowsPatchRequest object.
+
+  Fields:
+    name: The resource name of the workflow. Format:
+      projects/{project}/locations/{location}/workflows/{workflow}
+    updateMask: List of fields to be updated. If not present, the entire
+      workflow will be updated.
+    workflow: A Workflow resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  workflow = _messages.MessageField('Workflow', 3)
 
 
 encoding.AddCustomJsonFieldMapping(

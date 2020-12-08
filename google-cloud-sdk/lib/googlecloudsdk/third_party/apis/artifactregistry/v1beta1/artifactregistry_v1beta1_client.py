@@ -404,7 +404,7 @@ class ArtifactregistryV1beta1(base_api.BaseApiClient):
         method_id='artifactregistry.projects.locations.repositories.packages.versions.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken', 'view'],
+        query_params=['orderBy', 'pageSize', 'pageToken', 'view'],
         relative_path='v1beta1/{+parent}/versions',
         request_field='',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest',

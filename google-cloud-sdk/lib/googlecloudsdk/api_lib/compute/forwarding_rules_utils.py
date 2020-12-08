@@ -27,7 +27,7 @@ from googlecloudsdk.command_lib.compute.forwarding_rules import flags
 from googlecloudsdk.core import properties
 
 
-def _ValidateGlobalArgs(args, support_target_grpc_proxy):
+def _ValidateGlobalArgs(args, support_tcp_in_td):
   """Validate the global forwarding rules args."""
   if args.target_instance:
     raise calliope_exceptions.ToolException(
@@ -56,19 +56,20 @@ def _ValidateGlobalArgs(args, support_target_grpc_proxy):
   if getattr(args, 'load_balancing_scheme', None) == 'INTERNAL_SELF_MANAGED':
     if (not getattr(args, 'target_http_proxy', None) and
         not getattr(args, 'target_https_proxy', None) and
-        not (support_target_grpc_proxy and
-             getattr(args, 'target_grpc_proxy', None))):
-      target_error_message_with_grpc = (
+        not getattr(args, 'target_grpc_proxy', None) and
+        not (support_tcp_in_td and getattr(args, 'target_tcp_proxy', None))):
+      target_error_message_with_tcp = (
+          'You must specify either [--target-http-proxy], '
+          '[--target-https-proxy], [--target-grpc-proxy] '
+          'or [--target-tcp-proxy] for an '
+          'INTERNAL_SELF_MANAGED [--load-balancing-scheme].')
+      target_error_message = (
           'You must specify either [--target-http-proxy], '
           '[--target-https-proxy] or [--target-grpc-proxy] for an '
           'INTERNAL_SELF_MANAGED [--load-balancing-scheme].')
-      target_error_message = (
-          'You must specify either [--target-http-proxy] or '
-          '[--target-https-proxy] for an INTERNAL_SELF_MANAGED '
-          '[--load-balancing-scheme].')
       raise calliope_exceptions.ToolException(
-          target_error_message_with_grpc
-          if support_target_grpc_proxy else target_error_message)
+          target_error_message_with_tcp
+          if support_tcp_in_td else target_error_message)
 
     if getattr(args, 'subnet', None):
       raise calliope_exceptions.ToolException(
@@ -81,9 +82,9 @@ def _ValidateGlobalArgs(args, support_target_grpc_proxy):
           '[--load-balancing-scheme]')
 
 
-def GetGlobalTarget(resources, args, support_target_grpc_proxy):
+def GetGlobalTarget(resources, args, support_tcp_in_td):
   """Return the forwarding target for a globally scoped request."""
-  _ValidateGlobalArgs(args, support_target_grpc_proxy)
+  _ValidateGlobalArgs(args, support_tcp_in_td)
 
   if args.target_http_proxy:
     return flags.TargetHttpProxyArg().ResolveAsResource(
@@ -91,7 +92,7 @@ def GetGlobalTarget(resources, args, support_target_grpc_proxy):
   if args.target_https_proxy:
     return flags.TargetHttpsProxyArg().ResolveAsResource(
         args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL)
-  if support_target_grpc_proxy and args.target_grpc_proxy:
+  if args.target_grpc_proxy:
     return flags.TargetGrpcProxyArg().ResolveAsResource(
         args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL)
   if args.target_ssl_proxy:
@@ -208,12 +209,13 @@ def GetRegionalTarget(client,
   elif include_target_service_attachment and args.target_service_attachment:
     target_ref = flags.TargetServiceAttachmentArg().ResolveAsResource(
         args, resources)
-    target_region = region_arg
-    if args.target_service_attachment_region and region_arg:
-      if args.target_service_attachment_region != region_arg:
-        raise calliope_exceptions.ToolException(
-            'The provided [--target-service-attachment-region] must equal '
-            'the [--region] of the forwarding rule.')
+    target_region = target_ref.region
+    if target_region != region_arg or (
+        args.target_service_attachment_region and region_arg and
+        args.target_service_attachment_region != region_arg):
+      raise calliope_exceptions.ToolException(
+          'The region of the provided service attachment must equal the '
+          '[--region] of the forwarding rule.')
 
   return target_ref, target_region
 

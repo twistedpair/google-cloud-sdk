@@ -92,7 +92,6 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -136,10 +135,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class BooleanConstraint(_messages.Message):
@@ -750,6 +748,74 @@ class Constraint(_messages.Message):
   version = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
+class CreateFolderMetadata(_messages.Message):
+  r"""Metadata pertaining to the Folder creation process.
+
+  Fields:
+    displayName: The display name of the folder.
+    parent: The resource name of the folder or organization we are creating
+      the folder under.
+  """
+
+  displayName = _messages.StringField(1)
+  parent = _messages.StringField(2)
+
+
+class CreateProjectMetadata(_messages.Message):
+  r"""A status object which is used as the `metadata` field for the Operation
+  returned by CreateProject. It provides insight for when significant phases
+  of Project creation have completed.
+
+  Fields:
+    createTime: Creation time of the project creation workflow.
+    gettable: True if the project can be retrieved using GetProject. No other
+      operations on the project are guaranteed to work until the project
+      creation is complete.
+    ready: True if the project creation process is complete.
+  """
+
+  createTime = _messages.StringField(1)
+  gettable = _messages.BooleanField(2)
+  ready = _messages.BooleanField(3)
+
+
+class CreateTagKeyMetadata(_messages.Message):
+  r"""Runtime operation information for creating a TagKey."""
+
+
+class CreateTagValueMetadata(_messages.Message):
+  r"""Runtime operation information for creating a TagValue."""
+
+
+class DeleteFolderMetadata(_messages.Message):
+  r"""A status object which is used as the `metadata` field for the Operation
+  returned by DeleteFolder.
+  """
+
+
+
+class DeleteOrganizationMetadata(_messages.Message):
+  r"""A status object which is used as the `metadata` field for the Operation
+  returned by DeleteOrganization.
+  """
+
+
+
+class DeleteProjectMetadata(_messages.Message):
+  r"""A status object which is used as the `metadata` field for the Operation
+  returned by DeleteProject.
+  """
+
+
+
+class DeleteTagKeyMetadata(_messages.Message):
+  r"""Runtime operation information for deleting a TagKey."""
+
+
+class DeleteTagValueMetadata(_messages.Message):
+  r"""Runtime operation information for deleting a TagValue."""
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1157,6 +1223,28 @@ class ListProjectsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   projects = _messages.MessageField('Project', 2, repeated=True)
+
+
+class MoveFolderMetadata(_messages.Message):
+  r"""Metadata pertaining to the Folder move process.
+
+  Fields:
+    destinationParent: The resource name of the folder or organization to move
+      the folder to.
+    displayName: The display name of the folder.
+    sourceParent: The resource name of the folder's parent.
+  """
+
+  destinationParent = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  sourceParent = _messages.StringField(3)
+
+
+class MoveProjectMetadata(_messages.Message):
+  r"""A status object which is used as the `metadata` field for the Operation
+  returned by MoveProject.
+  """
+
 
 
 class Operation(_messages.Message):
@@ -1797,8 +1885,51 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class UndeleteFolderMetadata(_messages.Message):
+  r"""A status object which is used as the `metadata` field for the Operation
+  returned by UndeleteFolder.
+  """
+
+
+
+class UndeleteOrganizationMetadata(_messages.Message):
+  r"""A status object which is used as the `metadata` field for the Operation
+  returned by UndeleteOrganization.
+  """
+
+
+
+class UndeleteProjectMetadata(_messages.Message):
+  r"""A status object which is used as the `metadata` field for the Operation
+  returned by UndeleteProject.
+  """
+
+
+
 class UndeleteProjectRequest(_messages.Message):
   r"""The request sent to the UndeleteProject method."""
+
+
+class UpdateFolderMetadata(_messages.Message):
+  r"""A status object which is used as the `metadata` field for the Operation
+  returned by UpdateFolder.
+  """
+
+
+
+class UpdateProjectMetadata(_messages.Message):
+  r"""A status object which is used as the `metadata` field for the Operation
+  returned by UpdateProject.
+  """
+
+
+
+class UpdateTagKeyMetadata(_messages.Message):
+  r"""Runtime operation information for updating a TagKey."""
+
+
+class UpdateTagValueMetadata(_messages.Message):
+  r"""Runtime operation information for updating a TagValue."""
 
 
 encoding.AddCustomJsonFieldMapping(

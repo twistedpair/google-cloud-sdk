@@ -18,43 +18,22 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import contextlib
 import re
 from apitools.base.protorpclite import messages as proto_messages
 from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import files
 
 import six
-from six.moves.urllib import parse as urlparse
 
 _API_NAME = 'cloudbuild'
 _GA_API_VERSION = 'v1'
 _BETA_API_VERSION = 'v1beta1'
 _ALPHA_API_VERSION = 'v1alpha2'
-
-# Ideally, gcloud should be able to detect what regions there are automatically
-# instead of having them hardcoded. We considered two ways to do this:
-#   1) Use the API discovery service. This would mean all of our gcloud commands
-#      would depend on the API Discovery service, which is unacceptable.
-#   2) Just put the user-provided region string in the URL and see if it 404s.
-#      This would work, but would have the unfortunate side-effect of sending
-#      requests from confused users to random URLs.
-# With only these two alternatives, it is preferable to hardcode the endpoints
-# in gcloud, even though this forces users to update gcloud to use new regions.
-SERVICE_REGIONS = [
-    'asia-east1',
-    'asia-southeast1',
-    'europe-west1',
-    'europe-west4',
-    'us-central1',
-    'us-east1',
-]
 
 RELEASE_TRACK_TO_API_VERSION = {
     base.ReleaseTrack.GA: _GA_API_VERSION,
@@ -68,90 +47,8 @@ REGIONAL_WORKERPOOL_NAME_MATCHER = r'projects/.*/locations/.*/workerPools/.*'
 REGIONAL_WORKERPOOL_NAME_SELECTOR = r'projects/.*/locations/.*/workerPools/(.*)'
 REGIONAL_WORKERPOOL_REGION_SELECTOR = r'projects/.*/locations/(.*)/workerPools/.*'
 
-
-# This feature was only added in Python 3.7, so I made my own.
-@contextlib.contextmanager
-def _NullContext():
-  yield None
-
-
-class NoSuchRegionError(exceptions.Error):
-  """User-specified region is not one of the Cloud Build Service regions."""
-
-  def __init__(self, region):
-    msg = 'Cloud Build has no region "%s". Try one of [%s].' % (
-        region, ', '.join(SERVICE_REGIONS))
-    super(NoSuchRegionError, self).__init__(msg)
-
-
-def DeriveRegionalEndpoint(endpoint, region):
-  """Turn https://xyz.googleapis.com/ into https://{region}-xyz.googleapis.com/.
-
-  Args:
-    endpoint: str, The global endpoint URL to reginalize.
-    region: str, The region to use in the URL.
-
-  Returns:
-    str, The regional endpoint URL.
-  """
-  scheme, netloc, path, params, query, fragment = urlparse.urlparse(endpoint)
-  netloc = '{}-{}'.format(region, netloc)
-  return urlparse.urlunparse((scheme, netloc, path, params, query, fragment))
-
-
-@contextlib.contextmanager
-def OverrideEndpointOnce(api_name, override):
-  """Temporarily set an API's endpoint override if it has not been set yet.
-
-  Args:
-    api_name: str, Name of the API to modify.
-    override: str, New value for the endpoint.
-
-  Yields:
-    None.
-  """
-  endpoint_property = getattr(properties.VALUES.api_endpoint_overrides,
-                              api_name)
-  old_endpoint = endpoint_property.Get()
-
-  if old_endpoint:
-    override = old_endpoint
-
-  try:
-    endpoint_property.Set(override)
-    yield
-  finally:
-    endpoint_property.Set(old_endpoint)
-
-
-@contextlib.contextmanager
-def RegionalCloudBuildContext(release_track=base.ReleaseTrack.GA, region=None):
-  """Use the selected Cloud Build regional endpoint, unless it is overridden.
-
-  Args:
-    release_track: The desired value of the enum
-      googlecloudsdk.calliope.base.ReleaseTrack.
-    region: str, The region of the service to use, or None for the global
-      service.
-
-  Raises:
-    NoSuchRegionError: if the specified region is not a Cloud Build region.
-
-  Yields:
-    None.
-  """
-  if region:
-    if region not in SERVICE_REGIONS:
-      raise NoSuchRegionError(region)
-    dummy_client_class = apis.GetClientClass(
-        _API_NAME, RELEASE_TRACK_TO_API_VERSION[release_track])
-    global_endpoint = dummy_client_class.BASE_URL
-    regional_endpoint = DeriveRegionalEndpoint(global_endpoint, region)
-    override_ctx = OverrideEndpointOnce(_API_NAME, regional_endpoint)
-  else:
-    override_ctx = _NullContext()
-  with override_ctx:
-    yield
+# Default for optionally-regional requests when the user does not specify.
+DEFAULT_REGION = 'global'
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.GA):
@@ -168,49 +65,35 @@ def GetMessagesModule(release_track=base.ReleaseTrack.GA):
                                 RELEASE_TRACK_TO_API_VERSION[release_track])
 
 
-def GetClientClass(release_track=base.ReleaseTrack.GA, region=None):
+def GetClientClass(release_track=base.ReleaseTrack.GA):
   """Returns the client class for Cloud Build.
 
   Args:
     release_track: The desired value of the enum
       googlecloudsdk.calliope.base.ReleaseTrack.
-    region: str, The region of the service to use, or None for the global
-      service.
-
-  Raises:
-    NoSuchRegionError: if the specified region is not a Cloud Build region.
 
   Returns:
     base_api.BaseApiClient, Client class for Cloud Build.
   """
-  with RegionalCloudBuildContext(release_track, region):
-    return apis.GetClientClass(_API_NAME,
-                               RELEASE_TRACK_TO_API_VERSION[release_track])
+  return apis.GetClientClass(_API_NAME,
+                             RELEASE_TRACK_TO_API_VERSION[release_track])
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.GA,
-                      region=None,
-                      use_http=True):
+def GetClientInstance(release_track=base.ReleaseTrack.GA, use_http=True):
   """Returns an instance of the Cloud Build client.
 
   Args:
     release_track: The desired value of the enum
       googlecloudsdk.calliope.base.ReleaseTrack.
-    region: str, The region of the service to use, or None for the global
-      service.
     use_http: bool, True to create an http object for this client.
-
-  Raises:
-    NoSuchRegionError: if the specified region is not a Cloud Build region.
 
   Returns:
     base_api.BaseApiClient, An instance of the Cloud Build client.
   """
-  with RegionalCloudBuildContext(release_track, region):
-    return apis.GetClientInstance(
-        _API_NAME,
-        RELEASE_TRACK_TO_API_VERSION[release_track],
-        no_http=(not use_http))
+  return apis.GetClientInstance(
+      _API_NAME,
+      RELEASE_TRACK_TO_API_VERSION[release_track],
+      no_http=(not use_http))
 
 
 def EncodeSubstitutions(substitutions, messages):

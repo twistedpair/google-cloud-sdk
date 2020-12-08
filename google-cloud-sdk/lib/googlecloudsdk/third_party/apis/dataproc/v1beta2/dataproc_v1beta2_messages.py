@@ -147,7 +147,6 @@ class Binding(_messages.Message):
   r"""Associates members with a role.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding.If the
       condition evaluates to true, then this binding applies to the current
       request.If the condition evaluates to false, then this binding does not
@@ -189,10 +188,9 @@ class Binding(_messages.Message):
       roles/editor, or roles/owner.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CancelJobRequest(_messages.Message):
@@ -1213,6 +1211,24 @@ class DataprocProjectsRegionsClustersGetRequest(_messages.Message):
   region = _messages.StringField(3, required=True)
 
 
+class DataprocProjectsRegionsClustersInjectCredentialsRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersInjectCredentialsRequest object.
+
+  Fields:
+    cluster: Required. The cluster, in the form clusters/.
+    injectCredentialsRequest: A InjectCredentialsRequest resource to be passed
+      as the request body.
+    project: Required. The ID of the Google Cloud Platform project the cluster
+      belongs to, of the form projects/.
+    region: Required. The region containing the cluster, of the form regions/.
+  """
+
+  cluster = _messages.StringField(1, required=True)
+  injectCredentialsRequest = _messages.MessageField('InjectCredentialsRequest', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+
+
 class DataprocProjectsRegionsClustersListRequest(_messages.Message):
   r"""A DataprocProjectsRegionsClustersListRequest object.
 
@@ -2052,6 +2068,8 @@ class GceClusterConfig(_messages.Message):
       https://www.googleapis.com/auth/bigtable.admin.table
       https://www.googleapis.com/auth/bigtable.data
       https://www.googleapis.com/auth/devstorage.full_control
+    shieldedInstanceConfig: Optional. Shielded Instance Config for clusters
+      using shielded VMs.
     subnetworkUri: Optional. The Compute Engine subnetwork to be used for
       machine communications. Cannot be specified with network_uri.A full URL,
       partial URI, or short name are valid. Examples:
@@ -2126,9 +2144,10 @@ class GceClusterConfig(_messages.Message):
   reservationAffinity = _messages.MessageField('ReservationAffinity', 6)
   serviceAccount = _messages.StringField(7)
   serviceAccountScopes = _messages.StringField(8, repeated=True)
-  subnetworkUri = _messages.StringField(9)
-  tags = _messages.StringField(10, repeated=True)
-  zoneUri = _messages.StringField(11)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 9)
+  subnetworkUri = _messages.StringField(10)
+  tags = _messages.StringField(11, repeated=True)
+  zoneUri = _messages.StringField(12)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -2336,6 +2355,22 @@ class HiveJob(_messages.Message):
   queryFileUri = _messages.StringField(4)
   queryList = _messages.MessageField('QueryList', 5)
   scriptVariables = _messages.MessageField('ScriptVariablesValue', 6)
+
+
+class InjectCredentialsRequest(_messages.Message):
+  r"""A request to inject credentials into a cluster.
+
+  Fields:
+    clusterUuid: Required. The cluster UUID.
+    credentialsCiphertext: Required. The encrypted credentials being injected
+      in to the cluster.The client is responsible for encrypting the
+      credentials in a way that is supported by the cluster.A wrapped value is
+      used here so that the actual contents of the encrypted credentials are
+      not written to audit logs.
+  """
+
+  clusterUuid = _messages.StringField(1)
+  credentialsCiphertext = _messages.StringField(2)
 
 
 class InstanceGroupAutoscalingPolicyConfig(_messages.Message):
@@ -3716,6 +3751,22 @@ class SetIamPolicyRequest(_messages.Message):
   """
 
   policy = _messages.MessageField('Policy', 1)
+
+
+class ShieldedInstanceConfig(_messages.Message):
+  r"""Shielded Instance Config for clusters using shielded VMs.
+
+  Fields:
+    enableIntegrityMonitoring: Optional. Defines whether instances have
+      integrity monitoring enabled.
+    enableSecureBoot: Optional. Defines whether instances have Secure Boot
+      enabled.
+    enableVtpm: Optional. Defines whether instances have the vTPM enabled.
+  """
+
+  enableIntegrityMonitoring = _messages.BooleanField(1)
+  enableSecureBoot = _messages.BooleanField(2)
+  enableVtpm = _messages.BooleanField(3)
 
 
 class SoftwareConfig(_messages.Message):

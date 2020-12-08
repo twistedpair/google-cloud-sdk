@@ -5,7 +5,211 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
-## 319.0.0 (2020-11-17)
+## 320.0.0 (2020-12-08)
+
+### AI Platform
+
+* Updated the following command groups to display a choice of available regions
+  if a region hasn't been specified:
+   * `gcloud ai-platform models`
+   * `gcloud ai-platform versions`
+   * `gcloud ai-platform predict`
+   * `gcloud ai-platform explain`
+  Learn more about regional endpoints and see a list of available regions here:
+  <https://cloud.google.com/ai-platform/prediction/docs/regional-endpoints>.
+
+### App Engine
+
+* Updated `gcloud beta app instances list` and `gcloud beta app instances describe`
+  to return the auto healer health check (i.e. liveness) for the flexible
+  environment.
+* Updated the Java SDK to version 1.9.84.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### Assured Workloads
+
+*   Change `--next-rotation-time` and `--rotation-period` flags of `gcloud
+    assured workloads create` to be optional.
+*   Add `--provisioned-resources-parent` flag to `gcloud assured workloads
+    create` command.
+
+### BigQuery
+
+* Added schema to jobs.query dry run reply.
+* Supported `bq partition` command for HOUR/MONTH/YEAR time partitioning types.
+* Supported Avro logical types for creating new external tables.
+* Added `PARQUET` as option for export type. This feature is still experimental.
+
+### Cloud Asset Inventory
+
+* Added `gcloud asset bulk-export` command to beta which enables the user to export GCP
+  resource configurations in Kubernetes Resource Model or Terraform formats.
+
+### Cloud Billing
+
+* Promoted `gcloud billing budgets` to GA.
+    * Renamed `all-updates-rule-*` flags as `notifications-rule-*` flags in GA.
+
+### Cloud Build
+
+* Added flag `--no-external-ip` to `gcloud beta builds worker-pools
+  <create|update>` commands.
+
+### Cloud Composer
+
+* Added `--kms-key-name` flag to `gcloud beta composer environments` command to
+specify the Customer-managed KMS key name to use for encrypting the Composer
+environment.
+
+### Cloud DNS
+
+*   Fixed issue where `gcloud dns managed-zones update` could not remove labels.
+    This issue can be tracked at <https://issuetracker.google.com/issues/171509626>.
+
+### Cloud Dataproc
+
+*   Added `--max-failures-total` flag to `gcloud dataproc jobs submit`
+    to allow jobs to be restarted in event of a failure during job execution.
+
+### Cloud Filestore
+
+* Removed deprecation warning of `--location` flag from the `gcloud filestore` command group.
+* Added `gcloud filestore operations cancel` to cancel a Filestore operation.
+
+### Cloud Functions
+
+* Fixed issue where `gcloud functions deploy` would crash with an AttributeError
+  when provided invalid YAML data. This issue can be tracked at
+  <https://issuetracker.google.com/issues/173043502>.
+
+### Cloud Key Management Service
+
+*   Added client-side request and response integrity verification to `gcloud kms
+    encrypt`, `gcloud kms decrypt`, `gcloud kms asymmetric-sign`, `gcloud kms
+    asymmetric-decrypt` in beta.
+    For more information about Cloud KMS's integrity verification API, visit
+    <https://cloud.google.com/kms/docs/data-integrity-guidelines>.
+*   Added `--skip-integrity-verification` flag to `gcloud kms encrypt`, `gcloud
+    kms decrypt`, `gcloud kms asymmetric-sign`, `gcloud kms asymmetric-decrypt`
+    in beta.
+
+### Cloud Logging
+
+* Promoted the following commands that support Logs Buckets and Logs Views to beta:
+   * `gcloud logging buckets`
+   * `gcloud logging sinks`
+   * `gcloud logging read`
+   * `gcloud logging locations`
+   * `gcloud logging cmek-settings`
+   Logs Buckets are GA, while Logs Views and Regionalized Logs Buckets are in Preview.
+* Promoted `--use-partitioned-tables` of `gcloud logging sinks` to beta.
+  BigQuery sinks with partitioned tables are GA.
+
+### Cloud Memorystore
+
+* Added `--transit-encryption-mode` flag to `gcloud beta redis instances create`
+to allow enabling Redis TLS with server authentication when
+creating a new instance.
+
+### Cloud Source Repositories
+
+*   Fixed issue where `gcloud source repos clone` installed its credential
+    helper for all URLs instead of only for Cloud Source Repositories URLs.
+    This issue can be tracked at
+    <https://issuetracker.google.com/issues/173139520>.
+
+### Cloud Spanner
+
+* Added `--strong` and `--read-timestamp` flags to
+  `gcloud spanner databases execute-sql` to give more control over the timestamp
+  of a read-only query.
+* Added throttling state to the output of `gcloud spanner operations list`.
+
+### Compute Engine
+
+* Promoted the following flags in `gcloud compute instance-groups managed
+  set-autoscaling` to GA:
+    * `--stackdriver-metric-single-instance-assignment`
+    * `--stackdriver-metric-utilization-target-type`
+    * `--stackdriver-metric-utilization-target`
+    * `--stackdriver-metric-filter`
+    * `--update-stackdriver-metric`
+    * `--remove-stackdriver-metric`
+  For more information see `<https://cloud.google.com/compute/docs/autoscaler/scaling-stackdriver-monitoring-metrics#per_group_metrics>`.
+* Promoted `--distribution-target-shape` flag in `gcloud compute instance-groups managed create` command to beta.
+* Promoted `--distribution-target-shape` flag in `gcloud compute instance-groups managed update` command to beta.
+* Promoted `--network`, `--subnetwork`, and `--private-network-ip` flags of
+`gcloud compute instances network-interfaces update` to GA.
+* Promoted  `--enable-endpoint-independent-mapping` flag of `compute routers nats create` and `compute routers nats update` to GA.
+* Promoted the following flags in `gcloud compute instance-groups managed
+  set-autoscaling` to Beta:
+    * `--set-schedule`
+    * `--schedule-cron`
+    * `--schedule-duration-sec`
+    * `--schedule-min-required-replicas`
+    * `--schedule-time-zone`
+    * `--schedule-description`
+* Promoted the following flags in `gcloud compute instance-groups managed
+  update-autoscaling` to Beta:
+    * `--set-schedule`
+    * `--remove-schedule`
+    * `--enable-schedule`
+    * `--disable-schedule`
+    * `--update-schedule`
+    * `--schedule-cron`
+    * `--schedule-duration-sec`
+    * `--schedule-min-required-replicas`
+    * `--schedule-time-zone`
+    * `--schedule-description`
+* Promoted `--[no-]enable-logging` flag of `gcloud compute health-checks`
+  command group to GA.
+* Promoted `gcloud compute instance-groups managed describe-instance` to GA.
+* Extended `gcloud beta compute target-tcp-proxies create` command with `--proxy-bind` flag.
+* Allow `--target-tcp-proxy` for `gcloud beta compute forwarding-rules` `create` and `set-target`
+  with specified `-load-balancing-scheme=INTERNAL_SELF_MANAGED`.
+* Promoted `--no-address` flag in `gcloud beta compute instances import` command to GA.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.32.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Dataproc Metastore
+
+*   Added `gcloud metastore services export gcs` which exports metadata
+    from a Dataproc Metastore service.
+*   Removed `--maintenance-window-day-of-week` and
+    `--maintenance-window-hour-of-day`. Use `--maintenance-window-day` and
+    `--maintenance-window-hour` instead.
+*   Fixed issue where `--maintenance-window-day-of-week` and
+    `--maintenance-window-hour-of-day` flags were not both required in `gcloud
+    metastore services update`.
+*   Promoted `gcloud metastore services` to beta.
+*   Promoted `gcloud metastore imports` to beta.
+*   Promoted `gcloud metastore operations` to beta.
+*   Promoted `gcloud metastore locations` to beta.
+
+### Events
+
+* Added URI support to `--target-service` of `gcloud events triggers create`.
+* Updated `gcloud beta events init` to set the roles `monitoring.metricWriter`
+and `cloudtrace.agent` for the data plane service account.
+
+### GKE Hub
+
+* Promoted `gcloud container hub memberships get-credentials` to beta.
+
+### Kubernetes Engine
+
+*   Promoted `--private-ipv6-google-access-type` to GA.
+*   Fixed behavior of `--no-enable-stackdriver-kubernetes` flag of `gcloud container clusters update` command group.
+* Updates default kubectl from 1.16 to 1.17.
+* Additional kubectl versions:
+  * kubectl.1.15 (1.15.12)
+  * kubectl.1.16 (1.16.15)
+  * kubectl.1.17 (1.17.14)
+  * kubectl.1.18 (1.18.12)
 
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).

@@ -348,6 +348,7 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest(_
     ViewValueValuesEnum: The view that should be returned in the response.
 
   Fields:
+    orderBy: Optional. Sorting field and order
     pageSize: The maximum number of versions to return. Maximum page size is
       10,000.
     pageToken: The next_page_token value returned from a previous list
@@ -370,10 +371,11 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest(_
     BASIC = 1
     FULL = 2
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 4)
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesPatchRequest(_messages.Message):
@@ -429,7 +431,6 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -473,10 +474,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class Empty(_messages.Message):
@@ -560,7 +560,7 @@ class GoogleDevtoolsArtifactregistryV1alpha1ErrorInfo(_messages.Message):
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1GcsSource(_messages.Message):
-  r"""Google Cloud Storage location for the input content.
+  r"""Google Cloud Storage location where the artifacts currently reside.
 
   Fields:
     uris: Cloud Storage paths URI (e.g., gs://my_bucket//my_object).

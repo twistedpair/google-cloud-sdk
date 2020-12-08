@@ -20,34 +20,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-
-# TODO(b/159812354): Update placeholder value.
-TASKS_PER_THREAD_THRESHOLD = 8
-
-
-# TODO(b/159812354): Complete function implementation.
-def _ExecuteTaskParallel(task_iterator):
-  """Executes tasks in parallel.
-
-  1) Create concurrent futures executor.
-  2) Iterate over each task and submit the task to the executor
-
-  Args:
-    task_iterator: An iterator for task objects.
-  """
-  tasks_on_thread = 0
-  stats_estimator_started = False
-  for _ in task_iterator:
-    # Add task to concurrent.futures executor.
-    tasks_on_thread += 1
-
-    # If the count is created than some predefined threshold,
-    # start the stats_estimator, which runs on a separate thread.
-    if (tasks_on_thread > TASKS_PER_THREAD_THRESHOLD
-        and not stats_estimator_started):
-      task_iterator.stats_estimator.start()
-      stats_estimator_started = True
-      tasks_on_thread = 0
+from googlecloudsdk.command_lib.storage.tasks import task_graph_executor
+from googlecloudsdk.core import properties
 
 
 def _ExecuteTasksSequential(task_iterator):
@@ -70,7 +44,12 @@ def ExecuteTasks(task_iterator, is_parallel=False):
     task_iterator: An iterator for task objects.
     is_parallel (boolean): Should tasks be executed in parallel.
   """
-  if is_parallel:
-    _ExecuteTaskParallel(task_iterator)
+  process_count = properties.VALUES.storage.process_count.GetInt()
+  thread_count = properties.VALUES.storage.thread_count.GetInt()
+
+  if is_parallel and (process_count > 1 or thread_count > 1):
+    task_graph_executor.TaskGraphExecutor(task_iterator,
+                                          process_count=process_count,
+                                          thread_count=thread_count).run()
   else:
     _ExecuteTasksSequential(task_iterator)

@@ -548,8 +548,8 @@ class ConsumerConfig(_messages.Message):
       managed service instances. In the format,
       projects/{project}/global/networks/{network} where {project} is the
       project number e.g. '12345' and {network} is the network name.
-    reservedRanges: Output only. The name of the allocated IP address ranges
-      for this private service access connection.
+    reservedRanges: Output only. The reserved ranges associated with this
+      private service access connection.
   """
 
   consumerExportCustomRoutes = _messages.BooleanField(1)
@@ -561,7 +561,7 @@ class ConsumerConfig(_messages.Message):
   producerImportCustomRoutes = _messages.BooleanField(7)
   producerImportSubnetRoutesWithPublicIp = _messages.BooleanField(8)
   producerNetwork = _messages.StringField(9)
-  reservedRanges = _messages.StringField(10, repeated=True)
+  reservedRanges = _messages.MessageField('GoogleCloudServicenetworkingV1ConsumerConfigReservedRange', 10, repeated=True)
 
 
 class ConsumerConfigMetadata(_messages.Message):
@@ -1015,6 +1015,22 @@ class Field(_messages.Message):
   options = _messages.MessageField('Option', 8, repeated=True)
   packed = _messages.BooleanField(9)
   typeUrl = _messages.StringField(10)
+
+
+class GoogleCloudServicenetworkingV1ConsumerConfigReservedRange(_messages.Message):
+  r"""Allocated IP address ranges for this private service access connection.
+
+  Fields:
+    address: The starting address of the reserved range. The address must be a
+      valid IPv4 address in the x.x.x.x format. This value combined with the
+      IP prefix length is the CIDR range for the reserved range.
+    ipPrefixLength: The prefix length of the reserved range.
+    name: The name of the reserved range.
+  """
+
+  address = _messages.StringField(1)
+  ipPrefixLength = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  name = _messages.StringField(3)
 
 
 class GoogleCloudServicenetworkingV1betaSubnetwork(_messages.Message):

@@ -7,14 +7,14 @@
   "version": "v1alpha1",
   "revision": "0",
   "title": "Cloud AI Platform API",
-  "description": "Train high-quality custom machine learning models with minimum effort and machine learning expertise.",
+  "description": "Train high-quality custom machine learning models with minimal machine learning expertise and effort.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/ai-platform",
+  "documentationLink": "https://cloud.google.com/ai-platform-unified/docs",
   "protocol": "rest",
   "rootUrl": "https://aiplatform.googleapis.com/",
   "mtlsRootUrl": "https://aiplatform.mtls.googleapis.com/",
@@ -713,7 +713,7 @@
       "type": "object",
       "properties": {
         "machineType": {
-          "description": "Immutable. The type of the machine. Following machine types are supported: * `n1-standard-2` * `n1-standard-4` * `n1-standard-8` * `n1-standard-16` * `n1-standard-32` * `n1-highmem-2` * `n1-highmem-4` * `n1-highmem-8` * `n1-highmem-16` * `n1-highmem-32` * `n1-highcpu-2` * `n1-highcpu-4` * `n1-highcpu-8` * `n1-highcpu-16` * `n1-highcpu-32` When used for DeployedMode this field is optional and the default value is `n1-standard-2`. If used for BatchPredictionJob or as part of WorkerPoolSpec this field is required.",
+          "description": "Immutable. The type of the machine. For the machine types supported for prediction, see https:\/\/tinyurl.com\/aip-docs\/predictions\/machine-types. For machine types supported for creating a custom training job, see https:\/\/tinyurl.com\/aip-docs\/training\/configure-compute. For DeployedModel this field is optional, and the default value is `n1-standard-2`. For BatchPredictionJob or as part of WorkerPoolSpec this field is required.",
           "type": "string"
         },
         "acceleratorType": {
@@ -808,7 +808,7 @@
       "type": "object",
       "properties": {
         "inputs": {
-          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature . Once specified, featureAttributions will be keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
+          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature. Once specified, featureAttributions are keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadata"
@@ -1278,6 +1278,20 @@
             "GRID_SEARCH",
             "RANDOM_SEARCH"
           ]
+        },
+        "observationNoise": {
+          "description": "The observation noise level of the study. Currently only supported by the Optimizer service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default noise level chosen by the AI Platform service.",
+            "AI Platform Optimizer assumes that the objective function is (nearly) perfectly reproducible, and will never repeat the same Trial parameters.",
+            "AI Platform Optimizer will estimate the amount of noise in metric evaluations, it may repeat the same Trial parameters more than once."
+          ],
+          "enum": [
+            "OBSERVATION_NOISE_UNSPECIFIED",
+            "LOW",
+            "HIGH"
+          ]
         }
       }
     },
@@ -1590,7 +1604,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1ManualBatchTuningParameters"
         },
         "generateExplanation": {
-          "description": "Generate explanation along with the batch prediction results. When it's true, the batch prediction output will change based on the output format: * `bigquery`: output will include a column named `explanation`. The value is a struct that conforms to the Explanation object. * `jsonl`: The JSON objects on each line will include an additional entry keyed `explanation`. The value of the entry is a JSON object that conforms to the Explanation object. * `csv`: Generating explanations for CSV format is not supported.",
+          "description": "Generate explanation with the batch prediction results. When set to `true`, the batch prediction output changes based on the `predictions_format` field of the BatchPredictionJob.output_config object: * `bigquery`: output includes a column named `explanation`. The value is a struct that conforms to the Explanation object. * `jsonl`: The JSON objects on each line include an additional entry keyed `explanation`. The value of the entry is a JSON object that conforms to the Explanation object. * `csv`: Generating explanations for CSV format is not supported. If this field is set to true, the Model.explanation_spec must be populated.",
           "type": "boolean"
         },
         "outputInfo": {
@@ -1687,7 +1701,7 @@
       "type": "object",
       "properties": {
         "gcsSource": {
-          "description": "The Google Cloud Storage location for the input instances.",
+          "description": "The Cloud Storage location for the input instances.",
           "$ref": "GoogleCloudAiplatformV1alpha1GcsSource"
         },
         "bigquerySource": {
@@ -1717,7 +1731,7 @@
       "type": "object",
       "properties": {
         "gcsDestination": {
-          "description": "The Google Cloud Storage location of the directory where the output is to be written to. In the given directory a new directory is created. Its name is `prediction--`, where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. Inside of it files `predictions_0001.`, `predictions_0002.`, ..., `predictions_N.` are created where `` depends on chosen predictions_format, and N may equal 0001 and depends on the total number of successfully predicted instances. If the Model has both instance and prediction schemata defined then each such file contains predictions as per the predictions_format. If prediction for any instance failed (partially or completely), then an additional `errors_0001.`, `errors_0002.`,..., `errors_N.` files are created (N depends on total number of failed predictions). These files contain the failed instances, as per their schema, followed by an additional `error` field which as value has [`google.rpc.Status`](Status) containing only `code` and `message` fields.",
+          "description": "The Cloud Storage location of the directory where the output is to be written to. In the given directory a new directory is created. Its name is `prediction--`, where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. Inside of it files `predictions_0001.`, `predictions_0002.`, ..., `predictions_N.` are created where `` depends on chosen predictions_format, and N may equal 0001 and depends on the total number of successfully predicted instances. If the Model has both instance and prediction schemata defined then each such file contains predictions as per the predictions_format. If prediction for any instance failed (partially or completely), then an additional `errors_0001.`, `errors_0002.`,..., `errors_N.` files are created (N depends on total number of failed predictions). These files contain the failed instances, as per their schema, followed by an additional `error` field which as value has [`google.rpc.Status`](Status) containing only `code` and `message` fields.",
           "$ref": "GoogleCloudAiplatformV1alpha1GcsDestination"
         },
         "bigqueryDestination": {
@@ -1780,7 +1794,7 @@
       "type": "object",
       "properties": {
         "gcsOutputDirectory": {
-          "description": "Output only. The full path of the Google Cloud Storage directory created, into which the prediction output is written.",
+          "description": "Output only. The full path of the Cloud Storage directory created, into which the prediction output is written.",
           "readOnly": true,
           "type": "string"
         },
@@ -2208,7 +2222,7 @@
           }
         },
         "supportedInputStorageFormats": {
-          "description": "Output only. The formats this Model supports in BatchPredictionJob.input_config. If PredictSchemata.instance_schema_uri exists, the instances should be given as per that schema. The possible formats are: * `jsonl` The JSON Lines format, where each instance is a single line. Uses GcsSource. * `csv` The CSV format, where each instance is a single comma-separated line. The first line in the file is the header, containing comma-separated field names. Uses GcsSource. * `tf-record` The TFRecord format, where each instance is a single record in tfrecord syntax. Uses GcsSource. * `tf-record-gzip` Similar to `tf-record`, but the file is gzipped. Uses GcsSource. * `bigquery` Each instance is a single row in BigQuery. Uses BigQuerySource. If this Model doesn't support any of these formats it means it cannot be used with a BatchPredictionJob. However, if it has supported_deployment_resources_types, it could serve online predictions by using PredictionService.Predict or PredictionService.Explain.",
+          "description": "Output only. The formats this Model supports in BatchPredictionJob.input_config. If PredictSchemata.instance_schema_uri exists, the instances should be given as per that schema. The possible formats are: * `jsonl` The JSON Lines format, where each instance is a single line. Uses GcsSource. * `csv` The CSV format, where each instance is a single comma-separated line. The first line in the file is the header, containing comma-separated field names. Uses GcsSource. * `tf-record` The TFRecord format, where each instance is a single record in tfrecord syntax. Uses GcsSource. * `tf-record-gzip` Similar to `tf-record`, but the file is gzipped. Uses GcsSource. * `bigquery` Each instance is a single row in BigQuery. Uses BigQuerySource. * `file-list` Each line of the file is the location of an instance to process, uses `gcs_source` field of the InputConfig object. If this Model doesn't support any of these formats it means it cannot be used with a BatchPredictionJob. However, if it has supported_deployment_resources_types, it could serve online predictions by using PredictionService.Predict or PredictionService.Explain.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -2329,11 +2343,11 @@
           }
         },
         "predictRoute": {
-          "description": "Immutable. HTTP path on the container to send prediction requests to. AI Platform forwards requests sent using projects.locations.endpoints.predict to this path on the container's IP address and port. AI Platform then returns the container's response in the API response. For example, if you set this field to `\/foo`, then when AI Platform receives a prediction request, it forwards the request body in a POST request to the following URL on the container: localhost:PORT\/foo PORT refers to the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/DEPLOYED_MODEL:predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (AI Platform makes this value available to your container code as the [`AIP_ENDPOINT_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID` environment variable](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables).)",
+          "description": "Immutable. HTTP path on the container to send prediction requests to. AI Platform forwards requests sent using projects.locations.endpoints.predict to this path on the container's IP address and port. AI Platform then returns the container's response in the API response. For example, if you set this field to `\/foo`, then when AI Platform receives a prediction request, it forwards the request body in a POST request to the `\/foo` path on the port of your container specified by the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/DEPLOYED_MODEL:predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (AI Platform makes this value available to your container code as the [`AIP_ENDPOINT_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID` environment variable](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables).)",
           "type": "string"
         },
         "healthRoute": {
-          "description": "Immutable. HTTP path on the container to send health checkss to. AI Platform intermittently sends GET requests to this path on the container's IP address and port to check that the container is healthy. Read more about [health checks](https:\/\/tinyurl.com\/cust-cont-reqs#checks). For example, if you set this field to `\/bar`, then AI Platform intermittently sends a GET request to the following URL on the container: localhost:PORT\/bar PORT refers to the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/ DEPLOYED_MODEL:predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (AI Platform makes this value available to your container code as the [`AIP_ENDPOINT_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.)",
+          "description": "Immutable. HTTP path on the container to send health checkss to. AI Platform intermittently sends GET requests to this path on the container's IP address and port to check that the container is healthy. Read more about [health checks](https:\/\/tinyurl.com\/cust-cont-reqs#checks). For example, if you set this field to `\/bar`, then AI Platform intermittently sends a GET request to the `\/bar` path on the port of your container specified by the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/DEPLOYED_MODEL :predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (AI Platform makes this value available to your container code as the [`AIP_ENDPOINT_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.)",
           "type": "string"
         }
       }
@@ -2348,7 +2362,7 @@
           "type": "string"
         },
         "value": {
-          "description": "Variables that reference a $(VAR_NAME) are expanded using the previous defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not.",
+          "description": "Required. Variables that reference a $(VAR_NAME) are expanded using the previous defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not.",
           "type": "string"
         }
       }
@@ -2669,7 +2683,7 @@
           "type": "any"
         },
         "modelToUpload": {
-          "description": "Describes the Model that may be uploaded (via ModelService.UploadMode) by this TrainingPipeline. The TrainingPipeline's training_task_definition should make clear whether this Model description should be populated, and if there are any special requirements regarding how it should be filled. If nothing is mentioned in the training_task_definition, then it should be assumed that this field should not be filled and the training task either uploads the Model without a need of this information, or that training task does not support uploading a Model as part of the pipeline. When the Pipeline's state becomes `PIPELINE_STATE_SUCCEEDED` and the trained Model had been uploaded into AI Platform, then the model_to_upload's resource name is populated. The Model is always uploaded into the Project and Location in which this pipeline is.",
+          "description": "Describes the Model that may be uploaded (via ModelService.UploadModel) by this TrainingPipeline. The TrainingPipeline's training_task_definition should make clear whether this Model description should be populated, and if there are any special requirements regarding how it should be filled. If nothing is mentioned in the training_task_definition, then it should be assumed that this field should not be filled and the training task either uploads the Model without a need of this information, or that training task does not support uploading a Model as part of the pipeline. When the Pipeline's state becomes `PIPELINE_STATE_SUCCEEDED` and the trained Model had been uploaded into AI Platform, then the model_to_upload's resource name is populated. The Model is always uploaded into the Project and Location in which this pipeline is.",
           "$ref": "GoogleCloudAiplatformV1alpha1Model"
         },
         "state": {
@@ -2763,7 +2777,7 @@
           "type": "string"
         },
         "annotationsFilter": {
-          "description": "Only applicable to Datasets that have DataItems and Annotations. A filter on Annotations of the Dataset. Only Annotations that both match this filter and belong to DataItems not ignored by the split method are used in respectively training, validation or test role, depending on the role of the DataItem they are on (for the auto-assigned that role is decided by AI Platform). A filter with same syntax as the one used in ListAnnotations may be used, but note here it filters across all Annotations of the Dataset, and not just within a single DataItem.",
+          "description": "Applicable only to Datasets that have DataItems and Annotations. A filter on Annotations of the Dataset. Only Annotations that both match this filter and belong to DataItems not ignored by the split method are used in respectively training, validation or test role, depending on the role of the DataItem they are on (for the auto-assigned that role is decided by AI Platform). A filter with same syntax as the one used in ListAnnotations may be used, but note here it filters across all Annotations of the Dataset, and not just within a single DataItem.",
           "type": "string"
         }
       }
@@ -3020,6 +3034,398 @@
         "nextPageToken": {
           "description": "The standard List next-page token.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalCreateHumanInTheLoopOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalCreateHumanInTheLoopOperationMetadata",
+      "description": "Runtime operation information for HumanInTheLoopService.CreateHumanInTheLoop.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalGenericOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalGenericOperationMetadata",
+      "description": "Generic Metadata shared by all operations.",
+      "type": "object",
+      "properties": {
+        "partialFailures": {
+          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard GCP error details.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleRpcStatus"
+          }
+        },
+        "createTime": {
+          "description": "Output only. Time when the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time when the operation was updated for the last time. If the operation has finished (successfully or not), this is the finish time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalHumanInTheLoop": {
+      "id": "GoogleCloudAiplatformInternalHumanInTheLoop",
+      "description": "A human in the loop configuration describing how to trigger a human labeling job in a prediction process and properties of the human labeling job. Next id: 23",
+      "type": "object",
+      "properties": {
+        "documentCriteria": {
+          "description": "Required. Criteria for triggering a document labeling job.",
+          "$ref": "GoogleCloudAiplatformInternalDocumentCriteria"
+        },
+        "documentMetadata": {
+          "description": "Metadata for document labeling.",
+          "$ref": "GoogleCloudAiplatformInternalDocumentMetadata"
+        },
+        "name": {
+          "description": "Output only. The resource name of the human in the loop configuration.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "State of the human in the loop feature.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Feature is disabled;",
+            "Feature is enabled."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "DISABLED",
+            "ENABLED"
+          ]
+        },
+        "displayName": {
+          "description": "Required. The user-defined name of the Human in the Loop. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "type": "string"
+        },
+        "specialistPool": {
+          "description": "Resource names of the specialist pools used in this configuration.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "googleSpecialistRegion": {
+          "description": "Residency of Google in-house specialists. If users select to use Google in-house specialists to do the human review, Indian specialists are used by default; otherwise, users need to specify the Google specialist region here. If users select to use customized specialists, the Google specialist region here will be ignored.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Google specialist residented in IN.",
+            "Google specialist residented in US.",
+            "Google specialist residented in EU."
+          ],
+          "enum": [
+            "GOOGLE_SPECIALIST_REGION_UNSPECIFIED",
+            "IN",
+            "US",
+            "EU"
+          ]
+        },
+        "replicaCount": {
+          "description": "Required. Number of labelers to work on each DataItem.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "instructionUri": {
+          "description": "Required. The Google Cloud Storage location of the instruction pdf. This pdf is shared with labelers, and provides detailed description on how to label DataItems in Datasets.",
+          "type": "string"
+        },
+        "dataLabelingJobInputsSchemaUri": {
+          "description": "Required. Points to a YAML file stored on Google Cloud Storage describing the configuration for a specific type of DataLabelingJob created from this configuration.",
+          "type": "string"
+        },
+        "dataLabelingJobParameters": {
+          "description": "Required. Input configuration parameters for the DataLabelingJob created from this configuration.",
+          "type": "any"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this configuration was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this configuration was updated most recently.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "outputPath": {
+          "description": "Cloud Storage path the labeling answer will be written to.",
+          "type": "string"
+        },
+        "completedDataLabelingJobsCount": {
+          "description": "Output only. Number of completed data labeling jobs from this human in the loop configuration.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "completedDataItemsCount": {
+          "description": "Output only. Number of labeled data items from this human in the loop configuration.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "runningDataLabelingJobsCount": {
+          "description": "Output only. Number of currently running data labeling jobs from this human in the loop configuration.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "runningDataItemsCount": {
+          "description": "Output only. Number of data items that belongs to the current running data labeling jobs from this human in the loop configuration.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "pendingDataItemsCount": {
+          "description": "Output only. Number of data items that are collected but not yet sent to human review.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "batchConfig": {
+          "description": "Batching configuration of this human in the loop configuration.",
+          "$ref": "GoogleCloudAiplatformInternalBatchConfig"
+        },
+        "labels": {
+          "description": "The labels with user-defined metadata to organize your human in the loop configuration. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. See https:\/\/goo.gl\/xmQnxf for more information and examples of labels. System reserved label keys are prefixed with \"aiplatform.googleapis.com\/\" and are immutable. Following system labels exist for each HumanInTheLoop: * \"aiplatform.googleapis.com\/schema\": - output only, its value is the inputs_schema's title.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDocumentCriteria": {
+      "id": "GoogleCloudAiplatformInternalDocumentCriteria",
+      "description": "Describes the triggering criteria of the human in the loop configuration for document AI.",
+      "type": "object",
+      "properties": {
+        "randomSampling": {
+          "description": "Randomly sample the documents for human review.",
+          "$ref": "GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling"
+        },
+        "documentLevelCriteria": {
+          "description": "Document level criteria configuration.",
+          "$ref": "GoogleCloudAiplatformInternalDocumentCriteriaDocumentLevelCriteria"
+        },
+        "fieldCriteria": {
+          "description": "The list of field criteria user added.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformInternalDocumentCriteriaFieldLevelCriteria"
+          }
+        },
+        "criteriaType": {
+          "description": "The current enabled criteria.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified criteria type.",
+            "Randomly sample the document for human review.",
+            "Configuration for the whole document fields\/entities.",
+            "Configuration for each field\/entity.",
+            "Criteria is disabled."
+          ],
+          "enum": [
+            "CRITERIA_TYPE_UNSPECIFIED",
+            "RANDOM_SAMPLING",
+            "DOCUMENT_LEVEL",
+            "FIELD_LEVEL",
+            "CRITERIA_DISABLED"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling": {
+      "id": "GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling",
+      "description": "Describe the random sampling parameters for triggering human in the loop.",
+      "type": "object",
+      "properties": {
+        "rate": {
+          "description": "Sampling rate: (0,1]",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDocumentCriteriaDocumentLevelCriteria": {
+      "id": "GoogleCloudAiplatformInternalDocumentCriteriaDocumentLevelCriteria",
+      "description": "The general criteria for all the entities\/fields in one document.",
+      "type": "object",
+      "properties": {
+        "confidenceThreshold": {
+          "description": "Confidence Threshold, between 0 - 1.0.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDocumentCriteriaFieldLevelCriteria": {
+      "id": "GoogleCloudAiplatformInternalDocumentCriteriaFieldLevelCriteria",
+      "description": "Criteria for each field\/entity interested.",
+      "type": "object",
+      "properties": {
+        "fieldName": {
+          "description": "Field\/Entity Name.",
+          "type": "string"
+        },
+        "confidenceThreshold": {
+          "description": "Confidence threshold, between 0 - 1.0.",
+          "type": "number",
+          "format": "double"
+        },
+        "occurrenceType": {
+          "description": "The expected OccurrenceType for the field\/entity.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified occurrence type.",
+            "The entity type will appear zero times or once.",
+            "The entity type will appear zero or multiple times.",
+            "The entity type will only appear exactly once.",
+            "The entity type will appear once or more times."
+          ],
+          "enum": [
+            "OCCURRENCE_TYPE_UNSPECIFIED",
+            "OPTIONAL_ONCE",
+            "OPTIONAL_MULTIPLE",
+            "REQUIRED_ONCE",
+            "REQUIRED_MULTIPLE"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDocumentMetadata": {
+      "id": "GoogleCloudAiplatformInternalDocumentMetadata",
+      "description": "Metadata for the document AI human in the loop configuration.",
+      "type": "object",
+      "properties": {
+        "processorVersion": {
+          "description": "The Atlas processor version name that creates this human in the loop configuration.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalBatchConfig": {
+      "id": "GoogleCloudAiplatformInternalBatchConfig",
+      "description": "Configurations describing how to construct labeling tasks from collected prediction results.",
+      "type": "object",
+      "properties": {
+        "batchCount": {
+          "description": "A new labeling task will be generated once batch_count number of data items are collected.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pendingDuration": {
+          "description": "A new labeling task will be generated once the oldest collected data item is pending for longer than pending_duration.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalSendHumanInTheLoopEntryOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalSendHumanInTheLoopEntryOperationMetadata",
+      "description": "Runtime operation information for HumanInTheLoopService.SendHumanInTheLoopEntry",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        },
+        "labelingProgress": {
+          "description": "Output only. Current labeling job progress percentage scaled in interval [0, 100], indicating the percentage of DataItems that has been finished.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalSendHumanInTheLoopEntryResponse": {
+      "id": "GoogleCloudAiplatformInternalSendHumanInTheLoopEntryResponse",
+      "description": "Response message for HumanInTheLoopService.SendHumanInTheLoopEntry",
+      "type": "object",
+      "properties": {
+        "currentSpend": {
+          "description": "Output only. Estimated cost(in US dollars) that the DataLabelingJob has incurred to date.",
+          "readOnly": true,
+          "$ref": "GoogleTypeMoney"
+        },
+        "dataItemCount": {
+          "description": "Output only. The number of data items that are labeled in this operation.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "annotationSpecCount": {
+          "description": "Output only. The number of annotation specs used in this operation.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "state": {
+          "description": "Output only. State of the sent entries.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default, shall not be used.",
+            "The entry is being enqueued to a batch.",
+            "The entry is in a batch waiting for a labeling job to be created.",
+            "The entry is in a labeling job and being labeled.",
+            "The entry is labeled and the annotations are being collected and exported.",
+            "The entry is labeled and the annotations are exported.",
+            "The entry failed."
+          ],
+          "enum": [
+            "HUMAN_IN_THE_LOOP_ENTRY_STATE_UNSPECIFIED",
+            "ENQUEUEING",
+            "WAITING_FOR_LABELING",
+            "LABELING",
+            "FINISHING",
+            "FINISHED",
+            "FAILED"
+          ]
+        },
+        "exportedFiles": {
+          "description": "Output only. All of the files that are exported from export dataset.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleTypeMoney": {
+      "id": "GoogleTypeMoney",
+      "description": "Represents an amount of money with its currency type.",
+      "type": "object",
+      "properties": {
+        "currencyCode": {
+          "description": "The three-letter currency code defined in ISO 4217.",
+          "type": "string"
+        },
+        "units": {
+          "description": "The whole units of the amount. For example if `currencyCode` is `\"USD\"`, then 1 unit is one US dollar.",
+          "type": "string",
+          "format": "int64"
+        },
+        "nanos": {
+          "description": "Number of nano (10^-9) units of the amount. The value must be between -999,999,999 and +999,999,999 inclusive. If `units` is positive, `nanos` must be positive or zero. If `units` is zero, `nanos` can be positive, zero, or negative. If `units` is negative, `nanos` must be negative or zero. For example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -3587,7 +3993,7 @@
       "type": "object",
       "properties": {
         "machineType": {
-          "description": "Immutable. The type of the machine. Following machine types are supported: * `n1-standard-2` * `n1-standard-4` * `n1-standard-8` * `n1-standard-16` * `n1-standard-32` * `n1-highmem-2` * `n1-highmem-4` * `n1-highmem-8` * `n1-highmem-16` * `n1-highmem-32` * `n1-highcpu-2` * `n1-highcpu-4` * `n1-highcpu-8` * `n1-highcpu-16` * `n1-highcpu-32` When used for DeployedMode this field is optional and the default value is `n1-standard-2`. If used for BatchPredictionJob or as part of WorkerPoolSpec this field is required.",
+          "description": "Immutable. The type of the machine. For the machine types supported for prediction, see https:\/\/tinyurl.com\/aip-docs\/predictions\/machine-types. For machine types supported for creating a custom training job, see https:\/\/tinyurl.com\/aip-docs\/training\/configure-compute. For DeployedModel this field is optional, and the default value is `n1-standard-2`. For BatchPredictionJob or as part of WorkerPoolSpec this field is required.",
           "type": "string"
         },
         "acceleratorType": {
@@ -3785,7 +4191,7 @@
       "type": "object",
       "properties": {
         "inputs": {
-          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature . Once specified, featureAttributions will be keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
+          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature. Once specified, featureAttributions are keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformUiExplanationMetadataInputMetadata"
@@ -4622,7 +5028,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Google Cloud Storage URI to a input file, only .csv file is supported.",
+          "description": "Cloud Storage URI of one or more files. Only CSV files are supported. The first line of the CSV file is used as the header. If there are multiple files, the header is the first line of the lexicographically first file, the other files must either contain the exact same header or omit the header.",
           "type": "array",
           "items": {
             "type": "string"
@@ -4810,7 +5216,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Google Cloud Storage URI to a input file, only .csv file is supported.",
+          "description": "Cloud Storage URI of one or more files. Only CSV files are supported. The first line of the CSV file is used as the header. If there are multiple files, the header is the first line of the lexicographically first file, the other files must either contain the exact same header or omit the header.",
           "type": "array",
           "items": {
             "type": "string"
@@ -5545,7 +5951,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Google Cloud Storage URI to a input file, only .csv file is supported.",
+          "description": "Cloud Storage URI of one or more files. Only CSV files are supported. The first line of the CSV file is used as the header. If there are multiple files, the header is the first line of the lexicographically first file, the other files must either contain the exact same header or omit the header.",
           "type": "array",
           "items": {
             "type": "string"
@@ -5718,7 +6124,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Google Cloud Storage URI to a input file, only .csv file is supported.",
+          "description": "Cloud Storage URI of one or more files. Only CSV files are supported. The first line of the CSV file is used as the header. If there are multiple files, the header is the first line of the lexicographically first file, the other files must either contain the exact same header or omit the header.",
           "type": "array",
           "items": {
             "type": "string"
@@ -6225,7 +6631,7 @@
       "type": "object",
       "properties": {
         "machineType": {
-          "description": "Immutable. The type of the machine. Following machine types are supported: * `n1-standard-2` * `n1-standard-4` * `n1-standard-8` * `n1-standard-16` * `n1-standard-32` * `n1-highmem-2` * `n1-highmem-4` * `n1-highmem-8` * `n1-highmem-16` * `n1-highmem-32` * `n1-highcpu-2` * `n1-highcpu-4` * `n1-highcpu-8` * `n1-highcpu-16` * `n1-highcpu-32` When used for DeployedMode this field is optional and the default value is `n1-standard-2`. If used for BatchPredictionJob or as part of WorkerPoolSpec this field is required.",
+          "description": "Immutable. The type of the machine. For the machine types supported for prediction, see https:\/\/tinyurl.com\/aip-docs\/predictions\/machine-types. For machine types supported for creating a custom training job, see https:\/\/tinyurl.com\/aip-docs\/training\/configure-compute. For DeployedModel this field is optional, and the default value is `n1-standard-2`. For BatchPredictionJob or as part of WorkerPoolSpec this field is required.",
           "type": "string"
         },
         "acceleratorType": {
@@ -6423,7 +6829,7 @@
       "type": "object",
       "properties": {
         "inputs": {
-          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature . Once specified, featureAttributions will be keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
+          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature. Once specified, featureAttributions are keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadata"
@@ -7190,13 +7596,11 @@
       "properties": {
         "categoryMask": {
           "description": "A PNG image where each pixel in the mask represents the category in which the pixel in the original image was predicted to belong to. The size of this image will be the same as the original image. The mapping between the AnntoationSpec and the color can be found in model's metadata. The model will choose the most likely category and if none of the categories reach the confidence threshold, the pixel will be marked as background.",
-          "type": "string",
-          "format": "byte"
+          "type": "string"
         },
         "confidenceMask": {
           "description": "A one channel image which is encoded as an 8bit lossless PNG. The size of the image will be the same as the original image. For a specific pixel, darker color means less confidence in correctness of the cateogry in the categoryMask for the corresponding pixel. Black means no confidence and white means complete confidence.",
-          "type": "string",
-          "format": "byte"
+          "type": "string"
         }
       }
     },
@@ -9094,7 +9498,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Google Cloud Storage URI to a input file, only .csv file is supported.",
+          "description": "Cloud Storage URI of one or more files. Only CSV files are supported. The first line of the CSV file is used as the header. If there are multiple files, the header is the first line of the lexicographically first file, the other files must either contain the exact same header or omit the header.",
           "type": "array",
           "items": {
             "type": "string"
@@ -9267,7 +9671,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Google Cloud Storage URI to a input file, only .csv file is supported.",
+          "description": "Cloud Storage URI of one or more files. Only CSV files are supported. The first line of the CSV file is used as the header. If there are multiple files, the header is the first line of the lexicographically first file, the other files must either contain the exact same header or omit the header.",
           "type": "array",
           "items": {
             "type": "string"
@@ -10125,161 +10529,6 @@
                           }
                         }
                       }
-                    }
-                  }
-                }
-              }
-            },
-            "humanInTheLoops": {
-              "resources": {
-                "operations": {
-                  "methods": {
-                    "list": {
-                      "id": "aiplatform.projects.locations.humanInTheLoops.operations.list",
-                      "path": "v1alpha1/{+name}/operations",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/humanInTheLoops/{humanInTheLoopsId}/operations",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation's parent resource.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/humanInTheLoops\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "The standard list filter.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The standard list page size.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "The standard list page token.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningListOperationsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
-                    },
-                    "get": {
-                      "id": "aiplatform.projects.locations.humanInTheLoops.operations.get",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/humanInTheLoops/{humanInTheLoopsId}/operations/{operationsId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/humanInTheLoops\/[^\/]+\/operations\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
-                    },
-                    "delete": {
-                      "id": "aiplatform.projects.locations.humanInTheLoops.operations.delete",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/humanInTheLoops/{humanInTheLoopsId}/operations/{operationsId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource to be deleted.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/humanInTheLoops\/[^\/]+\/operations\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleProtobufEmpty"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
-                    },
-                    "cancel": {
-                      "id": "aiplatform.projects.locations.humanInTheLoops.operations.cancel",
-                      "path": "v1alpha1/{+name}:cancel",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/humanInTheLoops/{humanInTheLoopsId}/operations/{operationsId}:cancel",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource to be cancelled.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/humanInTheLoops\/[^\/]+\/operations\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleProtobufEmpty"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
-                    },
-                    "wait": {
-                      "id": "aiplatform.projects.locations.humanInTheLoops.operations.wait",
-                      "path": "v1alpha1/{+name}:wait",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/humanInTheLoops/{humanInTheLoopsId}/operations/{operationsId}:wait",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource to wait on.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/humanInTheLoops\/[^\/]+\/operations\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "timeout": {
-                          "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-duration"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Waits for the specified long-running operation until it is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
                     }
                   }
                 }

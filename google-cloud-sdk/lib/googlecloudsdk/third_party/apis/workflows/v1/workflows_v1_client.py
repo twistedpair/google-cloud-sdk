@@ -40,6 +40,7 @@ class WorkflowsV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_workflows = self.ProjectsLocationsWorkflowsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -131,6 +132,151 @@ class WorkflowsV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='WorkflowsProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsWorkflowsService(base_api.BaseApiService):
+    """Service class for the projects_locations_workflows resource."""
+
+    _NAME = 'projects_locations_workflows'
+
+    def __init__(self, client):
+      super(WorkflowsV1.ProjectsLocationsWorkflowsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new workflow. If a workflow with the specified name already exists in the specified project and location, the long running operation will return ALREADY_EXISTS error.
+
+      Args:
+        request: (WorkflowsProjectsLocationsWorkflowsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workflows',
+        http_method='POST',
+        method_id='workflows.projects.locations.workflows.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['workflowId'],
+        relative_path='v1/{+parent}/workflows',
+        request_field='workflow',
+        request_type_name='WorkflowsProjectsLocationsWorkflowsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a workflow with the specified name. This method also cancels and deletes all running executions of the workflow.
+
+      Args:
+        request: (WorkflowsProjectsLocationsWorkflowsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}',
+        http_method='DELETE',
+        method_id='workflows.projects.locations.workflows.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='WorkflowsProjectsLocationsWorkflowsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Workflow.
+
+      Args:
+        request: (WorkflowsProjectsLocationsWorkflowsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Workflow) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}',
+        http_method='GET',
+        method_id='workflows.projects.locations.workflows.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='WorkflowsProjectsLocationsWorkflowsGetRequest',
+        response_type_name='Workflow',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Workflows in a given project and location. The default order is not specified.
+
+      Args:
+        request: (WorkflowsProjectsLocationsWorkflowsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkflowsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workflows',
+        http_method='GET',
+        method_id='workflows.projects.locations.workflows.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/workflows',
+        request_field='',
+        request_type_name='WorkflowsProjectsLocationsWorkflowsListRequest',
+        response_type_name='ListWorkflowsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing workflow. Running this method has no impact on already running executions of the workflow. A new revision of the workflow may be created as a result of a successful update operation. In that case, such revision will be used in new workflow executions.
+
+      Args:
+        request: (WorkflowsProjectsLocationsWorkflowsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}',
+        http_method='PATCH',
+        method_id='workflows.projects.locations.workflows.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='workflow',
+        request_type_name='WorkflowsProjectsLocationsWorkflowsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

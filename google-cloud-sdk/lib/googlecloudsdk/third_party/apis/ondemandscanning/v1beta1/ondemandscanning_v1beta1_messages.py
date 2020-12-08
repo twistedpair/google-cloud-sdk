@@ -44,6 +44,44 @@ class AliasContext(_messages.Message):
   name = _messages.StringField(2)
 
 
+class AnalyzePackagesMetadata(_messages.Message):
+  r"""AnalyzePackagesMetadata contains metadata for an active scan of a
+  container image.
+
+  Fields:
+    createTime: When the scan was created.
+    resourceUri: The resource URI of the container image being scanned.
+  """
+
+  createTime = _messages.StringField(1)
+  resourceUri = _messages.StringField(2)
+
+
+class AnalyzePackagesRequest(_messages.Message):
+  r"""AnalyzePackagesRequest is the request to analyze a list of packages and
+  create Vulnerability Occurrences for it.
+
+  Fields:
+    packages: The packages to analyze.
+    resourceUri: Required. The resource URI of the container image being
+      scanned.
+  """
+
+  packages = _messages.MessageField('PackageData', 1, repeated=True)
+  resourceUri = _messages.StringField(2)
+
+
+class AnalyzePackagesResponse(_messages.Message):
+  r"""AnalyzePackagesResponse contains the information necessary to find
+  results for the given scan.
+
+  Fields:
+    scan: The name of the scan resource created by this successful scan.
+  """
+
+  scan = _messages.StringField(1)
+
+
 class Artifact(_messages.Message):
   r"""Artifact describes a build product.
 
@@ -660,6 +698,20 @@ class OndemandscanningProjectsLocationsOperationsWaitRequest(_messages.Message):
   timeout = _messages.StringField(2)
 
 
+class OndemandscanningProjectsLocationsScansAnalyzePackagesRequest(_messages.Message):
+  r"""A OndemandscanningProjectsLocationsScansAnalyzePackagesRequest object.
+
+  Fields:
+    analyzePackagesRequest: A AnalyzePackagesRequest resource to be passed as
+      the request body.
+    parent: Required. The parent of the resource for which analysis is
+      requested. Format: projects/[project_name]/locations/[location]
+  """
+
+  analyzePackagesRequest = _messages.MessageField('AnalyzePackagesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class OndemandscanningProjectsLocationsScansScanContainerImageRequest(_messages.Message):
   r"""A OndemandscanningProjectsLocationsScansScanContainerImageRequest
   object.
@@ -799,6 +851,28 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class PackageData(_messages.Message):
+  r"""A PackageData object.
+
+  Fields:
+    cpeUri: The cpe_uri in [cpe format] (https://cpe.mitre.org/specification/)
+      in which the vulnerability may manifest. Examples include distro or
+      storage location for vulnerable jar.
+    os: The OS affected by a vulnerability This field is deprecated and the
+      information is in cpe_uri
+    osVersion: The version of the OS This field is deprecated and the
+      information is in cpe_uri
+    package: The package being analysed for vulnerabilities
+    version: The version of the package being analysed
+  """
+
+  cpeUri = _messages.StringField(1)
+  os = _messages.StringField(2)
+  osVersion = _messages.StringField(3)
+  package = _messages.StringField(4)
+  version = _messages.StringField(5)
 
 
 class PackageIssue(_messages.Message):

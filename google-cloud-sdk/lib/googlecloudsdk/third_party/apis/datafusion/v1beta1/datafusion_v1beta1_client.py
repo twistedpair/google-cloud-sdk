@@ -553,3 +553,30 @@ class DatafusionV1beta1(base_api.BaseApiClient):
       super(DatafusionV1beta1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def RemoveIamPolicy(self, request, global_params=None):
+      r"""Remove IAM policy that is currently set on the given resource.
+
+      Args:
+        request: (DatafusionProjectsRemoveIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RemoveIAMPolicyResponse) The response message.
+      """
+      config = self.GetMethodConfig('RemoveIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}:removeIamPolicy',
+        http_method='POST',
+        method_id='datafusion.projects.removeIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta1/{+resource}:removeIamPolicy',
+        request_field='removeIAMPolicyRequest',
+        request_type_name='DatafusionProjectsRemoveIamPolicyRequest',
+        response_type_name='RemoveIAMPolicyResponse',
+        supports_download=False,
+    )

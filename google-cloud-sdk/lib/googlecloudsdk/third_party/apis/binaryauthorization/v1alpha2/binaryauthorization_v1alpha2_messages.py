@@ -84,7 +84,9 @@ class AdmissionWhitelistPattern(_messages.Message):
   Fields:
     namePattern: An image name pattern to allowlist, in the form
       `registry/path/to/image`. This supports a trailing `*` as a wildcard,
-      but this is allowed only in text after the `registry/` part.
+      but this is allowed only in text after the `registry/` part. Also
+      wildcards do not match `/`, i.e., gcr.io/nginx* matches
+      gcr.io/nginx@latest, but it does not match gcr.io/nginx/image.
   """
 
   namePattern = _messages.StringField(1)
@@ -418,7 +420,6 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -462,10 +463,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class Empty(_messages.Message):

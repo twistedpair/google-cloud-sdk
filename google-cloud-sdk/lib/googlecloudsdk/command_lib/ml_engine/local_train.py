@@ -40,12 +40,13 @@ def GetPrimaryNodeName():
     If tensorflow is not installed in local envrionment, it will return
     the default name 'chief'.
   Raises:
-    RuntimeError: if there is no python executable on the user system.
+    ValueError: if there is no python executable on the user system thrown by
+      execution_utils.GetPythonExecutable.
   """
   exe_override = properties.VALUES.ml_engine.local_python.Get()
-  python_executable = exe_override or files.FindExecutableOnPath('python')
-  if not python_executable:
-    raise RuntimeError('No python interpreter found on local machine')
+  python_executable = (
+      exe_override or files.FindExecutableOnPath('python') or
+      execution_utils.GetPythonExecutable())
   cmd = [python_executable,
          '-c',
          'import tensorflow as tf; print(tf.version.VERSION)']
@@ -102,14 +103,15 @@ def MakeProcess(module_name,
     corresponding to the return value of the subprocess
     (if task_type is primary)
   Raises:
-    RuntimeError: if there is no python executable on the user system
+    ValueError: if there is no python executable on the user system thrown by
+      execution_utils.GetPythonExecutable.
   """
   if args is None:
     args = []
   exe_override = properties.VALUES.ml_engine.local_python.Get()
-  python_executable = exe_override or files.FindExecutableOnPath('python')
-  if not python_executable:
-    raise RuntimeError('No python interpreter found on local machine')
+  python_executable = (
+      exe_override or files.FindExecutableOnPath('python') or
+      execution_utils.GetPythonExecutable())
   cmd = [python_executable, '-m', module_name] + args
   config = {
       'job': {'job_name': module_name, 'args': args},

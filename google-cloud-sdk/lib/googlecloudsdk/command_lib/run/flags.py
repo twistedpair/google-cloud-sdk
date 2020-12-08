@@ -36,7 +36,7 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.command_lib.functions.deploy import env_vars_util
+from googlecloudsdk.command_lib.functions.v1.deploy import env_vars_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import pretty_print
@@ -1298,7 +1298,7 @@ def FlagIsExplicitlySet(args, flag):
   return hasattr(args, flag) and args.IsSpecified(flag)
 
 
-def VerifyOnePlatformFlags(args, release_track, product):
+def VerifyManagedFlags(args, release_track, product):
   """Raise ConfigurationError if args includes GKE only arguments."""
 
   if product == Product.EVENTS and release_track != base.ReleaseTrack.ALPHA:
@@ -1582,7 +1582,7 @@ def GetAndValidatePlatform(args, release_track, product):
   """Returns the platform to run on."""
   platform = GetPlatform()
   if platform == PLATFORM_MANAGED:
-    VerifyOnePlatformFlags(args, release_track, product)
+    VerifyManagedFlags(args, release_track, product)
   elif platform == PLATFORM_GKE:
     VerifyGKEFlags(args, release_track, product)
   elif platform == PLATFORM_KUBERNETES:

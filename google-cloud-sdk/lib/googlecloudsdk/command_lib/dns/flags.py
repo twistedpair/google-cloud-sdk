@@ -334,4 +334,41 @@ def GetPolicyPrivateAltNameServersArg():
       ))
 
 
+## ResourceRecordSets flags.
+
+
+def GetResourceRecordSetsNameArg():
+  return base.Argument(
+      'name',
+      metavar='DNS_NAME',
+      help='DNS or domain name of the record-set.')
+
+
+def GetResourceRecordSetsTypeArg(required=False):
+  return base.Argument(
+      '--type',
+      required=required,
+      help='DNS record type of the record-set (e.g. A, AAAA, MX etc.).')
+
+
+def GetResourceRecordSetsTtlArg(required=False):
+  return base.Argument(
+      '--ttl',
+      type=int,
+      required=required,
+      help='TTL (time to live) for the record-set.')
+
+
+def GetResourceRecordSetsRrdatasArg(required=False):
+  return base.Argument(
+      '--rrdatas',
+      metavar='RRDATA',
+      required=required,
+      type=arg_parsers.ArgList(),
+      help='DNS data (Address/CNAME/MX info, etc.) of the record-set. '
+      'This is RDATA; the format of this information varies depending '
+      'on the type and class of the resource record.')
+
+
 CHANGES_FORMAT = 'table(id, startTime, status)'
+RESOURCERECORDSETS_FORMAT = 'table(name, type, ttl, rrdatas.list():label=DATA)'

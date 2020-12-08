@@ -133,7 +133,7 @@ To help improve the quality of this product, we collect anonymized usage data
 and anonymized stacktraces when crashes are encountered; additional information
 is available at <https://cloud.google.com/sdk/usage-statistics>. This data is
 handled in accordance with our privacy policy
-<https://policies.google.com/privacy>. You may choose to opt in this
+<https://cloud.google.com/terms/cloud-privacy-notice>. You may choose to opt in this
 collection now (by choosing 'Y' at the below prompt), or at any time in the
 future by running the following command:
 

@@ -1541,6 +1541,11 @@ class JobConfigurationLoad(_messages.Message):
       returned in the job result. The default value is false. The sourceFormat
       property determines what BigQuery treats as an extra value: CSV:
       Trailing columns JSON: Named values that don't match any column names
+    jsonExtension: [Optional] If sourceFormat is set to newline-delimited
+      JSON, indicates whether it should be processed as a JSON variant such as
+      GeoJSON. For a sourceFormat other than JSON, omit this field. If the
+      sourceFormat is newline-delimited JSON: - for newline-delimited GeoJSON:
+      set to GEOJSON.
     maxBadRecords: [Optional] The maximum number of bad records that BigQuery
       can ignore when running the job. If the number of bad records exceeds
       this value, an invalid error is returned in the job result. This is only
@@ -1634,21 +1639,22 @@ class JobConfigurationLoad(_messages.Message):
   fieldDelimiter = _messages.StringField(11)
   hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 12)
   ignoreUnknownValues = _messages.BooleanField(13)
-  maxBadRecords = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  nullMarker = _messages.StringField(15)
-  projectionFields = _messages.StringField(16, repeated=True)
-  quote = _messages.StringField(17, default='"')
-  rangePartitioning = _messages.MessageField('RangePartitioning', 18)
-  schema = _messages.MessageField('TableSchema', 19)
-  schemaInline = _messages.StringField(20)
-  schemaInlineFormat = _messages.StringField(21)
-  schemaUpdateOptions = _messages.StringField(22, repeated=True)
-  skipLeadingRows = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(24)
-  sourceUris = _messages.StringField(25, repeated=True)
-  timePartitioning = _messages.MessageField('TimePartitioning', 26)
-  useAvroLogicalTypes = _messages.BooleanField(27)
-  writeDisposition = _messages.StringField(28)
+  jsonExtension = _messages.StringField(14)
+  maxBadRecords = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  nullMarker = _messages.StringField(16)
+  projectionFields = _messages.StringField(17, repeated=True)
+  quote = _messages.StringField(18, default='"')
+  rangePartitioning = _messages.MessageField('RangePartitioning', 19)
+  schema = _messages.MessageField('TableSchema', 20)
+  schemaInline = _messages.StringField(21)
+  schemaInlineFormat = _messages.StringField(22)
+  schemaUpdateOptions = _messages.StringField(23, repeated=True)
+  skipLeadingRows = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(25)
+  sourceUris = _messages.StringField(26, repeated=True)
+  timePartitioning = _messages.MessageField('TimePartitioning', 27)
+  useAvroLogicalTypes = _messages.BooleanField(28)
+  writeDisposition = _messages.StringField(29)
 
 
 class JobConfigurationQuery(_messages.Message):

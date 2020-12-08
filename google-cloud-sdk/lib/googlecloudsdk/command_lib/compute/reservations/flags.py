@@ -110,15 +110,30 @@ to learn about all available accelerator types.
 """
   return base.Argument(
       custom_name if custom_name else '--accelerator',
-      type=arg_parsers.ArgDict(spec={
-          'count': int,
-          'type': str,
-      }, required_keys=['count', 'type']),
+      type=arg_parsers.ArgDict(
+          spec={
+              'count': int,
+              'type': str,
+          }, required_keys=['count', 'type']),
       action='append',
       help=help_text)
 
 
-def AddCreateFlags(parser, support_location_hint=False, support_fleet=False):
+def GetSharedSettingFlag():
+  """Gets the --share-setting flag."""
+  help_text = """\
+  Specify if this reservation is shared; and if so, the type of sharing:
+  share with all projects in the organization or share with specific projects or
+  folders.
+  """
+  return base.Argument(
+      '--share-setting', choices=['organization'], help=help_text)
+
+
+def AddCreateFlags(parser,
+                   support_location_hint=False,
+                   support_fleet=False,
+                   support_share_setting=False):
   """Adds all flags needed for the create command."""
   GetDescriptionFlag().AddToParser(parser)
 
@@ -137,3 +152,10 @@ def AddCreateFlags(parser, support_location_hint=False, support_fleet=False):
     group.AddArgument(instance_flags.AddMaintenanceFreezeDuration())
     group.AddArgument(instance_flags.AddMaintenanceInterval())
   group.AddToParser(parser)
+
+  if support_share_setting:
+    share_group = base.ArgumentGroup(
+        'Manage the properties of a shared reservation to create',
+        required=False)
+    share_group.AddArgument(GetSharedSettingFlag())
+    share_group.AddToParser(parser)

@@ -35,6 +35,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import requests
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.credentials import creds as c_creds
@@ -806,7 +807,9 @@ def Refresh(credentials,
   Args:
     credentials: oauth2client.client.Credentials or
       google.auth.credentials.Credentials, The credentials to refresh.
-    http_client: httplib2.Http, The http transport to refresh with.
+    http_client: The http transport to refresh with. httplib2.Http when
+      refreshing oauth2client credentials. google.auth.transport.Request when
+      refreshing google-auth credentials.
     is_impersonated_credential: bool, True treat provided credential as an
       impersonated service account credential. If False, treat as service
       account or user credential. Needed to avoid circular dependency on
@@ -901,7 +904,7 @@ def HandleGoogleAuthCredentialsRefreshError(for_adc=False):
 
 
 def _RefreshGoogleAuth(credentials,
-                       http_client=None,
+                       http_client,
                        is_impersonated_credential=False,
                        include_email=False,
                        gce_token_format='standard',
@@ -911,7 +914,7 @@ def _RefreshGoogleAuth(credentials,
   Args:
     credentials: google.auth.credentials.Credentials, A google-auth credentials
       to refresh.
-    http_client: httplib2.Http, The http transport to refresh
+    http_client: google.auth.transport.Request, The http transport to refresh
       with.
     is_impersonated_credential: bool, True treat provided credential as an
       impersonated service account credential. If False, treat as service
@@ -936,7 +939,7 @@ def _RefreshGoogleAuth(credentials,
   # pylint: disable=g-import-not-at-top
   from google.oauth2 import service_account as google_auth_service_account
   # pylint: enable=g-import-not-at-top
-  request_client = http.GoogleAuthRequest(http_client)
+  request_client = http_client or requests.GoogleAuthRequest()
   with HandleGoogleAuthCredentialsRefreshError():
     credentials.refresh(request_client)
 
@@ -1145,11 +1148,10 @@ def RevokeCredentials(credentials):
   if not c_creds.IsUserAccountCredentials(credentials):
     raise RevokeError('The token cannot be revoked from server because it is '
                       'not user account credentials.')
-  http_client = http.Http()
   if c_creds.IsOauth2ClientCredentials(credentials):
-    credentials.revoke(http_client)
+    credentials.revoke(http.Http())
   else:
-    credentials.revoke(http.GoogleAuthRequest(http_client))
+    credentials.revoke(requests.GoogleAuthRequest())
 
 
 def Revoke(account=None):

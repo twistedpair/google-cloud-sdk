@@ -78,42 +78,12 @@ def CreateBetaAssuredWorkload(display_name=None,
   if compliance_regime:
     workload.complianceRegime = workload_message.ComplianceRegimeValueValuesEnum(
         compliance_regime)
-    if compliance_regime == 'FEDRAMP_MODERATE':
-      settings = workloads_messages.GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampModerateSettings(
-      )
-      settings.kmsSettings = CreateBetaKmsSettings(workloads_messages,
-                                                   next_rotation_time,
-                                                   rotation_period)
-      workload.fedrampModerateSettings = settings
-    elif compliance_regime == 'FEDRAMP_HIGH':
-      settings = workloads_messages.GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampHighSettings(
-      )
-      settings.kmsSettings = CreateBetaKmsSettings(workloads_messages,
-                                                   next_rotation_time,
-                                                   rotation_period)
-      workload.fedrampHighSettings = settings
-    elif compliance_regime == 'CJIS':
-      settings = workloads_messages.GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings(
-      )
-      settings.kmsSettings = CreateBetaKmsSettings(workloads_messages,
-                                                   next_rotation_time,
-                                                   rotation_period)
-      workload.cjisSettings = settings
-    elif compliance_regime == 'IL4':
-      settings = workloads_messages.GoogleCloudAssuredworkloadsV1beta1WorkloadIL4Settings(
-      )
-      settings.kmsSettings = CreateBetaKmsSettings(workloads_messages,
-                                                   next_rotation_time,
-                                                   rotation_period)
-      workload.il4Settings = settings
   if provisioned_resources_parent:
     workload.provisionedResourcesParent = provisioned_resources_parent
+  if next_rotation_time and rotation_period:
+    workload.kmsSettings = workloads_messages.GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings(
+        nextRotationTime=next_rotation_time, rotationPeriod=rotation_period)
   return workload
-
-
-def CreateBetaKmsSettings(messages, next_rotation_time, rotation_period):
-  return messages.GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings(
-      nextRotationTime=next_rotation_time, rotationPeriod=rotation_period)
 
 
 def CreateBetaLabels(labels):

@@ -247,7 +247,7 @@
           "type": "boolean"
         },
         "logLink": {
-          "description": "Configures a linked dataset in BigQuery corresponding to this log bucket. Requires analytics_enabled to be True.",
+          "description": "Configures a linked dataset in BigQuery corresponding to this log bucket. Requires analytics_enabled to be True. A log link can only be enabled by updating an existing bucket with analytics enabled.",
           "$ref": "LogLink"
         }
       }
@@ -1083,7 +1083,7 @@
           "type": "string",
           "enumDescriptions": [
             "Unexpected default.",
-            "Indicates suppression occurred due to relevant entries being received in excess of rate limits.",
+            "Indicates suppression occurred due to relevant entries being received in excess of rate limits. For quotas and limits, see Logging API quotas and limits (https:\/\/cloud.google.com\/logging\/quotas#api-limits).",
             "Indicates suppression occurred due to the client not consuming responses quickly enough."
           ],
           "enum": [

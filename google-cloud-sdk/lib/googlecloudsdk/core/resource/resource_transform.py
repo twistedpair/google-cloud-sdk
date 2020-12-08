@@ -132,6 +132,8 @@ def TransformBaseName(r, undefined=''):
   """
   if not r:
     return undefined
+  if isinstance(r, list):
+    return [TransformBaseName(i) for i in r]
   s = six.text_type(r)
   for separator in ('/', '\\'):
     i = s.rfind(separator)

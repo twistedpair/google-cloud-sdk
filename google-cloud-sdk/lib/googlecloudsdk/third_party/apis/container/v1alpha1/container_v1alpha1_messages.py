@@ -133,8 +133,9 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
       smallest allowed disk size is 10GB. If unspecified, the default disk
       size is 100GB.
-    diskType: Type of the disk attached to each node (e.g. 'pd-standard' or
-      'pd-ssd') If unspecified, the default disk type is 'pd-standard'
+    diskType: Type of the disk attached to each node (e.g. 'pd-standard', 'pd-
+      ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-
+      standard'
     management: NodeManagement configuration for this NodePool.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
@@ -810,6 +811,9 @@ class ClusterUpdate(_messages.Message):
       1.15). * `none` - No metrics will be exported from the cluster. If left
       as an empty string,`monitoring.googleapis.com/kubernetes` will be used
       for GKE 1.14+ or `monitoring.googleapis.com` for earlier versions.
+    desiredNodeNetworkPolicy: NodeNetworkPolicy specifies the config for the
+      node firewall feature. This feature is only supported with
+      DatapathProvider=ADVANCED_DATAPATH.
     desiredNodePoolAutoscaling: Autoscaler configuration for the node pool
       specified in desired_node_pool_id. If there is only one pool in the
       cluster and desired_node_pool_id is not provided then the change applies
@@ -831,7 +835,8 @@ class ClusterUpdate(_messages.Message):
       PodSecurityPolicy feature.
     desiredPrivateClusterConfig: The desired private cluster configuration.
     desiredPrivateIpv6Access: The desired status of Private IPv6 access for
-      this cluster.
+      this cluster. Deprecated. Use desired_private_ipv6_google_access
+      instead.
     desiredPrivateIpv6GoogleAccess: The desired state of IPv6 connectivity to
       Google Services.
     desiredReleaseChannel: The desired release channel configuration.
@@ -904,23 +909,24 @@ class ClusterUpdate(_messages.Message):
   desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 24)
   desiredMasterVersion = _messages.StringField(25)
   desiredMonitoringService = _messages.StringField(26)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 27)
-  desiredNodePoolId = _messages.StringField(28)
-  desiredNodeVersion = _messages.StringField(29)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 30)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 31)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 32)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 33)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 34)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 35)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 36)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 37)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 38)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 39)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 40)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 41)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 42)
-  securityProfile = _messages.MessageField('SecurityProfile', 43)
+  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 27)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 28)
+  desiredNodePoolId = _messages.StringField(29)
+  desiredNodeVersion = _messages.StringField(30)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 31)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 32)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 33)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 34)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 35)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 36)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 37)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 38)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 39)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 40)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 41)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 42)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 43)
+  securityProfile = _messages.MessageField('SecurityProfile', 44)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1698,8 +1704,7 @@ class EphemeralStorageConfig(_messages.Message):
 
 
 class GcePersistentDiskCsiDriverConfig(_messages.Message):
-  r"""Configuration for the Compute Engine PD CSI driver. This option can only
-  be enabled at cluster creation time.
+  r"""Configuration for the Compute Engine PD CSI driver.
 
   Fields:
     enabled: Whether the Compute Engine PD CSI driver is enabled for this
@@ -2462,13 +2467,16 @@ class NetworkConfig(_messages.Message):
       cluster.
     enablePrivateIpv6Access: Whether or not Private IPv6 access is enabled.
       This enables direct connectivity from GKE pods to Google Cloud services
-      over gRPC.
+      over gRPC. Deprecated: use private_ipv6_google_access instead
     enableSharedNetwork: Deprecated: This flag doesn't need to be flipped for
       using shared VPC and it has no effect.
     network: Output only. The relative name of the Google Compute Engine
       network(/compute/docs/networks-and-firewalls#networks) to which the
       cluster is connected. Example: projects/my-project/global/networks/my-
       network
+    nodeNetworkPolicy: NodeNetworkPolicy specifies the config for the node
+      firewall feature. This feature is only supported with
+      DatapathProvider=ADVANCED_DATAPATH.
     privateIpv6GoogleAccess: The desired state of IPv6 connectivity to Google
       Services. By default, no private IPv6 access to or from Google Services
       (all access will be via IPv4)
@@ -2520,8 +2528,9 @@ class NetworkConfig(_messages.Message):
   enablePrivateIpv6Access = _messages.BooleanField(8)
   enableSharedNetwork = _messages.BooleanField(9)
   network = _messages.StringField(10)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 11)
-  subnetwork = _messages.StringField(12)
+  nodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 11)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 12)
+  subnetwork = _messages.StringField(13)
 
 
 class NetworkPolicy(_messages.Message):
@@ -2604,8 +2613,9 @@ class NodeConfig(_messages.Message):
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
       smallest allowed disk size is 10GB. If unspecified, the default disk
       size is 100GB.
-    diskType: Type of the disk attached to each node (e.g. 'pd-standard' or
-      'pd-ssd') If unspecified, the default disk type is 'pd-standard'
+    diskType: Type of the disk attached to each node (e.g. 'pd-standard', 'pd-
+      ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-
+      standard'
     ephemeralStorageConfig: Parameters for the ephemeral storage filesystem.
       If unspecified, ephemeral storage is backed by the boot disk.
     gcfsConfig: GCFS (Google Container File System) configs.
@@ -2883,6 +2893,17 @@ class NodeNetworkConfig(_messages.Message):
   podIpv4CidrBlock = _messages.StringField(5)
   podRange = _messages.StringField(6)
   subnetwork = _messages.StringField(7)
+
+
+class NodeNetworkPolicy(_messages.Message):
+  r"""NodeNetworkPolicy specifies if node network policy feature is enabled.
+  This feature is only supported with DatapathProvider=ADVANCED_DATAPATH.
+
+  Fields:
+    enabled: Whether node network policy is enabled.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class NodePool(_messages.Message):
@@ -3236,8 +3257,9 @@ class PrivateClusterConfig(_messages.Message):
     privateEndpoint: Output only. The internal IP address of this cluster's
       endpoint.
     privateEndpointFqdn: Output only. The private endpoint's FQDN.
-    privateEndpointSubnetwork: Subnetwork in customer's VPC where master's
-      endpoint will be provisioned.
+    privateEndpointSubnetwork: Subnetwork in cluster's network where master's
+      endpoint will be provisioned. Specified in
+      projects/*/regions/*/subnetworks/* format.
     publicEndpoint: Output only. The external IP address of this cluster's
       endpoint.
   """
@@ -3936,7 +3958,7 @@ class SetNodePoolManagementRequest(_messages.Message):
 
 
 class SetNodePoolSizeRequest(_messages.Message):
-  r"""SetNodePoolSizeRequest sets the size a node pool.
+  r"""SetNodePoolSizeRequest sets the size of a node pool.
 
   Fields:
     clusterId: Deprecated. The name of the cluster to update. This field has

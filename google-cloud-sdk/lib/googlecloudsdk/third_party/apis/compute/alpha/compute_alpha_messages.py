@@ -1406,6 +1406,63 @@ class AllocationSpecificSKUReservation(_messages.Message):
   instanceProperties = _messages.MessageField('AllocationSpecificSKUAllocationReservedInstanceProperties', 3)
 
 
+class Any(_messages.Message):
+  r"""`Any` contains an arbitrary serialized protocol buffer message along
+  with a URL that describes the type of the serialized message.  Protobuf
+  library provides support to pack/unpack Any values in the form of utility
+  functions or additional generated methods of the Any type.  Example 1: Pack
+  and unpack a message in C++.  Foo foo = ...; Any any; any.PackFrom(foo); ...
+  if (any.UnpackTo(&foo)) { ... }  Example 2: Pack and unpack a message in
+  Java.  Foo foo = ...; Any any = Any.pack(foo); ... if (any.is(Foo.class)) {
+  foo = any.unpack(Foo.class); }  Example 3: Pack and unpack a message in
+  Python.  foo = Foo(...) any = Any() any.Pack(foo) ... if
+  any.Is(Foo.DESCRIPTOR): any.Unpack(foo) ...  Example 4: Pack and unpack a
+  message in Go  foo := &pb.Foo{...} any, err := anypb.New(foo) if err != nil
+  { ... } ... foo := &pb.Foo{} if err := any.UnmarshalTo(foo); err != nil {
+  ... }  The pack methods provided by protobuf library will by default use
+  'type.googleapis.com/full.type.name' as the type URL and the unpack methods
+  only use the fully qualified type name after the last '/' in the type URL,
+  for example "foo.bar.com/x/y.z" will yield type name "y.z".    JSON ==== The
+  JSON representation of an `Any` value uses the regular representation of the
+  deserialized, embedded message, with an additional field `@type` which
+  contains the type URL. Example:  package google.profile; message Person {
+  string first_name = 1; string last_name = 2; }  { "@type":
+  "type.googleapis.com/google.profile.Person", "firstName": , "lastName":  }
+  If the embedded message type is well-known and has a custom JSON
+  representation, that representation will be embedded adding a field `value`
+  which holds the custom JSON in addition to the `@type` field. Example (for
+  message [google.protobuf.Duration][]):  { "@type":
+  "type.googleapis.com/google.protobuf.Duration", "value": "1.212s" }
+
+  Fields:
+    typeUrl: A URL/resource name that uniquely identifies the type of the
+      serialized protocol buffer message. This string must contain at least
+      one "/" character. The last segment of the URL's path must represent the
+      fully qualified name of the type (as in
+      `path/google.protobuf.Duration`). The name should be in a canonical form
+      (e.g., leading "." is not accepted).  In practice, teams usually
+      precompile into the binary all types that they expect it to use in the
+      context of Any. However, for URLs which use the scheme `http`, `https`,
+      or no scheme, one can optionally set up a type server that maps type
+      URLs to message definitions as follows:  * If no scheme is provided,
+      `https` is assumed. * An HTTP GET on the URL must yield a
+      [google.protobuf.Type][] value in binary format, or produce an error. *
+      Applications are allowed to cache lookup results based on the URL, or
+      have them precompiled into a binary to avoid any lookup. Therefore,
+      binary compatibility needs to be preserved on changes to types. (Use
+      versioned type names to manage breaking changes.)  Note: this
+      functionality is not currently available in the official protobuf
+      release, and it is not used for type URLs beginning with
+      type.googleapis.com.  Schemes other than `http`, `https` (or the empty
+      scheme) might be used with implementation specific semantics.
+    value: Must be a valid serialized protocol buffer of the above specified
+      type.
+  """
+
+  typeUrl = _messages.StringField(1)
+  value = _messages.BytesField(2)
+
+
 class AttachedDisk(_messages.Message):
   r"""An instance-attached disk resource.
 
@@ -1936,10 +1993,10 @@ class Autoscaler(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     recommendedSize: [Output Only] Target recommended MIG size (number of
-      instances) computed by autoscaler. Autoscaler calculates recommended MIG
-      size even when autoscaling policy mode is different from ON. This field
-      is empty when autoscaler is not connected to the existing managed
-      instance group or autoscaler did not generate its prediction.
+      instances) computed by autoscaler. Autoscaler calculates the recommended
+      MIG size even when the autoscaling policy mode is different from ON.
+      This field is empty when autoscaler is not connected to an existing
+      managed instance group or autoscaler did not generate its prediction.
     region: [Output Only] URL of the region where the instance group resides
       (for autoscalers living in regional scope).
     scalingScheduleStatus: [Output Only] Status information of existing
@@ -1958,6 +2015,7 @@ class Autoscaler(_messages.Message):
       state of the autoscaler. Read the documentation for Commonly returned
       status messages for examples of status messages you might encounter.
     target: URL of the managed instance group that this autoscaler will scale.
+      This field is required when creating an autoscaler.
     zone: [Output Only] URL of the zone where the instance group resides (for
       autoscalers living in zonal scope).
   """
@@ -2335,7 +2393,7 @@ class AutoscalerStatusDetails(_messages.Message):
       - MODE_OFF (WARNING): Autoscaling is turned off. The number of instances
       in the group won't change automatically. The autoscaling configuration
       is preserved.  - MODE_ONLY_UP (WARNING): Autoscaling is in the
-      "Autoscale only up" mode. The autoscaler can add instances but not
+      "Autoscale only out" mode. The autoscaler can add instances but not
       remove any.  - MORE_THAN_ONE_BACKEND_SERVICE (ERROR): The instance group
       cannot be autoscaled because it has more than one backend service
       attached to it.  - NOT_ENOUGH_QUOTA_AVAILABLE (ERROR): There is
@@ -2373,7 +2431,7 @@ class AutoscalerStatusDetails(_messages.Message):
       - MODE_OFF (WARNING): Autoscaling is turned off. The number of instances
       in the group won't change automatically. The autoscaling configuration
       is preserved.  - MODE_ONLY_UP (WARNING): Autoscaling is in the
-      "Autoscale only up" mode. The autoscaler can add instances but not
+      "Autoscale only out" mode. The autoscaler can add instances but not
       remove any.  - MORE_THAN_ONE_BACKEND_SERVICE (ERROR): The instance group
       cannot be autoscaled because it has more than one backend service
       attached to it.  - NOT_ENOUGH_QUOTA_AVAILABLE (ERROR): There is
@@ -2410,7 +2468,7 @@ class AutoscalerStatusDetails(_messages.Message):
     received any requests from the load balancer.  - MODE_OFF (WARNING):
     Autoscaling is turned off. The number of instances in the group won't
     change automatically. The autoscaling configuration is preserved.  -
-    MODE_ONLY_UP (WARNING): Autoscaling is in the "Autoscale only up" mode.
+    MODE_ONLY_UP (WARNING): Autoscaling is in the "Autoscale only out" mode.
     The autoscaler can add instances but not remove any.  -
     MORE_THAN_ONE_BACKEND_SERVICE (ERROR): The instance group cannot be
     autoscaled because it has more than one backend service attached to it.  -
@@ -2596,15 +2654,14 @@ class AutoscalingPolicy(_messages.Message):
 
   Messages:
     ScalingSchedulesValue: Scaling schedules defined for an autoscaler.
-      Multiple schedules can be set on an autoscaler and they can overlap.
+      Multiple schedules can be set on an autoscaler, and they can overlap.
       During overlapping periods the greatest min_required_replicas of all
-      scaling schedules will be applied. Up to 128 scaling schedules are
-      allowed.
+      scaling schedules is applied. Up to 128 scaling schedules are allowed.
 
   Fields:
-    coolDownPeriodSec: The number of seconds that the autoscaler should wait
-      before it starts collecting information from a new instance. This
-      prevents the autoscaler from collecting information when the instance is
+    coolDownPeriodSec: The number of seconds that the autoscaler waits before
+      it starts collecting information from a new instance. This prevents the
+      autoscaler from collecting information when the instance is
       initializing, during which the collected usage would not be reliable.
       The default time autoscaler waits is 60 seconds.  Virtual machine
       initialization times might vary because of numerous factors. We
@@ -2618,20 +2675,20 @@ class AutoscalingPolicy(_messages.Message):
     loadBalancingUtilization: Configuration parameters of autoscaling based on
       load balancer.
     maxNumReplicas: The maximum number of instances that the autoscaler can
-      scale up to. This is required when creating or updating an autoscaler.
-      The maximum number of replicas should not be lower than minimal number
-      of replicas.
+      scale out to. This is required when creating or updating an autoscaler.
+      The maximum number of replicas must not be lower than minimal number of
+      replicas.
     minNumReplicas: The minimum number of replicas that the autoscaler can
-      scale down to. This cannot be less than 0. If not provided, autoscaler
-      will choose a default value depending on maximum number of instances
+      scale in to. This cannot be less than 0. If not provided, autoscaler
+      chooses a default value depending on maximum number of instances
       allowed.
     mode: Defines operating mode for this policy.
     scaleDownControl: A AutoscalingPolicyScaleDownControl attribute.
     scaleInControl: A AutoscalingPolicyScaleInControl attribute.
     scalingSchedules: Scaling schedules defined for an autoscaler. Multiple
-      schedules can be set on an autoscaler and they can overlap. During
+      schedules can be set on an autoscaler, and they can overlap. During
       overlapping periods the greatest min_required_replicas of all scaling
-      schedules will be applied. Up to 128 scaling schedules are allowed.
+      schedules is applied. Up to 128 scaling schedules are allowed.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
@@ -2651,9 +2708,9 @@ class AutoscalingPolicy(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ScalingSchedulesValue(_messages.Message):
     r"""Scaling schedules defined for an autoscaler. Multiple schedules can be
-    set on an autoscaler and they can overlap. During overlapping periods the
-    greatest min_required_replicas of all scaling schedules will be applied.
-    Up to 128 scaling schedules are allowed.
+    set on an autoscaler, and they can overlap. During overlapping periods the
+    greatest min_required_replicas of all scaling schedules is applied. Up to
+    128 scaling schedules are allowed.
 
     Messages:
       AdditionalProperty: An additional property for a ScalingSchedulesValue
@@ -2707,13 +2764,13 @@ class AutoscalingPolicyCpuUtilization(_messages.Message):
       based on real-time metrics. * OPTIMIZE_AVAILABILITY. Predictive
       autoscaling improves availability by monitoring daily and weekly load
       patterns and scaling out ahead of anticipated demand.
-    utilizationTarget: The target CPU utilization that the autoscaler should
-      maintain. Must be a float value in the range (0, 1]. If not specified,
+    utilizationTarget: The target CPU utilization that the autoscaler
+      maintains. Must be a float value in the range (0, 1]. If not specified,
       the default is 0.6.  If the CPU level is below the target utilization,
-      the autoscaler scales down the number of instances until it reaches the
+      the autoscaler scales in the number of instances until it reaches the
       minimum number of instances you specified or until the average CPU of
       your instances reaches the target utilization.  If the average CPU is
-      above the target utilization, the autoscaler scales up until it reaches
+      above the target utilization, the autoscaler scales out until it reaches
       the maximum number of instances you specified or until the average
       utilization reaches the target utilization.
   """
@@ -2768,8 +2825,8 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
       entire autoscaled instance group and resource label filtering can be
       performed to point autoscaler at the correct TimeSeries to scale upon.
       This is called a per-group metric for the purpose of autoscaling.  If
-      not specified, the type defaults to gce_instance.    You should provide
-      a filter that is selective enough to pick just one TimeSeries for the
+      not specified, the type defaults to gce_instance.    Try to provide a
+      filter that is selective enough to pick just one TimeSeries for the
       autoscaled group or for each of the instances (if you are using
       gce_instance resource type). If multiple TimeSeries are returned upon
       the query execution, the autoscaler will sum their respective values to
@@ -2780,20 +2837,20 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
     singleInstanceAssignment: If scaling is based on a per-group metric value
       that represents the total amount of work to be done or resource usage,
       set this value to an amount assigned for a single instance of the scaled
-      group. Autoscaler will keep the number of instances proportional to the
-      value of this metric, the metric itself should not change value due to
+      group. Autoscaler keeps the number of instances proportional to the
+      value of this metric. The metric itself does not change value due to
       group resizing.  A good metric to use with the target is for example
       pubsub.googleapis.com/subscription/num_undelivered_messages or a custom
       metric exporting the total number of requests coming to your instances.
       A bad example would be a metric exporting an average or median latency,
       since this value can't include a chunk assignable to a single instance,
       it could be better used with utilization_target instead.
-    utilizationTarget: The target value of the metric that autoscaler should
-      maintain. This must be a positive value. A utilization metric scales
+    utilizationTarget: The target value of the metric that autoscaler
+      maintains. This must be a positive value. A utilization metric scales
       number of virtual machines handling requests to increase or decrease
       proportionally to the metric.  For example, a good metric to use as a
       utilization_target is https://www.googleapis.com/compute/v1/instance/net
-      work/received_bytes_count. The autoscaler will work to keep this value
+      work/received_bytes_count. The autoscaler works to keep this value
       constant for each of the instances.
     utilizationTargetType: Defines how target utilization value is expressed
       for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or
@@ -2825,7 +2882,7 @@ class AutoscalingPolicyLoadBalancingUtilization(_messages.Message):
 
   Fields:
     utilizationTarget: Fraction of backend capacity utilization (set in
-      HTTP(S) load balancing configuration) that autoscaler should maintain.
+      HTTP(S) load balancing configuration) that the autoscaler maintains.
       Must be a positive float value. If not defined, the default is 0.8.
   """
 
@@ -2833,9 +2890,9 @@ class AutoscalingPolicyLoadBalancingUtilization(_messages.Message):
 
 
 class AutoscalingPolicyScaleDownControl(_messages.Message):
-  r"""Configuration that allows for slower scale down so that even if
-  Autoscaler recommends an abrupt scale down of a MIG, it will be throttled as
-  specified by the parameters below.
+  r"""Configuration that allows for slower scale in so that even if Autoscaler
+  recommends an abrupt scale in of a MIG, it will be throttled as specified by
+  the parameters below.
 
   Fields:
     maxScaledDownReplicas: Maximum allowed number (or %) of VMs that can be
@@ -2843,8 +2900,8 @@ class AutoscalingPolicyScaleDownControl(_messages.Message):
       at when computing recommendations. Possibly all these VMs can be deleted
       at once so user service needs to be prepared to lose that many VMs in
       one step.
-    timeWindowSec: How long back autoscaling should look when computing
-      recommendations to include directives regarding slower scale down, as
+    timeWindowSec: How far back autoscaling looks when computing
+      recommendations to include directives regarding slower scale in, as
       described above.
   """
 
@@ -2863,7 +2920,7 @@ class AutoscalingPolicyScaleInControl(_messages.Message):
       at when computing recommendations. Possibly all these VMs can be deleted
       at once so user service needs to be prepared to lose that many VMs in
       one step.
-    timeWindowSec: How long back autoscaling should look when computing
+    timeWindowSec: How far back autoscaling looks when computing
       recommendations to include directives regarding slower scale in, as
       described above.
   """
@@ -2879,27 +2936,27 @@ class AutoscalingPolicyScalingSchedule(_messages.Message):
 
   Fields:
     description: A description of a scaling schedule.
-    disabled: A boolean value that specifies if a scaling schedule can
+    disabled: A boolean value that specifies whether a scaling schedule can
       influence autoscaler recommendations. If set to true, then a scaling
-      schedule has no effect. This field is optional and its value is false by
-      default.
-    durationSec: The duration of time intervals (in seconds) for which this
-      scaling schedule will be running. The minimum allowed value is 300. This
-      field is required.
-    minRequiredReplicas: Minimum number of VM instances that autoscaler will
-      recommend in time intervals starting according to schedule. This field
+      schedule has no effect. This field is optional, and its value is false
+      by default.
+    durationSec: The duration of time intervals, in seconds, for which this
+      scaling schedule is to run. The minimum allowed value is 300. This field
       is required.
+    minRequiredReplicas: The minimum number of VM instances that the
+      autoscaler will recommend in time intervals starting according to
+      schedule. This field is required.
     schedule: The start timestamps of time intervals when this scaling
-      schedule should provide a scaling signal. This field uses the extended
-      cron format (with an optional year field). The expression may describe a
-      single timestamp if the optional year is set, in which case a scaling
-      schedule will run once. schedule is interpreted with respect to
-      time_zone. This field is required. NOTE: these timestamps only describe
-      when autoscaler will start providing the scaling signal. The VMs will
-      need additional time to become serving.
-    timeZone: The time zone to be used when interpreting the schedule. The
-      value of this field must be a time zone name from the tz database:
-      http://en.wikipedia.org/wiki/Tz_database. This field will be assigned a
+      schedule is to provide a scaling signal. This field uses the extended
+      cron format (with an optional year field). The expression can describe a
+      single timestamp if the optional year is set, in which case the scaling
+      schedule runs once. The schedule is interpreted with respect to
+      time_zone. This field is required. Note: These timestamps only describe
+      when autoscaler starts providing the scaling signal. The VMs need
+      additional time to become serving.
+    timeZone: The time zone to use when interpreting the schedule. The value
+      of this field must be a time zone name from the tz database:
+      http://en.wikipedia.org/wiki/Tz_database. This field is assigned a
       default value of ?UTC? if left empty.
   """
 
@@ -2927,17 +2984,18 @@ class Backend(_messages.Message):
       following parameters: maxConnections (except for regional managed
       instance groups), maxConnectionsPerInstance, or
       maxConnectionsPerEndpoint.  If the loadBalancingScheme for the backend
-      service is INTERNAL (internal TCP/UDP load balancers), you cannot
-      specify any additional parameters.   - If the load balancing mode is
-      RATE, the load is spread based on the rate of HTTP requests per second
-      (RPS). You can use the RATE balancing mode if the protocol for the
-      backend service is HTTP or HTTPS. You must specify exactly one of the
-      following parameters: maxRate (except for regional managed instance
-      groups), maxRatePerInstance, or maxRatePerEndpoint.   - If the load
-      balancing mode is UTILIZATION, the load is spread based on the backend
-      utilization of instances in an instance group. You can use the
-      UTILIZATION balancing mode if the loadBalancingScheme of the backend
-      service is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the
+      service is INTERNAL (internal TCP/UDP Load Balancers) or EXTERNAL
+      (Network Load Balancing), you cannot specify any additional parameters.
+      - If the load balancing mode is RATE, the load is spread based on the
+      rate of HTTP requests per second (RPS). You can use the RATE balancing
+      mode if the protocol for the backend service is HTTP, HTTP2, or HTTPS.
+      You must specify exactly one of the following parameters: maxRate
+      (except for regional managed instance groups), maxRatePerInstance, or
+      maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
+      load is spread based on the backend utilization of instances in an
+      instance group. You can use the UTILIZATION balancing mode if the
+      loadBalancingScheme of the backend service is EXTERNAL (except Network
+      Load Balancing), INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the
       backends are instance groups. There are no restrictions on the backend
       service protocol.
 
@@ -2954,17 +3012,18 @@ class Backend(_messages.Message):
       following parameters: maxConnections (except for regional managed
       instance groups), maxConnectionsPerInstance, or
       maxConnectionsPerEndpoint.  If the loadBalancingScheme for the backend
-      service is INTERNAL (internal TCP/UDP load balancers), you cannot
-      specify any additional parameters.   - If the load balancing mode is
-      RATE, the load is spread based on the rate of HTTP requests per second
-      (RPS). You can use the RATE balancing mode if the protocol for the
-      backend service is HTTP or HTTPS. You must specify exactly one of the
-      following parameters: maxRate (except for regional managed instance
-      groups), maxRatePerInstance, or maxRatePerEndpoint.   - If the load
-      balancing mode is UTILIZATION, the load is spread based on the backend
-      utilization of instances in an instance group. You can use the
-      UTILIZATION balancing mode if the loadBalancingScheme of the backend
-      service is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the
+      service is INTERNAL (internal TCP/UDP Load Balancers) or EXTERNAL
+      (Network Load Balancing), you cannot specify any additional parameters.
+      - If the load balancing mode is RATE, the load is spread based on the
+      rate of HTTP requests per second (RPS). You can use the RATE balancing
+      mode if the protocol for the backend service is HTTP, HTTP2, or HTTPS.
+      You must specify exactly one of the following parameters: maxRate
+      (except for regional managed instance groups), maxRatePerInstance, or
+      maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
+      load is spread based on the backend utilization of instances in an
+      instance group. You can use the UTILIZATION balancing mode if the
+      loadBalancingScheme of the backend service is EXTERNAL (except Network
+      Load Balancing), INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the
       backends are instance groups. There are no restrictions on the backend
       service protocol.
     capacityScaler: A multiplier applied to the group's maximum servicing
@@ -2975,7 +3034,7 @@ class Backend(_messages.Message):
       is 0.0 and [0.1,1.0]. You cannot configure a setting larger than 0 and
       smaller than 0.1. You cannot configure a setting of 0 when there is only
       one backend attached to the backend service.  This cannot be used for
-      internal load balancing.
+      Internal TCP/UDP Load Balancing and Network Load Balancing.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     failover: This field designates whether this is a failover backend. More
@@ -2983,37 +3042,40 @@ class Backend(_messages.Message):
     group: The fully-qualified URL of an instance group or network endpoint
       group (NEG) resource. The type of backend that a backend service
       supports depends on the backend service's loadBalancingScheme.    - When
-      the loadBalancingScheme for the backend service is EXTERNAL,
-      INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, the backend can be either an
-      instance group or a NEG. The backends on the backend service must be
-      either all instance groups or all NEGs. You cannot mix instance group
-      and NEG backends on the same backend service.    - When the
-      loadBalancingScheme for the backend service is INTERNAL, the backend
-      must be an instance group in the same region as the backend service.
-      NEGs are not supported.    You must use the fully-qualified URL
-      (starting with https://www.googleapis.com/) to specify the instance
-      group or NEG. Partial URLs are not supported.
+      the loadBalancingScheme for the backend service is EXTERNAL (except
+      Network Load Balancing),  INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED ,
+      the backend can be either an instance group or a NEG. The backends on
+      the backend service must be either all instance groups or all NEGs. You
+      cannot mix instance group and NEG backends on the same backend service.
+      - When the loadBalancingScheme for the backend service is EXTERNAL for
+      Network Load Balancing or INTERNAL for Internal TCP/UDP Load Balancing,
+      the backend must be an instance group. NEGs are not supported.    For
+      regional services, the backend must be in the same region as the backend
+      service.  You must use the fully-qualified URL (starting with
+      https://www.googleapis.com/) to specify the instance group or NEG.
+      Partial URLs are not supported.
     maxConnections: Defines a target maximum number of simultaneous
       connections that the backend can handle. Valid for network endpoint
       group and instance group backends (except for regional managed instance
       groups). If the backend's balancingMode is UTILIZATION, this is an
       optional parameter. If the backend's balancingMode is CONNECTION, and
       backend is attached to a backend service whose loadBalancingScheme is
-      EXTERNAL, you must specify either this parameter,
-      maxConnectionsPerInstance, or maxConnectionsPerEndpoint.  Not available
-      if the backend's balancingMode is RATE. If the loadBalancingScheme is
-      INTERNAL, then maxConnections is not supported, even though the backend
-      requires a balancing mode of CONNECTION.
+      EXTERNAL (except Network Load Balancing), you must specify either this
+      parameter, maxConnectionsPerInstance, or maxConnectionsPerEndpoint.  Not
+      available if the backend's balancingMode is RATE. Cannot be specified
+      for Network Load Balancing or Internal TCP/UDP Load Balancing, even
+      though those load balancers require a balancing mode of CONNECTION.
     maxConnectionsPerEndpoint: Defines a target maximum number of simultaneous
       connections for an endpoint of a NEG. This is multiplied by the number
       of endpoints in the NEG to implicitly calculate a maximum number of
       target maximum simultaneous connections for the NEG. If the backend's
-      balancingMode is CONNECTION, and the backend is attached to a backend
-      service whose loadBalancingScheme is EXTERNAL, you must specify either
-      this parameter, maxConnections, or maxConnectionsPerInstance.  Not
-      available if the backend's balancingMode is RATE. Internal TCP/UDP load
-      balancing does not support setting maxConnectionsPerEndpoint even though
-      its backends require a balancing mode of CONNECTION.
+      balancingMode is CONNECTION, and backend is attached to a backend
+      service whose loadBalancingScheme is EXTERNAL (except Network Load
+      Balancing), you must specify either this parameter, maxConnections, or
+      maxConnectionsPerInstance.  Not available if the backend's balancingMode
+      is RATE. Cannot be specified for Network Load Balancing or Internal
+      TCP/UDP Load Balancing, even though those load balancers require a
+      balancing mode of CONNECTION.
     maxConnectionsPerInstance: Defines a target maximum number of simultaneous
       connections for a single VM in a backend instance group. This is
       multiplied by the number of instances in the instance group to
@@ -3021,11 +3083,12 @@ class Backend(_messages.Message):
       for the whole instance group. If the backend's balancingMode is
       UTILIZATION, this is an optional parameter. If the backend's
       balancingMode is CONNECTION, and backend is attached to a backend
-      service whose loadBalancingScheme is EXTERNAL, you must specify either
-      this parameter, maxConnections, or maxConnectionsPerEndpoint.  Not
-      available if the backend's balancingMode is RATE. Internal TCP/UDP load
-      balancing does not support setting maxConnectionsPerInstance even though
-      its backends require a balancing mode of CONNECTION.
+      service whose loadBalancingScheme is EXTERNAL (except Network Load
+      Balancing), you must specify either this parameter,  maxConnections, or
+      maxConnectionsPerEndpoint.  Not available if the backend's balancingMode
+      is RATE. Cannot be specified for Network Load Balancing or Internal
+      TCP/UDP Load Balancing, even though those load balancers require a
+      balancing mode of CONNECTION.
     maxRate: Defines a maximum number of HTTP requests per second (RPS) that
       the backend can handle. Valid for network endpoint group and instance
       group backends (except for regional managed instance groups). Must not
@@ -3071,18 +3134,20 @@ class Backend(_messages.Message):
     also specify exactly one of the following parameters: maxConnections
     (except for regional managed instance groups), maxConnectionsPerInstance,
     or maxConnectionsPerEndpoint.  If the loadBalancingScheme for the backend
-    service is INTERNAL (internal TCP/UDP load balancers), you cannot specify
-    any additional parameters.   - If the load balancing mode is RATE, the
-    load is spread based on the rate of HTTP requests per second (RPS). You
-    can use the RATE balancing mode if the protocol for the backend service is
-    HTTP or HTTPS. You must specify exactly one of the following parameters:
-    maxRate (except for regional managed instance groups), maxRatePerInstance,
-    or maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
+    service is INTERNAL (internal TCP/UDP Load Balancers) or EXTERNAL
+    (Network Load Balancing), you cannot specify any additional parameters.
+    - If the load balancing mode is RATE, the load is spread based on the rate
+    of HTTP requests per second (RPS). You can use the RATE balancing mode if
+    the protocol for the backend service is HTTP, HTTP2, or HTTPS. You must
+    specify exactly one of the following parameters: maxRate (except for
+    regional managed instance groups), maxRatePerInstance, or
+    maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
     load is spread based on the backend utilization of instances in an
     instance group. You can use the UTILIZATION balancing mode if the
-    loadBalancingScheme of the backend service is EXTERNAL,
-    INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance
-    groups. There are no restrictions on the backend service protocol.
+    loadBalancingScheme of the backend service is EXTERNAL (except Network
+    Load Balancing), INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the
+    backends are instance groups. There are no restrictions on the backend
+    service protocol.
 
     Values:
       CONNECTION: <no description>
@@ -3469,11 +3534,11 @@ class BackendService(_messages.Message):
 
   Enums:
     LoadBalancingSchemeValueValuesEnum: Specifies the load balancer type.
-      Choose EXTERNAL for load balancers that receive traffic from external
-      clients. Choose INTERNAL for Internal TCP/UDP Load Balancing. Choose
-      INTERNAL_MANAGED for Internal HTTP(S) Load Balancing. Choose
+      Choose EXTERNAL for external HTTP(S), SSL Proxy, TCP Proxy and Network
+      Load Balancing. Choose  INTERNAL for Internal TCP/UDP Load Balancing.
+      Choose  INTERNAL_MANAGED for Internal HTTP(S) Load Balancing.
       INTERNAL_SELF_MANAGED for Traffic Director. A backend service created
-      for one type of load balancing cannot be used with another. For more
+      for one type of load balancer cannot be used with another. For more
       information, refer to Choosing a load balancer.
     LocalityLbPolicyValueValuesEnum: The load balancing algorithm used within
       the scope of the locality. The possible values are:   - ROUND_ROBIN:
@@ -3509,10 +3574,12 @@ class BackendService(_messages.Message):
       the backend service is referenced by a URL map that is bound to target
       gRPC proxy.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
-      default is NONE. Session affinity is not applicable if the --protocol is
-      UDP.  When the loadBalancingScheme is EXTERNAL, possible values are
-      NONE, CLIENT_IP, or GENERATED_COOKIE. You can use GENERATED_COOKIE if
-      the protocol is HTTP or HTTPS.  When the loadBalancingScheme is
+      default is NONE.  When the loadBalancingScheme is EXTERNAL: * For
+      Network Load Balancing, the possible values are NONE, CLIENT_IP,
+      CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO. * For all other load balancers
+      that use loadBalancingScheme=EXTERNAL, the possible values are NONE,
+      CLIENT_IP, or GENERATED_COOKIE. * You can use GENERATED_COOKIE if the
+      protocol is HTTP, HTTP2, or HTTPS.  When the loadBalancingScheme is
       INTERNAL, possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
       CLIENT_IP_PORT_PROTO.  When the loadBalancingScheme is
       INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE,
@@ -3532,7 +3599,8 @@ class BackendService(_messages.Message):
       bound to target gRPC proxy that has validateForProxyless field set to
       true.
     backends: The list of backends that serve this BackendService.
-    cdnPolicy: Cloud CDN configuration for this BackendService.
+    cdnPolicy: Cloud CDN configuration for this BackendService. Not available
+      for Internal TCP/UDP Load Balancing and Network Load Balancing.
     circuitBreakers: Settings controlling the volume of connections to a
       backend service. If not set, this feature is considered disabled.  This
       field is applicable to either:   - A regional backend service with the
@@ -3572,8 +3640,8 @@ class BackendService(_messages.Message):
       applicable if the loadBalancingScheme is EXTERNAL and the protocol is
       HTTP or HTTPS.
     failoverPolicy: Applicable only to Failover for Internal TCP/UDP Load
-      Balancing. Requires at least one backend instance group to be defined as
-      a backup (failover) backend.
+      Balancing and Network Load Balancing. Requires at least one backend
+      instance group to be defined as a backup (failover) backend.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a BackendService. An up-to-date
@@ -3589,18 +3657,20 @@ class BackendService(_messages.Message):
       instance group or zonal NEG backends must have a health check. Backend
       services with internet or serverless NEG backends must not have a health
       check.
-    iap: The configurations for Identity-Aware Proxy on this resource.
+    iap: The configurations for Identity-Aware Proxy on this resource. Not
+      available for Internal TCP/UDP Load Balancing and Network Load
+      Balancing.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#backendService for
       backend services.
     loadBalancingScheme: Specifies the load balancer type. Choose EXTERNAL for
-      load balancers that receive traffic from external clients. Choose
-      INTERNAL for Internal TCP/UDP Load Balancing. Choose INTERNAL_MANAGED
-      for Internal HTTP(S) Load Balancing. Choose INTERNAL_SELF_MANAGED for
-      Traffic Director. A backend service created for one type of load
-      balancing cannot be used with another. For more information, refer to
-      Choosing a load balancer.
+      external HTTP(S), SSL Proxy, TCP Proxy and Network Load Balancing.
+      Choose  INTERNAL for Internal TCP/UDP Load Balancing. Choose
+      INTERNAL_MANAGED for Internal HTTP(S) Load Balancing.
+      INTERNAL_SELF_MANAGED for Traffic Director. A backend service created
+      for one type of load balancer cannot be used with another. For more
+      information, refer to Choosing a load balancer.
     localityLbPolicy: The load balancing algorithm used within the scope of
       the locality. The possible values are:   - ROUND_ROBIN: This is a simple
       policy in which each healthy backend is selected in round robin order.
@@ -3638,8 +3708,8 @@ class BackendService(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     network: The URL of the network to which this backend service belongs.
-      This field can only be spcified when the load balancing scheme is set to
-      INTERNAL.
+      This field can only be specified when the load balancing scheme is set
+      to INTERNAL.
     outlierDetection: Settings controlling the eviction of unhealthy hosts
       from the load balancing pool for the backend service. If not set, this
       feature is considered disabled.  This field is applicable to either:   -
@@ -3654,11 +3724,12 @@ class BackendService(_messages.Message):
       loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).
     portName: A named port on a backend instance group representing the port
       for communication to the backend VMs in that group. Required when the
-      loadBalancingScheme is EXTERNAL, INTERNAL_MANAGED, or
-      INTERNAL_SELF_MANAGED and the backends are instance groups. The named
-      port must be defined on each backend instance group. This parameter has
-      no meaning if the backends are NEGs.    Must be omitted when the
-      loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).
+      loadBalancingScheme is EXTERNAL (except Network Load Balancing),
+      INTERNAL_MANAGED, or  INTERNAL_SELF_MANAGED and the backends are
+      instance groups. The named port must be defined on each backend instance
+      group. This parameter has no meaning if the backends are NEGs.
+      Backend services for Internal TCP/UDP Load Balancing and Network Load
+      Balancing require you omit port_name.
     protocol: The protocol this BackendService uses to communicate with
       backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, UDP or
       GRPC. depending on the chosen load balancer or Traffic Director
@@ -3681,16 +3752,19 @@ class BackendService(_messages.Message):
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
     sessionAffinity: Type of session affinity to use. The default is NONE.
-      Session affinity is not applicable if the --protocol is UDP.  When the
-      loadBalancingScheme is EXTERNAL, possible values are NONE, CLIENT_IP, or
-      GENERATED_COOKIE. You can use GENERATED_COOKIE if the protocol is HTTP
-      or HTTPS.  When the loadBalancingScheme is INTERNAL, possible values are
-      NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.  When the
-      loadBalancingScheme is INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED,
-      possible values are NONE, CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or
-      HTTP_COOKIE.  Not supported when the backend service is referenced by a
-      URL map that is bound to target gRPC proxy that has validateForProxyless
-      field set to true.
+      When the loadBalancingScheme is EXTERNAL: * For Network Load Balancing,
+      the possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
+      CLIENT_IP_PORT_PROTO. * For all other load balancers that use
+      loadBalancingScheme=EXTERNAL, the possible values are NONE, CLIENT_IP,
+      or GENERATED_COOKIE. * You can use GENERATED_COOKIE if the protocol is
+      HTTP, HTTP2, or HTTPS.  When the loadBalancingScheme is INTERNAL,
+      possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
+      CLIENT_IP_PORT_PROTO.  When the loadBalancingScheme is
+      INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE,
+      CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.  Not
+      supported when the backend service is referenced by a URL map that is
+      bound to target gRPC proxy that has validateForProxyless field set to
+      true.
     subsetting: A Subsetting attribute.
     timeoutSec: The backend service timeout has a different meaning depending
       on the type of load balancer. For more information see,  Backend service
@@ -3698,11 +3772,11 @@ class BackendService(_messages.Message):
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
-    r"""Specifies the load balancer type. Choose EXTERNAL for load balancers
-    that receive traffic from external clients. Choose INTERNAL for Internal
-    TCP/UDP Load Balancing. Choose INTERNAL_MANAGED for Internal HTTP(S) Load
-    Balancing. Choose INTERNAL_SELF_MANAGED for Traffic Director. A backend
-    service created for one type of load balancing cannot be used with
+    r"""Specifies the load balancer type. Choose EXTERNAL for external
+    HTTP(S), SSL Proxy, TCP Proxy and Network Load Balancing. Choose  INTERNAL
+    for Internal TCP/UDP Load Balancing. Choose  INTERNAL_MANAGED for Internal
+    HTTP(S) Load Balancing.  INTERNAL_SELF_MANAGED for Traffic Director. A
+    backend service created for one type of load balancer cannot be used with
     another. For more information, refer to Choosing a load balancer.
 
     Values:
@@ -3792,16 +3866,19 @@ class BackendService(_messages.Message):
     UDP = 7
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
-    r"""Type of session affinity to use. The default is NONE. Session affinity
-    is not applicable if the --protocol is UDP.  When the loadBalancingScheme
-    is EXTERNAL, possible values are NONE, CLIENT_IP, or GENERATED_COOKIE. You
-    can use GENERATED_COOKIE if the protocol is HTTP or HTTPS.  When the
-    loadBalancingScheme is INTERNAL, possible values are NONE, CLIENT_IP,
-    CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.  When the loadBalancingScheme is
-    INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE,
-    CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.  Not supported
-    when the backend service is referenced by a URL map that is bound to
-    target gRPC proxy that has validateForProxyless field set to true.
+    r"""Type of session affinity to use. The default is NONE.  When the
+    loadBalancingScheme is EXTERNAL: * For Network Load Balancing, the
+    possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
+    CLIENT_IP_PORT_PROTO. * For all other load balancers that use
+    loadBalancingScheme=EXTERNAL, the possible values are NONE, CLIENT_IP, or
+    GENERATED_COOKIE. * You can use GENERATED_COOKIE if the protocol is HTTP,
+    HTTP2, or HTTPS.  When the loadBalancingScheme is INTERNAL, possible
+    values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.
+    When the loadBalancingScheme is INTERNAL_SELF_MANAGED, or
+    INTERNAL_MANAGED, possible values are NONE, CLIENT_IP, GENERATED_COOKIE,
+    HEADER_FIELD, or HTTP_COOKIE.  Not supported when the backend service is
+    referenced by a URL map that is bound to target gRPC proxy that has
+    validateForProxyless field set to true.
 
     Values:
       CLIENT_IP: <no description>
@@ -4253,29 +4330,30 @@ class BackendServiceConnectionTrackingPolicy(_messages.Message):
 
 
 class BackendServiceFailoverPolicy(_messages.Message):
-  r"""Applicable only to Failover for Internal TCP/UDP Load Balancing. On
-  failover or failback, this field indicates whether connection draining will
-  be honored. GCP has a fixed connection draining timeout of 10 minutes. A
-  setting of true terminates existing TCP connections to the active pool
-  during failover and failback, immediately draining traffic. A setting of
-  false allows existing TCP connections to persist, even on VMs no longer in
-  the active pool, for up to the duration of the connection draining timeout
-  (10 minutes).
+  r"""Applicable only to Failover for Internal TCP/UDP Load Balancing and
+  Network Load Balancing. On failover or failback, this field indicates
+  whether connection draining will be honored. GCP has a fixed connection
+  draining timeout of 10 minutes. A setting of true terminates existing TCP
+  connections to the active pool during failover and failback, immediately
+  draining traffic. A setting of false allows existing TCP connections to
+  persist, even on VMs no longer in the active pool, for up to the duration of
+  the connection draining timeout (10 minutes).
 
   Fields:
     disableConnectionDrainOnFailover: This can be set to true only if the
       protocol is TCP.  The default is false.
     dropTrafficIfUnhealthy: Applicable only to Failover for Internal TCP/UDP
-      Load Balancing. If set to true, connections to the load balancer are
-      dropped when all primary and all backup backend VMs are unhealthy. If
-      set to false, connections are distributed among all primary VMs when all
-      primary and all backup backend VMs are unhealthy.  The default is false.
+      Load Balancing and Network Load Balancing, If set to true, connections
+      to the load balancer are dropped when all primary and all backup backend
+      VMs are unhealthy.If set to false, connections are distributed among all
+      primary VMs when all primary and all backup backend VMs are unhealthy.
+      The default is false.
     failoverRatio: Applicable only to Failover for Internal TCP/UDP Load
-      Balancing. The value of the field must be in the range [0, 1]. If the
-      value is 0, the load balancer performs a failover when the number of
-      healthy primary VMs equals zero. For all other values, the load balancer
-      performs a failover when the total number of healthy primary VMs is less
-      than this ratio.
+      Balancing and Network Load Balancing. The value of the field must be in
+      the range [0, 1]. If the value is 0, the load balancer performs a
+      failover when the number of healthy primary VMs equals zero. For all
+      other values, the load balancer performs a failover when the total
+      number of healthy primary VMs is less than this ratio.
   """
 
   disableConnectionDrainOnFailover = _messages.BooleanField(1)
@@ -4972,17 +5050,18 @@ class BulkInsertInstanceResource(_messages.Message):
     minCount: The minimum number of instances to create. If no min_count is
       specified then count is used as the default value. If min_count
       instances cannot be created, then no instances will be created.
-    namePattern: Instance name pattern. Name pattern includes a parameter to
-      specify the auto-incrementing portion of the name, in a form of
-      consecutive hash (#) chars, each of them corresponding to one digit of
-      an instance name. For example: name_pattern = inst-####-prod will
-      generate names starting with inst-0001-prod, inst-0002-prod, up to
-      required count. If there exist instances matching the name pattern in
-      the same project and zone, the initial instance number will be equal to
-      the maximum existing instance number + 1 (e.g. if there exists an
-      instance with name inst-0030-prod, then the generated names will start
-      with inst-0031-prod). The name pattern placeholder #...# can contain up
-      to 18 characters.
+    namePattern: The string pattern used for the names of the VMs. Either
+      name_pattern or predefined_names must be set. The pattern should contain
+      one consecutive sequence of placeholder hash characters (#) with each
+      character corresponding to one digit of the generated instance name.
+      Example: name_pattern of inst-#### will generate instance names like
+      inst-0001, inst-0002, ... . If there already exist instance(s) whose
+      names match the name pattern in the same project and zone, then the
+      generated instance numbers will start after the biggest existing number.
+      For example, if there exists an instance with name inst-0050, then
+      instance names generated using the pattern inst-#### will be inst-0051,
+      inst-0052, etc. The name pattern placeholder #...# can contain up to 18
+      characters.
     predefinedNames: List of predefined names. The number of names provided
       must be equal to count.
     sourceInstanceTemplate: Specifies the instance template from which to
@@ -19211,10 +19290,10 @@ class ComputeRegionInstantSnapshotsExportRequest(_messages.Message):
 
   Fields:
     instantSnapshot: Name of the instant snapshot to export.
-    instantSnapshotExportParams: A InstantSnapshotExportParams resource to be
-      passed as the request body.
     project: Project ID for this request.
     region: The name of the zone for this request.
+    regionInstantSnapshotsExportRequest: A RegionInstantSnapshotsExportRequest
+      resource to be passed as the request body.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
@@ -19228,9 +19307,9 @@ class ComputeRegionInstantSnapshotsExportRequest(_messages.Message):
   """
 
   instantSnapshot = _messages.StringField(1, required=True)
-  instantSnapshotExportParams = _messages.MessageField('InstantSnapshotExportParams', 2)
-  project = _messages.StringField(3, required=True)
-  region = _messages.StringField(4, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstantSnapshotsExportRequest = _messages.MessageField('RegionInstantSnapshotsExportRequest', 4)
   requestId = _messages.StringField(5)
 
 
@@ -25738,8 +25817,6 @@ class ComputeZoneInstantSnapshotsExportRequest(_messages.Message):
 
   Fields:
     instantSnapshot: Name of the instant snapshot to export.
-    instantSnapshotExportParams: A InstantSnapshotExportParams resource to be
-      passed as the request body.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -25752,13 +25829,15 @@ class ComputeZoneInstantSnapshotsExportRequest(_messages.Message):
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
+    zoneInstantSnapshotsExportRequest: A ZoneInstantSnapshotsExportRequest
+      resource to be passed as the request body.
   """
 
   instantSnapshot = _messages.StringField(1, required=True)
-  instantSnapshotExportParams = _messages.MessageField('InstantSnapshotExportParams', 2)
-  project = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  zone = _messages.StringField(5, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
+  zoneInstantSnapshotsExportRequest = _messages.MessageField('ZoneInstantSnapshotsExportRequest', 5)
 
 
 class ComputeZoneInstantSnapshotsGetIamPolicyRequest(_messages.Message):
@@ -27697,37 +27776,22 @@ class DistributionPolicy(_messages.Message):
   r"""A DistributionPolicy object.
 
   Enums:
-    TargetShapeValueValuesEnum: The shape to which the group converges either
-      proactively or on resize events (depending on the value set in
-      updatePolicy.instanceRedistributionType). The possible values are EVEN
-      and ANY. For EVEN the group attempts to preserve a balanced number of
-      instances across zones. For ANY the group creates new instances where
-      resources are available to fulfill the request; as a result, instances
-      may be distributed unevenly across zones in this mode. The default value
-      is EVEN.
+    TargetShapeValueValuesEnum: The distribution shape to which the group
+      converges either proactively or on resize events (depending on the value
+      set in updatePolicy.instanceRedistributionType).
 
   Fields:
-    targetShape: The shape to which the group converges either proactively or
-      on resize events (depending on the value set in
-      updatePolicy.instanceRedistributionType). The possible values are EVEN
-      and ANY. For EVEN the group attempts to preserve a balanced number of
-      instances across zones. For ANY the group creates new instances where
-      resources are available to fulfill the request; as a result, instances
-      may be distributed unevenly across zones in this mode. The default value
-      is EVEN.
+    targetShape: The distribution shape to which the group converges either
+      proactively or on resize events (depending on the value set in
+      updatePolicy.instanceRedistributionType).
     zones: Zones where the regional managed instance group will create and
       manage its instances.
   """
 
   class TargetShapeValueValuesEnum(_messages.Enum):
-    r"""The shape to which the group converges either proactively or on resize
-    events (depending on the value set in
-    updatePolicy.instanceRedistributionType). The possible values are EVEN and
-    ANY. For EVEN the group attempts to preserve a balanced number of
-    instances across zones. For ANY the group creates new instances where
-    resources are available to fulfill the request; as a result, instances may
-    be distributed unevenly across zones in this mode. The default value is
-    EVEN.
+    r"""The distribution shape to which the group converges either proactively
+    or on resize events (depending on the value set in
+    updatePolicy.instanceRedistributionType).
 
     Values:
       ANY: <no description>
@@ -28956,28 +29020,29 @@ class ForwardingRule(_messages.Message):
   resource_for {$api_version}.regionForwardingRules ==)
 
   Enums:
-    IPProtocolValueValuesEnum: The IP protocol to which this rule applies. For
-      protocol forwarding, valid options are TCP, UDP, ESP, AH, SCTP or ICMP.
-      For Internal TCP/UDP Load Balancing, the load balancing scheme is
-      INTERNAL, and one of TCP or UDP are valid. For Traffic Director, the
-      load balancing scheme is INTERNAL_SELF_MANAGED, and only TCPis valid.
-      For Internal HTTP(S) Load Balancing, the load balancing scheme is
-      INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy, and TCP
-      Proxy Load Balancing, the load balancing scheme is EXTERNAL and only TCP
-      is valid. For Network TCP/UDP Load Balancing, the load balancing scheme
-      is EXTERNAL, and one of TCP or UDP is valid.
+    IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
+      For protocol forwarding, valid options are TCP, UDP, ESP, AH, SCTP and
+      ICMP.  The valid IP protocols are different for different load balancing
+      products:   - Internal TCP/UDP Load Balancing: The load balancing scheme
+      is INTERNAL, and one of TCP, UDP or ALL is valid.  - Traffic Director:
+      The load balancing scheme is INTERNAL_SELF_MANAGED, and only TCP is
+      valid.   - Internal HTTP(S) Load Balancing: The load balancing scheme is
+      INTERNAL_MANAGED, and only TCP is valid.  - HTTP(S), SSL Proxy, and TCP
+      Proxy Load Balancing: The load balancing scheme is EXTERNAL and only TCP
+      is valid.  - Network Load Balancing: The load balancing scheme is
+      EXTERNAL, and one of TCP or UDP is valid.
     IpVersionValueValuesEnum: The IP Version that will be used by this
       forwarding rule. Valid options are IPV4 or IPV6. This can only be
       specified for an external global forwarding rule.
     LoadBalancingSchemeValueValuesEnum: Specifies the forwarding rule type.
       - EXTERNAL is used for:   - Classic Cloud VPN gateways  - Protocol
-      forwarding to VMs from an external IP address  - The following load
-      balancers: HTTP(S), SSL Proxy, TCP Proxy, and Network TCP/UDP     -
-      INTERNAL is used for:   - Protocol forwarding to VMs from an internal IP
-      address  - Internal TCP/UDP load balancers    - INTERNAL_MANAGED is used
-      for:   - Internal HTTP(S) load balancers    - INTERNAL_SELF_MANAGED is
-      used for:   - Traffic Director      For more information about
-      forwarding rules, refer to Forwarding rule concepts.
+      forwarding to VMs from an external IP address  - HTTP(S), SSL Proxy, TCP
+      Proxy, and Network Load Balancing     - INTERNAL is used for:   -
+      Protocol forwarding to VMs from an internal IP address  - Internal
+      TCP/UDP Load Balancing    - INTERNAL_MANAGED is used for:   - Internal
+      HTTP(S) Load Balancing    - INTERNAL_SELF_MANAGED is used for:   -
+      Traffic Director      For more information about forwarding rules, refer
+      to Forwarding rule concepts.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this load balancer and can only take the following values:
       PREMIUM, STANDARD.  For regional ForwardingRule, the valid values are
@@ -28999,27 +29064,26 @@ class ForwardingRule(_messages.Message):
       assigned. Methods for specifying an IP address:  * IPv4 dotted decimal,
       as in `100.1.2.3` * Full URL, as in https://www.googleapis.com/compute/v
       1/projects/project_id/regions/region/addresses/address-name * Partial
-      URL or by name, as in: *
-      projects/project_id/regions/region/addresses/address-name *
-      regions/region/addresses/address-name * global/addresses/address-name *
-      address-name   The loadBalancingScheme and the forwarding rule's target
-      determine the type of IP address that you can use. For detailed
+      URL or by name, as in:   -
+      projects/project_id/regions/region/addresses/address-name  -
+      regions/region/addresses/address-name  - global/addresses/address-name
+      - address-name    The loadBalancingScheme and the forwarding rule's
+      target determine the type of IP address that you can use. For detailed
       information, refer to [IP address specifications](/load-
       balancing/docs/forwarding-rule-concepts#ip_address_specifications).
       Must be set to `0.0.0.0` when the target is targetGrpcProxy that has
-      validateForProxyless field set to true.  For Private Service Connect
-      forwarding rules that forward traffic to Google APIs, IP address must be
-      provided.
-    IPProtocol: The IP protocol to which this rule applies. For protocol
-      forwarding, valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For
-      Internal TCP/UDP Load Balancing, the load balancing scheme is INTERNAL,
-      and one of TCP or UDP are valid. For Traffic Director, the load
-      balancing scheme is INTERNAL_SELF_MANAGED, and only TCPis valid. For
-      Internal HTTP(S) Load Balancing, the load balancing scheme is
-      INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy, and TCP
-      Proxy Load Balancing, the load balancing scheme is EXTERNAL and only TCP
-      is valid. For Network TCP/UDP Load Balancing, the load balancing scheme
-      is EXTERNAL, and one of TCP or UDP is valid.
+      validateForProxyless field set to true.
+    IPProtocol: The IP protocol to which this rule applies.  For protocol
+      forwarding, valid options are TCP, UDP, ESP, AH, SCTP and ICMP.  The
+      valid IP protocols are different for different load balancing products:
+      - Internal TCP/UDP Load Balancing: The load balancing scheme is
+      INTERNAL, and one of TCP, UDP or ALL is valid.  - Traffic Director: The
+      load balancing scheme is INTERNAL_SELF_MANAGED, and only TCP is valid.
+      - Internal HTTP(S) Load Balancing: The load balancing scheme is
+      INTERNAL_MANAGED, and only TCP is valid.  - HTTP(S), SSL Proxy, and TCP
+      Proxy Load Balancing: The load balancing scheme is EXTERNAL and only TCP
+      is valid.  - Network Load Balancing: The load balancing scheme is
+      EXTERNAL, and one of TCP or UDP is valid.
     allPorts: This field is used along with the backend_service field for
       internal load balancing or with the target field for internal
       TargetInstance. This field cannot be used with port or portRange fields.
@@ -29031,9 +29095,10 @@ class ForwardingRule(_messages.Message):
       TargetInstance. If the field is set to TRUE, clients can access ILB from
       all regions. Otherwise only allows access from clients in the same
       region as the internal load balancer.
-    backendService: This field is only used for INTERNAL load balancing.  For
-      internal load balancing, this field identifies the BackendService
-      resource to receive the matched traffic.
+    backendService: Identifies the backend service to which the forwarding
+      rule sends traffic. Required for Internal TCP/UDP Load Balancing and
+      Network Load Balancing; must be omitted for all other load balancer
+      types.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -29070,13 +29135,13 @@ class ForwardingRule(_messages.Message):
       RFC1035. Label values may be empty.
     loadBalancingScheme: Specifies the forwarding rule type.    - EXTERNAL is
       used for:   - Classic Cloud VPN gateways  - Protocol forwarding to VMs
-      from an external IP address  - The following load balancers: HTTP(S),
-      SSL Proxy, TCP Proxy, and Network TCP/UDP     - INTERNAL is used for:
-      - Protocol forwarding to VMs from an internal IP address  - Internal
-      TCP/UDP load balancers    - INTERNAL_MANAGED is used for:   - Internal
-      HTTP(S) load balancers    - INTERNAL_SELF_MANAGED is used for:   -
-      Traffic Director      For more information about forwarding rules, refer
-      to Forwarding rule concepts.
+      from an external IP address  - HTTP(S), SSL Proxy, TCP Proxy, and
+      Network Load Balancing     - INTERNAL is used for:   - Protocol
+      forwarding to VMs from an internal IP address  - Internal TCP/UDP Load
+      Balancing    - INTERNAL_MANAGED is used for:   - Internal HTTP(S) Load
+      Balancing    - INTERNAL_SELF_MANAGED is used for:   - Traffic Director
+      For more information about forwarding rules, refer to Forwarding rule
+      concepts.
     metadataFilters: Opaque filter criteria used by Loadbalancer to restrict
       routing configuration to a limited set of xDS compliant clients. In
       their xDS requests to Loadbalancer, xDS clients present node metadata.
@@ -29101,43 +29166,39 @@ class ForwardingRule(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    network: This field is not used for external load balancing.  For internal
-      load balancing, this field identifies the network that the load balanced
-      IP should belong to for this Forwarding Rule. If this field is not
-      specified, the default network will be used.  For Private Service
-      Connect forwarding rules that forward traffic to Google APIs, a network
-      must be provided.
+    network: This field is not used for external load balancing.  For Internal
+      TCP/UDP Load Balancing, this field identifies the network that the load
+      balanced IP should belong to for this Forwarding Rule. If this field is
+      not specified, the default network will be used.
     networkTier: This signifies the networking tier used for configuring this
       load balancer and can only take the following values: PREMIUM, STANDARD.
       For regional ForwardingRule, the valid values are PREMIUM and STANDARD.
       For GlobalForwardingRule, the valid value is PREMIUM.  If this field is
       not specified, it is assumed to be PREMIUM. If IPAddress is specified,
       this value must be equal to the networkTier of the Address.
-    portRange: When the load balancing scheme is EXTERNAL,
-      INTERNAL_SELF_MANAGED and INTERNAL_MANAGED, you can specify a
-      port_range. Use with a forwarding rule that points to a target proxy or
-      a target pool. Do not use with a forwarding rule that points to a
-      backend service. This field is used along with the target field for
-      TargetHttpProxy, TargetHttpsProxy, TargetSslProxy, TargetTcpProxy,
-      TargetGrpcProxy, TargetVpnGateway, TargetPool, TargetInstance.
-      Applicable only when IPProtocol is TCP, UDP, or SCTP, only packets
-      addressed to ports in the specified range will be forwarded to target.
-      Forwarding rules with the same [IPAddress, IPProtocol] pair must have
-      disjoint port ranges.  Some types of forwarding target have constraints
-      on the acceptable ports:   - TargetHttpProxy: 80, 8080  -
-      TargetHttpsProxy: 443  - TargetGrpcProxy: Any ports  - TargetTcpProxy:
-      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222  -
-      TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995,
-      1688, 1883, 5222  - TargetVpnGateway: 500, 4500
-    ports: This field is used along with the backend_service field for
-      internal load balancing.  When the load balancing scheme is INTERNAL, a
-      list of ports can be configured, for example, ['80'], ['8000','9000'].
-      Only packets addressed to these ports are forwarded to the backends
-      configured with the forwarding rule.  If the forwarding rule's
-      loadBalancingScheme is INTERNAL, you can specify ports in one of the
-      following ways:  * A list of up to five ports, which can be non-
-      contiguous * Keyword ALL, which causes the forwarding rule to forward
-      traffic on any port of the forwarding rule's protocol.
+    portRange: This field can be used only if: * Load balancing scheme is one
+      of EXTERNAL,  INTERNAL_SELF_MANAGED or INTERNAL_MANAGED, and *
+      IPProtocol is one of TCP, UDP, or SCTP.  Packets addressed to ports in
+      the specified range will be forwarded to target or  backend_service. You
+      can only use one of ports, port_range, or allPorts. The three are
+      mutually exclusive. Forwarding rules with the same [IPAddress,
+      IPProtocol] pair must have disjoint port ranges.  Some types of
+      forwarding target have constraints on the acceptable ports:   -
+      TargetHttpProxy: 80, 8080  - TargetHttpsProxy: 443  - TargetGrpcProxy:
+      no constraints  - TargetTcpProxy: 25, 43, 110, 143, 195, 443, 465, 587,
+      700, 993, 995, 1688, 1883, 5222  - TargetSslProxy: 25, 43, 110, 143,
+      195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222  - TargetVpnGateway:
+      500, 4500
+    ports: The ports field is only supported when the forwarding rule
+      references a backend_service directly. Supported load balancing products
+      are Internal TCP/UDP Load Balancing and Network Load Balancing. Only
+      packets addressed to the specified list of ports are forwarded to
+      backends.  You can only use one of ports and port_range, or allPorts.
+      The three are mutually exclusive.  You can specify a list of up to five
+      ports, which can be non-contiguous.  For Internal TCP/UDP Load
+      Balancing, if you specify allPorts, you should not specify ports.  For
+      more information, see [Port specifications](/load-
+      balancing/docs/forwarding-rule-concepts#port_specifications).
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules. You
       must specify this field as part of the HTTP request URL. It is not
@@ -29147,7 +29208,8 @@ class ForwardingRule(_messages.Message):
       the resource id.
     serviceDirectoryRegistrations: Service Directory resources to register
       this forwarding rule with. Currently, only supports a single Service
-      Directory resource.
+      Directory resource.  It is only supported for Internal TCP/UDP Load
+      Balancing and Internal HTTP(S) Load Balancing.
     serviceLabel: An optional prefix to the service name for this Forwarding
       Rule. If specified, the prefix is the first label of the fully qualified
       service name.  The label must be 1-63 characters long, and comply with
@@ -29172,28 +29234,21 @@ class ForwardingRule(_messages.Message):
       global load balancing resource. The forwarded traffic must be of a type
       appropriate to the target object. For more information, see the "Target"
       column in [Port specifications](/load-balancing/docs/forwarding-rule-
-      concepts#ip_address_specifications).  For Private Service Connect
-      forwarding rules that forward traffic to Google APIs, provide the name
-      of a supported Google API bundle. Currently, the supported Google API
-      bundles include:    - vpc-sc - GCP APIs that support VPC Service
-      Controls. For more information about which APIs support VPC Service
-      Controls, refer to VPC-SC supported products and limitations.   - all-
-      apis - All GCP APIs. For more information about which APIs are supported
-      with this bundle, refer to Private Google Access-specific domains and
-      VIPs.
+      concepts#ip_address_specifications).
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
-    r"""The IP protocol to which this rule applies. For protocol forwarding,
-    valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP
-    Load Balancing, the load balancing scheme is INTERNAL, and one of TCP or
-    UDP are valid. For Traffic Director, the load balancing scheme is
-    INTERNAL_SELF_MANAGED, and only TCPis valid. For Internal HTTP(S) Load
-    Balancing, the load balancing scheme is INTERNAL_MANAGED, and only TCP is
-    valid. For HTTP(S), SSL Proxy, and TCP Proxy Load Balancing, the load
-    balancing scheme is EXTERNAL and only TCP is valid. For Network TCP/UDP
-    Load Balancing, the load balancing scheme is EXTERNAL, and one of TCP or
-    UDP is valid.
+    r"""The IP protocol to which this rule applies.  For protocol forwarding,
+    valid options are TCP, UDP, ESP, AH, SCTP and ICMP.  The valid IP
+    protocols are different for different load balancing products:   -
+    Internal TCP/UDP Load Balancing: The load balancing scheme is INTERNAL,
+    and one of TCP, UDP or ALL is valid.  - Traffic Director: The load
+    balancing scheme is INTERNAL_SELF_MANAGED, and only TCP is valid.   -
+    Internal HTTP(S) Load Balancing: The load balancing scheme is
+    INTERNAL_MANAGED, and only TCP is valid.  - HTTP(S), SSL Proxy, and TCP
+    Proxy Load Balancing: The load balancing scheme is EXTERNAL and only TCP
+    is valid.  - Network Load Balancing: The load balancing scheme is
+    EXTERNAL, and one of TCP or UDP is valid.
 
     Values:
       AH: <no description>
@@ -29229,12 +29284,12 @@ class ForwardingRule(_messages.Message):
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""Specifies the forwarding rule type.    - EXTERNAL is used for:   -
     Classic Cloud VPN gateways  - Protocol forwarding to VMs from an external
-    IP address  - The following load balancers: HTTP(S), SSL Proxy, TCP Proxy,
-    and Network TCP/UDP     - INTERNAL is used for:   - Protocol forwarding to
-    VMs from an internal IP address  - Internal TCP/UDP load balancers    -
-    INTERNAL_MANAGED is used for:   - Internal HTTP(S) load balancers    -
-    INTERNAL_SELF_MANAGED is used for:   - Traffic Director      For more
-    information about forwarding rules, refer to Forwarding rule concepts.
+    IP address  - HTTP(S), SSL Proxy, TCP Proxy, and Network Load Balancing
+    - INTERNAL is used for:   - Protocol forwarding to VMs from an internal IP
+    address  - Internal TCP/UDP Load Balancing    - INTERNAL_MANAGED is used
+    for:   - Internal HTTP(S) Load Balancing    - INTERNAL_SELF_MANAGED is
+    used for:   - Traffic Director      For more information about forwarding
+    rules, refer to Forwarding rule concepts.
 
     Values:
       EXTERNAL: <no description>
@@ -31098,6 +31153,7 @@ class HealthStatus(_messages.Message):
 
   Enums:
     HealthStateValueValuesEnum: Health state of the instance.
+    WeightErrorValueValuesEnum:
 
   Messages:
     AnnotationsValue: Metadata defined as annotations for network endpoint.
@@ -31109,6 +31165,8 @@ class HealthStatus(_messages.Message):
     ipAddress: A forwarding rule IP address assigned to this instance.
     port: The named port of the instance group, not necessarily the port that
       is health-checked.
+    weight: A string attribute.
+    weightError: A WeightErrorValueValuesEnum attribute.
   """
 
   class HealthStateValueValuesEnum(_messages.Enum):
@@ -31120,6 +31178,20 @@ class HealthStatus(_messages.Message):
     """
     HEALTHY = 0
     UNHEALTHY = 1
+
+  class WeightErrorValueValuesEnum(_messages.Enum):
+    r"""WeightErrorValueValuesEnum enum type.
+
+    Values:
+      INVALID_WEIGHT: <no description>
+      MISSING_WEIGHT: <no description>
+      UNAVAILABLE_WEIGHT: <no description>
+      WEIGHT_NONE: <no description>
+    """
+    INVALID_WEIGHT = 0
+    MISSING_WEIGHT = 1
+    UNAVAILABLE_WEIGHT = 2
+    WEIGHT_NONE = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -31151,6 +31223,8 @@ class HealthStatus(_messages.Message):
   instance = _messages.StringField(3)
   ipAddress = _messages.StringField(4)
   port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  weight = _messages.StringField(6)
+  weightError = _messages.EnumField('WeightErrorValueValuesEnum', 7)
 
 
 class HealthStatusForNetworkEndpoint(_messages.Message):
@@ -32843,6 +32917,7 @@ class Instance(_messages.Message):
       These specify how interfaces are configured to interact with other
       network services, such as connecting to the internet. Multiple
       interfaces are supported per instance.
+    networkPerformanceConfig: A NetworkPerformanceConfig attribute.
     postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
     preservedStateSizeGb: Total amount of preserved state for SUSPENDED
       instances. Read-only in the api.
@@ -33001,30 +33076,31 @@ class Instance(_messages.Message):
   minCpuPlatform = _messages.StringField(24)
   name = _messages.StringField(25)
   networkInterfaces = _messages.MessageField('NetworkInterface', 26, repeated=True)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 27)
-  preservedStateSizeGb = _messages.IntegerField(28)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 29)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 30)
-  resourcePolicies = _messages.StringField(31, repeated=True)
-  satisfiesPzs = _messages.BooleanField(32)
-  scheduling = _messages.MessageField('Scheduling', 33)
-  secureLabels = _messages.StringField(34, repeated=True)
-  secureTags = _messages.StringField(35, repeated=True)
-  selfLink = _messages.StringField(36)
-  selfLinkWithId = _messages.StringField(37)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 38, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 39)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 40)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 41)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 42)
-  sourceMachineImage = _messages.StringField(43)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 44)
-  startRestricted = _messages.BooleanField(45)
-  status = _messages.EnumField('StatusValueValuesEnum', 46)
-  statusMessage = _messages.StringField(47)
-  tags = _messages.MessageField('Tags', 48)
-  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 49)
-  zone = _messages.StringField(50)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 27)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 28)
+  preservedStateSizeGb = _messages.IntegerField(29)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 30)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 31)
+  resourcePolicies = _messages.StringField(32, repeated=True)
+  satisfiesPzs = _messages.BooleanField(33)
+  scheduling = _messages.MessageField('Scheduling', 34)
+  secureLabels = _messages.StringField(35, repeated=True)
+  secureTags = _messages.StringField(36, repeated=True)
+  selfLink = _messages.StringField(37)
+  selfLinkWithId = _messages.StringField(38)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 39, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 40)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 41)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 42)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 43)
+  sourceMachineImage = _messages.StringField(44)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 45)
+  startRestricted = _messages.BooleanField(46)
+  status = _messages.EnumField('StatusValueValuesEnum', 47)
+  statusMessage = _messages.StringField(48)
+  tags = _messages.MessageField('Tags', 49)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 50)
+  zone = _messages.StringField(51)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -33591,12 +33667,6 @@ class InstanceGroupManager(_messages.Message):
       characters long, and comply with RFC1035.
     namedPorts: Named ports configured for the Instance Groups complementary
       to this Instance Group Manager.
-    pendingActions: [Deprecated] This field is deprecated and will be removed.
-      Prefer using the status field instead. Please contact cloud-updater-
-      feedback@google.com to leave feedback if your workload relies on this
-      field. [Output Only] The list of instance actions and the number of
-      instances in this managed instance group that are pending for each of
-      those actions.
     region: [Output Only] The URL of the region where the managed instance
       group resides (for regional resources).
     selfLink: [Output Only] The URL for this managed instance group. The
@@ -33655,18 +33725,17 @@ class InstanceGroupManager(_messages.Message):
   kind = _messages.StringField(12, default='compute#instanceGroupManager')
   name = _messages.StringField(13)
   namedPorts = _messages.MessageField('NamedPort', 14, repeated=True)
-  pendingActions = _messages.MessageField('InstanceGroupManagerPendingActionsSummary', 15)
-  region = _messages.StringField(16)
-  selfLink = _messages.StringField(17)
-  selfLinkWithId = _messages.StringField(18)
-  serviceAccount = _messages.StringField(19)
-  statefulPolicy = _messages.MessageField('StatefulPolicy', 20)
-  status = _messages.MessageField('InstanceGroupManagerStatus', 21)
-  targetPools = _messages.StringField(22, repeated=True)
-  targetSize = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 24)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 25, repeated=True)
-  zone = _messages.StringField(26)
+  region = _messages.StringField(15)
+  selfLink = _messages.StringField(16)
+  selfLinkWithId = _messages.StringField(17)
+  serviceAccount = _messages.StringField(18)
+  statefulPolicy = _messages.MessageField('StatefulPolicy', 19)
+  status = _messages.MessageField('InstanceGroupManagerStatus', 20)
+  targetPools = _messages.StringField(21, repeated=True)
+  targetSize = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 23)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 24, repeated=True)
+  zone = _messages.StringField(25)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -34034,38 +34103,6 @@ class InstanceGroupManagerList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
-
-
-class InstanceGroupManagerPendingActionsSummary(_messages.Message):
-  r"""A InstanceGroupManagerPendingActionsSummary object.
-
-  Fields:
-    creating: [Deprecated] This field is deprecated and will be removed.
-      Prefer using the status field instead. Please contact cloud-updater-
-      feedback@google.com to leave feedback if your workload relies on this
-      field. [Output Only] The number of instances in the managed instance
-      group that are pending to be created.
-    deleting: [Deprecated] This field is deprecated and will be removed.
-      Prefer using the status field instead. Please contact cloud-updater-
-      feedback@google.com to leave feedback if your workload relies on this
-      field. [Output Only] The number of instances in the managed instance
-      group that are pending to be deleted.
-    recreating: [Deprecated] This field is deprecated and will be removed.
-      Prefer using the status field instead. Please contact cloud-updater-
-      feedback@google.com to leave feedback if your workload relies on this
-      field. [Output Only] The number of instances in the managed instance
-      group that are pending to be recreated.
-    restarting: [Deprecated] This field is deprecated and will be removed.
-      Prefer using the status field instead. Please contact cloud-updater-
-      feedback@google.com to leave feedback if your workload relies on this
-      field. [Output Only] The number of instances in the managed instance
-      group that are pending to be restarted.
-  """
-
-  creating = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  deleting = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  recreating = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  restarting = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class InstanceGroupManagerStatus(_messages.Message):
@@ -35603,6 +35640,7 @@ class InstanceProperties(_messages.Message):
       information, read Specifying a Minimum CPU Platform.
     networkInterfaces: An array of network access configurations for this
       interface.
+    networkPerformanceConfig: A NetworkPerformanceConfig attribute.
     postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
     privateIpv6GoogleAccess: The private IPv6 google access type for VMs. If
       not specified, use  INHERIT_FROM_SUBNETWORK as default.
@@ -35686,15 +35724,16 @@ class InstanceProperties(_messages.Message):
   metadata = _messages.MessageField('Metadata', 10)
   minCpuPlatform = _messages.StringField(11)
   networkInterfaces = _messages.MessageField('NetworkInterface', 12, repeated=True)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 13)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 14)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 15)
-  resourcePolicies = _messages.StringField(16, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 17)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 18, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 19)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 20)
-  tags = _messages.MessageField('Tags', 21)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 13)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 14)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 15)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 16)
+  resourcePolicies = _messages.StringField(17, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 18)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 19, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 20)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 21)
+  tags = _messages.MessageField('Tags', 22)
 
 
 class InstanceReference(_messages.Message):
@@ -41655,6 +41694,44 @@ class NetworkPeering(_messages.Message):
   stateDetails = _messages.StringField(12)
 
 
+class NetworkPerformanceConfig(_messages.Message):
+  r"""A NetworkPerformanceConfig object.
+
+  Enums:
+    ExternalIpEgressBandwidthTierValueValuesEnum:
+    TotalEgressBandwidthTierValueValuesEnum:
+
+  Fields:
+    externalIpEgressBandwidthTier: A
+      ExternalIpEgressBandwidthTierValueValuesEnum attribute.
+    totalEgressBandwidthTier: A TotalEgressBandwidthTierValueValuesEnum
+      attribute.
+  """
+
+  class ExternalIpEgressBandwidthTierValueValuesEnum(_messages.Enum):
+    r"""ExternalIpEgressBandwidthTierValueValuesEnum enum type.
+
+    Values:
+      DEFAULT: <no description>
+      TIER_1: <no description>
+    """
+    DEFAULT = 0
+    TIER_1 = 1
+
+  class TotalEgressBandwidthTierValueValuesEnum(_messages.Enum):
+    r"""TotalEgressBandwidthTierValueValuesEnum enum type.
+
+    Values:
+      DEFAULT: <no description>
+      TIER_1: <no description>
+    """
+    DEFAULT = 0
+    TIER_1 = 1
+
+  externalIpEgressBandwidthTier = _messages.EnumField('ExternalIpEgressBandwidthTierValueValuesEnum', 1)
+  totalEgressBandwidthTier = _messages.EnumField('TotalEgressBandwidthTierValueValuesEnum', 2)
+
+
 class NetworkRoutingConfig(_messages.Message):
   r"""A routing configuration attached to a network resource. The message
   includes the list of routers associated with the network, and a flag
@@ -43837,6 +43914,8 @@ class Operation(_messages.Message):
       value is in RFC3339 text format.
     kind: [Output Only] Type of the resource. Always `compute#operation` for
       Operation resources.
+    metadata: [Output Only] Service-specific metadata attached to this
+      operation.
     name: [Output Only] Name of the operation.
     operationType: [Output Only] The type of operation, such as `insert`,
       `update`, or `delete`, and so on.
@@ -44020,20 +44099,21 @@ class Operation(_messages.Message):
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   insertTime = _messages.StringField(9)
   kind = _messages.StringField(10, default='compute#operation')
-  name = _messages.StringField(11)
-  operationType = _messages.StringField(12)
-  progress = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  region = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  selfLinkWithId = _messages.StringField(16)
-  startTime = _messages.StringField(17)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  statusMessage = _messages.StringField(19)
-  targetId = _messages.IntegerField(20, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(21)
-  user = _messages.StringField(22)
-  warnings = _messages.MessageField('WarningsValueListEntry', 23, repeated=True)
-  zone = _messages.StringField(24)
+  metadata = _messages.MessageField('Any', 11)
+  name = _messages.StringField(12)
+  operationType = _messages.StringField(13)
+  progress = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  region = _messages.StringField(15)
+  selfLink = _messages.StringField(16)
+  selfLinkWithId = _messages.StringField(17)
+  startTime = _messages.StringField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  statusMessage = _messages.StringField(20)
+  targetId = _messages.IntegerField(21, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(22)
+  user = _messages.StringField(23)
+  warnings = _messages.MessageField('WarningsValueListEntry', 24, repeated=True)
+  zone = _messages.StringField(25)
 
 
 class OperationAggregatedList(_messages.Message):
@@ -46114,6 +46194,7 @@ class PublicDelegatedPrefix(_messages.Message):
       generates this identifier.
     ipCidrRange: The IPv4 address range, in CIDR format, represented by this
       public delegated prefix.
+    isLiveMigration: If true, the prefix will be live migrated.
     kind: [Output Only] Type of the resource. Always
       compute#publicDelegatedPrefix for public delegated prefixes.
     name: Name of the resource. Provided by the client when the resource is
@@ -46141,24 +46222,27 @@ class PublicDelegatedPrefix(_messages.Message):
 
     Values:
       ANNOUNCED: <no description>
+      DELETING: <no description>
       INITIALIZING: <no description>
     """
     ANNOUNCED = 0
-    INITIALIZING = 1
+    DELETING = 1
+    INITIALIZING = 2
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   fingerprint = _messages.BytesField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   ipCidrRange = _messages.StringField(5)
-  kind = _messages.StringField(6, default='compute#publicDelegatedPrefix')
-  name = _messages.StringField(7)
-  parentPrefix = _messages.StringField(8)
-  publicDelegatedSubPrefixs = _messages.MessageField('PublicDelegatedPrefixPublicDelegatedSubPrefix', 9, repeated=True)
-  region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  selfLinkWithId = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  isLiveMigration = _messages.BooleanField(6)
+  kind = _messages.StringField(7, default='compute#publicDelegatedPrefix')
+  name = _messages.StringField(8)
+  parentPrefix = _messages.StringField(9)
+  publicDelegatedSubPrefixs = _messages.MessageField('PublicDelegatedPrefixPublicDelegatedSubPrefix', 10, repeated=True)
+  region = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  selfLinkWithId = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
 
 
 class PublicDelegatedPrefixAggregatedList(_messages.Message):
@@ -47691,9 +47775,14 @@ class RegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   Fields:
     instances: The URLs of one or more instances to delete. This can be a full
       URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+    skipInapplicableInstances: If false and the request contains references to
+      instances that cannot be deleted (that is, instances that are not in the
+      group or are already deleted), the request fails. Otherwise, such
+      instances are ignored.
   """
 
   instances = _messages.StringField(1, repeated=True)
+  skipInapplicableInstances = _messages.BooleanField(2)
 
 
 class RegionInstanceGroupManagersListErrorsResponse(_messages.Message):
@@ -48071,6 +48160,16 @@ class RegionInstanceGroupsSetNamedPortsRequest(_messages.Message):
 
   fingerprint = _messages.BytesField(1)
   namedPorts = _messages.MessageField('NamedPort', 2, repeated=True)
+
+
+class RegionInstantSnapshotsExportRequest(_messages.Message):
+  r"""A RegionInstantSnapshotsExportRequest object.
+
+  Fields:
+    exportParams: Parameters to export the changed blocks.
+  """
+
+  exportParams = _messages.MessageField('InstantSnapshotExportParams', 1)
 
 
 class RegionList(_messages.Message):
@@ -49745,7 +49844,7 @@ class Route(_messages.Message):
     description: An optional description of this resource. Provide this field
       when you create the resource.
     destRange: The destination range of outgoing packets that this route
-      applies to. Only IPv4 is supported.
+      applies to. Both IPv4 and IPv6 are supported.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of this resource. Always compute#routes for Route
@@ -51585,7 +51684,7 @@ class ScalingScheduleStatus(_messages.Message):
       active. Note: this is a timestamp when a schedule actually became
       active, not when it was planned to do so. The timestamp is in RFC3339
       text format.
-    nextStartTime: [Output Only] The next time the scaling schedule will
+    nextStartTime: [Output Only] The next time the scaling schedule is to
       become active. Note: this is a timestamp when a schedule is planned to
       run, but the actual time might be slightly different. The timestamp is
       in RFC3339 text format.
@@ -51798,11 +51897,11 @@ class SecurityPolicy(_messages.Message):
       name should be unique in the organization in which the security policy
       is created. This should only be used when SecurityPolicyType is
       FIREWALL. The name must be 1-63 characters long, and comply with
-      RFC1035. Specifically, the name must be 1-63 characters long and match
-      the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the
-      first character must be a lowercase letter, and all following characters
-      must be a dash, lowercase letter, or digit, except the last character,
-      which cannot be a dash.
+      https://www.ietf.org/rfc/rfc1035.txt. Specifically, the name must be
+      1-63 characters long and match the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
+      lowercase letter, and all following characters must be a dash, lowercase
+      letter, or digit, except the last character, which cannot be a dash.
     fingerprint: Specifies a fingerprint for this resource, which is
       essentially a hash of the metadata's contents and used for optimistic
       locking. The fingerprint is initially generated by Compute Engine and
@@ -54433,11 +54532,13 @@ class Subnetwork(_messages.Message):
       will be used.  This field can be both set at resource creation time and
       updated using patch.
     StateValueValuesEnum: [Output Only] The state of the subnetwork, which can
-      be one of READY or DRAINING. A subnetwork that is READY is ready to be
-      used. The state of DRAINING is only applicable to subnetworks that have
-      the purpose set to INTERNAL_HTTPS_LOAD_BALANCER and indicates that
-      connections to the load balancer are being drained. A subnetwork that is
-      draining cannot be used or modified until it reaches a status of READY.
+      be one of the following values: READY: Subnetwork is created and ready
+      to use DRAINING: only applicable to subnetworks that have the purpose
+      set to INTERNAL_HTTPS_LOAD_BALANCER and indicates that connections to
+      the load balancer are being drained. A subnetwork that is draining
+      cannot be used or modified until it reaches a status of READY CREATING:
+      Subnetwork is provisioning DELETING: Subnetwork is being deleted
+      UPDATING: Subnetwork is being updated
 
   Fields:
     aggregationInterval: Can only be specified if VPC flow logging for this
@@ -54562,12 +54663,14 @@ class Subnetwork(_messages.Message):
       feature is enabled or not. If not specified IPV4_ONLY will be used.
       This field can be both set at resource creation time and updated using
       patch.
-    state: [Output Only] The state of the subnetwork, which can be one of
-      READY or DRAINING. A subnetwork that is READY is ready to be used. The
-      state of DRAINING is only applicable to subnetworks that have the
-      purpose set to INTERNAL_HTTPS_LOAD_BALANCER and indicates that
-      connections to the load balancer are being drained. A subnetwork that is
-      draining cannot be used or modified until it reaches a status of READY.
+    state: [Output Only] The state of the subnetwork, which can be one of the
+      following values: READY: Subnetwork is created and ready to use
+      DRAINING: only applicable to subnetworks that have the purpose set to
+      INTERNAL_HTTPS_LOAD_BALANCER and indicates that connections to the load
+      balancer are being drained. A subnetwork that is draining cannot be used
+      or modified until it reaches a status of READY CREATING: Subnetwork is
+      provisioning DELETING: Subnetwork is being deleted UPDATING: Subnetwork
+      is being updated
   """
 
   class AggregationIntervalValueValuesEnum(_messages.Enum):
@@ -54691,12 +54794,14 @@ class Subnetwork(_messages.Message):
     UNSPECIFIED_STACK_TYPE = 2
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The state of the subnetwork, which can be one of READY
-    or DRAINING. A subnetwork that is READY is ready to be used. The state of
-    DRAINING is only applicable to subnetworks that have the purpose set to
+    r"""[Output Only] The state of the subnetwork, which can be one of the
+    following values: READY: Subnetwork is created and ready to use DRAINING:
+    only applicable to subnetworks that have the purpose set to
     INTERNAL_HTTPS_LOAD_BALANCER and indicates that connections to the load
     balancer are being drained. A subnetwork that is draining cannot be used
-    or modified until it reaches a status of READY.
+    or modified until it reaches a status of READY CREATING: Subnetwork is
+    provisioning DELETING: Subnetwork is being deleted UPDATING: Subnetwork is
+    being updated
 
     Values:
       DRAINING: <no description>
@@ -58746,17 +58851,31 @@ class TestFailure(_messages.Message):
   r"""A TestFailure object.
 
   Fields:
+    actualOutputUrl: The actual output URL evaluated by load balancer
+      containing the scheme, host, path and query parameters.
+    actualRedirectResponseCode: Actual HTTP status code for rule with
+      `urlRedirect` calculated by load balancer
     actualService: BackendService or BackendBucket returned by load balancer.
+    expectedOutputUrl: The expected output URL evaluated by load balancer
+      containing the scheme, host, path and query parameters.
+    expectedRedirectResponseCode: Expected HTTP status code for rule with
+      `urlRedirect` calculated by load balancer
     expectedService: Expected BackendService or BackendBucket resource the
       given URL should be mapped to.
+    headers: HTTP headers of the request.
     host: Host portion of the URL.
     path: Path portion including query parameters in the URL.
   """
 
-  actualService = _messages.StringField(1)
-  expectedService = _messages.StringField(2)
-  host = _messages.StringField(3)
-  path = _messages.StringField(4)
+  actualOutputUrl = _messages.StringField(1)
+  actualRedirectResponseCode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  actualService = _messages.StringField(3)
+  expectedOutputUrl = _messages.StringField(4)
+  expectedRedirectResponseCode = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  expectedService = _messages.StringField(6)
+  headers = _messages.MessageField('UrlMapTestHeader', 7, repeated=True)
+  host = _messages.StringField(8)
+  path = _messages.StringField(9)
 
 
 class TestPermissionsRequest(_messages.Message):
@@ -59183,9 +59302,29 @@ class UrlMapTest(_messages.Message):
     backendServiceWeight: The weight to use for the supplied host and path
       when using advanced routing rules that involve traffic splitting.
     description: Description of this test case.
+    expectedOutputUrl: The expected output URL evaluated by load balancer
+      containing the scheme, host, path and query parameters. For rules that
+      forward requests to backends, the test passes only when
+      expectedOutputUrl matches the request forwarded by load balancer to
+      backends. For rules with urlRewrite, the test verifies that the
+      forwarded request matches hostRewrite and pathPrefixRewrite in the
+      urlRewrite action. When service is specified, expectedOutputUrl`s scheme
+      is ignored. For rules with urlRedirect, the test passes only if
+      expectedOutputUrl matches the URL in the load balancer's redirect
+      response. If urlRedirect specifies https_redirect, the test passes only
+      if the scheme in expectedOutputUrl is also set to https. If urlRedirect
+      specifies strip_query, the test passes only if expectedOutputUrl does
+      not contain any query parameters. expectedOutputUrl is optional when
+      service is specified.
+    expectedRedirectResponseCode: For rules with urlRedirect, the test passes
+      only if expectedRedirectResponseCode matches the HTTP status code in
+      load balancer's redirect response. expectedRedirectResponseCode cannot
+      be set when service is set.
     expectedUrlRedirect: The expected URL that should be redirected to for the
       host and path being tested. [Deprecated] This field is deprecated. Use
       expected_output_url instead.
+    headers: HTTP headers for this request. If headers contains a host header,
+      then host must also match the header value.
     host: Host portion of the URL. If headers contains a host header, then
       host must also match the header value.
     path: Path portion of the URL.
@@ -59196,10 +59335,25 @@ class UrlMapTest(_messages.Message):
 
   backendServiceWeight = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
   description = _messages.StringField(2)
-  expectedUrlRedirect = _messages.StringField(3)
-  host = _messages.StringField(4)
-  path = _messages.StringField(5)
-  service = _messages.StringField(6)
+  expectedOutputUrl = _messages.StringField(3)
+  expectedRedirectResponseCode = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  expectedUrlRedirect = _messages.StringField(5)
+  headers = _messages.MessageField('UrlMapTestHeader', 6, repeated=True)
+  host = _messages.StringField(7)
+  path = _messages.StringField(8)
+  service = _messages.StringField(9)
+
+
+class UrlMapTestHeader(_messages.Message):
+  r"""HTTP headers used in UrlMapTests.
+
+  Fields:
+    name: Header name.
+    value: Header value.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class UrlMapValidationResult(_messages.Message):
@@ -60396,9 +60550,9 @@ class VpnGatewayVpnGatewayInterface(_messages.Message):
     id: The numeric ID of this VPN gateway interface.
     interconnectAttachment: URL of the interconnect attachment resource. When
       the value of this field is present, the VPN Gateway will be used for
-      IPsec over Interconnect; all Egress or Ingress traffic for this VPN
-      Gateway interface will go through the specified interconnect attachment
-      resource.
+      IPsec-encrypted Cloud Interconnect; all Egress or Ingress traffic for
+      this VPN Gateway interface will go through the specified interconnect
+      attachment resource.
     ipAddress: [Output Only] The external IP address for this VPN gateway
       interface.
   """
@@ -61437,6 +61591,16 @@ class Zone(_messages.Message):
   selfLink = _messages.StringField(9)
   status = _messages.EnumField('StatusValueValuesEnum', 10)
   supportsPzs = _messages.BooleanField(11)
+
+
+class ZoneInstantSnapshotsExportRequest(_messages.Message):
+  r"""A ZoneInstantSnapshotsExportRequest object.
+
+  Fields:
+    exportParams: Parameters to export the changed blocks.
+  """
+
+  exportParams = _messages.MessageField('InstantSnapshotExportParams', 1)
 
 
 class ZoneList(_messages.Message):

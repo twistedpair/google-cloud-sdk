@@ -416,7 +416,9 @@ class CheckDataAccessRequest(_messages.Message):
   Consent store is consented for a given use.
 
   Enums:
-    ResponseViewValueValuesEnum: The view for CheckDataAccessResponse.
+    ResponseViewValueValuesEnum: The view for CheckDataAccessResponse. If
+      unspecified, defaults to `BASIC` and returns `consented` as `TRUE` or
+      `FALSE`.
 
   Messages:
     RequestAttributesValue: The values of request attributes associated with
@@ -426,16 +428,20 @@ class CheckDataAccessRequest(_messages.Message):
     consentList: The Consents to evaluate the access request against. They
       must have the same `user_id` as the data to check access for, exist in
       the current `consent_store`, and can have a `state` of either `ACTIVE`
-      or `DRAFT`. A maximum of 100 consents can be provided here.
+      or `DRAFT`. A maximum of 100 consents can be provided here. If
+      unspecified, all `ACTIVE` unexpired consents in the current
+      `consent_store` will be evaluated.
     dataId: The unique identifier of the data to check access for. It must
       exist in the given `consent_store`.
     requestAttributes: The values of request attributes associated with this
       access request.
-    responseView: The view for CheckDataAccessResponse.
+    responseView: The view for CheckDataAccessResponse. If unspecified,
+      defaults to `BASIC` and returns `consented` as `TRUE` or `FALSE`.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
-    r"""The view for CheckDataAccessResponse.
+    r"""The view for CheckDataAccessResponse. If unspecified, defaults to
+    `BASIC` and returns `consented` as `TRUE` or `FALSE`.
 
     Values:
       RESPONSE_VIEW_UNSPECIFIED: No response view specified. The API will
@@ -788,6 +794,21 @@ class DateShiftConfig(_messages.Message):
   cryptoKey = _messages.BytesField(1)
 
 
+class DeidentifiedStoreDestination(_messages.Message):
+  r"""Contains configuration for streaming de-identified FHIR export.
+
+  Fields:
+    config: The configuration to use when de-identifying resources that are
+      added to this store.
+    store: The full resource name of a Cloud Healthcare FHIR store, for
+      example, `projects/{project_id}/locations/{location_id}/datasets/{datase
+      t_id}/fhirStores/{fhir_store_id}`.
+  """
+
+  config = _messages.MessageField('DeidentifyConfig', 1)
+  store = _messages.StringField(2)
+
+
 class DeidentifyConfig(_messages.Message):
   r"""Configures de-id options specific to different types of content. Each
   submessage customizes the handling of an https://tools.ietf.org/html/rfc6838
@@ -826,6 +847,45 @@ class DeidentifyDatasetRequest(_messages.Message):
 
   config = _messages.MessageField('DeidentifyConfig', 1)
   destinationDataset = _messages.StringField(2)
+
+
+class DeidentifyDicomStoreRequest(_messages.Message):
+  r"""Creates a new DICOM store with sensitive information de-identified.
+
+  Fields:
+    config: Deidentify configuration.
+    destinationStore: The name of the DICOM store to create and write the
+      redacted data to. For example, `projects/{project_id}/locations/{locatio
+      n_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}`. * The
+      destination dataset must exist. * The source dataset and destination
+      dataset must both reside in the same project and location. De-
+      identifying data across multiple projects or locations is not supported.
+      * The destination DICOM store must not exist. * The caller must have the
+      necessary permissions to create the destination DICOM store.
+  """
+
+  config = _messages.MessageField('DeidentifyConfig', 1)
+  destinationStore = _messages.StringField(2)
+
+
+class DeidentifyFhirStoreRequest(_messages.Message):
+  r"""Creates a new FHIR store with sensitive information de-identified.
+
+  Fields:
+    config: Deidentify configuration.
+    destinationStore: The name of the FHIR store to create and write the
+      redacted data to. For example, `projects/{project_id}/locations/{locatio
+      n_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`. * The
+      destination dataset must exist. * The source dataset and destination
+      dataset must both reside in the same project and location. De-
+      identifying data across multiple projects or locations is not supported.
+      * The destination FHIR store must exist. * The caller must have the
+      healthcare.fhirResources.update permission to write to the destination
+      FHIR store.
+  """
+
+  config = _messages.MessageField('DeidentifyConfig', 1)
+  destinationStore = _messages.StringField(2)
 
 
 class DeidentifySummary(_messages.Message):
@@ -1058,7 +1118,9 @@ class EvaluateUserConsentsRequest(_messages.Message):
   r"""Evaluate an end user's Consents for all matching User data mappings.
 
   Enums:
-    ResponseViewValueValuesEnum: The view for EvaluateUserConsentsResponse.
+    ResponseViewValueValuesEnum: The view for EvaluateUserConsentsResponse. If
+      unspecified, defaults to `BASIC` and returns `consented` as `TRUE` or
+      `FALSE`.
 
   Messages:
     RequestAttributesValue: The values of request attributes associated with
@@ -1068,13 +1130,14 @@ class EvaluateUserConsentsRequest(_messages.Message):
       all data types are queried.
 
   Fields:
-    consentList: The resource names of the consents to evaluate against.
-      Consents must be in the current `consent_store` and belong to the
-      current `user_id`. Consents can be either active or draft. If this field
-      is empty, the default behavior is to use all active consents that belong
-      to `user_id`. A maximum of 100 consents can be provided here.
+    consentList: The Consents to evaluate the access request against. They
+      must have the same `user_id` as the data to check access for, exist in
+      the current `consent_store`, and can have a `state` of either `ACTIVE`
+      or `DRAFT`. A maximum of 100 consents can be provided here. If
+      unspecified, all `ACTIVE` unexpired consents in the current
+      `consent_store` will be evaluated.
     pageSize: Limit on the number of user data mappings to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: Token to retrieve the next page of results to get the first
       page.
     requestAttributes: The values of request attributes associated with this
@@ -1082,12 +1145,14 @@ class EvaluateUserConsentsRequest(_messages.Message):
     resourceAttributes: The values of resources attributes associated with the
       type of data being requested. If no values are specified, then all data
       types are queried.
-    responseView: The view for EvaluateUserConsentsResponse.
+    responseView: The view for EvaluateUserConsentsResponse. If unspecified,
+      defaults to `BASIC` and returns `consented` as `TRUE` or `FALSE`.
     userId: Required. User ID to evaluate consents for.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
-    r"""The view for EvaluateUserConsentsResponse.
+    r"""The view for EvaluateUserConsentsResponse. If unspecified, defaults to
+    `BASIC` and returns `consented` as `TRUE` or `FALSE`.
 
     Values:
       RESPONSE_VIEW_UNSPECIFIED: No response view specified. The API will
@@ -1676,6 +1741,14 @@ class GoogleCloudHealthcareV1alpha2ConsentPolicy(_messages.Message):
   resourceAttributes = _messages.MessageField('Attribute', 2, repeated=True)
 
 
+class GoogleCloudHealthcareV1alpha2DeidentifyDeidentifyDicomStoreSummary(_messages.Message):
+  r"""Contains a summary of the DeidentifyDicomStore operation."""
+
+
+class GoogleCloudHealthcareV1alpha2DeidentifyDeidentifyFhirStoreSummary(_messages.Message):
+  r"""Contains a summary of the DeidentifyFhirStore operation."""
+
+
 class GoogleCloudHealthcareV1alpha2DicomBigQueryDestination(_messages.Message):
   r"""The BigQuery table where the server writes output.
 
@@ -2085,7 +2158,7 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresListRequest(_messages.M
       s://cloud.google.com/appengine/docs/standard/python/search/query_strings
       Only filtering on labels is supported. For example, `labels.key=value`.
     pageSize: Limit on the number of Annotation stores to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: The name of the dataset.
@@ -2201,7 +2274,8 @@ class HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsListRe
       Syntax: https://cloud.google.com/appengine/docs/standard/python/search/q
       uery_strings. The only field available for filtering is `category`.
     pageSize: Limit on the number of attribute definitions to return in a
-      single response. If zero the default page size of 100 is used.
+      single response. If not specified, 100 is used. May not be larger than
+      1000.
     pageToken: Token to retrieve the next page of results or empty to get the
       first page.
     parent: Required. Name of the Consent store to retrieve attribute
@@ -2303,7 +2377,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsListReques
       uery_strings The fields available for filtering are: - user_id -
       consent_content_version
     pageSize: Limit on the number of consent artifacts to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Required. Name of the Consent store to retrieve consent artifacts
@@ -2371,7 +2445,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRequest(_messa
       metadata. For example, `Metadata("key")="value"` or
       `HasMetadata("key")`.
     pageSize: Limit on the number of consents to return in a single response.
-      If zero the default page size of 100 is used.
+      If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Required. Name of the Consent store to retrieve consents from.
@@ -2502,7 +2576,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresListRequest(_messages.Mess
       ings. Only filtering on labels is supported. For example,
       `labels.key=value`.
     pageSize: Limit on the number of Consent stores to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: Token to retrieve the next page of results or empty to get the
       first page.
     parent: Required. Name of the dataset.
@@ -2644,7 +2718,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsListReques
       search/query_strings The fields available for filtering are: - data_id -
       user_id - archived - archive_time
     pageSize: Limit on the number of user data mappings to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: Token to retrieve the next page of results or empty to get the
       first page.
     parent: Required. Name of the Consent store to retrieve user data mappings
@@ -2790,6 +2864,22 @@ class HealthcareProjectsLocationsDatasetsDicomStoresCreateRequest(_messages.Mess
   parent = _messages.StringField(3, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsDicomStoresDeidentifyRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDicomStoresDeidentifyRequest
+  object.
+
+  Fields:
+    deidentifyDicomStoreRequest: A DeidentifyDicomStoreRequest resource to be
+      passed as the request body.
+    sourceStore: Source DICOM store resource name. For example, `projects/{pro
+      ject_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores/{dico
+      m_store_id}`.
+  """
+
+  deidentifyDicomStoreRequest = _messages.MessageField('DeidentifyDicomStoreRequest', 1)
+  sourceStore = _messages.StringField(2, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsDicomStoresDeleteRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsDicomStoresDeleteRequest object.
 
@@ -2901,7 +2991,7 @@ class HealthcareProjectsLocationsDatasetsDicomStoresListRequest(_messages.Messag
       s://cloud.google.com/appengine/docs/standard/python/search/query_strings
       Only filtering on labels is supported, for example `labels.key=value`.
     pageSize: Limit on the number of DICOM stores to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Name of the dataset.
@@ -2977,6 +3067,21 @@ class HealthcareProjectsLocationsDatasetsFhirStoresCreateRequest(_messages.Messa
   fhirStore = _messages.MessageField('FhirStore', 1)
   fhirStoreId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresDeidentifyRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresDeidentifyRequest object.
+
+  Fields:
+    deidentifyFhirStoreRequest: A DeidentifyFhirStoreRequest resource to be
+      passed as the request body.
+    sourceStore: Source FHIR store resource name. For example, `projects/{proj
+      ect_id}/locations/{location_id}/datasets/{dataset_id}/fhirStores/{fhir_s
+      tore_id}`.
+  """
+
+  deidentifyFhirStoreRequest = _messages.MessageField('DeidentifyFhirStoreRequest', 1)
+  sourceStore = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresDeleteRequest(_messages.Message):
@@ -3059,7 +3164,7 @@ class HealthcareProjectsLocationsDatasetsFhirStoresListRequest(_messages.Message
       s://cloud.google.com/appengine/docs/standard/python/search/query_strings
       Only filtering on labels is supported, for example `labels.key=value`.
     pageSize: Limit on the number of FHIR stores to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Name of the dataset.
@@ -3248,7 +3353,7 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest(_messages.Messag
       s://cloud.google.com/appengine/docs/standard/python/search/query_strings
       Only filtering on labels is supported. For example, `labels.key=value`.
     pageSize: Limit on the number of HL7v2 stores to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Name of the dataset.
@@ -3330,8 +3435,8 @@ class HealthcareProjectsLocationsDatasetsListRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsListRequest object.
 
   Fields:
-    pageSize: The maximum number of items to return. Capped to 100 if not
-      specified. May not be larger than 1000.
+    pageSize: The maximum number of items to return. If not specified, 100 is
+      used. May not be larger than 1000.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
     parent: The name of the project whose datasets should be listed. For
@@ -3714,19 +3819,19 @@ class HttpBody(_messages.Message):
 
 
 class Image(_messages.Message):
-  r"""An image.
+  r"""Raw bytes representing consent artifact content.
 
   Fields:
-    gcsUri: Input only. Points to a Cloud Storage URI containing the image.
-      The URI must be in the following format: `gs://{bucket_id}/{object_id}`.
-      The Cloud Healthcare API service account must have the
-      `roles/storage.objectViewer` Cloud IAM role for this Cloud Storage
-      location. The image at this URI is copied to a Cloud Storage location
-      managed by the Cloud Healthcare API. Responses to image fetching
-      requests return the image in raw_bytes.
-    rawBytes: Image content represented as a stream of bytes. This field is
-      populated when returned in GetConsentArtifact response, but not included
-      in CreateConsentArtifact and ListConsentArtifact response.
+    gcsUri: Input only. Points to a Cloud Storage URI containing the consent
+      artifact content. The URI must be in the following format:
+      `gs://{bucket_id}/{object_id}`. The Cloud Healthcare API service account
+      must have the `roles/storage.objectViewer` Cloud IAM role for this Cloud
+      Storage location. The consent artifact content at this URI is copied to
+      a Cloud Storage location managed by the Cloud Healthcare API. Responses
+      to fetching requests return the consent artifact content in raw_bytes.
+    rawBytes: Consent artifact content represented as a stream of bytes. This
+      field is populated when returned in GetConsentArtifact response, but not
+      included in CreateConsentArtifact and ListConsentArtifact response.
   """
 
   gcsUri = _messages.StringField(1)
@@ -4935,6 +5040,25 @@ class StreamConfig(_messages.Message):
       resource mutation cannot be streamed to BigQuery, errors will be logged
       to Cloud Logging (see [Viewing error logs in Cloud
       Logging](/healthcare/docs/how-tos/logging)).
+    deidentifiedStoreDestination: The destination FHIR store for de-identified
+      resources. After this field is added, all subsequent
+      creates/updates/patches to the source store will be de-identified using
+      the provided configuration and applied to the destination store.
+      Importing resources to the source store will not trigger the streaming.
+      If the source store already contains resources when this option is
+      enabled, those resources will not be copied to the destination store
+      unless they are subsequently updated. This may result in invalid
+      references in the destination store. To add this configuration, you must
+      have healthcare.fhirStores.deidentify permission on this store. Before
+      adding this config, you must grant the healthcare.fhirResources.update
+      permission on the destination store to your project's **Cloud Healthcare
+      Service Agent** [service
+      account](https://cloud.google.com/iam/docs/service-accounts). The
+      destination store must set true on enable_update_create. The destination
+      store must have disable_referential_integrity false. If a resource
+      cannot be de-identified, errors will be logged to Cloud Logging (see
+      [Viewing error logs in Cloud Logging](/healthcare/docs/how-tos/cloud-
+      logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an
@@ -4943,7 +5067,8 @@ class StreamConfig(_messages.Message):
   """
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2FhirBigQueryDestination', 1)
-  resourceTypes = _messages.StringField(2, repeated=True)
+  deidentifiedStoreDestination = _messages.MessageField('DeidentifiedStoreDestination', 2)
+  resourceTypes = _messages.StringField(3, repeated=True)
 
 
 class StructuredStorageInfo(_messages.Message):

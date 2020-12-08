@@ -41,9 +41,6 @@ INTERNAL_GROUPS = (
 class KubernetesObject(mapobject.MapObject):
   """Common base class for wrapping K8s JSON objects."""
 
-  def MakeSerializable(self):
-    return self._props
-
   def Kind(self):
     return self._props['kind']
 

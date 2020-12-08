@@ -85,14 +85,12 @@ def AddCreateWorkloadFlags(parser):
             'example, billingAccounts/0000AA-AAA00A-A0A0A0'))
   parser.add_argument(
       '--next-rotation-time',
-      required=True,
-      help=('The next rotation time of the new Assured Workloads environment, '
-            'for example, 2020-12-30T10:15:30.00Z'))
+      help=('The next rotation time of the KMS settings of new Assured '
+            'Workloads environment, for example, 2020-12-30T10:15:30.00Z'))
   parser.add_argument(
       '--rotation-period',
-      required=True,
-      help=('The billing account of the new Assured Workloads environment, '
-            'for example, 172800s'))
+      help=('The rotation period of the KMS settings of the new Assured '
+            'Workloads environment, for example, 172800s'))
   parser.add_argument(
       '--labels',
       type=arg_parsers.ArgDict(),

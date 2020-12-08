@@ -18,7 +18,6 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -62,10 +61,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class DatacatalogEntriesLookupRequest(_messages.Message):
@@ -84,7 +82,7 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
       `bigquery.table.project_id.dataset_id.table_id` *
       `bigquery.dataset.project_id.dataset_id` *
       `datacatalog.entry.project_id.location_id.entry_group_id.entry_id`
-      `*_id`s shoud satisfy the standard SQL rules for identifiers.
+      `*_id`s should satisfy the standard SQL rules for identifiers.
       https://cloud.google.com/bigquery/docs/reference/standard-sql/lexical.
   """
 
@@ -1096,6 +1094,17 @@ class GoogleCloudDatacatalogV1BigQueryTableSpec(_messages.Message):
   viewSpec = _messages.MessageField('GoogleCloudDatacatalogV1ViewSpec', 3)
 
 
+class GoogleCloudDatacatalogV1ClusterSpec(_messages.Message):
+  r"""Additional specification of a cluster.
+
+  Fields:
+    kafkaCluster: Fields specific to a Kafka cluster. Present only on entries
+      representing Kafka clusters.
+  """
+
+  kafkaCluster = _messages.MessageField('GoogleCloudDatacatalogV1KafkaClusterSpec', 1)
+
+
 class GoogleCloudDatacatalogV1ColumnSchema(_messages.Message):
   r"""Representation of a column within a schema. Columns could be nested
   inside other columns.
@@ -1131,6 +1140,17 @@ class GoogleCloudDatacatalogV1CrossRegionalSource(_messages.Message):
   taxonomy = _messages.StringField(1)
 
 
+class GoogleCloudDatacatalogV1DataStreamSpec(_messages.Message):
+  r"""Additional specification of a data stream.
+
+  Fields:
+    kafkaTopic: Fields specific to a Kafka topic. Present only on entries
+      representing Kafka topics.
+  """
+
+  kafkaTopic = _messages.MessageField('GoogleCloudDatacatalogV1KafkaTopicSpec', 1)
+
+
 class GoogleCloudDatacatalogV1Entry(_messages.Message):
   r"""Entry Metadata. A Data Catalog Entry resource represents another
   resource in Google Cloud Platform (such as a BigQuery dataset or a Pub/Sub
@@ -1154,6 +1174,10 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       tables#partitioning_versus_sharding.
     bigqueryTableSpec: Specification that applies to a BigQuery table. This is
       only valid on entries of type `TABLE`.
+    clusterSpec: Additional specification of a cluster. Present on entries
+      representing clusters.
+    dataStreamSpec: Additional specification of a data stream. Present on
+      entries representing non-pubsub data streams.
     description: Entry description, which can consist of several sentences or
       paragraphs that describe entry contents. Default value is an empty
       string.
@@ -1208,12 +1232,10 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
-      DPMS: Dataproc Metastore - Managed Hive Metastore.
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
     CLOUD_PUBSUB = 2
-    DPMS = 3
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the entry. Only used for Entries with types in the
@@ -1229,26 +1251,30 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
         Pub/Sub topic.
       FILESET: An entry type which is a set of files or objects. Example:
         Cloud Storage fileset.
+      CLUSTER: A group of servers that work together. Example: Kafka cluster.
     """
     ENTRY_TYPE_UNSPECIFIED = 0
     TABLE = 1
     MODEL = 2
     DATA_STREAM = 3
     FILESET = 4
+    CLUSTER = 5
 
   bigqueryDateShardedSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryDateShardedSpec', 1)
   bigqueryTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryTableSpec', 2)
-  description = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 5)
-  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 6)
-  linkedResource = _messages.StringField(7)
-  name = _messages.StringField(8)
-  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 9)
-  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 10)
-  type = _messages.EnumField('TypeValueValuesEnum', 11)
-  userSpecifiedSystem = _messages.StringField(12)
-  userSpecifiedType = _messages.StringField(13)
+  clusterSpec = _messages.MessageField('GoogleCloudDatacatalogV1ClusterSpec', 3)
+  dataStreamSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataStreamSpec', 4)
+  description = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 7)
+  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 8)
+  linkedResource = _messages.StringField(9)
+  name = _messages.StringField(10)
+  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 11)
+  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 12)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  userSpecifiedSystem = _messages.StringField(14)
+  userSpecifiedType = _messages.StringField(15)
 
 
 class GoogleCloudDatacatalogV1EntryGroup(_messages.Message):
@@ -1417,6 +1443,48 @@ class GoogleCloudDatacatalogV1InlineSource(_messages.Message):
   taxonomies = _messages.MessageField('GoogleCloudDatacatalogV1SerializedTaxonomy', 1, repeated=True)
 
 
+class GoogleCloudDatacatalogV1KafkaClusterSpec(_messages.Message):
+  r"""Entry spec describing a Kafka cluster.
+
+  Fields:
+    bootstrapServers: Required. A comma-separated list of host and port pairs
+      that are the addresses of the Kafka brokers in a "bootstrap" Kafka
+      cluster that a Kafka client connects to initially to bootstrap itself.
+      Format is the same that is used for bootstrap.servers configuration
+      property for Kafka clients. Example:
+      host1:port1,host2:port2,host3:port3. See
+      https://kafka.apache.org/documentation/#bootstrap.servers
+    propertiesGcsUri: URI to Google Cloud Storage properties file with
+      additional properties needed to connect to the cluster represented by
+      this Entry. Properties stored in the file are passed to Kafka Consumer
+      by query engines wishing to connect to the cluster. The full range of
+      properties supported by query engines is dependant on the engine. The
+      properties file should be a valid Kafka consumer config file, see
+      https://kafka.apache.org/documentation/#consumerconfigs. For SSL
+      authorization, if supported by the query engine, keystore and truststore
+      paths will be interpreted relative to the properties file. Example:
+      gs://my_bucket/kafka/consumer.properties
+  """
+
+  bootstrapServers = _messages.StringField(1)
+  propertiesGcsUri = _messages.StringField(2)
+
+
+class GoogleCloudDatacatalogV1KafkaTopicSpec(_messages.Message):
+  r"""Entry spec describing a Kafka topic.
+
+  Fields:
+    clusterEntry: Required. Name of the entry representing Kafka cluster this
+      topic is a part of. Example:
+      'projects/my_project/locations/us/entryGroups/kafka/entries/my_cluster'.
+    topic: Required. Name of the Kafka topic this Entry represents. Example:
+      'my_topic'.
+  """
+
+  clusterEntry = _messages.StringField(1)
+  topic = _messages.StringField(2)
+
+
 class GoogleCloudDatacatalogV1ListEntriesResponse(_messages.Message):
   r"""Response message for ListEntries.
 
@@ -1480,6 +1548,63 @@ class GoogleCloudDatacatalogV1ListTaxonomiesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   taxonomies = _messages.MessageField('GoogleCloudDatacatalogV1Taxonomy', 2, repeated=True)
+
+
+class GoogleCloudDatacatalogV1PhysicalSchema(_messages.Message):
+  r"""Native schema used by a resource represented as an entry. Used by query
+  engines for deserializing and parsing source data.
+
+  Fields:
+    avro: Schema in Avro JSON format.
+    orc: Marks an ORC-encoded data source.
+    parquet: Marks a Parquet-encoded data source.
+    protobuf: Schema in Protobuf format.
+    thrift: Schema in Thrift format.
+  """
+
+  avro = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema', 1)
+  orc = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema', 2)
+  parquet = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema', 3)
+  protobuf = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema', 4)
+  thrift = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema', 5)
+
+
+class GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema(_messages.Message):
+  r"""Schema in Avro JSON format.
+
+  Fields:
+    text: Required. JSON source of the Avro schema.
+  """
+
+  text = _messages.StringField(1)
+
+
+class GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema(_messages.Message):
+  r"""Marks an ORC-encoded data source."""
+
+
+class GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema(_messages.Message):
+  r"""Marks a Parquet-encoded data source."""
+
+
+class GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema(_messages.Message):
+  r"""Schema in Protobuf format.
+
+  Fields:
+    text: Required. proto source of the schema.
+  """
+
+  text = _messages.StringField(1)
+
+
+class GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema(_messages.Message):
+  r"""Schema in Thrift format.
+
+  Fields:
+    text: Required. Thrift IDL source of the schema.
+  """
+
+  text = _messages.StringField(1)
 
 
 class GoogleCloudDatacatalogV1PolicyTag(_messages.Message):
@@ -1546,9 +1671,12 @@ class GoogleCloudDatacatalogV1Schema(_messages.Message):
   Fields:
     columns: The unified GoogleSQL-like schema of columns. A maximum of 10,000
       columns and sub-columns can be specified.
+    physicalSchema: Physical Schema is the native schema used to encode the
+      data represented by this entry.
   """
 
   columns = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchema', 1, repeated=True)
+  physicalSchema = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchema', 2)
 
 
 class GoogleCloudDatacatalogV1SearchCatalogRequest(_messages.Message):
@@ -1663,6 +1791,7 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
       https://cloud.google.com/apis/design/resource_names#full_resource_name.
       Example: * `//bigquery.googleapis.com/projects/projectId/datasets/datase
       tId/tables/tableId`
+    modifyTime: Last-modified timestamp of the entry from the managing system.
     relativeResourceName: The relative resource name of the resource in URL
       format. Examples: * `projects/{project_id}/locations/{location_id}/entry
       Groups/{entry_group_id}/entries/{entry_id}` *
@@ -1685,12 +1814,10 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
       INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
-      DPMS: Dataproc Metastore - Managed Hive Metastore.
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
     CLOUD_PUBSUB = 2
-    DPMS = 3
 
   class SearchResultTypeValueValuesEnum(_messages.Enum):
     r"""Type of the search result. This field can be used to determine which
@@ -1709,10 +1836,11 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
 
   integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 1)
   linkedResource = _messages.StringField(2)
-  relativeResourceName = _messages.StringField(3)
-  searchResultSubtype = _messages.StringField(4)
-  searchResultType = _messages.EnumField('SearchResultTypeValueValuesEnum', 5)
-  userSpecifiedSystem = _messages.StringField(6)
+  modifyTime = _messages.StringField(3)
+  relativeResourceName = _messages.StringField(4)
+  searchResultSubtype = _messages.StringField(5)
+  searchResultType = _messages.EnumField('SearchResultTypeValueValuesEnum', 6)
+  userSpecifiedSystem = _messages.StringField(7)
 
 
 class GoogleCloudDatacatalogV1SerializedPolicyTag(_messages.Message):

@@ -589,7 +589,6 @@ def ValidateExclusivity(cr_manifest, parent_ref, intended_membership,
   Raises:
     apitools.base.py.HttpError: if the request returns an HTTP error.
   """
-  # TODO(b/145955278): Use release_track to select the right Exclusivity API.
   release_track = base.ReleaseTrack.BETA
   client = gkehub_api_util.GetApiClientForTrack(release_track)
   return client.projects_locations_memberships.ValidateExclusivity(

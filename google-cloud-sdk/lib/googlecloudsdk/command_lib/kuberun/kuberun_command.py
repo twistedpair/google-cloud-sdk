@@ -70,7 +70,8 @@ class KubeRunCommand(base.BinaryBackedCommand):
     """Process the result of the operation."""
     pass
 
-  def CommandExecutor(self):
+  @property
+  def command_executor(self):
     return kuberuncli.KubeRunCli()
 
   def Run(self, args):
@@ -86,11 +87,10 @@ class KubeRunCommand(base.BinaryBackedCommand):
           cancel_on_no=True,
           default=False)
 
-    command_executor = self.CommandExecutor()
     project = properties.VALUES.core.project.Get()
     command = self.Command()
     command.extend(self.BuildKubeRunArgs(args))
-    response = command_executor(
+    response = self.command_executor(
         command=command,
         env=kuberuncli.GetEnvArgsForCommand(
             extra_vars={
@@ -99,8 +99,7 @@ class KubeRunCommand(base.BinaryBackedCommand):
                         account=properties.VALUES.core.account.Get()),
                 'CLOUDSDK_PROJECT':
                     project,
-                'CLOUDSDK_USER_AGENT':
-                    # Cloud SDK prefix + user agent string
+                'CLOUDSDK_USER_AGENT':  # Cloud SDK prefix + user agent string
                     '{} {}'.format(config.CLOUDSDK_USER_AGENT,
                                    transport.MakeUserAgentString()),
             }),
@@ -116,22 +115,13 @@ class KubeRunStreamingCommand(KubeRunCommand):
     Child classes must implement BuildArgs and Command methods.
   """
 
-  def CommandExecutor(self):
+  @property
+  def command_executor(self):
     return kuberuncli.KubeRunStreamingCli()
 
   def OperationResponseHandler(self, response, args):
     if response.failed:
-      if response.stderr:
-        log.error(response.stderr)
       raise exceptions.Error('Command execution failed')
-
-    if response.stderr:
-      log.status.Print(response.stderr)
-
-    if response.stdout:
-      log.Print(response.stdout)
-
-    return response.stdout
 
 
 class KubeRunCommandWithOutput(KubeRunCommand):
@@ -142,7 +132,10 @@ class KubeRunCommandWithOutput(KubeRunCommand):
       log.status.Print(response.stderr)
 
     if response.failed:
-      raise exceptions.Error('Command execution failed')
+      err_msg = 'Command execution failed'
+      if response.stderr:
+        err_msg += ': ' + response.stderr
+      raise exceptions.Error(err_msg)
 
     return self.FormatOutput(response.stdout, args)
 
@@ -150,3 +143,26 @@ class KubeRunCommandWithOutput(KubeRunCommand):
   def FormatOutput(self, out, args):
     """Formats the output of the kuberun command execution, typically convert to json."""
     pass
+
+
+class KubeRunStreamingCommandWithResult(KubeRunCommandWithOutput):
+  """Base class for streaming commands that return a result on their stdout."""
+
+  @property
+  def command_executor(self):
+    return kuberuncli.KubeRunStreamingCli(std_out_func=_CaptureStreamOutHandler)
+
+
+def _CaptureStreamOutHandler(result_holder, **kwargs):
+  """Captures streaming stdout from subprocess for processing in OperationResponseHandler."""
+  del kwargs  # we want to capture stdout regardless of other options
+
+  def HandleStdOut(line):
+    if line:
+      line.rstrip()
+      if not result_holder.stdout:
+        result_holder.stdout = line
+      else:
+        result_holder.stdout += '\n' + line
+
+  return HandleStdOut

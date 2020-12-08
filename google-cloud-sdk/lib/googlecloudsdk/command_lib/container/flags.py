@@ -112,8 +112,8 @@ def LogBasicAuthDeprecationWarning(args):
     args: an argparse namespace. All the arguments that were provided to this
       command invocation.
   """
-  if hasattr(args, 'username') or hasattr(args, 'password') or hasattr(
-      args, 'enable_basic_auth'):
+  if getattr(args, 'username', '') or getattr(args, 'password', '') or getattr(
+      args, 'enable_basic_auth', False):
     log.warning(
         'Warning: basic authentication is deprecated, and will be removed in GKE '
         'control plane versions 1.19 and newer. For a list of recommended '
@@ -847,7 +847,11 @@ def ValidateCloudRunConfigUpdateArgs(cloud_run_config_args, update_addons_args):
 
 def AddEnableStackdriverKubernetesFlag(parser):
   """Adds a --enable-stackdriver-kubernetes flag to parser."""
-  help_text = """Enable Stackdriver Kubernetes monitoring and logging."""
+  help_text = """Enable Cloud Operations for GKE. To enable only Cloud
+    Monitoring use `--enable-stackdriver-kubernetes`
+    and `--no-enable-cloud-logging`. To enable only Cloud Logging use
+    `--enable-stackdriver-kubernetes` and `--no-enable-cloud-monitoring`.
+  """
   parser.add_argument(
       '--enable-stackdriver-kubernetes',
       action='store_true',
@@ -857,7 +861,7 @@ def AddEnableStackdriverKubernetesFlag(parser):
 
 def AddEnableLoggingMonitoringSystemOnlyFlag(parser):
   """Adds a --enable-stackdriver-kubernetes-system flag to parser."""
-  help_text = """Enable Stackdriver Kubernetes system-only monitoring and logging."""
+  help_text = """Enable Cloud Operations system-only monitoring and logging."""
   parser.add_argument(
       '--enable-logging-monitoring-system-only',
       action='store_true',
@@ -3386,16 +3390,16 @@ def AddEnableCloudLogging(parser):
       '--enable-cloud-logging',
       action=actions.DeprecationAction(
           '--enable-cloud-logging',
-          warn='From 1.14, legacy Stackdriver GKE logging is deprecated. Thus, '
+          show_message=lambda val: val,
+          warn='Legacy Logging and Monitoring is deprecated. Thus, '
           'flag `--enable-cloud-logging` is also deprecated. Please use '
-          '`--enable-stackdriver-kubernetes` instead, to migrate to new '
-          'Stackdriver Kubernetes Engine monitoring and logging. For more '
-          'details, please read: '
+          '`--enable-stackdriver-kubernetes` '
+          '(optionally with `--no-enable-cloud-monitoring`). '
+          'For more details, please read: '
           'https://cloud.google.com/monitoring/kubernetes-engine/migration.',
           action='store_true'),
       help='Automatically send logs from the cluster to the Google Cloud '
-      'Logging API. This flag is deprecated, use '
-      '`--enable-stackdriver-kubernetes` instead.')
+      'Logging API.')
 
 
 def AddEnableCloudMonitoring(parser):
@@ -3403,17 +3407,17 @@ def AddEnableCloudMonitoring(parser):
       '--enable-cloud-monitoring',
       action=actions.DeprecationAction(
           '--enable-cloud-monitoring',
-          warn='From 1.14, legacy Stackdriver GKE monitoring is deprecated. '
-          'Thus, flag `--enable-cloud-monitoring` is also deprecated. Please '
-          'use `--enable-stackdriver-kubernetes` instead, to migrate to new '
-          'Stackdriver Kubernetes Engine monitoring and logging. For more '
-          'details, please read: '
+          show_message=lambda val: val,
+          warn='Legacy Logging and Monitoring is deprecated. Thus, '
+          'flag `--enable-cloud-monitoring` is also deprecated. Please use '
+          '`--enable-stackdriver-kubernetes` '
+          '(optionally with `--no-enable-cloud-logging`). '
+          'For more details, please read: '
           'https://cloud.google.com/monitoring/kubernetes-engine/migration.',
           action='store_true'),
       help='Automatically send metrics from pods in the cluster to the Google '
       'Cloud Monitoring API. VM metrics will be collected by Google Compute '
-      'Engine regardless of this setting. This flag is deprecated, use '
-      '`--enable-stackdriver-kubernetes` instead.')
+      'Engine regardless of this setting.')
 
 
 def AddMaxNodesPerPool(parser):

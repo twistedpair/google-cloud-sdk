@@ -608,9 +608,11 @@ def AddTimeout(parser, default='30s'):
       default=default,
       type=arg_parsers.Duration(),
       help="""\
-      Applicable to all load balancers except internal TCP/UDP load
-      balancers. For internal TCP/UDP load balancers
-      (``load-balancing-scheme'' INTERNAL), ``timeout'' is ignored.
+      Applicable to all load balancing products except Internal TCP/UDP Load
+      Balancing and External TCP/UDP Network Load Balancing. For Internal
+      TCP/UDP Load Balancing (``load-balancing-scheme'' set to INTERNAL) and
+      External TCP/UDP Network Load Balancing (``global'' not set and
+      ``load-balancing-scheme'' set to EXTERNAL), ``timeout'' is ignored.
 
       If the ``protocol'' is HTTP, HTTPS, or HTTP2, ``timeout'' is a
       request/response timeout for HTTP(S) traffic, meaning the amount
@@ -647,8 +649,8 @@ def AddPortName(parser):
       this flag, your instance groups must have a service named ``http''
       configured. See also
       `gcloud compute instance-groups set-named-ports --help`.
-      The ``port-name'' parameter cannot be set if the
-      load-balancing-scheme is INTERNAL.
+      The ``port-name'' parameter cannot be set for Internal TCP/UDP Load
+      Balancing or External TCP/UDP Network Load balancing.
       """)
 
 
@@ -674,18 +676,21 @@ def AddProtocol(parser,
       help="""\
       Protocol for incoming requests.
 
-      If the `load-balancing-scheme` is `INTERNAL` (internal TCP/UDP load
-      balancers), the protocol must be one of: {0}.
+      If the `load-balancing-scheme` is `INTERNAL` (Internal TCP/UDP Load
+      Balancing), the protocol must be one of: {0}.
 
       If the `load-balancing-scheme` is `INTERNAL_SELF_MANAGED` (Traffic
       Director), the protocol must be one of: {1}.
 
-      If the `load-balancing-scheme` is `INTERNAL_MANAGED` (internal HTTP(S)
-      load balancers), the protocol must be one of: HTTP, HTTPS, HTTP2.
+      If the `load-balancing-scheme` is `INTERNAL_MANAGED` (Internal HTTP(S)
+      Load Balancing), the protocol must be one of: HTTP, HTTPS, HTTP2.
 
-      If the `load-balancing-scheme` is `EXTERNAL` (HTTP(S), SSL proxy, or TCP
-      proxy load balancers), the protocol must be one of: HTTP, HTTPS, HTTP2,
-      SSL, TCP.
+      If the `load-balancing-scheme` is `EXTERNAL` and `region` is not set
+      (HTTP(S), SSL Proxy, or TCP Proxy Load Balancing), the protocol must be
+      one of: HTTP, HTTPS, HTTP2, SSL, TCP.
+
+      If the `load-balancing-scheme` is `EXTERNAL` and `region` is set
+      (External Network Load Balancing), the protocol must be one of: TCP, UDP.
       """.format(ilb_protocols, td_protocols))
 
 
@@ -701,7 +706,7 @@ def AddConnectionDrainOnFailover(parser, default):
       connection state will be cleared immediately on a best effort basis on
       failover or failback, all connections will then be served by the active
       pool of instances. Not compatible with the --global flag, load balancing
-      scheme must be INTERNAL, and the protocol must be TCP.
+      scheme must be INTERNAL or EXTERNAL, and the protocol must be TCP.
       """)
 
 
@@ -714,7 +719,7 @@ def AddDropTrafficIfUnhealthy(parser, default):
       help="""\
       Enable dropping of traffic if there are no healthy VMs detected in both
       the primary and backup instance groups. Not compatible with the --global
-      flag and load balancing scheme must be INTERNAL.
+      flag and load balancing scheme must be INTERNAL or EXTERNAL.
       """)
 
 

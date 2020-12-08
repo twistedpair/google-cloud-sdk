@@ -15,7 +15,7 @@ class WorkflowexecutionsV1(base_api.BaseApiClient):
   MTLS_BASE_URL = 'https://workflowexecutions.mtls.googleapis.com/'
 
   _PACKAGE = 'workflowexecutions'
-  _SCOPES = ['https://www.googleapis.com/auth/userinfo.email']
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
   _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
@@ -39,3 +39,155 @@ class WorkflowexecutionsV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_workflows_executions = self.ProjectsLocationsWorkflowsExecutionsService(self)
+    self.projects_locations_workflows = self.ProjectsLocationsWorkflowsService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
+    self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsWorkflowsExecutionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_workflows_executions resource."""
+
+    _NAME = 'projects_locations_workflows_executions'
+
+    def __init__(self, client):
+      super(WorkflowexecutionsV1.ProjectsLocationsWorkflowsExecutionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancels an execution of the given name.
+
+      Args:
+        request: (WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Execution) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions/{executionsId}:cancel',
+        http_method='POST',
+        method_id='workflowexecutions.projects.locations.workflows.executions.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelExecutionRequest',
+        request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCancelRequest',
+        response_type_name='Execution',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new execution using the latest revision of the given workflow.
+
+      Args:
+        request: (WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Execution) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions',
+        http_method='POST',
+        method_id='workflowexecutions.projects.locations.workflows.executions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/executions',
+        request_field='execution',
+        request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCreateRequest',
+        response_type_name='Execution',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns an execution of the given name.
+
+      Args:
+        request: (WorkflowexecutionsProjectsLocationsWorkflowsExecutionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Execution) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions/{executionsId}',
+        http_method='GET',
+        method_id='workflowexecutions.projects.locations.workflows.executions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsGetRequest',
+        response_type_name='Execution',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns a list of executions which belong to the workflow with the given name. The method returns executions of all workflow revisions. Returned executions are ordered by their start time (newest first).
+
+      Args:
+        request: (WorkflowexecutionsProjectsLocationsWorkflowsExecutionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListExecutionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions',
+        http_method='GET',
+        method_id='workflowexecutions.projects.locations.workflows.executions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'view'],
+        relative_path='v1/{+parent}/executions',
+        request_field='',
+        request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsListRequest',
+        response_type_name='ListExecutionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsWorkflowsService(base_api.BaseApiService):
+    """Service class for the projects_locations_workflows resource."""
+
+    _NAME = 'projects_locations_workflows'
+
+    def __init__(self, client):
+      super(WorkflowexecutionsV1.ProjectsLocationsWorkflowsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = 'projects_locations'
+
+    def __init__(self, client):
+      super(WorkflowexecutionsV1.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsService(base_api.BaseApiService):
+    """Service class for the projects resource."""
+
+    _NAME = 'projects'
+
+    def __init__(self, client):
+      super(WorkflowexecutionsV1.ProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }

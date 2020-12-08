@@ -94,6 +94,8 @@ class AssetDiscoveryConfig(_messages.Message):
       discovery.
 
   Fields:
+    folderIds: The folder ids to use for filtering asset discovery. It
+      consists of only digits, e.g., 756619654966.
     inclusionMode: The mode to use for filtering asset discovery.
     projectIds: The project ids to use for filtering asset discovery.
   """
@@ -113,8 +115,9 @@ class AssetDiscoveryConfig(_messages.Message):
     INCLUDE_ONLY = 1
     EXCLUDE = 2
 
-  inclusionMode = _messages.EnumField('InclusionModeValueValuesEnum', 1)
-  projectIds = _messages.StringField(2, repeated=True)
+  folderIds = _messages.StringField(1, repeated=True)
+  inclusionMode = _messages.EnumField('InclusionModeValueValuesEnum', 2)
+  projectIds = _messages.StringField(3, repeated=True)
 
 
 class AuditConfig(_messages.Message):
@@ -390,6 +393,20 @@ class Finding(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
+class Folder(_messages.Message):
+  r"""Message that contains the resource name and display name of a folder
+  resource.
+
+  Fields:
+    resourceFolder: Full resource name of this folder. See:
+      https://cloud.google.com/apis/design/resource_names#full_resource_name
+    resourceFolderDisplayName: The user defined display name for this folder.
+  """
+
+  resourceFolder = _messages.StringField(1)
+  resourceFolderDisplayName = _messages.StringField(2)
+
+
 class GetIamPolicyRequest(_messages.Message):
   r"""Request message for `GetIamPolicy` method.
 
@@ -438,6 +455,9 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
   r"""Information related to the Google Cloud resource.
 
   Fields:
+    folders: Output only. Contains a Folder message for each folder in the
+      assets ancestry. The first folder is the deepest nested folder, and the
+      last folder is the folder directly under the Organization.
     name: The full resource name of the resource. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
     parent: The full resource name of resource's parent.
@@ -447,11 +467,12 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
       belongs to.
   """
 
-  name = _messages.StringField(1)
-  parent = _messages.StringField(2)
-  parentDisplayName = _messages.StringField(3)
-  project = _messages.StringField(4)
-  projectDisplayName = _messages.StringField(5)
+  folders = _messages.MessageField('Folder', 1, repeated=True)
+  name = _messages.StringField(2)
+  parent = _messages.StringField(3)
+  parentDisplayName = _messages.StringField(4)
+  project = _messages.StringField(5)
+  projectDisplayName = _messages.StringField(6)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
@@ -650,6 +671,20 @@ class GoogleCloudSecuritycenterV1p1beta1Finding(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
+class GoogleCloudSecuritycenterV1p1beta1Folder(_messages.Message):
+  r"""Message that contains the resource name and display name of a folder
+  resource.
+
+  Fields:
+    resourceFolder: Full resource name of this folder. See:
+      https://cloud.google.com/apis/design/resource_names#full_resource_name
+    resourceFolderDisplayName: The user defined display name for this folder.
+  """
+
+  resourceFolder = _messages.StringField(1)
+  resourceFolderDisplayName = _messages.StringField(2)
+
+
 class GoogleCloudSecuritycenterV1p1beta1NotificationMessage(_messages.Message):
   r"""Security Command Center's Notification
 
@@ -670,6 +705,9 @@ class GoogleCloudSecuritycenterV1p1beta1Resource(_messages.Message):
   r"""Information related to the Google Cloud resource.
 
   Fields:
+    folders: Output only. Contains a Folder message for each folder in the
+      assets ancestry. The first folder is the deepest nested folder, and the
+      last folder is the folder directly under the Organization.
     name: The full resource name of the resource. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
     parent: The full resource name of resource's parent.
@@ -679,11 +717,12 @@ class GoogleCloudSecuritycenterV1p1beta1Resource(_messages.Message):
       belongs to.
   """
 
-  name = _messages.StringField(1)
-  parent = _messages.StringField(2)
-  parentDisplayName = _messages.StringField(3)
-  project = _messages.StringField(4)
-  projectDisplayName = _messages.StringField(5)
+  folders = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1Folder', 1, repeated=True)
+  name = _messages.StringField(2)
+  parent = _messages.StringField(3)
+  parentDisplayName = _messages.StringField(4)
+  project = _messages.StringField(5)
+  projectDisplayName = _messages.StringField(6)
 
 
 class GoogleCloudSecuritycenterV1p1beta1RunAssetDiscoveryResponse(_messages.Message):
@@ -1408,6 +1447,9 @@ class Resource(_messages.Message):
   this finding. LINT.IfChange
 
   Fields:
+    folders: Contains a Folder message for each folder in the assets ancestry.
+      The first folder is the deepest nested folder, and the last folder is
+      the folder directly under the Organization.
     name: The full resource name of the resource. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
     parentDisplayName: The human readable name of resource's parent.
@@ -1418,11 +1460,12 @@ class Resource(_messages.Message):
       to.
   """
 
-  name = _messages.StringField(1)
-  parentDisplayName = _messages.StringField(2)
-  parentName = _messages.StringField(3)
-  projectDisplayName = _messages.StringField(4)
-  projectName = _messages.StringField(5)
+  folders = _messages.MessageField('Folder', 1, repeated=True)
+  name = _messages.StringField(2)
+  parentDisplayName = _messages.StringField(3)
+  parentName = _messages.StringField(4)
+  projectDisplayName = _messages.StringField(5)
+  projectName = _messages.StringField(6)
 
 
 class RunAssetDiscoveryRequest(_messages.Message):
@@ -1434,6 +1477,9 @@ class SecurityCenterProperties(_messages.Message):
   by Security Command Center and cannot be modified by the user.
 
   Fields:
+    folders: Contains a Folder message for each folder in the assets ancestry.
+      The first folder is the deepest nested folder, and the last folder is
+      the folder directly under the Organization.
     resourceDisplayName: The user defined display name for this resource.
     resourceName: The full resource name of the Google Cloud resource this
       asset represents. This field is immutable after create time. See:
@@ -1455,14 +1501,15 @@ class SecurityCenterProperties(_messages.Message):
       and is immutable after create time.
   """
 
-  resourceDisplayName = _messages.StringField(1)
-  resourceName = _messages.StringField(2)
-  resourceOwners = _messages.StringField(3, repeated=True)
-  resourceParent = _messages.StringField(4)
-  resourceParentDisplayName = _messages.StringField(5)
-  resourceProject = _messages.StringField(6)
-  resourceProjectDisplayName = _messages.StringField(7)
-  resourceType = _messages.StringField(8)
+  folders = _messages.MessageField('Folder', 1, repeated=True)
+  resourceDisplayName = _messages.StringField(2)
+  resourceName = _messages.StringField(3)
+  resourceOwners = _messages.StringField(4, repeated=True)
+  resourceParent = _messages.StringField(5)
+  resourceParentDisplayName = _messages.StringField(6)
+  resourceProject = _messages.StringField(7)
+  resourceProjectDisplayName = _messages.StringField(8)
+  resourceType = _messages.StringField(9)
 
 
 class SecurityMarks(_messages.Message):
@@ -1527,6 +1574,332 @@ class SecurityMarks(_messages.Message):
   name = _messages.StringField(2)
 
 
+class SecuritycenterFoldersAssetsGroupRequest(_messages.Message):
+  r"""A SecuritycenterFoldersAssetsGroupRequest object.
+
+  Fields:
+    groupAssetsRequest: A GroupAssetsRequest resource to be passed as the
+      request body.
+    parent: Required. Name of the organization to groupBy. Its format is
+      "organizations/[organization_id], folders/[folder_id], or
+      projects/[project_id]".
+  """
+
+  groupAssetsRequest = _messages.MessageField('GroupAssetsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuritycenterFoldersAssetsListRequest(_messages.Message):
+  r"""A SecuritycenterFoldersAssetsListRequest object.
+
+  Fields:
+    compareDuration: When compare_duration is set, the ListAssetsResult's
+      "state_change" attribute is updated to indicate whether the asset was
+      added, removed, or remained present during the compare_duration period
+      of time that precedes the read_time. This is the time between (read_time
+      - compare_duration) and read_time. The state_change value is derived
+      based on the presence of the asset at the two points in time.
+      Intermediate state changes between the two times don't affect the
+      result. For example, the results aren't affected if the asset is removed
+      and re-created again. Possible "state_change" values when
+      compare_duration is specified: * "ADDED": indicates that the asset was
+      not present at the start of compare_duration, but present at read_time.
+      * "REMOVED": indicates that the asset was present at the start of
+      compare_duration, but not present at read_time. * "ACTIVE": indicates
+      that the asset was present at both the start and the end of the time
+      period defined by compare_duration and read_time. If compare_duration is
+      not specified, then the only possible state_change is "UNUSED", which
+      will be the state_change set for all assets present at read_time.
+    fieldMask: A field mask to specify the ListAssetsResult fields to be
+      listed in the response. An empty field mask will list all fields.
+    filter: Expression that defines the filter to apply across assets. The
+      expression is a list of zero or more restrictions combined via logical
+      operators `AND` and `OR`. Parentheses are supported, and `OR` has higher
+      precedence than `AND`. Restrictions have the form ` ` and may have a `-`
+      character in front of them to indicate negation. The fields map to those
+      defined in the Asset resource. Examples include: * name *
+      security_center_properties.resource_name *
+      resource_properties.a_property * security_marks.marks.marka The
+      supported operators are: * `=` for all value types. * `>`, `<`, `>=`,
+      `<=` for integer values. * `:`, meaning substring matching, for strings.
+      The supported value types are: * string literals in quotes. * integer
+      literals without quotes. * boolean literals `true` and `false` without
+      quotes. The following are the allowed field and operator combinations: *
+      name: `=` * update_time: `=`, `>`, `<`, `>=`, `<=` Usage: This should be
+      milliseconds since epoch or an RFC3339 string. Examples: `update_time =
+      "2019-06-10T16:07:18-07:00"` `update_time = 1560208038000` *
+      create_time: `=`, `>`, `<`, `>=`, `<=` Usage: This should be
+      milliseconds since epoch or an RFC3339 string. Examples: `create_time =
+      "2019-06-10T16:07:18-07:00"` `create_time = 1560208038000` *
+      iam_policy.policy_blob: `=`, `:` * resource_properties: `=`, `:`, `>`,
+      `<`, `>=`, `<=` * security_marks.marks: `=`, `:` *
+      security_center_properties.resource_name: `=`, `:` *
+      security_center_properties.resource_display_name: `=`, `:` *
+      security_center_properties.resource_type: `=`, `:` *
+      security_center_properties.resource_parent: `=`, `:` *
+      security_center_properties.resource_parent_display_name: `=`, `:` *
+      security_center_properties.resource_project: `=`, `:` *
+      security_center_properties.resource_project_display_name: `=`, `:` *
+      security_center_properties.resource_owners: `=`, `:` For example,
+      `resource_properties.size = 100` is a valid filter string. Use a partial
+      match on the empty string to filter based on a property existing:
+      `resource_properties.my_property : ""` Use a negated partial match on
+      the empty string to filter based on a property not existing:
+      `-resource_properties.my_property : ""`
+    orderBy: Expression that defines what fields and order to use for sorting.
+      The string value should follow SQL syntax: comma separated list of
+      fields. For example: "name,resource_properties.a_property". The default
+      sorting order is ascending. To specify descending order for a field, a
+      suffix " desc" should be appended to the field name. For example: "name
+      desc,resource_properties.a_property". Redundant space characters in the
+      syntax are insignificant. "name desc,resource_properties.a_property" and
+      " name desc , resource_properties.a_property " are equivalent. The
+      following fields are supported: name update_time resource_properties
+      security_marks.marks security_center_properties.resource_name
+      security_center_properties.resource_display_name
+      security_center_properties.resource_parent
+      security_center_properties.resource_parent_display_name
+      security_center_properties.resource_project
+      security_center_properties.resource_project_display_name
+      security_center_properties.resource_type
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last `ListAssetsResponse`; indicates
+      that this is a continuation of a prior `ListAssets` call, and that the
+      system should return the next page of data.
+    parent: Required. Name of the organization assets should belong to. Its
+      format is "organizations/[organization_id], folders/[folder_id], or
+      projects/[project_id]".
+    readTime: Time used as a reference point when filtering assets. The filter
+      is limited to assets existing at the supplied time and their values are
+      those at that specific time. Absence of this field will default to the
+      API's version of NOW.
+  """
+
+  compareDuration = _messages.StringField(1)
+  fieldMask = _messages.StringField(2)
+  filter = _messages.StringField(3)
+  orderBy = _messages.StringField(4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
+  parent = _messages.StringField(7, required=True)
+  readTime = _messages.StringField(8)
+
+
+class SecuritycenterFoldersAssetsUpdateSecurityMarksRequest(_messages.Message):
+  r"""A SecuritycenterFoldersAssetsUpdateSecurityMarksRequest object.
+
+  Fields:
+    name: The relative resource name of the SecurityMarks. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Examples:
+      "organizations/{organization_id}/assets/{asset_id}/securityMarks" "organ
+      izations/{organization_id}/sources/{source_id}/findings/{finding_id}/sec
+      urityMarks".
+    securityMarks: A SecurityMarks resource to be passed as the request body.
+    startTime: The time at which the updated SecurityMarks take effect. If not
+      set uses current server time. Updates will be applied to the
+      SecurityMarks that are active immediately preceding this time.
+    updateMask: The FieldMask to use when updating the security marks
+      resource. The field mask must not contain duplicate fields. If empty or
+      set to "marks", all marks will be replaced. Individual marks can be
+      updated using "marks.".
+  """
+
+  name = _messages.StringField(1, required=True)
+  securityMarks = _messages.MessageField('SecurityMarks', 2)
+  startTime = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class SecuritycenterFoldersSourcesFindingsGroupRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSourcesFindingsGroupRequest object.
+
+  Fields:
+    groupFindingsRequest: A GroupFindingsRequest resource to be passed as the
+      request body.
+    parent: Required. Name of the source to groupBy. Its format is
+      "organizations/[organization_id]/sources/[source_id]",
+      folders/[folder_id]/sources/[source_id], or
+      projects/[project_id]/sources/[source_id]. To groupBy across all sources
+      provide a source_id of `-`. For example:
+      organizations/{organization_id}/sources/-,
+      folders/{folder_id}/sources/-, or projects/{project_id}/sources/-
+  """
+
+  groupFindingsRequest = _messages.MessageField('GroupFindingsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuritycenterFoldersSourcesFindingsListRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSourcesFindingsListRequest object.
+
+  Fields:
+    compareDuration: When compare_duration is set, the ListFindingsResult's
+      "state_change" attribute is updated to indicate whether the finding had
+      its state changed, the finding's state remained unchanged, or if the
+      finding was added in any state during the compare_duration period of
+      time that precedes the read_time. This is the time between (read_time -
+      compare_duration) and read_time. The state_change value is derived based
+      on the presence and state of the finding at the two points in time.
+      Intermediate state changes between the two times don't affect the
+      result. For example, the results aren't affected if the finding is made
+      inactive and then active again. Possible "state_change" values when
+      compare_duration is specified: * "CHANGED": indicates that the finding
+      was present and matched the given filter at the start of
+      compare_duration, but changed its state at read_time. * "UNCHANGED":
+      indicates that the finding was present and matched the given filter at
+      the start of compare_duration and did not change state at read_time. *
+      "ADDED": indicates that the finding did not match the given filter or
+      was not present at the start of compare_duration, but was present at
+      read_time. * "REMOVED": indicates that the finding was present and
+      matched the filter at the start of compare_duration, but did not match
+      the filter at read_time. If compare_duration is not specified, then the
+      only possible state_change is "UNUSED", which will be the state_change
+      set for all findings present at read_time.
+    fieldMask: A field mask to specify the Finding fields to be listed in the
+      response. An empty field mask will list all fields.
+    filter: Expression that defines the filter to apply across findings. The
+      expression is a list of one or more restrictions combined via logical
+      operators `AND` and `OR`. Parentheses are supported, and `OR` has higher
+      precedence than `AND`. Restrictions have the form ` ` and may have a `-`
+      character in front of them to indicate negation. Examples include: *
+      name * source_properties.a_property * security_marks.marks.marka The
+      supported operators are: * `=` for all value types. * `>`, `<`, `>=`,
+      `<=` for integer values. * `:`, meaning substring matching, for strings.
+      The supported value types are: * string literals in quotes. * integer
+      literals without quotes. * boolean literals `true` and `false` without
+      quotes. The following field and operator combinations are supported:
+      name: `=` parent: `=`, `:` resource_name: `=`, `:` state: `=`, `:`
+      category: `=`, `:` external_uri: `=`, `:` event_time: `=`, `>`, `<`,
+      `>=`, `<=` Usage: This should be milliseconds since epoch or an RFC3339
+      string. Examples: `event_time = "2019-06-10T16:07:18-07:00"` `event_time
+      = 1560208038000` security_marks.marks: `=`, `:` source_properties: `=`,
+      `:`, `>`, `<`, `>=`, `<=` For example, `source_properties.size = 100` is
+      a valid filter string. Use a partial match on the empty string to filter
+      based on a property existing: `source_properties.my_property : ""` Use a
+      negated partial match on the empty string to filter based on a property
+      not existing: `-source_properties.my_property : ""`
+    orderBy: Expression that defines what fields and order to use for sorting.
+      The string value should follow SQL syntax: comma separated list of
+      fields. For example: "name,resource_properties.a_property". The default
+      sorting order is ascending. To specify descending order for a field, a
+      suffix " desc" should be appended to the field name. For example: "name
+      desc,source_properties.a_property". Redundant space characters in the
+      syntax are insignificant. "name desc,source_properties.a_property" and "
+      name desc , source_properties.a_property " are equivalent. The following
+      fields are supported: name parent state category resource_name
+      event_time source_properties security_marks.marks
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last `ListFindingsResponse`;
+      indicates that this is a continuation of a prior `ListFindings` call,
+      and that the system should return the next page of data.
+    parent: Required. Name of the source the findings belong to. Its format is
+      "organizations/[organization_id]/sources/[source_id],
+      folders/[folder_id]/sources/[source_id], or
+      projects/[project_id]/sources/[source_id]". To list across all sources
+      provide a source_id of `-`. For example:
+      organizations/{organization_id}/sources/-, folders/{folder_id}/sources/-
+      or projects/{projects_id}/sources/-
+    readTime: Time used as a reference point when filtering findings. The
+      filter is limited to findings existing at the supplied time and their
+      values are those at that specific time. Absence of this field will
+      default to the API's version of NOW.
+  """
+
+  compareDuration = _messages.StringField(1)
+  fieldMask = _messages.StringField(2)
+  filter = _messages.StringField(3)
+  orderBy = _messages.StringField(4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
+  parent = _messages.StringField(7, required=True)
+  readTime = _messages.StringField(8)
+
+
+class SecuritycenterFoldersSourcesFindingsPatchRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSourcesFindingsPatchRequest object.
+
+  Fields:
+    finding: A Finding resource to be passed as the request body.
+    name: The relative resource name of this finding. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Example: "organizations/{organization_id}/sources/{source_id}/finding
+      s/{finding_id}"
+    updateMask: The FieldMask to use when updating the finding resource. This
+      field should not be specified when creating a finding. When updating a
+      finding, an empty mask is treated as updating all mutable fields and
+      replacing source_properties. Individual source_properties can be
+      added/updated by using "source_properties." in the field mask.
+  """
+
+  finding = _messages.MessageField('Finding', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class SecuritycenterFoldersSourcesFindingsSetStateRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSourcesFindingsSetStateRequest object.
+
+  Fields:
+    name: Required. The relative resource name of the finding. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Example: "organizations/{organization_id}/sources/{source_id}/finding
+      /{finding_id}".
+    setFindingStateRequest: A SetFindingStateRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  setFindingStateRequest = _messages.MessageField('SetFindingStateRequest', 2)
+
+
+class SecuritycenterFoldersSourcesFindingsUpdateSecurityMarksRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSourcesFindingsUpdateSecurityMarksRequest object.
+
+  Fields:
+    name: The relative resource name of the SecurityMarks. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Examples:
+      "organizations/{organization_id}/assets/{asset_id}/securityMarks" "organ
+      izations/{organization_id}/sources/{source_id}/findings/{finding_id}/sec
+      urityMarks".
+    securityMarks: A SecurityMarks resource to be passed as the request body.
+    startTime: The time at which the updated SecurityMarks take effect. If not
+      set uses current server time. Updates will be applied to the
+      SecurityMarks that are active immediately preceding this time.
+    updateMask: The FieldMask to use when updating the security marks
+      resource. The field mask must not contain duplicate fields. If empty or
+      set to "marks", all marks will be replaced. Individual marks can be
+      updated using "marks.".
+  """
+
+  name = _messages.StringField(1, required=True)
+  securityMarks = _messages.MessageField('SecurityMarks', 2)
+  startTime = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class SecuritycenterFoldersSourcesListRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSourcesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last `ListSourcesResponse`; indicates
+      that this is a continuation of a prior `ListSources` call, and that the
+      system should return the next page of data.
+    parent: Required. Resource name of the parent of sources to list. Its
+      format should be "organizations/[organization_id], folders/[folder_id],
+      or projects/[project_id]".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class SecuritycenterOrganizationsAssetsGroupRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsAssetsGroupRequest object.
 
@@ -1534,7 +1907,8 @@ class SecuritycenterOrganizationsAssetsGroupRequest(_messages.Message):
     groupAssetsRequest: A GroupAssetsRequest resource to be passed as the
       request body.
     parent: Required. Name of the organization to groupBy. Its format is
-      "organizations/[organization_id]".
+      "organizations/[organization_id], folders/[folder_id], or
+      projects/[project_id]".
   """
 
   groupAssetsRequest = _messages.MessageField('GroupAssetsRequest', 1)
@@ -1620,7 +1994,8 @@ class SecuritycenterOrganizationsAssetsListRequest(_messages.Message):
       that this is a continuation of a prior `ListAssets` call, and that the
       system should return the next page of data.
     parent: Required. Name of the organization assets should belong to. Its
-      format is "organizations/[organization_id]".
+      format is "organizations/[organization_id], folders/[folder_id], or
+      projects/[project_id]".
     readTime: Time used as a reference point when filtering assets. The filter
       is limited to assets existing at the supplied time and their values are
       those at that specific time. Absence of this field will default to the
@@ -1849,9 +2224,12 @@ class SecuritycenterOrganizationsSourcesFindingsGroupRequest(_messages.Message):
     groupFindingsRequest: A GroupFindingsRequest resource to be passed as the
       request body.
     parent: Required. Name of the source to groupBy. Its format is
-      "organizations/[organization_id]/sources/[source_id]". To groupBy across
-      all sources provide a source_id of `-`. For example:
-      organizations/{organization_id}/sources/-
+      "organizations/[organization_id]/sources/[source_id]",
+      folders/[folder_id]/sources/[source_id], or
+      projects/[project_id]/sources/[source_id]. To groupBy across all sources
+      provide a source_id of `-`. For example:
+      organizations/{organization_id}/sources/-,
+      folders/{folder_id}/sources/-, or projects/{project_id}/sources/-
   """
 
   groupFindingsRequest = _messages.MessageField('GroupFindingsRequest', 1)
@@ -1923,9 +2301,12 @@ class SecuritycenterOrganizationsSourcesFindingsListRequest(_messages.Message):
       indicates that this is a continuation of a prior `ListFindings` call,
       and that the system should return the next page of data.
     parent: Required. Name of the source the findings belong to. Its format is
-      "organizations/[organization_id]/sources/[source_id]". To list across
-      all sources provide a source_id of `-`. For example:
-      organizations/{organization_id}/sources/-
+      "organizations/[organization_id]/sources/[source_id],
+      folders/[folder_id]/sources/[source_id], or
+      projects/[project_id]/sources/[source_id]". To list across all sources
+      provide a source_id of `-`. For example:
+      organizations/{organization_id}/sources/-, folders/{folder_id}/sources/-
+      or projects/{projects_id}/sources/-
     readTime: Time used as a reference point when filtering findings. The
       filter is limited to findings existing at the supplied time and their
       values are those at that specific time. Absence of this field will
@@ -2042,7 +2423,8 @@ class SecuritycenterOrganizationsSourcesListRequest(_messages.Message):
       that this is a continuation of a prior `ListSources` call, and that the
       system should return the next page of data.
     parent: Required. Resource name of the parent of sources to list. Its
-      format should be "organizations/[organization_id]".
+      format should be "organizations/[organization_id], folders/[folder_id],
+      or projects/[project_id]".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2113,6 +2495,333 @@ class SecuritycenterOrganizationsUpdateOrganizationSettingsRequest(_messages.Mes
   name = _messages.StringField(1, required=True)
   organizationSettings = _messages.MessageField('OrganizationSettings', 2)
   updateMask = _messages.StringField(3)
+
+
+class SecuritycenterProjectsAssetsGroupRequest(_messages.Message):
+  r"""A SecuritycenterProjectsAssetsGroupRequest object.
+
+  Fields:
+    groupAssetsRequest: A GroupAssetsRequest resource to be passed as the
+      request body.
+    parent: Required. Name of the organization to groupBy. Its format is
+      "organizations/[organization_id], folders/[folder_id], or
+      projects/[project_id]".
+  """
+
+  groupAssetsRequest = _messages.MessageField('GroupAssetsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuritycenterProjectsAssetsListRequest(_messages.Message):
+  r"""A SecuritycenterProjectsAssetsListRequest object.
+
+  Fields:
+    compareDuration: When compare_duration is set, the ListAssetsResult's
+      "state_change" attribute is updated to indicate whether the asset was
+      added, removed, or remained present during the compare_duration period
+      of time that precedes the read_time. This is the time between (read_time
+      - compare_duration) and read_time. The state_change value is derived
+      based on the presence of the asset at the two points in time.
+      Intermediate state changes between the two times don't affect the
+      result. For example, the results aren't affected if the asset is removed
+      and re-created again. Possible "state_change" values when
+      compare_duration is specified: * "ADDED": indicates that the asset was
+      not present at the start of compare_duration, but present at read_time.
+      * "REMOVED": indicates that the asset was present at the start of
+      compare_duration, but not present at read_time. * "ACTIVE": indicates
+      that the asset was present at both the start and the end of the time
+      period defined by compare_duration and read_time. If compare_duration is
+      not specified, then the only possible state_change is "UNUSED", which
+      will be the state_change set for all assets present at read_time.
+    fieldMask: A field mask to specify the ListAssetsResult fields to be
+      listed in the response. An empty field mask will list all fields.
+    filter: Expression that defines the filter to apply across assets. The
+      expression is a list of zero or more restrictions combined via logical
+      operators `AND` and `OR`. Parentheses are supported, and `OR` has higher
+      precedence than `AND`. Restrictions have the form ` ` and may have a `-`
+      character in front of them to indicate negation. The fields map to those
+      defined in the Asset resource. Examples include: * name *
+      security_center_properties.resource_name *
+      resource_properties.a_property * security_marks.marks.marka The
+      supported operators are: * `=` for all value types. * `>`, `<`, `>=`,
+      `<=` for integer values. * `:`, meaning substring matching, for strings.
+      The supported value types are: * string literals in quotes. * integer
+      literals without quotes. * boolean literals `true` and `false` without
+      quotes. The following are the allowed field and operator combinations: *
+      name: `=` * update_time: `=`, `>`, `<`, `>=`, `<=` Usage: This should be
+      milliseconds since epoch or an RFC3339 string. Examples: `update_time =
+      "2019-06-10T16:07:18-07:00"` `update_time = 1560208038000` *
+      create_time: `=`, `>`, `<`, `>=`, `<=` Usage: This should be
+      milliseconds since epoch or an RFC3339 string. Examples: `create_time =
+      "2019-06-10T16:07:18-07:00"` `create_time = 1560208038000` *
+      iam_policy.policy_blob: `=`, `:` * resource_properties: `=`, `:`, `>`,
+      `<`, `>=`, `<=` * security_marks.marks: `=`, `:` *
+      security_center_properties.resource_name: `=`, `:` *
+      security_center_properties.resource_display_name: `=`, `:` *
+      security_center_properties.resource_type: `=`, `:` *
+      security_center_properties.resource_parent: `=`, `:` *
+      security_center_properties.resource_parent_display_name: `=`, `:` *
+      security_center_properties.resource_project: `=`, `:` *
+      security_center_properties.resource_project_display_name: `=`, `:` *
+      security_center_properties.resource_owners: `=`, `:` For example,
+      `resource_properties.size = 100` is a valid filter string. Use a partial
+      match on the empty string to filter based on a property existing:
+      `resource_properties.my_property : ""` Use a negated partial match on
+      the empty string to filter based on a property not existing:
+      `-resource_properties.my_property : ""`
+    orderBy: Expression that defines what fields and order to use for sorting.
+      The string value should follow SQL syntax: comma separated list of
+      fields. For example: "name,resource_properties.a_property". The default
+      sorting order is ascending. To specify descending order for a field, a
+      suffix " desc" should be appended to the field name. For example: "name
+      desc,resource_properties.a_property". Redundant space characters in the
+      syntax are insignificant. "name desc,resource_properties.a_property" and
+      " name desc , resource_properties.a_property " are equivalent. The
+      following fields are supported: name update_time resource_properties
+      security_marks.marks security_center_properties.resource_name
+      security_center_properties.resource_display_name
+      security_center_properties.resource_parent
+      security_center_properties.resource_parent_display_name
+      security_center_properties.resource_project
+      security_center_properties.resource_project_display_name
+      security_center_properties.resource_type
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last `ListAssetsResponse`; indicates
+      that this is a continuation of a prior `ListAssets` call, and that the
+      system should return the next page of data.
+    parent: Required. Name of the organization assets should belong to. Its
+      format is "organizations/[organization_id], folders/[folder_id], or
+      projects/[project_id]".
+    readTime: Time used as a reference point when filtering assets. The filter
+      is limited to assets existing at the supplied time and their values are
+      those at that specific time. Absence of this field will default to the
+      API's version of NOW.
+  """
+
+  compareDuration = _messages.StringField(1)
+  fieldMask = _messages.StringField(2)
+  filter = _messages.StringField(3)
+  orderBy = _messages.StringField(4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
+  parent = _messages.StringField(7, required=True)
+  readTime = _messages.StringField(8)
+
+
+class SecuritycenterProjectsAssetsUpdateSecurityMarksRequest(_messages.Message):
+  r"""A SecuritycenterProjectsAssetsUpdateSecurityMarksRequest object.
+
+  Fields:
+    name: The relative resource name of the SecurityMarks. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Examples:
+      "organizations/{organization_id}/assets/{asset_id}/securityMarks" "organ
+      izations/{organization_id}/sources/{source_id}/findings/{finding_id}/sec
+      urityMarks".
+    securityMarks: A SecurityMarks resource to be passed as the request body.
+    startTime: The time at which the updated SecurityMarks take effect. If not
+      set uses current server time. Updates will be applied to the
+      SecurityMarks that are active immediately preceding this time.
+    updateMask: The FieldMask to use when updating the security marks
+      resource. The field mask must not contain duplicate fields. If empty or
+      set to "marks", all marks will be replaced. Individual marks can be
+      updated using "marks.".
+  """
+
+  name = _messages.StringField(1, required=True)
+  securityMarks = _messages.MessageField('SecurityMarks', 2)
+  startTime = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class SecuritycenterProjectsSourcesFindingsGroupRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSourcesFindingsGroupRequest object.
+
+  Fields:
+    groupFindingsRequest: A GroupFindingsRequest resource to be passed as the
+      request body.
+    parent: Required. Name of the source to groupBy. Its format is
+      "organizations/[organization_id]/sources/[source_id]",
+      folders/[folder_id]/sources/[source_id], or
+      projects/[project_id]/sources/[source_id]. To groupBy across all sources
+      provide a source_id of `-`. For example:
+      organizations/{organization_id}/sources/-,
+      folders/{folder_id}/sources/-, or projects/{project_id}/sources/-
+  """
+
+  groupFindingsRequest = _messages.MessageField('GroupFindingsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuritycenterProjectsSourcesFindingsListRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSourcesFindingsListRequest object.
+
+  Fields:
+    compareDuration: When compare_duration is set, the ListFindingsResult's
+      "state_change" attribute is updated to indicate whether the finding had
+      its state changed, the finding's state remained unchanged, or if the
+      finding was added in any state during the compare_duration period of
+      time that precedes the read_time. This is the time between (read_time -
+      compare_duration) and read_time. The state_change value is derived based
+      on the presence and state of the finding at the two points in time.
+      Intermediate state changes between the two times don't affect the
+      result. For example, the results aren't affected if the finding is made
+      inactive and then active again. Possible "state_change" values when
+      compare_duration is specified: * "CHANGED": indicates that the finding
+      was present and matched the given filter at the start of
+      compare_duration, but changed its state at read_time. * "UNCHANGED":
+      indicates that the finding was present and matched the given filter at
+      the start of compare_duration and did not change state at read_time. *
+      "ADDED": indicates that the finding did not match the given filter or
+      was not present at the start of compare_duration, but was present at
+      read_time. * "REMOVED": indicates that the finding was present and
+      matched the filter at the start of compare_duration, but did not match
+      the filter at read_time. If compare_duration is not specified, then the
+      only possible state_change is "UNUSED", which will be the state_change
+      set for all findings present at read_time.
+    fieldMask: A field mask to specify the Finding fields to be listed in the
+      response. An empty field mask will list all fields.
+    filter: Expression that defines the filter to apply across findings. The
+      expression is a list of one or more restrictions combined via logical
+      operators `AND` and `OR`. Parentheses are supported, and `OR` has higher
+      precedence than `AND`. Restrictions have the form ` ` and may have a `-`
+      character in front of them to indicate negation. Examples include: *
+      name * source_properties.a_property * security_marks.marks.marka The
+      supported operators are: * `=` for all value types. * `>`, `<`, `>=`,
+      `<=` for integer values. * `:`, meaning substring matching, for strings.
+      The supported value types are: * string literals in quotes. * integer
+      literals without quotes. * boolean literals `true` and `false` without
+      quotes. The following field and operator combinations are supported:
+      name: `=` parent: `=`, `:` resource_name: `=`, `:` state: `=`, `:`
+      category: `=`, `:` external_uri: `=`, `:` event_time: `=`, `>`, `<`,
+      `>=`, `<=` Usage: This should be milliseconds since epoch or an RFC3339
+      string. Examples: `event_time = "2019-06-10T16:07:18-07:00"` `event_time
+      = 1560208038000` security_marks.marks: `=`, `:` source_properties: `=`,
+      `:`, `>`, `<`, `>=`, `<=` For example, `source_properties.size = 100` is
+      a valid filter string. Use a partial match on the empty string to filter
+      based on a property existing: `source_properties.my_property : ""` Use a
+      negated partial match on the empty string to filter based on a property
+      not existing: `-source_properties.my_property : ""`
+    orderBy: Expression that defines what fields and order to use for sorting.
+      The string value should follow SQL syntax: comma separated list of
+      fields. For example: "name,resource_properties.a_property". The default
+      sorting order is ascending. To specify descending order for a field, a
+      suffix " desc" should be appended to the field name. For example: "name
+      desc,source_properties.a_property". Redundant space characters in the
+      syntax are insignificant. "name desc,source_properties.a_property" and "
+      name desc , source_properties.a_property " are equivalent. The following
+      fields are supported: name parent state category resource_name
+      event_time source_properties security_marks.marks
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last `ListFindingsResponse`;
+      indicates that this is a continuation of a prior `ListFindings` call,
+      and that the system should return the next page of data.
+    parent: Required. Name of the source the findings belong to. Its format is
+      "organizations/[organization_id]/sources/[source_id],
+      folders/[folder_id]/sources/[source_id], or
+      projects/[project_id]/sources/[source_id]". To list across all sources
+      provide a source_id of `-`. For example:
+      organizations/{organization_id}/sources/-, folders/{folder_id}/sources/-
+      or projects/{projects_id}/sources/-
+    readTime: Time used as a reference point when filtering findings. The
+      filter is limited to findings existing at the supplied time and their
+      values are those at that specific time. Absence of this field will
+      default to the API's version of NOW.
+  """
+
+  compareDuration = _messages.StringField(1)
+  fieldMask = _messages.StringField(2)
+  filter = _messages.StringField(3)
+  orderBy = _messages.StringField(4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
+  parent = _messages.StringField(7, required=True)
+  readTime = _messages.StringField(8)
+
+
+class SecuritycenterProjectsSourcesFindingsPatchRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSourcesFindingsPatchRequest object.
+
+  Fields:
+    finding: A Finding resource to be passed as the request body.
+    name: The relative resource name of this finding. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Example: "organizations/{organization_id}/sources/{source_id}/finding
+      s/{finding_id}"
+    updateMask: The FieldMask to use when updating the finding resource. This
+      field should not be specified when creating a finding. When updating a
+      finding, an empty mask is treated as updating all mutable fields and
+      replacing source_properties. Individual source_properties can be
+      added/updated by using "source_properties." in the field mask.
+  """
+
+  finding = _messages.MessageField('Finding', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class SecuritycenterProjectsSourcesFindingsSetStateRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSourcesFindingsSetStateRequest object.
+
+  Fields:
+    name: Required. The relative resource name of the finding. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Example: "organizations/{organization_id}/sources/{source_id}/finding
+      /{finding_id}".
+    setFindingStateRequest: A SetFindingStateRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  setFindingStateRequest = _messages.MessageField('SetFindingStateRequest', 2)
+
+
+class SecuritycenterProjectsSourcesFindingsUpdateSecurityMarksRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSourcesFindingsUpdateSecurityMarksRequest
+  object.
+
+  Fields:
+    name: The relative resource name of the SecurityMarks. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Examples:
+      "organizations/{organization_id}/assets/{asset_id}/securityMarks" "organ
+      izations/{organization_id}/sources/{source_id}/findings/{finding_id}/sec
+      urityMarks".
+    securityMarks: A SecurityMarks resource to be passed as the request body.
+    startTime: The time at which the updated SecurityMarks take effect. If not
+      set uses current server time. Updates will be applied to the
+      SecurityMarks that are active immediately preceding this time.
+    updateMask: The FieldMask to use when updating the security marks
+      resource. The field mask must not contain duplicate fields. If empty or
+      set to "marks", all marks will be replaced. Individual marks can be
+      updated using "marks.".
+  """
+
+  name = _messages.StringField(1, required=True)
+  securityMarks = _messages.MessageField('SecurityMarks', 2)
+  startTime = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class SecuritycenterProjectsSourcesListRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSourcesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last `ListSourcesResponse`; indicates
+      that this is a continuation of a prior `ListSources` call, and that the
+      system should return the next page of data.
+    parent: Required. Resource name of the parent of sources to list. Its
+      format should be "organizations/[organization_id], folders/[folder_id],
+      or projects/[project_id]".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class SetFindingStateRequest(_messages.Message):

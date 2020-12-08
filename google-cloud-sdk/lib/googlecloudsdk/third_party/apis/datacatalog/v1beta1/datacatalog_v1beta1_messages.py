@@ -18,7 +18,6 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -62,10 +61,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class DatacatalogEntriesLookupRequest(_messages.Message):
@@ -1647,6 +1645,7 @@ class GoogleCloudDatacatalogV1beta1SearchCatalogResult(_messages.Message):
       https://cloud.google.com/apis/design/resource_names#full_resource_name.
       Example: * `//bigquery.googleapis.com/projects/projectId/datasets/datase
       tId/tables/tableId`
+    modifyTime: Last-modified timestamp of the entry from the managing system.
     relativeResourceName: The relative resource name of the resource in URL
       format. Examples: * `projects/{project_id}/locations/{location_id}/entry
       Groups/{entry_group_id}/entries/{entry_id}` *
@@ -1675,9 +1674,10 @@ class GoogleCloudDatacatalogV1beta1SearchCatalogResult(_messages.Message):
     ENTRY_GROUP = 3
 
   linkedResource = _messages.StringField(1)
-  relativeResourceName = _messages.StringField(2)
-  searchResultSubtype = _messages.StringField(3)
-  searchResultType = _messages.EnumField('SearchResultTypeValueValuesEnum', 4)
+  modifyTime = _messages.StringField(2)
+  relativeResourceName = _messages.StringField(3)
+  searchResultSubtype = _messages.StringField(4)
+  searchResultType = _messages.EnumField('SearchResultTypeValueValuesEnum', 5)
 
 
 class GoogleCloudDatacatalogV1beta1SerializedPolicyTag(_messages.Message):

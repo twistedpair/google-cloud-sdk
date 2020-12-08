@@ -269,6 +269,10 @@
         "provisionedResourcesParent": {
           "description": "Input only. The parent resource for the resources managed by this Assured Workload. May be either an organization or a folder. Must be the same or a child of the Workload parent. If not specified all resources are created under the Workload parent. Formats: folders\/{folder_id} organizations\/{organization_id}",
           "type": "string"
+        },
+        "kmsSettings": {
+          "description": "Input only. Settings used to create a CMEK crypto key. When set a project with a KMS CMEK key is provisioned. This field is mandatory for a subset of Compliance Regimes.",
+          "$ref": "GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings"
         }
       }
     },
@@ -471,22 +475,6 @@
           "description": "Required. Input only. The billing account used for the resources which are direct children of workload. This billing account is initially associated with the resources created as part of Workload creation. After the initial creation of these resources, the customer can change the assigned billing account. The resource name has the form `billingAccounts\/{billing_account_id}`. For example, `billingAccounts\/012345-567890-ABCDEF`.",
           "type": "string"
         },
-        "il4Settings": {
-          "description": "Required. Input only. Immutable. Settings specific to resources needed for IL4.",
-          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadIL4Settings"
-        },
-        "cjisSettings": {
-          "description": "Required. Input only. Immutable. Settings specific to resources needed for CJIS.",
-          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadCJISSettings"
-        },
-        "fedrampHighSettings": {
-          "description": "Required. Input only. Immutable. Settings specific to resources needed for FedRAMP High.",
-          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadFedrampHighSettings"
-        },
-        "fedrampModerateSettings": {
-          "description": "Required. Input only. Immutable. Settings specific to resources needed for FedRAMP Moderate.",
-          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadFedrampModerateSettings"
-        },
         "etag": {
           "description": "Optional. ETag of the workload, it is calculated on the basis of the Workload contents. It will be used in Update & Delete operations.",
           "type": "string"
@@ -501,6 +489,10 @@
         "provisionedResourcesParent": {
           "description": "Input only. The parent resource for the resources managed by this Assured Workload. May be either an organization or a folder. Must be the same or a child of the Workload parent. If not specified all resources are created under the Workload parent. Formats: folders\/{folder_id} organizations\/{organization_id}",
           "type": "string"
+        },
+        "kmsSettings": {
+          "description": "Input only. Settings used to create a CMEK crypto key. When set a project with a KMS CMEK key is provisioned. This field is mandatory for a subset of Compliance Regimes.",
+          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings"
         }
       }
     },
@@ -530,17 +522,6 @@
         }
       }
     },
-    "GoogleCloudAssuredworkloadsV1WorkloadIL4Settings": {
-      "id": "GoogleCloudAssuredworkloadsV1WorkloadIL4Settings",
-      "description": "Settings specific to resources needed for IL4.",
-      "type": "object",
-      "properties": {
-        "kmsSettings": {
-          "description": "Required. Input only. Immutable. Settings used to create a CMEK crypto key.",
-          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings"
-        }
-      }
-    },
     "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings": {
       "id": "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings",
       "description": "Settings specific to the Key Management Service.",
@@ -555,39 +536,6 @@
           "description": "Required. Input only. Immutable. [next_rotation_time] will be advanced by this period when the Key Management Service automatically rotates a key. Must be at least 24 hours and at most 876,000 hours.",
           "type": "string",
           "format": "google-duration"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsV1WorkloadCJISSettings": {
-      "id": "GoogleCloudAssuredworkloadsV1WorkloadCJISSettings",
-      "description": "Settings specific to resources needed for CJIS.",
-      "type": "object",
-      "properties": {
-        "kmsSettings": {
-          "description": "Required. Input only. Immutable. Settings used to create a CMEK crypto key.",
-          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsV1WorkloadFedrampHighSettings": {
-      "id": "GoogleCloudAssuredworkloadsV1WorkloadFedrampHighSettings",
-      "description": "Settings specific to resources needed for FedRAMP High.",
-      "type": "object",
-      "properties": {
-        "kmsSettings": {
-          "description": "Required. Input only. Immutable. Settings used to create a CMEK crypto key.",
-          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsV1WorkloadFedrampModerateSettings": {
-      "id": "GoogleCloudAssuredworkloadsV1WorkloadFedrampModerateSettings",
-      "description": "Settings specific to resources needed for FedRAMP Moderate.",
-      "type": "object",
-      "properties": {
-        "kmsSettings": {
-          "description": "Required. Input only. Immutable. Settings used to create a CMEK crypto key.",
-          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings"
         }
       }
     },

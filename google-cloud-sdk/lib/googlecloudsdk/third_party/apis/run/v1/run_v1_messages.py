@@ -421,7 +421,8 @@ class ContainerPort(_messages.Message):
 
 
 class DomainMapping(_messages.Message):
-  r"""Resource to hold the state and status of a user's domain mapping.
+  r"""Resource to hold the state and status of a user's domain mapping. NOTE:
+  This resource is currently in Beta.
 
   Fields:
     apiVersion: The API version for this call such as

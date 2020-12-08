@@ -2053,26 +2053,26 @@ class GoogleCloudMlV1RouteMap(_messages.Message):
       Read more about [health checks](/ai-platform/prediction/docs/custom-
       container-requirements#checks). For example, if you set this field to
       `/bar`, then AI Platform Prediction intermittently sends a GET request
-      to the following URL on the container: localhost:PORT/bar PORT refers to
-      the first value of Version.container.ports. If you don't specify this
-      field, it defaults to the following value:
-      /v1/models/MODEL/versions/VERSION The placeholders in this value are
-      replaced as follows: * MODEL: The name of the parent Model. This does
-      not include the "projects/PROJECT_ID/models/" prefix that the API
-      returns in output; it is the bare model name, as provided to
-      projects.models.create. * VERSION: The name of the model version. This
-      does not include the "projects/PROJECT_ID/models/MODEL/versions/" prefix
-      that the API returns in output; it is the bare version name, as provided
-      to projects.models.versions.create.
+      to the `/bar` path on the port of your container specified by the first
+      value of Version.container.ports. If you don't specify this field, it
+      defaults to the following value: /v1/models/ MODEL/versions/VERSION The
+      placeholders in this value are replaced as follows: * MODEL: The name of
+      the parent Model. This does not include the
+      "projects/PROJECT_ID/models/" prefix that the API returns in output; it
+      is the bare model name, as provided to projects.models.create. *
+      VERSION: The name of the model version. This does not include the
+      "projects/PROJECT_ID /models/MODEL/versions/" prefix that the API
+      returns in output; it is the bare version name, as provided to
+      projects.models.versions.create.
     predict: HTTP path on the container to send prediction requests to. AI
       Platform Prediction forwards requests sent using projects.predict to
       this path on the container's IP address and port. AI Platform Prediction
       then returns the container's response in the API response. For example,
       if you set this field to `/foo`, then when AI Platform Prediction
       receives a prediction request, it forwards the request body in a POST
-      request to the following URL on the container: localhost:PORT/foo PORT
-      refers to the first value of Version.container.ports. If you don't
-      specify this field, it defaults to the following value:
+      request to the `/foo` path on the port of your container specified by
+      the first value of Version.container.ports. If you don't specify this
+      field, it defaults to the following value:
       /v1/models/MODEL/versions/VERSION:predict The placeholders in this value
       are replaced as follows: * MODEL: The name of the parent Model. This
       does not include the "projects/PROJECT_ID/models/" prefix that the API
@@ -2111,6 +2111,10 @@ class GoogleCloudMlV1SampledShapleyAttribution(_messages.Message):
 
 class GoogleCloudMlV1Scheduling(_messages.Message):
   r"""All parameters related to scheduling of training jobs.
+
+  Enums:
+    StrategyValueValuesEnum: Optional. TODO(b/148493578) : point to
+      documentation when ready.
 
   Fields:
     maxRunningTime: Optional. The maximum job running time, expressed in
@@ -2152,11 +2156,25 @@ class GoogleCloudMlV1Scheduling(_messages.Message):
       a worker gets restarted. This feature can be used by distributed
       training jobs that are not resilient to workers leaving and joining a
       job.
+    strategy: Optional. TODO(b/148493578) : point to documentation when ready.
   """
+
+  class StrategyValueValuesEnum(_messages.Enum):
+    r"""Optional. TODO(b/148493578) : point to documentation when ready.
+
+    Values:
+      STRATEGY_UNSPECIFIED: Strategy will default to ON_DEMAND.
+      ON_DEMAND: Regular on-demand provisioning strategy.
+      LOW_COST: Low cost by making potential use of Preemptible resources.
+    """
+    STRATEGY_UNSPECIFIED = 0
+    ON_DEMAND = 1
+    LOW_COST = 2
 
   maxRunningTime = _messages.StringField(1)
   maxWaitTime = _messages.StringField(2)
   resilientToWorkerRestart = _messages.BooleanField(3)
+  strategy = _messages.EnumField('StrategyValueValuesEnum', 4)
 
 
 class GoogleCloudMlV1SetDefaultVersionRequest(_messages.Message):
@@ -3255,7 +3273,6 @@ class GoogleIamV1Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -3299,10 +3316,9 @@ class GoogleIamV1Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('GoogleTypeExpr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('GoogleTypeExpr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class GoogleIamV1Policy(_messages.Message):

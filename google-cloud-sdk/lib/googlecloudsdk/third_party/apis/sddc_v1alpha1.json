@@ -261,18 +261,18 @@
       "type": "object",
       "properties": {
         "clusters": {
-          "description": "A list of SDDC clusters.",
+          "description": "A list of private cloud clusters.",
           "type": "array",
           "items": {
             "$ref": "Cluster"
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be send as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "A token that you can send as `page_token` to retrieve the next page. If you omit this field, there are no subsequent pages.",
           "type": "string"
         },
         "unreachable": {
-          "description": "List of Locations that could not be reached.",
+          "description": "List of locations that could not be reached.",
           "type": "array",
           "items": {
             "type": "string"
@@ -282,16 +282,16 @@
     },
     "Cluster": {
       "id": "Cluster",
-      "description": "A cluster in a cluater group. Cluster is a regional resource.",
+      "description": "A cluster in a cluster group. `Cluster` is a regional resource.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of this Cluster. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/clusters\/my-cluster`",
+          "description": "Output only. The resource name of this `Cluster`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/REGION\/clusterGroups\/MY-GROUP\/clusters\/MY-CLUSTER",
           "readOnly": true,
           "type": "string"
         },
         "nodeType": {
-          "description": "Required. The baremetal node type used to create a VMWare cluster. The only supported value is c1-highmem-72-metal.",
+          "description": "Required. The bare metal node type used to create a VMware cluster. The only supported value is `c1-highmem-72-metal`.",
           "type": "string"
         },
         "nodeCount": {
@@ -308,7 +308,7 @@
           }
         },
         "labels": {
-          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. Specifically, to add a new label, you would need to provide all of the existing labels along with the new label. If you only provide a map with the new label, all of the old labels will be removed (probably not what is desired).",
+          "description": "You can use labels to attach lightweight metadata to resources for filtering and querying resource data. You can associate at most 64 user labels with each resource. Label keys and values may contain at most 63 characters and may only contain lowercase letters, numeric characters, underscores, and dashes. Label keys must start with a letter, and international characters are allowed. The empty string is a valid label. Labels are set on creation and updated like any other field. To add a new label, you must provide all of the existing labels along with the new label. **If you only provide a map with the new label, all of the old labels are removed.**",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -359,7 +359,7 @@
           ]
         },
         "management": {
-          "description": "If the resource to be created a management cluster or not. There can only be one management cluster in an SDDC and it has to be the first one.",
+          "description": "If the resource to be created a management cluster or not. There can only be one management cluster in a private cloud and it has to be the first one.",
           "type": "boolean"
         }
       }
@@ -407,7 +407,7 @@
     },
     "RemoveNodesRequest": {
       "id": "RemoveNodesRequest",
-      "description": "Request for removing nodes from the given cluster until the target count is reached.",
+      "description": "Request to remove nodes from the given cluster until the target count is reached.",
       "type": "object",
       "properties": {
         "nodeCount": {
@@ -419,34 +419,34 @@
     },
     "ListIpAddressesResponse": {
       "id": "ListIpAddressesResponse",
-      "description": "The response of listing IpAddresses in a given ClusterGroup.",
+      "description": "The response of listing `IpAddress` objects in a given `ClusterGroup`.",
       "type": "object",
       "properties": {
         "ipAddresses": {
-          "description": "A list of IpAddresses.",
+          "description": "A list of `IpAddress` objects.",
           "type": "array",
           "items": {
             "$ref": "IpAddress"
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be send as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "A token, which can be send as `page_token` to retrieve the next page. If you omit this field, there are no subsequent pages.",
           "type": "string"
         }
       }
     },
     "IpAddress": {
       "id": "IpAddress",
-      "description": "An IpAddress resource in a ClusterGroup.",
+      "description": "An `IpAddress` resource in a `ClusterGroup`.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of this IpAddress. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/ipAddresses\/my-ip`",
+          "description": "Output only. The resource name of this `IpAddress`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY-GROUP\/ipAddresses\/ MY-IP",
           "readOnly": true,
           "type": "string"
         },
         "labels": {
-          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. Specifically, to add a new label, you would need to provide all of the existing labels along with the new label. If you only provide a map with the new label, all of the old labels will be removed (probably not what is desired).",
+          "description": "You can use labels to attach lightweight metadata to resources for filtering and querying resource data. You can associate at most 64 user labels with each resource. Label keys and values may contain at most 63 characters and may only contain lowercase letters, numeric characters, underscores, and dashes. Label keys must start with a letter, and international characters are allowed. The empty string is a valid label. Labels are set on creation and updated like any other field. To add a new label, you must provide all of the existing labels along with the new label. **If you only provide a map with the new label, all of the old labels are removed.**",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -484,11 +484,11 @@
           ]
         },
         "internalIp": {
-          "description": "The internal IP of an workload VM.",
+          "description": "The internal IP address of a workload VM.",
           "type": "string"
         },
         "externalIp": {
-          "description": "Output only. The external IP of an workload VM.",
+          "description": "Output only. The external IP address of a workload VM.",
           "readOnly": true,
           "type": "string"
         }
@@ -496,21 +496,22 @@
     },
     "ListClusterGroupBackupsResponse": {
       "id": "ListClusterGroupBackupsResponse",
-      "description": "A list of SDDC cluster group backups.",
+      "description": "A list of private cloud cluster group backups.",
       "type": "object",
       "properties": {
         "clusterGroupBackups": {
+          "description": "A list of private cloud cluster group backups.",
           "type": "array",
           "items": {
             "$ref": "ClusterGroupBackup"
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be send as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "A token that you can send as `page_token` to retrieve the next page. If you omit this field, there are no subsequent pages.",
           "type": "string"
         },
         "unreachable": {
-          "description": "List of Locations that could not be reached.",
+          "description": "List of locations that could not be reached.",
           "type": "array",
           "items": {
             "type": "string"
@@ -520,16 +521,16 @@
     },
     "ClusterGroupBackup": {
       "id": "ClusterGroupBackup",
-      "description": "Backup resource of the ClusterGroup.",
+      "description": "Backup resource of the `ClusterGroup`.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of this ClusterGroupBackup. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroupBackups\/my-backup`",
+          "description": "Output only. The resource name of this `ClusterGroupBackup`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroupBackups\/MY-BACKUP",
           "readOnly": true,
           "type": "string"
         },
         "labels": {
-          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. Specifically, to add a new label, you would need to provide all of the existing labels along with the new label. If you only provide a map with the new label, all of the old labels will be removed (probably not what is desired).",
+          "description": "You can use labels to attach lightweight metadata to resources for filtering and querying resource data. You can associate at most 64 user labels with each resource. Label keys and values may contain at most 63 characters and may only contain lowercase letters, numeric characters, underscores, and dashes. Label keys must start with a letter, and international characters are allowed. The empty string is a valid label. Labels are set on creation and updated like any other field. To add a new label, you must provide all of the existing labels along with the new label. **If you only provide a map with the new label, all of the old labels are removed.**",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -548,14 +549,14 @@
           "format": "google-datetime"
         },
         "clusterGroupId": {
-          "description": "Identity of the ClusterGroup of which this resource is a backup.",
+          "description": "Identity of the `ClusterGroup` of which this resource is a backup.",
           "type": "string"
         }
       }
     },
     "ListPrivateCloudBackupsResponse": {
       "id": "ListPrivateCloudBackupsResponse",
-      "description": "Response containing a list of SDDC private cloud backups.",
+      "description": "Response containing a list of private cloud backups.",
       "type": "object",
       "properties": {
         "privateCloudBackups": {
@@ -566,11 +567,11 @@
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "A token, which can be send as `page_token` to retrieve the next page. If you omit this field, there are no subsequent pages.",
           "type": "string"
         },
         "unreachable": {
-          "description": "List of Locations that could not be reached.",
+          "description": "List of locations that could not be reached.",
           "type": "array",
           "items": {
             "type": "string"
@@ -580,16 +581,16 @@
     },
     "PrivateCloudBackup": {
       "id": "PrivateCloudBackup",
-      "description": "Backup resource of the PrivateCloud.",
+      "description": "Backup resource of the private cloud.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of this PrivateCloudBackup. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/privateCloudBackups\/my-backup`",
+          "description": "Output only. The resource name of this `PrivateCloudBackup`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroupBackups\/MY-BACKUP",
           "readOnly": true,
           "type": "string"
         },
         "labels": {
-          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. Specifically, to add a new label, you would need to provide all of the existing labels along with the new label. If you only provide a map with the new label, all of the old labels will be removed (probably not what is desired).",
+          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. To add a new label, you must provide all of the existing labels along with the new label. **If you only provide a map with the new label, all of the old labels are removed.**",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -619,18 +620,18 @@
       "type": "object",
       "properties": {
         "privateClouds": {
-          "description": "A list of SDDC private clouds.",
+          "description": "A list of private clouds.",
           "type": "array",
           "items": {
             "$ref": "PrivateCloud"
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be send as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "A token that you can be send as `page_token` to retrieve the next page. If you omit this field, there are no subsequent pages.",
           "type": "string"
         },
         "unreachable": {
-          "description": "List of Locations that could not be reached.",
+          "description": "List of locations that could not be reached.",
           "type": "array",
           "items": {
             "type": "string"
@@ -640,16 +641,16 @@
     },
     "PrivateCloud": {
       "id": "PrivateCloud",
-      "description": "A private cloud resource. PrivateCloud is a regional resource.",
+      "description": "A private cloud resource. `PrivateCloud` is a regional resource.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of this PrivateCloud. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/privateClouds\/my-cloud`",
+          "description": "Output only. The resource name of this `PrivateCloud`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/privateClouds\/MY-CLOUD",
           "readOnly": true,
           "type": "string"
         },
         "labels": {
-          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. Specifically, to add a new label, you would need to provide all of the existing labels along with the new label. If you only provide a map with the new label, all of the old labels will be removed (probably not what is desired).",
+          "description": "You can use labels to attach lightweight metadata to resources for filtering and querying resource data. You can associate at most 64 user labels with each resource. Label keys and values may contain at most 63 characters and may only contain lowercase letters, numeric characters, underscores, and dashes. Label keys must start with a letter, and international characters are allowed. The empty string is a valid label. Labels are set on creation and updated like any other field. To add a new label, you must provide all of the existing labels along with the new label. **If you only provide a map with the new label, all of the old labels are removed.**",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -660,7 +661,7 @@
           "type": "string"
         },
         "networkConfig": {
-          "description": "NetworkConfig passed in the param.",
+          "description": "`NetworkConfig` passed in the param.",
           "$ref": "NetworkConfig"
         },
         "createTime": {
@@ -709,23 +710,23 @@
     },
     "NetworkConfig": {
       "id": "NetworkConfig",
-      "description": "Network configuration in the consumer project with which the peering has to be done.",
+      "description": "Network configuration in the consumer project with which peering is done.",
       "type": "object",
       "properties": {
         "network": {
-          "description": "name of the network in the consumer project with which the tenant project will be peered. In the case of shared VPC where the network lives inside another project the network should should be provided in the form of \/project\/{host_project_id}\/global\/networks\/{network}",
+          "description": "Name of the network in the consumer project with which the tenant project will be peered. In the case of shared VPC where the network lives inside another project, provide the network in the following form: \/project\/ HOST-PROJECT-NUMBER\/global\/networks\/NETWORK",
           "type": "string"
         },
         "externalIpAccess": {
-          "description": "controls if vCenter and NSX can be accessed via internet. - FQDNs will resolve to the allocated external IPs for sddc domain but remains mapping to the internal ip within consumer subnets. - NAT will be set up on NSX for external ip ingress traffic. - users need to manually configure NSX firewall to allow HTTPs traffic.",
+          "description": "Controls whether vCenter and NSX can be accessed via the internet. - FQDNs resolve to the allocated external IPs for private cloud domain but map to the internal IP within consumer subnets. - NAT is set up on NSX for external IP ingress traffic. - Users must manually configure NSX firewall rules to allow HTTPS traffic.",
           "type": "boolean"
         },
         "managementCidr": {
-          "description": "Management CIDR used by VMWare management applicances.",
+          "description": "Management CIDR range used by VMware management applicances.",
           "type": "string"
         },
         "workloadCidr": {
-          "description": "Workload CIDR used by VMWare workload VMs.",
+          "description": "Workload CIDR range used by VMware workload VMs.",
           "type": "string"
         }
       }
@@ -763,7 +764,7 @@
     },
     "Nsx": {
       "id": "Nsx",
-      "description": "Nsx description of a cluster group",
+      "description": "NSX description of a cluster group",
       "type": "object",
       "properties": {
         "clientUrl": {
@@ -797,18 +798,18 @@
       "type": "object",
       "properties": {
         "clusterGroups": {
-          "description": "A list of SDDC cluster groups.",
+          "description": "A list of private cloud cluster groups.",
           "type": "array",
           "items": {
             "$ref": "ClusterGroup"
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be send as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "A token, which can be send as `page_token` to retrieve the next page. If you omit this field, there are no subsequent pages.",
           "type": "string"
         },
         "unreachable": {
-          "description": "List of Locations that could not be reached.",
+          "description": "List of locations that could not be reached.",
           "type": "array",
           "items": {
             "type": "string"
@@ -818,16 +819,16 @@
     },
     "ClusterGroup": {
       "id": "ClusterGroup",
-      "description": "A cluster group resource. ClusterGroup is a regional resource.",
+      "description": "A cluster group resource. `ClusterGroup` is a regional resource.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of this ClusterGroup. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+          "description": "Output only. The resource name of this `ClusterGroup`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY-GROUP",
           "readOnly": true,
           "type": "string"
         },
         "labels": {
-          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. Specifically, to add a new label, you would need to provide all of the existing labels along with the new label. If you only provide a map with the new label, all of the old labels will be removed (probably not what is desired).",
+          "description": "You can use labels to attach lightweight metadata to resources for filtering and querying resource data. You can associate at most 64 user labels with each resource. Label keys and values may contain at most 63 characters and may only contain lowercase letters, numeric characters, underscores, and dashes. Label keys must start with a letter, and international characters are allowed. The empty string is a valid label. Labels are set on creation and updated like any other field. To add a new label, you must provide all of the existing labels along with the new label. **If you only provide a map with the new label, all of the old labels are removed.**",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -838,7 +839,7 @@
           "type": "string"
         },
         "networkConfig": {
-          "description": "NetworkConfig passed in the param.",
+          "description": "`NetworkConfig` passed in the param.",
           "$ref": "NetworkConfig"
         },
         "createTime": {
@@ -884,7 +885,7 @@
           "$ref": "Vcenter"
         },
         "nsx": {
-          "description": "Output only. Nsx information.",
+          "description": "Output only. NSX information.",
           "readOnly": true,
           "$ref": "Nsx"
         }
@@ -892,15 +893,15 @@
     },
     "ResetCloudAdminCredentialsRequest": {
       "id": "ResetCloudAdminCredentialsRequest",
-      "description": "Request for resetting vCenter or NSX CloudAdmin accounts.",
+      "description": "Request to reset vCenter or NSX **CloudAdmin** accounts.",
       "type": "object",
       "properties": {
         "resetVcenterCloudadmin": {
-          "description": "Required. If true, reset the vCenter cloudadmin account.",
+          "description": "Required. If true, reset the vCenter **CloudAdmin** account.",
           "type": "boolean"
         },
         "resetNsxCloudadmin": {
-          "description": "Required. If true, reset the NSX cloudadmin account.",
+          "description": "Required. If true, reset the NSX **CloudAdmin** account.",
           "type": "boolean"
         }
       }
@@ -1377,7 +1378,7 @@
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "Output only. The time the operation finished running.",
+          "description": "Output only. The time at which the operation finished running.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -1398,7 +1399,7 @@
           "type": "string"
         },
         "requestedCancellation": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have value `Operation.error` with a `google.rpc.Status.code` of 1, corresponding to `Code.CANCELLED`.",
           "readOnly": true,
           "type": "boolean"
         },
@@ -2363,20 +2364,20 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The location and project which will be queried for data centers. For example: `projects\/my-project\/locations\/us-central1`",
+                      "description": "Required. The location and project that is queried for data centers. For example, projects\/PROJECT-NUMBER\/locations\/us-central1",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of clusterGroupBackups to return. The service may return fewer than this value.",
+                      "description": "The maximum number of `clusterGroupBackup` objects to return. The service may return fewer cluster group backups.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A page token, received from a previous `ListClusterGroupBackupsRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListClusterGroupBackupsRequest` must match the call that provided the page token.",
+                      "description": "A page token, received from a previous `ListClusterGroupBackupsRequest` call. Provide this to retrieve the subsequent page. When paginating, you must provide exactly the same parameters to `ListClusterGroupBackupsRequest` as you provided to the page token request.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2395,7 +2396,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists ClusterGroupBackups in a given project and location(region)."
+                  "description": "Lists `ClusterGroupBackup` objects in a given project and location (region)."
                 },
                 "get": {
                   "id": "sddc.projects.locations.clusterGroupBackups.get",
@@ -2404,7 +2405,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the ClusterGroupBackup to retrieve. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroupBackups\/my-backup`",
+                      "description": "Required. The resource name of the `ClusterGroupBackup` to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroupBackups\/MY_BACKUP",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroupBackups\/[^\/]+$",
@@ -2420,7 +2421,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single ClusterGroupBackup."
+                  "description": "Gets details of a single `ClusterGroupBackup`."
                 },
                 "create": {
                   "id": "sddc.projects.locations.clusterGroupBackups.create",
@@ -2429,14 +2430,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The location(region) and project where the new ClusterGroupBackup will be created. For example: `projects\/my-project\/locations\/us-central1`",
+                      "description": "Required. The location (region) and project where the new `ClusterGroupBackup` is created. For example, projects\/PROJECT-NUMBER \/locations\/us-central1",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "clusterGroupBackupId": {
-                      "description": "Required. The user-provided id of the ClusterGroupBackup to be created. This id must be unique among ClusterGroupBackups within the parent and will become the final token in the name URI.",
+                      "description": "Required. The user-provided ID of the `ClusterGroupBackup` to create. This ID must be unique among `ClusterGroupBackup` objects within the parent and becomes the final token in the name URI.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2458,7 +2459,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new ClusterGroupBackup in a given project and location(region). The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the new ClusterGroupBackup will be functional. Completed longrunning.Operation will contain the new ClusterGroupBackup object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation."
+                  "description": "`ClusterGroupBackup` is functional. A completed `longrunning.Operation` contains the new `ClusterGroupBackup` object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`."
                 },
                 "delete": {
                   "id": "sddc.projects.locations.clusterGroupBackups.delete",
@@ -2467,7 +2468,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the ClusterGroupBackup to be deleted.",
+                      "description": "Required. The resource name of the `ClusterGroupBackup` to be deleted.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroupBackups\/[^\/]+$",
@@ -2488,7 +2489,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a ClusterGroupBackup."
+                  "description": "Deletes a `ClusterGroupBackup`."
                 }
               }
             },
@@ -2501,20 +2502,20 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The location and project which will be queried for data centers. For example: `projects\/my-project\/locations\/us-central1`",
+                      "description": "Required. The location and project which will be queried for data centers. For example, projects\/PROJECT-NUMBER\/locations\/us-central1",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of privateCloudBackups to return. The service may return fewer than this value. default page size is 500",
+                      "description": "The maximum number of `PrivateCloudBackup' objects to return. The service may return fewer than this value. The default is 500.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A page token, received from a previous `ListPrivateCloudBackupsRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListPrivateCloudBackupsRequest` must match the call that provided the page token.",
+                      "description": "A page token, received from a previous `ListPrivateCloudBackupsRequest` call. Provide this to retrieve the subsequent page. When paginating, you must provide exactly the same parameters to `ListPrivateCloudBackupsRequest` as you provided to the page token request.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2533,7 +2534,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists PrivateCloudBackups in a given project and location(region)."
+                  "description": "Lists `PrivateCloudBackup` objects in a given project and location (region)."
                 },
                 "get": {
                   "id": "sddc.projects.locations.privateCloudBackups.get",
@@ -2542,7 +2543,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the PrivateCloudBackup to retrieve. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/privateCloudBackups\/my-backup`",
+                      "description": "Required. The resource name of the PrivateCloudBackup to retrieve. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroupBackups\/MY-BACKUP",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateCloudBackups\/[^\/]+$",
@@ -2558,7 +2559,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single PrivateCloudBackup."
+                  "description": "Gets details of a single `PrivateCloudBackup`."
                 },
                 "create": {
                   "id": "sddc.projects.locations.privateCloudBackups.create",
@@ -2567,14 +2568,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The location(region) and project where the new PrivateCloudBackup will be created. For example: `projects\/my-project\/locations\/us-central1`",
+                      "description": "Required. The location (region) and project where the new `PrivateCloudBackup` will be created. For example, projects\/PROJECT-NUMBER \/locations\/us-central1",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "privateCloudBackupId": {
-                      "description": "Required. The user-provided id of the PrivateCloudBackup to be created. This id must be unique among PrivateCloudBackups within the parent and will become the final token in the name URI.",
+                      "description": "Required. The user-provided id of the `PrivateCloudBackup` to be created. This ID must be unique among `PrivateCloudBackup` objects within the parent and becomes the final token in the name URI.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2596,7 +2597,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new PrivateCloudBackup in a given project and location(region). The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the new PrivateCloudBackup will be functional. Completed longrunning.Operation will contain the new PrivateCloudBackup object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation."
+                  "description": "Creates a new `PrivateCloudBackup` in a given project and location (region). The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the `PrivateCloudBackup` has a *READY* status and is fully functional. A completed `longrunning.Operation` contains the new `PrivateCloudBackup` object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`."
                 },
                 "delete": {
                   "id": "sddc.projects.locations.privateCloudBackups.delete",
@@ -2605,7 +2606,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the PrivateCloudBackup to be deleted.",
+                      "description": "Required. The resource name of the `PrivateCloudBackup` to be deleted.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateCloudBackups\/[^\/]+$",
@@ -2626,7 +2627,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a PrivateCloudBackup."
+                  "description": "Deletes a `PrivateCloudBackup`."
                 }
               }
             },
@@ -2639,20 +2640,20 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The location and project which will be queried for data centers. For example: `projects\/my-project\/locations\/us-central1`",
+                      "description": "Required. The location and project which will be queried for data centers. For example, projects\/PROJECT-NUMBER\/locations\/us-central1",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of privateClouds to return. The service may return fewer than this value.",
+                      "description": "The maximum number of private clouds to return. The service may return fewer private clouds.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A page token, received from a previous `ListPrivateCloudsRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListPrivateCloudsRequest` must match the call that provided the page token.",
+                      "description": "A page token, received from a previous `ListPrivateCloudsRequest` call. Provide this to retrieve the subsequent page. When paginating, you must provide exactly the same parameters to `ListPrivateCloudsRequest` as you provided to the page token request.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2671,7 +2672,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists PrivateClouds in a given project and location(region)."
+                  "description": "Lists `PrivateCloud` objects in a given project and location (region)."
                 },
                 "get": {
                   "id": "sddc.projects.locations.privateClouds.get",
@@ -2680,7 +2681,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the PrivateCloud to retrieve. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/privateClouds\/my-cloud`",
+                      "description": "Required. The resource name of the `PrivateCloud` to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/privateClouds\/MY_CLOUD",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
@@ -2696,7 +2697,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single PrivateCloud."
+                  "description": "Gets details of a single `PrivateCloud`."
                 },
                 "create": {
                   "id": "sddc.projects.locations.privateClouds.create",
@@ -2705,14 +2706,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The location(region) and project where the new PrivateCloud will be created. For example: `projects\/my-project\/locations\/us-central1`",
+                      "description": "Required. The location (region) and project where the new `PrivateCloud` is created. For example, projects\/PROJECT-NUMBER\/locations\/us-central1",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "privateCloudId": {
-                      "description": "Required. The user-provided id of the PrivateCloud to be created. This id must be unique among PrivateClouds within the parent and will become the final token in the name URI.",
+                      "description": "Required. The user-provided ID of the `PrivateCloud` to create. This ID must be unique among `PrivateClouds` within the parent and becomes the final token in the name URI.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2729,7 +2730,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new PrivateCloud in a given project and location(region). The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the new PrivateCloud will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation."
+                  "description": "Creates a new `PrivateCloud` in a given project and location (region). The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the new `PrivateCloud` is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `DeleteOperation`."
                 },
                 "patch": {
                   "id": "sddc.projects.locations.privateClouds.patch",
@@ -2738,14 +2739,14 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. The resource name of this PrivateCloud. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/privateClouds\/my-cloud`",
+                      "description": "Output only. The resource name of this `PrivateCloud`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/privateClouds\/MY-CLOUD",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field may only include these fields: \"description\" \"labels\" \"network_config.external_ip_access\"",
+                      "description": "Mask of fields to update. You must provide at least one path in this field. The elements of the repeated paths field may only include the following fields: \"description\" \"labels\" \"network_config.external_ip_access\"",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2763,7 +2764,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates description, labels and network config of a specific privateCloud."
+                  "description": "Updates the description, labels, and `NetworkConfig` of a specific `PrivateCloud`."
                 },
                 "delete": {
                   "id": "sddc.projects.locations.privateClouds.delete",
@@ -2772,7 +2773,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the PrivateCloud to be deleted.",
+                      "description": "Required. The resource name of the `PrivateCloud` to be deleted.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
@@ -2788,7 +2789,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a PrivateCloud."
+                  "description": "Deletes a `PrivateCloud`."
                 }
               }
               ,
@@ -2802,20 +2803,20 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The project, location and cluster group which will be queried for clusters. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                          "description": "Required. The project, location, and cluster group that is queried for clusters. For example, projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY_GROUP",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of clusters to return. The service may return fewer than this value.",
+                          "description": "The maximum number of clusters to return. The service might return fewer clusters.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "A page token, received from a previous `ListClustersRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListClustersRequest` must match the call that provided the page token.",
+                          "description": "A page token received from a previous `ListClustersRequest`. Provide this to retrieve the subsequent page. When paginating, you must provide exactly the same parameters to `ListClustersRequest` as you provided to the page token request.",
                           "location": "query",
                           "type": "string"
                         },
@@ -2834,7 +2835,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists Clusters in a given private cloud. "
+                      "description": "Lists `Clusters` in a given private cloud. "
                     },
                     "get": {
                       "id": "sddc.projects.locations.privateClouds.clusters.get",
@@ -2843,7 +2844,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the Cluster to retrieve. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/clusters\/my-cluster`",
+                          "description": "Required. The resource name of the Cluster to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/clusters\/ MY_CLUSTER",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
@@ -2859,7 +2860,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets details of a single Cluster."
+                      "description": "Gets details of a single cluster."
                     },
                     "create": {
                       "id": "sddc.projects.locations.privateClouds.clusters.create",
@@ -2868,19 +2869,19 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The ClusterGroup in where the new Cluster will be created. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                          "description": "Required. The `ClusterGroup` in where the new Cluster will be created. For example, projects\/PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/ MY_GROUP",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "Required. The user-provided id of the new Cluster. This id must be unique among Clusters within the parent and will become the final token in the name URI.",
+                          "description": "Required. The user-provided ID of the `Cluster` to create. This ID must be unique among `Clusters` within the parent and becomes the final token in the name URI.",
                           "location": "query",
                           "type": "string"
                         },
                         "managementCluster": {
-                          "description": "Required. Deprecated. Use the management property in the Cluster resource. Whether the cluster is the management cluster.",
+                          "description": "Required. Deprecated. Use the management property in the `Cluster` resource. Whether the cluster is the management cluster.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -2906,14 +2907,14 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. The resource name of this Cluster. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/clusters\/my-cluster`",
+                          "description": "Output only. The resource name of this `Cluster`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/REGION\/clusterGroups\/MY-GROUP\/clusters\/MY-CLUSTER",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field may only include these fields: \"labels\"",
+                          "description": "Mask of fields to update. You must provide at least one path in this field. The elements of the repeated paths field may only include these fields: \"labels\"",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -2940,7 +2941,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the Cluster to be deleted.",
+                          "description": "Required. The resource name of the `Cluster` to delete.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
@@ -2956,7 +2957,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a Cluster."
+                      "description": "Deletes a cluster."
                     },
                     "addNodes": {
                       "id": "sddc.projects.locations.privateClouds.clusters.addNodes",
@@ -2965,7 +2966,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "cluster": {
-                          "description": "Required. The resource name of the Cluster to perform add nodes. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/clusters\/my-cluster`",
+                          "description": "Required. The resource name of the `Cluster` to perform add nodes. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/clusters\/ MY_CLUSTER",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
@@ -2993,7 +2994,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "cluster": {
-                          "description": "Required. The resource name of the Cluster to perform remove nodes. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/clusters\/my-cluster`",
+                          "description": "Required. The resource name of the `Cluster` to perform remove nodes. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/clusters\/ MY_CLUSTER",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
@@ -3025,20 +3026,20 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent ClusterGroup or PrivateCloud of which the IpAddresses belong to. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                          "description": "Required. The parent ClusterGroup or PrivateCloud of which the IpAddresses belong to. For example: projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY-GROUP",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of IpAddresses to return. The service may return fewer than this value.",
+                          "description": "The maximum number of `IpAddress` objects to return. The service may return fewer than this value.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "A page token, received from a previous `ListIpAddressesRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListIpAddressesRequest` must match the call that provided the page token.",
+                          "description": "A page token, received from a previous `ListIpAddressesRequest` call. Provide this to retrieve the subsequent page. When paginating, you must provide exactly the same parameters to `ListIpAddressesRequest` as you provided to the page token request",
                           "location": "query",
                           "type": "string"
                         },
@@ -3057,7 +3058,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists IpAddresses in a given PrivateCloud."
+                      "description": "Lists `IpAddress` objects in a given `PrivateCloud`."
                     },
                     "get": {
                       "id": "sddc.projects.locations.privateClouds.ipAddresses.get",
@@ -3066,7 +3067,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the IpAddress to retrieve. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/ipAddresses\/my-ip`",
+                          "description": "Required. The resource name of the `IpAddress` to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/ipAddresses\/ MY_IP",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/ipAddresses\/[^\/]+$",
@@ -3082,7 +3083,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets the details of a single IpAddress."
+                      "description": "Gets the details of a single `IpAddress`."
                     },
                     "create": {
                       "id": "sddc.projects.locations.privateClouds.ipAddresses.create",
@@ -3091,14 +3092,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The ClusterGroup or PrivateCloud in which the IpAddress will be created. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                          "description": "Required. The ClusterGroup or private cloud in which the `IpAddress` will be created. For example, projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY-GROUP",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "type": "string"
                         },
                         "ipAddressId": {
-                          "description": "Required. The user-provided ID of the IpAddress to be created. This id must be unique among IpAddresses within the parent and will become the final token in the name URI.",
+                          "description": "Required. The user-provided ID of the `IpAddress` to create. This ID must be unique among `IpAddress` within the parent and becomes the final token in the name URI.",
                           "location": "query",
                           "type": "string"
                         }
@@ -3115,7 +3116,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new IpAddress in a given PrivateCloud. The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the cluster will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation."
+                      "description": "Creates a new `IpAddress` in a given `PrivateCloud`. The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the cluster has a a *READY* status and is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`."
                     },
                     "delete": {
                       "id": "sddc.projects.locations.privateClouds.ipAddresses.delete",
@@ -3124,7 +3125,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the ClusterGroupBackup to be deleted.",
+                          "description": "Required. The resource name of the `ClusterGroupBackup` to be deleted.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/ipAddresses\/[^\/]+$",
@@ -3140,7 +3141,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes an IpAddress in a given PrivateCloud."
+                      "description": "Deletes an `IpAddress` in a given `PrivateCloud`."
                     }
                   }
                 }
@@ -3155,20 +3156,20 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The location and project which will be queried for data centers. For example: `projects\/my-project\/locations\/us-central1`",
+                      "description": "Required. The location and project which will be queried for data centers. For example, projects\/PROJECT-NUMBER\/locations\/us-central1",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of clusterGroups to return. The service may return fewer than this value.",
+                      "description": "The maximum number of cluster groups to return. The service may return fewer cluster groups.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A page token, received from a previous `ListClusterGroupsRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListClusterGroupsRequest` must match the call that provided the page token.",
+                      "description": "A page token, received from a previous `ListClusterGroupsRequest` call. Provide this to retrieve the subsequent page. When paginating, you must provide exactly the same parameters to `ListClusterGroupsRequest` as you provided to the page token request.",
                       "location": "query",
                       "type": "string"
                     },
@@ -3187,7 +3188,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists ClusterGroups in a given project and location(region)."
+                  "description": "Lists `ClusterGroup` objects in a given project and location (region)."
                 },
                 "get": {
                   "id": "sddc.projects.locations.clusterGroups.get",
@@ -3196,7 +3197,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the ClusterGroup to retrieve. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                      "description": "Required. The resource name of the `ClusterGroup` to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
@@ -3212,7 +3213,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single ClusterGroup."
+                  "description": "Gets details of a single `ClusterGroup`."
                 },
                 "create": {
                   "id": "sddc.projects.locations.clusterGroups.create",
@@ -3221,14 +3222,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The location(region) and project where the new ClusterGroup will be created. For example: `projects\/my-project\/locations\/us-central1`",
+                      "description": "Required. The location (region) and project where the new `ClusterGroup` is created. For example, projects\/PROJECT-NUMBER\/locations\/us-central1",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "clusterGroupId": {
-                      "description": "Required. The user-provided id of the ClusterGroup to be created. This id must be unique among ClusterGroups within the parent and will become the final token in the name URI.",
+                      "description": "Required. The user-provided ID of the `ClusterGroup` to create. This ID must be unique among `ClusterGroup` objects within the parent and becomes the final token in the name URI.",
                       "location": "query",
                       "type": "string"
                     }
@@ -3245,7 +3246,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new ClusterGroup in a given project and location(region). The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the new ClusterGroup will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation."
+                  "description": "Creates a new `ClusterGroup` in a given project and location (region). The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the new `ClusterGroup` is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `DeleteOperation`."
                 },
                 "patch": {
                   "id": "sddc.projects.locations.clusterGroups.patch",
@@ -3254,14 +3255,14 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. The resource name of this ClusterGroup. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                      "description": "Output only. The resource name of this `ClusterGroup`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY-GROUP",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field may only include these fields: \"description\" \"labels\" \"network_config.external_ip_access\"",
+                      "description": "Mask of fields to update. You must provide at least one path in this field. The elements of the repeated paths field may only include the following fields: \"description\" \"labels\" \"network_config.external_ip_access\"",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -3279,7 +3280,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates description, labels, and network config of a specific clusterGroup."
+                  "description": "Updates the description, labels, and `NetworkConfig` of a specific `ClusterGroup`."
                 },
                 "delete": {
                   "id": "sddc.projects.locations.clusterGroups.delete",
@@ -3288,7 +3289,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the ClusterGroup to be deleted.",
+                      "description": "Required. The resource name of the `ClusterGroup` to be deleted.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
@@ -3304,7 +3305,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a ClusterGroup."
+                  "description": "Deletes a `ClusterGroup`."
                 },
                 "resetCloudAdminCredentials": {
                   "id": "sddc.projects.locations.clusterGroups.resetCloudAdminCredentials",
@@ -3313,7 +3314,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "clusterGroup": {
-                      "description": "Required. The resource name of the cluster group to reset the cloudadmin password on. For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                      "description": "Required. The resource name of the cluster group on which to reset the **CloudAdmin** password. For example, projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY_GROUP",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
@@ -3433,20 +3434,20 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The project, location and cluster group which will be queried for clusters. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                          "description": "Required. The project, location, and cluster group that is queried for clusters. For example, projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY_GROUP",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of clusters to return. The service may return fewer than this value.",
+                          "description": "The maximum number of clusters to return. The service might return fewer clusters.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "A page token, received from a previous `ListClustersRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListClustersRequest` must match the call that provided the page token.",
+                          "description": "A page token received from a previous `ListClustersRequest`. Provide this to retrieve the subsequent page. When paginating, you must provide exactly the same parameters to `ListClustersRequest` as you provided to the page token request.",
                           "location": "query",
                           "type": "string"
                         },
@@ -3465,7 +3466,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists Clusters in a given cluster group."
+                      "description": "Lists clusters in a given cluster group."
                     },
                     "get": {
                       "id": "sddc.projects.locations.clusterGroups.clusters.get",
@@ -3474,7 +3475,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the Cluster to retrieve. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/clusters\/my-cluster`",
+                          "description": "Required. The resource name of the Cluster to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/clusters\/ MY_CLUSTER",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/clusters\/[^\/]+$",
@@ -3490,7 +3491,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets details of a single Cluster."
+                      "description": "Gets details of a single cluster."
                     },
                     "create": {
                       "id": "sddc.projects.locations.clusterGroups.clusters.create",
@@ -3499,19 +3500,19 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The ClusterGroup in where the new Cluster will be created. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                          "description": "Required. The `ClusterGroup` in where the new Cluster will be created. For example, projects\/PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/ MY_GROUP",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "Required. The user-provided id of the new Cluster. This id must be unique among Clusters within the parent and will become the final token in the name URI.",
+                          "description": "Required. The user-provided ID of the `Cluster` to create. This ID must be unique among `Clusters` within the parent and becomes the final token in the name URI.",
                           "location": "query",
                           "type": "string"
                         },
                         "managementCluster": {
-                          "description": "Required. Deprecated. Use the management property in the Cluster resource. Whether the cluster is the management cluster.",
+                          "description": "Required. Deprecated. Use the management property in the `Cluster` resource. Whether the cluster is the management cluster.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -3528,7 +3529,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new cluster in a given cluster group. The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the cluster will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation."
+                      "description": "Creates a new cluster in a given cluster group. The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the cluster has a a *READY* status and is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`."
                     },
                     "patch": {
                       "id": "sddc.projects.locations.clusterGroups.clusters.patch",
@@ -3537,14 +3538,14 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. The resource name of this Cluster. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/clusters\/my-cluster`",
+                          "description": "Output only. The resource name of this `Cluster`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/REGION\/clusterGroups\/MY-GROUP\/clusters\/MY-CLUSTER",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/clusters\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field may only include these fields: \"labels\"",
+                          "description": "Mask of fields to update. You must provide at least one path in this field. The elements of the repeated paths field may only include these fields: \"labels\"",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -3571,7 +3572,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the Cluster to be deleted.",
+                          "description": "Required. The resource name of the `Cluster` to delete.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/clusters\/[^\/]+$",
@@ -3587,7 +3588,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a Cluster."
+                      "description": "Deletes a cluster."
                     },
                     "addNodes": {
                       "id": "sddc.projects.locations.clusterGroups.clusters.addNodes",
@@ -3596,7 +3597,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "cluster": {
-                          "description": "Required. The resource name of the Cluster to perform add nodes. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/clusters\/my-cluster`",
+                          "description": "Required. The resource name of the `Cluster` to perform add nodes. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/clusters\/ MY_CLUSTER",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/clusters\/[^\/]+$",
@@ -3624,7 +3625,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "cluster": {
-                          "description": "Required. The resource name of the Cluster to perform remove nodes. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/clusters\/my-cluster`",
+                          "description": "Required. The resource name of the `Cluster` to perform remove nodes. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/clusters\/ MY_CLUSTER",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/clusters\/[^\/]+$",
@@ -3656,20 +3657,20 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent ClusterGroup or PrivateCloud of which the IpAddresses belong to. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                          "description": "Required. The parent ClusterGroup or PrivateCloud of which the IpAddresses belong to. For example: projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY-GROUP",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of IpAddresses to return. The service may return fewer than this value.",
+                          "description": "The maximum number of `IpAddress` objects to return. The service may return fewer than this value.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "A page token, received from a previous `ListIpAddressesRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListIpAddressesRequest` must match the call that provided the page token.",
+                          "description": "A page token, received from a previous `ListIpAddressesRequest` call. Provide this to retrieve the subsequent page. When paginating, you must provide exactly the same parameters to `ListIpAddressesRequest` as you provided to the page token request",
                           "location": "query",
                           "type": "string"
                         },
@@ -3688,7 +3689,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists IpAddresses in a given ClusterGroup."
+                      "description": "Lists `IpAddress` objects in a given `ClusterGroup`."
                     },
                     "get": {
                       "id": "sddc.projects.locations.clusterGroups.ipAddresses.get",
@@ -3697,7 +3698,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the IpAddress to retrieve. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/ipAddresses\/my-ip`",
+                          "description": "Required. The resource name of the `IpAddress` to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/ipAddresses\/ MY_IP",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/ipAddresses\/[^\/]+$",
@@ -3713,7 +3714,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets the details of a single IpAddress."
+                      "description": "Gets the details of a single `IpAddress`."
                     },
                     "create": {
                       "id": "sddc.projects.locations.clusterGroups.ipAddresses.create",
@@ -3722,14 +3723,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The ClusterGroup or PrivateCloud in which the IpAddress will be created. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                          "description": "Required. The ClusterGroup or private cloud in which the `IpAddress` will be created. For example, projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY-GROUP",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                           "type": "string"
                         },
                         "ipAddressId": {
-                          "description": "Required. The user-provided ID of the IpAddress to be created. This id must be unique among IpAddresses within the parent and will become the final token in the name URI.",
+                          "description": "Required. The user-provided ID of the `IpAddress` to create. This ID must be unique among `IpAddress` within the parent and becomes the final token in the name URI.",
                           "location": "query",
                           "type": "string"
                         }
@@ -3746,7 +3747,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new IpAddress in a given ClusterGroup. The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the cluster will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation."
+                      "description": "Creates a new `IpAddress` in a given `ClusterGroup`. The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the cluster is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `DeleteOperation`."
                     },
                     "delete": {
                       "id": "sddc.projects.locations.clusterGroups.ipAddresses.delete",
@@ -3755,7 +3756,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the ClusterGroupBackup to be deleted.",
+                          "description": "Required. The resource name of the `ClusterGroupBackup` to be deleted.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/ipAddresses\/[^\/]+$",
@@ -3771,7 +3772,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes an IpAddress in a given ClusterGroup."
+                      "description": "Deletes an `IpAddress` in a given `ClusterGroup`."
                     }
                   }
                 }

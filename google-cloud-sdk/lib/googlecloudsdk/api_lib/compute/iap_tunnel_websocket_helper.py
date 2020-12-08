@@ -100,7 +100,7 @@ class IapTunnelWebSocketHelper(object):
   def IsClosed(self):
     """Check to see if WebSocket has closed."""
     return (self._is_closed or
-            (self._receiving_thread and not self._receiving_thread.isAlive()))
+            (self._receiving_thread and not self._receiving_thread.is_alive()))
 
   def ErrorMsg(self):
     return self._error_msg

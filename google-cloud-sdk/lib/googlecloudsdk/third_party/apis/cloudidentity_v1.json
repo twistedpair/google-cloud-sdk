@@ -1333,7 +1333,7 @@
           "response": {
             "$ref": "Operation"
           },
-          "description": "Creates a device. Only company-owned device may be created."
+          "description": "Creates a device. Only company-owned device may be created. **Note**: This method is available only to customers who have one of the following SKUs: Enterprise Standard, Enterprise Plus, Enterprise for Education, and Cloud Identity Premium"
         },
         "get": {
           "id": "cloudidentity.devices.get",
@@ -1374,7 +1374,7 @@
               "type": "string"
             },
             "filter": {
-              "description": "Optional. Additional restrictions when fetching list of devices. [Help Center article link](https:\/\/support.google.com\/a\/answer\/7549103)",
+              "description": "Optional. Additional restrictions when fetching list of devices. For a list of search fields, refer to [Mobile device search fields](https:\/\/developers.google.com\/admin-sdk\/directory\/v1\/search-operators). Multiple search fields are separated by the space character.",
               "location": "query",
               "type": "string"
             },
@@ -1542,7 +1542,7 @@
           "httpMethod": "POST",
           "parameters": {
             "name": {
-              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}`, where device_id is the unique ID assigned to the Device, and device_user_id is the unique ID assigned to the User.",
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}`, where device_id is the unique ID assigned to the Device.",
               "location": "path",
               "required": true,
               "pattern": "^devices$",
@@ -1592,7 +1592,7 @@
           "httpMethod": "POST",
           "parameters": {
             "name": {
-              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}`, where device_id is the unique ID assigned to the Device, and device_user_id is the unique ID assigned to the User.",
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}`, where device_id is the unique ID assigned to the Device.",
               "location": "path",
               "required": true,
               "pattern": "^devices\/[^\/]+$",
@@ -1661,7 +1661,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "Optional. Additional restrictions when fetching list of devices. [HC article](https:\/\/support.google.com\/a\/answer\/7549103)",
+                  "description": "Optional. Additional restrictions when fetching list of devices. For a list of search fields, refer to [Mobile device search fields](https:\/\/developers.google.com\/admin-sdk\/directory\/v1\/search-operators). Multiple search fields are separated by the space character.",
                   "location": "query",
                   "type": "string"
                 },
@@ -2164,7 +2164,7 @@
                   "response": {
                     "$ref": "Operation"
                   },
-                  "description": "Updates the client state for the device user"
+                  "description": "Updates the client state for the device user **Note**: This method is available only to customers who have one of the following SKUs: Enterprise Standard, Enterprise Plus, Enterprise for Education, and Cloud Identity Premium"
                 }
               }
             }

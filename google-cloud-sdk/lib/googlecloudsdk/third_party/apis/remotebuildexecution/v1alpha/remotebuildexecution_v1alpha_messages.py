@@ -888,6 +888,8 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         run containers with CreateComputeSystem error that involves an
         incorrect parameter (more specific version of
         DOCKER_CREATE_COMPUTE_SYSTEM_ERROR that is user-caused).
+      DOCKER_TOO_MANY_SYMBOLIC_LINK_LEVELS: Docker failed to create an overlay
+        mount because of too many levels of symbolic links.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -927,6 +929,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_CREATE_RUNTIME_PERMISSION_DENIED = 35
     DOCKER_CREATE_PROCESS_FILE_NOT_FOUND = 36
     DOCKER_CREATE_COMPUTE_SYSTEM_INCORRECT_PARAMETER_ERROR = 37
+    DOCKER_TOO_MANY_SYMBOLIC_LINK_LEVELS = 38
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
@@ -1272,18 +1275,6 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListWorkerPoolsResponse(_mes
   workerPools = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool', 1, repeated=True)
 
 
-class GoogleDevtoolsRemotebuildexecutionAdminV1alphaSoleTenancyConfig(_messages.Message):
-  r"""SoleTenancyConfig specifies information required to host a pool on STNs.
-
-  Fields:
-    nodeType: The sole-tenant node type to host the pool's workers on.
-    nodesZone: Zone in which STNs are reserved.
-  """
-
-  nodeType = _messages.StringField(1)
-  nodesZone = _messages.StringField(2)
-
-
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateInstanceRequest(_messages.Message):
   r"""The request used for `UpdateInstance`.
 
@@ -1366,7 +1357,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
       Compute Engine on-demand VM and therefore won't be preempted). See
       [Preemptible VMs](https://cloud.google.com/preemptible-vms/) for more
       details.
-    soleTenancy: Sole-tenant node information for pools hosted on STNs.
+    soleTenantNodeType: The node type name to be used for sole-tenant nodes.
     vmImage: The name of the image used by each VM.
   """
 
@@ -1407,7 +1398,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
   minCpuPlatform = _messages.StringField(7)
   networkAccess = _messages.StringField(8)
   reserved = _messages.BooleanField(9)
-  soleTenancy = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaSoleTenancyConfig', 10)
+  soleTenantNodeType = _messages.StringField(10)
   vmImage = _messages.StringField(11)
 
 

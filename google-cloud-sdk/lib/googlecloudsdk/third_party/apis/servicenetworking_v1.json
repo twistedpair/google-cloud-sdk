@@ -508,12 +508,32 @@
           "type": "boolean"
         },
         "reservedRanges": {
-          "description": "Output only. The name of the allocated IP address ranges for this private service access connection.",
+          "description": "Output only. The reserved ranges associated with this private service access connection.",
           "readOnly": true,
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "GoogleCloudServicenetworkingV1ConsumerConfigReservedRange"
           }
+        }
+      }
+    },
+    "GoogleCloudServicenetworkingV1ConsumerConfigReservedRange": {
+      "id": "GoogleCloudServicenetworkingV1ConsumerConfigReservedRange",
+      "description": "Allocated IP address ranges for this private service access connection.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the reserved range.",
+          "type": "string"
+        },
+        "ipPrefixLength": {
+          "description": "The prefix length of the reserved range.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "address": {
+          "description": "The starting address of the reserved range. The address must be a valid IPv4 address in the x.x.x.x format. This value combined with the IP prefix length is the CIDR range for the reserved range.",
+          "type": "string"
         }
       }
     },

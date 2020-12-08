@@ -51,6 +51,23 @@ class ConfigChanger(six.with_metaclass(abc.ABCMeta, object)):
     return resource
 
 
+def WithChanges(resource, changes):
+  """Apply ConfigChangers to resource.
+
+  It's undefined whether the input resource is modified.
+
+  Args:
+    resource: KubernetesObject, probably a Service.
+    changes: List of ConfigChangers.
+
+  Returns:
+    Changed resource.
+  """
+  for config_change in changes:
+    resource = config_change.Adjust(resource)
+  return resource
+
+
 class LabelChanges(ConfigChanger):
   """Represents the user intent to modify metadata labels."""
 

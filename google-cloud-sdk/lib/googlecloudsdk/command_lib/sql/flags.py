@@ -637,7 +637,7 @@ def AddTier(parser, is_patch=False):
   parser.add_argument('--tier', '-t', required=False, help=help_text)
 
 
-def AddZone(parser, help_text):
+def AddZone(parser, help_text, enable_secondary_zone=False):
   """Adds the mutually exclusive `--gce-zone` and `--zone` to the parser."""
   zone_group = parser.add_mutually_exclusive_group()
   zone_group.add_argument(
@@ -649,7 +649,40 @@ def AddZone(parser, help_text):
           warn=('Flag `{flag_name}` is deprecated and will be removed by '
                 'release 255.0.0. Use `--zone` instead.')),
       help=help_text)
+  if enable_secondary_zone:
+    AddZonesPrimarySecondary(zone_group, help_text)
+  else:
+    zone_group.add_argument('--zone', required=False, help=help_text)
+
+
+def AddZonesPrimarySecondary(parser, help_text):
+  """Adds the `--zone` and `--secondary-zone` to the parser."""
+
+  zone_group = parser.add_group(required=False)
   zone_group.add_argument('--zone', required=False, help=help_text)
+  zone_group.add_argument('--secondary-zone', required=False, help=help_text)
+
+
+def AddRegion(parser):
+  parser.add_argument(
+      '--region',
+      required=False,
+      default='us-central',
+      help=('Regional location (e.g. asia-east1, us-east1). See the full '
+            'list of regions at '
+            'https://cloud.google.com/sql/docs/instance-locations.'))
+
+
+# TODO(b/31989340): add remote completion
+# TODO(b/73362371): Make specifying a location required.
+def AddLocationGroup(parser, enable_secondary_zone):
+  location_group = parser.add_mutually_exclusive_group()
+  AddRegion(location_group)
+  AddZone(
+      location_group,
+      help_text=('Preferred Compute Engine zone (e.g. us-central1-a, '
+                 'us-central1-b, etc.).'),
+      enable_secondary_zone=enable_secondary_zone)
 
 
 # Database specific flags

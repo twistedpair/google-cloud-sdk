@@ -124,9 +124,8 @@ def Explain(model_or_version_ref, instances):
   # Workaround since gcloud cannot handle HttpBody properly, see b/31403673
   # TODO(b/77278279): Decide whether we should always set this or not.
   encoding = None if six.PY2 else 'utf-8'
-  response, response_body = http.Http(response_encoding=encoding).request(
-      uri=url, method='POST', body=body, headers=headers)
-  if int(response.get('status')) != httplib.OK:
+  response_status, response_body = _GetPrediction(encoding, url, body, headers)
+  if int(response_status) != httplib.OK:
     raise HttpRequestFailError('HTTP request failed. Response: ' +
                                response_body)
   try:

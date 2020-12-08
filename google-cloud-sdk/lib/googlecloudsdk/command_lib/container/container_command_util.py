@@ -19,10 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.container import api_adapter
-from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import text
 
@@ -235,8 +233,6 @@ def GetAutoUpgrade(args):
     return args.enable_autoupgrade
   if getattr(args, 'enable_kubernetes_alpha', False):
     return None
-  if args.enable_autoupgrade:
-    log.warning(util.WARN_AUTOUPGRADE_ENABLED_BY_DEFAULT)
   # Return default value
   return args.enable_autoupgrade
 
@@ -282,6 +278,7 @@ def ParseUpdateOptionsBase(args, locations):
       locations=locations,
       enable_master_authorized_networks=args.enable_master_authorized_networks,
       master_authorized_networks=args.master_authorized_networks,
+      private_ipv6_google_access_type=args.private_ipv6_google_access_type,
       workload_pool=args.workload_pool,
       disable_workload_identity=args.disable_workload_identity,
       database_encryption_key=args.database_encryption_key,

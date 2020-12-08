@@ -123,7 +123,7 @@
     },
     "GoogleDevtoolsArtifactregistryV1alpha1GcsSource": {
       "id": "GoogleDevtoolsArtifactregistryV1alpha1GcsSource",
-      "description": "Google Cloud Storage location for the input content.",
+      "description": "Google Cloud Storage location where the artifacts currently reside.",
       "type": "object",
       "properties": {
         "uris": {

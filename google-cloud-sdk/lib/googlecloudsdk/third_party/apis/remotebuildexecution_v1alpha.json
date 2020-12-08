@@ -443,9 +443,9 @@
           "description": "The name of the image used by each VM.",
           "type": "string"
         },
-        "soleTenancy": {
-          "description": "Sole-tenant node information for pools hosted on STNs.",
-          "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaSoleTenancyConfig"
+        "soleTenantNodeType": {
+          "description": "The node type name to be used for sole-tenant nodes.",
+          "type": "string"
         }
       }
     },
@@ -461,21 +461,6 @@
         },
         "acceleratorType": {
           "description": "The type of accelerator to attach to each VM, e.g. \"nvidia-tesla-k80\" for nVidia Tesla K80.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleDevtoolsRemotebuildexecutionAdminV1alphaSoleTenancyConfig": {
-      "id": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaSoleTenancyConfig",
-      "description": "SoleTenancyConfig specifies information required to host a pool on STNs.",
-      "type": "object",
-      "properties": {
-        "nodeType": {
-          "description": "The sole-tenant node type to host the pool's workers on.",
-          "type": "string"
-        },
-        "nodesZone": {
-          "description": "Zone in which STNs are reserved.",
           "type": "string"
         }
       }
@@ -1249,7 +1234,8 @@
             "Docker failed to create OCI runtime because of file not found.",
             "Docker failed to create OCI runtime because of permission denied.",
             "Docker failed to create process because of file not found.",
-            "Docker failed to run containers with CreateComputeSystem error that involves an incorrect parameter (more specific version of DOCKER_CREATE_COMPUTE_SYSTEM_ERROR that is user-caused)."
+            "Docker failed to run containers with CreateComputeSystem error that involves an incorrect parameter (more specific version of DOCKER_CREATE_COMPUTE_SYSTEM_ERROR that is user-caused).",
+            "Docker failed to create an overlay mount because of too many levels of symbolic links."
           ],
           "enum": [
             "OK",
@@ -1289,7 +1275,8 @@
             "DOCKER_CREATE_RUNTIME_FILE_NOT_FOUND",
             "DOCKER_CREATE_RUNTIME_PERMISSION_DENIED",
             "DOCKER_CREATE_PROCESS_FILE_NOT_FOUND",
-            "DOCKER_CREATE_COMPUTE_SYSTEM_INCORRECT_PARAMETER_ERROR"
+            "DOCKER_CREATE_COMPUTE_SYSTEM_INCORRECT_PARAMETER_ERROR",
+            "DOCKER_TOO_MANY_SYMBOLIC_LINK_LEVELS"
           ]
         },
         "message": {

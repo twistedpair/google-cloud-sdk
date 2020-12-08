@@ -1507,6 +1507,33 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Deidentify(self, request, global_params=None):
+      r"""De-identifies data from the source store and writes it to the destination store. The metadata field type is OperationMetadata. If the request is successful, the response field type is DeidentifyDicomStoreSummary. The LRO result may still be successful if de-identification fails for some DICOM instances. The output DICOM store will not contain these failed resources. The number of resources processed are tracked in Operation.metadata. Error details are logged to Cloud Logging. For more information, see [Viewing logs](/healthcare/docs/how-tos/logging).
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresDeidentifyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Deidentify')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Deidentify.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:deidentify',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.dicomStores.deidentify',
+        ordered_params=['sourceStore'],
+        path_params=['sourceStore'],
+        query_params=[],
+        relative_path='v1alpha2/{+sourceStore}:deidentify',
+        request_field='deidentifyDicomStoreRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresDeidentifyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified DICOM store and removes all images that are contained within it.
 
@@ -1784,6 +1811,33 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
         request_field='fhirStore',
         request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresCreateRequest',
         response_type_name='FhirStore',
+        supports_download=False,
+    )
+
+    def Deidentify(self, request, global_params=None):
+      r"""De-identifies data from the source store and writes it to the destination store. The metadata field type is OperationMetadata. If the request is successful, the response field type is DeidentifyFhirStoreSummary. The number of resources processed are tracked in Operation.metadata. Error details are logged to Cloud Logging. For more information, see [Viewing logs](/healthcare/docs/how-tos/logging).
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsFhirStoresDeidentifyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Deidentify')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Deidentify.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:deidentify',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.fhirStores.deidentify',
+        ordered_params=['sourceStore'],
+        path_params=['sourceStore'],
+        query_params=[],
+        relative_path='v1alpha2/{+sourceStore}:deidentify',
+        request_field='deidentifyFhirStoreRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresDeidentifyRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

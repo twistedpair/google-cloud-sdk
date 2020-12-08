@@ -40,6 +40,8 @@ class AddonsConfig(_messages.Message):
       Kubernetes API
     dnsCacheConfig: Configuration for NodeLocalDNS, a dns cache running on
       cluster nodes
+    gcePersistentDiskCsiDriverConfig: Configuration for the Compute Engine
+      Persistent Disk CSI driver.
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
       replication controller has based on the resource usage of the existing
@@ -60,10 +62,11 @@ class AddonsConfig(_messages.Message):
   cloudRunConfig = _messages.MessageField('CloudRunConfig', 1)
   configConnectorConfig = _messages.MessageField('ConfigConnectorConfig', 2)
   dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 3)
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 4)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 5)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 6)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 7)
+  gcePersistentDiskCsiDriverConfig = _messages.MessageField('GcePersistentDiskCsiDriverConfig', 4)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 5)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 6)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 7)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 8)
 
 
 class AuthenticatorGroupsConfig(_messages.Message):
@@ -110,8 +113,9 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
       smallest allowed disk size is 10GB. If unspecified, the default disk
       size is 100GB.
-    diskType: Type of the disk attached to each node (e.g. 'pd-standard' or
-      'pd-ssd') If unspecified, the default disk type is 'pd-standard'
+    diskType: Type of the disk attached to each node (e.g. 'pd-standard', 'pd-
+      ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-
+      standard'
     management: Specifies the node management options for NAP created node-
       pools.
     minCpuPlatform: Minimum CPU platform to be used for NAP created node
@@ -381,6 +385,7 @@ class Cluster(_messages.Message):
       in route-based network mode.
     nodePools: The node pools associated with this cluster. This field should
       not be set if "node_config" or "initial_node_count" are specified.
+    notificationConfig: Notification configuration of the cluster.
     privateClusterConfig: Configuration for private cluster.
     releaseChannel: Release channel configuration.
     resourceLabels: The resource labels for the cluster to use to annotate any
@@ -395,8 +400,9 @@ class Cluster(_messages.Message):
       last `/16` from the container CIDR.
     shieldedNodes: Shielded Nodes configuration.
     status: [Output only] The current status of this cluster.
-    statusMessage: [Output only] Additional information about the current
-      status of this cluster, if available.
+    statusMessage: [Output only] Deprecated. Use conditions instead.
+      Additional information about the current status of this cluster, if
+      available.
     subnetwork: The name of the Google Compute Engine
       [subnetwork](https://cloud.google.com/compute/docs/subnetworks) to which
       the cluster is connected.
@@ -503,20 +509,21 @@ class Cluster(_messages.Message):
   nodeConfig = _messages.MessageField('NodeConfig', 35)
   nodeIpv4CidrSize = _messages.IntegerField(36, variant=_messages.Variant.INT32)
   nodePools = _messages.MessageField('NodePool', 37, repeated=True)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 38)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 39)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 40)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 41)
-  selfLink = _messages.StringField(42)
-  servicesIpv4Cidr = _messages.StringField(43)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 44)
-  status = _messages.EnumField('StatusValueValuesEnum', 45)
-  statusMessage = _messages.StringField(46)
-  subnetwork = _messages.StringField(47)
-  tpuIpv4CidrBlock = _messages.StringField(48)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 49)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 50)
-  zone = _messages.StringField(51)
+  notificationConfig = _messages.MessageField('NotificationConfig', 38)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 39)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 40)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 41)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 42)
+  selfLink = _messages.StringField(43)
+  servicesIpv4Cidr = _messages.StringField(44)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 45)
+  status = _messages.EnumField('StatusValueValuesEnum', 46)
+  statusMessage = _messages.StringField(47)
+  subnetwork = _messages.StringField(48)
+  tpuIpv4CidrBlock = _messages.StringField(49)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 50)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 51)
+  zone = _messages.StringField(52)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -617,6 +624,7 @@ class ClusterUpdate(_messages.Message):
       version - "1.X.Y": picks the highest valid gke.N patch in the 1.X.Y
       version - "1.X.Y-gke.N": picks an explicit Kubernetes version - "-":
       picks the Kubernetes master version
+    desiredNotificationConfig: The desired notification configuration.
     desiredPrivateClusterConfig: The desired private cluster configuration.
     desiredPrivateIpv6GoogleAccess: The desired state of IPv6 connectivity to
       Google Services.
@@ -663,13 +671,14 @@ class ClusterUpdate(_messages.Message):
   desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 15)
   desiredNodePoolId = _messages.StringField(16)
   desiredNodeVersion = _messages.StringField(17)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 18)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 19)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 20)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 21)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 22)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 23)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 24)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 18)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 19)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 20)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 21)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 22)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 23)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 24)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 25)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1337,6 +1346,17 @@ class Empty(_messages.Message):
 
 
 
+class GcePersistentDiskCsiDriverConfig(_messages.Message):
+  r"""Configuration for the Compute Engine PD CSI driver.
+
+  Fields:
+    enabled: Whether the Compute Engine PD CSI driver is enabled for this
+      cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class GetJSONWebKeysResponse(_messages.Message):
   r"""GetJSONWebKeysResponse is a valid JSON Web Key Set as specififed in rfc
   7517
@@ -1908,8 +1928,9 @@ class NodeConfig(_messages.Message):
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
       smallest allowed disk size is 10GB. If unspecified, the default disk
       size is 100GB.
-    diskType: Type of the disk attached to each node (e.g. 'pd-standard' or
-      'pd-ssd') If unspecified, the default disk type is 'pd-standard'
+    diskType: Type of the disk attached to each node (e.g. 'pd-standard', 'pd-
+      ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-
+      standard'
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used.
     labels: The map of Kubernetes labels (key/value pairs) to be applied to
@@ -2146,8 +2167,9 @@ class NodePool(_messages.Message):
       node pool.
     selfLink: [Output only] Server-defined URL for the resource.
     status: [Output only] The status of the nodes in this pool instance.
-    statusMessage: [Output only] Additional information about the current
-      status of this node pool instance, if available.
+    statusMessage: [Output only] Deprecated. Use conditions instead.
+      Additional information about the current status of this node pool
+      instance, if available.
     upgradeSettings: Upgrade settings control disruption and speed of the
       upgrade.
     version: The version of the Kubernetes of this node.
@@ -2250,6 +2272,16 @@ class NodeTaint(_messages.Message):
   effect = _messages.EnumField('EffectValueValuesEnum', 1)
   key = _messages.StringField(2)
   value = _messages.StringField(3)
+
+
+class NotificationConfig(_messages.Message):
+  r"""NotificationConfig is the configuration of notifications.
+
+  Fields:
+    pubsub: Notification config for Pub/Sub.
+  """
+
+  pubsub = _messages.MessageField('PubSub', 1)
 
 
 class Operation(_messages.Message):
@@ -2440,6 +2472,19 @@ class PrivateClusterMasterGlobalAccessConfig(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
+
+
+class PubSub(_messages.Message):
+  r"""Pub/Sub specific notification config.
+
+  Fields:
+    enabled: Enable notifications for Pub/Sub.
+    topic: The desired Pub/Sub topic to which notifications will be sent by
+      GKE. Format is `projects/{project}/topics/{topic}`.
+  """
+
+  enabled = _messages.BooleanField(1)
+  topic = _messages.StringField(2)
 
 
 class RecurringTimeWindow(_messages.Message):
@@ -3065,7 +3110,7 @@ class SetNodePoolManagementRequest(_messages.Message):
 
 
 class SetNodePoolSizeRequest(_messages.Message):
-  r"""SetNodePoolSizeRequest sets the size a node pool.
+  r"""SetNodePoolSizeRequest sets the size of a node pool.
 
   Fields:
     clusterId: Deprecated. The name of the cluster to update. This field has

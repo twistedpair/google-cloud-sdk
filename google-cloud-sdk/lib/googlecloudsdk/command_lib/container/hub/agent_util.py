@@ -245,7 +245,8 @@ def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
                                                 membership_ref)
     manifest_resources = adapter.GenerateConnectAgentManifest(connect_agent_ref)
     for resource in manifest_resources:
-      full_manifest = full_manifest + resource['manifest'] + delimeter
+      full_manifest = full_manifest + (getattr(resource, 'manifest') if hasattr(
+          resource, 'manifest') else '') + delimeter
   else:
     # If Workload Identity is enabled, the Hub API will detect the issuer on
     # the membership resource and seamlessly return a manifest that correctly

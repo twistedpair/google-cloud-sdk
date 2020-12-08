@@ -768,14 +768,14 @@
       "type": "object",
       "properties": {
         "modifications": {
-          "description": "Optional. Modifications for an existing Order created by an Offer. Required when Offer based Order is being modified.",
+          "description": "Optional. Modifications for an existing Order created by an Offer. Required when Offer based Order is being modified, except for when going from an offer to a public plan.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModification"
           }
         },
         "modifyProductsOrderRequest": {
-          "description": "Required. Modifies an existing order for non-quote products.",
+          "description": "Required. Modifies an existing non-quote order. Should only be used for offer-based orders when going from an offer to a public plan.",
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyProductsOrderRequest"
         },
         "modifyQuoteOrderRequest": {
@@ -2090,6 +2090,132 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes an existing OrderAllocation."
+                }
+              }
+              ,
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "list": {
+                      "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.operations.list",
+                      "path": "v1alpha1/{+name}/operations",
+                      "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations/{orderAllocationsId}/operations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation's parent resource.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningListOperationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                    },
+                    "get": {
+                      "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.operations.get",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations/{orderAllocationsId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+\/operations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    },
+                    "delete": {
+                      "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.operations.delete",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations/{orderAllocationsId}/operations/{operationsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be deleted.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+\/operations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                    },
+                    "cancel": {
+                      "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.operations.cancel",
+                      "path": "v1alpha1/{+name}:cancel",
+                      "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations/{orderAllocationsId}/operations/{operationsId}:cancel",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be cancelled.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+\/operations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleLongrunningCancelOperationRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                    }
+                  }
                 }
               }
             }

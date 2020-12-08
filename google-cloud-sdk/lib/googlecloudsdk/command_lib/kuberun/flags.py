@@ -21,6 +21,9 @@ import abc
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_io
 
 import six
 
@@ -215,18 +218,11 @@ class ClusterConnectionFlags(BinaryCommandFlag):
 class TrafficFlags(BinaryCommandFlag):
   """Encapsulates flags to configure traffic routes to the service."""
 
-  def AddToParser(self, parser):
-    mutex_group = parser.add_mutually_exclusive_group(required=True)
-    mutex_group.add_argument(
-        '--to-latest',
-        default=False,
-        action='store_true',
-        help='If true, assign 100 percent of traffic to the \'latest\' revision '
-        'of this service. Note that when a new revision is created, it will '
-        'become the \'latest\' and traffic will be directed to it. Defaults to '
-        'False. Synonymous with `--to-revisions=LATEST=100`.')
-    mutex_group.add_argument(
+  def __init__(self):
+    super(TrafficFlags, self).__init__()
+    self.to_revisions_flag = StringListFlag(
         '--to-revisions',
+        metavar='REVISION-NAME=PERCENTAGE',
         help='Comma-separated list of traffic assignments in the form '
         'REVISION-NAME=PERCENTAGE. REVISION-NAME must be the name for a revision '
         'for the service as returned by \'gcloud kuberun core revisions list\'. '
@@ -245,11 +241,31 @@ class TrafficFlags(BinaryCommandFlag):
         '"LATEST" as a special revision name to always put the given percentage '
         'of traffic on the latest ready revision.')
 
+  def AddToParser(self, parser):
+    mutex_group = parser.add_mutually_exclusive_group(required=True)
+    mutex_group.add_argument(
+        '--to-latest',
+        default=False,
+        action='store_true',
+        help='If true, assign 100 percent of traffic to the \'latest\' revision '
+        'of this service. Note that when a new revision is created, it will '
+        'become the \'latest\' and traffic will be directed to it. Defaults to '
+        'False. Synonymous with `--to-revisions=LATEST=100`.')
+
+    self.to_revisions_flag.AddToParser(mutex_group)
+
   def FormatFlags(self, args):
     if args.IsSpecified('to_latest'):
       return ['--to-latest']
     elif args.IsSpecified('to_revisions'):
-      return ['--to-revisions', args.to_revisions]
+      return self.to_revisions_flag.FormatFlags(args)
+
+
+def CreateIfMissingFlag():
+  return BasicFlag(
+      '--create-if-missing',
+      help="Creates the service if it's missing. If set, `--image` must be set as well."
+  )
 
 
 def CommonServiceFlags(is_create=False):
@@ -521,3 +537,43 @@ def RegisterFlags(parser, flags):
 
 def _GetDestNameForFlag(flag):
   return flag.replace('--', '').replace('-', '_')
+
+
+def _GetEnvironment(args):
+  """Prompt for environment if not provided.
+
+  Environment is decided in the following order:
+  - environment argument;
+  - kuberun/environment gcloud config;
+  - prompt user.
+
+  Args:
+    args: Environment, The args environment.
+
+  Returns:
+    A str representing the environment name.
+
+  Raises:
+    A ValueError if no environment is specified.
+  """
+  env = None
+  if getattr(args, 'environment', None):
+    env = args.environment
+  elif properties.VALUES.kuberun.environment.IsExplicitlySet():
+    env = properties.VALUES.kuberun.environment.Get()
+  elif console_io.CanPrompt():
+    env = console_io.PromptWithDefault('Environment name:  ', default=None)
+    log.status.Print(
+        'To make this the default environment, run '
+        '`gcloud config set kuberun/environment {}`.\n'.format(env))
+  if env:
+    return env
+  raise ValueError('Please specify an ENVIRONMENT to use this command.')
+
+
+class EnvironmentFlags(StringFlag):
+  """Formats an environment flag by pulling it from the appropriate source."""
+
+  def FormatFlags(self, args):
+    env = _GetEnvironment(args)
+    return ['--environment', env]

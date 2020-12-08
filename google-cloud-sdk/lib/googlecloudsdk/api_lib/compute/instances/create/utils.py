@@ -675,7 +675,8 @@ def GetNetworkInterfacesAlpha(args, client, holder, project, location, scope,
   if (skip_defaults and not instance_utils.IsAnySpecified(
       args, 'network', 'subnet', 'private_network_ip', 'no_address', 'address',
       'network_tier', 'no_public_dns', 'public_dns', 'no_public_ptr',
-      'public_ptr', 'no_public_ptr_domain', 'public_ptr_domain')):
+      'public_ptr', 'no_public_ptr_domain', 'public_ptr_domain', 'stack_type',
+      'ipv6_network_tier')):
     return []
   return [
       CreateNetworkInterfaceMessage(
@@ -695,7 +696,9 @@ def GetNetworkInterfacesAlpha(args, client, holder, project, location, scope,
           no_public_ptr=getattr(args, 'no_public_ptr', None),
           public_ptr=getattr(args, 'public_ptr', None),
           no_public_ptr_domain=getattr(args, 'no_public_ptr_domain', None),
-          public_ptr_domain=getattr(args, 'public_ptr_domain', None))
+          public_ptr_domain=getattr(args, 'public_ptr_domain', None),
+          stack_type=getattr(args, 'stack_type', None),
+          ipv6_network_tier=getattr(args, 'ipv6_network_tier', None))
   ]
 
 
@@ -717,7 +720,9 @@ def CreateNetworkInterfaceMessage(resources,
                                   no_public_ptr=None,
                                   public_ptr=None,
                                   no_public_ptr_domain=None,
-                                  public_ptr_domain=None):
+                                  public_ptr_domain=None,
+                                  stack_type=None,
+                                  ipv6_network_tier=None):
   """Returns a new NetworkInterface message."""
   # TODO(b/30460572): instance reference should have zone name, not zone URI.
   if scope == compute_scopes.ScopeEnum.ZONE:
@@ -762,13 +767,17 @@ def CreateNetworkInterfaceMessage(resources,
           resources, private_network_ip, region).SelfLink()
 
   if nic_type is not None:
-    network_interface.nicType = messages.NetworkInterface.NicTypeValueValuesEnum(
-        nic_type)
+    network_interface.nicType = (
+        messages.NetworkInterface.NicTypeValueValuesEnum(nic_type))
 
   if alias_ip_ranges_string:
     network_interface.aliasIpRanges = (
         alias_ip_range_utils.CreateAliasIpRangeMessagesFromString(
             messages, True, alias_ip_ranges_string))
+
+  if stack_type is not None:
+    network_interface.stackType = messages.NetworkInterface.StackTypeValueValuesEnum(
+        stack_type)
 
   if not no_address:
     access_config = messages.AccessConfig(
@@ -799,6 +808,15 @@ def CreateNetworkInterfaceMessage(resources,
       access_config.publicPtrDomainName = public_ptr_domain
 
     network_interface.accessConfigs = [access_config]
+
+  if ipv6_network_tier is not None:
+    ipv6_access_config = messages.AccessConfig(
+        name=constants.DEFAULT_IPV6_ACCESS_CONFIG_NAME,
+        type=messages.AccessConfig.TypeValueValuesEnum.DIRECT_IPV6)
+    ipv6_access_config.networkTier = (
+        messages.AccessConfig.NetworkTierValueValuesEnum(ipv6_network_tier))
+
+    network_interface.ipv6AccessConfigs = [ipv6_access_config]
 
   return network_interface
 
@@ -852,7 +870,9 @@ def GetNetworkInterfacesWithValidation(args,
                                        location,
                                        scope,
                                        skip_defaults,
-                                       support_public_dns=False):
+                                       support_public_dns=False,
+                                       support_stack_type=False,
+                                       support_ipv6_network_tier=False):
   """Validates and retrieves the network interface message."""
   if args.network_interface:
     return CreateNetworkInterfaceMessages(
@@ -864,8 +884,9 @@ def GetNetworkInterfacesWithValidation(args,
         scope=scope)
   else:
     instances_flags.ValidatePublicPtrFlags(args)
-    if support_public_dns:
-      instances_flags.ValidatePublicDnsFlags(args)
+    if support_public_dns or support_stack_type or support_ipv6_network_tier:
+      if support_public_dns:
+        instances_flags.ValidatePublicDnsFlags(args)
       return GetNetworkInterfacesAlpha(args, compute_client, holder, project,
                                        location, scope, skip_defaults)
     return GetNetworkInterfaces(args, compute_client, holder, project, location,

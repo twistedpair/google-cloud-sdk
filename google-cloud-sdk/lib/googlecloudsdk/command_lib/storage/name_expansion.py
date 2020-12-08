@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage import wildcard_iterator
+from googlecloudsdk.core import log
 
 
 class NameExpansionIterator:
@@ -48,24 +49,38 @@ class NameExpansionIterator:
 
     Yields:
       NameExpansionResult instance.
+
+    Raises:
+      InvalidUrlError: No matching objects found.
     """
     for url in self._urls:
       resources = plurality_checkable_iterator.PluralityCheckableIterator(
           wildcard_iterator.get_wildcard_iterator(url))
-      if resources.is_empty():
-        raise errors.InvalidUrlError('{} matched no objects.'.format(url))
+      is_name_expansion_iterator_empty = True
 
       # Iterate over all the resource_reference.Resource objects.
       for resource in resources:
-        if self._recursion_requested and resource.is_container():
-          # Append '**' to fetch all objects under this container
-          new_storage_url = resource.storage_url.join('**')
-          child_resources = wildcard_iterator.get_wildcard_iterator(
-              new_storage_url.url_string)
-          for child_resource in child_resources:
-            yield NameExpansionResult(child_resource, resource.storage_url)
-        else:
+        if not resource.is_container():
           yield NameExpansionResult(resource, resource.storage_url)
+          is_name_expansion_iterator_empty = False
+          continue
+
+        if not self._recursion_requested:
+          log.info('Omitting {} because it is a container, and recursion'
+                   ' is not enabled.'.format(resource.is_container()))
+          continue
+
+        # Append '**' to fetch all objects under this container.
+        new_storage_url = resource.storage_url.join('**')
+        child_resources = wildcard_iterator.get_wildcard_iterator(
+            new_storage_url.url_string)
+        for child_resource in child_resources:
+          yield NameExpansionResult(child_resource, resource.storage_url)
+          is_name_expansion_iterator_empty = False
+
+      if is_name_expansion_iterator_empty:
+        raise errors.InvalidUrlError(
+            '{} matched no objects or files.'.format(url))
 
 
 class NameExpansionResult:

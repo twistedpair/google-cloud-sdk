@@ -452,24 +452,33 @@ def DetermineBuildRegion(build_config, desired_region=None):
   return wp_region
 
 
-def Build(messages, async_, build_config, hide_logs=False, build_region=None):
+def Build(messages, async_, build_config, hide_logs=False,
+          build_region=cloudbuild_util.DEFAULT_REGION):
   """Starts the build."""
   log.debug('submitting build: ' + repr(build_config))
-  client = cloudbuild_util.GetClientInstance(region=build_region)
-  op = client.projects_builds.Create(
-      messages.CloudbuildProjectsBuildsCreateRequest(
-          build=build_config, projectId=properties.VALUES.core.project.Get()))
+  client = cloudbuild_util.GetClientInstance()
+
+  parent_resource = resources.REGISTRY.Create(
+      collection='cloudbuild.projects.locations',
+      projectsId=properties.VALUES.core.project.GetOrFail(),
+      locationsId=build_region)
+
+  op = client.projects_locations_builds.Create(
+      messages.CloudbuildProjectsLocationsBuildsCreateRequest(
+          parent=parent_resource.RelativeName(), build=build_config))
+
   json = encoding.MessageToJson(op.metadata)
   build = encoding.JsonToMessage(messages.BuildOperationMetadata, json).build
 
   # Need to set the default version to 'v1'
   build_ref = resources.REGISTRY.Parse(
       None,
-      collection='cloudbuild.projects.builds',
+      collection='cloudbuild.projects.locations.builds',
       api_version='v1',
       params={
-          'projectId': build.projectId,
-          'id': build.id,
+          'projectsId': build.projectId,
+          'locationsId': build_region,
+          'buildsId': build.id,
       })
 
   if not hide_logs:

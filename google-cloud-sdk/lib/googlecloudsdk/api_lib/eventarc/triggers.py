@@ -37,6 +37,10 @@ class NoFieldsSpecifiedError(exceptions.Error):
   """Error when no fields were specified for a Patch operation."""
 
 
+class NoRegionSpecifiedError(exceptions.Error):
+  """Error when no destination region was specified for a global trigger."""
+
+
 def BuildUpdateMask(matching_criteria, service_account, destination_run_service,
                     destination_run_path, destination_run_region):
   """Builds an update mask for updating a trigger.
@@ -141,10 +145,17 @@ class TriggersClient(object):
 
     Returns:
       A long-running operation for create.
+
+    Raises:
+      NoRegionSpecifiedError: Destination region omitted for a global trigger.
     """
     # If no Cloud Run region was provided, use the trigger's location instead.
-    destination_run_region = destination_run_region or trigger_ref.Parent(
-    ).Name()
+    if destination_run_region is None:
+      destination_run_region = trigger_ref.Parent().Name()
+      if destination_run_region == 'global':
+        raise NoRegionSpecifiedError(
+            'The `--destination-run-region` flag is required when creating a global trigger.'
+        )
     trigger_message = self._BuildTriggerMessage(trigger_ref, matching_criteria,
                                                 service_account,
                                                 destination_run_service,

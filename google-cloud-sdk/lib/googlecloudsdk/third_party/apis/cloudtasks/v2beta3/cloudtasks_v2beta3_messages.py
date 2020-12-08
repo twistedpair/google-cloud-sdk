@@ -319,7 +319,6 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -363,10 +362,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CloudtasksProjectsLocationsGetRequest(_messages.Message):
@@ -442,9 +440,15 @@ class CloudtasksProjectsLocationsQueuesGetRequest(_messages.Message):
   Fields:
     name: Required. The resource name of the queue. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`
+    readMask: Optional. Read mask is used for a more granular control over
+      what the API returns. If the mask is not present all fields will be
+      returned except [Queue.stats], if the mask is set to "*" all fields
+      including [Queue.stats] will be returned, otherwise only the fields
+      explicitly specified in the mask will be returned.
   """
 
   name = _messages.StringField(1, required=True)
+  readMask = _messages.StringField(2)
 
 
 class CloudtasksProjectsLocationsQueuesListRequest(_messages.Message):
@@ -469,12 +473,18 @@ class CloudtasksProjectsLocationsQueuesListRequest(_messages.Message):
       switch the value of the filter while iterating through pages.
     parent: Required. The location name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID`
+    readMask: Optional. Read mask is used for a more granular control on the
+      queues that the API returns. If the mask is not present all fields will
+      be returned except [Queue.stats], if the mask is set to "*" all fields
+      including [Queue.stats] will be returned, otherwise only the fields
+      explicitly specified in the mask will be returned.
   """
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+  readMask = _messages.StringField(5)
 
 
 class CloudtasksProjectsLocationsQueuesPatchRequest(_messages.Message):
@@ -1332,6 +1342,9 @@ class Queue(_messages.Message):
       called PauseQueue, ResumeQueue, or uploading [queue.yaml/xml](https://cl
       oud.google.com/appengine/docs/python/config/queueref). UpdateQueue
       cannot be used to change `state`.
+    stats: Output only. The realtime, informational statistics for a queue. In
+      order to receive the statistics the caller should include this field in
+      the FieldMask.
     type: Immutable. The type of a queue (push or pull). `Queue.type` is an
       immutable property of the queue that is set at the queue creation time.
       When left unspecified, the default value of `PUSH` is selected.
@@ -1388,7 +1401,37 @@ class Queue(_messages.Message):
   retryConfig = _messages.MessageField('RetryConfig', 5)
   stackdriverLoggingConfig = _messages.MessageField('StackdriverLoggingConfig', 6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
-  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  stats = _messages.MessageField('QueueStats', 8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
+
+
+class QueueStats(_messages.Message):
+  r"""Statistics for a queue.
+
+  Fields:
+    concurrentDispatchesCount: Output only. The number of requests that the
+      queue has dispatched but has not received a reply for yet.
+    effectiveExecutionRate: Output only. The current maximum number of tasks
+      per second executed by the queue. The maximum value of this variable is
+      controlled by the RateLimits of the Queue. However, this value could be
+      less to avoid overloading the endpoints tasks in the queue are
+      targeting.
+    executedLastMinuteCount: Output only. The number of tasks that the queue
+      has dispatched and received a reply for during the last minute. This
+      variable counts both successful and non-successful executions.
+    oldestEstimatedArrivalTime: Output only. An estimation of the nearest time
+      in the future where a task in the queue is scheduled to be executed.
+    tasksCount: Output only. An estimation of the number of tasks in the
+      queue, that is, the tasks in the queue that haven't been executed, the
+      tasks in the queue which the queue has dispatched but has not yet
+      received a reply for, and the failed tasks that the queue is retrying.
+  """
+
+  concurrentDispatchesCount = _messages.IntegerField(1)
+  effectiveExecutionRate = _messages.FloatField(2)
+  executedLastMinuteCount = _messages.IntegerField(3)
+  oldestEstimatedArrivalTime = _messages.StringField(4)
+  tasksCount = _messages.IntegerField(5)
 
 
 class RateLimits(_messages.Message):

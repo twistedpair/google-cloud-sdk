@@ -582,7 +582,8 @@ class LogBucket(_messages.Message):
       locked bucket may not be changed. Locked buckets may only be deleted if
       they are empty.
     logLink: Configures a linked dataset in BigQuery corresponding to this log
-      bucket. Requires analytics_enabled to be True.
+      bucket. Requires analytics_enabled to be True. A log link can only be
+      enabled by updating an existing bucket with analytics enabled.
     name: Output only. The resource name of the bucket. For example:
       "projects/my-project-id/locations/my-location/buckets/my-bucket-id The
       supported locations are: "global"For the location of global it is
@@ -4764,7 +4765,9 @@ class SuppressionInfo(_messages.Message):
     Values:
       REASON_UNSPECIFIED: Unexpected default.
       RATE_LIMIT: Indicates suppression occurred due to relevant entries being
-        received in excess of rate limits.
+        received in excess of rate limits. For quotas and limits, see Logging
+        API quotas and limits (https://cloud.google.com/logging/quotas#api-
+        limits).
       NOT_CONSUMED: Indicates suppression occurred due to the client not
         consuming responses quickly enough.
     """

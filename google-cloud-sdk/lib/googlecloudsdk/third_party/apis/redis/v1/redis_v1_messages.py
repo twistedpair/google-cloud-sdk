@@ -200,9 +200,8 @@ class Instance(_messages.Message):
       DIRECT_PEERING.
     StateValueValuesEnum: Output only. The current state of this instance.
     TierValueValuesEnum: Required. The service tier of the instance.
-    TransitEncryptionModeValueValuesEnum: Optional. The In-transit encryption
-      mode of Redis instance. If not provided, in-transit encryption is
-      disabled for instance.
+    TransitEncryptionModeValueValuesEnum: Optional. The TLS mode of the Redis
+      instance. If not provided, TLS is disabled for the instance.
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata
@@ -277,9 +276,8 @@ class Instance(_messages.Message):
     statusMessage: Output only. Additional information about the current
       status of this instance, if available.
     tier: Required. The service tier of the instance.
-    transitEncryptionMode: Optional. The In-transit encryption mode of Redis
-      instance. If not provided, in-transit encryption is disabled for
-      instance.
+    transitEncryptionMode: Optional. The TLS mode of the Redis instance. If
+      not provided, TLS is disabled for the instance.
   """
 
   class ConnectModeValueValuesEnum(_messages.Enum):
@@ -341,14 +339,14 @@ class Instance(_messages.Message):
     STANDARD_HA = 2
 
   class TransitEncryptionModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The In-transit encryption mode of Redis instance. If not
-    provided, in-transit encryption is disabled for instance.
+    r"""Optional. The TLS mode of the Redis instance. If not provided, TLS is
+    disabled for the instance.
 
     Values:
       TRANSIT_ENCRYPTION_MODE_UNSPECIFIED: Not set.
       SERVER_AUTHENTICATION: Client to Server traffic encryption enabled with
         server authentication.
-      DISABLED: In-transit encryption is disabled for instance.
+      DISABLED: TLS is disabled for the instance.
     """
     TRANSIT_ENCRYPTION_MODE_UNSPECIFIED = 0
     SERVER_AUTHENTICATION = 1

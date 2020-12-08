@@ -148,6 +148,8 @@ apis:
       discovery_doc: billingbudgets_v1alpha1.json
     v1beta1:
       discovery_doc: billingbudgets_v1beta1.json
+    v1:
+      discovery_doc: billingbudgets_v1.json
       default: true
   certificatemanager:
     v1alpha1:
@@ -548,6 +550,11 @@ apis:
   healthcare:
     v1alpha2:
       discovery_doc: healthcare_v1alpha2.json
+      # Include projects.locations.services.deidentify collection explicitly. This is not imported
+      # automatically since gcloud skips collections that do not have a GET method.
+      resources:
+        projects.locations.services.deidentify:
+          path: projects/{projectsId}/locations/{locationsId}/services/deidentify
     v1beta1:
       discovery_doc: healthcare_v1beta1.json
     v1:
@@ -673,6 +680,8 @@ apis:
   metastore:
     v1alpha:
       discovery_doc: metastore_v1alpha.json
+    v1beta:
+      discovery_doc: metastore_v1beta.json
       default: true
   ml:
     v1:
@@ -859,6 +868,9 @@ apis:
       resources:
         projects:
           path: projects/{project}
+  storagetransfer:
+    v1:
+      discovery_doc: storagetransfer_v1.json
   testing:
     v1:
       discovery_doc: testing_v1.json

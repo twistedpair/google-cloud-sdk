@@ -45,3 +45,16 @@ cluster:
     attribute_name: cluster
     help: Cluster in a VMware Engine private cloud.
   disable_auto_completers: false
+
+ip_address:
+  name: ip_address
+  collection: sddc.projects.locations.clusterGroups.ipAddresses
+  attributes:
+  - *project
+  - *region
+  - *privatecloud
+  - &ip_address
+    parameter_name: ipAddressesId
+    attribute_name: name
+    help: IP address name in a VMware Engine private cloud.
+  disable_auto_completers: false

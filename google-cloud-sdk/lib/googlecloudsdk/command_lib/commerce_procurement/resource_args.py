@@ -22,10 +22,13 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
-def BillingAccountAttributeConfig():
+def BillingAccountAttributeConfig(name=None, raw_help_text=None):
+  if raw_help_text is not None:
+    help_text = raw_help_text
+  else:
+    help_text = 'Cloud Billing account for the Procurement {resource}.'
   return concepts.ResourceParameterAttributeConfig(
-      name='billing-account',
-      help_text='Cloud Billing account for the Procurement {resource}.')
+      name=name if name is not None else 'billing-account', help_text=help_text)
 
 
 def AccountAttributeConfig():
@@ -44,9 +47,19 @@ def FreeTrialAttributeConfig():
       name='free-trial', help_text='Procurement free trial for the {resource}.')
 
 
-def OrderAttributeConfig():
+def OrderAttributeConfig(name=None, raw_help_text=None):
+  if raw_help_text is not None:
+    help_text = raw_help_text
+  else:
+    help_text = 'Procurement Order for the {resource}.'
   return concepts.ResourceParameterAttributeConfig(
-      name='order', help_text='Procurement Order for the {resource}.')
+      name=name if name is not None else 'order', help_text=help_text)
+
+
+def OrderAllocationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='order-allocation',
+      help_text='Procurement Order Allocation for the {resource}.')
 
 
 def OperationAttributeConfig():
@@ -81,16 +94,32 @@ def GetOrderResourceSpec():
   return concepts.ResourceSpec(
       'cloudcommerceconsumerprocurement.billingAccounts.orders',
       resource_name='order',
-      billingAccountsId=BillingAccountAttributeConfig(),
+      billingAccountsId=BillingAccountAttributeConfig(
+          raw_help_text='Cloud Billing Account for the Procurement Order. Billing account id is required if order is not specified as full resource name.'
+      ),
       ordersId=OrderAttributeConfig())
+
+
+def GetOrderAllocationResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations',
+      resource_name='order-allocation',
+      billingAccountsId=BillingAccountAttributeConfig(
+          raw_help_text='Cloud Billing Account for the Procurement Order Allocation. Billing account id is required if order allocation is not specified as full resource name.'
+      ),
+      ordersId=OrderAttributeConfig(
+          raw_help_text='Procurement Order for the Order Allocation. Order id is required if order allocation is not specified as full resource name.'
+      ),
+      orderAllocationsId=OrderAllocationAttributeConfig())
 
 
 def GetOrderOperationResourceSpec():
   return concepts.ResourceSpec(
       'cloudcommerceconsumerprocurement.billingAccounts.orders.operations',
       resource_name='order-operation',
-      billingAccountsId=BillingAccountAttributeConfig(),
-      ordersId=OrderAttributeConfig(),
+      billingAccountsId=BillingAccountAttributeConfig(
+          name='order-operation-billing-account'),
+      ordersId=OrderAttributeConfig(name='order-operation-order'),
       operationsId=OperationAttributeConfig())
 
 
@@ -100,6 +129,17 @@ def GetFreeTrialOperationResourceSpec():
       resource_name='free-trial-operation',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       freeTrialsId=FreeTrialAttributeConfig(),
+      operationsId=OperationAttributeConfig())
+
+
+def GetOrderAllocationOperationResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.operations',
+      resource_name='order-allocation-operation',
+      billingAccountsId=BillingAccountAttributeConfig(
+          name='order-allocation-operation-billing-account'),
+      ordersId=OrderAttributeConfig(name='order-allocation-operation-order'),
+      orderAllocationsId=OrderAllocationAttributeConfig(),
       operationsId=OperationAttributeConfig())
 
 
@@ -129,6 +169,20 @@ def AddOrderResourceArg(parser, description):
       required=True).AddToParser(parser)
 
 
+def AddOrderParentResourceArg(parser, description):
+  concept_parsers.ConceptParser.ForResource(
+      '--order', GetOrderResourceSpec(), description,
+      required=True).AddToParser(parser)
+
+
+def AddOrderAllocationResourceArg(parser, description):
+  concept_parsers.ConceptParser.ForResource(
+      'order_allocation',
+      GetOrderAllocationResourceSpec(),
+      description,
+      required=True).AddToParser(parser)
+
+
 def AddFreeTrialOperationResourceArg(parser, description):
   concept_parsers.ConceptParser.ForResource('--free-trial-operation',
                                             GetFreeTrialOperationResourceSpec(),
@@ -139,3 +193,9 @@ def AddOrderOperationResourceArg(parser, description):
   concept_parsers.ConceptParser.ForResource('--order-operation',
                                             GetOrderOperationResourceSpec(),
                                             description).AddToParser(parser)
+
+
+def AddOrderAllocationOperationResourceArg(parser, description):
+  concept_parsers.ConceptParser.ForResource(
+      '--order-allocation-operation', GetOrderAllocationOperationResourceSpec(),
+      description).AddToParser(parser)

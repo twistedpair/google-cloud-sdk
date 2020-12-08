@@ -438,12 +438,12 @@ class ApigeeOrganizationsDatacollectorsCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsDatacollectorsCreateRequest object.
 
   Fields:
-    dataCollectorId: ID of the Data Collector. Overrides any ID in the Data
-      Collector resource.
+    dataCollectorId: ID of the data collector. Overrides any ID in the data
+      collector resource. Must begin with `dc_`.
     googleCloudApigeeV1DataCollector: A GoogleCloudApigeeV1DataCollector
       resource to be passed as the request body.
-    parent: Required. Name of the organization in which to create the Data
-      Collector in the following format: `organizations/{org}`.
+    parent: Required. Name of the organization in which to create the data
+      collector in the following format: `organizations/{org}`.
   """
 
   dataCollectorId = _messages.StringField(1)
@@ -455,7 +455,7 @@ class ApigeeOrganizationsDatacollectorsDeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsDatacollectorsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the Data Collector in the following format:
+    name: Required. Name of the data collector in the following format:
       `organizations/{org}/datacollectors/{data_collector_id}`.
   """
 
@@ -466,7 +466,7 @@ class ApigeeOrganizationsDatacollectorsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsDatacollectorsGetRequest object.
 
   Fields:
-    name: Required. Name of the Data Collector in the following format:
+    name: Required. Name of the data collector in the following format:
       `organizations/{org}/datacollectors/{data_collector_id}`.
   """
 
@@ -477,12 +477,12 @@ class ApigeeOrganizationsDatacollectorsListRequest(_messages.Message):
   r"""A ApigeeOrganizationsDatacollectorsListRequest object.
 
   Fields:
-    pageSize: Maximum number of Data Collectors to return. The page size
+    pageSize: Maximum number of data collectors to return. The page size
       defaults to 25.
     pageToken: Page token, returned from a previous ListDataCollectors call,
       that you can use to retrieve the next page.
-    parent: Required. Name of the organization for which to list Data
-      Collectors in the following format: `organizations/{org}`.
+    parent: Required. Name of the organization for which to list data
+      collectors in the following format: `organizations/{org}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -496,7 +496,7 @@ class ApigeeOrganizationsDatacollectorsPatchRequest(_messages.Message):
   Fields:
     googleCloudApigeeV1DataCollector: A GoogleCloudApigeeV1DataCollector
       resource to be passed as the request body.
-    name: Required. Name of the Data Collector in the following format:
+    name: Required. Name of the data collector in the following format:
       `organizations/{org}/datacollectors/{data_collector_id}`.
     updateMask: List of fields to be updated.
   """
@@ -504,6 +504,17 @@ class ApigeeOrganizationsDatacollectorsPatchRequest(_messages.Message):
   googleCloudApigeeV1DataCollector = _messages.MessageField('GoogleCloudApigeeV1DataCollector', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class ApigeeOrganizationsDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the organization. Use the following structure in
+      your request: `organizations/{org}`
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class ApigeeOrganizationsDeploymentsListRequest(_messages.Message):
@@ -1461,7 +1472,10 @@ class ApigeeOrganizationsEnvironmentsKeystoresAliasesCreateRequest(_messages.Mes
   r"""A ApigeeOrganizationsEnvironmentsKeystoresAliasesCreateRequest object.
 
   Fields:
-    _password: The password for the private key file, if it exists.
+    _password: DEPRECATED: For improved security, send the password in the
+      body instead of using this query param. To send it in the body, use a
+      multipart/form-data part with name "password". The password for the
+      private key file, if it exists.
     alias: The alias for the key, certificate pair. Values must match regular
       expression `[\w\s-.]{1,255}`. This must be provided for all formats
       except 'selfsignedcert'; self-signed certs may specify the alias in
@@ -2447,6 +2461,76 @@ class ApigeeOrganizationsInstancesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class ApigeeOrganizationsInstancesNatAddressesActivateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesNatAddressesActivateRequest object.
+
+  Fields:
+    googleCloudApigeeV1ActivateNatAddressRequest: A
+      GoogleCloudApigeeV1ActivateNatAddressRequest resource to be passed as
+      the request body.
+    name: Required. Name of the nat address. Use the following structure in
+      your request:
+      `organizations/{org}/instances/{instances}/natAddresses/{nataddress}``
+  """
+
+  googleCloudApigeeV1ActivateNatAddressRequest = _messages.MessageField('GoogleCloudApigeeV1ActivateNatAddressRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsInstancesNatAddressesCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesNatAddressesCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1NatAddress: A GoogleCloudApigeeV1NatAddress resource to
+      be passed as the request body.
+    parent: Required. Name of the instance. Use the following structure in
+      your request: `organizations/{org}/instances/{instance}`
+  """
+
+  googleCloudApigeeV1NatAddress = _messages.MessageField('GoogleCloudApigeeV1NatAddress', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsInstancesNatAddressesDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesNatAddressesDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the nat address. Use the following structure in
+      your request:
+      `organizations/{org}/instances/{instances}/natAddresses/{nataddress}``
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsInstancesNatAddressesGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesNatAddressesGetRequest object.
+
+  Fields:
+    name: Required. Name of the nat address. Use the following structure in
+      your request:
+      `organizations/{org}/instances/{instances}/natAddresses/{nataddress}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsInstancesNatAddressesListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesNatAddressesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of natAddresses to return. Defaults to 25.
+    pageToken: Page token, returned from a previous ListNatAddresses call,
+      that you can use to retrieve the next page of content.
+    parent: Required. Name of the instance. Use the following structure in
+      your request: `organizations/{org}/instances/{instance}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ApigeeOrganizationsInstancesReportStatusRequest(_messages.Message):
   r"""A ApigeeOrganizationsInstancesReportStatusRequest object.
 
@@ -2947,6 +3031,12 @@ class GoogleCloudApigeeV1AccessSet(_messages.Message):
   name = _messages.StringField(1)
   success = _messages.BooleanField(2)
   value = _messages.StringField(3)
+
+
+class GoogleCloudApigeeV1ActivateNatAddressRequest(_messages.Message):
+  r"""Request for ActivateNatAddressRequest. Activate the nat address request.
+  """
+
 
 
 class GoogleCloudApigeeV1Alias(_messages.Message):
@@ -3679,24 +3769,24 @@ class GoogleCloudApigeeV1CustomReportMetric(_messages.Message):
 
 
 class GoogleCloudApigeeV1DataCollector(_messages.Message):
-  r"""Data Collector configuration.
+  r"""Data collector configuration.
 
   Enums:
-    TypeValueValuesEnum: Immutable. The type of data this DataCollector will
+    TypeValueValuesEnum: Immutable. The type of data this data collector will
       collect.
 
   Fields:
-    createdAt: Output only. The time at which the Data Collector was created
+    createdAt: Output only. The time at which the data collector was created
       in milliseconds since the epoch.
-    description: A description of the Data Collector.
+    description: A description of the data collector.
     lastModifiedAt: Output only. The time at which the Data Collector was last
       updated in milliseconds since the epoch.
-    name: ID of the Data Collector.
-    type: Immutable. The type of data this DataCollector will collect.
+    name: ID of the data collector. Must begin with `dc_`.
+    type: Immutable. The type of data this data collector will collect.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Immutable. The type of data this DataCollector will collect.
+    r"""Immutable. The type of data this data collector will collect.
 
     Values:
       TYPE_UNSPECIFIED: For future compatibility.
@@ -4627,7 +4717,7 @@ class GoogleCloudApigeeV1InstanceDeploymentStatus(_messages.Message):
   Fields:
     deployedRevisions: Revisions currently deployed in MPs.
     deployedRoutes: The current routes deployed in the ingress routing table.
-      A route which is missing will be shown with no destination environment.
+      A route which is missing will appear in missing_routes.
     instance: ID of the instance reporting the status.
   """
 
@@ -4789,7 +4879,7 @@ class GoogleCloudApigeeV1ListDataCollectorsResponse(_messages.Message):
   r"""Response for ListDataCollectors.
 
   Fields:
-    dataCollectors: Data Collectors in the specified organization.
+    dataCollectors: Data collectors in the specified organization.
     nextPageToken: Page token that you can include in a ListDataCollectors
       request to retrieve the next page. If omitted, no subsequent pages
       exist.
@@ -4931,6 +5021,20 @@ class GoogleCloudApigeeV1ListInstancesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudApigeeV1ListNatAddressesResponse(_messages.Message):
+  r"""Response for ListNatAddresses.
+
+  Fields:
+    natAddresses: List of NAT Addresses for the instance.
+    nextPageToken: Page token that you can include in a ListNatAddresses
+      request to retrieve the next page of content. If omitted, no subsequent
+      pages exist.
+  """
+
+  natAddresses = _messages.MessageField('GoogleCloudApigeeV1NatAddress', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudApigeeV1ListOfDevelopersResponse(_messages.Message):
   r"""A GoogleCloudApigeeV1ListOfDevelopersResponse object.
 
@@ -4992,6 +5096,41 @@ class GoogleCloudApigeeV1Metric(_messages.Message):
 
   name = _messages.StringField(1)
   values = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1NatAddress(_messages.Message):
+  r"""Apigee NAT(network address translation) address. A NAT address is a
+  static external IP address used for Internet egress traffic.
+
+  Enums:
+    StateValueValuesEnum: Required. State of the nat address.
+
+  Fields:
+    ipAddress: Required. The static IPV4 address.
+    name: Required. Resource ID of the NAT address.
+    state: Required. State of the nat address.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Required. State of the nat address.
+
+    Values:
+      STATE_UNSPECIFIED: The resource is in an unspecified state.
+      CREATING: The NAT address is being created.
+      RESERVED: The NAT address is reserved but not yet used for Internet
+        egress.
+      ACTIVE: The NAT address is active and used for Internet egress.
+      DELETING: The NAT address is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    RESERVED = 2
+    ACTIVE = 3
+    DELETING = 4
+
+  ipAddress = _messages.StringField(1)
+  name = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class GoogleCloudApigeeV1Operation(_messages.Message):

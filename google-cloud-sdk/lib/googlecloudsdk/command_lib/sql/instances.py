@@ -94,6 +94,13 @@ def _GetZone(args):
   return args.zone or args.gce_zone
 
 
+def _GetSecondaryZone(args):
+  if 'secondary_zone' in args:
+    return args.secondary_zone
+
+  return None
+
+
 def _IsAlpha(release_track):
   return release_track == base.ReleaseTrack.ALPHA
 
@@ -256,11 +263,12 @@ class _BaseInstances(object):
       if args.require_ssl is not None:
         settings.ipConfiguration.requireSsl = args.require_ssl
 
-    if any([args.follow_gae_app, _GetZone(args)]):
+    if any([args.follow_gae_app, _GetZone(args), _GetSecondaryZone(args)]):
       settings.locationPreference = sql_messages.LocationPreference(
           kind='sql#locationPreference',
           followGaeApplication=args.follow_gae_app,
-          zone=_GetZone(args))
+          zone=_GetZone(args),
+          secondaryZone=_GetSecondaryZone(args))
 
     if args.storage_size:
       settings.dataDiskSizeGb = int(args.storage_size / constants.BYTES_TO_GB)
@@ -528,7 +536,8 @@ class _BaseInstances(object):
     instance_resource = cls._ConstructBaseInstanceFromArgs(
         sql_messages, args, original, instance_ref)
 
-    instance_resource.region = reducers.Region(args.region, _GetZone(args))
+    instance_resource.region = reducers.Region(args.region, _GetZone(args),
+                                               _GetSecondaryZone(args))
     instance_resource.databaseVersion = _ParseDatabaseVersion(
         sql_messages, args.database_version)
     instance_resource.masterInstanceName = args.master_instance_name

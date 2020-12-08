@@ -25,7 +25,8 @@ DEFAULT_LIST_FORMAT = """\
     table(
       name,
       region.basename(),
-      producerForwardingRule.basename()
+      producerForwardingRule.basename(),
+      connection_preference
     )"""
 
 

@@ -30,6 +30,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.credentials import requests as creds_requests
@@ -58,9 +59,7 @@ class Httplib2LogTailer(object):
   def Request(self, url, cursor):
     try:
       (res, body) = self.http.request(
-          url,
-          method='GET',
-          headers={'Range': 'bytes={0}-'.format(cursor)})
+          url, method='GET', headers={'Range': 'bytes={0}-'.format(cursor)})
       return Response(res.status, res, body)
     except httplib2.HttpLib2Error as e:
       raise api_exceptions.CommunicationError('Failed to connect: %s' % e)
@@ -250,14 +249,24 @@ class CloudBuildClient(object):
     """Get a Build message.
 
     Args:
-      build_ref: Build reference
+      build_ref: Build reference. Expects a cloudbuild.projects.locations.builds
+        but also supports cloudbuild.projects.builds.
 
     Returns:
       Build resource
     """
-    return self.client.projects_builds.Get(
-        self.messages.CloudbuildProjectsBuildsGetRequest(
-            projectId=build_ref.projectId, id=build_ref.id))
+    # Legacy build_refs (for cloudbuild.projects.builds) don't have a location
+    # attached. Convert to the expected type and add the default location.
+    if build_ref.Collection() == 'cloudbuild.projects.builds':
+      build_ref = resources.REGISTRY.Create(
+          collection='cloudbuild.projects.locations.builds',
+          projectsId=build_ref.projectId,
+          locationsId=cloudbuild_util.DEFAULT_REGION,
+          buildsId=build_ref.id)
+
+    return self.client.projects_locations_builds.Get(
+        self.messages.CloudbuildProjectsLocationsBuildsGetRequest(
+            name=build_ref.RelativeName()))
 
   def Stream(self, build_ref, out=log.out):
     """Streams the logs for a build if available.

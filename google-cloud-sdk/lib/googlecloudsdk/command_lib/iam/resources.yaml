@@ -47,7 +47,7 @@ iam_account:
 # to with dashes when used in non-positional manner. To avoid the conflict, we define two
 # near-identical resources (only differing by attribute_name).
 positional_workload_identity_pool:
-  name: WorkloadIdentityPool
+  name: workload identity pool
   collection: iam.projects.locations.workloadIdentityPools
   request_id_field: workloadIdentityPoolId
   attributes:
@@ -63,7 +63,7 @@ positional_workload_identity_pool:
   disable_auto_completers: false
 
 workload_identity_pool:
-  name: WorkloadIdentityPool
+  name: workload identity pool
   collection: iam.projects.locations.workloadIdentityPools
   request_id_field: workloadIdentityPoolId
   attributes:
@@ -79,7 +79,7 @@ workload_identity_pool:
   disable_auto_completers: false
 
 workload_identity_pool_operation:
-  name: WorkloadIdentityPoolOperation
+  name: workload identity pool operation
   collection: iam.projects.locations.workloadIdentityPools.operations
   attributes:
   - *project
@@ -93,7 +93,7 @@ workload_identity_pool_operation:
   disable_auto_completers: false
 
 workload_identity_pool_provider:
-  name: WorkloadIdentityPoolProvider
+  name: workload identity pool provider
   collection: iam.projects.locations.workloadIdentityPools.providers
   request_id_field: workloadIdentityPoolProviderId
   attributes:
@@ -110,7 +110,7 @@ workload_identity_pool_provider:
   disable_auto_completers: false
 
 workload_identity_pool_provider_operation:
-  name: WorkloadIdentityPoolProviderOperation
+  name: workload identity pool provider operation
   collection: iam.projects.locations.workloadIdentityPools.providers.operations
   attributes:
   - *project

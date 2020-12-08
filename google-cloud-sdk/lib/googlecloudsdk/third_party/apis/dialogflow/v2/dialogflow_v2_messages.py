@@ -327,7 +327,10 @@ class DialogflowProjectsAgentEnvironmentsUsersSessionsDetectIntentRequest(_messa
       some type of user and session identifiers (preferably hashed). The
       length of the `Session ID` and `User ID` must not exceed 36 characters.
       For more information, see the [API interactions
-      guide](https://cloud.google.com/dialogflow/docs/api-overview).
+      guide](https://cloud.google.com/dialogflow/docs/api-overview). Note:
+      Always use agent versions for production traffic. See [Versions and
+      environments](https://cloud.google.com/dialogflow/es/docs/agents-
+      versions).
   """
 
   googleCloudDialogflowV2DetectIntentRequest = _messages.MessageField('GoogleCloudDialogflowV2DetectIntentRequest', 1)
@@ -831,7 +834,10 @@ class DialogflowProjectsAgentSessionsDetectIntentRequest(_messages.Message):
       some type of user and session identifiers (preferably hashed). The
       length of the `Session ID` and `User ID` must not exceed 36 characters.
       For more information, see the [API interactions
-      guide](https://cloud.google.com/dialogflow/docs/api-overview).
+      guide](https://cloud.google.com/dialogflow/docs/api-overview). Note:
+      Always use agent versions for production traffic. See [Versions and
+      environments](https://cloud.google.com/dialogflow/es/docs/agents-
+      versions).
   """
 
   googleCloudDialogflowV2DetectIntentRequest = _messages.MessageField('GoogleCloudDialogflowV2DetectIntentRequest', 1)
@@ -4212,7 +4218,7 @@ class GoogleCloudDialogflowV2Message(_messages.Message):
       Example: "en-US".
     messageAnnotation: Output only. The annotation for the message.
     name: The unique identifier of the message. Format:
-      `projects//conversations//messages/`.
+      `projects//locations//conversations//messages/`.
     participant: Output only. The participant that sends this message.
     participantRole: Output only. The role of the participant.
   """
@@ -4395,6 +4401,14 @@ class GoogleCloudDialogflowV2QueryParameters(_messages.Message):
       Arbitrary JSON objects are supported. If supplied, the value is used to
       populate the `WebhookRequest.original_detect_intent_request.payload`
       field sent to your webhook.
+    WebhookHeadersValue: This field can be used to pass HTTP headers for a
+      webhook call. These headers will be sent to webhook along with the
+      headers that have been configured through Dialogflow web console. The
+      headers defined within this field will overwrite the headers configured
+      through Dialogflow console if there is a conflict. Header names are
+      case-insensitive. Google's specified headers are not allowed. Including:
+      "Host", "Content-Length", "Connection", "From", "User-Agent", "Accept-
+      Encoding", "If-Modified-Since", "If-None-Match", "X-Forwarded-For", etc.
 
   Fields:
     contexts: The collection of contexts to be activated before this query is
@@ -4415,6 +4429,14 @@ class GoogleCloudDialogflowV2QueryParameters(_messages.Message):
       database](https://www.iana.org/time-zones), e.g., America/New_York,
       Europe/Paris. If not provided, the time zone specified in agent settings
       is used.
+    webhookHeaders: This field can be used to pass HTTP headers for a webhook
+      call. These headers will be sent to webhook along with the headers that
+      have been configured through Dialogflow web console. The headers defined
+      within this field will overwrite the headers configured through
+      Dialogflow console if there is a conflict. Header names are case-
+      insensitive. Google's specified headers are not allowed. Including:
+      "Host", "Content-Length", "Connection", "From", "User-Agent", "Accept-
+      Encoding", "If-Modified-Since", "If-None-Match", "X-Forwarded-For", etc.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -4444,6 +4466,38 @@ class GoogleCloudDialogflowV2QueryParameters(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class WebhookHeadersValue(_messages.Message):
+    r"""This field can be used to pass HTTP headers for a webhook call. These
+    headers will be sent to webhook along with the headers that have been
+    configured through Dialogflow web console. The headers defined within this
+    field will overwrite the headers configured through Dialogflow console if
+    there is a conflict. Header names are case-insensitive. Google's specified
+    headers are not allowed. Including: "Host", "Content-Length",
+    "Connection", "From", "User-Agent", "Accept-Encoding", "If-Modified-
+    Since", "If-None-Match", "X-Forwarded-For", etc.
+
+    Messages:
+      AdditionalProperty: An additional property for a WebhookHeadersValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type WebhookHeadersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a WebhookHeadersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   contexts = _messages.MessageField('GoogleCloudDialogflowV2Context', 1, repeated=True)
   geoLocation = _messages.MessageField('GoogleTypeLatLng', 2)
   payload = _messages.MessageField('PayloadValue', 3)
@@ -4451,6 +4505,7 @@ class GoogleCloudDialogflowV2QueryParameters(_messages.Message):
   sentimentAnalysisRequestConfig = _messages.MessageField('GoogleCloudDialogflowV2SentimentAnalysisRequestConfig', 5)
   sessionEntityTypes = _messages.MessageField('GoogleCloudDialogflowV2SessionEntityType', 6, repeated=True)
   timeZone = _messages.StringField(7)
+  webhookHeaders = _messages.MessageField('WebhookHeadersValue', 8)
 
 
 class GoogleCloudDialogflowV2QueryResult(_messages.Message):
@@ -7070,37 +7125,6 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
   payload = _messages.MessageField('PayloadValue', 6)
   sessionEntityTypes = _messages.MessageField('GoogleCloudDialogflowV2beta1SessionEntityType', 7, repeated=True)
   source = _messages.StringField(8)
-
-
-class GoogleCloudKnowledgeV1alpha1OperationMetadata(_messages.Message):
-  r"""Metadata in google::longrunning::Operation.
-
-  Enums:
-    StateValueValuesEnum: Required. The current state of this operation.
-
-  Fields:
-    errorCode: The error codes from Manifold endpoints' last failures.
-    message: The failure messages from Manifold endpoints' last failures.
-    state: Required. The current state of this operation.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Required. The current state of this operation.
-
-    Values:
-      STATE_UNSPECIFIED: Unspecified state. Should never be used.
-      PENDING: The operation has been created.
-      RUNNING: The operation is currently running.
-      DONE: The operation is done, either cancelled or completed.
-    """
-    STATE_UNSPECIFIED = 0
-    PENDING = 1
-    RUNNING = 2
-    DONE = 3
-
-  errorCode = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
-  message = _messages.StringField(2, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):

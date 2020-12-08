@@ -111,7 +111,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the client state for the device user.
+      r"""Updates the client state for the device user **Note**: This method is available only to customers who have one of the following SKUs: Enterprise Standard, Enterprise Plus, Enterprise for Education, and Cloud Identity Premium.
 
       Args:
         request: (CloudidentityDevicesDeviceUsersClientStatesPatchRequest) input message
@@ -573,7 +573,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a device. Only company-owned device may be created.
+      r"""Creates a device. Only company-owned device may be created. **Note**: This method is available only to customers who have one of the following SKUs: Enterprise Standard, Enterprise Plus, Enterprise for Education, and Cloud Identity Premium.
 
       Args:
         request: (CreateDeviceRequest) input message

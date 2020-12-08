@@ -568,6 +568,9 @@ def _PreActionHook(action, func, additional_help=None):
       if isinstance(flag_value, list):
         if len(flag_value) < 1:
           self.func(value)
+      elif not value:
+        # For boolean flags use implied value, not explicit value
+        self.func(self._wrapped_action.const)
       else:
         self.func(value)
 

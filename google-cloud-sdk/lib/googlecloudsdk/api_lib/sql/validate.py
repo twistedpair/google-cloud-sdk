@@ -32,3 +32,11 @@ project for [{instance}], use only '{instance}' for the argument, and either add
 '--project {project}' to the command line or first run
   $ gcloud config set project {project}
 """.format(project=possible_project, instance=possible_instance))
+
+
+def ValidateInstanceLocation(args, enable_secondary_zone):
+  if enable_secondary_zone:
+    if args.IsSpecified('secondary_zone') and not args.IsSpecified('zone'):
+      raise exceptions.RequiredArgumentException(
+          '--zone', '`--zone` is required if --secondary-zone is used '
+          'while creating an instance.')

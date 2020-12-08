@@ -260,7 +260,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "An optional name for the container. The container hostname will be set to this name, making it useful for inter-container communication. The name must contain only upper and lowercase alphanumeric characters and hypens and cannot start with a hyphen.",
+          "description": "An optional name for the container. The container hostname will be set to this name, making it useful for inter-container communication. The name must contain only upper and lowercase alphanumeric characters and hyphens and cannot start with a hyphen.",
           "type": "string"
         },
         "imageUri": {
@@ -497,7 +497,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "A user-supplied name for the disk. Used when mounting the disk into actions. The name must contain only upper and lowercase alphanumeric characters and hypens and cannot start with a hyphen.",
+          "description": "A user-supplied name for the disk. Used when mounting the disk into actions. The name must contain only upper and lowercase alphanumeric characters and hyphens and cannot start with a hyphen.",
           "type": "string"
         },
         "sizeGb": {

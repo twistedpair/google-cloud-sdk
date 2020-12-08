@@ -568,8 +568,9 @@ def AddHealthCheckLoggingRelatedArgs(parser):
       '--enable-logging',
       action='store_true',
       default=None,
-      help="""Enable logging of health check probe results to Stackdriver.
-      Logging is disabled by default.
+      help="""\
+      Enable logging of health check probe results to Stackdriver. Logging is
+      disabled by default.
 
       Use --no-enable-logging to disable logging.""")
 

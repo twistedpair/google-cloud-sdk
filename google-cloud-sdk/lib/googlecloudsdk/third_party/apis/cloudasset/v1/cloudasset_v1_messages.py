@@ -1792,7 +1792,9 @@ class IamPolicyAnalysisOutputConfig(_messages.Message):
 
 
 class IamPolicyAnalysisQuery(_messages.Message):
-  r"""IAM policy analysis query message.
+  r"""## LINT.IfChange Keep in sync with ##
+  logs/proto/cloud_asset_inventory/iam_policy_analyzer_log.proto IAM policy
+  analysis query message.
 
   Fields:
     accessSelector: Optional. Specifies roles or permissions for analysis.
@@ -2773,6 +2775,7 @@ class SoftwarePackage(_messages.Message):
   Fields:
     aptPackage: Details of an APT package. For details about the apt package
       manager, see https://wiki.debian.org/Apt.
+    cosPackage: Details of a COS package.
     googetPackage: Details of a Googet package. For details about the googet
       package manager, see https://github.com/google/googet.
     qfePackage: Details of a Windows Quick Fix engineering package. See
@@ -2792,12 +2795,13 @@ class SoftwarePackage(_messages.Message):
   """
 
   aptPackage = _messages.MessageField('VersionedPackage', 1)
-  googetPackage = _messages.MessageField('VersionedPackage', 2)
-  qfePackage = _messages.MessageField('WindowsQuickFixEngineeringPackage', 3)
-  wuaPackage = _messages.MessageField('WindowsUpdatePackage', 4)
-  yumPackage = _messages.MessageField('VersionedPackage', 5)
-  zypperPackage = _messages.MessageField('VersionedPackage', 6)
-  zypperPatch = _messages.MessageField('ZypperPatch', 7)
+  cosPackage = _messages.MessageField('VersionedPackage', 2)
+  googetPackage = _messages.MessageField('VersionedPackage', 3)
+  qfePackage = _messages.MessageField('WindowsQuickFixEngineeringPackage', 4)
+  wuaPackage = _messages.MessageField('WindowsUpdatePackage', 5)
+  yumPackage = _messages.MessageField('VersionedPackage', 6)
+  zypperPackage = _messages.MessageField('VersionedPackage', 7)
+  zypperPatch = _messages.MessageField('ZypperPatch', 8)
 
 
 class StandardQueryParameters(_messages.Message):

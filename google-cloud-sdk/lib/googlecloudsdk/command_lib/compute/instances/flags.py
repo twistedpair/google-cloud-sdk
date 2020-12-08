@@ -197,8 +197,8 @@ def InstanceArgumentForRouter(required=False, operation_type='added'):
       completer=compute_completers.InstancesCompleter,
       required=required,
       zonal_collection='compute.instances',
-      short_help='Router appliance instance of the BGP peer being {0}.'
-      .format(operation_type),
+      short_help='Router appliance instance of the BGP peer being {0}.'.format(
+          operation_type),
       zone_explanation=ZONE_PROPERTY_EXPLANATION)
 
 
@@ -346,8 +346,7 @@ def AddMaintenanceInterval():
       choices=['PERIODIC'],
       help="""
       Set maintenance interval for the instance.
-      """
-  )
+      """)
 
 
 def AddMaintenanceFreezeDuration():
@@ -357,8 +356,7 @@ def AddMaintenanceFreezeDuration():
       help="""
         Specifies the amount of hours after instance creation where the instance
         won't be scheduled for maintenance, e.g. `4h`, `2d6h`.
-        See $ gcloud topic datetimes for information on duration formats."""
-  )
+        See $ gcloud topic datetimes for information on duration formats.""")
 
 
 def AddStableFleetArgs(parser):
@@ -567,6 +565,7 @@ def AddDiskArgs(parser,
 
 
 def AddBootDiskArgs(parser):
+  """Adds boot disk args."""
   parser.add_argument(
       '--boot-disk-device-name',
       help="""\
@@ -960,7 +959,6 @@ def ValidateDiskFlags(args,
 
 
 def ValidateBulkDiskFlags(args,
-                          enable_kms=False,
                           enable_snapshots=False,
                           enable_source_snapshot_csek=False,
                           enable_image_csek=False):
@@ -2094,7 +2092,7 @@ def AddShieldedInstanceIntegrityPolicyArgs(parser):
 def AddConfidentialComputeArgs(parser):
   """Adds flags for confidential compute for instance."""
   help_text = """\
-  The instance will boot with Confidential Computing enabled. Confidential
+  The instance boots with Confidential Computing enabled. Confidential
   Computing is based on Secure Encrypted Virtualization (SEV), an AMD
   virtualization feature for running confidential instances.
   """
@@ -2644,17 +2642,31 @@ def AddBulkCreateArgs(parser):
         specified here they will be persisted, otherwise the operation rolls
         back and deletes all created virtual machines. If not specified, this
         value is equal to `--count`.""")
-  parser.add_argument(
+
+  name_group = parser.add_group(mutex=True, required=True)
+  name_group.add_argument(
       '--predefined-names',
       type=arg_parsers.ArgList(),
       metavar='INSTANCE_NAME',
-      required=True,
       help="""
         List of predefined names for the Compute Engine virtual machines being
         created. If `--count` is specified alongside this flag, provided count
         must equal the amount of names provided to this flag. If `--count` is
         not specified, the number of virtual machines
         created will equal the number of names provided.
+      """)
+  name_group.add_argument(
+      '--name-pattern',
+      help="""
+        Name pattern for generating instance names. Specify a pattern with a
+        single sequence of hash (#) characters that will be replaced with
+        generated sequential numbers of instances. E.g. name pattern of
+        'instance-###' will generate instance names 'instance-001',
+        'instance-002', and so on, until the number of virtual machines
+        specified using `--count` is reached. If instances matching name pattern
+        exist, the new instances will be assigned names to avoid clashing with
+        the existing ones. E.g. if there exists `instance-123`, the new
+        instances will start at `instance-124` and increment from there.
       """)
   location = parser.add_group(required=True, mutex=True)
   location.add_argument(
@@ -2679,6 +2691,53 @@ def AddBulkCreateArgs(parser):
       Alternatively, the zone can be stored in the environment variable
       CLOUDSDK_COMPUTE_ZONE.
    """)
+  parser.add_argument(
+      '--location-policy',
+      metavar='ZONE=POLICY',
+      type=arg_parsers.ArgDict(),
+      help="""
+        Policy for which zones to include or exclude during bulk instance creation
+        within a region. Policy is defined as a list of key-value pairs, with the
+        key being the zone name, and value being the applied policy. Available
+        policies are `allow` and `deny`. Default for zones left unspecified is `allow`.
+
+        Example:
+
+          gcloud compute instances bulk create --name-pattern=example-###
+            --count=5 --region=us-east1
+            --location-policy=us-east1-b=allow,us-east1-c=deny
+      """)
+
+
+def ValidateBulkCreateArgs(args):
+  if args.IsSpecified('name_pattern') and not args.IsSpecified('count'):
+    raise exceptions.RequiredArgumentException(
+        '--count',
+        """The `--count` argument must be specified when the `--name-pattern` argument is specified."""
+    )
+  if args.IsSpecified('location_policy') and (args.IsSpecified('zone') or
+                                              not args.IsSpecified('region')):
+    raise exceptions.RequiredArgumentException(
+        '--region',
+        """The '--region' argument must be used alongside the '--location-policy' argument and not '--zone'."""
+    )
+
+
+def ValidateLocationPolicyArgs(args):
+  """Validates args supplied to --location-policy."""
+  if args.IsSpecified('location_policy'):
+    for zone, policy in args.location_policy.items():
+      zone_split = zone.split('-')
+      if len(zone_split) != 3 or (
+          len(zone_split[2]) != 1 or
+          not zone_split[2].isalpha()) or not zone_split[1][-1].isdigit():
+        raise exceptions.InvalidArgumentException(
+            '--location-policy', 'Key [{}] must be a zone.'.format(zone))
+
+      if policy not in ['allow', 'deny']:
+        raise exceptions.InvalidArgumentException(
+            '--location-policy',
+            'Value [{}] must be one of [allow, deny]'.format(policy))
 
 
 def AddBulkCreateNetworkingArgs(parser):
@@ -2735,3 +2794,46 @@ def AddNestedVirtualizationArgs(parser):
       help="""\
       If set to true, enables nested virtualization for the instance.
       """)
+
+
+def AddThreadsPerCoreArgs(parser):
+  parser.add_argument(
+      '--threads-per-core',
+      type=int,
+      help="""
+      The number of visible threads per physical core. To disable simultaneous
+      multithreading (SMT) set this to 1. Valid values are currently: 0, 1, or 2.
+    """)
+
+
+def AddStackTypeArgs(parser):
+  """Adds stack type arguments for instance."""
+  parser.add_argument(
+      '--stack-type',
+      choices={
+          'IPV4_ONLY':
+              'The network interface will be assigned IPv4 addresses',
+          'IPV4_IPV6':
+              'The network interface can have both IPv4 and IPv6 addresses'
+      },
+      type=arg_utils.ChoiceToEnumName,
+      help=('The stack type for this network interface to identify whether the '
+            'IPv6 feature is enabled or not, only supports default NIC for '
+            'now. If not specified, IPV4_ONLY will be used.')
+      )
+
+
+def AddIpv6NetworkTierArgs(parser):
+  """Adds IPv6 network tier for network interface IPv6 access config."""
+  parser.add_argument(
+      '--ipv6-network-tier',
+      choices={
+          'PREMIUM': ('High quality, Google-grade network tier, support for '
+                      'all networking products.'),
+          'STANDARD': ('Public Internet quality, only limited support for '
+                       'other networking products.')
+      },
+      type=arg_utils.ChoiceToEnumName,
+      help=('Specifies the IPv6 network tier that will be used to configure '
+            'the instance network interface IPv6 access config. Only `PREMIUM` '
+            'is supported for now.'))

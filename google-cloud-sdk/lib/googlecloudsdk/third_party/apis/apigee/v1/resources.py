@@ -395,6 +395,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_INSTANCES_NATADDRESSES = (
+      'organizations.instances.natAddresses',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/instances/{instancesId}/'
+              'natAddresses/{natAddressesId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_OPERATIONS = (
       'organizations.operations',
       '{+name}',

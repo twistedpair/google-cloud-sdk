@@ -2280,6 +2280,10 @@ class ExecutionStageState(_messages.Message):
       JOB_STATE_QUEUED: `JOB_STATE_QUEUED` indicates that the job has been
         created but is being delayed until launch. Jobs that are queued may
         only transition to `JOB_STATE_PENDING` or `JOB_STATE_CANCELLED`.
+      JOB_STATE_RESOURCE_CLEANING_UP: `JOB_STATE_RESOURCE_CLEANING_UP`
+        indicates that the batch job's associated resources are currently
+        being cleaned up after a successful run. Currently, this is an opt-in
+        feature, please reach out to Cloud support team if you are intersted.
     """
     JOB_STATE_UNKNOWN = 0
     JOB_STATE_STOPPED = 1
@@ -2293,6 +2297,7 @@ class ExecutionStageState(_messages.Message):
     JOB_STATE_PENDING = 9
     JOB_STATE_CANCELLING = 10
     JOB_STATE_QUEUED = 11
+    JOB_STATE_RESOURCE_CLEANING_UP = 12
 
   currentStateTime = _messages.StringField(1)
   executionStageName = _messages.StringField(2)
@@ -2895,6 +2900,10 @@ class Job(_messages.Message):
       JOB_STATE_QUEUED: `JOB_STATE_QUEUED` indicates that the job has been
         created but is being delayed until launch. Jobs that are queued may
         only transition to `JOB_STATE_PENDING` or `JOB_STATE_CANCELLED`.
+      JOB_STATE_RESOURCE_CLEANING_UP: `JOB_STATE_RESOURCE_CLEANING_UP`
+        indicates that the batch job's associated resources are currently
+        being cleaned up after a successful run. Currently, this is an opt-in
+        feature, please reach out to Cloud support team if you are intersted.
     """
     JOB_STATE_UNKNOWN = 0
     JOB_STATE_STOPPED = 1
@@ -2908,6 +2917,7 @@ class Job(_messages.Message):
     JOB_STATE_PENDING = 9
     JOB_STATE_CANCELLING = 10
     JOB_STATE_QUEUED = 11
+    JOB_STATE_RESOURCE_CLEANING_UP = 12
 
   class RequestedStateValueValuesEnum(_messages.Enum):
     r"""The job's requested state. `UpdateJob` may be used to switch between
@@ -2962,6 +2972,10 @@ class Job(_messages.Message):
       JOB_STATE_QUEUED: `JOB_STATE_QUEUED` indicates that the job has been
         created but is being delayed until launch. Jobs that are queued may
         only transition to `JOB_STATE_PENDING` or `JOB_STATE_CANCELLED`.
+      JOB_STATE_RESOURCE_CLEANING_UP: `JOB_STATE_RESOURCE_CLEANING_UP`
+        indicates that the batch job's associated resources are currently
+        being cleaned up after a successful run. Currently, this is an opt-in
+        feature, please reach out to Cloud support team if you are intersted.
     """
     JOB_STATE_UNKNOWN = 0
     JOB_STATE_STOPPED = 1
@@ -2975,6 +2989,7 @@ class Job(_messages.Message):
     JOB_STATE_PENDING = 9
     JOB_STATE_CANCELLING = 10
     JOB_STATE_QUEUED = 11
+    JOB_STATE_RESOURCE_CLEANING_UP = 12
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of Cloud Dataflow job.

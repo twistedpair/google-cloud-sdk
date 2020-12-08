@@ -576,38 +576,6 @@
         "revision": {
           "description": "The revision to fetch from the Git repository such as a branch, a tag, a commit SHA, or any Git ref. Cloud Build uses `git fetch` to fetch the revision from the Git repository; therefore make sure that the string you provide for `revision` is parsable by the command. For information on string values accepted by `git fetch`, see https:\/\/git-scm.com\/docs\/gitrevisions#_specifying_revisions. For information on `git fetch`, see https:\/\/git-scm.com\/docs\/git-fetch.",
           "type": "string"
-        },
-        "credential": {
-          "description": "Secret containing the encrypted bytes.",
-          "$ref": "EncryptedCredential"
-        }
-      }
-    },
-    "EncryptedCredential": {
-      "id": "EncryptedCredential",
-      "description": "EncryptedCredential contains an encrypted secret, what key should be used to decode the secret, and how to use the secret.",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "Underlying credential type encoded in data.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default enum type. This should not be used.",
-            "HTTP Basic Authentication Credentials. `data` should be a base64 encoded username:password. See https:\/\/tools.ietf.org\/html\/rfc7617 for more details."
-          ],
-          "enum": [
-            "UNKNOWN",
-            "HTTP_BASIC_AUTH"
-          ]
-        },
-        "data": {
-          "description": "Encrypted user credential. `key` should be able to decrypt this data. See `type` for supported types.",
-          "type": "string",
-          "format": "byte"
-        },
-        "key": {
-          "description": "KMS key ID to use for decryption.",
-          "type": "string"
         }
       }
     },

@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -39,3 +40,21 @@ def TargetTcpProxyArgument(required=True, plural=False):
       custom_plural='target TCP proxies',
       required=required,
       global_collection='compute.targetTcpProxies')
+
+
+def AddProxyBind(parser):
+  """Adds the --proxy-bind argument."""
+  parser.add_argument(
+      '--proxy-bind',
+      action=arg_parsers.StoreTrueFalseAction,
+      help="""\
+      This field only applies when the forwarding rule that references this
+      target proxy has a `loadBalancingScheme` set to `INTERNAL_SELF_MANAGED`.
+
+      When this field is set to `true`, Envoy proxies set up inbound traffic
+      interception and bind to the IP address and port specified in the
+      forwarding rule. This is generally useful when using Traffic Director to
+      configure Envoy as a gateway or middle proxy (in other words, not a
+      sidecar proxy). The Envoy proxy listens for inbound requests and handles
+      requests when it receives them.
+      """)

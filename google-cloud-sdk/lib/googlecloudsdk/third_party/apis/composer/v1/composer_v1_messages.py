@@ -14,6 +14,24 @@ from apitools.base.py import extra_types
 package = 'composer'
 
 
+class AllowedIpRange(_messages.Message):
+  r"""Allowed IP range with user-provided description.
+
+  Fields:
+    description: Optional. User-provided description. It must contain at most
+      300 characters.
+    value: IP address or range, defined using CIDR notation, of requests that
+      this rule applies to. Examples: `192.168.1.1` or `192.168.0.0/16` or
+      `2001:db8::/32` or `2001:0db8:0000:0042:0000:8a2e:0370:7334`. IP range
+      prefixes should be properly truncated. For example, `1.2.3.4/24` should
+      be truncated to `1.2.3.0/24`. Similarly, for IPv6, `2001:db8::1/32`
+      should be truncated to `2001:db8::/32`.
+  """
+
+  description = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
 class ComposerProjectsLocationsEnvironmentsCreateRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsCreateRequest object.
 
@@ -123,6 +141,8 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       of this form and the "labels" mask. config.nodeCount Horizontally scale
       the number of nodes in the environment. An integer greater than or equal
       to 3 must be provided in the `config.nodeCount` field.
+      config.webServerNetworkAccessControl Replace the environment's current
+      WebServerNetworkAccessControl.
       config.softwareConfig.airflowConfigOverrides Replace all Apache Airflow
       config overrides. If a replacement config overrides map is not included
       in `environment`, all config overrides are cleared. It is an error to
@@ -150,6 +170,8 @@ class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
   r"""A ComposerProjectsLocationsImageVersionsListRequest object.
 
   Fields:
+    includePastReleases: Whether or not image versions from old releases
+      should be included.
     pageSize: The maximum number of image_versions to return.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
@@ -157,9 +179,10 @@ class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
       "projects/{projectId}/locations/{locationId}"
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  includePastReleases = _messages.BooleanField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class ComposerProjectsLocationsOperationsDeleteRequest(_messages.Message):
@@ -196,6 +219,31 @@ class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class Date(_messages.Message):
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values * A month and day value, with a zero year, such as an
+  anniversary * A year on its own, with zero month and day values * A year and
+  month value, with a zero day, such as a credit card expiration date Related
+  types are google.type.TimeOfDay and `google.protobuf.Timestamp`.
+
+  Fields:
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
+      without a month and day.
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class Empty(_messages.Message):
@@ -322,6 +370,9 @@ class EnvironmentConfig(_messages.Message):
       Composer environment.
     softwareConfig: The configuration settings for software inside the
       environment.
+    webServerNetworkAccessControl: Optional. The network-level access control
+      policy for the Airflow web server. If unspecified, no network-level
+      access restrictions will be applied.
   """
 
   airflowUri = _messages.StringField(1)
@@ -331,6 +382,7 @@ class EnvironmentConfig(_messages.Message):
   nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 6)
   softwareConfig = _messages.MessageField('SoftwareConfig', 7)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 8)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -377,16 +429,24 @@ class ImageVersion(_messages.Message):
   r"""ImageVersion information
 
   Fields:
+    creationDisabled: Whether it is impossible to create an environment with
+      the image version.
     imageVersionId: The string identifier of the ImageVersion, in the form:
       "composer-x.y.z-airflow-a.b(.c)"
     isDefault: Whether this is the default ImageVersion used by Composer
       during environment creation if no input ImageVersion is specified.
+    releaseDate: The date of the version release.
     supportedPythonVersions: supported python versions
+    upgradeDisabled: Whether it is impossible to upgrade an environment
+      running with the image version.
   """
 
-  imageVersionId = _messages.StringField(1)
-  isDefault = _messages.BooleanField(2)
-  supportedPythonVersions = _messages.StringField(3, repeated=True)
+  creationDisabled = _messages.BooleanField(1)
+  imageVersionId = _messages.StringField(2)
+  isDefault = _messages.BooleanField(3)
+  releaseDate = _messages.MessageField('Date', 4)
+  supportedPythonVersions = _messages.StringField(5, repeated=True)
+  upgradeDisabled = _messages.BooleanField(6)
 
 
 class ListEnvironmentsResponse(_messages.Message):
@@ -1029,6 +1089,16 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class WebServerNetworkAccessControl(_messages.Message):
+  r"""Network-level access control policy for the Airflow web server.
+
+  Fields:
+    allowedIpRanges: A collection of allowed IP ranges with descriptions.
+  """
+
+  allowedIpRanges = _messages.MessageField('AllowedIpRange', 1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

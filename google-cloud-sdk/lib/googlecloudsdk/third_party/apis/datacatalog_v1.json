@@ -228,6 +228,11 @@
           "description": "The full name of the cloud resource the entry belongs to. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name. Example: * `\/\/bigquery.googleapis.com\/projects\/projectId\/datasets\/datasetId\/tables\/tableId`",
           "type": "string"
         },
+        "modifyTime": {
+          "description": "Last-modified timestamp of the entry from the managing system.",
+          "type": "string",
+          "format": "google-datetime"
+        },
         "integratedSystem": {
           "description": "Output only. This field indicates the entry's source system that Data Catalog integrates with, such as BigQuery or Cloud Pub\/Sub.",
           "readOnly": true,
@@ -235,14 +240,12 @@
           "enumDescriptions": [
             "Default unknown system.",
             "BigQuery.",
-            "Cloud Pub\/Sub.",
-            "Dataproc Metastore - Managed Hive Metastore."
+            "Cloud Pub\/Sub."
           ],
           "enum": [
             "INTEGRATED_SYSTEM_UNSPECIFIED",
             "BIGQUERY",
-            "CLOUD_PUBSUB",
-            "DPMS"
+            "CLOUD_PUBSUB"
           ]
         },
         "userSpecifiedSystem": {
@@ -344,14 +347,16 @@
             "Output only. The type of entry that has a GoogleSQL schema, including logical views.",
             "Output only. The type of models, examples include https:\/\/cloud.google.com\/bigquery-ml\/docs\/bigqueryml-intro",
             "An entry type which is used for streaming entries. Example: Pub\/Sub topic.",
-            "An entry type which is a set of files or objects. Example: Cloud Storage fileset."
+            "An entry type which is a set of files or objects. Example: Cloud Storage fileset.",
+            "A group of servers that work together. Example: Kafka cluster."
           ],
           "enum": [
             "ENTRY_TYPE_UNSPECIFIED",
             "TABLE",
             "MODEL",
             "DATA_STREAM",
-            "FILESET"
+            "FILESET",
+            "CLUSTER"
           ]
         },
         "userSpecifiedType": {
@@ -365,14 +370,12 @@
           "enumDescriptions": [
             "Default unknown system.",
             "BigQuery.",
-            "Cloud Pub\/Sub.",
-            "Dataproc Metastore - Managed Hive Metastore."
+            "Cloud Pub\/Sub."
           ],
           "enum": [
             "INTEGRATED_SYSTEM_UNSPECIFIED",
             "BIGQUERY",
-            "CLOUD_PUBSUB",
-            "DPMS"
+            "CLOUD_PUBSUB"
           ]
         },
         "userSpecifiedSystem": {
@@ -390,6 +393,14 @@
         "bigqueryDateShardedSpec": {
           "description": "Specification for a group of BigQuery tables with name pattern `[prefix]YYYYMMDD`. Context: https:\/\/cloud.google.com\/bigquery\/docs\/partitioned-tables#partitioning_versus_sharding.",
           "$ref": "GoogleCloudDatacatalogV1BigQueryDateShardedSpec"
+        },
+        "dataStreamSpec": {
+          "description": "Additional specification of a data stream. Present on entries representing non-pubsub data streams.",
+          "$ref": "GoogleCloudDatacatalogV1DataStreamSpec"
+        },
+        "clusterSpec": {
+          "description": "Additional specification of a cluster. Present on entries representing clusters.",
+          "$ref": "GoogleCloudDatacatalogV1ClusterSpec"
         },
         "displayName": {
           "description": "Display information such as title and description. A short name to identify the entry, for example, \"Analytics Data - Jan 2011\". Default value is an empty string.",
@@ -532,6 +543,58 @@
         }
       }
     },
+    "GoogleCloudDatacatalogV1DataStreamSpec": {
+      "id": "GoogleCloudDatacatalogV1DataStreamSpec",
+      "description": "Additional specification of a data stream.",
+      "type": "object",
+      "properties": {
+        "kafkaTopic": {
+          "description": "Fields specific to a Kafka topic. Present only on entries representing Kafka topics.",
+          "$ref": "GoogleCloudDatacatalogV1KafkaTopicSpec"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1KafkaTopicSpec": {
+      "id": "GoogleCloudDatacatalogV1KafkaTopicSpec",
+      "description": "Entry spec describing a Kafka topic.",
+      "type": "object",
+      "properties": {
+        "topic": {
+          "description": "Required. Name of the Kafka topic this Entry represents. Example: 'my_topic'.",
+          "type": "string"
+        },
+        "clusterEntry": {
+          "description": "Required. Name of the entry representing Kafka cluster this topic is a part of. Example: 'projects\/my_project\/locations\/us\/entryGroups\/kafka\/entries\/my_cluster'.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1ClusterSpec": {
+      "id": "GoogleCloudDatacatalogV1ClusterSpec",
+      "description": "Additional specification of a cluster.",
+      "type": "object",
+      "properties": {
+        "kafkaCluster": {
+          "description": "Fields specific to a Kafka cluster. Present only on entries representing Kafka clusters.",
+          "$ref": "GoogleCloudDatacatalogV1KafkaClusterSpec"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1KafkaClusterSpec": {
+      "id": "GoogleCloudDatacatalogV1KafkaClusterSpec",
+      "description": "Entry spec describing a Kafka cluster.",
+      "type": "object",
+      "properties": {
+        "bootstrapServers": {
+          "description": "Required. A comma-separated list of host and port pairs that are the addresses of the Kafka brokers in a \"bootstrap\" Kafka cluster that a Kafka client connects to initially to bootstrap itself. Format is the same that is used for bootstrap.servers configuration property for Kafka clients. Example: host1:port1,host2:port2,host3:port3. See https:\/\/kafka.apache.org\/documentation\/#bootstrap.servers",
+          "type": "string"
+        },
+        "propertiesGcsUri": {
+          "description": "URI to Google Cloud Storage properties file with additional properties needed to connect to the cluster represented by this Entry. Properties stored in the file are passed to Kafka Consumer by query engines wishing to connect to the cluster. The full range of properties supported by query engines is dependant on the engine. The properties file should be a valid Kafka consumer config file, see https:\/\/kafka.apache.org\/documentation\/#consumerconfigs. For SSL authorization, if supported by the query engine, keystore and truststore paths will be interpreted relative to the properties file. Example: gs:\/\/my_bucket\/kafka\/consumer.properties",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudDatacatalogV1Schema": {
       "id": "GoogleCloudDatacatalogV1Schema",
       "description": "Represents a schema (e.g. BigQuery, GoogleSQL, Avro schema).",
@@ -543,6 +606,10 @@
           "items": {
             "$ref": "GoogleCloudDatacatalogV1ColumnSchema"
           }
+        },
+        "physicalSchema": {
+          "description": "Physical Schema is the native schema used to encode the data represented by this entry.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchema"
         }
       }
     },
@@ -574,6 +641,80 @@
             "$ref": "GoogleCloudDatacatalogV1ColumnSchema"
           }
         }
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchema",
+      "description": "Native schema used by a resource represented as an entry. Used by query engines for deserializing and parsing source data.",
+      "type": "object",
+      "properties": {
+        "avro": {
+          "description": "Schema in Avro JSON format.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema"
+        },
+        "thrift": {
+          "description": "Schema in Thrift format.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema"
+        },
+        "protobuf": {
+          "description": "Schema in Protobuf format.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema"
+        },
+        "parquet": {
+          "description": "Marks a Parquet-encoded data source.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema"
+        },
+        "orc": {
+          "description": "Marks an ORC-encoded data source.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema",
+      "description": "Schema in Avro JSON format.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Required. JSON source of the Avro schema.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema",
+      "description": "Schema in Thrift format.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Required. Thrift IDL source of the schema.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema",
+      "description": "Schema in Protobuf format.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Required. proto source of the schema.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema",
+      "description": "Marks a Parquet-encoded data source.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema",
+      "description": "Marks an ORC-encoded data source.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudDatacatalogV1ListEntriesResponse": {
@@ -875,9 +1016,6 @@
         "condition": {
           "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "$ref": "Expr"
-        },
-        "bindingId": {
-          "type": "string"
         }
       }
     },
@@ -2895,7 +3033,7 @@
               "type": "string"
             },
             "sqlResource": {
-              "description": "The SQL name of the entry. SQL names are case-sensitive. Examples: * `pubsub.project_id.topic_id` * ``pubsub.project_id.`topic.id.with.dots` `` * `bigquery.table.project_id.dataset_id.table_id` * `bigquery.dataset.project_id.dataset_id` * `datacatalog.entry.project_id.location_id.entry_group_id.entry_id` `*_id`s shoud satisfy the standard SQL rules for identifiers. https:\/\/cloud.google.com\/bigquery\/docs\/reference\/standard-sql\/lexical.",
+              "description": "The SQL name of the entry. SQL names are case-sensitive. Examples: * `pubsub.project_id.topic_id` * ``pubsub.project_id.`topic.id.with.dots` `` * `bigquery.table.project_id.dataset_id.table_id` * `bigquery.dataset.project_id.dataset_id` * `datacatalog.entry.project_id.location_id.entry_group_id.entry_id` `*_id`s should satisfy the standard SQL rules for identifiers. https:\/\/cloud.google.com\/bigquery\/docs\/reference\/standard-sql\/lexical.",
               "location": "query",
               "type": "string"
             }

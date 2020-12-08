@@ -13,17 +13,29 @@
 # limitations under the License.
 workload_identity_pool:
   display_name:
-    api_field: googleIamV1betaWorkloadIdentityPool.displayName
+    api_field: workloadIdentityPool.displayName
+    ALPHA:
+      api_field: googleIamV1betaWorkloadIdentityPool.displayName
+    BETA:
+      api_field: googleIamV1betaWorkloadIdentityPool.displayName
     arg_name: display-name
     help_text: |-
       A display name for the pool. Cannot exceed 32 characters.
   description:
-    api_field: googleIamV1betaWorkloadIdentityPool.description
+    api_field: workloadIdentityPool.description
+    ALPHA:
+      api_field: googleIamV1betaWorkloadIdentityPool.description
+    BETA:
+      api_field: googleIamV1betaWorkloadIdentityPool.description
     arg_name: description
     help_text: |-
       A description of the pool. Cannot exceed 256 characters.
   disabled:
-    api_field: googleIamV1betaWorkloadIdentityPool.disabled
+    api_field: workloadIdentityPool.disabled
+    ALPHA:
+      api_field: googleIamV1betaWorkloadIdentityPool.disabled
+    BETA:
+      api_field: googleIamV1betaWorkloadIdentityPool.disabled
     arg_name: disabled
     help_text: |-
       Whether the pool is disabled. You cannot use a disabled pool to exchange tokens, or use
@@ -31,24 +43,40 @@ workload_identity_pool:
       again.
 workload_identity_pool_provider:
   display_name:
-    api_field: googleIamV1betaWorkloadIdentityPoolProvider.displayName
+    api_field: workloadIdentityPoolProvider.displayName
+    ALPHA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.displayName
+    BETA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.displayName
     arg_name: display-name
     help_text: |-
       A display name for the provider. Cannot exceed 32 characters.
   description:
-    api_field: googleIamV1betaWorkloadIdentityPoolProvider.description
+    api_field: workloadIdentityPoolProvider.description
+    ALPHA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.description
+    BETA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.description
     arg_name: description
     required: false
     help_text: |-
       A description for the provider. Cannot exceed 256 characters.
   disabled:
-    api_field: googleIamV1betaWorkloadIdentityPoolProvider.disabled
+    api_field: workloadIdentityPoolProvider.disabled
+    ALPHA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.disabled
+    BETA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.disabled
     arg_name: disabled
     help_text: |-
       Whether the provider is disabled. You cannot use a disabled provider to exchange tokens.
       However, existing tokens still grant access.
   attribute_mapping:
-    api_field: googleIamV1betaWorkloadIdentityPoolProvider.attributeMapping
+    api_field: workloadIdentityPoolProvider.attributeMapping
+    ALPHA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.attributeMapping
+    BETA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.attributeMapping
     arg_name: attribute-mapping
     type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
     help_text: |-
@@ -129,7 +157,11 @@ workload_identity_pool_provider:
         {"google.subject": "assertion.sub"}
         ```
   attribute_condition:
-    api_field: googleIamV1betaWorkloadIdentityPoolProvider.attributeCondition
+    api_field: workloadIdentityPoolProvider.attributeCondition
+    ALPHA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.attributeCondition
+    BETA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.attributeCondition
     arg_name: attribute-condition
     help_text: |-
       [A Common Expression Language](https://opensource.google/projects/cel)
@@ -144,7 +176,7 @@ workload_identity_pool_provider:
       * `assertion`: JSON representing the authentication credential issued by
                      the provider.
       * `google`: The Google attributes mapped from the assertion in the
-                  `attrubute_mappings`.
+                  `attribute_mappings`.
       * `attribute`: The custom attributes mapped from the assertion in the
                      `attribute_mappings`.
 
@@ -159,17 +191,29 @@ workload_identity_pool_provider:
       "'admins' in google.groups"
       ```
   aws_account_id:
-    api_field: googleIamV1betaWorkloadIdentityPoolProvider.aws.accountId
+    api_field: workloadIdentityPoolProvider.aws.accountId
+    ALPHA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.aws.accountId
+    BETA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.aws.accountId
     arg_name: account-id
     help_text: |-
       The AWS account ID.
   oidc_issuer_uri:
-    api_field: googleIamV1betaWorkloadIdentityPoolProvider.oidc.issuerUri
+    api_field: workloadIdentityPoolProvider.oidc.issuerUri
+    ALPHA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.oidc.issuerUri
+    BETA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.oidc.issuerUri
     arg_name: issuer-uri
     help_text: |-
       The OIDC issuer URL.
   oidc_allowed_audiences:
-    api_field: googleIamV1betaWorkloadIdentityPoolProvider.oidc.allowedAudiences
+    api_field: workloadIdentityPoolProvider.oidc.allowedAudiences
+    ALPHA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.oidc.allowedAudiences
+    BETA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.oidc.allowedAudiences
     arg_name: allowed-audiences
     help_text: |-
       Acceptable values for the `aud` field (audience) in the OIDC token. Token
@@ -178,7 +222,7 @@ workload_identity_pool_provider:
       maximum of 10 audiences may be configured.
 
       If this list is empty, the OIDC token audience must be equal to
-      the full canonical resource name of the WorkloadIdentityPoolProvider,
+      the full canonical resource name of the workload identity pool provider,
       with or without the HTTPS prefix. For example:
 
       ```

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import enum
 import functools
+import multiprocessing
 import os
 import re
 import sys
@@ -240,6 +241,8 @@ class _Sections(object):
     accessibility: Section, The section containing accessibility properties for
       the Cloud SDK.
     ai: Section, The section containing ai properties for the Cloud SDK.
+    ai_platform: Section, The section containing ai platform properties for the
+      Cloud SDK.
     api_client_overrides: Section, The section containing API client override
       properties for the Cloud SDK.
     api_endpoint_overrides: Section, The section containing API endpoint
@@ -250,6 +253,8 @@ class _Sections(object):
       SDK.
     builds: Section, The section containing builds properties for the Cloud SDK.
     artifacts: Section, The section containing artifacts properties for the
+      Cloud SDK.
+    code: Section, The section containing local development properties for
       Cloud SDK.
     component_manager: Section, The section containing properties for the
       component_manager.
@@ -342,6 +347,7 @@ class _Sections(object):
     self.access_context_manager = _SectionAccessContextManager()
     self.accessibility = _SectionAccessibility()
     self.ai = _SectionAi()
+    self.ai_platform = _SectionAiPlatform()
     self.api_client_overrides = _SectionApiClientOverrides()
     self.api_endpoint_overrides = _SectionApiEndpointOverrides()
     self.app = _SectionApp()
@@ -349,6 +355,7 @@ class _Sections(object):
     self.auth = _SectionAuth()
     self.billing = _SectionBilling()
     self.builds = _SectionBuilds()
+    self.code = _SectionCode()
     self.component_manager = _SectionComponentManager()
     self.composer = _SectionComposer()
     self.compute = _SectionCompute()
@@ -398,6 +405,7 @@ class _Sections(object):
         self.access_context_manager,
         self.accessibility,
         self.ai,
+        self.ai_platform,
         self.api_client_overrides,
         self.api_endpoint_overrides,
         self.app,
@@ -405,6 +413,7 @@ class _Sections(object):
         self.billing,
         self.builds,
         self.artifacts,
+        self.code,
         self.component_manager,
         self.composer,
         self.compute,
@@ -442,6 +451,7 @@ class _Sections(object):
         self.run,
         self.secrets,
         self.spanner,
+        self.storage,
         self.survey,
         self.test,
         self.transport,
@@ -766,6 +776,11 @@ class _SectionKubeRun(_Section):
         'enable_experimental_commands',
         help_text='If True, experimental KubeRun commands will not prompt to '
         'continue.',
+        hidden=True)
+    self.environment = self._Add(
+        'environment',
+        help_text='If set, this environment will be used as the deployment'
+        'target in all KubeRun commands.',
         hidden=True)
 
 
@@ -1545,6 +1560,16 @@ class _SectionComponentManager(_Section):
         'updates.')
     self.fixed_sdk_version = self._Add('fixed_sdk_version', hidden=True)
     self.snapshot_url = self._Add('snapshot_url', hidden=True)
+    # We need the original snapshot_url because snapshot_url may be
+    # overwritten by users. Without original_snapshot_url, users can be trapped
+    # to the overwritten snapshot_url even after it is unset.
+    self.original_snapshot_url = self._Add(
+        'original_snapshot_url',
+        internal=True,
+        hidden=True,
+        help_text='Snapshot URL when this installation is firstly installed.',
+        default='https://dl.google.com/dl/cloudsdk/channels/rapid/components-2.json'
+    )
 
 
 class _SectionExperimental(_Section):
@@ -2137,6 +2162,7 @@ class _SectionMetastore(_Section):
   """Contains the properties for the 'metastore' section."""
 
   class Tier(enum.Enum):
+    developer = 1
     enterprise = 3
 
   def TierValidator(self, tier):
@@ -2145,7 +2171,7 @@ class _SectionMetastore(_Section):
 
     if tier not in [x.name for x in list(_SectionMetastore.Tier)]:
       raise InvalidValueError(
-          ('tier `{0}` must be one of: [enterprise]'.format(tier)))
+          ('tier `{0}` must be one of: [developer, enterprise]'.format(tier)))
 
   def __init__(self):
     super(_SectionMetastore, self).__init__('metastore')
@@ -2163,8 +2189,11 @@ class _SectionMetastore(_Section):
         the command will fall back to this value, if set.
 
         Valid values are:
-            *   `enterprise` - The enterprise tier combines a powerful metastore
-            serving layer with a highly scalable data storage layer.""",
+            *   `developer` - The developer tier provides limited scalability
+            and no fault tolerance. Good for low-cost proof-of-concept.
+            *   `enterprise` - The enterprise tier provides multi-zone high
+            availability, and sufficient scalability for enterprise-level
+            Dataproc Metastore workloads.""",
         choices=[x.name for x in list(_SectionMetastore.Tier)])
 
 
@@ -2183,8 +2212,11 @@ class _SectionRedis(_Section):
 class _SectionStorage(_Section):
   """Contains the properties for the 'storage' section."""
 
+  MAXIMUM_DEFAULT_PROCESS_COUNT = 12
+  DEFAULT_THREAD_COUNT = 4
+
   def __init__(self):
-    super(_SectionStorage, self).__init__('storage')
+    super(_SectionStorage, self).__init__('storage', hidden=True)
     self.chunk_size = self._Add(
         'chunk_size',
         default=104857600,  # gsutil's default chunksize (1024 * 1024 * 100)
@@ -2194,9 +2226,21 @@ class _SectionStorage(_Section):
     self.use_gsutil = self._AddBool(
         'use_gsutil',
         default=False,
-        hidden=True,
         help_text='If True, use the deprecated upload implementation which '
         'uses gsutil.')
+    self.process_count = self._Add(
+        'process_count',
+        default=min(multiprocessing.cpu_count(),
+                    self.MAXIMUM_DEFAULT_PROCESS_COUNT),
+        help_text='The number of processes parallel execution should use. '
+        'When process_count and thread_count are both 1, commands use '
+        'sequential execution.')
+    self.thread_count = self._Add(
+        'thread_count',
+        default=self.DEFAULT_THREAD_COUNT,
+        help_text='The number of threads parallel execution should use per '
+        'process. When process_count and thread_count are both 1, commands use '
+        'sequential execution.')
 
 
 class _SectionSurvey(_Section):
@@ -2249,6 +2293,21 @@ class _SectionAi(_Section):
         'but not provided, the command will fall back to this value, if set.')
 
 
+class _SectionAiPlatform(_Section):
+  """Contains the properties for the command group 'ai_platform' section."""
+
+  def __init__(self):
+    super(_SectionAiPlatform, self).__init__('ai_platform')
+    self.region = self._Add(
+        'region',
+        help_text='Default region to use when working with AI Platform '
+        'Training and Prediction resources (currently for Prediction only). '
+        'It is ignored for training resources for now. The value should be '
+        'either `global` or one of the supported regions. When a `--region` '
+        'flag is required but not provided, the command will fall back to this '
+        'value, if set.')
+
+
 class _SectionVmware(_Section):
   """Contains the properties for the 'vmware' section."""
 
@@ -2268,6 +2327,21 @@ class _SectionVmware(_Section):
         default='c1-highmem-72-metal',
         hidden=True,
         help_text='Node type to use when creating a new cluster.')
+
+
+class _SectionCode(_Section):
+  """Contains the properties for the 'code' section."""
+
+  def __init__(self):
+    super(_SectionCode, self).__init__('code', hidden=True)
+
+    self.minikube_event_timeout = self._Add(
+        'minikube_event_timeout',
+        default='90s',
+        hidden=True,
+        help_text='Terminate the cluster start process if this amount of time '
+        'has passed since the last minikube event.'
+    )
 
 
 class _Property(object):

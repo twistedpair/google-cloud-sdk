@@ -89,6 +89,10 @@ class ArgDictFile(object):
   def __call__(self, file_path):
     map_file_dict = yaml.load_path(file_path)
     map_dict = {}
+    if not yaml.dict_like(map_file_dict):
+      raise arg_parsers.ArgumentTypeError(
+          'Invalid YAML/JSON data in [{}], expected map-like data.'.format(
+              file_path))
     for key, value in map_file_dict.items():
       if self.key_type:
         try:

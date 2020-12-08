@@ -18,18 +18,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import base64
-import binascii
-import json
 
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.api_lib.util import apis as core_apis
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import resources as cloud_resources
-from googlecloudsdk.core.credentials import http
-from googlecloudsdk.core.util import encoding as core_encoding
-from six.moves import http_client as httplib
-from six.moves import urllib
+import six
+
+API_NAME = 'gkehub'
 
 
 def NewAPIAdapter(api_version):
@@ -46,12 +42,12 @@ def InitAPIAdapter(api_version, adapter):
     APIAdapter object.
   """
 
-  api_client = core_apis.GetClientInstance('gkehub', api_version)
+  api_client = core_apis.GetClientInstance(API_NAME, api_version)
   api_client.check_response_func = api_adapter.CheckResponse
   messages = api_client.MESSAGES_MODULE
 
   registry = cloud_resources.REGISTRY.Clone()
-  registry.RegisterApiByName('gkehub', api_version)
+  registry.RegisterApiByName(API_NAME, api_version)
 
   return adapter(registry, api_client, messages, api_version)
 
@@ -68,6 +64,20 @@ class APIAdapter(object):
     self.messages = messages
     self.api_version = api_version
 
+  def _ManifestResponse(self, client, messages, option):
+    return getattr(
+        client.projects_locations_memberships.GenerateConnectManifest(
+            messages
+            .GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(
+                imagePullSecretContent=six.ensure_binary(
+                    option.image_pull_secret_content),
+                isUpgrade=option.is_upgrade,
+                name=option.membership_ref,
+                connectAgent_namespace=option.namespace,
+                connectAgent_proxy=six.ensure_binary(option.proxy),
+                registry=option.registry,
+                version=option.version)), 'manifest')
+
   def GenerateConnectAgentManifest(self, option):
     """Generate the YAML manifest to deploy the Connect Agent.
 
@@ -79,30 +89,17 @@ class APIAdapter(object):
     Raises:
       Error: if the API call to generate connect agent manifest failed.
     """
-    # Can't directly use the generated API client given that it currently
-    # doesn't support nested messages. See the discussion here:
-    # https://groups.google.com/a/google.com/forum/#!msg/cloud-sdk-eng/hwdwUTEmvlw/fRdrvK26AAAJ
-    query_params = [
-        ('connectAgent.namespace', option.namespace),
-        ('connectAgent.proxy', option.proxy),
-        ('isUpgrade', option.is_upgrade),
-        ('version', option.version),
-        ('registry', option.registry),
-        ('image_pull_secret_content', option.image_pull_secret_content)
-    ]
-    base_url = self.client.url
-    url = '{}/{}/{}:generateConnectManifest?{}'.format(
-        base_url,
-        self.api_version,
-        option.membership_ref,
-        urllib.parse.urlencode(query_params))
-    response, raw_content = http.Http().request(uri=url)
-    content = core_encoding.Decode(raw_content)
-    status_code = response.get('status')
-    if int(status_code) != httplib.OK:
-      msg = self._HTTP_ERROR_FORMAT.format(status_code, content)
-      raise exceptions.HttpException(msg)
-    return json.loads(content).get('manifest')
+    client = core_apis.GetClientInstance(API_NAME, self.api_version)
+    messages = core_apis.GetMessagesModule(API_NAME, self.api_version)
+    encoding.AddCustomJsonFieldMapping(
+        messages
+        .GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest,
+        'connectAgent_namespace', 'connectAgent.namespace')
+    encoding.AddCustomJsonFieldMapping(
+        messages
+        .GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest,
+        'connectAgent_proxy', 'connectAgent.proxy')
+    return self._ManifestResponse(client, messages, option)
 
 
 class ConnectAgentOption(object):
@@ -117,14 +114,6 @@ class ConnectAgentOption(object):
                registry,
                image_pull_secret_content,
                membership_ref):
-    # TODO(b/143641551): make sure GKE On-Prem is compatible with non-base64
-    # encoded string before removing this check.
-    if proxy:
-      try:
-        base64.standard_b64decode(proxy)
-      # Python 2 and Python 3 use different errors.
-      except (TypeError, binascii.Error):
-        proxy = base64.standard_b64encode(proxy.encode('ascii'))
     self.name = name
     self.proxy = proxy
     self.namespace = namespace

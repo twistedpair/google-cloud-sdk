@@ -49,7 +49,7 @@ def MlEndpointOverrides(region=None):
   old_endpoint = properties.VALUES.api_endpoint_overrides.ml.Get()
   try:
     log.status.Print('Using endpoint [{}]'.format(used_endpoint))
-    if region:
+    if region and region != 'global':
       properties.VALUES.api_endpoint_overrides.ml.Set(used_endpoint)
     yield
   finally:
@@ -59,6 +59,6 @@ def MlEndpointOverrides(region=None):
 def GetEffectiveMlEndpoint(region):
   """Returns regional ML Endpoint, or global if region not set."""
   endpoint = apis.GetEffectiveApiEndpoint(ML_API_NAME, ML_API_VERSION)
-  if region:
+  if region and region != 'global':
     return DeriveMLRegionalEndpoint(endpoint, region)
   return endpoint

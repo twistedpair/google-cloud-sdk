@@ -128,7 +128,7 @@ class ApigatewayApiConfig(_messages.Message):
     name: Output only. Resource name of the API Config. Format:
       projects/{project}/locations/global/apis/{api}/configs/{api_config}
     openapiDocuments: Optional. OpenAPI specification documents. If specified,
-      grpc_services and managed_service_config must not be included.
+      grpc_services and managed_service_configs must not be included.
     serviceConfigId: Output only. The ID of the associated Service Config (
       https://cloud.google.com/service-infrastructure/docs/glossary#config).
     state: Output only. State of the API Config.

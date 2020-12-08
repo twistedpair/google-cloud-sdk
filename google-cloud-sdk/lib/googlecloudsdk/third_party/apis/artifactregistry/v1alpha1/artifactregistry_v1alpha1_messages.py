@@ -43,7 +43,7 @@ class GoogleDevtoolsArtifactregistryV1alpha1ErrorInfo(_messages.Message):
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1GcsSource(_messages.Message):
-  r"""Google Cloud Storage location for the input content.
+  r"""Google Cloud Storage location where the artifacts currently reside.
 
   Fields:
     uris: Cloud Storage paths URI (e.g., gs://my_bucket//my_object).

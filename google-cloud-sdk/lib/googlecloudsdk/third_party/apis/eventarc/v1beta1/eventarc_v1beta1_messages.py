@@ -157,7 +157,7 @@ class Destination(_messages.Message):
 
   Fields:
     cloudRunService: Cloud Run fully-managed service that receives the events.
-      The service should be running in the same project of the trigger.
+      The service should be running in the same project as the trigger.
   """
 
   cloudRunService = _messages.MessageField('CloudRunService', 1)
@@ -266,13 +266,16 @@ class EventarcProjectsLocationsTriggersDeleteRequest(_messages.Message):
   r"""A EventarcProjectsLocationsTriggersDeleteRequest object.
 
   Fields:
+    allowMissing: If set to true, and the trigger is not found, the request
+      will succeed but no action will be taken on the server.
     etag: If provided, the trigger will only be deleted if the etag matches
       the current etag on the resource.
     name: Required. The name of the trigger to be deleted.
   """
 
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
 
 
 class EventarcProjectsLocationsTriggersGetIamPolicyRequest(_messages.Message):
@@ -333,9 +336,11 @@ class EventarcProjectsLocationsTriggersPatchRequest(_messages.Message):
   r"""A EventarcProjectsLocationsTriggersPatchRequest object.
 
   Fields:
+    allowMissing: If set to true, and the trigger is not found, a new trigger
+      will be created. In this situation, `update_mask` is ignored.
     name: Required. The resource name of the trigger. Must be unique within
-      the location on the project. Format:
-      projects/{project}/locations/{location}/triggers/{trigger}
+      the location on the project and must in
+      `projects/{project}/locations/{location}/triggers/{trigger}` format.
     trigger: A Trigger resource to be passed as the request body.
     updateMask: The fields to be updated; only fields explicitly provided will
       be updated. If no field mask is provided, all provided fields in the
@@ -343,9 +348,10 @@ class EventarcProjectsLocationsTriggersPatchRequest(_messages.Message):
       "*".
   """
 
-  name = _messages.StringField(1, required=True)
-  trigger = _messages.MessageField('Trigger', 2)
-  updateMask = _messages.StringField(3)
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  trigger = _messages.MessageField('Trigger', 3)
+  updateMask = _messages.StringField(4)
 
 
 class EventarcProjectsLocationsTriggersSetIamPolicyRequest(_messages.Message):
@@ -540,11 +546,10 @@ class MatchingCriteria(_messages.Message):
   r"""Matches events based on exact matches on the CloudEvents attributes.
 
   Fields:
-    attribute: Required. The name of a CloudEvents atrribute. Currently, only
+    attribute: Required. The name of a CloudEvents attribute. Currently, only
       a subset of attributes can be specified. All triggers MUST provide a
-      matching criteria for attribute 'type'. Event types specify what event
-      type has attributes are allowed based on
-    value: Required. The value for the attribute
+      matching criteria for the 'type' attribute.
+    value: Required. The value for the attribute.
   """
 
   attribute = _messages.StringField(1)
@@ -764,10 +769,11 @@ class Pubsub(_messages.Message):
   Fields:
     subscription: The name of the Pub/Sub subscription created and managed by
       Eventarc system as a transport for the event delivery. The value must be
-      in the form of `projects/{PROJECT_ID}/subscriptions/{SUBSCRIPTION_NAME}
+      in the form of
+      `projects/{PROJECT_ID}/subscriptions/{SUBSCRIPTION_NAME}`.
     topic: The name of the Pub/Sub topic created and managed by Eventarc
       system as a transport for the event delivery. The value must be in the
-      form of `projects/{PROJECT_ID}/topics/{TOPIC_NAME}
+      form of `projects/{PROJECT_ID}/topics/{TOPIC_NAME}`.
   """
 
   subscription = _messages.StringField(1)
@@ -946,17 +952,17 @@ class Trigger(_messages.Message):
 
   Fields:
     createTime: Output only. The creation time.
-    destination: Required. Destinations specify where the events will be sent
-      to. Exactly one destination is supported at this time.
+    destination: Required. Destination specifies where the events should be
+      sent to.
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and may be sent only on create requests to ensure
       the client has an up-to-date value before proceeding.
     matchingCriteria: Required. The criteria by which events are filtered.
-      Only events that match with this critera will be sent to the
-      destinations.
+      Only events that match with this criteria will be sent to the
+      destination.
     name: Required. The resource name of the trigger. Must be unique within
-      the location on the project. Format:
-      projects/{project}/locations/{location}/triggers/{trigger}
+      the location on the project and must in
+      `projects/{project}/locations/{location}/triggers/{trigger}` format.
     serviceAccount: Optional. The IAM service account email associated with
       the trigger. The service account represents the identity of the trigger.
       The principal who calls this API must have `iam.serviceAccounts.actAs`

@@ -19,21 +19,66 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import io
-import os
-import sys
 
 from googlecloudsdk.command_lib.util.anthos import binary_operations as bin_ops
 from googlecloudsdk.command_lib.util.declarative.clients import client_base
 from googlecloudsdk.core import execution_utils as exec_utils
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import yaml
-from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.credentials import store
-from googlecloudsdk.core.util import files
+
+_ASSET_INVENTORY_STRING = '{{"name":"{}","asset_type":"{}"}}\n'
 
 
 class ResourceNotFoundException(client_base.ClientException):
   """General Purpose Exception."""
+
+
+def _NormalizeUri(resource_uri):
+  if 'www.googleapis.com/' in resource_uri:
+    api = resource_uri.split('www.googleapis.com/')[1].split('/')[0]
+    return resource_uri.replace('www.googleapis.com/{api}'.format(api=api),
+                                '{api}.googleapis.com/{api}'.format(api=api))
+  return resource_uri
+
+
+def _NormalizeUris(resource_uris):
+  if not isinstance(resource_uris, list):
+    raise Exception(
+        'Implementation Error: _NormalizeUris requires a list, not str.')
+  normalized_uris = []
+  for resource_uri in resource_uris:
+    normalized_uris.append(_NormalizeUri(resource_uri))
+  return normalized_uris
+
+
+def _GetAssetInventoryInput(resource_uris, resource_type):
+  if not isinstance(resource_uris, list):
+    raise Exception(
+        'Implementation Error: Resource URIs must be a list, not string.')
+  asset_inventory_input = ''
+  for uri in resource_uris:
+    asset_inventory_input += _ASSET_INVENTORY_STRING.format(uri, resource_type)
+  return asset_inventory_input
+
+
+def _ExecuteBinary(cmd, in_str=None):
+  output_value = io.StringIO()
+  error_value = io.StringIO()
+  exit_code = exec_utils.Exec(
+      args=cmd,
+      no_exit=True,
+      in_str=in_str,
+      out_func=output_value.write,
+      err_func=error_value.write)
+  return exit_code, output_value.getvalue(), error_value.getvalue()
+
+
+def _ExecuteBinaryWithStreaming(cmd, in_str=None):
+  exit_code = exec_utils.ExecWithStreamingOutput(args=cmd, in_str=in_str)
+  if exit_code != 0:
+    raise client_base.ClientException(
+        'The bulk-export command could not finish correctly.')
 
 
 class KccClient(client_base.DeclarativeClient):
@@ -42,18 +87,13 @@ class KccClient(client_base.DeclarativeClient):
   def __init__(self, gcp_account=None, impersonated=False):
     if not gcp_account:
       gcp_account = properties.VALUES.core.account.Get()
-    self._export_service = bin_ops.CheckForInstalledBinary(
-        'config-connector',
-        custom_message='config-connector tool not installed.')
+    try:
+      self._export_service = bin_ops.CheckForInstalledBinary('config-connector')
+    except bin_ops.MissingExecutableException:
+      self._export_service = bin_ops.InstallBinaryNoOverrides(
+          'config-connector')
     self._use_account_impersonation = impersonated
     self._account = gcp_account
-
-  def _NormalizeURI(self, uri):
-    if 'www.googleapis.com/' in uri:
-      api = uri.split('www.googleapis.com/')[1].split('/')[0]
-      return uri.replace('www.googleapis.com/{api}'.format(api=api),
-                         '{api}.googleapis.com/{api}'.format(api=api))
-    return uri
 
   def _GetToken(self):
     try:
@@ -65,100 +105,87 @@ class KccClient(client_base.DeclarativeClient):
       raise client_base.ClientException(
           'Error Configuring KCC Client: [{}]'.format(e))
 
-  def Parse(self, file_path):
-    raise NotImplementedError(
-        'DeclarativeService Parse function must be implemented.')
+  def _OutputToFileOrDir(self, args):
+    if args.path.strip() == '-':
+      return False
+    return True
 
-  def SerializeAll(self, resources, path=None, scope_field=None):
-    if path:
-      if not os.path.isdir(path):
-        raise client_base.ClientException(
-            'Error executing export: "{}" must be an existing directory when --all is specified.'
-            .format(path))
-      for resource in resources:
-        file_name = resource['metadata']['name']
-        if scope_field:
-          scope = resource['spec'][scope_field]
-          file_name = '{}_{}'.format(scope, file_name)
-        file_path = os.path.join(path, '{}.yaml'.format(file_name))
-        try:
-          with files.FileWriter(file_path) as stream:
-            yaml.dump(resource, stream=stream)
-        except (EnvironmentError, yaml.Error) as e:
-          raise client_base.ClientException(
-              'Error while serializing resource to file [{}]: "{}"'.format(
-                  file_path, e))
-    else:
-      yaml.dump_all(documents=resources, stream=sys.stdout)
+  def _GetBinaryCommand(self, args, command_name, resource_uri=None):
+    # Populate universal flags to command.
+    cmd = [
+        self._export_service, '--oauth2-token',
+        self._GetToken(), command_name
+    ]
 
-  def Serialize(self, resource, path=None):
-    if path:
-      if os.path.isdir(path):
-        path = os.path.join(path,
-                            '{}.yaml'.format(resource['metadata']['name']))
-      try:
-        with files.FileWriter(path) as stream:
-          yaml.dump(resource, stream=stream)
-      except (EnvironmentError, yaml.Error) as e:
-        raise client_base.ClientException(
-            'Error while serializing resource to file [{}]: "{}"'.format(
-                path, e))
-    else:
-      yaml.dump(resource, stream=sys.stdout)
+    # If command is single resource export, add single resource flags to cmd.
+    if command_name == 'export':
+      if not resource_uri:
+        raise ValueError(
+            '`_GetBinaryCommand` requires a resource uri for export commands.')
+      cmd.extend([resource_uri])
 
-  def Get(self, **kwargs):
-    """Excute execute command on underlying binary using resource_uri."""
-    resource_uri = self._NormalizeURI(kwargs['resource_uri'])
-    use_progress_tracker = kwargs.get('use_progress_tracker', False)
+    # Populate flags for bulk-export command.
+    if command_name == 'bulk-export':
+      cmd.extend(['--on-error', getattr(args, 'on_error', 'ignore')])
 
-    if use_progress_tracker:
-      with progress_tracker.ProgressTracker(
-          'Getting resource configuration...', aborted_message='aborted'):
-        return self._GetHelper(resource_uri)
-    else:
-      return self._GetHelper(resource_uri)
+      # If bulk export call is not being used for single resource --all, add
+      # scope flag to command.
+      if not getattr(args, 'all', None):
+        if args.IsSpecified('organization'):
+          cmd.extend(['--organization', args.organization])
+        elif args.IsSpecified('folder'):
+          cmd.extend(['--folder', args.folder])
+        else:
+          project = args.project or properties.VALUES.core.project.GetOrFail()
+          cmd.extend(['--project', project])
 
-  def GetAll(self, **kwargs):
-    resource_uris = [self._NormalizeURI(uri) for uri in kwargs['resource_uris']]
-    use_progress_tracker = kwargs.get('use_progress_tracker', False)
-    resource_documents = []
-    if use_progress_tracker:
-      with progress_tracker.ProgressTracker(
-          'Getting resource configurations...', aborted_message='aborted'):
-        for resource_uri in resource_uris:
-          resource_documents.append(self._GetHelper(resource_uri))
-    else:
-      for resource_uri in resource_uris:
-        resource_documents.append(self._GetHelper(resource_uri))
-    return resource_documents
+    if getattr(args, 'resource_format', None):
+      cmd.extend(['--resource-format', args.resource_format])
 
-  def _GetHelper(self, resource_uri):
-    cmd = [self._export_service, '--oauth2-token', self._GetToken()]
-    cmd.extend(['export', resource_uri])
-    output_value = io.StringIO()
-    error_value = io.StringIO()
+      # Terraform does not support iam currently.
+      if args.resource_format == 'hcl':
+        cmd.extend(['--iam-format', 'none'])
 
-    exit_code = exec_utils.Exec(
-        args=cmd,
-        no_exit=True,
-        out_func=output_value.write,
-        err_func=error_value.write)
+    # If a file or directory path is specified, add path to command.
+    if self._OutputToFileOrDir(args):
+      cmd.extend(['--output', args.path])
+
+    return cmd
+
+  def Export(self, args, resource_uri):
+    normalized_resource_uri = _NormalizeUri(resource_uri)
+    cmd = self._GetBinaryCommand(
+        args=args, command_name='export', resource_uri=normalized_resource_uri)
+    exit_code, output_value, error_value = _ExecuteBinary(cmd)
+
     if exit_code != 0:
-      error = error_value.getvalue()
-      if 'resource not found' in error:
+      if 'resource not found' in error_value:
         raise client_base.ResourceNotFoundException(
             'Could not fetch resource: \n - The resource [{}] does not exist.'
-            .format(resource_uri))
+            .format(normalized_resource_uri))
       else:
         raise client_base.ClientException(
-            'Error executing export:: [{}]'.format(error_value.getvalue()))
-    resource = yaml.load(output_value.getvalue())
-    return resource
+            'Error executing export:: [{}]'.format(error_value))
+    if not self._OutputToFileOrDir(args):
+      log.out.Print(output_value)
+    return exit_code
 
-  def Apply(self, **kwargs):
-    raise NotImplementedError(
-        'DeclarativeService Apply function must be implemented.')
+  def ExportAll(self, args, resource_uris, resource_type):
+    normalized_resource_uris = _NormalizeUris(resource_uris)
+    cmd = self._GetBinaryCommand(args, 'bulk-export')
 
-  def Delete(self, **kwargs):
-    raise NotImplementedError(
-        'DeclarativeService Delete function must be implemented.')
+    asset_inventory_input = _GetAssetInventoryInput(
+        resource_uris=normalized_resource_uris, resource_type=resource_type)
+
+    if self._OutputToFileOrDir(args):
+      return _ExecuteBinary(cmd=cmd, in_str=asset_inventory_input)
+    else:
+      return _ExecuteBinaryWithStreaming(cmd=cmd, in_str=asset_inventory_input)
+
+  def BulkExport(self, args):
+    cmd = self._GetBinaryCommand(args, 'bulk-export')
+
+    if self._OutputToFileOrDir(args):
+      return _ExecuteBinary(cmd)
+    else:
+      return _ExecuteBinaryWithStreaming(cmd)

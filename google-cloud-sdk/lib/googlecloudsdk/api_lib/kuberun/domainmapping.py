@@ -30,7 +30,10 @@ class DomainMapping(kubernetesobject.KubernetesObject):
 
   @property
   def records(self):
-    return [ResourceRecord(x) for x in self._props['status']['resourceRecords']]
+    return [
+        ResourceRecord(r)
+        for r in self._props['status'].get('resourceRecords', [])
+    ]
 
 
 class ResourceRecord(mapobject.MapObject):

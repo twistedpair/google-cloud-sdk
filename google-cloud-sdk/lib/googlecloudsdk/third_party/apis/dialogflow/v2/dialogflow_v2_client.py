@@ -674,7 +674,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def DetectIntent(self, request, global_params=None):
-      r"""Processes a natural language query and returns structured, actionable data as a result. This method is not idempotent, because it may cause contexts and session entity types to be updated, which in turn might affect results of future queries.
+      r"""Processes a natural language query and returns structured, actionable data as a result. This method is not idempotent, because it may cause contexts and session entity types to be updated, which in turn might affect results of future queries. Note: Always use agent versions for production traffic. See [Versions and environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
 
       Args:
         request: (DialogflowProjectsAgentEnvironmentsUsersSessionsDetectIntentRequest) input message
@@ -1274,7 +1274,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def DetectIntent(self, request, global_params=None):
-      r"""Processes a natural language query and returns structured, actionable data as a result. This method is not idempotent, because it may cause contexts and session entity types to be updated, which in turn might affect results of future queries.
+      r"""Processes a natural language query and returns structured, actionable data as a result. This method is not idempotent, because it may cause contexts and session entity types to be updated, which in turn might affect results of future queries. Note: Always use agent versions for production traffic. See [Versions and environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
 
       Args:
         request: (DialogflowProjectsAgentSessionsDetectIntentRequest) input message

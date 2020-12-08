@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.ml_engine import models
 from googlecloudsdk.command_lib.iam import iam_util
+from googlecloudsdk.command_lib.ml_engine import region_util
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -49,28 +50,45 @@ class RegionArgError(core_exceptions.Error):
   pass
 
 
-def _GetModelRegion(args):
-  """Extract the region from the command line args."""
-  if args.region and args.regions:
+def GetModelRegion(args):
+  """Extract the region from the command line args.
+
+  Args:
+    args: arguments from parser.
+
+  Returns:
+    region, model_regions
+
+    region: str, regional endpoint or global endpoint.
+    model_regions: list, region where the model will be deployed.
+
+  Raises:
+    RegionArgError: if both --region and --regions are specified.
+  """
+  if args.IsSpecified('region') and args.IsSpecified('regions'):
     raise RegionArgError('Only one of --region or --regions can be specified.')
-  if args.region is not None:
-    return [args.region]
-  if args.regions is None:
-    log.warning(
-        'Please explicitly specify a region. Using [us-central1] by default on '
-        'https://ml.googleapis.com. Please note that your model will be '
-        'inaccessible from https://us-central1-ml.googelapis.com\n'
-        '\n'
-        'Learn more about regional endpoints and see a list of available '
-        'regions: https://cloud.google.com/ai-platform/prediction/docs/'
-        'regional-endpoints')
-    return ['us-central1']
-  return args.regions
+  if args.IsSpecified('regions'):
+    return 'global', args.regions
+  if args.IsSpecified('region') and args.region != 'global':
+    return args.region, [args.region]
+
+  region = region_util.GetRegion(args)
+  if region != 'global':
+    return region, [region]
+  log.warning(
+      'To specify a region where the model will deployed on the global '
+      'endpoint, please use `--regions`. Using [us-central1] by default on '
+      'https://ml.googleapis.com. Please note that your model will be '
+      'inaccessible from https://us-central1-ml.googelapis.com\n'
+      '\n'
+      'Learn more about regional endpoints and see a list of available '
+      'regions: https://cloud.google.com/ai-platform/prediction/docs/'
+      'regional-endpoints')
+  return 'global', ['us-central1']
 
 
-def Create(models_client, model, args, enable_logging=None,
+def Create(models_client, model, regions, enable_logging=None,
            enable_console_logging=None, labels=None, description=None):
-  regions = _GetModelRegion(args)
   return models_client.Create(model, regions, enable_logging=enable_logging,
                               enable_console_logging=enable_console_logging,
                               labels=labels, description=description)

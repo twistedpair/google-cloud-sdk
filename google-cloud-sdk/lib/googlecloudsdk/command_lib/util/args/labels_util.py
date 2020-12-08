@@ -191,7 +191,7 @@ def GetRemoveLabelsFlag(extra_message, labels_name='labels'):
       help="""\
       List of label keys to remove. If a label does not exist it is
       silently ignored. If `--update-{labels}` is also specified then
-      `--remove-{labels}` is applied first.""".format(labels=labels_name) +
+      `--update-{labels}` is applied first.""".format(labels=labels_name) +
       extra_message)
 
 

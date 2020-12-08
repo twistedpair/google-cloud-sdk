@@ -319,6 +319,10 @@
           "description": "Optional. The Autoscaling settings for GKE cluster within Composer environment. GKE cluster handles Airflow scheduler and workers workload.",
           "$ref": "AutoscalingConfig"
         },
+        "databaseRetentionConfig": {
+          "description": "Optional. The configuration setting for Airflow database data retention mechanism.",
+          "$ref": "DatabaseRetentionConfig"
+        },
         "airflowUri": {
           "description": "Output only. The URI of the Apache Airflow Web UI hosted within this environment (see [Airflow web interface](\/composer\/docs\/how-to\/accessing\/airflow-web-interface)).",
           "readOnly": true,
@@ -617,6 +621,36 @@
           "description": "Optional. Memory limit in GB in the environment.",
           "type": "integer",
           "format": "int32"
+        },
+        "minimumCpu": {
+          "description": "Optional. Minimum number of CPU in the environment.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "minimumMemory": {
+          "description": "Optional. Minimum memory limit in GB in the environment.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "DatabaseRetentionConfig": {
+      "id": "DatabaseRetentionConfig",
+      "description": "The configuration setting for Airflow database data retention mechanism.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Optional. Whether database retention mechanism should be enabled.",
+          "type": "boolean"
+        },
+        "storeArchives": {
+          "description": "Optional. Whether to store archives of deleted data in the Customer bucket. If set to true, then the data will be stored in the Customer bucket under archives\/ directory.",
+          "type": "boolean"
+        },
+        "retentionDays": {
+          "description": "Optional. The number of days describing for how long to store data in the database. Infinite retention period is represented by 0. If not specified the data will be retained forever.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

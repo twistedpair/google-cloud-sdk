@@ -39,12 +39,303 @@ class SecuritycenterV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.folders_assets = self.FoldersAssetsService(self)
+    self.folders_sources_findings = self.FoldersSourcesFindingsService(self)
+    self.folders_sources = self.FoldersSourcesService(self)
+    self.folders = self.FoldersService(self)
     self.organizations_assets = self.OrganizationsAssetsService(self)
     self.organizations_notificationConfigs = self.OrganizationsNotificationConfigsService(self)
     self.organizations_operations = self.OrganizationsOperationsService(self)
     self.organizations_sources_findings = self.OrganizationsSourcesFindingsService(self)
     self.organizations_sources = self.OrganizationsSourcesService(self)
     self.organizations = self.OrganizationsService(self)
+    self.projects_assets = self.ProjectsAssetsService(self)
+    self.projects_sources_findings = self.ProjectsSourcesFindingsService(self)
+    self.projects_sources = self.ProjectsSourcesService(self)
+    self.projects = self.ProjectsService(self)
+
+  class FoldersAssetsService(base_api.BaseApiService):
+    """Service class for the folders_assets resource."""
+
+    _NAME = 'folders_assets'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.FoldersAssetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Group(self, request, global_params=None):
+      r"""Filters an organization's assets and groups them by their specified properties.
+
+      Args:
+        request: (SecuritycenterFoldersAssetsGroupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GroupAssetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Group')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Group.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/assets:group',
+        http_method='POST',
+        method_id='securitycenter.folders.assets.group',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/assets:group',
+        request_field='groupAssetsRequest',
+        request_type_name='SecuritycenterFoldersAssetsGroupRequest',
+        response_type_name='GroupAssetsResponse',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists an organization's assets.
+
+      Args:
+        request: (SecuritycenterFoldersAssetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAssetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/assets',
+        http_method='GET',
+        method_id='securitycenter.folders.assets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['compareDuration', 'fieldMask', 'filter', 'orderBy', 'pageSize', 'pageToken', 'readTime'],
+        relative_path='v1/{+parent}/assets',
+        request_field='',
+        request_type_name='SecuritycenterFoldersAssetsListRequest',
+        response_type_name='ListAssetsResponse',
+        supports_download=False,
+    )
+
+    def UpdateSecurityMarks(self, request, global_params=None):
+      r"""Updates security marks.
+
+      Args:
+        request: (SecuritycenterFoldersAssetsUpdateSecurityMarksRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityMarks) The response message.
+      """
+      config = self.GetMethodConfig('UpdateSecurityMarks')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateSecurityMarks.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/assets/{assetsId}/securityMarks',
+        http_method='PATCH',
+        method_id='securitycenter.folders.assets.updateSecurityMarks',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['startTime', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='securityMarks',
+        request_type_name='SecuritycenterFoldersAssetsUpdateSecurityMarksRequest',
+        response_type_name='SecurityMarks',
+        supports_download=False,
+    )
+
+  class FoldersSourcesFindingsService(base_api.BaseApiService):
+    """Service class for the folders_sources_findings resource."""
+
+    _NAME = 'folders_sources_findings'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.FoldersSourcesFindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Group(self, request, global_params=None):
+      r"""Filters an organization or source's findings and groups them by their specified properties. To group across all sources provide a `-` as the source id. Example: /v1/organizations/{organization_id}/sources/-/findings, /v1/folders/{folder_id}/sources/-/findings, /v1/projects/{project_id}/sources/-/findings.
+
+      Args:
+        request: (SecuritycenterFoldersSourcesFindingsGroupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GroupFindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Group')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Group.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/sources/{sourcesId}/findings:group',
+        http_method='POST',
+        method_id='securitycenter.folders.sources.findings.group',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/findings:group',
+        request_field='groupFindingsRequest',
+        request_type_name='SecuritycenterFoldersSourcesFindingsGroupRequest',
+        response_type_name='GroupFindingsResponse',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists an organization or source's findings. To list across all sources provide a `-` as the source id. Example: /v1/organizations/{organization_id}/sources/-/findings.
+
+      Args:
+        request: (SecuritycenterFoldersSourcesFindingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/sources/{sourcesId}/findings',
+        http_method='GET',
+        method_id='securitycenter.folders.sources.findings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['compareDuration', 'fieldMask', 'filter', 'orderBy', 'pageSize', 'pageToken', 'readTime'],
+        relative_path='v1/{+parent}/findings',
+        request_field='',
+        request_type_name='SecuritycenterFoldersSourcesFindingsListRequest',
+        response_type_name='ListFindingsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Creates or updates a finding. The corresponding source must exist for a finding creation to succeed.
+
+      Args:
+        request: (SecuritycenterFoldersSourcesFindingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Finding) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/sources/{sourcesId}/findings/{findingsId}',
+        http_method='PATCH',
+        method_id='securitycenter.folders.sources.findings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='finding',
+        request_type_name='SecuritycenterFoldersSourcesFindingsPatchRequest',
+        response_type_name='Finding',
+        supports_download=False,
+    )
+
+    def SetState(self, request, global_params=None):
+      r"""Updates the state of a finding.
+
+      Args:
+        request: (SecuritycenterFoldersSourcesFindingsSetStateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Finding) The response message.
+      """
+      config = self.GetMethodConfig('SetState')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetState.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/sources/{sourcesId}/findings/{findingsId}:setState',
+        http_method='POST',
+        method_id='securitycenter.folders.sources.findings.setState',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:setState',
+        request_field='setFindingStateRequest',
+        request_type_name='SecuritycenterFoldersSourcesFindingsSetStateRequest',
+        response_type_name='Finding',
+        supports_download=False,
+    )
+
+    def UpdateSecurityMarks(self, request, global_params=None):
+      r"""Updates security marks.
+
+      Args:
+        request: (SecuritycenterFoldersSourcesFindingsUpdateSecurityMarksRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityMarks) The response message.
+      """
+      config = self.GetMethodConfig('UpdateSecurityMarks')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateSecurityMarks.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/sources/{sourcesId}/findings/{findingsId}/securityMarks',
+        http_method='PATCH',
+        method_id='securitycenter.folders.sources.findings.updateSecurityMarks',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['startTime', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='securityMarks',
+        request_type_name='SecuritycenterFoldersSourcesFindingsUpdateSecurityMarksRequest',
+        response_type_name='SecurityMarks',
+        supports_download=False,
+    )
+
+  class FoldersSourcesService(base_api.BaseApiService):
+    """Service class for the folders_sources resource."""
+
+    _NAME = 'folders_sources'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.FoldersSourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists all sources belonging to an organization.
+
+      Args:
+        request: (SecuritycenterFoldersSourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/sources',
+        http_method='GET',
+        method_id='securitycenter.folders.sources.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/sources',
+        request_field='',
+        request_type_name='SecuritycenterFoldersSourcesListRequest',
+        response_type_name='ListSourcesResponse',
+        supports_download=False,
+    )
+
+  class FoldersService(base_api.BaseApiService):
+    """Service class for the folders resource."""
+
+    _NAME = 'folders'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.FoldersService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class OrganizationsAssetsService(base_api.BaseApiService):
     """Service class for the organizations_assets resource."""
@@ -465,7 +756,7 @@ class SecuritycenterV1(base_api.BaseApiClient):
     )
 
     def Group(self, request, global_params=None):
-      r"""Filters an organization or source's findings and groups them by their specified properties. To group across all sources provide a `-` as the source id. Example: /v1/organizations/{organization_id}/sources/-/findings.
+      r"""Filters an organization or source's findings and groups them by their specified properties. To group across all sources provide a `-` as the source id. Example: /v1/organizations/{organization_id}/sources/-/findings, /v1/folders/{folder_id}/sources/-/findings, /v1/projects/{project_id}/sources/-/findings.
 
       Args:
         request: (SecuritycenterOrganizationsSourcesFindingsGroupRequest) input message
@@ -861,3 +1152,286 @@ class SecuritycenterV1(base_api.BaseApiClient):
         response_type_name='OrganizationSettings',
         supports_download=False,
     )
+
+  class ProjectsAssetsService(base_api.BaseApiService):
+    """Service class for the projects_assets resource."""
+
+    _NAME = 'projects_assets'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.ProjectsAssetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Group(self, request, global_params=None):
+      r"""Filters an organization's assets and groups them by their specified properties.
+
+      Args:
+        request: (SecuritycenterProjectsAssetsGroupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GroupAssetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Group')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Group.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/assets:group',
+        http_method='POST',
+        method_id='securitycenter.projects.assets.group',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/assets:group',
+        request_field='groupAssetsRequest',
+        request_type_name='SecuritycenterProjectsAssetsGroupRequest',
+        response_type_name='GroupAssetsResponse',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists an organization's assets.
+
+      Args:
+        request: (SecuritycenterProjectsAssetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAssetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/assets',
+        http_method='GET',
+        method_id='securitycenter.projects.assets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['compareDuration', 'fieldMask', 'filter', 'orderBy', 'pageSize', 'pageToken', 'readTime'],
+        relative_path='v1/{+parent}/assets',
+        request_field='',
+        request_type_name='SecuritycenterProjectsAssetsListRequest',
+        response_type_name='ListAssetsResponse',
+        supports_download=False,
+    )
+
+    def UpdateSecurityMarks(self, request, global_params=None):
+      r"""Updates security marks.
+
+      Args:
+        request: (SecuritycenterProjectsAssetsUpdateSecurityMarksRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityMarks) The response message.
+      """
+      config = self.GetMethodConfig('UpdateSecurityMarks')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateSecurityMarks.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/assets/{assetsId}/securityMarks',
+        http_method='PATCH',
+        method_id='securitycenter.projects.assets.updateSecurityMarks',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['startTime', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='securityMarks',
+        request_type_name='SecuritycenterProjectsAssetsUpdateSecurityMarksRequest',
+        response_type_name='SecurityMarks',
+        supports_download=False,
+    )
+
+  class ProjectsSourcesFindingsService(base_api.BaseApiService):
+    """Service class for the projects_sources_findings resource."""
+
+    _NAME = 'projects_sources_findings'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.ProjectsSourcesFindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Group(self, request, global_params=None):
+      r"""Filters an organization or source's findings and groups them by their specified properties. To group across all sources provide a `-` as the source id. Example: /v1/organizations/{organization_id}/sources/-/findings, /v1/folders/{folder_id}/sources/-/findings, /v1/projects/{project_id}/sources/-/findings.
+
+      Args:
+        request: (SecuritycenterProjectsSourcesFindingsGroupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GroupFindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Group')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Group.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/sources/{sourcesId}/findings:group',
+        http_method='POST',
+        method_id='securitycenter.projects.sources.findings.group',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/findings:group',
+        request_field='groupFindingsRequest',
+        request_type_name='SecuritycenterProjectsSourcesFindingsGroupRequest',
+        response_type_name='GroupFindingsResponse',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists an organization or source's findings. To list across all sources provide a `-` as the source id. Example: /v1/organizations/{organization_id}/sources/-/findings.
+
+      Args:
+        request: (SecuritycenterProjectsSourcesFindingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/sources/{sourcesId}/findings',
+        http_method='GET',
+        method_id='securitycenter.projects.sources.findings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['compareDuration', 'fieldMask', 'filter', 'orderBy', 'pageSize', 'pageToken', 'readTime'],
+        relative_path='v1/{+parent}/findings',
+        request_field='',
+        request_type_name='SecuritycenterProjectsSourcesFindingsListRequest',
+        response_type_name='ListFindingsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Creates or updates a finding. The corresponding source must exist for a finding creation to succeed.
+
+      Args:
+        request: (SecuritycenterProjectsSourcesFindingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Finding) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/sources/{sourcesId}/findings/{findingsId}',
+        http_method='PATCH',
+        method_id='securitycenter.projects.sources.findings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='finding',
+        request_type_name='SecuritycenterProjectsSourcesFindingsPatchRequest',
+        response_type_name='Finding',
+        supports_download=False,
+    )
+
+    def SetState(self, request, global_params=None):
+      r"""Updates the state of a finding.
+
+      Args:
+        request: (SecuritycenterProjectsSourcesFindingsSetStateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Finding) The response message.
+      """
+      config = self.GetMethodConfig('SetState')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetState.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/sources/{sourcesId}/findings/{findingsId}:setState',
+        http_method='POST',
+        method_id='securitycenter.projects.sources.findings.setState',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:setState',
+        request_field='setFindingStateRequest',
+        request_type_name='SecuritycenterProjectsSourcesFindingsSetStateRequest',
+        response_type_name='Finding',
+        supports_download=False,
+    )
+
+    def UpdateSecurityMarks(self, request, global_params=None):
+      r"""Updates security marks.
+
+      Args:
+        request: (SecuritycenterProjectsSourcesFindingsUpdateSecurityMarksRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityMarks) The response message.
+      """
+      config = self.GetMethodConfig('UpdateSecurityMarks')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateSecurityMarks.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/sources/{sourcesId}/findings/{findingsId}/securityMarks',
+        http_method='PATCH',
+        method_id='securitycenter.projects.sources.findings.updateSecurityMarks',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['startTime', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='securityMarks',
+        request_type_name='SecuritycenterProjectsSourcesFindingsUpdateSecurityMarksRequest',
+        response_type_name='SecurityMarks',
+        supports_download=False,
+    )
+
+  class ProjectsSourcesService(base_api.BaseApiService):
+    """Service class for the projects_sources resource."""
+
+    _NAME = 'projects_sources'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.ProjectsSourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists all sources belonging to an organization.
+
+      Args:
+        request: (SecuritycenterProjectsSourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/sources',
+        http_method='GET',
+        method_id='securitycenter.projects.sources.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/sources',
+        request_field='',
+        request_type_name='SecuritycenterProjectsSourcesListRequest',
+        response_type_name='ListSourcesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsService(base_api.BaseApiService):
+    """Service class for the projects resource."""
+
+    _NAME = 'projects'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.ProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }

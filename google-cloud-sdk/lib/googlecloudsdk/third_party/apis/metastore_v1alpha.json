@@ -360,10 +360,12 @@
           "type": "string",
           "enumDescriptions": [
             "The tier is not set.",
-            "The enterprise tier combines a powerful metastore serving layer with a highly scalable data storage layer."
+            "The developer tier provides limited scalability and no fault tolerance. Good for low-cost proof-of-concept.",
+            "The enterprise tier provides multi-zone high availability, and sufficient scalability for enterprise-level Dataproc Metastore workloads."
           ],
           "enum": [
             "TIER_UNSPECIFIED",
+            "DEVELOPER",
             "ENTERPRISE"
           ]
         },
@@ -379,6 +381,11 @@
           "description": "Output only. The globally unique resource identifier of the metastore service.",
           "readOnly": true,
           "type": "string"
+        },
+        "metadataManagementActivity": {
+          "description": "Output only. The metadata management activities of the metastore service.",
+          "readOnly": true,
+          "$ref": "MetadataManagementActivity"
         }
       }
     },
@@ -474,6 +481,64 @@
             "SATURDAY",
             "SUNDAY"
           ]
+        }
+      }
+    },
+    "MetadataManagementActivity": {
+      "id": "MetadataManagementActivity",
+      "description": "The metadata management activities of the metastore service.",
+      "type": "object",
+      "properties": {
+        "metadataExports": {
+          "description": "Output only. The latest metadata exports of the metastore service.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "MetadataExport"
+          }
+        }
+      }
+    },
+    "MetadataExport": {
+      "id": "MetadataExport",
+      "description": "The details of a metadata export operation.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Output only. The time when the export started.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time when the export ended.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. The current state of the export.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The state of the metadata export is unknown.",
+            "The metadata export is running.",
+            "The metadata export completed successfully.",
+            "The metadata export failed.",
+            "The metadata export is cancelled."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "RUNNING",
+            "SUCCEEDED",
+            "FAILED",
+            "CANCELLED"
+          ]
+        },
+        "destinationGcsUri": {
+          "description": "Output only. A Cloud Storage URI of a folder that metadata are exported to, in the form of gs:\/\/\/\/, where ` is automatically generated.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -575,6 +640,21 @@
         },
         "sourceDatabase": {
           "description": "The name of the source database.",
+          "type": "string"
+        }
+      }
+    },
+    "ExportMetadataRequest": {
+      "id": "ExportMetadataRequest",
+      "description": "Request message for DataprocMetastore.ExportMetadata.",
+      "type": "object",
+      "properties": {
+        "destinationGcsFolder": {
+          "description": "Required. A Cloud Storage URI of a folder that metadata are exported to, in the format gs:\/\/\/. A sub-folder containing exported files will be created below it.",
+          "type": "string"
+        },
+        "requestId": {
+          "description": "Optional. A request ID. Specify a unique request ID to allow the server to ignore the request if it has completed. The server will ignore subsequent requests that provide a duplicate request ID for at least 60 minutes after the first request.For example, if an initial request times out, followed by another request with the same request ID, the server ignores the second request to prevent the creation of duplicate commitments.The request ID must be a valid UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier#Format). A zero UUID (00000000-0000-0000-0000-000000000000) is not supported.",
           "type": "string"
         }
       }
@@ -1169,6 +1249,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a single service."
+                },
+                "exportMetadata": {
+                  "id": "metastore.projects.locations.services.exportMetadata",
+                  "path": "v1alpha/{+service}:exportMetadata",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:exportMetadata",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "service": {
+                      "description": "Required. The relative resource name of the metastore service to run export, in the following form:\"projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "service"
+                  ],
+                  "request": {
+                    "$ref": "ExportMetadataRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Exports metadata from a service."
                 },
                 "setIamPolicy": {
                   "id": "metastore.projects.locations.services.setIamPolicy",

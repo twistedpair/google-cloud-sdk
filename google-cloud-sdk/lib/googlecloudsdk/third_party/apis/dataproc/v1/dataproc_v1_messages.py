@@ -151,7 +151,6 @@ class Binding(_messages.Message):
   r"""Associates members with a role.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding.If the
       condition evaluates to true, then this binding applies to the current
       request.If the condition evaluates to false, then this binding does not
@@ -193,10 +192,9 @@ class Binding(_messages.Message):
       roles/editor, or roles/owner.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CancelJobRequest(_messages.Message):
@@ -1139,6 +1137,24 @@ class DataprocProjectsRegionsClustersGetRequest(_messages.Message):
   region = _messages.StringField(3, required=True)
 
 
+class DataprocProjectsRegionsClustersInjectCredentialsRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersInjectCredentialsRequest object.
+
+  Fields:
+    cluster: Required. The cluster, in the form clusters/.
+    injectCredentialsRequest: A InjectCredentialsRequest resource to be passed
+      as the request body.
+    project: Required. The ID of the Google Cloud Platform project the cluster
+      belongs to, of the form projects/.
+    region: Required. The region containing the cluster, of the form regions/.
+  """
+
+  cluster = _messages.StringField(1, required=True)
+  injectCredentialsRequest = _messages.MessageField('InjectCredentialsRequest', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+
+
 class DataprocProjectsRegionsClustersListRequest(_messages.Message):
   r"""A DataprocProjectsRegionsClustersListRequest object.
 
@@ -1920,6 +1936,8 @@ class GceClusterConfig(_messages.Message):
       https://www.googleapis.com/auth/bigtable.admin.table
       https://www.googleapis.com/auth/bigtable.data
       https://www.googleapis.com/auth/devstorage.full_control
+    shieldedInstanceConfig: Optional. Shielded Instance Config for clusters
+      using shielded VMs.
     subnetworkUri: Optional. The Compute Engine subnetwork to be used for
       machine communications. Cannot be specified with network_uri.A full URL,
       partial URI, or short name are valid. Examples:
@@ -1994,9 +2012,10 @@ class GceClusterConfig(_messages.Message):
   reservationAffinity = _messages.MessageField('ReservationAffinity', 6)
   serviceAccount = _messages.StringField(7)
   serviceAccountScopes = _messages.StringField(8, repeated=True)
-  subnetworkUri = _messages.StringField(9)
-  tags = _messages.StringField(10, repeated=True)
-  zoneUri = _messages.StringField(11)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 9)
+  subnetworkUri = _messages.StringField(10)
+  tags = _messages.StringField(11, repeated=True)
+  zoneUri = _messages.StringField(12)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -2194,6 +2213,22 @@ class HiveJob(_messages.Message):
   queryFileUri = _messages.StringField(4)
   queryList = _messages.MessageField('QueryList', 5)
   scriptVariables = _messages.MessageField('ScriptVariablesValue', 6)
+
+
+class InjectCredentialsRequest(_messages.Message):
+  r"""A request to inject credentials into a cluster.
+
+  Fields:
+    clusterUuid: Required. The cluster UUID.
+    credentialsCiphertext: Required. The encrypted credentials being injected
+      in to the cluster.The client is responsible for encrypting the
+      credentials in a way that is supported by the cluster.A wrapped value is
+      used here so that the actual contents of the encrypted credentials are
+      not written to audit logs.
+  """
+
+  clusterUuid = _messages.StringField(1)
+  credentialsCiphertext = _messages.StringField(2)
 
 
 class InstanceGroupAutoscalingPolicyConfig(_messages.Message):
@@ -3542,6 +3577,22 @@ class SetIamPolicyRequest(_messages.Message):
   policy = _messages.MessageField('Policy', 1)
 
 
+class ShieldedInstanceConfig(_messages.Message):
+  r"""Shielded Instance Config for clusters using shielded VMs.
+
+  Fields:
+    enableIntegrityMonitoring: Optional. Defines whether instances have
+      integrity monitoring enabled.
+    enableSecureBoot: Optional. Defines whether instances have Secure Boot
+      enabled.
+    enableVtpm: Optional. Defines whether instances have the vTPM enabled.
+  """
+
+  enableIntegrityMonitoring = _messages.BooleanField(1)
+  enableSecureBoot = _messages.BooleanField(2)
+  enableVtpm = _messages.BooleanField(3)
+
+
 class SoftwareConfig(_messages.Message):
   r"""Specifies the selection and config of software inside the cluster.
 
@@ -4108,6 +4159,11 @@ class WorkflowMetadata(_messages.Message):
     clusterName: Output only. The name of the target cluster.
     clusterUuid: Output only. The UUID of target cluster.
     createCluster: Output only. The create cluster operation metadata.
+    dagEndTime: Output only. DAG end time, only set for workflows with
+      dag_timeout when DAG ends.
+    dagStartTime: Output only. DAG start time, only set for workflows with
+      dag_timeout when DAG begins.
+    dagTimeout: Output only. The timeout duration for the DAG of jobs.
     deleteCluster: Output only. The delete cluster operation metadata.
     endTime: Output only. Workflow end time.
     graph: Output only. The workflow graph.
@@ -4169,14 +4225,17 @@ class WorkflowMetadata(_messages.Message):
   clusterName = _messages.StringField(1)
   clusterUuid = _messages.StringField(2)
   createCluster = _messages.MessageField('ClusterOperation', 3)
-  deleteCluster = _messages.MessageField('ClusterOperation', 4)
-  endTime = _messages.StringField(5)
-  graph = _messages.MessageField('WorkflowGraph', 6)
-  parameters = _messages.MessageField('ParametersValue', 7)
-  startTime = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  template = _messages.StringField(10)
-  version = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  dagEndTime = _messages.StringField(4)
+  dagStartTime = _messages.StringField(5)
+  dagTimeout = _messages.StringField(6)
+  deleteCluster = _messages.MessageField('ClusterOperation', 7)
+  endTime = _messages.StringField(8)
+  graph = _messages.MessageField('WorkflowGraph', 9)
+  parameters = _messages.MessageField('ParametersValue', 10)
+  startTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  template = _messages.StringField(13)
+  version = _messages.IntegerField(14, variant=_messages.Variant.INT32)
 
 
 class WorkflowNode(_messages.Message):
@@ -4234,6 +4293,14 @@ class WorkflowTemplate(_messages.Message):
 
   Fields:
     createTime: Output only. The time template was created.
+    dagTimeout: Optional. Timeout duration for the DAG of jobs. You can use
+      "s", "m", "h", and "d" suffixes for second, minute, hour, and day
+      duration values, respectively. The timeout duration must be from 10
+      minutes ("10m") to 24 hours ("24h" or "1d"). The timer begins when the
+      first job is submitted. If the workflow is running at the end of the
+      timeout period, any remaining jobs are cancelled, the workflow is ended,
+      and if the workflow was running on a managed cluster, the cluster is
+      deleted.
     id: A string attribute.
     jobs: Required. The Directed Acyclic Graph of Jobs to submit.
     labels: Optional. The labels to associate with this template. These labels
@@ -4297,14 +4364,15 @@ class WorkflowTemplate(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  id = _messages.StringField(2)
-  jobs = _messages.MessageField('OrderedJob', 3, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  parameters = _messages.MessageField('TemplateParameter', 6, repeated=True)
-  placement = _messages.MessageField('WorkflowTemplatePlacement', 7)
-  updateTime = _messages.StringField(8)
-  version = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  dagTimeout = _messages.StringField(2)
+  id = _messages.StringField(3)
+  jobs = _messages.MessageField('OrderedJob', 4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  parameters = _messages.MessageField('TemplateParameter', 7, repeated=True)
+  placement = _messages.MessageField('WorkflowTemplatePlacement', 8)
+  updateTime = _messages.StringField(9)
+  version = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
 class WorkflowTemplatePlacement(_messages.Message):

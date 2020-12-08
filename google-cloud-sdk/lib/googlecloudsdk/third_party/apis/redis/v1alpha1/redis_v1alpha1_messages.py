@@ -144,9 +144,8 @@ class Instance(_messages.Message):
       DIRECT_PEERING.
     StateValueValuesEnum: Output only. The current state of this instance.
     TierValueValuesEnum: Required. The service tier of the instance.
-    TransitEncryptionModeValueValuesEnum: Optional. The In-transit encryption
-      mode of Redis instance. If not provided, in-transit encryption is
-      disabled for instance.
+    TransitEncryptionModeValueValuesEnum: Optional. The TLS mode of the Redis
+      instance. If not provided, TLS is disabled for the instance.
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata
@@ -186,6 +185,10 @@ class Instance(_messages.Message):
       standard tier, instances will be created across two zones for protection
       against zonal failures. If [alternative_location_id] is also provided,
       it must be different from [location_id].
+    maintenancePolicy: Optional. The maintenance policy for the instance. If
+      not provided, the maintenance event will be performed based on
+      Memorystore internal rollout schedule.
+    maintenanceSchedule: Output only. Published maintenance schedule.
     memorySizeGb: Required. Redis memory size in GB, up to 200GB.
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
@@ -220,9 +223,8 @@ class Instance(_messages.Message):
     statusMessage: Output only. Additional information about the current
       status of this instance, if available.
     tier: Required. The service tier of the instance.
-    transitEncryptionMode: Optional. The In-transit encryption mode of Redis
-      instance. If not provided, in-transit encryption is disabled for
-      instance.
+    transitEncryptionMode: Optional. The TLS mode of the Redis instance. If
+      not provided, TLS is disabled for the instance.
   """
 
   class ConnectModeValueValuesEnum(_messages.Enum):
@@ -284,14 +286,14 @@ class Instance(_messages.Message):
     STANDARD_HA = 2
 
   class TransitEncryptionModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The In-transit encryption mode of Redis instance. If not
-    provided, in-transit encryption is disabled for instance.
+    r"""Optional. The TLS mode of the Redis instance. If not provided, TLS is
+    disabled for the instance.
 
     Values:
       TRANSIT_ENCRYPTION_MODE_UNSPECIFIED: Not set.
       SERVER_AUTHENTICATION: Client to Server traffic encryption enabled with
         server authentication.
-      DISABLED: In-transit encryption is disabled for instance.
+      DISABLED: TLS is disabled for the instance.
     """
     TRANSIT_ENCRYPTION_MODE_UNSPECIFIED = 0
     SERVER_AUTHENTICATION = 1
@@ -359,19 +361,21 @@ class Instance(_messages.Message):
   host = _messages.StringField(8)
   labels = _messages.MessageField('LabelsValue', 9)
   locationId = _messages.StringField(10)
-  memorySizeGb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  name = _messages.StringField(12)
-  persistenceConfig = _messages.MessageField('PersistenceConfig', 13)
-  persistenceIamIdentity = _messages.StringField(14)
-  port = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 16)
-  redisVersion = _messages.StringField(17)
-  reservedIpRange = _messages.StringField(18)
-  serverCaCerts = _messages.MessageField('TlsCertificate', 19, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  statusMessage = _messages.StringField(21)
-  tier = _messages.EnumField('TierValueValuesEnum', 22)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 23)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 11)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 12)
+  memorySizeGb = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  name = _messages.StringField(14)
+  persistenceConfig = _messages.MessageField('PersistenceConfig', 15)
+  persistenceIamIdentity = _messages.StringField(16)
+  port = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 18)
+  redisVersion = _messages.StringField(19)
+  reservedIpRange = _messages.StringField(20)
+  serverCaCerts = _messages.MessageField('TlsCertificate', 21, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  statusMessage = _messages.StringField(23)
+  tier = _messages.EnumField('TierValueValuesEnum', 24)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 25)
 
 
 class InstanceAuthString(_messages.Message):
@@ -566,6 +570,43 @@ class LocationMetadata(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   availableZones = _messages.MessageField('AvailableZonesValue', 1)
+
+
+class MaintenancePolicy(_messages.Message):
+  r"""Maintenance policy per instance.
+
+  Fields:
+    createTime: Output only. The time when the policy was created.
+    description: Optional. Description of what this policy is for.
+      Create/Update methods return INVALID_ARGUMENT if the length is greater
+      than 512.
+    updateTime: Output only. The time when the policy was updated.
+    weeklyMaintenanceWindow: Optional. Maintenance window that is applied to
+      resources covered by this policy. Minimum 1. For the current version,
+      the maximum number of weekly_window is expected to be one.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
+  weeklyMaintenanceWindow = _messages.MessageField('WeeklyMaintenanceWindow', 4, repeated=True)
+
+
+class MaintenanceSchedule(_messages.Message):
+  r"""Upcoming maitenance schedule.
+
+  Fields:
+    canReschedule: Output only. If the scheduled maintenance can be
+      rescheduled, default is true.
+    endTime: Output only. The end time of any upcoming scheduled maintenance
+      for this instance.
+    startTime: Output only. The start time of any upcoming scheduled
+      maintenance for this instance.
+  """
+
+  canReschedule = _messages.BooleanField(1)
+  endTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
 
 
 class MetricHealth(_messages.Message):
@@ -978,6 +1019,21 @@ class RedisProjectsLocationsInstancesReportInstanceHealthRequest(_messages.Messa
   window = _messages.EnumField('WindowValueValuesEnum', 3)
 
 
+class RedisProjectsLocationsInstancesRescheduleMaintenanceRequest(_messages.Message):
+  r"""A RedisProjectsLocationsInstancesRescheduleMaintenanceRequest object.
+
+  Fields:
+    name: Required. Redis instance resource name using the form:
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+      where `location_id` refers to a GCP region.
+    rescheduleMaintenanceRequest: A RescheduleMaintenanceRequest resource to
+      be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rescheduleMaintenanceRequest = _messages.MessageField('RescheduleMaintenanceRequest', 2)
+
+
 class RedisProjectsLocationsInstancesUpgradeRequest(_messages.Message):
   r"""A RedisProjectsLocationsInstancesUpgradeRequest object.
 
@@ -1087,6 +1143,42 @@ class ReportInstanceHealthResponse(_messages.Message):
 
   categories = _messages.MessageField('CategoryHealth', 1, repeated=True)
   overallState = _messages.EnumField('OverallStateValueValuesEnum', 2)
+
+
+class RescheduleMaintenanceRequest(_messages.Message):
+  r"""Request for RescheduleMaintenance.
+
+  Enums:
+    RescheduleTypeValueValuesEnum: Required. If reschedule type is
+      SPECIFIC_TIME, must set up schedule_time as well.
+
+  Fields:
+    rescheduleType: Required. If reschedule type is SPECIFIC_TIME, must set up
+      schedule_time as well.
+    scheduleTime: Optional. The RFC 3339 timestamp for when maintenance will
+      be rescheduled if rescheduleType=SPECIFIC_TIME. For example
+      `2012-11-15T16:19:00.094Z`.
+  """
+
+  class RescheduleTypeValueValuesEnum(_messages.Enum):
+    r"""Required. If reschedule type is SPECIFIC_TIME, must set up
+    schedule_time as well.
+
+    Values:
+      RESCHEDULE_TYPE_UNSPECIFIED: If not set, the rpc will be a no-op.
+      IMMEDIATE: If the user wants to schedule the maintenance to happen now.
+      NEXT_AVAILABLE_WINDOW: If the user wants to use the existing maintenance
+        policy to find the next available window.
+      SPECIFIC_TIME: If the user wants to reschedule the maintenance to a
+        specific time.
+    """
+    RESCHEDULE_TYPE_UNSPECIFIED = 0
+    IMMEDIATE = 1
+    NEXT_AVAILABLE_WINDOW = 2
+    SPECIFIC_TIME = 3
+
+  rescheduleType = _messages.EnumField('RescheduleTypeValueValuesEnum', 1)
+  scheduleTime = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1255,6 +1347,49 @@ class UpgradeInstanceRequest(_messages.Message):
   """
 
   redisVersion = _messages.StringField(1)
+
+
+class WeeklyMaintenanceWindow(_messages.Message):
+  r"""Time window specified for weekly operations.
+
+  Enums:
+    DayValueValuesEnum: Required. Allows to define schedule that runs
+      specified day of the week.
+
+  Fields:
+    day: Required. Allows to define schedule that runs specified day of the
+      week.
+    duration: Output only. Duration of the time window. Fixed to be 3 hours
+      for now.
+    startTime: Required. Start time of the window in UTC.
+  """
+
+  class DayValueValuesEnum(_messages.Enum):
+    r"""Required. Allows to define schedule that runs specified day of the
+    week.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  day = _messages.EnumField('DayValueValuesEnum', 1)
+  duration = _messages.StringField(2)
+  startTime = _messages.MessageField('TimeOfDay', 3)
 
 
 class ZoneMetadata(_messages.Message):

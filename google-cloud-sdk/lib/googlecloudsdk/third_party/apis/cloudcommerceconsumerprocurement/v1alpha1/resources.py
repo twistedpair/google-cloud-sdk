@@ -84,6 +84,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  BILLINGACCOUNTS_ORDERS_ORDERALLOCATIONS_OPERATIONS = (
+      'billingAccounts.orders.orderAllocations.operations',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/orders/{ordersId}/'
+              'orderAllocations/{orderAllocationsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',

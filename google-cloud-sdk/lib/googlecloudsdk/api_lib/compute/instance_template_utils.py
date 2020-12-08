@@ -40,7 +40,9 @@ def CreateNetworkInterfaceMessage(resources,
                                   subnet,
                                   address,
                                   alias_ip_ranges_string=None,
-                                  network_tier=None):
+                                  network_tier=None,
+                                  stack_type=None,
+                                  ipv6_network_tier=None):
   """Creates and returns a new NetworkInterface message.
 
   Args:
@@ -61,6 +63,12 @@ def CreateNetworkInterfaceMessage(resources,
                * None - no network tier
                * PREMIUM - network tier being PREMIUM
                * SELECT - network tier being SELECT
+               * STANDARD - network tier being STANDARD
+    stack_type: identify whether IPv6 features are enabled
+               * IPV4_ONLY - can only have IPv4 address
+               * IPV4_IPV6 - can have both IPv4 and IPv6 address
+    ipv6_network_tier: specify network tier for IPv6 access config
+               * PREMIUM - network tier being PREMIUM
                * STANDARD - network tier being STANDARD
   Returns:
     network_interface: a NetworkInterface message object
@@ -89,6 +97,10 @@ def CreateNetworkInterfaceMessage(resources,
   if private_ip is not None:
     network_interface.networkIP = private_ip
 
+  if stack_type is not None:
+    network_interface.stackType = (
+        messages.NetworkInterface.StackTypeValueValuesEnum(stack_type))
+
   if address:
     access_config = messages.AccessConfig(
         name=constants.DEFAULT_ACCESS_CONFIG_NAME,
@@ -104,6 +116,15 @@ def CreateNetworkInterfaceMessage(resources,
                                    NetworkTierValueValuesEnum(network_tier))
 
     network_interface.accessConfigs = [access_config]
+
+  if ipv6_network_tier is not None:
+    ipv6_access_config = messages.AccessConfig(
+        name=constants.DEFAULT_IPV6_ACCESS_CONFIG_NAME,
+        type=messages.AccessConfig.TypeValueValuesEnum.DIRECT_IPV6)
+    ipv6_access_config.networkTier = (
+        messages.AccessConfig.NetworkTierValueValuesEnum(ipv6_network_tier))
+
+    network_interface.ipv6AccessConfigs = [ipv6_access_config]
 
   if alias_ip_ranges_string:
     network_interface.aliasIpRanges = (

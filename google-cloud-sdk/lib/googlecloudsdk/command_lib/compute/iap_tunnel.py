@@ -559,7 +559,7 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
     if self._connections:
       close_count = 0
       for client_thread, conn in self._connections:
-        if client_thread.isAlive():
+        if client_thread.is_alive():
           close_count += 1
           try:
             conn.close()

@@ -1823,6 +1823,292 @@
           "$ref": "SoftwareRecipe"
         }
       }
+    },
+    "Inventory": {
+      "id": "Inventory",
+      "description": "The inventory details of a VM.",
+      "type": "object",
+      "properties": {
+        "osInfo": {
+          "description": "Base level operating system information for the VM.",
+          "$ref": "InventoryOsInfo"
+        },
+        "items": {
+          "description": "Inventory items related to the VM keyed by an opaque unique identifier for each inventory item. The identifier is unique to each distinct and addressable inventory item and will change, when there is a new package version.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "InventoryItem"
+          }
+        }
+      }
+    },
+    "InventoryOsInfo": {
+      "id": "InventoryOsInfo",
+      "description": "Operating system information for the VM.",
+      "type": "object",
+      "properties": {
+        "hostname": {
+          "description": "The VM hostname.",
+          "type": "string"
+        },
+        "longName": {
+          "description": "The operating system long name. For example 'Debian GNU\/Linux 9' or 'Microsoft Window Server 2019 Datacenter'.",
+          "type": "string"
+        },
+        "shortName": {
+          "description": "The operating system short name. For example, 'windows' or 'debian'.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The version of the operating system.",
+          "type": "string"
+        },
+        "architecture": {
+          "description": "The system architecture of the operating system.",
+          "type": "string"
+        },
+        "kernelVersion": {
+          "description": "The kernel version of the operating system.",
+          "type": "string"
+        },
+        "kernelRelease": {
+          "description": "The kernel release of the operating system.",
+          "type": "string"
+        },
+        "osconfigAgentVersion": {
+          "description": "The current version of the OS Config agent running on the VM.",
+          "type": "string"
+        }
+      }
+    },
+    "InventoryItem": {
+      "id": "InventoryItem",
+      "description": "A single piece of inventory on a VM.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Identifier for this item, unique across items for this VM.",
+          "type": "string"
+        },
+        "originType": {
+          "description": "The origin of this inventory item.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid. An origin type must be specified.",
+            "This inventory item was discovered as the result of the agent reporting inventory via the reporting API."
+          ],
+          "enum": [
+            "ORIGIN_TYPE_UNSPECIFIED",
+            "INVENTORY_REPORT"
+          ]
+        },
+        "createTime": {
+          "description": "When this inventory item was first detected.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "When this inventory item was last modified.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "type": {
+          "description": "The specific type of inventory, correlating to its specific details.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid. An type must be specified.",
+            "This represents a package that is installed on the VM.",
+            "This represents an update that is available for a package."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "INSTALLED_PACKAGE",
+            "AVAILABLE_PACKAGE"
+          ]
+        },
+        "installedPackage": {
+          "description": "Software package present on the VM instance.",
+          "$ref": "InventorySoftwarePackage"
+        },
+        "availablePackage": {
+          "description": "Software package available to be installed on the VM instance.",
+          "$ref": "InventorySoftwarePackage"
+        }
+      }
+    },
+    "InventorySoftwarePackage": {
+      "id": "InventorySoftwarePackage",
+      "description": "Software package information of the operating system.",
+      "type": "object",
+      "properties": {
+        "yumPackage": {
+          "description": "Yum package info. For details about the yum package manager, see https:\/\/access.redhat.com\/documentation\/en-us\/red_hat_enterprise_linux\/6\/html\/deployment_guide\/ch-yum.",
+          "$ref": "InventoryVersionedPackage"
+        },
+        "aptPackage": {
+          "description": "Details of an APT package. For details about the apt package manager, see https:\/\/wiki.debian.org\/Apt.",
+          "$ref": "InventoryVersionedPackage"
+        },
+        "zypperPackage": {
+          "description": "Details of a Zypper package. For details about the Zypper package manager, see https:\/\/en.opensuse.org\/SDB:Zypper_manual.",
+          "$ref": "InventoryVersionedPackage"
+        },
+        "googetPackage": {
+          "description": "Details of a Googet package. For details about the googet package manager, see https:\/\/github.com\/google\/googet.",
+          "$ref": "InventoryVersionedPackage"
+        },
+        "zypperPatch": {
+          "description": "Details of a Zypper patch. For details about the Zypper package manager, see https:\/\/en.opensuse.org\/SDB:Zypper_manual.",
+          "$ref": "InventoryZypperPatch"
+        },
+        "wuaPackage": {
+          "description": "Details of a Windows Update package. See https:\/\/docs.microsoft.com\/en-us\/windows\/win32\/api\/_wua\/ for information about Windows Update.",
+          "$ref": "InventoryWindowsUpdatePackage"
+        },
+        "qfePackage": {
+          "description": "Details of a Windows Quick Fix engineering package. See https:\/\/docs.microsoft.com\/en-us\/windows\/win32\/cimwin32prov\/win32-quickfixengineering for info in Windows Quick Fix Engineering.",
+          "$ref": "InventoryWindowsQuickFixEngineeringPackage"
+        },
+        "cosPackage": {
+          "description": "Details of a COS package.",
+          "$ref": "InventoryVersionedPackage"
+        }
+      }
+    },
+    "InventoryVersionedPackage": {
+      "id": "InventoryVersionedPackage",
+      "description": "Information related to the a standard versioned package. This includes package info for APT, Yum, Zypper, and Googet package managers.",
+      "type": "object",
+      "properties": {
+        "packageName": {
+          "description": "The name of the package.",
+          "type": "string"
+        },
+        "architecture": {
+          "description": "The system architecture this package is intended for.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The version of the package.",
+          "type": "string"
+        }
+      }
+    },
+    "InventoryZypperPatch": {
+      "id": "InventoryZypperPatch",
+      "description": "Details related to a Zypper Patch.",
+      "type": "object",
+      "properties": {
+        "patchName": {
+          "description": "The name of the patch.",
+          "type": "string"
+        },
+        "category": {
+          "description": "The category of the patch.",
+          "type": "string"
+        },
+        "severity": {
+          "description": "The severity specified for this patch",
+          "type": "string"
+        },
+        "summary": {
+          "description": "Any summary information provided about this patch.",
+          "type": "string"
+        }
+      }
+    },
+    "InventoryWindowsUpdatePackage": {
+      "id": "InventoryWindowsUpdatePackage",
+      "description": "Details related to a Windows Update package. Field data and names are taken from Windows Update API IUpdate Interface: https:\/\/docs.microsoft.com\/en-us\/windows\/win32\/api\/_wua\/ Descriptive fields like title, and description are localized based on the locale of the VM being updated.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "description": "The localized title of the update package.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The localized description of the update package.",
+          "type": "string"
+        },
+        "categories": {
+          "description": "The categories that are associated with this update package.",
+          "type": "array",
+          "items": {
+            "$ref": "InventoryWindowsUpdatePackageWindowsUpdateCategory"
+          }
+        },
+        "kbArticleIds": {
+          "description": "A collection of Microsoft Knowledge Base article IDs that are associated with the update package.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "supportUrl": {
+          "description": "A hyperlink to the language-specific support information for the update.",
+          "type": "string"
+        },
+        "moreInfoUrls": {
+          "description": "A collection of URLs that provide more information about the update package.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "updateId": {
+          "description": "Gets the identifier of an update package. Stays the same across revisions.",
+          "type": "string"
+        },
+        "revisionNumber": {
+          "description": "The revision number of this update package.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "lastDeploymentChangeTime": {
+          "description": "The last published date of the update, in (UTC) date and time.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "InventoryWindowsUpdatePackageWindowsUpdateCategory": {
+      "id": "InventoryWindowsUpdatePackageWindowsUpdateCategory",
+      "description": "Categories specified by the Windows Update.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The identifier of the windows update category.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the windows update category.",
+          "type": "string"
+        }
+      }
+    },
+    "InventoryWindowsQuickFixEngineeringPackage": {
+      "id": "InventoryWindowsQuickFixEngineeringPackage",
+      "description": "Information related to a Quick Fix Engineering package. Fields are taken from Windows QuickFixEngineering Interface and match the source names: https:\/\/docs.microsoft.com\/en-us\/windows\/win32\/cimwin32prov\/win32-quickfixengineering",
+      "type": "object",
+      "properties": {
+        "caption": {
+          "description": "A short textual description of the QFE update.",
+          "type": "string"
+        },
+        "description": {
+          "description": "A textual description of the QFE update.",
+          "type": "string"
+        },
+        "hotFixId": {
+          "description": "Unique identifier associated with a particular QFE update.",
+          "type": "string"
+        },
+        "installTime": {
+          "description": "Date that the QFE update was installed. Mapped from installed_on field.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
     }
   },
   "resources": {

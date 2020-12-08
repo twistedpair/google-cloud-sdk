@@ -377,6 +377,20 @@ class Finding(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
+class Folder(_messages.Message):
+  r"""Message that contains the resource name and display name of a folder
+  resource.
+
+  Fields:
+    resourceFolder: Full resource name of this folder. See:
+      https://cloud.google.com/apis/design/resource_names#full_resource_name
+    resourceFolderDisplayName: The user defined display name for this folder.
+  """
+
+  resourceFolder = _messages.StringField(1)
+  resourceFolderDisplayName = _messages.StringField(2)
+
+
 class GoogleCloudSecuritycenterV1NotificationMessage(_messages.Message):
   r"""Cloud SCC's Notification
 
@@ -397,6 +411,9 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
   r"""Information related to the Google Cloud resource.
 
   Fields:
+    folders: Output only. Contains a Folder message for each folder in the
+      assets ancestry. The first folder is the deepest nested folder, and the
+      last folder is the folder directly under the Organization.
     name: The full resource name of the resource. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
     parent: The full resource name of resource's parent.
@@ -406,11 +423,12 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
       belongs to.
   """
 
-  name = _messages.StringField(1)
-  parent = _messages.StringField(2)
-  parentDisplayName = _messages.StringField(3)
-  project = _messages.StringField(4)
-  projectDisplayName = _messages.StringField(5)
+  folders = _messages.MessageField('Folder', 1, repeated=True)
+  name = _messages.StringField(2)
+  parent = _messages.StringField(3)
+  parentDisplayName = _messages.StringField(4)
+  project = _messages.StringField(5)
+  projectDisplayName = _messages.StringField(6)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
@@ -609,6 +627,20 @@ class GoogleCloudSecuritycenterV1p1beta1Finding(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
+class GoogleCloudSecuritycenterV1p1beta1Folder(_messages.Message):
+  r"""Message that contains the resource name and display name of a folder
+  resource.
+
+  Fields:
+    resourceFolder: Full resource name of this folder. See:
+      https://cloud.google.com/apis/design/resource_names#full_resource_name
+    resourceFolderDisplayName: The user defined display name for this folder.
+  """
+
+  resourceFolder = _messages.StringField(1)
+  resourceFolderDisplayName = _messages.StringField(2)
+
+
 class GoogleCloudSecuritycenterV1p1beta1NotificationMessage(_messages.Message):
   r"""Security Command Center's Notification
 
@@ -629,6 +661,9 @@ class GoogleCloudSecuritycenterV1p1beta1Resource(_messages.Message):
   r"""Information related to the Google Cloud resource.
 
   Fields:
+    folders: Output only. Contains a Folder message for each folder in the
+      assets ancestry. The first folder is the deepest nested folder, and the
+      last folder is the folder directly under the Organization.
     name: The full resource name of the resource. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
     parent: The full resource name of resource's parent.
@@ -638,11 +673,12 @@ class GoogleCloudSecuritycenterV1p1beta1Resource(_messages.Message):
       belongs to.
   """
 
-  name = _messages.StringField(1)
-  parent = _messages.StringField(2)
-  parentDisplayName = _messages.StringField(3)
-  project = _messages.StringField(4)
-  projectDisplayName = _messages.StringField(5)
+  folders = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1Folder', 1, repeated=True)
+  name = _messages.StringField(2)
+  parent = _messages.StringField(3)
+  parentDisplayName = _messages.StringField(4)
+  project = _messages.StringField(5)
+  projectDisplayName = _messages.StringField(6)
 
 
 class GoogleCloudSecuritycenterV1p1beta1RunAssetDiscoveryResponse(_messages.Message):

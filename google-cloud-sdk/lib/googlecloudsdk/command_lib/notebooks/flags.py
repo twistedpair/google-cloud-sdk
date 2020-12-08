@@ -297,7 +297,10 @@ def AddCreateInstanceFlags(parser):
           'service_account) is used.'))
   parser.add_argument(
       '--machine-type',
-      help='The [Compute Engine machine type](/compute/docs/machine-types) of this instance.',
+      help=(
+          'The '
+          '[Compute Engine machine type](https://cloud.google.com/sdk/gcloud/reference/compute/machine-types) '
+          'of this instance.'),
       default='n1-standard-1')
   parser.add_argument(
       '--instance-owners',

@@ -768,7 +768,7 @@ class IosDeviceList(_messages.Message):
 
 
 class IosModel(_messages.Message):
-  r"""A description of an iOS device tests may be run on. Next tag: 13
+  r"""A description of an iOS device tests may be run on.
 
   Enums:
     FormFactorValueValuesEnum: Whether this device is a phone, tablet,

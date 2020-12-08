@@ -816,33 +816,6 @@ class OsconfigV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def ReportPatchJobInstanceDetails(self, request, global_params=None):
-      r"""Deprecated: Should use AgentEndpoint API going forward. Will be removed in v1beta. Endpoint used by the agent to report back its state during a patch job. This endpoint will also return the patch job's state and configurations that the agent needs to know in order to run or stop patching. This endpoint is only used by the agent. Using it in other ways may affect the state of the active patch job and prevent the patches from being correctly applied to this instance.
-
-      Args:
-        request: (OsconfigProjectsZonesInstancesReportPatchJobInstanceDetailsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ReportPatchJobInstanceDetailsResponse) The response message.
-      """
-      config = self.GetMethodConfig('ReportPatchJobInstanceDetails')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ReportPatchJobInstanceDetails.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha2/projects/{projectsId}/zones/{zonesId}/instances/{instancesId}:reportPatchJobInstanceDetails',
-        http_method='POST',
-        method_id='osconfig.projects.zones.instances.reportPatchJobInstanceDetails',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1alpha2/{+resource}:reportPatchJobInstanceDetails',
-        request_field='reportPatchJobInstanceDetailsRequest',
-        request_type_name='OsconfigProjectsZonesInstancesReportPatchJobInstanceDetailsRequest',
-        response_type_name='ReportPatchJobInstanceDetailsResponse',
-        supports_download=False,
-    )
-
   class ProjectsZonesService(base_api.BaseApiService):
     """Service class for the projects_zones resource."""
 

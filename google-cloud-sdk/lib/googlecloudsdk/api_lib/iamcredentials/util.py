@@ -25,7 +25,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
-from googlecloudsdk.core import http as http_core
+from googlecloudsdk.core import requests as core_requests
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.credentials import transports
@@ -120,7 +120,7 @@ class ImpersonationAccessTokenProvider(object):
   def GetElevationAccessTokenGoogleAuth(self, source_credentials,
                                         service_account_id, scopes):
     """Creates a fresh impersonation credential using google-auth library."""
-    request_client = http_core.GoogleAuthRequest()
+    request_client = core_requests.GoogleAuthRequest()
     # google-auth makes a shadow copy of the source_credentials and refresh
     # the copy instead of the original source_credentials. During the copying,
     # the monkey patch
@@ -158,7 +158,7 @@ class ImpersonationAccessTokenProvider(object):
         google_auth_impersonation_credentials,
         target_audience=audience,
         include_email=include_email)
-    request_client = http_core.GoogleAuthRequest()
+    request_client = core_requests.GoogleAuthRequest()
     cred.refresh(request_client)
     return cred
 

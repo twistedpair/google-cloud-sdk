@@ -182,8 +182,6 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       can change the assigned billing account. The resource name has the form
       `billingAccounts/{billing_account_id}`. For example,
       `billingAccounts/012345-567890-ABCDEF`.
-    cjisSettings: Required. Input only. Immutable. Settings specific to
-      resources needed for CJIS.
     complianceRegime: Required. Immutable. Compliance Regime associated with
       this workload.
     createTime: Output only. Immutable. The Workload creation timestamp.
@@ -193,12 +191,9 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       Example: My Workload
     etag: Optional. ETag of the workload, it is calculated on the basis of the
       Workload contents. It will be used in Update & Delete operations.
-    fedrampHighSettings: Required. Input only. Immutable. Settings specific to
-      resources needed for FedRAMP High.
-    fedrampModerateSettings: Required. Input only. Immutable. Settings
-      specific to resources needed for FedRAMP Moderate.
-    il4Settings: Required. Input only. Immutable. Settings specific to
-      resources needed for IL4.
+    kmsSettings: Input only. Settings used to create a CMEK crypto key. When
+      set a project with a KMS CMEK key is provisioned. This field is
+      mandatory for a subset of Compliance Regimes.
     labels: Optional. Labels applied to the workload.
     name: Optional. The resource name of the workload. Format:
       organizations/{organization}/locations/{location}/workloads/{workload}
@@ -255,62 +250,15 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   billingAccount = _messages.StringField(1)
-  cjisSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadCJISSettings', 2)
-  complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 3)
-  createTime = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  fedrampHighSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadFedrampHighSettings', 7)
-  fedrampModerateSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadFedrampModerateSettings', 8)
-  il4Settings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadIL4Settings', 9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  provisionedResourcesParent = _messages.StringField(12)
-  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceInfo', 13, repeated=True)
-
-
-class GoogleCloudAssuredworkloadsV1WorkloadCJISSettings(_messages.Message):
-  r"""Settings specific to resources needed for CJIS.
-
-  Fields:
-    kmsSettings: Required. Input only. Immutable. Settings used to create a
-      CMEK crypto key.
-  """
-
-  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadKMSSettings', 1)
-
-
-class GoogleCloudAssuredworkloadsV1WorkloadFedrampHighSettings(_messages.Message):
-  r"""Settings specific to resources needed for FedRAMP High.
-
-  Fields:
-    kmsSettings: Required. Input only. Immutable. Settings used to create a
-      CMEK crypto key.
-  """
-
-  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadKMSSettings', 1)
-
-
-class GoogleCloudAssuredworkloadsV1WorkloadFedrampModerateSettings(_messages.Message):
-  r"""Settings specific to resources needed for FedRAMP Moderate.
-
-  Fields:
-    kmsSettings: Required. Input only. Immutable. Settings used to create a
-      CMEK crypto key.
-  """
-
-  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadKMSSettings', 1)
-
-
-class GoogleCloudAssuredworkloadsV1WorkloadIL4Settings(_messages.Message):
-  r"""Settings specific to resources needed for IL4.
-
-  Fields:
-    kmsSettings: Required. Input only. Immutable. Settings used to create a
-      CMEK crypto key.
-  """
-
-  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadKMSSettings', 1)
+  complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 2)
+  createTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadKMSSettings', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  provisionedResourcesParent = _messages.StringField(9)
+  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceInfo', 10, repeated=True)
 
 
 class GoogleCloudAssuredworkloadsV1WorkloadKMSSettings(_messages.Message):
@@ -443,6 +391,9 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       specific to resources needed for FedRAMP Moderate.
     il4Settings: Required. Input only. Immutable. Settings specific to
       resources needed for IL4.
+    kmsSettings: Input only. Settings used to create a CMEK crypto key. When
+      set a project with a KMS CMEK key is provisioned. This field is
+      mandatory for a subset of Compliance Regimes.
     labels: Optional. Labels applied to the workload.
     name: Optional. The resource name of the workload. Format:
       organizations/{organization}/locations/{location}/workloads/{workload}
@@ -507,10 +458,11 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
   fedrampHighSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampHighSettings', 7)
   fedrampModerateSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampModerateSettings', 8)
   il4Settings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadIL4Settings', 9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  provisionedResourcesParent = _messages.StringField(12)
-  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 13, repeated=True)
+  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  provisionedResourcesParent = _messages.StringField(13)
+  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 14, repeated=True)
 
 
 class GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings(_messages.Message):

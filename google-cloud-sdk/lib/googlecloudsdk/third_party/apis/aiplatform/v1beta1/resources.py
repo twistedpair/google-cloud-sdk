@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://aiplatform.googleapis.com/v1beta1/'
-DOCS_URL = 'https://cloud.google.com/ai-platform'
+DOCS_URL = 'https://cloud.google.com/ai-platform-unified/docs'
 
 
 class Collections(enum.Enum):

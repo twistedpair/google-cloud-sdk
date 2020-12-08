@@ -817,7 +817,7 @@
       "type": "object",
       "properties": {
         "gcsUri": {
-          "description": "Specifies a Cloud Storage URI for the recognition results. Must be specified in the format: `gs:\/\/bucket_name\/object_name`",
+          "description": "Specifies a Cloud Storage URI for the recognition results. Must be specified in the format: `gs:\/\/bucket_name\/object_name`, and the bucket must already exist.",
           "type": "string"
         }
       }

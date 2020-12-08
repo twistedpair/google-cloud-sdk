@@ -498,7 +498,7 @@
           ]
         },
         "openapiDocuments": {
-          "description": "Optional. OpenAPI specification documents. If specified, grpc_services and managed_service_config must not be included.",
+          "description": "Optional. OpenAPI specification documents. If specified, grpc_services and managed_service_configs must not be included.",
           "type": "array",
           "items": {
             "$ref": "ApigatewayApiConfigOpenApiDocument"

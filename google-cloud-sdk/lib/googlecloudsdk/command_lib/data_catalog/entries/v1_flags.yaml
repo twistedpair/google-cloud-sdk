@@ -108,3 +108,62 @@ user_specified_system:
   api_field: googleCloudDatacatalogV1Entry.userSpecifiedSystem
   help_text: |-
     External system from which the entry is fed. This can be updated for on prem entries.
+kafka_cluster_bootstrap_servers:
+  arg_name: kafka-cluster-bootstrap-servers
+  api_field: googleCloudDatacatalogV1Entry.clusterSpec.kafkaCluster.bootstrapServers
+  hidden: true
+  help_text: |-
+    A comma-separated list of host and port pairs that are the addresses of
+    the Kafka brokers.
+kafka_cluster_bootstrap_servers_required:
+  arg_name: kafka-cluster-bootstrap-servers
+  api_field: googleCloudDatacatalogV1Entry.clusterSpec.kafkaCluster.bootstrapServers
+  hidden: true
+  required: true
+  help_text: |-
+    A comma-separated list of host and port pairs that are the addresses of
+    the Kafka brokers.
+kafka_cluster_properties_gcs_uri:
+  arg_name: kafka-cluster-properties-gcs-uri
+  api_field: googleCloudDatacatalogV1Entry.clusterSpec.kafkaCluster.propertiesGcsUri
+  hidden: true
+  help_text: |-
+    URI to Google Cloud Storage properties file with additional properties
+    needed to connect to the cluster represented by this Entry.
+kafka_cluster:
+  arg_name: kafka-cluster
+  api_field: googleCloudDatacatalogV1Entry.dataStreamSpec.kafkaTopic.clusterEntry
+  hidden: true
+  help_text: |-
+    Name of the entry representing Kafka cluster this topic is a part of.
+kafka_cluster_required:
+  arg_name: kafka-cluster
+  api_field: googleCloudDatacatalogV1Entry.dataStreamSpec.kafkaTopic.clusterEntry
+  required: true
+  hidden: true
+  help_text: |-
+    Name of the entry representing Kafka cluster this topic is a part of.
+kafka_topic:
+  arg_name: kafka-topic
+  api_field: googleCloudDatacatalogV1Entry.dataStreamSpec.kafkaTopic.topic
+  hidden: true
+  help_text: |-
+    Name of the Kafka topic this Entry represents.
+kafka_topic_required:
+  arg_name: kafka-topic
+  api_field: googleCloudDatacatalogV1Entry.dataStreamSpec.kafkaTopic.topic
+  required: true
+  hidden: true
+  help_text: |-
+    Name of the Kafka topic this Entry represents.
+physical_schema_type:
+  arg_name: physical-schema-type
+  required: true
+  hidden: true
+  help_text: |-
+    Type of physical schema. Accepted values are avro, thrift, protobuf, parquet, orc
+physical_schema_file:
+  arg_name: physical-schema-file
+  hidden: true
+  help_text: |-
+    File contents with physical schema.

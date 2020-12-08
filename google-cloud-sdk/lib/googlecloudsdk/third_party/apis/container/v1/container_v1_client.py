@@ -299,7 +299,7 @@ class ContainerV1(base_api.BaseApiClient):
     )
 
     def SetSize(self, request, global_params=None):
-      r"""Sets the size for a specific node pool.
+      r"""Sets the size for a specific node pool. The new size will be used for all replicas, including future replicas created by modifying NodePool.locations.
 
       Args:
         request: (SetNodePoolSizeRequest) input message
@@ -1206,7 +1206,7 @@ class ContainerV1(base_api.BaseApiClient):
     )
 
     def SetSize(self, request, global_params=None):
-      r"""Sets the size for a specific node pool.
+      r"""Sets the size for a specific node pool. The new size will be used for all replicas, including future replicas created by modifying NodePool.locations.
 
       Args:
         request: (SetNodePoolSizeRequest) input message

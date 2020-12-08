@@ -4410,7 +4410,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetAutoHealingPolicies(self, request, global_params=None):
-      r"""Modifies the autohealing policies. [Deprecated] This method is deprecated. Please use Patch instead.
+      r"""Motifies the autohealing policy for the instances in this managed instance group. [Deprecated] This method is deprecated. Use instanceGroupManagers.patch instead.
 
       Args:
         request: (ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest) input message
@@ -11004,7 +11004,7 @@ A regional managed instance group can contain up to 2000 instances.
     )
 
     def PatchPerInstanceConfigs(self, request, global_params=None):
-      r"""Insert or patch (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch.
+      r"""Inserts or patches per-instance configs for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersPatchPerInstanceConfigsRequest) input message
@@ -11090,7 +11090,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetAutoHealingPolicies(self, request, global_params=None):
-      r"""Modifies the autohealing policy for the instances in this managed instance group. [Deprecated] This method is deprecated. Please use Patch instead.
+      r"""Modifies the autohealing policy for the instances in this managed instance group. [Deprecated] This method is deprecated. Use regionInstanceGroupManagers.patch instead.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest) input message
@@ -11220,7 +11220,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def UpdatePerInstanceConfigs(self, request, global_params=None):
-      r"""Insert or update (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch.
+      r"""Inserts or updates per-instance configs for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersUpdatePerInstanceConfigsRequest) input message

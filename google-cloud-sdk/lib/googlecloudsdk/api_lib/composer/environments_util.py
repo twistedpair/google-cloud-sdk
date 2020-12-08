@@ -256,6 +256,25 @@ def Delete(environment_ref, release_track=base.ReleaseTrack.GA):
           name=environment_ref.RelativeName()))
 
 
+def RestartWebServer(environment_ref, release_track=base.ReleaseTrack.ALPHA):
+  """Calls the Composer Environments.RestartWebServer method.
+
+  Args:
+    environment_ref: Resource, the Composer environment resource to restart the
+      web server for.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+      which Composer client library will be used.
+
+  Returns:
+    Operation: the operation corresponding to the restart of the web server
+  """
+  message_module = api_util.GetMessagesModule(release_track=release_track)
+  request_message = message_module.ComposerProjectsLocationsEnvironmentsRestartWebServerRequest(
+      name=environment_ref.RelativeName())
+  return GetService(
+      release_track=release_track).RestartWebServer(request_message)
+
+
 def Get(environment_ref, release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.Get method.
 

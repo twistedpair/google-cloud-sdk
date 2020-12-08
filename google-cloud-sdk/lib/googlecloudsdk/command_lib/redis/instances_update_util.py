@@ -36,18 +36,20 @@ def CheckFieldsSpecifiedGA(unused_instance_ref, args, patch_request):
 
 def CheckFieldsSpecifiedBeta(unused_instance_ref, args, patch_request):
   """Checks if fields to update are registered for BETA track."""
-  return CheckFieldsSpecifiedCommon(args, patch_request, ['enable_auth'])
+  return CheckFieldsSpecifiedCommon(args, patch_request, [])
 
 
 def CheckFieldsSpecifiedAlpha(unused_instance_ref, args, patch_request):
   """Checks if fields to update are registered for ALPHA track."""
-  return CheckFieldsSpecifiedCommon(args, patch_request, ['enable_auth'])
+  return CheckFieldsSpecifiedCommon(args, patch_request, [])
 
 
 def CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args):
+  """Checks fields to update that are registered for all tracks."""
   update_args = [
       'clear_labels',
       'display_name',
+      'enable_auth',
       'remove_labels',
       'remove_redis_config',
       'size',

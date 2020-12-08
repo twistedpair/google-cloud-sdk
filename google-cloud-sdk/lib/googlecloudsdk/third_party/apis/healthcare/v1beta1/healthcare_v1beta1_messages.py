@@ -431,7 +431,9 @@ class CheckDataAccessRequest(_messages.Message):
   Consent store is consented for a given use.
 
   Enums:
-    ResponseViewValueValuesEnum: The view for CheckDataAccessResponse.
+    ResponseViewValueValuesEnum: The view for CheckDataAccessResponse. If
+      unspecified, defaults to `BASIC` and returns `consented` as `TRUE` or
+      `FALSE`.
 
   Messages:
     RequestAttributesValue: The values of request attributes associated with
@@ -441,16 +443,20 @@ class CheckDataAccessRequest(_messages.Message):
     consentList: The Consents to evaluate the access request against. They
       must have the same `user_id` as the data to check access for, exist in
       the current `consent_store`, and can have a `state` of either `ACTIVE`
-      or `DRAFT`. A maximum of 100 consents can be provided here.
+      or `DRAFT`. A maximum of 100 consents can be provided here. If
+      unspecified, all `ACTIVE` unexpired consents in the current
+      `consent_store` will be evaluated.
     dataId: The unique identifier of the data to check access for. It must
       exist in the given `consent_store`.
     requestAttributes: The values of request attributes associated with this
       access request.
-    responseView: The view for CheckDataAccessResponse.
+    responseView: The view for CheckDataAccessResponse. If unspecified,
+      defaults to `BASIC` and returns `consented` as `TRUE` or `FALSE`.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
-    r"""The view for CheckDataAccessResponse.
+    r"""The view for CheckDataAccessResponse. If unspecified, defaults to
+    `BASIC` and returns `consented` as `TRUE` or `FALSE`.
 
     Values:
       RESPONSE_VIEW_UNSPECIFIED: No response view specified. The API will
@@ -557,12 +563,32 @@ class Consent(_messages.Message):
   Enums:
     StateValueValuesEnum: Indicates the current state of this consent.
 
+  Messages:
+    MetadataValue: User-supplied key-value pairs used to organize consent
+      resources. Metadata keys must: - be between 1 and 63 characters long -
+      have a UTF-8 encoding of maximum 128 bytes - begin with a letter -
+      consist of up to 63 characters including lowercase letters, numeric
+      characters, underscores, and dashes Metadata values must be: - be
+      between 1 and 63 characters long - have a UTF-8 encoding of maximum 128
+      bytes - consist of up to 63 characters including lowercase letters,
+      numeric characters, underscores, and dashes No more than 64 metadata
+      entries can be associated with a given consent.
+
   Fields:
     consentArtifact: Required. The resource name of the consent artifact that
       contains proof of the end user's consent, of the form `projects/{project
       _id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consen
       t_store_id}/consentArtifacts/{consent_artifact_id}`.
     expireTime: Timestamp in UTC of when this consent is considered expired.
+    metadata: User-supplied key-value pairs used to organize consent
+      resources. Metadata keys must: - be between 1 and 63 characters long -
+      have a UTF-8 encoding of maximum 128 bytes - begin with a letter -
+      consist of up to 63 characters including lowercase letters, numeric
+      characters, underscores, and dashes Metadata values must be: - be
+      between 1 and 63 characters long - have a UTF-8 encoding of maximum 128
+      bytes - consist of up to 63 characters including lowercase letters,
+      numeric characters, underscores, and dashes No more than 64 metadata
+      entries can be associated with a given consent.
     name: Resource name of the Consent, of the form `projects/{project_id}/loc
       ations/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_
       id}/consents/{consent_id}`.
@@ -603,15 +629,48 @@ class Consent(_messages.Message):
     DRAFT = 4
     REJECTED = 5
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""User-supplied key-value pairs used to organize consent resources.
+    Metadata keys must: - be between 1 and 63 characters long - have a UTF-8
+    encoding of maximum 128 bytes - begin with a letter - consist of up to 63
+    characters including lowercase letters, numeric characters, underscores,
+    and dashes Metadata values must be: - be between 1 and 63 characters long
+    - have a UTF-8 encoding of maximum 128 bytes - consist of up to 63
+    characters including lowercase letters, numeric characters, underscores,
+    and dashes No more than 64 metadata entries can be associated with a given
+    consent.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   consentArtifact = _messages.StringField(1)
   expireTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  policies = _messages.MessageField('GoogleCloudHealthcareV1beta1ConsentPolicy', 4, repeated=True)
-  revisionCreateTime = _messages.StringField(5)
-  revisionId = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  ttl = _messages.StringField(8)
-  userId = _messages.StringField(9)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  policies = _messages.MessageField('GoogleCloudHealthcareV1beta1ConsentPolicy', 5, repeated=True)
+  revisionCreateTime = _messages.StringField(6)
+  revisionId = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  ttl = _messages.StringField(9)
+  userId = _messages.StringField(10)
 
 
 class ConsentArtifact(_messages.Message):
@@ -1292,7 +1351,9 @@ class EvaluateUserConsentsRequest(_messages.Message):
   r"""Evaluate an end user's Consents for all matching User data mappings.
 
   Enums:
-    ResponseViewValueValuesEnum: The view for EvaluateUserConsentsResponse.
+    ResponseViewValueValuesEnum: The view for EvaluateUserConsentsResponse. If
+      unspecified, defaults to `BASIC` and returns `consented` as `TRUE` or
+      `FALSE`.
 
   Messages:
     RequestAttributesValue: The values of request attributes associated with
@@ -1302,13 +1363,14 @@ class EvaluateUserConsentsRequest(_messages.Message):
       all data types are queried.
 
   Fields:
-    consentList: The resource names of the consents to evaluate against.
-      Consents must be in the current `consent_store` and belong to the
-      current `user_id`. Consents can be either active or draft. If this field
-      is empty, the default behavior is to use all active consents that belong
-      to `user_id`. A maximum of 100 consents can be provided here.
+    consentList: The Consents to evaluate the access request against. They
+      must have the same `user_id` as the data to check access for, exist in
+      the current `consent_store`, and can have a `state` of either `ACTIVE`
+      or `DRAFT`. A maximum of 100 consents can be provided here. If
+      unspecified, all `ACTIVE` unexpired consents in the current
+      `consent_store` will be evaluated.
     pageSize: Limit on the number of user data mappings to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: Token to retrieve the next page of results to get the first
       page.
     requestAttributes: The values of request attributes associated with this
@@ -1316,12 +1378,14 @@ class EvaluateUserConsentsRequest(_messages.Message):
     resourceAttributes: The values of resources attributes associated with the
       type of data being requested. If no values are specified, then all data
       types are queried.
-    responseView: The view for EvaluateUserConsentsResponse.
+    responseView: The view for EvaluateUserConsentsResponse. If unspecified,
+      defaults to `BASIC` and returns `consented` as `TRUE` or `FALSE`.
     userId: Required. User ID to evaluate consents for.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
-    r"""The view for EvaluateUserConsentsResponse.
+    r"""The view for EvaluateUserConsentsResponse. If unspecified, defaults to
+    `BASIC` and returns `consented` as `TRUE` or `FALSE`.
 
     Values:
       RESPONSE_VIEW_UNSPECIFIED: No response view specified. The API will
@@ -1493,6 +1557,12 @@ class ExportResourcesRequest(_messages.Message):
   r"""Request to export resources.
 
   Fields:
+    _since: If provided, only resources updated after this time are exported.
+      The time uses the format YYYY-MM-DDThh:mm:ss.sss+zz:zz. For example,
+      `2015-02-07T13:28:17.239+02:00` or `2017-01-01T00:00:00Z`. The time must
+      be specified to the second and include a time zone.
+    _type: String of comma-delimited FHIR resource types. If provided, only
+      resources of the specified resource type(s) are exported.
     bigqueryDestination: The BigQuery output destination. The Cloud Healthcare
       Service Agent requires two IAM roles on the BigQuery location:
       `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. The output is
@@ -1505,8 +1575,10 @@ class ExportResourcesRequest(_messages.Message):
       resource.
   """
 
-  bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirBigQueryDestination', 1)
-  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirGcsDestination', 2)
+  _since = _messages.StringField(1)
+  _type = _messages.StringField(2)
+  bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirBigQueryDestination', 3)
+  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirGcsDestination', 4)
 
 
 class Expr(_messages.Message):
@@ -2425,7 +2497,7 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresAnnotationsListRequest(
       `type("text")`, `type("image")`, `type("resource")`. Filter on the type
       of annotation `data`.
     pageSize: Limit on the number of Annotations to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Name of the Annotation store to retrieve Annotations from.
@@ -2588,7 +2660,7 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresListRequest(_messages.M
       s://cloud.google.com/appengine/docs/standard/python/search/query_strings
       Only filtering on labels is supported, for example `labels.key=value`.
     pageSize: Limit on the number of Annotation stores to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Name of the dataset.
@@ -2704,7 +2776,8 @@ class HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsListRe
       Syntax: https://cloud.google.com/appengine/docs/standard/python/search/q
       uery_strings. The only field available for filtering is `category`.
     pageSize: Limit on the number of attribute definitions to return in a
-      single response. If zero the default page size of 100 is used.
+      single response. If not specified, 100 is used. May not be larger than
+      1000.
     pageToken: Token to retrieve the next page of results or empty to get the
       first page.
     parent: Required. Name of the Consent store to retrieve attribute
@@ -2806,7 +2879,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsListReques
       uery_strings The fields available for filtering are: - user_id -
       consent_content_version
     pageSize: Limit on the number of consent artifacts to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Required. Name of the Consent store to retrieve consent artifacts
@@ -2903,9 +2976,10 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRequest(_messa
     filter: Restricts the consents returned to those matching a filter.
       Syntax: https://cloud.google.com/appengine/docs/standard/python/search/q
       uery_strings The fields available for filtering are: - user_id -
-      consent_artifact - state - revision_create_time
+      consent_artifact - state - revision_create_time - metadata. For example,
+      `Metadata("key")="value"` or `HasMetadata("key")`.
     pageSize: Limit on the number of consents to return in a single response.
-      If zero the default page size of 100 is used.
+      If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Required. Name of the Consent store to retrieve consents from.
@@ -2930,7 +3004,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRevisionsReque
     name: Required. The resource name of the consent to retrieve revisions
       for.
     pageSize: Limit on the number of revisions to return in a single response.
-      If zero the default page size of 100 is used.
+      If not specified, 100 is used. May not be larger than 1000.
     pageToken: Token to retrieve the next page of results or empty if there
       are no more results in the list.
   """
@@ -3077,7 +3151,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresListRequest(_messages.Mess
       ings. Only filtering on labels is supported. For example,
       `labels.key=value`.
     pageSize: Limit on the number of Consent stores to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: Token to retrieve the next page of results or empty to get the
       first page.
     parent: Required. Name of the dataset.
@@ -3219,7 +3293,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsListReques
       search/query_strings The fields available for filtering are: - data_id -
       user_id - archived - archive_time
     pageSize: Limit on the number of user data mappings to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: Token to retrieve the next page of results or empty to get the
       first page.
     parent: Required. Name of the Consent store to retrieve user data mappings
@@ -3405,7 +3479,7 @@ class HealthcareProjectsLocationsDatasetsDicomStoresListRequest(_messages.Messag
       s://cloud.google.com/appengine/docs/standard/python/search/query_strings
       Only filtering on labels is supported. For example, `labels.key=value`.
     pageSize: Limit on the number of DICOM stores to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Name of the dataset.
@@ -4029,8 +4103,8 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryRequest(_messages.
       the following: * An entire year: `_at=2019` * An entire month:
       `_at=2019-01` * A specific day: `_at=2019-01-20` * A specific second:
       `_at=2018-12-31T23:59:58Z`
-    _count: The maximum number of search results on a page. Default value is
-      100. Maximum value is 1,000.
+    _count: The maximum number of search results on a page. If not specified,
+      100 is used. May not be larger than 1000.
     _page_token: Used to retrieve the first, previous, next, or last page of
       resource versions when using pagination. Value should be set to the
       value of `_page_token` set in next or previous page links' URLs. Next
@@ -4082,7 +4156,8 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest(
   object.
 
   Fields:
-    _count: Maximum number of resources in a page. Defaults to 100.
+    _count: Maximum number of resources in a page. If not specified, 100 is
+      used. May not be larger than 1000.
     _page_token: Used to retrieve the next or previous page of results when
       using pagination. Set `_page_token` to the value of _page_token set in
       next or previous page links' url. Next and previous page are returned in
@@ -4222,7 +4297,7 @@ class HealthcareProjectsLocationsDatasetsFhirStoresListRequest(_messages.Message
       s://cloud.google.com/appengine/docs/standard/python/search/query_strings
       Only filtering on labels is supported, for example `labels.key=value`.
     pageSize: Limit on the number of FHIR stores to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Name of the dataset.
@@ -4411,7 +4486,7 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest(_messages.Messag
       s://cloud.google.com/appengine/docs/standard/python/search/query_strings
       Only filtering on labels is supported. For example, `labels.key=value`.
     pageSize: Limit on the number of HL7v2 stores to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Name of the dataset.
@@ -4537,7 +4612,7 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
       https://cloud.google.com/apis/design/design_patterns#sorting_order
       Fields available for ordering are: * `send_time`
     pageSize: Limit on the number of messages to return in a single response.
-      If zero the default page size of 100 is used.
+      If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Name of the HL7v2 store to retrieve messages from.
@@ -4653,8 +4728,8 @@ class HealthcareProjectsLocationsDatasetsListRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsListRequest object.
 
   Fields:
-    pageSize: The maximum number of items to return. Capped to 100 if not
-      specified. May not be larger than 1000.
+    pageSize: The maximum number of items to return. If not specified, 100 is
+      used. May not be larger than 1000.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
     parent: The name of the project whose datasets should be listed. For
@@ -5042,19 +5117,19 @@ class HttpBody(_messages.Message):
 
 
 class Image(_messages.Message):
-  r"""An image.
+  r"""Raw bytes representing consent artifact content.
 
   Fields:
-    gcsUri: Input only. Points to a Cloud Storage URI containing the image.
-      The URI must be in the following format: `gs://{bucket_id}/{object_id}`.
-      The Cloud Healthcare API service account must have the
-      `roles/storage.objectViewer` Cloud IAM role for this Cloud Storage
-      location. The image at this URI is copied to a Cloud Storage location
-      managed by the Cloud Healthcare API. Responses to image fetching
-      requests return the image in raw_bytes.
-    rawBytes: Image content represented as a stream of bytes. This field is
-      populated when returned in GetConsentArtifact response, but not included
-      in CreateConsentArtifact and ListConsentArtifact response.
+    gcsUri: Input only. Points to a Cloud Storage URI containing the consent
+      artifact content. The URI must be in the following format:
+      `gs://{bucket_id}/{object_id}`. The Cloud Healthcare API service account
+      must have the `roles/storage.objectViewer` Cloud IAM role for this Cloud
+      Storage location. The consent artifact content at this URI is copied to
+      a Cloud Storage location managed by the Cloud Healthcare API. Responses
+      to fetching requests return the consent artifact content in raw_bytes.
+    rawBytes: Consent artifact content represented as a stream of bytes. This
+      field is populated when returned in GetConsentArtifact response, but not
+      included in CreateConsentArtifact and ListConsentArtifact response.
   """
 
   gcsUri = _messages.StringField(1)

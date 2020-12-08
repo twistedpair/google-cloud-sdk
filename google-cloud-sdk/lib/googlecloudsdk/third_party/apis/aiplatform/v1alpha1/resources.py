@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://aiplatform.googleapis.com/v1alpha1/'
-DOCS_URL = 'https://cloud.google.com/ai-platform'
+DOCS_URL = 'https://cloud.google.com/ai-platform-unified/docs'
 
 
 class Collections(enum.Enum):
@@ -275,25 +275,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/featurestores/'
               '{featurestoresId}/operations/{operationsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_HUMANINTHELOOPS = (
-      'projects.locations.humanInTheLoops',
-      'projects/{projectsId}/locations/{locationsId}/humanInTheLoops/'
-      '{humanInTheLoopsId}',
-      {},
-      ['projectsId', 'locationsId', 'humanInTheLoopsId'],
-      True
-  )
-  PROJECTS_LOCATIONS_HUMANINTHELOOPS_OPERATIONS = (
-      'projects.locations.humanInTheLoops.operations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/humanInTheLoops/'
-              '{humanInTheLoopsId}/operations/{operationsId}',
       },
       ['name'],
       True

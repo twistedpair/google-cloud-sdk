@@ -45,9 +45,10 @@ def AddCreatePdpArgsToParser(parser):
   )
   parser.add_argument(
       '--range',
+      required=True,
       help='IPv4 range from this public delegated prefix that should be '
-           'delegated, in CIDR format. If not specified, the entire range of'
-           'the public advertised prefix is delegated.'
+           'delegated, in CIDR format. It must be smaller than parent public '
+           'advertised prefix range.'
   )
   parser.add_argument(
       '--description',

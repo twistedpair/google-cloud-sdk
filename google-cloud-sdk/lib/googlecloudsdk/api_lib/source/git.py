@@ -32,7 +32,6 @@ from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 import six
-from six.moves import range  # pylint: disable=redefined-builtin
 import uritemplate
 
 
@@ -55,10 +54,6 @@ class CannotInitRepositoryException(Error):
 
 class CannotFetchRepositoryException(Error):
   """Exception to be thrown when a repository cannot be fetched."""
-
-
-class CannotPushToRepositoryException(Error):
-  """Exception to be thrown when a repository cannot be pushed to."""
 
 
 class GitVersionException(Error):
@@ -301,81 +296,16 @@ class Git(object):
           self._uri, full_path=full_path, min_version=min_git)
       if cred_helper_command:
         cmd += [
-            '--config', 'credential.helper=', '--config',
-            'credential.helper=' + cred_helper_command
+            '--config',
+            'credential.https://source.developers.google.com/.helper=',
+            '--config',
+            'credential.https://source.developers.google.com/.helper=' +
+            cred_helper_command
         ]
       self._RunCommand(cmd, dry_run)
     except subprocess.CalledProcessError as e:
       raise CannotFetchRepositoryException(e)
     return abs_repository_path
-
-  def ForcePushFilesToBranch(self,
-                             branch,
-                             base_path,
-                             paths,
-                             dry_run=False,
-                             full_path=False):
-    """Force pushes a set of files to a branch on the remote repository.
-
-    This is mainly to be used with source captures, where the user wants to
-    upload files associated with a deployment to view later.
-
-    Args:
-      branch: str, The name of the branch to push to.
-      base_path: str, The base path to use for the files.
-      paths: list of str, The paths for the files to upload.
-          Their paths in the repository will be relative to base_path.
-          For example, if base_path is '/a/b/c', the path '/a/b/c/d/file1' will
-          appear as 'd/file1' in the repository.
-      dry_run: bool, If true do not run but print commands instead.
-      full_path: bool, If true use the full path to gcloud.
-
-    Raises:
-      CannotPushToRepositoryException: If the operation fails in any way.
-    """
-    # Git treats relative paths strangely with the --work-tree flag.
-    # git add --work-tree=a a/b will try to look for a/a/b.
-    # To avoid the lookup, always convert to absolute paths.
-    paths = [os.path.abspath(p) for p in paths]
-
-    # Check for git files and don't allow upload if they are included.
-    for path in paths:
-      for segment in path.split(os.sep):
-        if segment in ('.git', '.gitignore'):
-          message = ("Can't upload the file tree. "
-                     'Uploading a directory containing a git repository as a '
-                     'subdirectory is not supported. '
-                     'Please either upload from the top level git repository '
-                     'or any of its subdirectories. '
-                     'Unsupported git file detected: %s' % path)
-          raise CannotPushToRepositoryException(message)
-
-    with files.TemporaryDirectory() as temp_dir:
-      def RunGitCommand(*args):
-        git_dir = '--git-dir=' + os.path.join(temp_dir, '.git')
-        work_tree = '--work-tree=' + base_path
-        self._RunCommand(['git', git_dir, work_tree] + list(args), dry_run)
-
-      # Init empty repository in a temporary location
-      self._RunCommand(['git', 'init', temp_dir], dry_run)
-
-      # Create new branch and add files
-      RunGitCommand('checkout', '-b', branch)
-      args_len = 100
-      for i in range(0, len(paths), args_len):
-        RunGitCommand('add', *paths[i:i + args_len])
-      RunGitCommand('commit', '-m', 'source capture uploaded from gcloud')
-
-      # Add remote and force push
-      cred_helper_command = _GetCredHelperCommand(
-          self._uri, full_path=full_path)
-      if cred_helper_command:
-        RunGitCommand('config', 'credential.helper', cred_helper_command)
-      try:
-        RunGitCommand('remote', 'add', 'origin', self._uri)
-        RunGitCommand('push', '-f', 'origin', branch)
-      except subprocess.CalledProcessError as e:
-        raise CannotPushToRepositoryException(e)
 
   def _RunCommand(self, cmd, dry_run):
     log.debug('Executing %s', cmd)

@@ -19,22 +19,16 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import encoding
-from apitools.base.py import exceptions as api_exceptions
 from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 from googlecloudsdk.command_lib.asset import utils as asset_utils
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import repeated
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core.credentials import http
-from googlecloudsdk.core.util import encoding as core_encoding
 from googlecloudsdk.core.util import times
-
-import six
-from six.moves import http_client as httplib
 
 API_NAME = 'cloudasset'
 DEFAULT_API_VERSION = 'v1'
@@ -49,7 +43,7 @@ _HEADERS = {
 _HTTP_ERROR_FORMAT = ('HTTP request failed with status code {}. '
                       'Response content: {}')
 # A dictionary that captures version differences for IAM Policy Analyzer.
-_IAM_POLICY_ANALYZER_VERSION_DICT = {
+_IAM_POLICY_ANALYZER_VERSION_DICT_JSON = {
     V1P4ALPHA1_API_VERSION: {
         'resource_selector': 'resourceSelector',
         'identity_selector': 'identitySelector',
@@ -57,18 +51,16 @@ _IAM_POLICY_ANALYZER_VERSION_DICT = {
         'options': 'options',
     },
     V1P4BETA1_API_VERSION: {
-        'resource_selector': 'analysisQuery.resourceSelector',
-        'identity_selector': 'analysisQuery.identitySelector',
-        'access_selector': 'analysisQuery.accessSelector',
+        'resource_selector': 'analysisQuery_resourceSelector',
+        'identity_selector': 'analysisQuery_identitySelector',
+        'access_selector': 'analysisQuery_accessSelector',
         'options': 'options',
-        'execution_timeout': 'options.executionTimeout',
     },
     DEFAULT_API_VERSION: {
-        'resource_selector': 'analysisQuery.resourceSelector',
-        'identity_selector': 'analysisQuery.identitySelector',
-        'access_selector': 'analysisQuery.accessSelector',
-        'options': 'analysisQuery.options',
-        'execution_timeout': 'executionTimeout',
+        'resource_selector': 'analysisQuery_resourceSelector',
+        'identity_selector': 'analysisQuery_identitySelector',
+        'access_selector': 'analysisQuery_accessSelector',
+        'options': 'analysisQuery_options',
     },
 }
 
@@ -131,44 +123,39 @@ def PartitionKeyTranslation(partition_key):
   return 'PARTITION_KEY_UNSPECIFIED'
 
 
-def MakeGetAssetsHistoryHttpRequests(args, api_version=DEFAULT_API_VERSION):
+def MakeGetAssetsHistoryHttpRequests(args,
+                                     service,
+                                     api_version=DEFAULT_API_VERSION):
   """Manually make the get assets history request."""
-  http_client = http.Http()
-  query_params = [
-      ('assetNames', asset_name) for asset_name in args.asset_names or []
-  ]
-  query_params.extend([
-      ('contentType', ContentTypeTranslation(args.content_type)),
-      ('readTimeWindow.startTime', times.FormatDateTime(args.start_time))
-  ])
-  if args.IsSpecified('end_time'):
-    query_params.extend([('readTimeWindow.endTime',
-                          times.FormatDateTime(args.end_time))])
+  messages = GetMessages(api_version)
+
+  encoding.AddCustomJsonFieldMapping(
+      messages.CloudassetBatchGetAssetsHistoryRequest,
+      'readTimeWindow_startTime', 'readTimeWindow.startTime')
+  encoding.AddCustomJsonFieldMapping(
+      messages.CloudassetBatchGetAssetsHistoryRequest, 'readTimeWindow_endTime',
+      'readTimeWindow.endTime')
+
+  content_type = arg_utils.ChoiceToEnum(
+      args.content_type, messages.CloudassetBatchGetAssetsHistoryRequest
+      .ContentTypeValueValuesEnum)
   parent = asset_utils.GetParentNameForGetHistory(args.organization,
                                                   args.project)
-  endpoint = apis.GetEffectiveApiEndpoint(API_NAME, api_version)
-  url = '{0}{1}/{2}:{3}'.format(endpoint, api_version, parent,
-                                'batchGetAssetsHistory')
-  encoded_query_params = six.moves.urllib.parse.urlencode(query_params)
-  response, raw_content = http_client.request(
-      uri=url, headers=_HEADERS, method='POST', body=encoded_query_params)
+  start_time = times.FormatDateTime(args.start_time)
+  end_time = None
+  if args.IsSpecified('end_time'):
+    end_time = times.FormatDateTime(args.end_time)
 
-  content = core_encoding.Decode(raw_content)
+  response = service.BatchGetAssetsHistory(
+      messages.CloudassetBatchGetAssetsHistoryRequest(
+          assetNames=args.asset_names,
+          contentType=content_type,
+          parent=parent,
+          readTimeWindow_endTime=end_time,
+          readTimeWindow_startTime=start_time,
+      ))
 
-  if int(response['status']) != httplib.OK:
-    http_error = api_exceptions.HttpError(response, content, url)
-    raise exceptions.HttpException(http_error)
-
-  response_message_class = GetMessages(
-      api_version).BatchGetAssetsHistoryResponse
-  try:
-    history_response = encoding.JsonToMessage(response_message_class, content)
-  except ValueError as e:
-    err_msg = ('Failed receiving proper response from server, cannot'
-               'parse received assets. Error details: ' + six.text_type(e))
-    raise MessageDecodeError(err_msg)
-
-  for asset in history_response.assets:
+  for asset in response.assets:
     yield asset
 
 
@@ -235,10 +222,11 @@ def _RenderResponseforAnalyzeIamPolicy(response,
   log.status.Print(msg)
 
 
-def MakeAnalyzeIamPolicyHttpRequests(args, api_version=V1P4ALPHA1_API_VERSION):
+def MakeAnalyzeIamPolicyHttpRequests(args,
+                                     service,
+                                     messages,
+                                     api_version=V1P4ALPHA1_API_VERSION):
   """Manually make the analyze IAM policy request."""
-  http_client = http.Http()
-
   if api_version == V1P4ALPHA1_API_VERSION:
     folder = None
     project = None
@@ -248,100 +236,163 @@ def MakeAnalyzeIamPolicyHttpRequests(args, api_version=V1P4ALPHA1_API_VERSION):
 
   parent = asset_utils.GetParentNameForAnalyzeIamPolicy(args.organization,
                                                         project, folder)
-  endpoint = apis.GetEffectiveApiEndpoint(API_NAME, api_version)
-  url = '{0}{1}/{2}:{3}'.format(endpoint, api_version, parent,
-                                'analyzeIamPolicy')
 
-  params = []
-  if args.IsSpecified('full_resource_name'):
-    params.extend([
-        (_IAM_POLICY_ANALYZER_VERSION_DICT[api_version]['resource_selector'] +
-         '.fullResourceName', args.full_resource_name)
-    ])
+  full_resource_name = args.full_resource_name if args.IsSpecified(
+      'full_resource_name') else None
 
-  if args.IsSpecified('identity'):
-    params.extend([
-        (_IAM_POLICY_ANALYZER_VERSION_DICT[api_version]['identity_selector'] +
-         '.identity', args.identity)
-    ])
+  identity = args.identity if args.IsSpecified('identity') else None
 
-  if args.IsSpecified('roles'):
-    params.extend([
-        (_IAM_POLICY_ANALYZER_VERSION_DICT[api_version]['access_selector'] +
-         '.roles', r) for r in args.roles
-    ])
-  if args.IsSpecified('permissions'):
-    params.extend([
-        (_IAM_POLICY_ANALYZER_VERSION_DICT[api_version]['access_selector'] +
-         '.permissions', p) for p in args.permissions
-    ])
+  roles = args.roles if args.IsSpecified('roles') else []
 
-  if args.expand_groups:
-    params.extend([(_IAM_POLICY_ANALYZER_VERSION_DICT[api_version]['options'] +
-                    '.expandGroups', args.expand_groups)])
-  if args.expand_resources:
-    params.extend([(_IAM_POLICY_ANALYZER_VERSION_DICT[api_version]['options'] +
-                    '.expandResources', args.expand_resources)])
-  if args.expand_roles:
-    params.extend([(_IAM_POLICY_ANALYZER_VERSION_DICT[api_version]['options'] +
-                    '.expandRoles', args.expand_roles)])
+  permissions = args.permissions if args.IsSpecified('permissions') else []
 
+  expand_groups = args.expand_groups if args.expand_groups else None
+
+  expand_resources = args.expand_resources if args.expand_resources else None
+
+  expand_roles = args.expand_roles if args.expand_roles else None
+
+  output_resource_edges = None
   if args.output_resource_edges:
     if (api_version == V1P4BETA1_API_VERSION or
         api_version == DEFAULT_API_VERSION) and (not args.show_response):
       raise gcloud_exceptions.InvalidArgumentException(
           '--output-resource-edges',
           'Must be set together with --show-response to take effect.')
-    params.extend([(_IAM_POLICY_ANALYZER_VERSION_DICT[api_version]['options'] +
-                    '.outputResourceEdges', args.output_resource_edges)])
+    output_resource_edges = args.output_resource_edges
+
+  output_group_edges = None
   if args.output_group_edges:
     if (api_version == V1P4BETA1_API_VERSION or
         api_version == DEFAULT_API_VERSION) and (not args.show_response):
       raise gcloud_exceptions.InvalidArgumentException(
           '--output-group-edges',
           'Must be set together with --show-response to take effect.')
-    params.extend([(_IAM_POLICY_ANALYZER_VERSION_DICT[api_version]['options'] +
-                    '.outputGroupEdges', args.output_group_edges)])
+    output_group_edges = args.output_group_edges
+
+  output_partial_result_before_timeout = None
   if api_version == V1P4ALPHA1_API_VERSION and args.IsSpecified(
       'output_partial_result_before_timeout'):
-    params.extend([('options.outputPartialResultBeforeTimeout',
-                    args.output_partial_result_before_timeout)])
+    output_partial_result_before_timeout = args.output_partial_result_before_timeout
+
+  execution_timeout = None
   if (api_version == V1P4BETA1_API_VERSION or api_version == DEFAULT_API_VERSION
      ) and args.IsSpecified('execution_timeout'):
-    params.extend([
-        (_IAM_POLICY_ANALYZER_VERSION_DICT[api_version]['execution_timeout'],
-         six.text_type(args.execution_timeout) + 's')
-    ])
+    execution_timeout = str(args.execution_timeout) + 's'
 
-  if (api_version == V1P4BETA1_API_VERSION or api_version == DEFAULT_API_VERSION
-     ) and args.analyze_service_account_impersonation:
-    params.extend([(_IAM_POLICY_ANALYZER_VERSION_DICT[api_version]['options'] +
-                    '.analyzeServiceAccountImpersonation',
-                    args.analyze_service_account_impersonation)])
+  analyze_service_account_impersonation = None
+  if api_version == V1P4BETA1_API_VERSION or api_version == DEFAULT_API_VERSION:
+    analyze_service_account_impersonation = args.analyze_service_account_impersonation
 
-  encoded_params = six.moves.urllib.parse.urlencode(params)
-  response, raw_content = http_client.request(
-      uri=url, headers=_HEADERS, method='POST', body=encoded_params)
+  if api_version == V1P4ALPHA1_API_VERSION:
+    return service.AnalyzeIamPolicy(
+        messages.CloudassetAnalyzeIamPolicyRequest(
+            accessSelector_permissions=permissions,
+            accessSelector_roles=roles,
+            identitySelector_identity=identity,
+            options_expandGroups=expand_groups,
+            options_expandResources=expand_resources,
+            options_expandRoles=expand_roles,
+            options_outputGroupEdges=output_group_edges,
+            options_outputPartialResultBeforeTimeout=output_partial_result_before_timeout,
+            options_outputResourceEdges=output_resource_edges,
+            parent=parent,
+            resourceSelector_fullResourceName=full_resource_name,
+        ))
+  elif api_version == V1P4BETA1_API_VERSION:
+    response = service.AnalyzeIamPolicy(
+        messages.CloudassetAnalyzeIamPolicyRequest(
+            analysisQuery_accessSelector_permissions=permissions,
+            analysisQuery_accessSelector_roles=roles,
+            analysisQuery_identitySelector_identity=identity,
+            analysisQuery_resourceSelector_fullResourceName=full_resource_name,
+            options_analyzeServiceAccountImpersonation=analyze_service_account_impersonation,
+            options_executionTimeout=execution_timeout,
+            options_expandGroups=expand_groups,
+            options_expandResources=expand_resources,
+            options_expandRoles=expand_roles,
+            options_outputGroupEdges=output_group_edges,
+            options_outputResourceEdges=output_resource_edges,
+            parent=parent,
+        ))
+  else:
+    response = service.AnalyzeIamPolicy(
+        messages.CloudassetAnalyzeIamPolicyRequest(
+            analysisQuery_accessSelector_permissions=permissions,
+            analysisQuery_accessSelector_roles=roles,
+            analysisQuery_identitySelector_identity=identity,
+            analysisQuery_options_analyzeServiceAccountImpersonation=analyze_service_account_impersonation,
+            analysisQuery_options_expandGroups=expand_groups,
+            analysisQuery_options_expandResources=expand_resources,
+            analysisQuery_options_expandRoles=expand_roles,
+            analysisQuery_options_outputGroupEdges=output_group_edges,
+            analysisQuery_options_outputResourceEdges=output_resource_edges,
+            analysisQuery_resourceSelector_fullResourceName=full_resource_name,
+            executionTimeout=execution_timeout,
+            scope=parent,
+        ))
+  if not args.show_response:
+    return _RenderResponseforAnalyzeIamPolicy(
+        response, analyze_service_account_impersonation)
+  return response
 
-  content = core_encoding.Decode(raw_content)
 
-  if int(response['status']) != httplib.OK:
-    http_error = api_exceptions.HttpError(response, content, url)
-    raise exceptions.HttpException(http_error)
+class AnalyzeIamPolicyClient(object):
+  """Client for IAM policy analysis."""
 
-  response_message_class = GetMessages(api_version).AnalyzeIamPolicyResponse
-  try:
-    response = encoding.JsonToMessage(response_message_class, content)
-    if (api_version == V1P4BETA1_API_VERSION or
-        api_version == DEFAULT_API_VERSION) and (not args.show_response):
-      return _RenderResponseforAnalyzeIamPolicy(
-          response, args.analyze_service_account_impersonation)
+  def __init__(self, api_version=V1P4ALPHA1_API_VERSION):
+    self.api_version = api_version
+    self.client = GetClient(api_version)
+
+    if api_version == DEFAULT_API_VERSION:
+      self.service = self.client.v1
+    elif api_version == V1P4BETA1_API_VERSION:
+      self.service = self.client.v1p4beta1
     else:
-      return response
-  except ValueError as e:
-    err_msg = ('Failed receiving proper response from server, cannot'
-               'parse received assets. Error details: ' + six.text_type(e))
-    raise MessageDecodeError(err_msg)
+      self.service = self.client.v1p4alpha1
+
+  def Analyze(self, args):
+    """Calls MakeAnalyzeIamPolicy method."""
+    messages = self.EncodeMessages(args)
+    return MakeAnalyzeIamPolicyHttpRequests(args, self.service, messages,
+                                            self.api_version)
+
+  def EncodeMessages(self, args):
+    """Adds custom encoding for MakeAnalyzeIamPolicy request."""
+    messages = GetMessages(self.api_version)
+
+    def AddCustomJsonFieldMapping(prefix, suffix):
+      field = _IAM_POLICY_ANALYZER_VERSION_DICT_JSON[
+          self.api_version][prefix] + suffix
+      encoding.AddCustomJsonFieldMapping(
+          messages.CloudassetAnalyzeIamPolicyRequest,
+          field,
+          field.replace('_', '.'),
+      )
+
+    AddCustomJsonFieldMapping('resource_selector', '_fullResourceName')
+    AddCustomJsonFieldMapping('identity_selector', '_identity')
+    AddCustomJsonFieldMapping('access_selector', '_roles')
+    AddCustomJsonFieldMapping('access_selector', '_permissions')
+    AddCustomJsonFieldMapping('options', '_expandGroups')
+    AddCustomJsonFieldMapping('options', '_expandResources')
+    AddCustomJsonFieldMapping('options', '_expandRoles')
+    AddCustomJsonFieldMapping('options', '_outputResourceEdges')
+    AddCustomJsonFieldMapping('options', '_outputGroupEdges')
+
+    if self.api_version == V1P4ALPHA1_API_VERSION and args.IsSpecified(
+        'output_partial_result_before_timeout'):
+      AddCustomJsonFieldMapping('options', '_outputPartialResultBeforeTimeout')
+
+    if self.api_version == V1P4BETA1_API_VERSION and args.IsSpecified(
+        'execution_timeout'):
+      AddCustomJsonFieldMapping('options', '_executionTimeout')
+
+    if self.api_version == V1P4BETA1_API_VERSION or self.api_version == DEFAULT_API_VERSION:
+      AddCustomJsonFieldMapping('options',
+                                '_analyzeServiceAccountImpersonation')
+
+    return messages
 
 
 class AssetExportClient(object):
@@ -595,6 +646,19 @@ class AssetOperationClient(object):
   def Get(self, name):
     request = self.message(name=name)
     return self.service.Get(request)
+
+
+class GetHistoryClient(object):
+  """Client for get history assets."""
+
+  def __init__(self, api_version=DEFAULT_API_VERSION):
+    self.api_version = api_version
+    self.client = GetClient(api_version)
+    self.service = self.client.v1
+
+  def GetHistory(self, args):
+    return MakeGetAssetsHistoryHttpRequests(args, self.service,
+                                            self.api_version)
 
 
 class IamPolicyAnalysisLongrunningClient(object):

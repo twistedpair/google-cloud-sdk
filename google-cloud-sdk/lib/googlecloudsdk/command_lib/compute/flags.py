@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import copy
 import functools
 
 from googlecloudsdk.api_lib.compute import filter_rewrite
@@ -404,6 +405,32 @@ class ResourceResolver(object):
       refs.append(ref)
     return refs, underspecified_names
 
+  def _ResolveMultiScope(self, with_project, project, underspecified_names,
+                         api_resource_registry, refs):
+    """Resolve argument against available scopes of the resource."""
+    names = copy.deepcopy(underspecified_names)
+    for scope in self.scopes:
+      if with_project:
+        params = {
+            'project': project,
+        }
+      else:
+        params = {}
+      params[scope.scope_enum.param_name] = scope.scope_enum.property_func
+      for name in names:
+        try:
+          ref = [api_resource_registry.Parse(name[0], params=params,
+                                             collection=scope.collection,
+                                             enforce_collection=False)]
+          refs.remove(name)
+          refs.append(ref)
+          underspecified_names.remove(name)
+        except (resources.UnknownCollectionException,
+                resources.RequiredFieldOmittedException,
+                properties.RequiredPropertyError,
+                ValueError):
+          continue
+
   def _ResolveUnderspecifiedNames(self,
                                   underspecified_names,
                                   default_scope,
@@ -515,7 +542,6 @@ class ResourceResolver(object):
       }
     else:
       params = {}
-
     if scope_value is None:
       resource_scope = self.scopes.GetImplicitScope(default_scope)
 
@@ -534,6 +560,11 @@ class ResourceResolver(object):
     refs, underspecified_names = self._GetRefsAndUnderspecifiedNames(
         names, params, collection, scope_value is not None,
         api_resource_registry)
+
+    # Try to resolve with each available scope
+    if underspecified_names and len(self.scopes) > 1:
+      self._ResolveMultiScope(with_project, project, underspecified_names,
+                              api_resource_registry, refs)
 
     # If we still have some resources which need to be resolve see if we can
     # prompt the user and try to resolve these again.
@@ -901,17 +932,17 @@ def AddShieldedInstanceInitialStateKeyArg(parser):
   parser.add_argument(
       '--platform-key-file',
       help="""\
-      File path that points to an X.509 certificate or raw binary file. When
-      you create a shielded VM from this image, this certificate or raw binary
-      file is used as the platform key (PK).
+      File path that points to an X.509 certificate in DER format or raw binary
+      file. When you create a shielded VM from this image, this certificate or
+      raw binary file is used as the platform key (PK).
         """)
   parser.add_argument(
       '--key-exchange-key-file',
       type=arg_parsers.ArgList(),
       metavar='KEK_VALUE',
       help="""\
-      Comma-separated list of file paths that point to X.509 certificates or raw
-      binary files. When you create a shielded VM from this image,
+      Comma-separated list of file paths that point to X.509 certificates in DER
+      format or raw binary files. When you create a shielded VM from this image,
       these certificates or files are used as key exchange keys (KEK).
         """)
   parser.add_argument(
@@ -920,7 +951,7 @@ def AddShieldedInstanceInitialStateKeyArg(parser):
       metavar='DB_VALUE',
       help="""\
       Comma-separated list of file paths that point to valid X.509 certificates
-      or raw binary files. When you create a shielded VM from this
+      in DER format or raw binary files. When you create a shielded VM from this
       image, these certificates or files are  added to the signature database
       (db).
         """)
@@ -930,8 +961,8 @@ def AddShieldedInstanceInitialStateKeyArg(parser):
       metavar='DBX_VALUE',
       help="""\
       Comma-separated list of file paths that point to revoked X.509
-      certificates or raw binary files. When you create a shielded VM
-      from this image, these certificates or files are added to the forbidden
+      certificates in DER format or raw binary files. When you create a shielded
+      VM from this image, these certificates or files are added to the forbidden
       signature database (dbx).
         """)
 

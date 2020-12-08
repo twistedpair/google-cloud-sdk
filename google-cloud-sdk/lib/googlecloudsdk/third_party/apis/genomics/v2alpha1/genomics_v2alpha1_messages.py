@@ -119,7 +119,7 @@ class Action(_messages.Message):
     name: An optional name for the container. The container hostname will be
       set to this name, making it useful for inter-container communication.
       The name must contain only upper and lowercase alphanumeric characters
-      and hypens and cannot start with a hyphen.
+      and hyphens and cannot start with a hyphen.
     pidNamespace: An optional identifier for a PID namespace to run the action
       inside. Multiple actions should use the same string to share a
       namespace. If unspecified, a separate isolated namespace is used.
@@ -511,7 +511,7 @@ class Disk(_messages.Message):
   Fields:
     name: A user-supplied name for the disk. Used when mounting the disk into
       actions. The name must contain only upper and lowercase alphanumeric
-      characters and hypens and cannot start with a hyphen.
+      characters and hyphens and cannot start with a hyphen.
     sizeGb: The size, in GB, of the disk to attach. If the size is not
       specified, a default is chosen to ensure reasonable I/O performance. If
       the disk type is specified as `local-ssd`, multiple local drives are

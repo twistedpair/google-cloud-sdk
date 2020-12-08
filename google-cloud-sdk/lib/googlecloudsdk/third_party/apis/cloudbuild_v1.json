@@ -459,38 +459,6 @@
         "revision": {
           "description": "The revision to fetch from the Git repository such as a branch, a tag, a commit SHA, or any Git ref. Cloud Build uses `git fetch` to fetch the revision from the Git repository; therefore make sure that the string you provide for `revision` is parsable by the command. For information on string values accepted by `git fetch`, see https:\/\/git-scm.com\/docs\/gitrevisions#_specifying_revisions. For information on `git fetch`, see https:\/\/git-scm.com\/docs\/git-fetch.",
           "type": "string"
-        },
-        "credential": {
-          "description": "Secret containing the encrypted bytes.",
-          "$ref": "EncryptedCredential"
-        }
-      }
-    },
-    "EncryptedCredential": {
-      "id": "EncryptedCredential",
-      "description": "EncryptedCredential contains an encrypted secret, what key should be used to decode the secret, and how to use the secret.",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "Underlying credential type encoded in data.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default enum type. This should not be used.",
-            "HTTP Basic Authentication Credentials. `data` should be a base64 encoded username:password. See https:\/\/tools.ietf.org\/html\/rfc7617 for more details."
-          ],
-          "enum": [
-            "UNKNOWN",
-            "HTTP_BASIC_AUTH"
-          ]
-        },
-        "data": {
-          "description": "Encrypted user credential. `key` should be able to decrypt this data. See `type` for supported types.",
-          "type": "string",
-          "format": "byte"
-        },
-        "key": {
-          "description": "KMS key ID to use for decryption.",
-          "type": "string"
         }
       }
     },
@@ -1124,7 +1092,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the `Build` to retrieve. Format: `projects\/{project}\/locations\/{location}\/builds\/{build}`",
+          "description": "The name of the `Build` to cancel. Format: `projects\/{project}\/locations\/{location}\/builds\/{build}`",
           "type": "string"
         },
         "projectId": {
@@ -1203,6 +1171,14 @@
         "cron": {
           "description": "CronConfig describes the configuration of a trigger that creates a build whenever a Cloud Scheduler event is received.",
           "$ref": "CronConfig"
+        },
+        "pubsubConfig": {
+          "description": "PubsubConfig [Experimental] describes the configuration of a trigger that creates a build whenever a Pub\/Sub message is published.",
+          "$ref": "PubsubConfig"
+        },
+        "webhookConfig": {
+          "description": "WebhookConfig [Experimental] describes the configuration of a trigger that creates a build whenever a webhook is sent to a trigger's webhook URL.",
+          "$ref": "WebhookConfig"
         },
         "build": {
           "description": "Contents of the build template.",
@@ -1381,6 +1357,10 @@
         "secrets": {
           "description": "Optional. Names of secrets in Secret Manager.",
           "$ref": "GitHubEnterpriseSecrets"
+        },
+        "displayName": {
+          "description": "Optional. Name to display for this config.",
+          "type": "string"
         }
       }
     },
@@ -1424,6 +1404,22 @@
         "oauthClientIdName": {
           "description": "The resource name for the OAuth client ID secret in Secret Manager.",
           "type": "string"
+        },
+        "privateKeyVersionName": {
+          "description": "The resource name for the private key secret version.",
+          "type": "string"
+        },
+        "webhookSecretVersionName": {
+          "description": "The resource name for the webhook secret secret version in Secret Manager.",
+          "type": "string"
+        },
+        "oauthSecretVersionName": {
+          "description": "The resource name for the OAuth secret secret version in Secret Manager.",
+          "type": "string"
+        },
+        "oauthClientIdVersionName": {
+          "description": "The resource name for the OAuth client ID secret version in Secret Manager.",
+          "type": "string"
         }
       }
     },
@@ -1442,6 +1438,55 @@
         },
         "timeZone": {
           "description": "Optional. Specifies the time zone to be used in interpreting the schedule. The value of this field must be a time zone name from the [tz database] (http:\/\/en.wikipedia.org\/wiki\/Tz_database). Note that some time zones include a provision for daylight savings time. The rules for daylight saving time are determined by the chosen tz. For UTC use the string \"utc\". If a time zone is not specified, the default will be in UTC (also known as GMT).",
+          "type": "string"
+        }
+      }
+    },
+    "PubsubConfig": {
+      "id": "PubsubConfig",
+      "description": "PubsubConfig [Experimental] describes the configuration of a trigger that creates a build whenever a Pub\/Sub message is published.",
+      "type": "object",
+      "properties": {
+        "subscription": {
+          "description": "Output only. Name of the subscription. Format is `projects\/{project}\/subscriptions\/{subscription}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "topic": {
+          "description": "The name of the topic from which this subscription is receiving messages. Format is `projects\/{project}\/topics\/{topic}`.",
+          "type": "string"
+        },
+        "serviceAccountEmail": {
+          "description": "Service account that will make the push request.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Potential issues with the underlying Pub\/Sub subscription configuration. Only populated on get requests.",
+          "type": "string",
+          "enumDescriptions": [
+            "The subscription configuration has not been checked.",
+            "The Pub\/Sub subscription is properly configured.",
+            "The subscription has been deleted.",
+            "The topic has been deleted.",
+            "Some of the subscription's field are misconfigured."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "OK",
+            "SUBSCRIPTION_DELETED",
+            "TOPIC_DELETED",
+            "SUBSCRIPTION_MISCONFIGURED"
+          ]
+        }
+      }
+    },
+    "WebhookConfig": {
+      "id": "WebhookConfig",
+      "description": "WebhookConfig [Experimental] describes the configuration of a trigger that creates a build whenever a webhook is sent to a trigger's webhook URL.",
+      "type": "object",
+      "properties": {
+        "secret": {
+          "description": "Required. Resource name for the secret required as a URL parameter.",
           "type": "string"
         }
       }
@@ -1551,6 +1596,13 @@
             }
           }
         }
+      }
+    },
+    "ReceiveTriggerWebhookResponse": {
+      "id": "ReceiveTriggerWebhookResponse",
+      "description": "ReceiveTriggerWebhookResponse [Experimental] is the response object for the ReceiveTriggerWebhook method.",
+      "type": "object",
+      "properties": {
       }
     },
     "Installation": {
@@ -2126,7 +2178,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name of the `Build` to retrieve. Format: `projects\/{project}\/locations\/{location}\/builds\/{build}`",
+                      "description": "The name of the `Build` to cancel. Format: `projects\/{project}\/locations\/{location}\/builds\/{build}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/builds\/[^\/]+$",
@@ -2585,6 +2637,41 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Runs a `BuildTrigger` at a particular source revision."
+            },
+            "webhook": {
+              "id": "cloudbuild.projects.triggers.webhook",
+              "path": "v1/{+trigger}:webhook",
+              "flatPath": "v1/projects/{projectsId}/triggers/{triggersId}:webhook",
+              "httpMethod": "POST",
+              "parameters": {
+                "trigger": {
+                  "description": "Name of the trigger to run the payload against",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/triggers\/[^\/]+$",
+                  "type": "string"
+                },
+                "projectId": {
+                  "description": "Project in which the specified trigger lives",
+                  "location": "query",
+                  "type": "string"
+                },
+                "secret": {
+                  "description": "Secret token used for authorization if an OAuth token isn't provided.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "trigger"
+              ],
+              "request": {
+                "$ref": "HttpBody"
+              },
+              "response": {
+                "$ref": "ReceiveTriggerWebhookResponse"
+              },
+              "description": "ReceiveTriggerWebhook [Experimental] is called when the API receives a webhook request targeted at a specific trigger."
             }
           }
         },

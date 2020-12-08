@@ -25,7 +25,7 @@ import datetime
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.util.ssh import ssh
-from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import store
 
@@ -36,7 +36,7 @@ MIN_CREDS_EXPIRY = datetime.timedelta(minutes=30)
 MIN_CREDS_EXPIRY_SECONDS = '{}s'.format(MIN_CREDS_EXPIRY.seconds)
 
 
-class UnsupportedPlatform(exceptions.Error):
+class UnsupportedPlatform(core_exceptions.Error):
   """Raised when attempting to run a command on an unsupported platform."""
 
 
@@ -210,6 +210,9 @@ def PrepareEnvironment(args):
         'Waiting for your Cloud Shell machine to start',
         sleep_ms=500,
         max_wait_ms=None)
+
+    if not environment.sshHost:
+      raise core_exceptions.Error('The Cloud Shell machine did not start.')
 
   return ConnectionInfo(
       ssh_env=ssh_env,

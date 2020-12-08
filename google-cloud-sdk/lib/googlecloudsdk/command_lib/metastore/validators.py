@@ -51,3 +51,12 @@ def ValidateKerberosPrincipal(kerberos_principal):
         'Kerberos Principal {0} does not match ReGeX {1}.'.format(
             kerberos_principal, pattern))
   return kerberos_principal
+
+
+def ValidateHourOfDay(hour):
+  """Validates that the hour falls between 0 and 23, inclusive."""
+  if hour < 0 or hour > 23:
+    raise exceptions.BadArgumentException(
+        '--maintenance-window-hour-of-day',
+        'Hour of day ({0}) is not in [0, 23].'.format(hour))
+  return hour

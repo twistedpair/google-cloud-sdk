@@ -933,6 +933,33 @@ class DataprocV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def InjectCredentials(self, request, global_params=None):
+      r"""Inject encrypted credentials into all of the VMs in a cluster.The target cluster must be a personal auth cluster assigned to the user who is issuing the RPC.
+
+      Args:
+        request: (DataprocProjectsRegionsClustersInjectCredentialsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('InjectCredentials')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    InjectCredentials.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}:injectCredentials',
+        http_method='POST',
+        method_id='dataproc.projects.regions.clusters.injectCredentials',
+        ordered_params=['project', 'region', 'cluster'],
+        path_params=['cluster', 'project', 'region'],
+        query_params=[],
+        relative_path='v1beta2/{+project}/{+region}/{+cluster}:injectCredentials',
+        request_field='injectCredentialsRequest',
+        request_type_name='DataprocProjectsRegionsClustersInjectCredentialsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists all regions/{region}/clusters in a project alphabetically.
 

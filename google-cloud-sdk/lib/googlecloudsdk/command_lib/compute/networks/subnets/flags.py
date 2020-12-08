@@ -89,13 +89,16 @@ def SubnetworkResolver():
 
 
 def AddUpdateArgs(parser, include_alpha_logging,
-                  include_l7_internal_load_balancing, api_version):
+                  include_l7_internal_load_balancing, include_stack_type,
+                  include_ipv6_access_type, api_version):
   """Add args to the parser for subnet update.
 
   Args:
     parser: The argparse parser.
     include_alpha_logging: Include alpha-specific logging args.
     include_l7_internal_load_balancing: Include Internal HTTP(S) LB args.
+    include_stack_type: Include stack type args.
+    include_ipv6_access_type: Include IPv6 access type args.
     api_version: The api version of the request.
   """
   messages = apis.GetMessagesModule('compute',
@@ -215,6 +218,33 @@ def AddUpdateArgs(parser, include_alpha_logging,
         the availability of proxies for load balancing. The drain timeout is
         only applicable when the [--role=ACTIVE] flag is being used.
         """)
+
+  if include_stack_type:
+    parser.add_argument(
+        '--stack-type',
+        choices={
+            'IPV4_ONLY':
+                'New VMs in this subnet will only be assigned IPv4 addresses',
+            'IPV4_IPV6':
+                'New VMs in this subnet can have both IPv4 and IPv6 addresses'
+        },
+        type=arg_utils.ChoiceToEnumName,
+        help=('The stack type for this subnet to identify whether the IPv6 '
+              'feature is enabled or not.'))
+
+  if include_ipv6_access_type:
+    parser.add_argument(
+        '--ipv6-access-type',
+        choices={
+            'INTERNAL': 'VMs in this subnet can have internal IPv6.',
+            'EXTERNAL': 'VMs in this subnet can have external IPv6.'
+        },
+        type=arg_utils.ChoiceToEnumName,
+        help=('The access type of IPv6 address this subnet holds. It\'s '
+              'immutable and can only be specified during creation or the '
+              'time the subnet is updated into IPV4_IPV6 dual stack. If the '
+              'ipv6 access type is EXTERNAL then this subnet cannot enable '
+              'direct path.'))
 
   messages = apis.GetMessagesModule('compute', api_version)
   GetPrivateIpv6GoogleAccessTypeFlagMapper(messages).choice_arg.AddToParser(

@@ -518,9 +518,9 @@ class GoogleCloudRecommenderV1alpha2Operation(_messages.Message):
       exact match per filter. To perform advanced matching, use
       path_value_matchers. * Example: { "/versions/*/name" : "it-123"
       "/versions/*/targetSize/percent": 20 } * Example: { "/bindings/*/role":
-      "roles/admin" "/bindings/*/condition" : null } * Example: {
-      "/bindings/*/role": "roles/admin" "/bindings/*/members/*" :
-      ["x@google.com", "y@google.com"] } When both path_filters and
+      "roles/owner" "/bindings/*/condition" : null } * Example: {
+      "/bindings/*/role": "roles/owner" "/bindings/*/members/*" :
+      ["x@example.com", "y@example.com"] } When both path_filters and
       path_value_matchers are set, an implicit AND must be performed.
     PathValueMatchersValue: Similar to path_filters, this contains set of
       filters to apply if `path` field referes to array elements. This is
@@ -543,9 +543,9 @@ class GoogleCloudRecommenderV1alpha2Operation(_messages.Message):
       filter. To perform advanced matching, use path_value_matchers. *
       Example: { "/versions/*/name" : "it-123"
       "/versions/*/targetSize/percent": 20 } * Example: { "/bindings/*/role":
-      "roles/admin" "/bindings/*/condition" : null } * Example: {
-      "/bindings/*/role": "roles/admin" "/bindings/*/members/*" :
-      ["x@google.com", "y@google.com"] } When both path_filters and
+      "roles/owner" "/bindings/*/condition" : null } * Example: {
+      "/bindings/*/role": "roles/owner" "/bindings/*/members/*" :
+      ["x@example.com", "y@example.com"] } When both path_filters and
       path_value_matchers are set, an implicit AND must be performed.
     pathValueMatchers: Similar to path_filters, this contains set of filters
       to apply if `path` field referes to array elements. This is meant to
@@ -581,9 +581,9 @@ class GoogleCloudRecommenderV1alpha2Operation(_messages.Message):
     being tested/modified. This is intended to be an exact match per filter.
     To perform advanced matching, use path_value_matchers. * Example: {
     "/versions/*/name" : "it-123" "/versions/*/targetSize/percent": 20 } *
-    Example: { "/bindings/*/role": "roles/admin" "/bindings/*/condition" :
-    null } * Example: { "/bindings/*/role": "roles/admin"
-    "/bindings/*/members/*" : ["x@google.com", "y@google.com"] } When both
+    Example: { "/bindings/*/role": "roles/owner" "/bindings/*/condition" :
+    null } * Example: { "/bindings/*/role": "roles/owner"
+    "/bindings/*/members/*" : ["x@example.com", "y@example.com"] } When both
     path_filters and path_value_matchers are set, an implicit AND must be
     performed.
 

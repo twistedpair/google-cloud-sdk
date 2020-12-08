@@ -316,10 +316,12 @@ def CreateConfidentialInstanceMessage(messages, enable_confidential_compute):
 
 
 def CreateAdvancedMachineFeaturesMessage(messages,
-                                         enable_nested_virtualization=None):
+                                         enable_nested_virtualization=None,
+                                         threads_per_core=None):
   """Create AdvancedMachineFeatures message for an Instance."""
   return messages.AdvancedMachineFeatures(
-      enableNestedVirtualization=enable_nested_virtualization)
+      enableNestedVirtualization=enable_nested_virtualization,
+      threadsPerCore=threads_per_core)
 
 
 def ParseDiskResource(resources, name, project, zone, type_):

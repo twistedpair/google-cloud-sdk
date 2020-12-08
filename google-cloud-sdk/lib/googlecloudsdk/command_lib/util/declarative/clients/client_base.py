@@ -37,35 +37,17 @@ class DeclarativeClient(object):
   """Abstract class representing a high level declarative service."""
 
   @abc.abstractmethod
-  def Parse(self, file_path):
+  def Export(self, file_path):
     raise NotImplementedError(
         'DeclarativeService Parse function must be implemented.')
 
   @abc.abstractmethod
-  def Serialize(self, file_path):
+  def ExportAll(self, file_path):
     raise NotImplementedError(
         'DeclarativeService Export function must be implemented.')
 
   @abc.abstractmethod
-  def SerializeAll(self, file_path):
+  def BulkExport(self, file_path):
     raise NotImplementedError(
         'DeclarativeService Export function must be implemented.')
 
-  @abc.abstractmethod
-  def Get(self):
-    raise NotImplementedError(
-        'DeclarativeService Get function must be implemented.')
-
-  @abc.abstractmethod
-  def GetAll(self):
-    raise NotImplementedError(
-        'DeclarativeService GetAll function must be implemented.')
-
-  @abc.abstractmethod
-  def Apply(self):
-    raise NotImplementedError(
-        'DeclarativeService Apply function must be implemented.')
-
-  def Delete(self):
-    raise NotImplementedError(
-        'DeclarativeService Delete function must be implemented.')

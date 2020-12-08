@@ -1756,6 +1756,13 @@
         "sentimentAnalysisRequestConfig": {
           "description": "Configures the type of sentiment analysis to perform. If not provided, sentiment analysis is not performed.",
           "$ref": "GoogleCloudDialogflowV2SentimentAnalysisRequestConfig"
+        },
+        "webhookHeaders": {
+          "description": "This field can be used to pass HTTP headers for a webhook call. These headers will be sent to webhook along with the headers that have been configured through Dialogflow web console. The headers defined within this field will overwrite the headers configured through Dialogflow console if there is a conflict. Header names are case-insensitive. Google's specified headers are not allowed. Including: \"Host\", \"Content-Length\", \"Connection\", \"From\", \"User-Agent\", \"Accept-Encoding\", \"If-Modified-Since\", \"If-None-Match\", \"X-Forwarded-For\", etc.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -3234,7 +3241,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The unique identifier of the message. Format: `projects\/\/conversations\/\/messages\/`.",
+          "description": "The unique identifier of the message. Format: `projects\/\/locations\/\/conversations\/\/messages\/`.",
           "type": "string"
         },
         "content": {
@@ -5126,44 +5133,6 @@
           }
         }
       }
-    },
-    "GoogleCloudKnowledgeV1alpha1OperationMetadata": {
-      "id": "GoogleCloudKnowledgeV1alpha1OperationMetadata",
-      "description": "Metadata in google::longrunning::Operation.",
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "Required. The current state of this operation.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unspecified state. Should never be used.",
-            "The operation has been created.",
-            "The operation is currently running.",
-            "The operation is done, either cancelled or completed."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "PENDING",
-            "RUNNING",
-            "DONE"
-          ]
-        },
-        "message": {
-          "description": "The failure messages from Manifold endpoints' last failures.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "errorCode": {
-          "description": "The error codes from Manifold endpoints' last failures.",
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      }
     }
   },
   "resources": {
@@ -5744,7 +5713,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "session": {
-                      "description": "Required. The name of the session this query is sent to. Format: `projects\/\/agent\/sessions\/`, or `projects\/\/agent\/environments\/\/users\/\/sessions\/`. If `Environment ID` is not specified, we assume default 'draft' environment. If `User ID` is not specified, we are using \"-\". It's up to the API caller to choose an appropriate `Session ID` and `User Id`. They can be a random number or some type of user and session identifiers (preferably hashed). The length of the `Session ID` and `User ID` must not exceed 36 characters. For more information, see the [API interactions guide](https:\/\/cloud.google.com\/dialogflow\/docs\/api-overview).",
+                      "description": "Required. The name of the session this query is sent to. Format: `projects\/\/agent\/sessions\/`, or `projects\/\/agent\/environments\/\/users\/\/sessions\/`. If `Environment ID` is not specified, we assume default 'draft' environment. If `User ID` is not specified, we are using \"-\". It's up to the API caller to choose an appropriate `Session ID` and `User Id`. They can be a random number or some type of user and session identifiers (preferably hashed). The length of the `Session ID` and `User ID` must not exceed 36 characters. For more information, see the [API interactions guide](https:\/\/cloud.google.com\/dialogflow\/docs\/api-overview). Note: Always use agent versions for production traffic. See [Versions and environments](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/agents-versions).",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/agent\/sessions\/[^\/]+$",
@@ -5764,7 +5733,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Processes a natural language query and returns structured, actionable data as a result. This method is not idempotent, because it may cause contexts and session entity types to be updated, which in turn might affect results of future queries."
+                  "description": "Processes a natural language query and returns structured, actionable data as a result. This method is not idempotent, because it may cause contexts and session entity types to be updated, which in turn might affect results of future queries. Note: Always use agent versions for production traffic. See [Versions and environments](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/agents-versions)."
                 }
               }
               ,
@@ -6780,7 +6749,7 @@
                           "httpMethod": "POST",
                           "parameters": {
                             "session": {
-                              "description": "Required. The name of the session this query is sent to. Format: `projects\/\/agent\/sessions\/`, or `projects\/\/agent\/environments\/\/users\/\/sessions\/`. If `Environment ID` is not specified, we assume default 'draft' environment. If `User ID` is not specified, we are using \"-\". It's up to the API caller to choose an appropriate `Session ID` and `User Id`. They can be a random number or some type of user and session identifiers (preferably hashed). The length of the `Session ID` and `User ID` must not exceed 36 characters. For more information, see the [API interactions guide](https:\/\/cloud.google.com\/dialogflow\/docs\/api-overview).",
+                              "description": "Required. The name of the session this query is sent to. Format: `projects\/\/agent\/sessions\/`, or `projects\/\/agent\/environments\/\/users\/\/sessions\/`. If `Environment ID` is not specified, we assume default 'draft' environment. If `User ID` is not specified, we are using \"-\". It's up to the API caller to choose an appropriate `Session ID` and `User Id`. They can be a random number or some type of user and session identifiers (preferably hashed). The length of the `Session ID` and `User ID` must not exceed 36 characters. For more information, see the [API interactions guide](https:\/\/cloud.google.com\/dialogflow\/docs\/api-overview). Note: Always use agent versions for production traffic. See [Versions and environments](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/agents-versions).",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+\/users\/[^\/]+\/sessions\/[^\/]+$",
@@ -6800,7 +6769,7 @@
                             "https://www.googleapis.com/auth/cloud-platform",
                             "https://www.googleapis.com/auth/dialogflow"
                           ],
-                          "description": "Processes a natural language query and returns structured, actionable data as a result. This method is not idempotent, because it may cause contexts and session entity types to be updated, which in turn might affect results of future queries."
+                          "description": "Processes a natural language query and returns structured, actionable data as a result. This method is not idempotent, because it may cause contexts and session entity types to be updated, which in turn might affect results of future queries. Note: Always use agent versions for production traffic. See [Versions and environments](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/agents-versions)."
                         }
                       }
                       ,

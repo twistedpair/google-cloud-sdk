@@ -29,7 +29,6 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -73,10 +72,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CreateSnapshotRequest(_messages.Message):
@@ -1322,12 +1320,10 @@ class Schema(_messages.Message):
       TYPE_UNSPECIFIED: Default value. This value is unused.
       PROTOCOL_BUFFER: A Protocol Buffer schema definition.
       AVRO: An Avro schema definition.
-      ZETA_SQL: A ZetaSQL schema definition.
     """
     TYPE_UNSPECIFIED = 0
     PROTOCOL_BUFFER = 1
     AVRO = 2
-    ZETA_SQL = 3
 
   definition = _messages.StringField(1)
   name = _messages.StringField(2)

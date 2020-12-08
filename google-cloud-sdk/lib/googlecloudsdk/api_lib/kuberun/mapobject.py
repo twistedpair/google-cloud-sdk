@@ -25,6 +25,12 @@ class MapObject(object):
   def __init__(self, props):
     self._props = props
 
+  def __eq__(self, o):
+    return self._props == o._props
+
   @property
   def props(self):
+    return self._props
+
+  def MakeSerializable(self):
     return self._props

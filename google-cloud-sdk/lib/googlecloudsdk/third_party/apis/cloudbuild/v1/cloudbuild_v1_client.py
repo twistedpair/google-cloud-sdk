@@ -1285,6 +1285,33 @@ class CloudbuildV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Webhook(self, request, global_params=None):
+      r"""ReceiveTriggerWebhook [Experimental] is called when the API receives a webhook request targeted at a specific trigger.
+
+      Args:
+        request: (CloudbuildProjectsTriggersWebhookRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReceiveTriggerWebhookResponse) The response message.
+      """
+      config = self.GetMethodConfig('Webhook')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Webhook.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/triggers/{triggersId}:webhook',
+        http_method='POST',
+        method_id='cloudbuild.projects.triggers.webhook',
+        ordered_params=['trigger'],
+        path_params=['trigger'],
+        query_params=['projectId', 'secret'],
+        relative_path='v1/{+trigger}:webhook',
+        request_field='httpBody',
+        request_type_name='CloudbuildProjectsTriggersWebhookRequest',
+        response_type_name='ReceiveTriggerWebhookResponse',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 

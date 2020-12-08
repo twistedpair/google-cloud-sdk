@@ -72,8 +72,7 @@ def ReservationArgToMessage(reservation, accelerator, local_ssd,
       reservation.get('machine-type', None),
       reservation.get('min-cpu-platform', None))
   a_msg = util.MakeReservationMessage(
-      messages, reservation.get('reservation', None),
-      specific_allocation,
+      messages, reservation.get('reservation', None), None, specific_allocation,
       reservation.get('require-specific-reservation', None),
       reservation.get('reservation-zone', None))
 
@@ -98,7 +97,7 @@ def _ConvertYAMLToMessage(messages, reservations_yaml):
         messages, a.get('vm_count', None), accelerators, local_ssds,
         a.get('machine_type', None), a.get('min_cpu_platform', None))
     a_msg = util.MakeReservationMessage(
-        messages, a.get('reservation', None), specific_allocation,
+        messages, a.get('reservation', None), None, specific_allocation,
         a.get('require_specific_reservation', None),
         a.get('reservation_zone', None))
     allocations_msg.append(a_msg)

@@ -818,37 +818,38 @@ def ValidateMigInstanceRedistributionTypeFlag(instance_redistribution_type,
             'managed instance groups only.'))
 
 
-DISTRIBUTION_POLICY_TARGET_SHAPES = ['EVEN', 'ANY', 'BALANCED']
+DISTRIBUTION_POLICY_TARGET_SHAPE_CHOICES = {
+    'EVEN':
+        'The group schedules VM instance creation and deletion to achieve and '
+        'maintain an even number of managed instances across the selected '
+        'zones. The distribution is even when the number of managed instances '
+        'does not differ by more than 1 between any two zones. Recommended for'
+        ' highly available serving workloads.',
+    'BALANCED':
+        'The group prioritizes acquisition of resources, scheduling VMs in '
+        'zones where resources are available while distributing VMs as evenly '
+        'as possible across selected zones to minimize the impact of zonal '
+        'failure. Recommended for highly available serving or batch workloads '
+        'that do not require autoscaling.',
+    'ANY': 'The group picks zones for creating VM instances to fulfill the '
+           'requested number of VMs within present resource constraints and to '
+           'maximize utilization of unused zonal reservations. Recommended for '
+           'batch workloads that do not require high availability.'
+}
 
 
-def AddMigDistributionPolicyTargetShapeFlag(parser, for_create=True):
+def AddMigDistributionPolicyTargetShapeFlag(parser):
   """Add --target-distribution-shape flag to the parser."""
   help_text = """\
       Specifies how a regional managed instance group distributes its instances
-      across zones within the region.
-
-      The following target shape are available:
-
-      * ``EVEN'' ‒ The group schedules VM instance creation and deletion in a
-        way that maintains an even number of managed instances across the
-        selected zones. Recommended for highly available serving workloads.
-      * ``BALANCED'' ‒ The group prioritizes acquisition of resources -
-        scheduling VMs in zones where resources are available - while
-        distributing VMs as evenly as possible across selected zones to minimize
-        the impact of zone-level failure. Recommended for highly available
-        serving or batch workloads that do not require autoscaling.
-      * ``ANY'' ‒ The group picks zones for creating VM instances to fulfill the
-        requested number of VMs within present capacity constraints. Recommended
-        for batch workloads that do not require high availability.
+      across zones within the region. The default shape is ``EVEN''.
     """
-  if for_create:
-    help_text += "\nIf not specified, the default shape is ``EVEN''."
 
   parser.add_argument(
       '--target-distribution-shape',
       metavar='SHAPE',
       type=lambda x: x.upper(),
-      choices=DISTRIBUTION_POLICY_TARGET_SHAPES,
+      choices=DISTRIBUTION_POLICY_TARGET_SHAPE_CHOICES,
       help=help_text)
 
 

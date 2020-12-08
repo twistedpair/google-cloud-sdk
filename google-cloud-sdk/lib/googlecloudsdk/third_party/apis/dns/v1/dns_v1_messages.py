@@ -607,6 +607,7 @@ class ManagedZone(_messages.Message):
     peeringConfig: A ManagedZonePeeringConfig attribute.
     privateVisibilityConfig: A ManagedZonePrivateVisibilityConfig attribute.
     reverseLookupConfig: A ManagedZoneReverseLookupConfig attribute.
+    serviceDirectoryConfig: A ManagedZoneServiceDirectoryConfig attribute.
     visibility: A VisibilityValueValuesEnum attribute.
   """
 
@@ -658,7 +659,8 @@ class ManagedZone(_messages.Message):
   peeringConfig = _messages.MessageField('ManagedZonePeeringConfig', 12)
   privateVisibilityConfig = _messages.MessageField('ManagedZonePrivateVisibilityConfig', 13)
   reverseLookupConfig = _messages.MessageField('ManagedZoneReverseLookupConfig', 14)
-  visibility = _messages.EnumField('VisibilityValueValuesEnum', 15)
+  serviceDirectoryConfig = _messages.MessageField('ManagedZoneServiceDirectoryConfig', 15)
+  visibility = _messages.EnumField('VisibilityValueValuesEnum', 16)
 
 
 class ManagedZoneDnsSecConfig(_messages.Message):
@@ -825,6 +827,34 @@ class ManagedZoneReverseLookupConfig(_messages.Message):
   """
 
   kind = _messages.StringField(1, default='dns#managedZoneReverseLookupConfig')
+
+
+class ManagedZoneServiceDirectoryConfig(_messages.Message):
+  r"""A ManagedZoneServiceDirectoryConfig object.
+
+  Fields:
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#managedZoneServiceDirectoryConfig".
+    namespace: A ManagedZoneServiceDirectoryConfigNamespace attribute.
+  """
+
+  kind = _messages.StringField(1, default='dns#managedZoneServiceDirectoryConfig')
+  namespace = _messages.MessageField('ManagedZoneServiceDirectoryConfigNamespace', 2)
+
+
+class ManagedZoneServiceDirectoryConfigNamespace(_messages.Message):
+  r"""A ManagedZoneServiceDirectoryConfigNamespace object.
+
+  Fields:
+    deletionTime: A string attribute.
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#managedZoneServiceDirectoryConfigNamespace".
+    namespaceUrl: A string attribute.
+  """
+
+  deletionTime = _messages.StringField(1)
+  kind = _messages.StringField(2, default='dns#managedZoneServiceDirectoryConfigNamespace')
+  namespaceUrl = _messages.StringField(3)
 
 
 class ManagedZonesListResponse(_messages.Message):
@@ -1049,6 +1079,7 @@ class Quota(_messages.Message):
   Fields:
     allowManualDnssec: A boolean attribute.
     dnsKeysPerManagedZone: A integer attribute.
+    gkeClustersPerPolicy: A integer attribute.
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#quota".
     managedZones: A integer attribute.
@@ -1068,20 +1099,21 @@ class Quota(_messages.Message):
 
   allowManualDnssec = _messages.BooleanField(1)
   dnsKeysPerManagedZone = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  kind = _messages.StringField(3, default='dns#quota')
-  managedZones = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  managedZonesPerNetwork = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  networksPerManagedZone = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  networksPerPolicy = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  policies = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  resourceRecordsPerRrset = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  rrsetAdditionsPerChange = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  rrsetDeletionsPerChange = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  rrsetsPerManagedZone = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  targetNameServersPerManagedZone = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  targetNameServersPerPolicy = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  totalRrdataSizePerChange = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 16, repeated=True)
+  gkeClustersPerPolicy = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  kind = _messages.StringField(4, default='dns#quota')
+  managedZones = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  managedZonesPerNetwork = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  networksPerManagedZone = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  networksPerPolicy = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  policies = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  resourceRecordsPerRrset = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  rrsetAdditionsPerChange = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  rrsetDeletionsPerChange = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  rrsetsPerManagedZone = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  targetNameServersPerManagedZone = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  targetNameServersPerPolicy = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  totalRrdataSizePerChange = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 17, repeated=True)
 
 
 class RRSetRoutingPolicy(_messages.Message):

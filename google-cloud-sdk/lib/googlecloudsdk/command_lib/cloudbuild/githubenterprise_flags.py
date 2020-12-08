@@ -51,8 +51,8 @@ If not specified, calls will be made over the public internet.
   if update:
     parser.add_argument(
         'CONFIG',
-        help=
-        'The unique identifier of the GitHub Enterprise Config to be updated.')
+        help='The unique identifier of the GitHub Enterprise Config to be updated.'
+    )
   parser.add_argument(
       '--webhook-key',
       help="""\
@@ -64,7 +64,7 @@ If this is not set, Cloud Build will generate one on the user's behalf.
   gcs_or_secretmanager = parser.add_mutually_exclusive_group(
       required=not update)
   gcs = gcs_or_secretmanager.add_argument_group(
-      'CLoud Storage location of the GitHub App credentials:')
+      'Cloud Storage location of the GitHub App credentials:')
   gcs.add_argument(
       '--gcs-bucket',
       required=True,
@@ -86,19 +86,35 @@ If this is not set, Cloud Build will read the latest version.
   secretmanager.add_argument(
       '--private-key-name',
       required=True,
-      help='The Secret Manager resource containing the private key.')
+      help='Secret Manager resource containing the private key.')
   secretmanager.add_argument(
       '--webhook-secret-name',
       required=True,
-      help='The Secret Manager resource containing the webhook key.')
+      help='Secret Manager resource containing the webhook key.')
   secretmanager.add_argument(
       '--oauth-secret-name',
       required=True,
-      help='The Secret Manager resource containing the oauth secret.')
+      help='Secret Manager resource containing the oauth secret.')
   secretmanager.add_argument(
       '--oauth-client-id-name',
       required=True,
-      help='The Secret Manager resource containing the oauth client id.')
+      help='Secret Manager resource containing the oauth client id.')
+  secretmanager.add_argument(
+      '--private-key-version-name',
+      help='Secret Manager SecretVersion resource containing the private key.'
+  )
+  secretmanager.add_argument(
+      '--webhook-secret-version-name',
+      help='Secret Manager SecretVersion resource containing the webhook key.'
+  )
+  secretmanager.add_argument(
+      '--oauth-secret-version-name',
+      help='Secret Manager SecretVersion resource containing the oauth secret.'
+  )
+  secretmanager.add_argument(
+      '--oauth-client-id-version-name',
+      help='Secret Manager SecretVersion resource containing the oauth client id.'
+  )
   return parser
 
 

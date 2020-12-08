@@ -210,6 +210,10 @@
          "format": "date-time"
         }
        }
+      },
+      "publicAccessPrevention": {
+       "type": "string",
+       "description": "The bucket's Public Access Prevention configuration. Currently, 'unspecified' and 'enforced' are supported."
       }
      }
     },

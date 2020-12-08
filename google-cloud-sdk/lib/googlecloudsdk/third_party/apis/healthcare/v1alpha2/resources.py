@@ -166,6 +166,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SERVICES_DEIDENTIFY = (
+      'projects.locations.services.deidentify',
+      'projects/{projectsId}/locations/{locationsId}/services/deidentify',
+      {},
+      ['projectsId', 'locationsId'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

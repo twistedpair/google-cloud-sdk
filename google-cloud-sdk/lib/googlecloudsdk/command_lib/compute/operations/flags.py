@@ -69,4 +69,8 @@ COMPUTE_OPERATION_ARG = compute_flags.ResourceArgument(
     regional_collection='compute.regionOperations',
     zonal_collection='compute.zoneOperations',
     required=True,
-    plural=False)
+    plural=False,
+    short_help='Name of the operation returned by an asynchronous command. '
+               'Use `gcloud compute operations list` to display recent '
+               'operations.'
+)

@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://www.google.com",
+  "documentationLink": "https://cloud.google.com/container-analysis/docs/apis/",
   "protocol": "rest",
   "rootUrl": "https://ondemandscanning.googleapis.com/",
   "mtlsRootUrl": "https://ondemandscanning.mtls.googleapis.com/",
@@ -204,6 +204,50 @@
       "properties": {
         "resourceUri": {
           "description": "Required. The resource URI of the container image being scanned.",
+          "type": "string"
+        }
+      }
+    },
+    "AnalyzePackagesRequest": {
+      "id": "AnalyzePackagesRequest",
+      "description": "AnalyzePackagesRequest is the request to analyze a list of packages and create Vulnerability Occurrences for it.",
+      "type": "object",
+      "properties": {
+        "resourceUri": {
+          "description": "Required. The resource URI of the container image being scanned.",
+          "type": "string"
+        },
+        "packages": {
+          "description": "The packages to analyze.",
+          "type": "array",
+          "items": {
+            "$ref": "PackageData"
+          }
+        }
+      }
+    },
+    "PackageData": {
+      "id": "PackageData",
+      "type": "object",
+      "properties": {
+        "package": {
+          "description": "The package being analysed for vulnerabilities",
+          "type": "string"
+        },
+        "version": {
+          "description": "The version of the package being analysed",
+          "type": "string"
+        },
+        "os": {
+          "description": "The OS affected by a vulnerability This field is deprecated and the information is in cpe_uri",
+          "type": "string"
+        },
+        "osVersion": {
+          "description": "The version of the OS This field is deprecated and the information is in cpe_uri",
+          "type": "string"
+        },
+        "cpeUri": {
+          "description": "The cpe_uri in [cpe format] (https:\/\/cpe.mitre.org\/specification\/) in which the vulnerability may manifest. Examples include distro or storage location for vulnerable jar.",
           "type": "string"
         }
       }
@@ -1217,6 +1261,33 @@
         }
       }
     },
+    "AnalyzePackagesMetadata": {
+      "id": "AnalyzePackagesMetadata",
+      "description": "AnalyzePackagesMetadata contains metadata for an active scan of a container image.",
+      "type": "object",
+      "properties": {
+        "resourceUri": {
+          "description": "The resource URI of the container image being scanned.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "When the scan was created.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "AnalyzePackagesResponse": {
+      "id": "AnalyzePackagesResponse",
+      "description": "AnalyzePackagesResponse contains the information necessary to find results for the given scan.",
+      "type": "object",
+      "properties": {
+        "scan": {
+          "description": "The name of the scan resource created by this successful scan.",
+          "type": "string"
+        }
+      }
+    },
     "ScanContainerImageMetadata": {
       "id": "ScanContainerImageMetadata",
       "description": "ScanContainerImageMetadata contains metadata for an active scan of a container image.",
@@ -1430,6 +1501,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Initiates a scan of the provided resource."
+                },
+                "analyzePackages": {
+                  "id": "ondemandscanning.projects.locations.scans.analyzePackages",
+                  "path": "v1beta1/{+parent}/scans:analyzePackages",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/scans:analyzePackages",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent of the resource for which analysis is requested. Format: projects\/[project_name]\/locations\/[location]",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "AnalyzePackagesRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Initiates an analysis of the provided packages."
                 }
               }
               ,

@@ -391,7 +391,8 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
     # OAuth 2.0 should only occur over https.
     authorization_response = wsgi_app.last_request_uri.replace(
         'http:', 'https:')
-    self.fetch_token(authorization_response=authorization_response)
+    self.fetch_token(
+        authorization_response=authorization_response, include_client_id=True)
 
     return self.credentials
 

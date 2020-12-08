@@ -544,6 +544,29 @@
         "parentDisplayName": {
           "description": "The human readable name of resource's parent.",
           "type": "string"
+        },
+        "folders": {
+          "description": "Output only. Contains a Folder message for each folder in the assets ancestry. The first folder is the deepest nested folder, and the last folder is the folder directly under the Organization.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "Folder"
+          }
+        }
+      }
+    },
+    "Folder": {
+      "id": "Folder",
+      "description": "Message that contains the resource name and display name of a folder resource.",
+      "type": "object",
+      "properties": {
+        "resourceFolder": {
+          "description": "Full resource name of this folder. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name",
+          "type": "string"
+        },
+        "resourceFolderDisplayName": {
+          "description": "The user defined display name for this folder.",
+          "type": "string"
         }
       }
     },
@@ -716,6 +739,29 @@
         },
         "parentDisplayName": {
           "description": "The human readable name of resource's parent.",
+          "type": "string"
+        },
+        "folders": {
+          "description": "Output only. Contains a Folder message for each folder in the assets ancestry. The first folder is the deepest nested folder, and the last folder is the folder directly under the Organization.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudSecuritycenterV1p1beta1Folder"
+          }
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1p1beta1Folder": {
+      "id": "GoogleCloudSecuritycenterV1p1beta1Folder",
+      "description": "Message that contains the resource name and display name of a folder resource.",
+      "type": "object",
+      "properties": {
+        "resourceFolder": {
+          "description": "Full resource name of this folder. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name",
+          "type": "string"
+        },
+        "resourceFolderDisplayName": {
+          "description": "The user defined display name for this folder.",
           "type": "string"
         }
       }

@@ -76,17 +76,14 @@ def AddNatNameArg(parser, operation_type='operate on', plural=False):
   parser.add_argument('name', **params)
 
 
-def AddCommonNatArgs(parser,
-                     for_create=False,
-                     with_endpoint_independent_mapping=False):
+def AddCommonNatArgs(parser, for_create=False):
   """Adds common arguments for creating and updating NATs."""
   _AddIpAllocationArgs(parser, for_create)
   _AddSubnetworkArgs(parser, for_create)
   _AddTimeoutsArgs(parser, for_create)
   _AddMinPortsPerVmArg(parser, for_create)
   _AddLoggingArgs(parser)
-  if with_endpoint_independent_mapping:
-    _AddEndpointIndependentMappingArg(parser)
+  _AddEndpointIndependentMappingArg(parser)
   if not for_create:
     _AddDrainNatIpsArgument(parser)
 

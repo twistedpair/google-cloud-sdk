@@ -65,6 +65,8 @@ def _GenerateUpdateMask(args):
   arg_name_to_field = {
       '--port':
           'port',
+      '--tier':
+          'tier',
       '--update-hive-metastore-configs-from-file':
           'hive_metastore_config.config_overrides',
       '--clear-hive-metastore-configs':
@@ -77,6 +79,10 @@ def _GenerateUpdateMask(args):
           'hive_metastore_config.kerberos_config.keytab',
       '--krb5-config':
           'hive_metastore_config.kerberos_config.krb5_config_gcs_uri',
+      '--maintenance-window-day':
+          'maintenance_window',
+      '--maintenance-window-hour':
+          'maintenance_window',
   }
 
   update_mask = set()

@@ -254,11 +254,15 @@ def AddRuntimeFlag(parser):
 
           - `nodejs10`: Node.js 10
           - `nodejs12`: Node.js 12
+          - `nodejs14`: Node.js 14
           - `python37`: Python 3.7
           - `python38`: Python 3.8
+          - `python39`: Python 3.9
           - `go111`: Go 1.11
           - `go113`: Go 1.13
           - `java11`: Java 11
+          - `dotnet3`: .NET Framework 3
+          - `ruby26`: Ruby 2.6
           - `nodejs6`: Node.js 6 (deprecated)
           - `nodejs8`: Node.js 8 (deprecated)
           """)

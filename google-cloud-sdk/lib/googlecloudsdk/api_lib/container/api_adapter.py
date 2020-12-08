@@ -1185,15 +1185,24 @@ class APIAdapter(object):
     if options.cluster_ipv4_cidr:
       cluster.clusterIpv4Cidr = options.cluster_ipv4_cidr
     if options.enable_stackdriver_kubernetes is not None:
-      # When "enable-stackdriver-kubernetes" is specified, either true or false
+      # When "enable-stackdriver-kubernetes" is specified, either true or false.
       if options.enable_stackdriver_kubernetes:
         cluster.loggingService = 'logging.googleapis.com/kubernetes'
         cluster.monitoringService = 'monitoring.googleapis.com/kubernetes'
+        # When "enable-stackdriver-kubernetes" is true, the
+        # "enable-cloud-logging" and "enable-cloud-monitoring" flags can be
+        # used to explicitly disable logging or monitoring
+        if (options.enable_cloud_logging is not None and
+            not options.enable_cloud_logging):
+          cluster.loggingService = 'none'
+        if (options.enable_cloud_monitoring is not None and
+            not options.enable_cloud_monitoring):
+          cluster.monitoringService = 'none'
       else:
         cluster.loggingService = 'none'
         cluster.monitoringService = 'none'
-    # When "enable-stackdriver-kubernetes" is unspecified, checks whether legacy
-    # "enable-cloud-logging" or "enable-cloud-monitoring" flags are specified.
+    # When "enable-stackdriver-kubernetes" is unspecified, checks whether
+    # "enable-cloud-logging" or "enable-cloud-monitoring" options are specified.
     else:
       if options.enable_cloud_logging is not None:
         if options.enable_cloud_logging:
@@ -1371,6 +1380,14 @@ class APIAdapter(object):
     if options.enable_confidential_nodes:
       cluster.confidentialNodes = self.messages.ConfidentialNodes(
           enabled=options.enable_confidential_nodes)
+
+    if options.private_ipv6_google_access_type is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.privateIpv6GoogleAccess = util.GetPrivateIpv6GoogleAccessTypeMapper(
+          self.messages, hidden=False).GetEnumForChoice(
+              options.private_ipv6_google_access_type)
+
     return cluster
 
   def ParseNodeConfig(self, options):
@@ -1898,6 +1915,35 @@ class APIAdapter(object):
          autoscaling.autoprovisioningNodePoolDefaults.oauthScopes):
       raise util.Error(DEFAULTS_WITHOUT_AUTOPROVISIONING_MSG)
 
+  def _GetClusterTelemetryType(self, options, logging_service,
+                               monitoring_service):
+    """Gets the cluster telemetry from create options."""
+    # If enable_stackdriver_kubernetes is set to false cluster telemetry
+    # will be set to DISABLED.
+    if (options.enable_stackdriver_kubernetes is not None and
+        not options.enable_stackdriver_kubernetes):
+      return self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED
+
+    # If either logging service or monitoring service is explicitly disabled we
+    # do not set the cluster telemtry.
+    if (options.enable_stackdriver_kubernetes and
+        (logging_service == 'none' or monitoring_service == 'none')):
+      return None
+
+    # When enable_stackdriver_kubernetes is set to true and neither logging nor
+    # monitoring service are explicitly disabled we set the Cluster Telemetry
+    # to ENABLED.
+    if (options.enable_stackdriver_kubernetes and logging_service != 'none' and
+        monitoring_service != 'none'):
+      return self.messages.ClusterTelemetry.TypeValueValuesEnum.ENABLED
+
+    # When enable_logging_monitoring_system_only is set to true we set the
+    # telemetry to SYSTEM_ONLY. In case of SYSTEM_ONLY it's not possible to
+    # disable either logging or monitoring.
+    if options.enable_logging_monitoring_system_only:
+      return self.messages.ClusterTelemetry.TypeValueValuesEnum.SYSTEM_ONLY
+    return None
+
   def ResourceLimitsFromFlags(self, options):
     """Create cluster's autoscaling resource limits from command line flags.
 
@@ -1961,6 +2007,10 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate()
       update.desiredLoggingService = 'logging.googleapis.com/kubernetes'
       update.desiredMonitoringService = 'monitoring.googleapis.com/kubernetes'
+    elif options.enable_stackdriver_kubernetes is not None:
+      update = self.messages.ClusterUpdate()
+      update.desiredLoggingService = 'none'
+      update.desiredMonitoringService = 'none'
     elif options.monitoring_service or options.logging_service:
       update = self.messages.ClusterUpdate()
       if options.monitoring_service:
@@ -2108,6 +2158,13 @@ class APIAdapter(object):
           disabled=options.disable_default_snat)
       update = self.messages.ClusterUpdate(
           desiredDefaultSnatStatus=disable_default_snat)
+
+    if options.private_ipv6_google_access_type is not None:
+      update = self.messages.ClusterUpdate(
+          desiredPrivateIpv6GoogleAccess=util
+          .GetPrivateIpv6GoogleAccessTypeMapperForUpdate(
+              self.messages, hidden=False).GetEnumForChoice(
+                  options.private_ipv6_google_access_type))
 
     return update
 
@@ -3119,15 +3176,11 @@ class V1Beta1Adapter(V1Adapter):
               enabled=options.enable_master_global_access)
     _AddNotificationConfigToCluster(cluster, options, self.messages)
 
-    cluster.clusterTelemetry = self.messages.ClusterTelemetry()
-    if options.enable_stackdriver_kubernetes:
-      cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.ENABLED
-    elif options.enable_logging_monitoring_system_only:
-      cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.SYSTEM_ONLY
-    elif options.enable_stackdriver_kubernetes is not None:
-      cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED
-    else:
-      cluster.clusterTelemetry = None
+    cluster_telemetry_type = self._GetClusterTelemetryType(
+        options, cluster.loggingService, cluster.monitoringService)
+    if cluster_telemetry_type is not None:
+      cluster.clusterTelemetry = self.messages.ClusterTelemetry()
+      cluster.clusterTelemetry.type = cluster_telemetry_type
 
     if cluster.clusterTelemetry:
       cluster.loggingService = None
@@ -3155,13 +3208,6 @@ class V1Beta1Adapter(V1Adapter):
         cluster.networkConfig = self.messages.NetworkConfig()
       cluster.networkConfig.datapathProvider = \
             self.messages.NetworkConfig.DatapathProviderValueValuesEnum.ADVANCED_DATAPATH
-
-    if options.private_ipv6_google_access_type is not None:
-      if cluster.networkConfig is None:
-        cluster.networkConfig = self.messages.NetworkConfig()
-      cluster.networkConfig.privateIpv6GoogleAccess = util.GetPrivateIpv6GoogleAccessTypeMapper(
-          self.messages,
-          hidden=True).GetEnumForChoice(options.private_ipv6_google_access_type)
 
     cluster.master = _GetMasterForClusterCreate(options, self.messages)
 
@@ -3223,17 +3269,11 @@ class V1Beta1Adapter(V1Adapter):
           desiredClusterTelemetry=self.messages.ClusterTelemetry(
               type=self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED))
 
-    if options.enable_workload_monitoring_eap:
+    if options.enable_workload_monitoring_eap is not None:
       update = self.messages.ClusterUpdate(
           desiredWorkloadMonitoringEapConfig=self.messages
-          .WorkloadMonitoringEapConfig(enabled=True))
-
-    if options.private_ipv6_google_access_type is not None:
-      update = self.messages.ClusterUpdate(
-          desiredPrivateIpv6GoogleAccess=util
-          .GetPrivateIpv6GoogleAccessTypeMapperForUpdate(
-              self.messages, hidden=True).GetEnumForChoice(
-                  options.private_ipv6_google_access_type))
+          .WorkloadMonitoringEapConfig(
+              enabled=options.enable_workload_monitoring_eap))
 
     master = _GetMasterForClusterUpdate(options, self.messages)
     if master is not None:
@@ -3585,15 +3625,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.costManagementConfig = self.messages.CostManagementConfig(
           enabled=True)
 
-    cluster.clusterTelemetry = self.messages.ClusterTelemetry()
-    if options.enable_stackdriver_kubernetes:
-      cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.ENABLED
-    elif options.enable_logging_monitoring_system_only:
-      cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.SYSTEM_ONLY
-    elif options.enable_stackdriver_kubernetes is not None:
-      cluster.clusterTelemetry.type = self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED
-    else:
-      cluster.clusterTelemetry = None
+    cluster_telemetry_type = self._GetClusterTelemetryType(
+        options, cluster.loggingService, cluster.monitoringService)
+    if cluster_telemetry_type is not None:
+      cluster.clusterTelemetry = self.messages.ClusterTelemetry()
+      cluster.clusterTelemetry.type = cluster_telemetry_type
 
     if cluster.clusterTelemetry:
       cluster.loggingService = None
@@ -3621,13 +3657,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         cluster.networkConfig = self.messages.NetworkConfig()
       cluster.networkConfig.datapathProvider = \
             self.messages.NetworkConfig.DatapathProviderValueValuesEnum.ADVANCED_DATAPATH
-
-    if options.private_ipv6_google_access_type is not None:
-      if cluster.networkConfig is None:
-        cluster.networkConfig = self.messages.NetworkConfig()
-      cluster.networkConfig.privateIpv6GoogleAccess = util.GetPrivateIpv6GoogleAccessTypeMapper(
-          self.messages,
-          hidden=True).GetEnumForChoice(options.private_ipv6_google_access_type)
 
     cluster.master = _GetMasterForClusterCreate(options, self.messages)
 
@@ -3699,17 +3728,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           desiredClusterTelemetry=self.messages.ClusterTelemetry(
               type=self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED))
 
-    if options.enable_workload_monitoring_eap:
+    if options.enable_workload_monitoring_eap is not None:
       update = self.messages.ClusterUpdate(
           desiredWorkloadMonitoringEapConfig=self.messages
-          .WorkloadMonitoringEapConfig(enabled=True))
-
-    if options.private_ipv6_google_access_type is not None:
-      update = self.messages.ClusterUpdate(
-          desiredPrivateIpv6GoogleAccess=util
-          .GetPrivateIpv6GoogleAccessTypeMapperForUpdate(
-              self.messages, hidden=True).GetEnumForChoice(
-                  options.private_ipv6_google_access_type))
+          .WorkloadMonitoringEapConfig(
+              enabled=options.enable_workload_monitoring_eap))
 
     master = _GetMasterForClusterUpdate(options, self.messages)
     if master is not None:

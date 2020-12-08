@@ -1044,6 +1044,92 @@
           "type": "string"
         }
       }
+    },
+    "Reference": {
+      "id": "Reference",
+      "description": "Represents a reference to a resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the reference. Includes target resource as a parent and reference uid `{target_resource}\/references\/{reference_id}`. For example, `projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "type": {
+          "description": "Required. Type of the reference. A service might impose limits on number of references of a specific type.",
+          "type": "string"
+        },
+        "sourceResource": {
+          "description": "Required. Full resource name of the resource which refers the target resource. For example: \/\/tpu.googleapis.com\/projects\/myproject\/nodes\/mynode",
+          "type": "string"
+        },
+        "details": {
+          "description": "Details of the reference type with no implied semantics. Cumulative size of the field must not be more than 1KiB.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        },
+        "createTime": {
+          "description": "Output only. The creation time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "CreateReferenceRequest": {
+      "id": "CreateReferenceRequest",
+      "description": "The CreateReferenceRequest request.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "Required. The parent resource name (target_resource of this reference) For example: `projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}`.",
+          "type": "string"
+        },
+        "referenceId": {
+          "description": "The unique id of this resource. Can be any arbitrary string, either GUID or any other string. Must be unique within a scope of a target resource, but does not have to be globally unique. Reference ID is part of resource name of the reference. Resource name is generated in the following way: {parent}\/references\/{reference_id}. Reference ID field is currently required but id auto generation might be added in the future.",
+          "type": "string"
+        },
+        "reference": {
+          "description": "Required. The reference to be created.",
+          "$ref": "Reference"
+        },
+        "requestId": {
+          "description": "Optional. Request ID is an idempotency ID of the request. It must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000) is not supported.",
+          "type": "string"
+        }
+      }
+    },
+    "DeleteReferenceRequest": {
+      "id": "DeleteReferenceRequest",
+      "description": "The DeleteReferenceRequest request.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Resource name of the reference, in the following format: `{target_resource}\/references\/{reference_id}`. For example: `projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
+          "type": "string"
+        },
+        "requestId": {
+          "description": "Optional. Request ID is an idempotency ID of the request. It must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000) is not supported.",
+          "type": "string"
+        }
+      }
+    },
+    "GetReferenceRequest": {
+      "id": "GetReferenceRequest",
+      "description": "The GetReferenceRequest request.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Resource name of the reference, in the following format: `{target_resource}\/references\/{reference_id}`. For example: `projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {

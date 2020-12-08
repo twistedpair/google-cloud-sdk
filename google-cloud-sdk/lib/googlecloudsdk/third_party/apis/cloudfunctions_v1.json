@@ -375,6 +375,20 @@
           "description": "Output only. The Cloud Build ID of the latest successful deployment of the function.",
           "readOnly": true,
           "type": "string"
+        },
+        "secretEnvironmentVariables": {
+          "description": "Secret environment variables config to fetch the secret values from secret manager and expose it as environment variables available during function execution. The values are fetched every time a new container is started, so any secret value changes in between are not reflected.",
+          "type": "array",
+          "items": {
+            "$ref": "SecretEnvVar"
+          }
+        },
+        "secretVolumes": {
+          "description": "Secret volume mount config to mount references to secret values at the requested paths within the GCF application container. Every filesystem read performs a lookup in secret manager, so the latest value for a version is always available regardless of when the application container was started.",
+          "type": "array",
+          "items": {
+            "$ref": "SecretVolume"
+          }
         }
       }
     },
@@ -459,6 +473,70 @@
       "description": "Describes the retry policy in case of function's execution failure. A function execution will be retried on any failure. A failed execution will be retried up to 7 days with an exponential backoff (capped at 10 seconds). Retried execution is charged as any other execution.",
       "type": "object",
       "properties": {
+      }
+    },
+    "SecretEnvVar": {
+      "id": "SecretEnvVar",
+      "description": "Configuration for a secret environment variable.",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "Name of the environment variable.",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "Project whose secret manager data is being referenced.",
+          "type": "string"
+        },
+        "secret": {
+          "description": "Name of the secret in secret manager (not the full resource name).",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version of the secret (version number or the string 'latest').",
+          "type": "string"
+        }
+      }
+    },
+    "SecretVolume": {
+      "id": "SecretVolume",
+      "description": "Configuration for a secret volume.",
+      "type": "object",
+      "properties": {
+        "mountPath": {
+          "description": "The path within the container to mount the volume.",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "Project whose secret manager data is being referenced.",
+          "type": "string"
+        },
+        "secret": {
+          "description": "Name of the secret in secret manager (not the full resource name).",
+          "type": "string"
+        },
+        "versions": {
+          "description": "List of secret versions to mount for this secret. If the list is empty, then all versions of the secret will be fetched and mounted under the mount_path with the secret files named after their corresponding versions.",
+          "type": "array",
+          "items": {
+            "$ref": "SecretVersion"
+          }
+        }
+      }
+    },
+    "SecretVersion": {
+      "id": "SecretVersion",
+      "description": "Configuration for a single version.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Version of the secret (version number or the string 'latest').",
+          "type": "string"
+        },
+        "path": {
+          "description": "Path to the file under mount_path where the secret value for this version has to be mounted.",
+          "type": "string"
+        }
       }
     },
     "CallFunctionRequest": {
@@ -797,6 +875,10 @@
         },
         "buildId": {
           "description": "The Cloud Build ID of the function created or updated by an API call. This field is only populated for Create and Update operations.",
+          "type": "string"
+        },
+        "sourceToken": {
+          "description": "A field for Firebase function deployments",
           "type": "string"
         }
       }

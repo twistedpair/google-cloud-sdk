@@ -139,7 +139,9 @@ def _ErrorFromInvalidMatrix(matrix):
       enum_values.FORBIDDEN_PERMISSIONS:
           'The app declares one or more permissions that are not allowed',
       enum_values.INVALID_ROBO_DIRECTIVES:
-          'Cannot have multiple robo-directives with the same resource name',
+          ('Robo directives are invalid: multiple robo-directives cannot have '
+           'the same resource name and there cannot be more than one `click:` '
+           'directive specified.'),
       enum_values.INVALID_DIRECTIVE_ACTION:
           'Robo Directive includes at least one invalid action definition.',
       enum_values.INVALID_RESOURCE_NAME:

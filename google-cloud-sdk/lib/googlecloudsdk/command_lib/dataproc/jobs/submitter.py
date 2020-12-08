@@ -41,7 +41,6 @@ class JobSubmitter(base.Command):
     parser.add_argument(
         '--max-failures-total',
         type=int,
-        hidden=True,
         help=('Specifies the maximum total number of times a job can be '
               'restarted after the job fails. '
               'Default is 0 (no retries after job failure).'))

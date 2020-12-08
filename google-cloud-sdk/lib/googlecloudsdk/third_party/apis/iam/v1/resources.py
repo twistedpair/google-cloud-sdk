@@ -55,6 +55,60 @@ class Collections(enum.Enum):
       ['projectsId'],
       True
   )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      ['projectsId', 'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_WORKLOADIDENTITYPOOLS = (
+      'projects.locations.workloadIdentityPools',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'workloadIdentityPools/{workloadIdentityPoolsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_WORKLOADIDENTITYPOOLS_OPERATIONS = (
+      'projects.locations.workloadIdentityPools.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'workloadIdentityPools/{workloadIdentityPoolsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_WORKLOADIDENTITYPOOLS_PROVIDERS = (
+      'projects.locations.workloadIdentityPools.providers',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'workloadIdentityPools/{workloadIdentityPoolsId}/providers/'
+              '{providersId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_WORKLOADIDENTITYPOOLS_PROVIDERS_OPERATIONS = (
+      'projects.locations.workloadIdentityPools.providers.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'workloadIdentityPools/{workloadIdentityPoolsId}/providers/'
+              '{providersId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_ROLES = (
       'projects.roles',
       '{+name}',

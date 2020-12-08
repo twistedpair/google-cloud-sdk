@@ -29,6 +29,10 @@ from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.core import exceptions as core_exceptions
 
 
+# S3 does not allow upload of size > 5 GiB for put_object.
+MAX_PUT_OBJECT_SIZE = 5 * (1024**3)  # 5 GiB
+
+
 def _catch_client_error_raise_s3_api_error(format_str=None):
   """Decorator that catches botocore ClientErrors and raises S3ApiErrors.
 
@@ -270,6 +274,34 @@ class S3Api(cloud_api.CloudApi):
 
     # TODO(b/161900052): Implement resumable copies.
 
+  def _get_content_encoding(self, resource):
+    """Returns the ContentEncoding for the resource.
+
+    Returns the ContentEncoding if it is already present in the resource object.
+    If it is not present, it makes an API call to fetch the object's metadata.
+    This might happen if the resource was not created using the head_object
+    call, for example, in case of S3Api.list_objects call which is used by the
+    WildCardIterator if a wildcard is present.
+
+    Args:
+      resource (resource_reference.ObjectResource): Resource representing an
+        existing object.
+
+    Returns:
+      A string representing the ContentEncoding for the S3 Object.
+    """
+    if resource.metadata:
+      content_encoding = resource.metadata.get('ContentEncoding')
+    else:
+      content_encoding = None
+
+    if content_encoding is not None:
+      return content_encoding
+
+    complete_resource = self.get_object_metadata(resource.bucket, resource.name,
+                                                 resource.generation)
+    return complete_resource.metadata.get('ContentEncoding')
+
   # pylint: disable=unused-argument
   @_catch_client_error_raise_s3_api_error()
   def download_object(self,
@@ -284,13 +316,17 @@ class S3Api(cloud_api.CloudApi):
                       start_byte=0,
                       end_byte=None):
     """See super class."""
-    kwargs = {'Bucket': cloud_resource.bucket, 'Key': cloud_resource.name}
+    extra_args = {}
     if cloud_resource.generation:
-      kwargs['VersionId'] = cloud_resource.generation
+      extra_args['VersionId'] = cloud_resource.generation
 
-    response = self.client.get_object(**kwargs)
-    download_stream.write(response['Body'].read())
-    return response.get('ContentEncoding', None)
+    # TODO(b/172480278) Conditionally call get_object for smaller object.
+    self.client.download_fileobj(
+        cloud_resource.bucket,
+        cloud_resource.name,
+        download_stream,
+        ExtraArgs=extra_args)
+    return self._get_content_encoding(cloud_resource)
 
     # TODO(b/161437901): Handle resumed download.
     # TODO(b/161460749): Handle download retries.
@@ -310,7 +346,15 @@ class S3Api(cloud_api.CloudApi):
     if generation is not None:
       request['VersionId'] = generation
 
-    object_dict = self.client.head_object(**request)
+    try:
+      object_dict = self.client.head_object(**request)
+    except botocore.exceptions.ClientError as e:
+      if e.response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 404:
+        # Allows custom error handling.
+        raise errors.NotFoundError('Object not found: {}'.format(
+            storage_url.CloudUrl(storage_url.ProviderPrefix.S3, bucket_name,
+                                 object_name, generation).url_string))
+      raise e
 
     # User requested ACL's with FieldsScope.FULL.
     if fields_scope is cloud_api.FieldsScope.FULL:
@@ -324,6 +368,61 @@ class S3Api(cloud_api.CloudApi):
     return _get_object_resource_from_s3_response(object_dict, bucket_name,
                                                  object_name)
 
+  def _upload_using_managed_transfer_utility(self, source_stream,
+                                             destination_resource, extra_args):
+    """Uploads the data using boto3's managed transfer utility.
+
+    Calls the upload_fileobj method which performs multi-threaded multipart
+    upload automatically. Performs slightly better than put_object API method.
+    However, upload_fileobj cannot perform data intergrity checks and we have
+    to use put_object method in such cases.
+
+    Args:
+      source_stream (a file-like object): A file-like object to upload. At a
+        minimum, it must implement the read method, and must return bytes.
+      destination_resource (resource_reference.ObjectResource|UnknownResource):
+        Represents the metadata for the destination object.
+      extra_args (dict): Extra arguments that may be passed to the client
+        operation.
+
+    Returns:
+      resource_reference.ObjectResource with uploaded object's metadata.
+    """
+    bucket_name = destination_resource.storage_url.bucket_name
+    object_name = destination_resource.storage_url.object_name
+    self.client.upload_fileobj(
+        Fileobj=source_stream,
+        Bucket=bucket_name,
+        Key=object_name,
+        ExtraArgs=extra_args)
+    return self.get_object_metadata(bucket_name, object_name)
+
+  def _upload_using_put_object(self, source_stream, destination_resource,
+                               extra_args):
+    """Uploads the source stream using the put_object API method.
+
+    Args:
+      source_stream (a seekable file-like object): The stream of bytes to be
+        uploaded.
+      destination_resource (resource_reference.ObjectResource|UnknownResource):
+        Represents the metadata for the destination object.
+      extra_args (dict): Extra arguments that may be passed to the client
+        operation.
+
+    Returns:
+      resource_reference.ObjectResource with uploaded object's metadata.
+    """
+    kwargs = {
+        'Bucket': destination_resource.storage_url.bucket_name,
+        'Key': destination_resource.storage_url.object_name,
+        'Body': source_stream,
+    }
+    kwargs.update(extra_args)
+    response = self.client.put_object(**kwargs)
+    return _get_object_resource_from_s3_response(
+        response, destination_resource.storage_url.bucket_name,
+        destination_resource.storage_url.object_name)
+
   @_catch_client_error_raise_s3_api_error()
   def upload_object(self,
                     source_stream,
@@ -333,22 +432,35 @@ class S3Api(cloud_api.CloudApi):
     """See super class."""
     # TODO(b/160998556): Implement resumable upload.
     del progress_callback
-
     if request_config is None:
       request_config = cloud_api.RequestConfig()
 
-    kwargs = {
-        'Bucket': destination_resource.storage_url.bucket_name,
-        'Key': destination_resource.storage_url.object_name,
-        'Body': source_stream.read(),
-    }
-    if request_config.predefined_acl_string:
-      kwargs['ACL'] = _translate_predefined_acl_string_to_s3(
-          request_config.predefined_acl_string)
-    if request_config.md5_hash:
-      kwargs['ContentMD5'] = request_config.md5_hash
+    # All fields common to both put_object and upload_fileobj are added
+    # to the extra_args dict.
+    extra_args = {}
 
-    response = self.client.put_object(**kwargs)
-    return _get_object_resource_from_s3_response(
-        response, destination_resource.storage_url.bucket_name,
-        destination_resource.storage_url.object_name)
+    if request_config.predefined_acl_string:
+      extra_args['ACL'] = _translate_predefined_acl_string_to_s3(
+          request_config.predefined_acl_string)
+
+    if request_config.md5_hash:
+      # The upload_fileobj method does not perform any MD5 validation.
+      # Hence we use the put_object API method if MD5 validation is requested.
+      if request_config.size > MAX_PUT_OBJECT_SIZE:
+        raise errors.S3ApiError(
+            'Cannot upload to destination: {url} because MD5 validation can'
+            ' only be performed for file size <= {maxsize} Bytes. Current file'
+            ' size is {filesize} Bytes. You can remove the MD5 validation'
+            ' requirement to complete the upload'.format(
+                url=destination_resource.storage_url.url_string,
+                maxsize=MAX_PUT_OBJECT_SIZE,
+                filesize=request_config.size))
+      extra_args['ContentMD5'] = request_config.md5_hash
+      return self._upload_using_put_object(source_stream, destination_resource,
+                                           extra_args)
+    else:
+      # We default to calling the upload_fileobj method provided by boto3 which
+      # is a managed-transfer utility that can perform mulitpart uploads
+      # automatically. It can be used for non-seekable source_streams as well.
+      return self._upload_using_managed_transfer_utility(
+          source_stream, destination_resource, extra_args)

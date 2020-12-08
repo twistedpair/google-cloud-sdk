@@ -25,8 +25,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import os
-
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from apitools.base.py import transfer as apitools_transfer
@@ -50,7 +48,7 @@ DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 # TODO(b/161346648) Retrieve number of retries from Boto config file.
 DEFAULT_NUM_RETRIES = 23
 # 100 MB in bytes.
-DEFAULT_UPLOAD_CHUNK_SIZE = 104857600
+DEFAULT_COPY_CHUNK_SIZE = 104857600
 
 
 def _catch_http_error_raise_gcs_api_error(format_str=None):
@@ -124,10 +122,6 @@ class GcsRequestConfig(cloud_api.RequestConfig):
   """Arguments object for requests with custom GCS parameters.
 
   Attributes:
-      decryption_wrapper (CryptoKeyWrapper):
-          utils.encryption_helper.CryptoKeyWrapper for decrypting an object.
-      encryption_wrapper (CryptoKeyWrapper):
-          utils.encryption_helper.CryptoKeyWrapper for encrypting an object.
       gzip_encoded (bool): Whether to use gzip transport encoding for the
           upload.
       max_bytes_per_call (int): Integer describing maximum number of bytes
@@ -142,8 +136,6 @@ class GcsRequestConfig(cloud_api.RequestConfig):
   """
 
   def __init__(self,
-               decryption_wrapper=None,
-               encryption_wrapper=None,
                gzip_encoded=False,
                max_bytes_per_call=None,
                md5_hash=None,
@@ -152,25 +144,24 @@ class GcsRequestConfig(cloud_api.RequestConfig):
                predefined_acl_string=None,
                size=None):
     super(GcsRequestConfig, self).__init__(
-        md5_hash=md5_hash, predefined_acl_string=predefined_acl_string)
-    self.decryption_wrapper = decryption_wrapper
-    self.encryption_wrapper = encryption_wrapper
+        md5_hash=md5_hash,
+        predefined_acl_string=predefined_acl_string,
+        size=size)
     self.gzip_encoded = gzip_encoded
     self.max_bytes_per_call = max_bytes_per_call
     self.precondition_generation_match = precondition_generation_match
     self.precondition_metageneration_match = precondition_metageneration_match
-    self.size = size
 
   def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return NotImplemented
     return (super(GcsRequestConfig, self).__eq__(other) and
-            self.decryption_wrapper == other.decryption_wrapper and
-            self.encryption_wrapper == other.encryption_wrapper and
             self.gzip_encoded == other.gzip_encoded and
             self.max_bytes_per_call == other.max_bytes_per_call and
             self.precondition_generation_match ==
             other.precondition_generation_match and
             self.precondition_metageneration_match ==
-            other.precondition_metageneration_match and self.size == other.size)
+            other.precondition_metageneration_match)
 
 
 class GcsApi(cloud_api.CloudApi):
@@ -490,16 +481,17 @@ class GcsApi(cloud_api.CloudApi):
     # TODO(b/161437904): Add decryption handling.
 
     if start_byte or end_byte:
-      apitools_download.GetRange(additional_headers=additional_headers,
-                                 start=start_byte,
-                                 end=end_byte,
-                                 use_chunks=False)
+      apitools_download.GetRange(
+          additional_headers=additional_headers,
+          start=start_byte,
+          end=end_byte,
+          use_chunks=True)
     else:
       apitools_download.StreamMedia(
           additional_headers=additional_headers,
           callback=_no_op_callback,
           finish_callback=_no_op_callback,
-          use_chunks=False)
+          use_chunks=True)
     return apitools_download.encoding
 
   # pylint: disable=unused-argument
@@ -525,6 +517,7 @@ class GcsApi(cloud_api.CloudApi):
       apitools_download = apitools_transfer.Download.FromStream(
           download_stream,
           auto_transfer=False,
+          chunksize=DEFAULT_COPY_CHUNK_SIZE,
           total_size=cloud_resource.size,
           num_retries=DEFAULT_NUM_RETRIES)
       apitools_download.bytes_http = transports.GetApitoolsTransport(
@@ -609,12 +602,11 @@ class GcsApi(cloud_api.CloudApi):
           predefinedAcl=predefined_acl)
 
     if apitools_strategy == apitools_transfer.SIMPLE_UPLOAD:
-      # One-shot upload.
       apitools_upload = apitools_transfer.Upload(
           source_stream,
           content_type,
           auto_transfer=True,
-          chunksize=DEFAULT_UPLOAD_CHUNK_SIZE,
+          chunksize=DEFAULT_COPY_CHUNK_SIZE,
           gzip_encoded=request_config.gzip_encoded,
           num_retries=DEFAULT_NUM_RETRIES,
           total_size=request_config.size)
@@ -641,8 +633,13 @@ class GcsApi(cloud_api.CloudApi):
     else:
       validated_request_config = cloud_api.convert_to_provider_request_config(
           request_config, GcsRequestConfig)
-    # Calculate size, so apitools_transfer can pick optimal upload strategy.
-    validated_request_config.size = os.path.getsize(source_stream.name)
+
+    if request_config.size is None:
+      # Size is required so that apitools_transfer can pick the
+      # optimal upload strategy.
+      raise cloud_errors.GcsApiError(
+          'Upload failed due to missing size. Destination: {}'.format(
+              destination_resource.storage_url.url_string))
 
     object_metadata = self.messages.Object(
         name=destination_resource.storage_url.object_name,

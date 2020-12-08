@@ -357,7 +357,7 @@
           ]
         },
         "statusMessage": {
-          "description": "[Output only] Additional information about the current status of this cluster, if available.",
+          "description": "[Output only] Deprecated. Use conditions instead. Additional information about the current status of this cluster, if available.",
           "type": "string"
         },
         "nodeIpv4CidrSize": {
@@ -513,7 +513,7 @@
           "$ref": "ReservationAffinity"
         },
         "diskType": {
-          "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd') If unspecified, the default disk type is 'pd-standard'",
+          "description": "Type of the disk attached to each node (e.g. 'pd-standard', 'pd-ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-standard'",
           "type": "string"
         },
         "minCpuPlatform": {
@@ -992,7 +992,7 @@
     },
     "GcePersistentDiskCsiDriverConfig": {
       "id": "GcePersistentDiskCsiDriverConfig",
-      "description": "Configuration for the Compute Engine PD CSI driver. This option can only be enabled at cluster creation time.",
+      "description": "Configuration for the Compute Engine PD CSI driver.",
       "type": "object",
       "properties": {
         "enabled": {
@@ -1079,7 +1079,7 @@
           ]
         },
         "statusMessage": {
-          "description": "[Output only] Additional information about the current status of this node pool instance, if available.",
+          "description": "[Output only] Deprecated. Use conditions instead. Additional information about the current status of this node pool instance, if available.",
           "type": "string"
         },
         "autoscaling": {
@@ -1642,7 +1642,7 @@
           "format": "int32"
         },
         "diskType": {
-          "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd') If unspecified, the default disk type is 'pd-standard'",
+          "description": "Type of the disk attached to each node (e.g. 'pd-standard', 'pd-ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-standard'",
           "type": "string"
         },
         "shieldedInstanceConfig": {
@@ -1675,6 +1675,10 @@
         "defaultSnatStatus": {
           "description": "Whether the cluster disables default in-node sNAT rules. In-node sNAT rules will be disabled when default_snat_status is disabled. When disabled is set to false, default IP masquerade rules will be applied to the nodes to prevent sNAT on cluster internal traffic.",
           "$ref": "DefaultSnatStatus"
+        },
+        "enableL4ilbSubsetting": {
+          "description": "Whether L4ILB Subsetting is enabled for this cluster.",
+          "type": "boolean"
         },
         "datapathProvider": {
           "description": "The desired datapath provider for this cluster. By default, uses the IPTables-based kube-proxy implementation.",
@@ -1709,6 +1713,10 @@
         "dnsConfig": {
           "description": "DNSConfig contains clusterDNS config for this cluster.",
           "$ref": "DNSConfig"
+        },
+        "nodeNetworkPolicy": {
+          "description": "NodeNetworkPolicy specifies the config for the node firewall feature. This feature is only supported with DatapathProvider=ADVANCED_DATAPATH.",
+          "$ref": "NodeNetworkPolicy"
         }
       }
     },
@@ -1759,6 +1767,17 @@
         "clusterDnsDomain": {
           "description": "cluster_dns_domain is the suffix used for all cluster service records.",
           "type": "string"
+        }
+      }
+    },
+    "NodeNetworkPolicy": {
+      "id": "NodeNetworkPolicy",
+      "description": "NodeNetworkPolicy specifies if node network policy feature is enabled. This feature is only supported with DatapathProvider=ADVANCED_DATAPATH.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether node network policy is enabled.",
+          "type": "boolean"
         }
       }
     },
@@ -1866,7 +1885,7 @@
           ]
         },
         "privateEndpointSubnetwork": {
-          "description": "Subnetwork in customer's VPC where master's endpoint will be provisioned.",
+          "description": "Subnetwork in cluster's network where master's endpoint will be provisioned. Specified in projects\/*\/regions\/*\/subnetworks\/* format.",
           "type": "string"
         },
         "privateEndpointFqdn": {
@@ -2541,6 +2560,10 @@
           "description": "The desired Cloud TPU configuration.",
           "$ref": "TpuConfig"
         },
+        "desiredL4ilbSubsettingConfig": {
+          "description": "The desired L4 Internal Load Balancer Subsetting configuration.",
+          "$ref": "ILBSubsettingConfig"
+        },
         "desiredEnableGvnic": {
           "description": "Enable or disable gvnic on this cluster. This field is not yet used.",
           "type": "boolean"
@@ -2626,6 +2649,10 @@
         "desiredWorkloadMonitoringEapConfig": {
           "description": "Configuration for workload monitoring EAP.",
           "$ref": "WorkloadMonitoringEapConfig"
+        },
+        "desiredNodeNetworkPolicy": {
+          "description": "NodeNetworkPolicy specifies the config for the node firewall feature. This feature is only supported with DatapathProvider=ADVANCED_DATAPATH.",
+          "$ref": "NodeNetworkPolicy"
         }
       }
     },
@@ -2636,6 +2663,17 @@
       "properties": {
         "enabled": {
           "description": "Enables intra node visibility for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ILBSubsettingConfig": {
+      "id": "ILBSubsettingConfig",
+      "description": "ILBSubsettingConfig contains the desired config of L4 Internal LoadBalancer subsetting on this cluster.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enables l4 ILB subsetting for this cluster",
           "type": "boolean"
         }
       }
@@ -3426,7 +3464,7 @@
     },
     "SetNodePoolSizeRequest": {
       "id": "SetNodePoolSizeRequest",
-      "description": "SetNodePoolSizeRequest sets the size a node pool.",
+      "description": "SetNodePoolSizeRequest sets the size of a node pool.",
       "type": "object",
       "properties": {
         "projectId": {
@@ -4581,7 +4619,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the size for a specific node pool."
+                      "description": "SetNodePoolSizeRequest sets the size of a node pool. The new size will be used for all replicas, including future replicas created by modifying NodePool.locations."
                     }
                   }
                 },
@@ -5881,7 +5919,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the size for a specific node pool."
+                      "description": "SetNodePoolSizeRequest sets the size of a node pool. The new size will be used for all replicas, including future replicas created by modifying NodePool.locations."
                     }
                   }
                 }

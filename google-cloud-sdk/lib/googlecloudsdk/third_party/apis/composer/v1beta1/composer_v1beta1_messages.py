@@ -181,10 +181,27 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class ComposerProjectsLocationsEnvironmentsRestartWebServerRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsRestartWebServerRequest object.
+
+  Fields:
+    name: The resource name of the environment to restart the web server for,
+      in the form: "projects/{projectId}/locations/{locationId}/environments/{
+      environmentId}"
+    restartWebServerRequest: A RestartWebServerRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  restartWebServerRequest = _messages.MessageField('RestartWebServerRequest', 2)
+
+
 class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
   r"""A ComposerProjectsLocationsImageVersionsListRequest object.
 
   Fields:
+    includePastReleases: Whether or not image versions from old releases
+      should be included.
     pageSize: The maximum number of image_versions to return.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
@@ -192,9 +209,10 @@ class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
       "projects/{projectId}/locations/{locationId}"
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  includePastReleases = _messages.BooleanField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class ComposerProjectsLocationsOperationsDeleteRequest(_messages.Message):
@@ -246,6 +264,31 @@ class DatabaseConfig(_messages.Message):
   machineType = _messages.StringField(1)
 
 
+class Date(_messages.Message):
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values * A month and day value, with a zero year, such as an
+  anniversary * A year on its own, with zero month and day values * A year and
+  month value, with a zero day, such as a credit card expiration date Related
+  types are google.type.TimeOfDay and `google.protobuf.Timestamp`.
+
+  Fields:
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
+      without a month and day.
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -254,6 +297,19 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class EncryptionConfig(_messages.Message):
+  r"""The encryption options for the Composer environment and its
+  dependencies.
+
+  Fields:
+    kmsKeyName: Optional. Customer-managed Encryption Key available through
+      Google's Key Management Service. Cannot be updated. If not specified,
+      Google-managed key will be used.
+  """
+
+  kmsKeyName = _messages.StringField(1)
 
 
 class Environment(_messages.Message):
@@ -363,6 +419,8 @@ class EnvironmentConfig(_messages.Message):
       directory with the given prefix.
     databaseConfig: Optional. The configuration settings for Cloud SQL
       instance used internally by Apache Airflow software.
+    encryptionConfig: Optional. The encryption options for the Composer
+      environment and its dependencies. Cannot be updated.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
       environment.
     nodeConfig: The configuration used for the Kubernetes Engine cluster.
@@ -382,13 +440,14 @@ class EnvironmentConfig(_messages.Message):
   airflowUri = _messages.StringField(1)
   dagGcsPrefix = _messages.StringField(2)
   databaseConfig = _messages.MessageField('DatabaseConfig', 3)
-  gkeCluster = _messages.StringField(4)
-  nodeConfig = _messages.MessageField('NodeConfig', 5)
-  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 7)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 8)
-  webServerConfig = _messages.MessageField('WebServerConfig', 9)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 10)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
+  gkeCluster = _messages.StringField(5)
+  nodeConfig = _messages.MessageField('NodeConfig', 6)
+  nodeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 8)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 9)
+  webServerConfig = _messages.MessageField('WebServerConfig', 10)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 11)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -438,16 +497,24 @@ class ImageVersion(_messages.Message):
   r"""Image Version information
 
   Fields:
+    creationDisabled: Whether it is impossible to create an environment with
+      the image version.
     imageVersionId: The string identifier of the ImageVersion, in the form:
       "composer-x.y.z-airflow-a.b(.c)"
     isDefault: Whether this is the default ImageVersion used by Composer
       during environment creation if no input ImageVersion is specified.
+    releaseDate: The date of the version release.
     supportedPythonVersions: supported python versions
+    upgradeDisabled: Whether it is impossible to upgrade an environment
+      running with the image version.
   """
 
-  imageVersionId = _messages.StringField(1)
-  isDefault = _messages.BooleanField(2)
-  supportedPythonVersions = _messages.StringField(3, repeated=True)
+  creationDisabled = _messages.BooleanField(1)
+  imageVersionId = _messages.StringField(2)
+  isDefault = _messages.BooleanField(3)
+  releaseDate = _messages.MessageField('Date', 4)
+  supportedPythonVersions = _messages.StringField(5, repeated=True)
+  upgradeDisabled = _messages.BooleanField(6)
 
 
 class ListEnvironmentsResponse(_messages.Message):
@@ -781,6 +848,10 @@ class PrivateEnvironmentConfig(_messages.Message):
   privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 3)
   webServerIpv4CidrBlock = _messages.StringField(4)
   webServerIpv4ReservedRange = _messages.StringField(5)
+
+
+class RestartWebServerRequest(_messages.Message):
+  r"""Restart Airflow web server."""
 
 
 class SoftwareConfig(_messages.Message):

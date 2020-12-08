@@ -20,7 +20,10 @@ from __future__ import unicode_literals
 
 from apitools.base.protorpclite import protojson
 from googlecloudsdk.api_lib.run import k8s_object
+import six.moves.urllib.parse
 
+_K8S_SERVICE_API_VERSION = 'v1'
+_K8S_SERVICE_KIND = 'Service'
 
 _SERVICE_API_VERSION = 'serving.knative.dev/v1'
 _SERVICE_KIND = 'Service'
@@ -87,11 +90,26 @@ class Trigger(k8s_object.KubernetesObject):
     return self._m.spec.subscriber.ref.name
 
   @subscriber.setter
-  def subscriber(self, service_name):
+  def subscriber(self, sink):
     """Set the subscriber to a Cloud Run service."""
-    self._m.spec.subscriber.ref.apiVersion = _SERVICE_API_VERSION
-    self._m.spec.subscriber.ref.kind = _SERVICE_KIND
-    self._m.spec.subscriber.ref.name = service_name
+    if not sink:
+      raise AttributeError('Invalid sink: {}'.format(sink))
+    if ':' not in sink:
+      sink = 'ksvc:' + sink
+    parsed = six.moves.urllib.parse.urlparse(sink)
+
+    if parsed.scheme == 'http' or parsed.scheme == 'https':
+      # URI target
+      self._m.spec.subscriber.uri = sink
+      self._m.spec.subscriber.ref = None
+      return
+    # TODO(b/169444592) Add k8s service support
+    elif parsed.scheme == 'ksvc' or not parsed.scheme:
+      self._m.spec.subscriber.ref.apiVersion = _SERVICE_API_VERSION
+      self._m.spec.subscriber.ref.kind = _SERVICE_KIND
+      self._m.spec.subscriber.ref.name = parsed.path
+    else:
+      raise AttributeError('Invalid sink: {}'.format(sink))
 
   @property
   def filter_attributes(self):

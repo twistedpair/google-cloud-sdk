@@ -177,6 +177,19 @@ class FilestoreClient(object):
             self.client.projects_locations_operations), operation_ref,
         'Waiting for [{0}] to finish'.format(operation_ref.Name()))
 
+  def CancelOperation(self, operation_ref):
+    """Cancels a long-running operation.
+
+    Args:
+      operation_ref: the operation reference.
+
+    Returns:
+      Empty response message.
+    """
+    request = self.messages.FileProjectsLocationsOperationsCancelRequest(
+        name=operation_ref.RelativeName())
+    return self.client.projects_locations_operations.Cancel(request)
+
   def CreateInstance(self, instance_ref, async_, config):
     """Create a Cloud Filestore instance."""
     request = self.messages.FileProjectsLocationsInstancesCreateRequest(

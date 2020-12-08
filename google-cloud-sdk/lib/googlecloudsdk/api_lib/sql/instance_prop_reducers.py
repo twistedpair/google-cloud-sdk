@@ -511,16 +511,24 @@ def ReplicaConfiguration(sql_messages,
       mysqlReplicaConfiguration=mysql_replica_configuration)
 
 
-def Region(specified_region, gce_zone):
+def Region(specified_region, gce_zone, secondary_zone=None):
   """Generates the region string for the instance.
 
   Args:
     specified_region: string, the GCE region to create the instance in.
     gce_zone: string, the GCE zone to create the instance in.
+    secondary_zone: string, the GCE zone to create the standby instance in.
 
   Returns:
     string, the region to create the instance in.
   """
+  if gce_zone and secondary_zone:
+    region_from_zone = api_util.GetRegionFromZone(gce_zone)
+    region_from_secondary_zone = api_util.GetRegionFromZone(secondary_zone)
+    if region_from_zone != region_from_secondary_zone:
+      raise exceptions.ConflictingArgumentsException(
+          'Zones in arguments --zone and --secondary-zone '
+          'belong to different regions.')
   if gce_zone:
     derived_region = api_util.GetRegionFromZone(gce_zone)
     return derived_region

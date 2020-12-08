@@ -38,6 +38,8 @@ def MakeSubnetworkUpdateRequest(
     set_role_active=None,
     drain_timeout_seconds=None,
     private_ipv6_google_access_type=None,
+    stack_type=None,
+    ipv6_access_type=None,
 ):
   """Make the appropriate update request for the args.
 
@@ -61,6 +63,8 @@ def MakeSubnetworkUpdateRequest(
       the active subnet to the backup subnet with set_role_active=True.
     private_ipv6_google_access_type: The private IPv6 google access type for the
       VMs in this subnet.
+    stack_type: The stack type for this subnet.
+    ipv6_access_type: The IPv6 access type for this subnet.
 
   Returns:
     response, result of sending the update request for the subnetwork
@@ -184,6 +188,22 @@ def MakeSubnetworkUpdateRequest(
         drainTimeoutSeconds=drain_timeout_seconds)
     return client.MakeRequests([(client.apitools_client.subnetworks, 'Patch',
                                  patch_request)])
+  elif stack_type is not None:
+    subnetwork = client.messages.Subnetwork()
+    original_subnetwork = client.MakeRequests([
+        (client.apitools_client.subnetworks, 'Get',
+         client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
+    ])[0]
+    subnetwork.fingerprint = original_subnetwork.fingerprint
+
+    subnetwork.stackType = (
+        client.messages.Subnetwork.StackTypeValueValuesEnum(stack_type))
+    if ipv6_access_type is not None:
+      subnetwork.ipv6AccessType = (
+          client.messages.Subnetwork.Ipv6AccessTypeValueValuesEnum(
+              ipv6_access_type))
+    return client.MakeRequests(
+        [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
 
   return client.MakeRequests([])
 

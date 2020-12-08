@@ -466,6 +466,8 @@ class FileShareConfig(_messages.Message):
     capacityGb: File share capacity in gigabytes (GB). Cloud Filestore defines
       1 GB as 1024^3 bytes.
     name: The name of the file share (must be 16 characters or less).
+    nfsExportOptions: Nfs Export Options. There is a limit of 10 export
+      options per file share.
     sourceBackup: The resource name of the backup, in the format
       projects/{project_number}/locations/{location_id}/backups/{backup_id},
       that this file share has been restored from.
@@ -473,7 +475,8 @@ class FileShareConfig(_messages.Message):
 
   capacityGb = _messages.IntegerField(1)
   name = _messages.StringField(2)
-  sourceBackup = _messages.StringField(3)
+  nfsExportOptions = _messages.MessageField('NfsExportOptions', 3, repeated=True)
+  sourceBackup = _messages.StringField(4)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message):
@@ -1303,6 +1306,76 @@ class NetworkConfig(_messages.Message):
   modes = _messages.EnumField('ModesValueListEntryValuesEnum', 2, repeated=True)
   network = _messages.StringField(3)
   reservedIpRange = _messages.StringField(4)
+
+
+class NfsExportOptions(_messages.Message):
+  r"""NFS export options specifications.
+
+  Enums:
+    AccessModeValueValuesEnum: Either READ_ONLY, for allowing only read
+      requests on the exported directory, or READ_WRITE, for allowing both
+      read and write requests. The default is READ_WRITE.
+    SquashModeValueValuesEnum: Either NO_ROOT_SQUASH, for allowing root access
+      on the exported directory, or ROOT_SQUASH, for not allowing root access.
+      The default is NO_ROOT_SQUASH.
+
+  Fields:
+    accessMode: Either READ_ONLY, for allowing only read requests on the
+      exported directory, or READ_WRITE, for allowing both read and write
+      requests. The default is READ_WRITE.
+    anonGid: An integer representing the anonymous group id with a default
+      value of 65534. Anon_gid may only be set with squash_mode of
+      ROOT_SQUASH. An error will be returned if this field is specified for
+      other squash_mode settings.
+    anonUid: An integer representing the anonymous user id with a default
+      value of 65534. Anon_uid may only be set with squash_mode of
+      ROOT_SQUASH. An error will be returned if this field is specified for
+      other squash_mode settings.
+    ipRanges: List of either an IPv4 addresses in the format {octet 1}.{octet
+      2}.{octet 3}.{octet 4} or CIDR ranges in the format {octet 1}.{octet
+      2}.{octet 3}.{octet 4}/{mask size} which may mount the file share.
+      Overlapping IP ranges are not allowed, both within and across
+      NfsExportOptions. An error will be returned. The limit is 64 IP
+      ranges/addresses for each FileShareConfig among all NfsExportOptions.
+    squashMode: Either NO_ROOT_SQUASH, for allowing root access on the
+      exported directory, or ROOT_SQUASH, for not allowing root access. The
+      default is NO_ROOT_SQUASH.
+  """
+
+  class AccessModeValueValuesEnum(_messages.Enum):
+    r"""Either READ_ONLY, for allowing only read requests on the exported
+    directory, or READ_WRITE, for allowing both read and write requests. The
+    default is READ_WRITE.
+
+    Values:
+      ACCESS_MODE_UNSPECIFIED: AccessMode not set.
+      READ_ONLY: The client can only read the file share.
+      READ_WRITE: The client can read and write the file share (default).
+    """
+    ACCESS_MODE_UNSPECIFIED = 0
+    READ_ONLY = 1
+    READ_WRITE = 2
+
+  class SquashModeValueValuesEnum(_messages.Enum):
+    r"""Either NO_ROOT_SQUASH, for allowing root access on the exported
+    directory, or ROOT_SQUASH, for not allowing root access. The default is
+    NO_ROOT_SQUASH.
+
+    Values:
+      SQUASH_MODE_UNSPECIFIED: SquashMode not set.
+      NO_ROOT_SQUASH: The Root user has root access to the file share
+        (default).
+      ROOT_SQUASH: The Root user has squashed access to the anonymous uid/gid.
+    """
+    SQUASH_MODE_UNSPECIFIED = 0
+    NO_ROOT_SQUASH = 1
+    ROOT_SQUASH = 2
+
+  accessMode = _messages.EnumField('AccessModeValueValuesEnum', 1)
+  anonGid = _messages.IntegerField(2)
+  anonUid = _messages.IntegerField(3)
+  ipRanges = _messages.StringField(4, repeated=True)
+  squashMode = _messages.EnumField('SquashModeValueValuesEnum', 5)
 
 
 class Operation(_messages.Message):

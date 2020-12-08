@@ -175,6 +175,8 @@ class Bucket(_messages.Message):
         identical information as the uniformBucketLevelAccess field. We
         recommend using the uniformBucketLevelAccess field to enable and
         disable the feature.
+      publicAccessPrevention: The bucket's Public Access Prevention
+        configuration. Currently, 'unspecified' and 'enforced' are supported.
       uniformBucketLevelAccess: The bucket's uniform bucket-level access
         configuration.
     """
@@ -217,7 +219,8 @@ class Bucket(_messages.Message):
       lockedTime = _message_types.DateTimeField(2)
 
     bucketPolicyOnly = _messages.MessageField('BucketPolicyOnlyValue', 1)
-    uniformBucketLevelAccess = _messages.MessageField('UniformBucketLevelAccessValue', 2)
+    publicAccessPrevention = _messages.StringField(2)
+    uniformBucketLevelAccess = _messages.MessageField('UniformBucketLevelAccessValue', 3)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

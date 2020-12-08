@@ -765,37 +765,6 @@ class Empty(_messages.Message):
 
 
 
-class EncryptedCredential(_messages.Message):
-  r"""EncryptedCredential contains an encrypted secret, what key should be
-  used to decode the secret, and how to use the secret.
-
-  Enums:
-    TypeValueValuesEnum: Underlying credential type encoded in data.
-
-  Fields:
-    data: Encrypted user credential. `key` should be able to decrypt this
-      data. See `type` for supported types.
-    key: KMS key ID to use for decryption.
-    type: Underlying credential type encoded in data.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Underlying credential type encoded in data.
-
-    Values:
-      UNKNOWN: Default enum type. This should not be used.
-      HTTP_BASIC_AUTH: HTTP Basic Authentication Credentials. `data` should be
-        a base64 encoded username:password. See
-        https://tools.ietf.org/html/rfc7617 for more details.
-    """
-    UNKNOWN = 0
-    HTTP_BASIC_AUTH = 1
-
-  data = _messages.BytesField(1)
-  key = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
-
-
 class FileHashes(_messages.Message):
   r"""Container message for hashes of byte content of files, used in
   SourceProvenance messages to verify integrity of source input to the build.
@@ -811,7 +780,6 @@ class GitSource(_messages.Message):
   r"""Location of the source in any accessible Git repository.
 
   Fields:
-    credential: Secret containing the encrypted bytes.
     dir: Directory, relative to the source root, in which to run the build.
       This must be a relative path. If a step's `dir` is specified and is an
       absolute path, this value is ignored for that step's execution.
@@ -825,10 +793,9 @@ class GitSource(_messages.Message):
     url: Location of the Git repo to build.
   """
 
-  credential = _messages.MessageField('EncryptedCredential', 1)
-  dir = _messages.StringField(2)
-  revision = _messages.StringField(3)
-  url = _messages.StringField(4)
+  dir = _messages.StringField(1)
+  revision = _messages.StringField(2)
+  url = _messages.StringField(3)
 
 
 class HTTPDelivery(_messages.Message):

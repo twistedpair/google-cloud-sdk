@@ -62,7 +62,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new ClusterGroupBackup in a given project and location(region). The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the new ClusterGroupBackup will be functional. Completed longrunning.Operation will contain the new ClusterGroupBackup object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
+      r"""`ClusterGroupBackup` is functional. A completed `longrunning.Operation` contains the new `ClusterGroupBackup` object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupBackupsCreateRequest) input message
@@ -89,7 +89,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a ClusterGroupBackup.
+      r"""Deletes a `ClusterGroupBackup`.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupBackupsDeleteRequest) input message
@@ -116,7 +116,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single ClusterGroupBackup.
+      r"""Gets details of a single `ClusterGroupBackup`.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupBackupsGetRequest) input message
@@ -143,7 +143,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists ClusterGroupBackups in a given project and location(region).
+      r"""Lists `ClusterGroupBackup` objects in a given project and location (region).
 
       Args:
         request: (SddcProjectsLocationsClusterGroupBackupsListRequest) input message
@@ -207,7 +207,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new cluster in a given cluster group. The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the cluster will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
+      r"""Creates a new cluster in a given cluster group. The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the cluster has a a *READY* status and is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsClustersCreateRequest) input message
@@ -234,7 +234,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Cluster.
+      r"""Deletes a cluster.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsClustersDeleteRequest) input message
@@ -261,7 +261,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Cluster.
+      r"""Gets details of a single cluster.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsClustersGetRequest) input message
@@ -288,7 +288,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Clusters in a given cluster group.
+      r"""Lists clusters in a given cluster group.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsClustersListRequest) input message
@@ -379,7 +379,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new IpAddress in a given ClusterGroup. The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the cluster will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
+      r"""Creates a new `IpAddress` in a given `ClusterGroup`. The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the cluster is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `DeleteOperation`.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsIpAddressesCreateRequest) input message
@@ -406,7 +406,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an IpAddress in a given ClusterGroup.
+      r"""Deletes an `IpAddress` in a given `ClusterGroup`.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsIpAddressesDeleteRequest) input message
@@ -433,7 +433,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the details of a single IpAddress.
+      r"""Gets the details of a single `IpAddress`.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsIpAddressesGetRequest) input message
@@ -460,7 +460,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists IpAddresses in a given ClusterGroup.
+      r"""Lists `IpAddress` objects in a given `ClusterGroup`.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsIpAddressesListRequest) input message
@@ -497,7 +497,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new ClusterGroup in a given project and location(region). The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the new ClusterGroup will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
+      r"""Creates a new `ClusterGroup` in a given project and location (region). The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the new `ClusterGroup` is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `DeleteOperation`.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsCreateRequest) input message
@@ -524,7 +524,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a ClusterGroup.
+      r"""Deletes a `ClusterGroup`.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsDeleteRequest) input message
@@ -551,7 +551,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single ClusterGroup.
+      r"""Gets details of a single `ClusterGroup`.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsGetRequest) input message
@@ -605,7 +605,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists ClusterGroups in a given project and location(region).
+      r"""Lists `ClusterGroup` objects in a given project and location (region).
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsListRequest) input message
@@ -632,7 +632,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates description, labels, and network config of a specific clusterGroup.
+      r"""Updates the description, labels, and `NetworkConfig` of a specific `ClusterGroup`.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsPatchRequest) input message
@@ -868,7 +868,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new PrivateCloudBackup in a given project and location(region). The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the new PrivateCloudBackup will be functional. Completed longrunning.Operation will contain the new PrivateCloudBackup object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
+      r"""Creates a new `PrivateCloudBackup` in a given project and location (region). The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the `PrivateCloudBackup` has a *READY* status and is fully functional. A completed `longrunning.Operation` contains the new `PrivateCloudBackup` object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`.
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudBackupsCreateRequest) input message
@@ -895,7 +895,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a PrivateCloudBackup.
+      r"""Deletes a `PrivateCloudBackup`.
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudBackupsDeleteRequest) input message
@@ -922,7 +922,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single PrivateCloudBackup.
+      r"""Gets details of a single `PrivateCloudBackup`.
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudBackupsGetRequest) input message
@@ -949,7 +949,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists PrivateCloudBackups in a given project and location(region).
+      r"""Lists `PrivateCloudBackup` objects in a given project and location (region).
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudBackupsListRequest) input message
@@ -1040,7 +1040,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Cluster.
+      r"""Deletes a cluster.
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudsClustersDeleteRequest) input message
@@ -1067,7 +1067,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Cluster.
+      r"""Gets details of a single cluster.
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudsClustersGetRequest) input message
@@ -1094,7 +1094,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Clusters in a given private cloud. .
+      r"""Lists `Clusters` in a given private cloud. .
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudsClustersListRequest) input message
@@ -1185,7 +1185,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new IpAddress in a given PrivateCloud. The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the cluster will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
+      r"""Creates a new `IpAddress` in a given `PrivateCloud`. The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the cluster has a a *READY* status and is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`.
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudsIpAddressesCreateRequest) input message
@@ -1212,7 +1212,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an IpAddress in a given PrivateCloud.
+      r"""Deletes an `IpAddress` in a given `PrivateCloud`.
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudsIpAddressesDeleteRequest) input message
@@ -1239,7 +1239,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the details of a single IpAddress.
+      r"""Gets the details of a single `IpAddress`.
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudsIpAddressesGetRequest) input message
@@ -1266,7 +1266,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists IpAddresses in a given PrivateCloud.
+      r"""Lists `IpAddress` objects in a given `PrivateCloud`.
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudsIpAddressesListRequest) input message
@@ -1303,7 +1303,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new PrivateCloud in a given project and location(region). The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the new PrivateCloud will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
+      r"""Creates a new `PrivateCloud` in a given project and location (region). The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the new `PrivateCloud` is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `DeleteOperation`.
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudsCreateRequest) input message
@@ -1330,7 +1330,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a PrivateCloud.
+      r"""Deletes a `PrivateCloud`.
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudsDeleteRequest) input message
@@ -1357,7 +1357,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single PrivateCloud.
+      r"""Gets details of a single `PrivateCloud`.
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudsGetRequest) input message
@@ -1384,7 +1384,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists PrivateClouds in a given project and location(region).
+      r"""Lists `PrivateCloud` objects in a given project and location (region).
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudsListRequest) input message
@@ -1411,7 +1411,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates description, labels and network config of a specific privateCloud.
+      r"""Updates the description, labels, and `NetworkConfig` of a specific `PrivateCloud`.
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudsPatchRequest) input message

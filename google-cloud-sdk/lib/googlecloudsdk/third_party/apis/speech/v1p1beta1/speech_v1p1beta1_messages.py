@@ -1693,7 +1693,8 @@ class TranscriptOutputConfig(_messages.Message):
 
   Fields:
     gcsUri: Specifies a Cloud Storage URI for the recognition results. Must be
-      specified in the format: `gs://bucket_name/object_name`
+      specified in the format: `gs://bucket_name/object_name`, and the bucket
+      must already exist.
   """
 
   gcsUri = _messages.StringField(1)

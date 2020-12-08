@@ -20,9 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import os
-from dns import rdatatype
-from googlecloudsdk.api_lib.dns import import_util
-from googlecloudsdk.api_lib.dns import util
+
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
@@ -43,10 +41,6 @@ class TransactionFileAlreadyExists(Error):
 
 class UnableToAccessTransactionFile(Error):
   """Unable to access transaction file."""
-
-
-class UnsupportedRecordType(Error):
-  """Unsupported record-set type."""
 
 
 class TransactionFileNotFound(Error):
@@ -125,37 +119,6 @@ def ChangeFromYamlFile(yaml_file, api_version='v1'):
   change.deletions = _RecordSetsFromDictionaries(
       messages, change_dict['deletions'])
   return change
-
-
-def CreateRecordSetFromArgs(args, api_version='v1'):
-  """Creates and returns a record-set from the given args.
-
-  Args:
-    args: The arguments to use to create the record-set.
-    api_version: [str], the api version to use for creating the RecordSet.
-
-  Raises:
-    UnsupportedRecordType: If given record-set type is not supported
-
-  Returns:
-    ResourceRecordSet, the record-set created from the given args.
-  """
-  messages = apis.GetMessagesModule('dns', api_version)
-  rd_type = rdatatype.from_text(args.type)
-  if import_util.GetRdataTranslation(rd_type) is None:
-    raise UnsupportedRecordType(
-        'Unsupported record-set type [{0}]'.format(args.type))
-
-  record_set = messages.ResourceRecordSet()
-  # Need to assign kind to default value for useful equals comparisons.
-  record_set.kind = record_set.kind
-  record_set.name = util.AppendTrailingDot(args.name)
-  record_set.ttl = args.ttl
-  record_set.type = args.type
-  record_set.rrdatas = args.data
-  if rd_type is rdatatype.TXT or rd_type is rdatatype.SPF:
-    record_set.rrdatas = [import_util.QuotedText(datum) for datum in args.data]
-  return record_set
 
 
 class TransactionFile(object):

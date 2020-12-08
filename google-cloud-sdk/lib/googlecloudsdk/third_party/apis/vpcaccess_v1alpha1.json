@@ -305,6 +305,10 @@
         "subnet": {
           "description": "The subnet in which to house the VPC Access Connector.",
           "$ref": "Subnet"
+        },
+        "machineType": {
+          "description": "Machine type of VM Instance underlying connector. Default is e2-micro.",
+          "type": "string"
         }
       }
     },

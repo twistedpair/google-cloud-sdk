@@ -440,6 +440,10 @@
             "GROUP",
             "OTHER"
           ]
+        },
+        "restrictionEvaluations": {
+          "description": "Evaluations of restrictions applied to parent group on this membership.",
+          "$ref": "RestrictionEvaluations"
         }
       }
     },
@@ -479,6 +483,43 @@
           "description": "Expiration time for the Membership.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "RestrictionEvaluations": {
+      "id": "RestrictionEvaluations",
+      "description": "Evaluations of restrictions applied to parent group on this membership.",
+      "type": "object",
+      "properties": {
+        "memberRestrictionEvaluation": {
+          "description": "Evaluation of the member restriction applied to this membership. Empty if the user lacks permission to view the restriction evaluation.",
+          "$ref": "RestrictionEvaluation"
+        }
+      }
+    },
+    "RestrictionEvaluation": {
+      "id": "RestrictionEvaluation",
+      "description": "The evaluated state of this restriction.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Output only. The current state of the restriction",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "The restriction state is currently being evaluated.",
+            "All transitive members are adhering to restriction.",
+            "Some transitive members violate the restriction. No new violating members can be added.",
+            "Some transitive members violate the restriction. New violating direct members will be denied while indirect members may be added."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "EVALUATING",
+            "COMPLIANT",
+            "FORWARD_COMPLIANT",
+            "NON_COMPLIANT"
+          ]
         }
       }
     },

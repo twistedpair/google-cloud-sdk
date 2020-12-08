@@ -24,8 +24,7 @@ class CloudidentityDevicesCancelWipeRequest(_messages.Message):
     name: Required. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the Device
       in format: `devices/{device_id}`, where device_id is the unique ID
-      assigned to the Device, and device_user_id is the unique ID assigned to
-      the User.
+      assigned to the Device.
   """
 
   googleAppsCloudidentityDevicesV1CancelWipeDeviceRequest = _messages.MessageField('GoogleAppsCloudidentityDevicesV1CancelWipeDeviceRequest', 1)
@@ -323,7 +322,9 @@ class CloudidentityDevicesDeviceUsersListRequest(_messages.Message):
       organization, use `customers/{customer_id}`, where customer_id is the
       customer to whom the device belongs.
     filter: Optional. Additional restrictions when fetching list of devices.
-      [HC article](https://support.google.com/a/answer/7549103)
+      For a list of search fields, refer to [Mobile device search
+      fields](https://developers.google.com/admin-sdk/directory/v1/search-
+      operators). Multiple search fields are separated by the space character.
     orderBy: Optional. Order specification for devices in the response.
     pageSize: Optional. The maximum number of DeviceUsers to return. If
       unspecified, at most 5 DeviceUsers will be returned. The maximum value
@@ -522,7 +523,9 @@ class CloudidentityDevicesListRequest(_messages.Message):
       API to manage another organization, use `customers/{customer_id}`, where
       customer_id is the customer to whom the device belongs.
     filter: Optional. Additional restrictions when fetching list of devices.
-      [Help Center article link](https://support.google.com/a/answer/7549103)
+      For a list of search fields, refer to [Mobile device search
+      fields](https://developers.google.com/admin-sdk/directory/v1/search-
+      operators). Multiple search fields are separated by the space character.
     orderBy: Optional. Order specification for devices in the response. Only
       one of the following field names may be used to specify the order:
       `create_time`, `last_sync_time`, `model`, `os_version`, `device_type`
@@ -624,8 +627,7 @@ class CloudidentityDevicesResetPinRequest(_messages.Message):
     name: Required. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the Device
       in format: `devices/{device_id}`, where device_id is the unique ID
-      assigned to the Device, and device_user_id is the unique ID assigned to
-      the User.
+      assigned to the Device.
   """
 
   googleAppsCloudidentityDevicesV1ResetPinRequest = _messages.MessageField('GoogleAppsCloudidentityDevicesV1ResetPinRequest', 1)

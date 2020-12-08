@@ -1729,7 +1729,7 @@ class HealthcareV1beta1(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""DeleteSeriesAsync deletes all instances within the given study and series using an operation. Delete requests are equivalent to the GET requests specified in the Retrieve transaction. The method returns an Operation which will be marked successful when the deletion is complete. Warning: Inserting instances into a series while a delete operation is running for that series could result in the new instances not appearing in search results until the deletion operation finishes.
+      r"""DeleteSeriesAsync deletes all instances within the given study and series using a long running operation. The method returns an Operation which will be marked successful when the deletion is complete. Warning: If you insert instances into a series while a delete operation is running for that series, the instances you insert might not appear in search results until after the deletion operation finishes.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesDeleteRequest) input message
@@ -1847,7 +1847,7 @@ class HealthcareV1beta1(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""DeleteStudyAsync deletes all instances within the given study using an operation. Delete requests are equivalent to the GET requests specified in the Retrieve transaction. The method returns an Operation which will be marked successful when the deletion is complete. Warning: Inserting instances into a study while a delete operation is running for that study could result in the new instances not appearing in search results until the deletion operation finishes.
+      r"""DeleteStudyAsync deletes all instances within the given study using a long running operation. The method returns an Operation which will be marked successful when the deletion is complete. Warning: If you insert instances into a study while a delete operation is running for that study, the instances you insert might not appear in search results until after the deletion operation finishes.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsDicomStoresStudiesDeleteRequest) input message

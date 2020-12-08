@@ -41,6 +41,39 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_EDGECACHEKEYSETS = (
+      'projects.locations.edgeCacheKeysets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'edgeCacheKeysets/{edgeCacheKeysetsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_EDGECACHEORIGINS = (
+      'projects.locations.edgeCacheOrigins',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'edgeCacheOrigins/{edgeCacheOriginsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_EDGECACHESERVICES = (
+      'projects.locations.edgeCacheServices',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'edgeCacheServices/{edgeCacheServicesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_ENDPOINTCONFIGSELECTORS = (
       'projects.locations.endpointConfigSelectors',
       '{+name}',

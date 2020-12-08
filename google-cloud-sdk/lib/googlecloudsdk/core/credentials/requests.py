@@ -93,8 +93,13 @@ class RequestWrapper(transport.CredentialWrappingMixin,
     orig_request = http_client.request
 
     def WrappedRequest(method, url, data=None, headers=None, **kwargs):
+      wrapped_request = http_client.request
+      http_client.request = orig_request
+
       auth_request = google_auth_requests.Request(http_client)
       creds.before_request(auth_request, method, url, headers)
+
+      http_client.request = wrapped_request
       return orig_request(method, url, data=data, headers=headers or {},
                           **kwargs)
 

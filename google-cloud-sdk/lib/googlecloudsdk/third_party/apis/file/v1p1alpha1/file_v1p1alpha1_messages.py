@@ -565,7 +565,8 @@ class FileShareConfig(_messages.Message):
       1 GB as 1024^3 bytes.
     exports: Exports. If exports are omitted, a default allowed_ip_ranges is
       set to RFC1918 Internal IP ranges (10.0.0.0/8, 172.16.0.0/12,
-      192.168.0.0/16)
+      192.168.0.0/16) This field is deprecated, use nfs_export_options
+      instead.
     name: The name of the file share (must be 16 characters or less).
     nfsExportOptions: Nfs Export Options. There is a limit of 10 export
       options per file share.

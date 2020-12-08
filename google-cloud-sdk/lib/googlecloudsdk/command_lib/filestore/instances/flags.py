@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.filestore import filestore_client
-from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
@@ -109,13 +108,8 @@ def GetTierType(instance_tier):
 
 
 def AddLocationArg(parser):
-  action = actions.DeprecationAction(
-      'location', warn='The `--location` flag is deprecated. Use `--zone`.')
   parser.add_argument(
-      '--location',
-      required=False,
-      action=action,
-      help='Location of the Cloud Filestore instance.')
+      '--location', help='Location of the Cloud Filestore instance/operation.')
 
 
 def AddDescriptionArg(parser):

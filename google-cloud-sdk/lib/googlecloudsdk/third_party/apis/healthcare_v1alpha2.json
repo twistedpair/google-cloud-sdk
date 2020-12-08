@@ -740,16 +740,16 @@
     },
     "Image": {
       "id": "Image",
-      "description": "An image.",
+      "description": "Raw bytes representing consent artifact content.",
       "type": "object",
       "properties": {
         "rawBytes": {
-          "description": "Image content represented as a stream of bytes. This field is populated when returned in GetConsentArtifact response, but not included in CreateConsentArtifact and ListConsentArtifact response.",
+          "description": "Consent artifact content represented as a stream of bytes. This field is populated when returned in GetConsentArtifact response, but not included in CreateConsentArtifact and ListConsentArtifact response.",
           "type": "string",
           "format": "byte"
         },
         "gcsUri": {
-          "description": "Input only. Points to a Cloud Storage URI containing the image. The URI must be in the following format: `gs:\/\/{bucket_id}\/{object_id}`. The Cloud Healthcare API service account must have the `roles\/storage.objectViewer` Cloud IAM role for this Cloud Storage location. The image at this URI is copied to a Cloud Storage location managed by the Cloud Healthcare API. Responses to image fetching requests return the image in raw_bytes.",
+          "description": "Input only. Points to a Cloud Storage URI containing the consent artifact content. The URI must be in the following format: `gs:\/\/{bucket_id}\/{object_id}`. The Cloud Healthcare API service account must have the `roles\/storage.objectViewer` Cloud IAM role for this Cloud Storage location. The consent artifact content at this URI is copied to a Cloud Storage location managed by the Cloud Healthcare API. Responses to fetching requests return the consent artifact content in raw_bytes.",
           "type": "string"
         }
       }
@@ -961,11 +961,11 @@
           }
         },
         "consentList": {
-          "description": "The Consents to evaluate the access request against. They must have the same `user_id` as the data to check access for, exist in the current `consent_store`, and can have a `state` of either `ACTIVE` or `DRAFT`. A maximum of 100 consents can be provided here.",
+          "description": "The Consents to evaluate the access request against. They must have the same `user_id` as the data to check access for, exist in the current `consent_store`, and can have a `state` of either `ACTIVE` or `DRAFT`. A maximum of 100 consents can be provided here. If unspecified, all `ACTIVE` unexpired consents in the current `consent_store` will be evaluated.",
           "$ref": "ConsentList"
         },
         "responseView": {
-          "description": "The view for CheckDataAccessResponse.",
+          "description": "The view for CheckDataAccessResponse. If unspecified, defaults to `BASIC` and returns `consented` as `TRUE` or `FALSE`.",
           "type": "string",
           "enumDescriptions": [
             "No response view specified. The API will default to the BASIC view.",
@@ -1097,11 +1097,11 @@
           }
         },
         "consentList": {
-          "description": "The resource names of the consents to evaluate against. Consents must be in the current `consent_store` and belong to the current `user_id`. Consents can be either active or draft. If this field is empty, the default behavior is to use all active consents that belong to `user_id`. A maximum of 100 consents can be provided here.",
+          "description": "The Consents to evaluate the access request against. They must have the same `user_id` as the data to check access for, exist in the current `consent_store`, and can have a `state` of either `ACTIVE` or `DRAFT`. A maximum of 100 consents can be provided here. If unspecified, all `ACTIVE` unexpired consents in the current `consent_store` will be evaluated.",
           "$ref": "ConsentList"
         },
         "responseView": {
-          "description": "The view for EvaluateUserConsentsResponse.",
+          "description": "The view for EvaluateUserConsentsResponse. If unspecified, defaults to `BASIC` and returns `consented` as `TRUE` or `FALSE`.",
           "type": "string",
           "enumDescriptions": [
             "No response view specified. The API will default to the BASIC view.",
@@ -1115,7 +1115,7 @@
           ]
         },
         "pageSize": {
-          "description": "Limit on the number of user data mappings to return in a single response. If zero the default page size of 100 is used.",
+          "description": "Limit on the number of user data mappings to return in a single response. If not specified, 100 is used. May not be larger than 1000.",
           "type": "integer",
           "format": "int32"
         },
@@ -1165,102 +1165,13 @@
         }
       }
     },
-    "HttpBody": {
-      "id": "HttpBody",
-      "description": "Message that represents an arbitrary HTTP body. It should only be used for payload formats that can't be represented as JSON, such as raw binary or an HTML page. This message can be used both in streaming and non-streaming API methods in the request as well as the response. It can be used as a top-level request field, which is convenient if one wants to extract parameters from either the URL or HTTP template into the request fields and also want access to the raw HTTP body. Example: message GetResourceRequest { \/\/ A unique request id. string request_id = 1; \/\/ The raw HTTP body is bound to this field. google.api.HttpBody http_body = 2; } service ResourceService { rpc GetResource(GetResourceRequest) returns (google.api.HttpBody); rpc UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty); } Example with streaming methods: service CaldavService { rpc GetCalendar(stream google.api.HttpBody) returns (stream google.api.HttpBody); rpc UpdateCalendar(stream google.api.HttpBody) returns (stream google.api.HttpBody); } Use of this type only changes how the request and response bodies are handled, all other features will continue to work unchanged.",
+    "DeidentifyFhirStoreRequest": {
+      "id": "DeidentifyFhirStoreRequest",
+      "description": "Creates a new FHIR store with sensitive information de-identified.",
       "type": "object",
       "properties": {
-        "contentType": {
-          "description": "The HTTP Content-Type header value specifying the content type of the body.",
-          "type": "string"
-        },
-        "data": {
-          "description": "The HTTP request\/response body as raw binary.",
-          "type": "string",
-          "format": "byte"
-        },
-        "extensions": {
-          "description": "Application specific response metadata. Must be set in the first response for streaming APIs.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @type with type URL."
-            }
-          }
-        }
-      }
-    },
-    "Dataset": {
-      "id": "Dataset",
-      "description": "A message representing a health dataset. A health dataset represents a collection of healthcare data pertaining to one or more patients. This may include multiple modalities of healthcare data, such as electronic medical records or medical imaging data.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Resource name of the dataset, of the form `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`.",
-          "type": "string"
-        },
-        "timeZone": {
-          "description": "The default timezone used by this dataset. Must be a either a valid IANA time zone name such as \"America\/New_York\" or empty, which defaults to UTC. This is used for parsing times in resources, such as HL7v2 messages, where no explicit timezone is specified.",
-          "type": "string"
-        },
-        "storageOptions": {
-          "description": "StorageOptions defines the options for storing datasets.",
-          "$ref": "StorageOptions"
-        }
-      }
-    },
-    "StorageOptions": {
-      "id": "StorageOptions",
-      "description": "StorageOptions defines the options for storing datasets.",
-      "type": "object",
-      "properties": {
-        "defaultBlobStorageClass": {
-          "description": "The default storage class for Blobs stored in this dataset. Applies to DICOM objects only.",
-          "type": "string",
-          "enumDescriptions": [
-            "If unspecified in CreateDataset, the StorageClass defaults to STANDARD. If unspecified in UpdateDataset and the StorageClass is set in the field mask, an InvalidRequest error is thrown.",
-            "Stores the Object in Blob Standard Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#standard",
-            "Stores the Object in Blob Nearline Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#nearline",
-            "Stores the Object in Blob Coldline Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#coldline",
-            "Stores the Object in Blob Archive Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#archive"
-          ],
-          "enum": [
-            "BLOB_STORAGE_CLASS_UNSPECIFIED",
-            "STANDARD",
-            "NEARLINE",
-            "COLDLINE",
-            "ARCHIVE"
-          ]
-        }
-      }
-    },
-    "ListDatasetsResponse": {
-      "id": "ListDatasetsResponse",
-      "description": "Lists the available datasets.",
-      "type": "object",
-      "properties": {
-        "datasets": {
-          "description": "The first page of datasets.",
-          "type": "array",
-          "items": {
-            "$ref": "Dataset"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
-          "type": "string"
-        }
-      }
-    },
-    "DeidentifyDatasetRequest": {
-      "id": "DeidentifyDatasetRequest",
-      "description": "Redacts identifying information from the specified dataset.",
-      "type": "object",
-      "properties": {
-        "destinationDataset": {
-          "description": "The name of the dataset resource to create and write the redacted data to. For example, `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`. * The destination dataset must not exist. * The destination dataset must be in the same project and location as the source dataset. De-identifying data across multiple projects or locations is not supported.",
+        "destinationStore": {
+          "description": "The name of the FHIR store to create and write the redacted data to. For example, `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`. * The destination dataset must exist. * The source dataset and destination dataset must both reside in the same project and location. De-identifying data across multiple projects or locations is not supported. * The destination FHIR store must exist. * The caller must have the healthcare.fhirResources.update permission to write to the destination FHIR store.",
           "type": "string"
         },
         "config": {
@@ -1520,6 +1431,125 @@
       "description": "When using the INSPECT_AND_TRANSFORM action, each match is replaced with the name of the `info_type`. For example, \"My name is Jane\" becomes \"My name is [PERSON_NAME].\" The TRANSFORM action is equivalent to redacting.",
       "type": "object",
       "properties": {
+      }
+    },
+    "DeidentifyDicomStoreRequest": {
+      "id": "DeidentifyDicomStoreRequest",
+      "description": "Creates a new DICOM store with sensitive information de-identified.",
+      "type": "object",
+      "properties": {
+        "destinationStore": {
+          "description": "The name of the DICOM store to create and write the redacted data to. For example, `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`. * The destination dataset must exist. * The source dataset and destination dataset must both reside in the same project and location. De-identifying data across multiple projects or locations is not supported. * The destination DICOM store must not exist. * The caller must have the necessary permissions to create the destination DICOM store.",
+          "type": "string"
+        },
+        "config": {
+          "description": "Deidentify configuration.",
+          "$ref": "DeidentifyConfig"
+        }
+      }
+    },
+    "HttpBody": {
+      "id": "HttpBody",
+      "description": "Message that represents an arbitrary HTTP body. It should only be used for payload formats that can't be represented as JSON, such as raw binary or an HTML page. This message can be used both in streaming and non-streaming API methods in the request as well as the response. It can be used as a top-level request field, which is convenient if one wants to extract parameters from either the URL or HTTP template into the request fields and also want access to the raw HTTP body. Example: message GetResourceRequest { \/\/ A unique request id. string request_id = 1; \/\/ The raw HTTP body is bound to this field. google.api.HttpBody http_body = 2; } service ResourceService { rpc GetResource(GetResourceRequest) returns (google.api.HttpBody); rpc UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty); } Example with streaming methods: service CaldavService { rpc GetCalendar(stream google.api.HttpBody) returns (stream google.api.HttpBody); rpc UpdateCalendar(stream google.api.HttpBody) returns (stream google.api.HttpBody); } Use of this type only changes how the request and response bodies are handled, all other features will continue to work unchanged.",
+      "type": "object",
+      "properties": {
+        "contentType": {
+          "description": "The HTTP Content-Type header value specifying the content type of the body.",
+          "type": "string"
+        },
+        "data": {
+          "description": "The HTTP request\/response body as raw binary.",
+          "type": "string",
+          "format": "byte"
+        },
+        "extensions": {
+          "description": "Application specific response metadata. Must be set in the first response for streaming APIs.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "Dataset": {
+      "id": "Dataset",
+      "description": "A message representing a health dataset. A health dataset represents a collection of healthcare data pertaining to one or more patients. This may include multiple modalities of healthcare data, such as electronic medical records or medical imaging data.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name of the dataset, of the form `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`.",
+          "type": "string"
+        },
+        "timeZone": {
+          "description": "The default timezone used by this dataset. Must be a either a valid IANA time zone name such as \"America\/New_York\" or empty, which defaults to UTC. This is used for parsing times in resources, such as HL7v2 messages, where no explicit timezone is specified.",
+          "type": "string"
+        },
+        "storageOptions": {
+          "description": "StorageOptions defines the options for storing datasets.",
+          "$ref": "StorageOptions"
+        }
+      }
+    },
+    "StorageOptions": {
+      "id": "StorageOptions",
+      "description": "StorageOptions defines the options for storing datasets.",
+      "type": "object",
+      "properties": {
+        "defaultBlobStorageClass": {
+          "description": "The default storage class for Blobs stored in this dataset. Applies to DICOM objects only.",
+          "type": "string",
+          "enumDescriptions": [
+            "If unspecified in CreateDataset, the StorageClass defaults to STANDARD. If unspecified in UpdateDataset and the StorageClass is set in the field mask, an InvalidRequest error is thrown.",
+            "Stores the Object in Blob Standard Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#standard",
+            "Stores the Object in Blob Nearline Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#nearline",
+            "Stores the Object in Blob Coldline Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#coldline",
+            "Stores the Object in Blob Archive Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#archive"
+          ],
+          "enum": [
+            "BLOB_STORAGE_CLASS_UNSPECIFIED",
+            "STANDARD",
+            "NEARLINE",
+            "COLDLINE",
+            "ARCHIVE"
+          ]
+        }
+      }
+    },
+    "ListDatasetsResponse": {
+      "id": "ListDatasetsResponse",
+      "description": "Lists the available datasets.",
+      "type": "object",
+      "properties": {
+        "datasets": {
+          "description": "The first page of datasets.",
+          "type": "array",
+          "items": {
+            "$ref": "Dataset"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "DeidentifyDatasetRequest": {
+      "id": "DeidentifyDatasetRequest",
+      "description": "Redacts identifying information from the specified dataset.",
+      "type": "object",
+      "properties": {
+        "destinationDataset": {
+          "description": "The name of the dataset resource to create and write the redacted data to. For example, `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`. * The destination dataset must not exist. * The destination dataset must be in the same project and location as the source dataset. De-identifying data across multiple projects or locations is not supported.",
+          "type": "string"
+        },
+        "config": {
+          "description": "Deidentify configuration.",
+          "$ref": "DeidentifyConfig"
+        }
       }
     },
     "DicomStore": {
@@ -1857,6 +1887,10 @@
         "bigqueryDestination": {
           "description": "The destination BigQuery structure that contains both the dataset location and corresponding schema config. The output is organized in one table per resource type. The server reuses the existing tables (if any) that are named after the resource types, e.g. \"Patient\", \"Observation\". When there is no existing table for a given resource type, the server attempts to create one. When a table schema doesn't align with the schema config, either because of existing incompatible schema or out of band incompatible modification, the server does not stream in new data. One resolution in this case is to delete the incompatible table and let the server recreate one, though the newly created table only contains data after the table recreation. BigQuery imposes a 1 MB limit on streaming insert row size, therefore any resource mutation that generates more than 1 MB of BigQuery data will not be streamed. Results are appended to the corresponding BigQuery tables. Different versions of the same resource are distinguishable by the meta.versionId and meta.lastUpdated columns. The operation (CREATE\/UPDATE\/DELETE) that results in the new version is recorded in the meta.tag. The tables contain all historical resource versions since streaming was enabled. For query convenience, the server also creates one view per table of the same name containing only the current resource version. The streamed data in the BigQuery dataset is not guaranteed to be completely unique. The combination of the id and meta.versionId columns should ideally identify a single unique row. But in rare cases, duplicates may exist. At query time, users may use the SQL select statement to keep only one of the duplicate rows given an id and meta.versionId pair. Alternatively, the server created view mentioned above also filters out duplicates. Before adding this configuration, you must add the [`bigquery.dataEditor`](https:\/\/cloud.google.com\/bigquery\/docs\/access-control#bigquery.dataEditor) role to your project's **Cloud Healthcare Service Agent** [service account](https:\/\/cloud.google.com\/iam\/docs\/service-accounts). If a resource mutation cannot be streamed to BigQuery, errors will be logged to Cloud Logging (see [Viewing error logs in Cloud Logging](\/healthcare\/docs\/how-tos\/logging)).",
           "$ref": "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination"
+        },
+        "deidentifiedStoreDestination": {
+          "description": "The destination FHIR store for de-identified resources. After this field is added, all subsequent creates\/updates\/patches to the source store will be de-identified using the provided configuration and applied to the destination store. Importing resources to the source store will not trigger the streaming. If the source store already contains resources when this option is enabled, those resources will not be copied to the destination store unless they are subsequently updated. This may result in invalid references in the destination store. To add this configuration, you must have healthcare.fhirStores.deidentify permission on this store. Before adding this config, you must grant the healthcare.fhirResources.update permission on the destination store to your project's **Cloud Healthcare Service Agent** [service account](https:\/\/cloud.google.com\/iam\/docs\/service-accounts). The destination store must set true on enable_update_create. The destination store must have disable_referential_integrity false. If a resource cannot be de-identified, errors will be logged to Cloud Logging (see [Viewing error logs in Cloud Logging](\/healthcare\/docs\/how-tos\/cloud-logging)).",
+          "$ref": "DeidentifiedStoreDestination"
         }
       }
     },
@@ -1898,6 +1932,21 @@
           "description": "The depth for all recursive structures in the output analytics schema. For example, `concept` in the CodeSystem resource is a recursive structure; when the depth is 2, the CodeSystem table will have a column called `concept.concept` but not `concept.concept.concept`. If not specified or set to 0, the server will use the default value 2. The maximum depth allowed is 5.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "DeidentifiedStoreDestination": {
+      "id": "DeidentifiedStoreDestination",
+      "description": "Contains configuration for streaming de-identified FHIR export.",
+      "type": "object",
+      "properties": {
+        "store": {
+          "description": "The full resource name of a Cloud Healthcare FHIR store, for example, `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
+          "type": "string"
+        },
+        "config": {
+          "description": "The configuration to use when de-identifying resources that are added to this store.",
+          "$ref": "DeidentifyConfig"
         }
       }
     },
@@ -2343,6 +2392,20 @@
       "properties": {
       }
     },
+    "GoogleCloudHealthcareV1alpha2DeidentifyDeidentifyDicomStoreSummary": {
+      "id": "GoogleCloudHealthcareV1alpha2DeidentifyDeidentifyDicomStoreSummary",
+      "description": "Contains a summary of the DeidentifyDicomStore operation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudHealthcareV1alpha2DeidentifyDeidentifyFhirStoreSummary": {
+      "id": "GoogleCloudHealthcareV1alpha2DeidentifyDeidentifyFhirStoreSummary",
+      "description": "Contains a summary of the DeidentifyFhirStore operation.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ImportDicomDataResponse": {
       "id": "ImportDicomDataResponse",
       "description": "Returns additional information in regards to a completed DICOM store import.",
@@ -2722,7 +2785,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of items to return. Capped to 100 if not specified. May not be larger than 1000.",
+                      "description": "The maximum number of items to return. If not specified, 100 is used. May not be larger than 1000.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -3039,6 +3102,34 @@
                       ],
                       "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                     },
+                    "deidentify": {
+                      "id": "healthcare.projects.locations.datasets.dicomStores.deidentify",
+                      "path": "v1alpha2/{+sourceStore}:deidentify",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:deidentify",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "sourceStore": {
+                          "description": "Source DICOM store resource name. For example, `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/dicomStores\/{dicom_store_id}`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dicomStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "sourceStore"
+                      ],
+                      "request": {
+                        "$ref": "DeidentifyDicomStoreRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "De-identifies data from the source store and writes it to the destination store. The metadata field type is OperationMetadata. If the request is successful, the response field type is DeidentifyDicomStoreSummary. The LRO result may still be successful if de-identification fails for some DICOM instances. The output DICOM store will not contain these failed resources. The number of resources processed are tracked in Operation.metadata. Error details are logged to Cloud Logging. For more information, see [Viewing logs](\/healthcare\/docs\/how-tos\/logging)."
+                    },
                     "create": {
                       "id": "healthcare.projects.locations.datasets.dicomStores.create",
                       "path": "v1alpha2/{+parent}/dicomStores",
@@ -3170,7 +3261,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Limit on the number of DICOM stores to return in a single response. If zero the default page size of 100 is used.",
+                          "description": "Limit on the number of DICOM stores to return in a single response. If not specified, 100 is used. May not be larger than 1000.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -3513,7 +3604,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Limit on the number of HL7v2 stores to return in a single response. If zero the default page size of 100 is used.",
+                          "description": "Limit on the number of HL7v2 stores to return in a single response. If not specified, 100 is used. May not be larger than 1000.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -3756,6 +3847,34 @@
                       ],
                       "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                     },
+                    "deidentify": {
+                      "id": "healthcare.projects.locations.datasets.fhirStores.deidentify",
+                      "path": "v1alpha2/{+sourceStore}:deidentify",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:deidentify",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "sourceStore": {
+                          "description": "Source FHIR store resource name. For example, `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "sourceStore"
+                      ],
+                      "request": {
+                        "$ref": "DeidentifyFhirStoreRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "De-identifies data from the source store and writes it to the destination store. The metadata field type is OperationMetadata. If the request is successful, the response field type is DeidentifyFhirStoreSummary. The number of resources processed are tracked in Operation.metadata. Error details are logged to Cloud Logging. For more information, see [Viewing logs](\/healthcare\/docs\/how-tos\/logging)."
+                    },
                     "create": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.create",
                       "path": "v1alpha2/{+parent}/fhirStores",
@@ -3887,7 +4006,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Limit on the number of FHIR stores to return in a single response. If zero the default page size of 100 is used.",
+                          "description": "Limit on the number of FHIR stores to return in a single response. If not specified, 100 is used. May not be larger than 1000.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -4192,7 +4311,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Limit on the number of Annotation stores to return in a single response. If zero the default page size of 100 is used.",
+                          "description": "Limit on the number of Annotation stores to return in a single response. If not specified, 100 is used. May not be larger than 1000.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -4525,7 +4644,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Limit on the number of Consent stores to return in a single response. If zero the default page size of 100 is used.",
+                          "description": "Limit on the number of Consent stores to return in a single response. If not specified, 100 is used. May not be larger than 1000.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -4772,7 +4891,7 @@
                               "type": "string"
                             },
                             "pageSize": {
-                              "description": "Limit on the number of attribute definitions to return in a single response. If zero the default page size of 100 is used.",
+                              "description": "Limit on the number of attribute definitions to return in a single response. If not specified, 100 is used. May not be larger than 1000.",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"
@@ -4895,7 +5014,7 @@
                               "type": "string"
                             },
                             "pageSize": {
-                              "description": "Limit on the number of consent artifacts to return in a single response. If zero the default page size of 100 is used.",
+                              "description": "Limit on the number of consent artifacts to return in a single response. If not specified, 100 is used. May not be larger than 1000.",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"
@@ -5052,7 +5171,7 @@
                               "type": "string"
                             },
                             "pageSize": {
-                              "description": "Limit on the number of consents to return in a single response. If zero the default page size of 100 is used.",
+                              "description": "Limit on the number of consents to return in a single response. If not specified, 100 is used. May not be larger than 1000.",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"
@@ -5237,7 +5356,7 @@
                               "type": "string"
                             },
                             "pageSize": {
-                              "description": "Limit on the number of user data mappings to return in a single response. If zero the default page size of 100 is used.",
+                              "description": "Limit on the number of user data mappings to return in a single response. If not specified, 100 is used. May not be larger than 1000.",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"

@@ -30,9 +30,22 @@ instance:
     help: The name of the Admin Service Cluster instance.
   disable_auto_completers: false
 
+location-list:
+  name: location
+  collection: krmapihosting.projects.locations
+  attributes:
+  - &location-list
+    parameter_name: locationsId
+    attribute_name: location
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.admin_service_cluster.instances.utils:SetLocation
+      hint: use global location
+    help: The name of the Admin Service Cluster instance location. Currently, only `us-central1` is supported.
+  disable_auto_completers: false
+
 instance-list:
   name: instance-list
   collection: krmapihosting.projects.locations
   attributes:
   - *project
-  - *location
+  - *location-list

@@ -34,6 +34,7 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.iam import completers as iam_completers
 from googlecloudsdk.command_lib.iam import iam_util as core_iam_util
 from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
+from googlecloudsdk.command_lib.ml_engine import constants
 from googlecloudsdk.command_lib.ml_engine import models_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -237,25 +238,16 @@ Learn more about regional endpoints and see a list of available regions:
 """
 
 
-def GetRegionArg():
+def GetRegionArg(include_global=False):
   """Adds --region flag to determine endpoint for models and versions."""
+  if include_global:
+    return base.Argument(
+        '--region',
+        choices=constants.SUPPORTED_REGIONS_WITH_GLOBAL,
+        help=_REGION_FLAG_HELPTEXT)
   return base.Argument(
       '--region',
-      choices=[
-          'asia-east1',
-          'asia-northeast1',
-          'asia-southeast1',
-          'australia-southeast1',
-          'europe-west1',
-          'europe-west2',
-          'europe-west3',
-          'europe-west4',
-          'northamerica-northeast1',
-          'us-central1',
-          'us-east1',
-          'us-east4',
-          'us-west1',
-      ],
+      choices=constants.SUPPORTED_REGIONS,
       help=_REGION_FLAG_HELPTEXT)
 
 

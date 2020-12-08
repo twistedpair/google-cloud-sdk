@@ -27,6 +27,7 @@ import re
 import signal
 import subprocess
 import sys
+import threading
 import time
 
 
@@ -269,6 +270,54 @@ def _ReplaceSignal(signo, handler):
     signal.signal(signo, old_handler)
 
 
+def _Exec(args,
+          process_holder,
+          env=None,
+          out_func=None,
+          err_func=None,
+          in_str=None,
+          **extra_popen_kwargs):
+  """See Exec docstring."""
+  if out_func:
+    extra_popen_kwargs['stdout'] = subprocess.PIPE
+  if err_func:
+    extra_popen_kwargs['stderr'] = subprocess.PIPE
+  if in_str:
+    extra_popen_kwargs['stdin'] = subprocess.PIPE
+  try:
+    if args and isinstance(args, list):
+      # On Python 2.x on Windows, the first arg can't be unicode. We encode
+      # encode it anyway because there is really nothing else we can do if
+      # that happens.
+      # https://bugs.python.org/issue19264
+      args = [encoding.Encode(a) for a in args]
+    p = subprocess.Popen(args, env=_GetToolEnv(env=env), **extra_popen_kwargs)
+  except OSError as err:
+    if err.errno == errno.EACCES:
+      raise PermissionError(err.strerror)
+    elif err.errno == errno.ENOENT:
+      raise InvalidCommandError(args[0])
+    raise
+  process_holder.process = p
+
+  if process_holder.signum is not None:
+    # This covers the small possibility that process_holder handled a
+    # signal when the process was starting but not yet set to
+    # process_holder.process.
+    if p.poll() is None:
+      p.terminate()
+
+  if isinstance(in_str, six.text_type):
+    in_str = in_str.encode('utf-8')
+  stdout, stderr = list(map(encoding.Decode, p.communicate(input=in_str)))
+
+  if out_func:
+    out_func(stdout)
+  if err_func:
+    err_func(stderr)
+  return p.returncode
+
+
 def Exec(args,
          env=None,
          no_exit=False,
@@ -309,48 +358,21 @@ def Exec(args,
   # started and the original is killed.  When running in a shell, the prompt
   # returns as soon as the parent is killed even though the child is still
   # running.  subprocess waits for the new process to finish before returning.
-  env = _GetToolEnv(env=env)
   process_holder = _ProcessHolder()
-  with _ReplaceSignal(signal.SIGTERM, process_holder.Handler):
-    with _ReplaceSignal(signal.SIGINT, process_holder.Handler):
-      if out_func:
-        extra_popen_kwargs['stdout'] = subprocess.PIPE
-      if err_func:
-        extra_popen_kwargs['stderr'] = subprocess.PIPE
-      if in_str:
-        extra_popen_kwargs['stdin'] = subprocess.PIPE
-      try:
-        if args and isinstance(args, list):
-          # On Python 2.x on Windows, the first arg can't be unicode. We encode
-          # encode it anyway because there is really nothing else we can do if
-          # that happens.
-          # https://bugs.python.org/issue19264
-          args = [encoding.Encode(a) for a in args]
-        p = subprocess.Popen(args, env=env, **extra_popen_kwargs)
-      except OSError as err:
-        if err.errno == errno.EACCES:
-          raise PermissionError(err.strerror)
-        elif err.errno == errno.ENOENT:
-          raise InvalidCommandError(args[0])
-        raise
-      process_holder.process = p
 
-      if process_holder.signum is not None:
-        # This covers the small possibility that process_holder handled a
-        # signal when the process was starting but not yet set to
-        # process_holder.process.
-        if p.poll() is None:
-          p.terminate()
-
-      if isinstance(in_str, six.text_type):
-        in_str = in_str.encode('utf-8')
-      stdout, stderr = list(map(encoding.Decode, p.communicate(input=in_str)))
-
-      if out_func:
-        out_func(stdout)
-      if err_func:
-        err_func(stderr)
-      ret_val = p.returncode
+  # pylint:disable=protected-access
+  # Python 3 has a cleaner way to check if on main thread, but must support PY2.
+  if isinstance(threading.current_thread(), threading._MainThread):
+    # pylint:enable=protected-access
+    # Signal replacement is not allowed by Python on non-main threads.
+    # https://bugs.python.org/issue38904
+    with _ReplaceSignal(signal.SIGTERM, process_holder.Handler):
+      with _ReplaceSignal(signal.SIGINT, process_holder.Handler):
+        ret_val = _Exec(args, process_holder, env, out_func, err_func, in_str,
+                        **extra_popen_kwargs)
+  else:
+    ret_val = _Exec(args, process_holder, env, out_func, err_func, in_str,
+                    **extra_popen_kwargs)
 
   if no_exit and process_holder.signum is None:
     return ret_val
@@ -368,7 +390,7 @@ def _ProcessStreamHandler(proc, err=False, handler=log.Print):
         stream.close()
       except OSError:
         pass  # This is thread cleanup so we should just
-              # exit so runner can Join()
+        # exit so runner can Join()
       break
     line_str = line.decode('utf-8')
     line_str = line_str.rstrip('\r\n')

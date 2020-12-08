@@ -277,6 +277,10 @@
           "description": "Configuration for the use of Kubernetes Service Accounts in GCP IAM policies.",
           "$ref": "WorkloadIdentityConfig"
         },
+        "notificationConfig": {
+          "description": "Notification configuration of the cluster.",
+          "$ref": "NotificationConfig"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -328,7 +332,7 @@
           ]
         },
         "statusMessage": {
-          "description": "[Output only] Additional information about the current status of this cluster, if available.",
+          "description": "[Output only] Deprecated. Use conditions instead. Additional information about the current status of this cluster, if available.",
           "type": "string"
         },
         "nodeIpv4CidrSize": {
@@ -448,7 +452,7 @@
           }
         },
         "diskType": {
-          "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd') If unspecified, the default disk type is 'pd-standard'",
+          "description": "Type of the disk attached to each node (e.g. 'pd-standard', 'pd-ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-standard'",
           "type": "string"
         },
         "minCpuPlatform": {
@@ -717,6 +721,10 @@
         "configConnectorConfig": {
           "description": "Configuration for the ConfigConnector add-on, a Kubernetes extension to manage hosted GCP services through the Kubernetes API",
           "$ref": "ConfigConnectorConfig"
+        },
+        "gcePersistentDiskCsiDriverConfig": {
+          "description": "Configuration for the Compute Engine Persistent Disk CSI driver.",
+          "$ref": "GcePersistentDiskCsiDriverConfig"
         }
       }
     },
@@ -811,6 +819,17 @@
         }
       }
     },
+    "GcePersistentDiskCsiDriverConfig": {
+      "id": "GcePersistentDiskCsiDriverConfig",
+      "description": "Configuration for the Compute Engine PD CSI driver.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether the Compute Engine PD CSI driver is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
     "NodePool": {
       "id": "NodePool",
       "description": "NodePool contains the name and configuration for a cluster's node pool. Node pools are a set of nodes (i.e. VM's), with a common configuration and specification, under the control of the cluster master. They may have a set of Kubernetes labels applied to them, which may be used to reference them during pod scheduling. They may also be resized up or down, to accommodate the workload.",
@@ -874,7 +893,7 @@
           ]
         },
         "statusMessage": {
-          "description": "[Output only] Additional information about the current status of this node pool instance, if available.",
+          "description": "[Output only] Deprecated. Use conditions instead. Additional information about the current status of this node pool instance, if available.",
           "type": "string"
         },
         "autoscaling": {
@@ -1331,7 +1350,7 @@
           "format": "int32"
         },
         "diskType": {
-          "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd') If unspecified, the default disk type is 'pd-standard'",
+          "description": "Type of the disk attached to each node (e.g. 'pd-standard', 'pd-ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-standard'",
           "type": "string"
         },
         "shieldedInstanceConfig": {
@@ -1573,6 +1592,32 @@
       "properties": {
         "workloadPool": {
           "description": "The workload pool to attach all Kubernetes service accounts to.",
+          "type": "string"
+        }
+      }
+    },
+    "NotificationConfig": {
+      "id": "NotificationConfig",
+      "description": "NotificationConfig is the configuration of notifications.",
+      "type": "object",
+      "properties": {
+        "pubsub": {
+          "description": "Notification config for Pub\/Sub.",
+          "$ref": "PubSub"
+        }
+      }
+    },
+    "PubSub": {
+      "id": "PubSub",
+      "description": "Pub\/Sub specific notification config.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable notifications for Pub\/Sub.",
+          "type": "boolean"
+        },
+        "topic": {
+          "description": "The desired Pub\/Sub topic to which notifications will be sent by GKE. Format is `projects\/{project}\/topics\/{topic}`.",
           "type": "string"
         }
       }
@@ -1929,6 +1974,10 @@
             "PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE",
             "PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL"
           ]
+        },
+        "desiredNotificationConfig": {
+          "description": "The desired notification configuration.",
+          "$ref": "NotificationConfig"
         },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to. Users may specify either explicit versions offered by Kubernetes Engine or version aliases, which have the following behavior: - \"latest\": picks the highest valid Kubernetes version - \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version - \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version - \"1.X.Y-gke.N\": picks an explicit Kubernetes version - \"-\": picks the default Kubernetes version",
@@ -2692,7 +2741,7 @@
     },
     "SetNodePoolSizeRequest": {
       "id": "SetNodePoolSizeRequest",
-      "description": "SetNodePoolSizeRequest sets the size a node pool.",
+      "description": "SetNodePoolSizeRequest sets the size of a node pool.",
       "type": "object",
       "properties": {
         "projectId": {
@@ -3775,7 +3824,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the size for a specific node pool."
+                      "description": "Sets the size for a specific node pool. The new size will be used for all replicas, including future replicas created by modifying NodePool.locations."
                     }
                   }
                 },
@@ -5075,7 +5124,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the size for a specific node pool."
+                      "description": "Sets the size for a specific node pool. The new size will be used for all replicas, including future replicas created by modifying NodePool.locations."
                     }
                   }
                 }

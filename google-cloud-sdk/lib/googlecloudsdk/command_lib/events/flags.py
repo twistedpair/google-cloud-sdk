@@ -59,7 +59,8 @@ def AddTargetServiceFlag(parser, required=False):
       '--target-service',
       required=required,
       help='Name or absolute uri of the Cloud Run service at which '
-      'events should be received.')
+      'events should be received. (e.g. service-name or '
+      'http://service-name.default.svc.cluster.local)')
 
 
 def AddEventTypeFlagArg(parser, release_track):

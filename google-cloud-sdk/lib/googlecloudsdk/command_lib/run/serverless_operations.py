@@ -864,8 +864,7 @@ class ServerlessOperations(object):
     try:
       if serv:
         # PUT the changed Service
-        for config_change in config_changes:
-          serv = config_change.Adjust(serv)
+        serv = config_changes_mod.WithChanges(serv, config_changes)
         serv_name = service_ref.RelativeName()
         serv_update_req = (
             messages.RunNamespacesServicesReplaceServiceRequest(
@@ -884,8 +883,7 @@ class ServerlessOperations(object):
         new_serv = service.Service.New(self._client, service_ref.namespacesId)
         new_serv.name = service_ref.servicesId
         parent = service_ref.Parent().RelativeName()
-        for config_change in config_changes:
-          new_serv = config_change.Adjust(new_serv)
+        new_serv = config_changes_mod.WithChanges(new_serv, config_changes)
         serv_create_req = (
             messages.RunNamespacesServicesCreateRequest(
                 service=new_serv.Message(),

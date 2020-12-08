@@ -44,6 +44,8 @@ class AutoscalingConfig(_messages.Message):
   Fields:
     maximumCpu: Optional. Maximum number of CPU in the environment.
     maximumMemory: Optional. Memory limit in GB in the environment.
+    minimumCpu: Optional. Minimum number of CPU in the environment.
+    minimumMemory: Optional. Minimum memory limit in GB in the environment.
     mode: Optional. Represents information on whether autoscaling is enabled.
   """
 
@@ -62,7 +64,9 @@ class AutoscalingConfig(_messages.Message):
 
   maximumCpu = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   maximumMemory = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  mode = _messages.EnumField('ModeValueValuesEnum', 3)
+  minimumCpu = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minimumMemory = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  mode = _messages.EnumField('ModeValueValuesEnum', 5)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -314,6 +318,24 @@ class DatabaseConfig(_messages.Message):
   machineType = _messages.StringField(1)
 
 
+class DatabaseRetentionConfig(_messages.Message):
+  r"""The configuration setting for Airflow database data retention mechanism.
+
+  Fields:
+    enabled: Optional. Whether database retention mechanism should be enabled.
+    retentionDays: Optional. The number of days describing for how long to
+      store data in the database. Infinite retention period is represented by
+      0. If not specified the data will be retained forever.
+    storeArchives: Optional. Whether to store archives of deleted data in the
+      Customer bucket. If set to true, then the data will be stored in the
+      Customer bucket under archives/ directory.
+  """
+
+  enabled = _messages.BooleanField(1)
+  retentionDays = _messages.IntegerField(2)
+  storeArchives = _messages.BooleanField(3)
+
+
 class Date(_messages.Message):
   r"""Represents a whole or partial calendar date, such as a birthday. The
   time of day and time zone are either specified elsewhere or are
@@ -472,6 +494,8 @@ class EnvironmentConfig(_messages.Message):
       directory with the given prefix.
     databaseConfig: Optional. The configuration settings for Cloud SQL
       instance used internally by Apache Airflow software.
+    databaseRetentionConfig: Optional. The configuration setting for Airflow
+      database data retention mechanism.
     encryptionConfig: Optional. The encryption options for the Composer
       environment and its dependencies. Cannot be updated.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
@@ -503,15 +527,16 @@ class EnvironmentConfig(_messages.Message):
   autoscalingConfig = _messages.MessageField('AutoscalingConfig', 2)
   dagGcsPrefix = _messages.StringField(3)
   databaseConfig = _messages.MessageField('DatabaseConfig', 4)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 5)
-  gkeCluster = _messages.StringField(6)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 7)
-  nodeConfig = _messages.MessageField('NodeConfig', 8)
-  nodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 10)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 11)
-  webServerConfig = _messages.MessageField('WebServerConfig', 12)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 13)
+  databaseRetentionConfig = _messages.MessageField('DatabaseRetentionConfig', 5)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 6)
+  gkeCluster = _messages.StringField(7)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 8)
+  nodeConfig = _messages.MessageField('NodeConfig', 9)
+  nodeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 11)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 12)
+  webServerConfig = _messages.MessageField('WebServerConfig', 13)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 14)
 
 
 class IPAllocationPolicy(_messages.Message):

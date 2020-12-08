@@ -285,6 +285,7 @@ API_CONFIG = 'api_config'
 CODE_LOCK = 'code_lock'
 ENV_VARIABLES = 'env_variables'
 STANDARD_WEBSOCKET = 'standard_websocket'
+APP_ENGINE_APIS = 'app_engine_apis'
 
 SOURCE_REPO_RE_STRING = r'^[a-z][a-z0-9\-\+\.]*:[^#]*$'
 SOURCE_REVISION_RE_STRING = r'^[0-9a-fA-F]+$'
@@ -2342,6 +2343,7 @@ class AppInfoExternal(validation.Validated):
       CODE_LOCK: validation.Optional(bool),
       ENV_VARIABLES: validation.Optional(EnvironmentVariables),
       STANDARD_WEBSOCKET: validation.Optional(bool),
+      APP_ENGINE_APIS: validation.Optional(bool),
   }
 
   def CheckInitialized(self):

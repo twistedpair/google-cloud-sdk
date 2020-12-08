@@ -316,13 +316,12 @@ def ExtractLogId(log_resource):
   return log_id.replace('%2F', '/')
 
 
-def PrintPermissionInstructions(destination, writer_identity, is_dlp_sink):
+def PrintPermissionInstructions(destination, writer_identity):
   """Prints a message to remind the user to set up permissions for a sink.
 
   Args:
     destination: the sink destination (either bigquery or cloud storage).
     writer_identity: identity to which to grant write access.
-    is_dlp_sink: whether or not the sink is DLP enabled.
   """
   if writer_identity:
     grantee = '`{0}`'.format(writer_identity)
@@ -339,10 +338,6 @@ def PrintPermissionInstructions(destination, writer_identity, is_dlp_sink):
   elif destination.startswith('pubsub'):
     sdk_log.status.Print('Please remember to grant {0} the Pub/Sub Publisher '
                          'role on the topic.'.format(grantee))
-  if is_dlp_sink:
-    sdk_log.status.Print('Also remember to grant {0} DLP User and DLP Reader '
-                         'roles on the project that owns the sink '
-                         'destination.'.format(grantee))
   sdk_log.status.Print('More information about sinks can be found at https://'
                        'cloud.google.com/logging/docs/export/configure_export')
 

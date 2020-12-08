@@ -80,6 +80,7 @@ SUBCOMMAND_WHITELIST = [
     'pool',
     'render',
     'run',
+    'sync_perm',
     'task_failed_deps',
     'task_state',
     'test',

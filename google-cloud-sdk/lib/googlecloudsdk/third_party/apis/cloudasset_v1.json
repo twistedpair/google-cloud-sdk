@@ -1153,6 +1153,10 @@
         "qfePackage": {
           "description": "Details of a Windows Quick Fix engineering package. See https:\/\/docs.microsoft.com\/en-us\/windows\/win32\/cimwin32prov\/win32-quickfixengineering for info in Windows Quick Fix Engineering.",
           "$ref": "WindowsQuickFixEngineeringPackage"
+        },
+        "cosPackage": {
+          "description": "Details of a COS package.",
+          "$ref": "VersionedPackage"
         }
       }
     },
@@ -1610,7 +1614,7 @@
     },
     "IamPolicyAnalysisQuery": {
       "id": "IamPolicyAnalysisQuery",
-      "description": "IAM policy analysis query message.",
+      "description": "## LINT.IfChange Keep in sync with ## logs\/proto\/cloud_asset_inventory\/iam_policy_analyzer_log.proto IAM policy analysis query message.",
       "type": "object",
       "properties": {
         "scope": {

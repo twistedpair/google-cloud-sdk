@@ -23,6 +23,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage.tasks import task
@@ -51,11 +53,15 @@ class FileUploadTask(task.Task):
     destination_url = self._destination_resource.storage_url
     provider = destination_url.scheme
 
-    with files.BinaryFileReader(
-        self._source_resource.storage_url.object_name) as upload_stream:
+    source_filename = self._source_resource.storage_url.object_name
+    size = os.path.getsize(source_filename)
+
+    with files.BinaryFileReader(source_filename) as upload_stream:
       # TODO(b/162069479): Support all of upload_object's parameters.
       api_factory.get_api(provider).upload_object(
           upload_stream,
           self._destination_resource,
           request_config=cloud_api.RequestConfig(
-              md5_hash=self._source_resource.md5_hash))
+              md5_hash=self._source_resource.md5_hash,
+              size=size))
+

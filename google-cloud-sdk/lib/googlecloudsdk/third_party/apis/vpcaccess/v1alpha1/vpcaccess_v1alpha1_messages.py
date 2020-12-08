@@ -26,6 +26,8 @@ class Connector(_messages.Message):
       `access1`.
     ipCidrRange: The range of internal addresses that follows RFC 4632
       notation. Example: `10.132.0.0/28`.
+    machineType: Machine type of VM Instance underlying connector. Default is
+      e2-micro.
     maxThroughput: Maximum throughput of the connector in Mbps. Default is
       200, max is 1000.
     minThroughput: Minimum throughput of the connector in Mbps. Default and
@@ -58,12 +60,13 @@ class Connector(_messages.Message):
   connectedProjects = _messages.StringField(1, repeated=True)
   id = _messages.StringField(2)
   ipCidrRange = _messages.StringField(3)
-  maxThroughput = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  minThroughput = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  status = _messages.EnumField('StatusValueValuesEnum', 8)
-  subnet = _messages.MessageField('Subnet', 9)
+  machineType = _messages.StringField(4)
+  maxThroughput = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  minThroughput = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  subnet = _messages.MessageField('Subnet', 10)
 
 
 class ListConnectorsResponse(_messages.Message):

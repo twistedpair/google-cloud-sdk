@@ -92,3 +92,26 @@ class Client(object):
         operation_ref,
         'Updating managed zone [{}]'.format(zone_ref.Name())
     )
+
+  def UpdateLabels(self, zone_ref, labels):
+    """Update labels using Managed Zones Update request."""
+    zone = self.Get(zone_ref)
+    zone.labels = labels
+
+    operation = self._service.Update(
+        self.messages.DnsManagedZonesUpdateRequest(
+            managedZoneResource=zone,
+            project=zone_ref.project,
+            managedZone=zone_ref.Name()))
+
+    operation_ref = util.GetRegistry(self.version).Parse(
+        operation.id,
+        params={
+            'project': zone_ref.project,
+            'managedZone': zone_ref.Name(),
+        },
+        collection='dns.managedZoneOperations')
+
+    return operations.WaitFor(
+        self.version, operation_ref,
+        'Updating managed zone [{}]'.format(zone_ref.Name()))

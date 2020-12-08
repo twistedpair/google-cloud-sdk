@@ -299,6 +299,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'billingbudgets': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.billingbudgets.v1',
+                client_classpath='billingbudgets_v1_client.BillingbudgetsV1',
+                messages_modulepath='billingbudgets_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.billingbudgets.v1alpha1',
@@ -312,7 +320,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.billingbudgets.v1beta1',
                 client_classpath='billingbudgets_v1beta1_client.BillingbudgetsV1beta1',
                 messages_modulepath='billingbudgets_v1beta1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -1344,6 +1352,14 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.metastore.v1alpha',
                 client_classpath='metastore_v1alpha_client.MetastoreV1alpha',
                 messages_modulepath='metastore_v1alpha_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.metastore.v1beta',
+                client_classpath='metastore_v1beta_client.MetastoreV1beta',
+                messages_modulepath='metastore_v1beta_messages',
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
@@ -1880,6 +1896,16 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.storage.v1',
                 client_classpath='storage_v1_client.StorageV1',
                 messages_modulepath='storage_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'storagetransfer': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.storagetransfer.v1',
+                client_classpath='storagetransfer_v1_client.StoragetransferV1',
+                messages_modulepath='storagetransfer_v1_messages',
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),

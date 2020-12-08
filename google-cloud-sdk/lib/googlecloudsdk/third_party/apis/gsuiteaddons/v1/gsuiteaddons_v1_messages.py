@@ -37,6 +37,8 @@ class GoogleAppsScriptTypeAddOnWidgetSet(_messages.Message):
       UPDATE_SUBJECT_AND_RECIPIENTS: Update the subject and recipients of a
         draft.
       GRID_WIDGET: The grid widget.
+      ADDON_COMPOSE_UI_ACTION: A Gmail add-on action that applies to the addon
+        compose UI.
     """
     WIDGET_TYPE_UNSPECIFIED = 0
     DATE_PICKER = 1
@@ -45,6 +47,7 @@ class GoogleAppsScriptTypeAddOnWidgetSet(_messages.Message):
     FIXED_FOOTER = 4
     UPDATE_SUBJECT_AND_RECIPIENTS = 5
     GRID_WIDGET = 6
+    ADDON_COMPOSE_UI_ACTION = 7
 
   usedWidgets = _messages.EnumField('UsedWidgetsValueListEntryValuesEnum', 1, repeated=True)
 

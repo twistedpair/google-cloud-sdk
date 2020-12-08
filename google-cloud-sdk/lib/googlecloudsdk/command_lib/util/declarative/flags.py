@@ -27,8 +27,18 @@ from googlecloudsdk.core.util import files
 def AddPathFlag(parser):
   parser.add_argument(
       '--path',
+      required=True,
       type=files.ExpandHomeAndVars,
-      help='Path of the directory or file to output configuration.')
+      help='Path of the directory or file to output configuration(s).')
+
+
+def AddFormatFlag(parser):
+  parser.add_argument(
+      '--resource-format',
+      choices=['krm', 'hcl'],
+      help=('Format of the configuration to export. Available configuration '
+            'formats are Kubernetes Resource Model (krm) or Terraform '
+            'HCL (hcl). Command defaults to "krm".'))
 
 
 def AddAllFlag(parser, collection='collection'):
@@ -41,6 +51,29 @@ def AddAllFlag(parser, collection='collection'):
           'individual files based on resource name and scope. If `--path` is not '
           'specified, resources will be streamed to stdout.'.format(collection)
       ))
+
+
+def AddOnErrorFlag(parser):
+  parser.add_argument(
+      '--on-error',
+      choices=['continue', 'halt', 'ignore'],
+      default='ignore',
+      help=('Determines behavior when a recoverable error is encountered while '
+            'exporting a resource. To stop execution when encountering an '
+            'error, specify "halt". To log errors when encountered and '
+            'continue the export, specify "continue". To continue when errors '
+            'are encountered without logging, specify "ignore".'))
+
+
+def AddBulkExportArgs(parser):
+  """Adds flags for the bulk-export command."""
+  AddOnErrorFlag(parser)
+  AddPathFlag(parser)
+  AddFormatFlag(parser)
+  group = parser.add_group(mutex=True)
+  group.add_argument('--organization', type=int, help='Organization ID')
+  group.add_argument('--project', help='Project ID')
+  group.add_argument('--folder', type=int, help='Folder ID')
 
 
 def ValidateAllPathArgs(args):

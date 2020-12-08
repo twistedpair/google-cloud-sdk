@@ -87,6 +87,15 @@ Size of the disk attached to the worker.
 
 If not given, Cloud Build will use a standard disk size.
 """)
+  if release_track != base.ReleaseTrack.ALPHA:
+    worker_flags.add_argument(
+        '--no-external-ip',
+        action='store_true',
+        help="""\
+If set, workers in the worker pool are created without an external IP address.
+
+If the worker pool is within a VPC Service Control perimeter, use this flag.
+""")
   return parser
 
 

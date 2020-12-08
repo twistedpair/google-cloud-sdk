@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://ondemandscanning.googleapis.com/v1beta1/'
-DOCS_URL = 'https://www.google.com'
+DOCS_URL = 'https://cloud.google.com/container-analysis/docs/apis/'
 
 
 class Collections(enum.Enum):

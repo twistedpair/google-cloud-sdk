@@ -187,7 +187,7 @@ only `local-ssd` is allowed.
 *size*::: The size of the disk in GiB. Currently you can specify only 375 GiB
 or no value at all.
 
-*count*::: Specifies the number of such disks.
+*count*::: Specifies the number of such disks. Set to `16` or `24`.
 
 """)
 

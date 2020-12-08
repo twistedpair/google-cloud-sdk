@@ -32,6 +32,7 @@ import six
 from six.moves import urllib
 import socks
 from urllib3.util.ssl_ import create_urllib3_context
+from google.auth.transport import requests as google_auth_requests
 
 
 def GetSession(timeout='unset', response_encoding=None, ca_certs=None,
@@ -308,3 +309,8 @@ class RequestWrapper(transport.RequestWrapper):
   def DecodeResponse(self, response, response_encoding):
     response.encoding = response_encoding
     return response
+
+
+def GoogleAuthRequest():
+  """Returns a gcloud's requests session to refresh google-auth credentials."""
+  return google_auth_requests.Request(session=GetSession())

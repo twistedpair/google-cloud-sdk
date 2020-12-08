@@ -182,7 +182,7 @@ SETLOCAL EnableDelayedExpansion
 rem temporarily set code page to utf-8 support
 for /F "tokens=4" %%G in ('chcp') do (set OLD_CP=%%G)
 set PYTHONIOENCODING=utf-8
-chcp 65001
+chcp 65001 >NUL
 
 IF %NO_WORKING_PYTHON_FOUND%=="true" (
   echo.
@@ -205,7 +205,7 @@ IF %NO_WORKING_PYTHON_FOUND%=="true" (
 
 set EXIT_CODE=%ERRORLEVEL%
 
-chcp %OLD_CP%
+chcp %OLD_CP% >NUL
 
 IF _%INTERACTIVE%_==_0_ (
   IF _%CLOUDSDK_CORE_DISABLE_PROMPTS%_==__ (

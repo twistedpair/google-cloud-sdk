@@ -167,6 +167,28 @@ class Empty(_messages.Message):
 
 
 
+class ExportMetadataRequest(_messages.Message):
+  r"""Request message for DataprocMetastore.ExportMetadata.
+
+  Fields:
+    destinationGcsFolder: Required. A Cloud Storage URI of a folder that
+      metadata are exported to, in the format gs:///. A sub-folder containing
+      exported files will be created below it.
+    requestId: Optional. A request ID. Specify a unique request ID to allow
+      the server to ignore the request if it has completed. The server will
+      ignore subsequent requests that provide a duplicate request ID for at
+      least 60 minutes after the first request.For example, if an initial
+      request times out, followed by another request with the same request ID,
+      the server ignores the second request to prevent the creation of
+      duplicate commitments.The request ID must be a valid UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier#Format). A
+      zero UUID (00000000-0000-0000-0000-000000000000) is not supported.
+  """
+
+  destinationGcsFolder = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -499,6 +521,43 @@ class MaintenanceWindow(_messages.Message):
   hourOfDay = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class MetadataExport(_messages.Message):
+  r"""The details of a metadata export operation.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the export.
+
+  Fields:
+    destinationGcsUri: Output only. A Cloud Storage URI of a folder that
+      metadata are exported to, in the form of gs:////, where ` is
+      automatically generated.
+    endTime: Output only. The time when the export ended.
+    startTime: Output only. The time when the export started.
+    state: Output only. The current state of the export.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the export.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the metadata export is unknown.
+      RUNNING: The metadata export is running.
+      SUCCEEDED: The metadata export completed successfully.
+      FAILED: The metadata export failed.
+      CANCELLED: The metadata export is cancelled.
+    """
+    STATE_UNSPECIFIED = 0
+    RUNNING = 1
+    SUCCEEDED = 2
+    FAILED = 3
+    CANCELLED = 4
+
+  destinationGcsUri = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
 class MetadataImport(_messages.Message):
   r"""A metastore resource that imports metadata.
 
@@ -549,6 +608,17 @@ class MetadataIntegration(_messages.Message):
   services.
   """
 
+
+
+class MetadataManagementActivity(_messages.Message):
+  r"""The metadata management activities of the metastore service.
+
+  Fields:
+    metadataExports: Output only. The latest metadata exports of the metastore
+      service.
+  """
+
+  metadataExports = _messages.MessageField('MetadataExport', 1, repeated=True)
 
 
 class MetastoreProjectsLocationsGetRequest(_messages.Message):
@@ -663,6 +733,21 @@ class MetastoreProjectsLocationsServicesDeleteRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class MetastoreProjectsLocationsServicesExportMetadataRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesExportMetadataRequest object.
+
+  Fields:
+    exportMetadataRequest: A ExportMetadataRequest resource to be passed as
+      the request body.
+    service: Required. The relative resource name of the metastore service to
+      run export, in the following form:"projects/{project_id}/locations/{loca
+      tion_id}/services/{service_id}
+  """
+
+  exportMetadataRequest = _messages.MessageField('ExportMetadataRequest', 1)
+  service = _messages.StringField(2, required=True)
 
 
 class MetastoreProjectsLocationsServicesGetIamPolicyRequest(_messages.Message):
@@ -1104,6 +1189,8 @@ class Service(_messages.Message):
       maintenance purposes in UTC time.
     metadataIntegration: The setting that defines how metastore metadata
       should be integrated with external services and systems.
+    metadataManagementActivity: Output only. The metadata management
+      activities of the metastore service.
     name: Immutable. The relative resource name of the metastore service, of
       the form:"projects/{project_number}/locations/{location_id}/services/{se
       rvice_id}".
@@ -1155,11 +1242,15 @@ class Service(_messages.Message):
 
     Values:
       TIER_UNSPECIFIED: The tier is not set.
-      ENTERPRISE: The enterprise tier combines a powerful metastore serving
-        layer with a highly scalable data storage layer.
+      DEVELOPER: The developer tier provides limited scalability and no fault
+        tolerance. Good for low-cost proof-of-concept.
+      ENTERPRISE: The enterprise tier provides multi-zone high availability,
+        and sufficient scalability for enterprise-level Dataproc Metastore
+        workloads.
     """
     TIER_UNSPECIFIED = 0
-    ENTERPRISE = 1
+    DEVELOPER = 1
+    ENTERPRISE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1192,14 +1283,15 @@ class Service(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   maintenanceWindow = _messages.MessageField('MaintenanceWindow', 6)
   metadataIntegration = _messages.MessageField('MetadataIntegration', 7)
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  stateMessage = _messages.StringField(12)
-  tier = _messages.EnumField('TierValueValuesEnum', 13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  metadataManagementActivity = _messages.MessageField('MetadataManagementActivity', 8)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  port = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  stateMessage = _messages.StringField(13)
+  tier = _messages.EnumField('TierValueValuesEnum', 14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
 
 
 class SetIamPolicyRequest(_messages.Message):

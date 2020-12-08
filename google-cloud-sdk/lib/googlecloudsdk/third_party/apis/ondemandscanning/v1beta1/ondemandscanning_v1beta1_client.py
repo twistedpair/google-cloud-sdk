@@ -237,6 +237,33 @@ class OndemandscanningV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AnalyzePackages(self, request, global_params=None):
+      r"""Initiates an analysis of the provided packages.
+
+      Args:
+        request: (OndemandscanningProjectsLocationsScansAnalyzePackagesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AnalyzePackages')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AnalyzePackages.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/scans:analyzePackages',
+        http_method='POST',
+        method_id='ondemandscanning.projects.locations.scans.analyzePackages',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/scans:analyzePackages',
+        request_field='analyzePackagesRequest',
+        request_type_name='OndemandscanningProjectsLocationsScansAnalyzePackagesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def ScanContainerImage(self, request, global_params=None):
       r"""Initiates a scan of the provided resource.
 

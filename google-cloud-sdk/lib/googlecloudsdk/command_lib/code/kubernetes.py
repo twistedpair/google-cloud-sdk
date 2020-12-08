@@ -23,8 +23,10 @@ import sys
 
 from googlecloudsdk.command_lib.code import run_subprocess
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import platforms
+from googlecloudsdk.core.util import times
 import six
 
 DEFAULT_CLUSTER_NAME = 'gcloud-local-dev'
@@ -252,9 +254,13 @@ def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
 
       start_msg = "Starting development environment '%s' ..." % cluster_name
 
+      event_timeout = times.ParseDuration(
+          properties.VALUES.code.minikube_event_timeout.Get(
+              required=True)).total_seconds
+
       with console_io.ProgressBar(start_msg) as progress_bar:
         for json_obj in run_subprocess.StreamOutputJson(
-            cmd, event_timeout_sec=90, show_stderr=debug):
+            cmd, event_timeout_sec=event_timeout, show_stderr=debug):
           if debug:
             print('minikube', json_obj)
 
@@ -268,6 +274,7 @@ def _HandleMinikubeStatusEvent(progress_bar, json_obj):
   if json_obj['type'] == _MINIKUBE_STEP:
     data = json_obj['data']
 
+    # https://github.com/kubernetes/minikube/issues/9754
     # currentstep and totalsteps could be:
     #   missing -> invalid
     #   ''      -> invalid
@@ -282,7 +289,15 @@ def _HandleMinikubeStatusEvent(progress_bar, json_obj):
   elif json_obj['type'] == _MINIKUBE_DOWNLOAD_PROGRESS:
     data = json_obj['data']
 
-    if 'currentstep' in data and 'totalsteps' in data and 'progress' in data:
+    # https://github.com/kubernetes/minikube/issues/9754
+    # currentstep and totalsteps could be:
+    #   missing -> invalid
+    #   ''      -> invalid
+    #   '0'     -> ok
+    #   0       -> ok
+    # pylint:disable=g-explicit-bool-comparison
+    if (data.get('currentstep', '') != '' and
+        data.get('totalsteps', '') != '' and 'progress' in data):
       current_step = int(data['currentstep'])
       total_steps = int(data['totalsteps'])
       download_progress = float(data['progress'])

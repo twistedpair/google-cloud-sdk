@@ -41,6 +41,17 @@ def AddPrivatecloudArgToParser(parser, positional=False):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
+def AddIPArgToParser(parser):
+  ip_address_id = yaml_data.ResourceYAMLData.FromPath('vmware.ip_address')
+  resource_spec = concepts.ResourceSpec.FromYaml(ip_address_id.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name='name',
+      concept_spec=resource_spec,
+      required=True,
+      group_help='ip_address.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
 def AddClusterArgToParser(parser):
   cluster_data = yaml_data.ResourceYAMLData.FromPath('vmware.cluster')
   resource_spec = concepts.ResourceSpec.FromYaml(cluster_data.GetData())

@@ -66,16 +66,18 @@ def _GetClientInstance(api_name, api_version, http_timeout_sec=None):
   return client
 
 
-def ExecuteSql(session_ref, sql, query_mode, enable_partitioned_dml=False,
-               http_timeout_sec=None):
+def ExecuteSql(sql, query_mode, session_ref, read_only_options=None,
+               enable_partitioned_dml=False, http_timeout_sec=None):
   """Execute an SQL command.
 
   Args:
-    session_ref: Session, Indicates that the repo should be created if it does
-      not exist.
     sql: String, The SQL to execute.
     query_mode: String, The mode in which to run the query. Must be one of
       'NORMAL', 'PLAN', or 'PROFILE'
+    session_ref: Session, Indicates that the repo should be created if it does
+      not exist.
+    read_only_options: The ReadOnly message for a read-only request. It is
+      ignored in a DML request.
     enable_partitioned_dml: Boolean, whether partitioned dml is enabled.
     http_timeout_sec: int, Maximum time in seconds to wait for the SQL query to
       complete.
@@ -87,8 +89,8 @@ def ExecuteSql(session_ref, sql, query_mode, enable_partitioned_dml=False,
   msgs = apis.GetMessagesModule('spanner', 'v1')
   _RegisterCustomMessageCodec(msgs)
 
-  execute_sql_request = _GetQueryRequest(sql, query_mode, session_ref,
-                                         enable_partitioned_dml)
+  execute_sql_request = _GetQueryRequest(
+      sql, query_mode, session_ref, read_only_options, enable_partitioned_dml)
   req = msgs.SpannerProjectsInstancesDatabasesSessionsExecuteSqlRequest(
       session=session_ref.RelativeName(), executeSqlRequest=execute_sql_request)
   resp = client.projects_instances_databases_sessions.ExecuteSql(req)
@@ -119,6 +121,7 @@ def _RegisterCustomMessageCodec(msgs):
 def _GetQueryRequest(sql,
                      query_mode,
                      session_ref=None,
+                     read_only_options=None,
                      enable_partitioned_dml=False):
   """Formats the request based on whether the statement contains DML.
 
@@ -127,6 +130,8 @@ def _GetQueryRequest(sql,
     query_mode: String, The mode in which to run the query. Must be one of
       'NORMAL', 'PLAN', or 'PROFILE'
     session_ref: Reference to the session.
+    read_only_options: The ReadOnly message for a read-only request. It is
+      ignored in a DML request.
     enable_partitioned_dml: Boolean, whether partitioned dml is enabled.
 
   Returns:
@@ -141,7 +146,7 @@ def _GetQueryRequest(sql,
     transaction = msgs.TransactionSelector(begin=transaction_options)
   else:
     transaction_options = msgs.TransactionOptions(
-        readOnly=msgs.ReadOnly(strong=True))
+        readOnly=read_only_options)
     transaction = msgs.TransactionSelector(singleUse=transaction_options)
   return msgs.ExecuteSqlRequest(
       sql=sql,

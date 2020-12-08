@@ -549,6 +549,10 @@
           "description": "Whether to deploy this version in a container on a virtual machine.",
           "type": "boolean"
         },
+        "appEngineApis": {
+          "description": "app_engine_apis allows Second Generation runtimes to access the App Engine APIs.",
+          "type": "boolean"
+        },
         "betaSettings": {
           "description": "Metadata settings that are supplied to this version to enable beta runtime features.",
           "type": "object",

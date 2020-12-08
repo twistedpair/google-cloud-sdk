@@ -282,7 +282,7 @@ class UpdateManager(object):
       if warn:
         log.warning('You are using an overridden snapshot URL: [%s]', url)
     else:
-      url = config.INSTALLATION_CONFIG.snapshot_url
+      url = properties.VALUES.component_manager.original_snapshot_url.Get()
     if not url:
       raise MissingUpdateURLError()
 

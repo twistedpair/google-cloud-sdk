@@ -131,7 +131,6 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -175,10 +174,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class ChildLink(_messages.Message):
@@ -1893,6 +1891,46 @@ class ReplicaInfo(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
+class RestoreDatabaseEncryptionConfig(_messages.Message):
+  r"""Encryption configuration for the database to restore to.
+
+  Enums:
+    EncryptionTypeValueValuesEnum: Required. The encryption type of the
+      restored database.
+
+  Fields:
+    encryptionType: Required. The encryption type of the restored database.
+    kmsKeyName: Optional. The resource name of the Cloud KMS key that will be
+      used to encrypt/decrypt the database to restore to. Once specified, the
+      database will enforce customer managed encryption, regardless of the
+      backup encryption type. This field should be set only when
+      encryption_type is CUSTOMER_MANAGED_ENCRYPTION. Values are of the form
+      `projects//locations//keyRings//cryptoKeys/`.
+  """
+
+  class EncryptionTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The encryption type of the restored database.
+
+    Values:
+      ENCRYPTION_TYPE_UNSPECIFIED: Unspecified. Do not use.
+      USE_CONFIG_DEFAULT_OR_BACKUP_ENCRYPTION: This is the default option when
+        encryption_config is empty. It will first check whether there is a
+        config default and use it if set. if not set, it will use the backup
+        encryption setting. Note that the config default feature is a new
+        feature that may not be available at the beginning.
+      GOOGLE_DEFAULT_ENCRYPTION: Enforce google default encryption.
+      CUSTOMER_MANAGED_ENCRYPTION: Enforce customer managed encryption. If
+        specified, the kms_key_name must provide a valid Cloud KMS key name.
+    """
+    ENCRYPTION_TYPE_UNSPECIFIED = 0
+    USE_CONFIG_DEFAULT_OR_BACKUP_ENCRYPTION = 1
+    GOOGLE_DEFAULT_ENCRYPTION = 2
+    CUSTOMER_MANAGED_ENCRYPTION = 3
+
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 1)
+  kmsKeyName = _messages.StringField(2)
+
+
 class RestoreDatabaseMetadata(_messages.Message):
   r"""Metadata type for the long-running operation returned by
   RestoreDatabase.
@@ -1954,10 +1992,17 @@ class RestoreDatabaseRequest(_messages.Message):
       This database must not already exist. The `database_id` appended to
       `parent` forms the full database name of the form
       `projects//instances//databases/`.
+    encryptionConfig: Optional. An encryption configuration describing the
+      encryption type and key resources in Cloud KMS used to encrypt/decrypt
+      the database to restore to. If no `encryption_config` is specified, the
+      restored database will use the config default (if set) or the same
+      encryption configuration as the backup by default, namely
+      encryption_type = USE_CONFIG_DEFAULT_OR_DATABASE_ENCRYPTION.
   """
 
   backup = _messages.StringField(1)
   databaseId = _messages.StringField(2)
+  encryptionConfig = _messages.MessageField('RestoreDatabaseEncryptionConfig', 3)
 
 
 class RestoreInfo(_messages.Message):
@@ -2307,11 +2352,23 @@ class SpannerProjectsInstancesBackupOperationsListRequest(_messages.Message):
 class SpannerProjectsInstancesBackupsCreateRequest(_messages.Message):
   r"""A SpannerProjectsInstancesBackupsCreateRequest object.
 
+  Enums:
+    EncryptionConfigEncryptionTypeValueValuesEnum: Required. The encryption
+      type of the backup.
+
   Fields:
     backup: A Backup resource to be passed as the request body.
     backupId: Required. The id of the backup to be created. The `backup_id`
       appended to `parent` forms the full backup name of the form
       `projects//instances//backups/`.
+    encryptionConfig_encryptionType: Required. The encryption type of the
+      backup.
+    encryptionConfig_kmsKeyName: Optional. The resource name of the Cloud KMS
+      key that will be used to protect the backup. Once specified, the backup
+      will enforce customer managed encryption, regardless of the database
+      encryption type. This field should be set only when encryption_type is
+      CUSTOMER_MANAGED_ENCRYPTION. Values are of the form
+      `projects//locations//keyRings//cryptoKeys/`.
     parent: Required. The name of the instance in which the backup will be
       created. This must be the same instance that contains the database the
       backup will be created from. The backup will be stored in the
@@ -2319,9 +2376,29 @@ class SpannerProjectsInstancesBackupsCreateRequest(_messages.Message):
       Values are of the form `projects//instances/`.
   """
 
+  class EncryptionConfigEncryptionTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The encryption type of the backup.
+
+    Values:
+      ENCRYPTION_TYPE_UNSPECIFIED: Unspecified. Do not use.
+      USE_DATABASE_ENCRYPTION: Use the same encryption configuration as the
+        database. This is the default option when encryption_config is empty.
+        If the database is using customer managed encryption, the backup will
+        be using the same KMS key.
+      GOOGLE_DEFAULT_ENCRYPTION: Enforce google default encryption.
+      CUSTOMER_MANAGED_ENCRYPTION: Enforce customer managed encryption. If
+        specified, the kms_key_name must provide a valid Cloud KMS key name.
+    """
+    ENCRYPTION_TYPE_UNSPECIFIED = 0
+    USE_DATABASE_ENCRYPTION = 1
+    GOOGLE_DEFAULT_ENCRYPTION = 2
+    CUSTOMER_MANAGED_ENCRYPTION = 3
+
   backup = _messages.MessageField('Backup', 1)
   backupId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  encryptionConfig_encryptionType = _messages.EnumField('EncryptionConfigEncryptionTypeValueValuesEnum', 3)
+  encryptionConfig_kmsKeyName = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class SpannerProjectsInstancesBackupsDeleteRequest(_messages.Message):
@@ -3659,11 +3736,15 @@ class UpdateDatabaseDdlMetadata(_messages.Message):
     database: The database being modified.
     statements: For an update this list contains all the statements. For an
       individual statement, this list contains only that statement.
+    throttled: Output only. When true, indicates that the operation is
+      throttled e.g due to resource constraints. When resources become
+      available the operation will resume and this field will be false again.
   """
 
   commitTimestamps = _messages.StringField(1, repeated=True)
   database = _messages.StringField(2)
   statements = _messages.StringField(3, repeated=True)
+  throttled = _messages.BooleanField(4)
 
 
 class UpdateDatabaseDdlRequest(_messages.Message):

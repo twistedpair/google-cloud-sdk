@@ -53,6 +53,7 @@ MAX_RESULTS_PER_PAGE = 500
 
 # Defaults for instance creation.
 DEFAULT_ACCESS_CONFIG_NAME = 'external-nat'
+DEFAULT_IPV6_ACCESS_CONFIG_NAME = 'external-v6-access-config'
 
 DEFAULT_MACHINE_TYPE = 'n1-standard-1'
 DEFAULT_MACHINE_TYPE_FOR_CONFIDENTIAL_VMS = 'n2d-standard-2'

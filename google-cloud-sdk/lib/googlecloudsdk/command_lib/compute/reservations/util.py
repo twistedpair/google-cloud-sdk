@@ -20,17 +20,21 @@ from __future__ import unicode_literals
 
 
 def MakeReservationMessageFromArgs(messages, args, allocation_ref):
+  """Construct allocation message from args passed in."""
   accelerators = MakeGuestAccelerators(messages,
                                        getattr(args, 'accelerator', None))
   local_ssds = MakeLocalSsds(messages, getattr(args, 'local_ssd', None))
+  share_settings = MakeShareSettings(messages,
+                                     getattr(args, 'share_setting', None))
   specific_reservation = MakeSpecificSKUReservationMessage(
       messages, args.vm_count, accelerators, local_ssds, args.machine_type,
       args.min_cpu_platform, getattr(args, 'location_hint', None),
       getattr(args, 'maintenance_freeze_duration', None),
       getattr(args, 'maintenance_interval', None))
-  return MakeReservationMessage(
-      messages, allocation_ref.Name(), specific_reservation,
-      args.require_specific_reservation, allocation_ref.zone)
+  return MakeReservationMessage(messages, allocation_ref.Name(), share_settings,
+                                specific_reservation,
+                                args.require_specific_reservation,
+                                allocation_ref.zone)
 
 
 def MakeGuestAccelerators(messages, accelerator_configs):
@@ -70,10 +74,26 @@ def MakeLocalSsds(messages, ssd_configs):
   return local_ssds
 
 
-def MakeSpecificSKUReservationMessage(
-    messages, vm_count, accelerators, local_ssds, machine_type,
-    min_cpu_platform, location_hint=None, freeze_duration=None,
-    freeze_interval=None):
+def MakeShareSettings(messages, setting_configs):
+  """Constructs the share settings message object."""
+  if setting_configs:
+    if setting_configs == 'organization':
+      return messages.AllocationShareSettings(
+          shareType=messages.AllocationShareSettings.ShareTypeValueValuesEnum
+          .ORGANIZATION)
+  else:
+    return None
+
+
+def MakeSpecificSKUReservationMessage(messages,
+                                      vm_count,
+                                      accelerators,
+                                      local_ssds,
+                                      machine_type,
+                                      min_cpu_platform,
+                                      location_hint=None,
+                                      freeze_duration=None,
+                                      freeze_interval=None):
   """Constructs a single specific sku reservation message object."""
   prop_msgs = (
       messages.AllocationSpecificSKUAllocationReservedInstanceProperties)
@@ -86,20 +106,23 @@ def MakeSpecificSKUReservationMessage(
     instance_properties.maintenanceFreezeDurationHours = freeze_duration // 3600
   if freeze_interval:
     instance_properties.maintenanceInterval = (
-        messages.AllocationSpecificSKUAllocationReservedInstanceProperties.
-        MaintenanceIntervalValueValuesEnum(freeze_interval))
+        messages.AllocationSpecificSKUAllocationReservedInstanceProperties
+        .MaintenanceIntervalValueValuesEnum(freeze_interval))
   if location_hint:
     instance_properties.locationHint = location_hint
-
   return messages.AllocationSpecificSKUReservation(
       count=vm_count, instanceProperties=instance_properties)
 
 
-def MakeReservationMessage(messages, reservation_name, specific_reservation,
-                           require_specific_reservation, reservation_zone):
+def MakeReservationMessage(messages, reservation_name, share_settings,
+                           specific_reservation, require_specific_reservation,
+                           reservation_zone):
   """Constructs a single allocation message object."""
-  return messages.Reservation(
+  reservation_message = messages.Reservation(
       name=reservation_name,
       specificReservation=specific_reservation,
       specificReservationRequired=require_specific_reservation,
       zone=reservation_zone)
+  if share_settings:
+    reservation_message.shareSettings = share_settings
+  return reservation_message

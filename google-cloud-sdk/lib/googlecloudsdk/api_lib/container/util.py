@@ -73,11 +73,6 @@ NODEPOOLS_FORMAT = """
 HTTP_ERROR_FORMAT = (
     'ResponseError: code={status_code}, message={status_message}')
 
-WARN_AUTOUPGRADE_ENABLED_BY_DEFAULT = (
-    'Newly created clusters and node-pools will have node auto-upgrade enabled '
-    'by default. This can be disabled using the `--no-enable-autoupgrade` '
-    'flag.')
-
 WARN_NODE_VERSION_WITH_AUTOUPGRADE_ENABLED = (
     'Node version is specified while node auto-upgrade is enabled. '
     'Node-pools created at the specified version will be auto-upgraded '
@@ -556,17 +551,28 @@ def GetPrivateIpv6GoogleAccessTypeMapper(messages, hidden=False):
   """
 
   help_text = """
-Selects the type of private access to Google services over IPv6. Defaults to
-`disabled`.
-outbound-only allows GKE pods to make fast, secure requests to Google services
-over IPv6. This is the most common use of private IPv6 access.
-bidirectional access allows Google services to initiate connections to GKE pods
-in this cluster. This is not intended for common use, and requires previous
-integration with Google services.
+Sets the type of private access to Google services over IPv6.
 
-$ {command} --private-ipv6-google-access-type=disabled
-$ {command} --private-ipv6-google-access-type=outbound-only
-$ {command} --private-ipv6-google-access-type=bidirectional
+PRIVATE_IPV6_GOOGLE_ACCESS_TYPE must be one of:
+
+  bidirectional
+    Allows Google services to initiate connections to GKE pods in this
+    cluster. This is not intended for common use, and requires previous
+    integration with Google services.
+
+  disabled
+    Default value. Disables private access to Google services over IPv6.
+
+  outbound-only
+    Allows GKE pods to make fast, secure requests to Google services
+    over IPv6. This is the most common use of private IPv6 access.
+
+  $ gcloud alpha container clusters create \
+      --private-ipv6-google-access-type=disabled
+  $ gcloud alpha container clusters create \
+      --private-ipv6-google-access-type=outbound-only
+  $ gcloud alpha container clusters create \
+      --private-ipv6-google-access-type=bidirectional
 """
   return arg_utils.ChoiceEnumMapper(
       '--private-ipv6-google-access-type',

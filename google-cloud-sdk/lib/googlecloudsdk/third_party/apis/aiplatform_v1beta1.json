@@ -7,14 +7,14 @@
   "version": "v1beta1",
   "revision": "0",
   "title": "Cloud AI Platform API",
-  "description": "Train high-quality custom machine learning models with minimum effort and machine learning expertise.",
+  "description": "Train high-quality custom machine learning models with minimal machine learning expertise and effort.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/ai-platform",
+  "documentationLink": "https://cloud.google.com/ai-platform-unified/docs",
   "protocol": "rest",
   "rootUrl": "https://aiplatform.googleapis.com/",
   "mtlsRootUrl": "https://aiplatform.mtls.googleapis.com/",
@@ -2620,7 +2620,7 @@
           }
         },
         "supportedInputStorageFormats": {
-          "description": "Output only. The formats this Model supports in BatchPredictionJob.input_config. If PredictSchemata.instance_schema_uri exists, the instances should be given as per that schema. The possible formats are: * `jsonl` The JSON Lines format, where each instance is a single line. Uses GcsSource. * `csv` The CSV format, where each instance is a single comma-separated line. The first line in the file is the header, containing comma-separated field names. Uses GcsSource. * `tf-record` The TFRecord format, where each instance is a single record in tfrecord syntax. Uses GcsSource. * `tf-record-gzip` Similar to `tf-record`, but the file is gzipped. Uses GcsSource. * `bigquery` Each instance is a single row in BigQuery. Uses BigQuerySource. If this Model doesn't support any of these formats it means it cannot be used with a BatchPredictionJob. However, if it has supported_deployment_resources_types, it could serve online predictions by using PredictionService.Predict or PredictionService.Explain.",
+          "description": "Output only. The formats this Model supports in BatchPredictionJob.input_config. If PredictSchemata.instance_schema_uri exists, the instances should be given as per that schema. The possible formats are: * `jsonl` The JSON Lines format, where each instance is a single line. Uses GcsSource. * `csv` The CSV format, where each instance is a single comma-separated line. The first line in the file is the header, containing comma-separated field names. Uses GcsSource. * `tf-record` The TFRecord format, where each instance is a single record in tfrecord syntax. Uses GcsSource. * `tf-record-gzip` Similar to `tf-record`, but the file is gzipped. Uses GcsSource. * `bigquery` Each instance is a single row in BigQuery. Uses BigQuerySource. * `file-list` Each line of the file is the location of an instance to process, uses `gcs_source` field of the InputConfig object. If this Model doesn't support any of these formats it means it cannot be used with a BatchPredictionJob. However, if it has supported_deployment_resources_types, it could serve online predictions by using PredictionService.Predict or PredictionService.Explain.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -2759,11 +2759,11 @@
           }
         },
         "predictRoute": {
-          "description": "Immutable. HTTP path on the container to send prediction requests to. AI Platform forwards requests sent using projects.locations.endpoints.predict to this path on the container's IP address and port. AI Platform then returns the container's response in the API response. For example, if you set this field to `\/foo`, then when AI Platform receives a prediction request, it forwards the request body in a POST request to the following URL on the container: localhost:PORT\/foo PORT refers to the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/DEPLOYED_MODEL:predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (AI Platform makes this value available to your container code as the [`AIP_ENDPOINT_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID` environment variable](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables).)",
+          "description": "Immutable. HTTP path on the container to send prediction requests to. AI Platform forwards requests sent using projects.locations.endpoints.predict to this path on the container's IP address and port. AI Platform then returns the container's response in the API response. For example, if you set this field to `\/foo`, then when AI Platform receives a prediction request, it forwards the request body in a POST request to the `\/foo` path on the port of your container specified by the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/DEPLOYED_MODEL:predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (AI Platform makes this value available to your container code as the [`AIP_ENDPOINT_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID` environment variable](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables).)",
           "type": "string"
         },
         "healthRoute": {
-          "description": "Immutable. HTTP path on the container to send health checkss to. AI Platform intermittently sends GET requests to this path on the container's IP address and port to check that the container is healthy. Read more about [health checks](https:\/\/tinyurl.com\/cust-cont-reqs#checks). For example, if you set this field to `\/bar`, then AI Platform intermittently sends a GET request to the following URL on the container: localhost:PORT\/bar PORT refers to the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/ DEPLOYED_MODEL:predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (AI Platform makes this value available to your container code as the [`AIP_ENDPOINT_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.)",
+          "description": "Immutable. HTTP path on the container to send health checkss to. AI Platform intermittently sends GET requests to this path on the container's IP address and port to check that the container is healthy. Read more about [health checks](https:\/\/tinyurl.com\/cust-cont-reqs#checks). For example, if you set this field to `\/bar`, then AI Platform intermittently sends a GET request to the `\/bar` path on the port of your container specified by the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/DEPLOYED_MODEL :predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (AI Platform makes this value available to your container code as the [`AIP_ENDPOINT_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.)",
           "type": "string"
         }
       }
@@ -2778,7 +2778,7 @@
           "type": "string"
         },
         "value": {
-          "description": "Variables that reference a $(VAR_NAME) are expanded using the previous defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not.",
+          "description": "Required. Variables that reference a $(VAR_NAME) are expanded using the previous defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not.",
           "type": "string"
         }
       }
@@ -5449,7 +5449,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Google Cloud Storage URI to a input file, only .csv file is supported.",
+          "description": "Cloud Storage URI of one or more files. Only CSV files are supported. The first line of the CSV file is used as the header. If there are multiple files, the header is the first line of the lexicographically first file, the other files must either contain the exact same header or omit the header.",
           "type": "array",
           "items": {
             "type": "string"
@@ -5637,7 +5637,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Google Cloud Storage URI to a input file, only .csv file is supported.",
+          "description": "Cloud Storage URI of one or more files. Only CSV files are supported. The first line of the CSV file is used as the header. If there are multiple files, the header is the first line of the lexicographically first file, the other files must either contain the exact same header or omit the header.",
           "type": "array",
           "items": {
             "type": "string"
@@ -6732,7 +6732,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Google Cloud Storage URI to a input file, only .csv file is supported.",
+          "description": "Cloud Storage URI of one or more files. Only CSV files are supported. The first line of the CSV file is used as the header. If there are multiple files, the header is the first line of the lexicographically first file, the other files must either contain the exact same header or omit the header.",
           "type": "array",
           "items": {
             "type": "string"
@@ -6905,7 +6905,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Google Cloud Storage URI to a input file, only .csv file is supported.",
+          "description": "Cloud Storage URI of one or more files. Only CSV files are supported. The first line of the CSV file is used as the header. If there are multiple files, the header is the first line of the lexicographically first file, the other files must either contain the exact same header or omit the header.",
           "type": "array",
           "items": {
             "type": "string"
@@ -7711,13 +7711,11 @@
       "properties": {
         "categoryMask": {
           "description": "A PNG image where each pixel in the mask represents the category in which the pixel in the original image was predicted to belong to. The size of this image will be the same as the original image. The mapping between the AnntoationSpec and the color can be found in model's metadata. The model will choose the most likely category and if none of the categories reach the confidence threshold, the pixel will be marked as background.",
-          "type": "string",
-          "format": "byte"
+          "type": "string"
         },
         "confidenceMask": {
           "description": "A one channel image which is encoded as an 8bit lossless PNG. The size of the image will be the same as the original image. For a specific pixel, darker color means less confidence in correctness of the cateogry in the categoryMask for the corresponding pixel. Black means no confidence and white means complete confidence.",
-          "type": "string",
-          "format": "byte"
+          "type": "string"
         }
       }
     },
@@ -9615,7 +9613,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Google Cloud Storage URI to a input file, only .csv file is supported.",
+          "description": "Cloud Storage URI of one or more files. Only CSV files are supported. The first line of the CSV file is used as the header. If there are multiple files, the header is the first line of the lexicographically first file, the other files must either contain the exact same header or omit the header.",
           "type": "array",
           "items": {
             "type": "string"
@@ -9788,7 +9786,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Google Cloud Storage URI to a input file, only .csv file is supported.",
+          "description": "Cloud Storage URI of one or more files. Only CSV files are supported. The first line of the CSV file is used as the header. If there are multiple files, the header is the first line of the lexicographically first file, the other files must either contain the exact same header or omit the header.",
           "type": "array",
           "items": {
             "type": "string"

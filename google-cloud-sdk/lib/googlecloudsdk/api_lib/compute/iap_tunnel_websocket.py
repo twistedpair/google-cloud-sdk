@@ -220,7 +220,7 @@ class IapTunnelWebSocket(object):
   def _IsClosed(self):
     return ((self._websocket_helper and self._websocket_helper.IsClosed()) or
             (self._send_and_reconnect_thread and
-             not self._send_and_reconnect_thread.isAlive()))
+             not self._send_and_reconnect_thread.is_alive()))
 
   def _StartNewWebSocket(self):
     """Start a new WebSocket and thread to listen for incoming data."""

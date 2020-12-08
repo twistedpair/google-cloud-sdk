@@ -318,6 +318,33 @@ class MetastoreV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExportMetadata(self, request, global_params=None):
+      r"""Exports metadata from a service.
+
+      Args:
+        request: (MetastoreProjectsLocationsServicesExportMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ExportMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:exportMetadata',
+        http_method='POST',
+        method_id='metastore.projects.locations.services.exportMetadata',
+        ordered_params=['service'],
+        path_params=['service'],
+        query_params=[],
+        relative_path='v1alpha/{+service}:exportMetadata',
+        request_field='exportMetadataRequest',
+        request_type_name='MetastoreProjectsLocationsServicesExportMetadataRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets the details of a single service.
 

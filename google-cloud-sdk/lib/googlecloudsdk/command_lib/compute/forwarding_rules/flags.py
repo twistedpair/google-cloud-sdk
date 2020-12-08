@@ -405,14 +405,13 @@ def AddressArg(include_l7_internal_load_balancing):
 
 def AddUpdateArgs(parser,
                   include_l7_internal_load_balancing=False,
-                  include_target_grpc_proxy=False,
                   include_psc_google_apis=False,
-                  include_target_service_attachment=False):
+                  include_target_service_attachment=False,
+                  support_tcp_in_td=False):
   """Adds common flags for mutating forwarding rule targets."""
   target = parser.add_mutually_exclusive_group(required=True)
 
-  if include_target_grpc_proxy:
-    TargetGrpcProxyArg().AddArgument(parser, mutex_group=target)
+  TargetGrpcProxyArg().AddArgument(parser, mutex_group=target)
 
   if include_target_service_attachment:
     TargetServiceAttachmentArg().AddArgument(parser, mutex_group=target)
@@ -452,20 +451,21 @@ def AddUpdateArgs(parser,
   AddLoadBalancingScheme(
       parser,
       include_l7_ilb=include_l7_internal_load_balancing,
-      include_target_grpc_proxy=include_target_grpc_proxy,
+      support_tcp_in_td=support_tcp_in_td,
       include_psc_google_apis=include_psc_google_apis,
       include_target_service_attachment=include_target_service_attachment)
 
 
 def AddLoadBalancingScheme(parser,
                            include_l7_ilb=False,
-                           include_target_grpc_proxy=False,
+                           support_tcp_in_td=False,
                            include_psc_google_apis=False,
                            include_target_service_attachment=False):
   """Adds the load-balancing-scheme flag."""
-  td_proxies = ('--target-http-proxy, --target-https-proxy, --target-grpc-proxy'
-                if include_target_grpc_proxy else
-                '--target-http-proxy, --target-https-proxy')
+  td_proxies = ('--target-http-proxy, --target-https-proxy, '
+                '--target-grpc-proxy, --target-tcp-proxy' if support_tcp_in_td
+                else '--target-http-proxy, --target-https-proxy, '
+                '--target-grpc-proxy')
   load_balancing_choices = {
       'EXTERNAL':
           'External load balancing or forwarding, used with one of '

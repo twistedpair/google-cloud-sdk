@@ -4,7 +4,7 @@
  "id": "dns:v1",
  "name": "dns",
  "version": "v1",
- "revision": "20201106",
+ "revision": "20201130",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -361,6 +361,9 @@
     "reverseLookupConfig": {
      "$ref": "ManagedZoneReverseLookupConfig"
     },
+    "serviceDirectoryConfig": {
+     "$ref": "ManagedZoneServiceDirectoryConfig"
+    },
     "visibility": {
      "type": "string",
      "enum": [
@@ -550,6 +553,37 @@
      "type": "string",
      "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZoneReverseLookupConfig\".",
      "default": "dns#managedZoneReverseLookupConfig"
+    }
+   }
+  },
+  "ManagedZoneServiceDirectoryConfig": {
+   "id": "ManagedZoneServiceDirectoryConfig",
+   "type": "object",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZoneServiceDirectoryConfig\".",
+     "default": "dns#managedZoneServiceDirectoryConfig"
+    },
+    "namespace": {
+     "$ref": "ManagedZoneServiceDirectoryConfigNamespace"
+    }
+   }
+  },
+  "ManagedZoneServiceDirectoryConfigNamespace": {
+   "id": "ManagedZoneServiceDirectoryConfigNamespace",
+   "type": "object",
+   "properties": {
+    "deletionTime": {
+     "type": "string"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZoneServiceDirectoryConfigNamespace\".",
+     "default": "dns#managedZoneServiceDirectoryConfigNamespace"
+    },
+    "namespaceUrl": {
+     "type": "string"
     }
    }
   },
@@ -808,6 +842,10 @@
      "type": "boolean"
     },
     "dnsKeysPerManagedZone": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "gkeClustersPerPolicy": {
      "type": "integer",
      "format": "int32"
     },

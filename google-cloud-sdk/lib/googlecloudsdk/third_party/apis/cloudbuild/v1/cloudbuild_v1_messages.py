@@ -685,6 +685,8 @@ class BuildTrigger(_messages.Message):
       contain only alphanumeric characters and dashes. + They can be 1-64
       characters long. + They must begin and end with an alphanumeric
       character.
+    pubsubConfig: PubsubConfig [Experimental] describes the configuration of a
+      trigger that creates a build whenever a Pub/Sub message is published.
     sourceToBuild: The repo and ref of the repository from which to build.
       This field is used only for those triggers that do not respond to SCM
       events. Triggers that respond to such events build source at whatever
@@ -697,6 +699,9 @@ class BuildTrigger(_messages.Message):
       interpreted as regular expressions. Any branch or tag change that
       matches that regular expression will trigger a build. Mutually exclusive
       with `github`.
+    webhookConfig: WebhookConfig [Experimental] describes the configuration of
+      a trigger that creates a build whenever a webhook is sent to a trigger's
+      webhook URL.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -738,10 +743,12 @@ class BuildTrigger(_messages.Message):
   ignoredFiles = _messages.StringField(11, repeated=True)
   includedFiles = _messages.StringField(12, repeated=True)
   name = _messages.StringField(13)
-  sourceToBuild = _messages.MessageField('GitRepoSource', 14)
-  substitutions = _messages.MessageField('SubstitutionsValue', 15)
-  tags = _messages.StringField(16, repeated=True)
-  triggerTemplate = _messages.MessageField('RepoSource', 17)
+  pubsubConfig = _messages.MessageField('PubsubConfig', 14)
+  sourceToBuild = _messages.MessageField('GitRepoSource', 15)
+  substitutions = _messages.MessageField('SubstitutionsValue', 16)
+  tags = _messages.StringField(17, repeated=True)
+  triggerTemplate = _messages.MessageField('RepoSource', 18)
+  webhookConfig = _messages.MessageField('WebhookConfig', 19)
 
 
 class BuiltImage(_messages.Message):
@@ -765,7 +772,7 @@ class CancelBuildRequest(_messages.Message):
 
   Fields:
     id: Required. ID of the build.
-    name: The name of the `Build` to retrieve. Format:
+    name: The name of the `Build` to cancel. Format:
       `projects/{project}/locations/{location}/builds/{build}`
     projectId: Required. ID of the project.
   """
@@ -1345,6 +1352,23 @@ class CloudbuildProjectsTriggersRunRequest(_messages.Message):
   triggerId = _messages.StringField(3, required=True)
 
 
+class CloudbuildProjectsTriggersWebhookRequest(_messages.Message):
+  r"""A CloudbuildProjectsTriggersWebhookRequest object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    projectId: Project in which the specified trigger lives
+    secret: Secret token used for authorization if an OAuth token isn't
+      provided.
+    trigger: Name of the trigger to run the payload against
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  projectId = _messages.StringField(2)
+  secret = _messages.StringField(3)
+  trigger = _messages.StringField(4, required=True)
+
+
 class ClusterOptions(_messages.Message):
   r"""Details of the GKE Cluster for builds that should execute on-cluster.
 
@@ -1392,37 +1416,6 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
-
-
-class EncryptedCredential(_messages.Message):
-  r"""EncryptedCredential contains an encrypted secret, what key should be
-  used to decode the secret, and how to use the secret.
-
-  Enums:
-    TypeValueValuesEnum: Underlying credential type encoded in data.
-
-  Fields:
-    data: Encrypted user credential. `key` should be able to decrypt this
-      data. See `type` for supported types.
-    key: KMS key ID to use for decryption.
-    type: Underlying credential type encoded in data.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Underlying credential type encoded in data.
-
-    Values:
-      UNKNOWN: Default enum type. This should not be used.
-      HTTP_BASIC_AUTH: HTTP Basic Authentication Credentials. `data` should be
-        a base64 encoded username:password. See
-        https://tools.ietf.org/html/rfc7617 for more details.
-    """
-    UNKNOWN = 0
-    HTTP_BASIC_AUTH = 1
-
-  data = _messages.BytesField(1)
-  key = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class FileHashes(_messages.Message):
@@ -1515,6 +1508,7 @@ class GitHubEnterpriseConfig(_messages.Message):
       Enterprise server.
     createTime: Output only. Time when the installation was associated with
       the project.
+    displayName: Optional. Name to display for this config.
     hostUrl: The URL of the github enterprise host the configuration is for.
     name: Optional. The full resource name for the GitHubEnterpriseConfig For
       example: "projects/{$project_id}/githubEnterpriseConfig/{$config_id}"
@@ -1535,11 +1529,12 @@ class GitHubEnterpriseConfig(_messages.Message):
   appConfigJson = _messages.MessageField('GCSLocation', 1)
   appId = _messages.IntegerField(2)
   createTime = _messages.StringField(3)
-  hostUrl = _messages.StringField(4)
-  name = _messages.StringField(5)
-  peeredNetwork = _messages.StringField(6)
-  secrets = _messages.MessageField('GitHubEnterpriseSecrets', 7)
-  webhookKey = _messages.StringField(8)
+  displayName = _messages.StringField(4)
+  hostUrl = _messages.StringField(5)
+  name = _messages.StringField(6)
+  peeredNetwork = _messages.StringField(7)
+  secrets = _messages.MessageField('GitHubEnterpriseSecrets', 8)
+  webhookKey = _messages.StringField(9)
 
 
 class GitHubEnterpriseSecrets(_messages.Message):
@@ -1550,16 +1545,28 @@ class GitHubEnterpriseSecrets(_messages.Message):
   Fields:
     oauthClientIdName: The resource name for the OAuth client ID secret in
       Secret Manager.
+    oauthClientIdVersionName: The resource name for the OAuth client ID secret
+      version in Secret Manager.
     oauthSecretName: The resource name for the OAuth secret in Secret Manager.
+    oauthSecretVersionName: The resource name for the OAuth secret secret
+      version in Secret Manager.
     privateKeyName: The resource name for the private key secret.
+    privateKeyVersionName: The resource name for the private key secret
+      version.
     webhookSecretName: The resource name for the webhook secret in Secret
       Manager.
+    webhookSecretVersionName: The resource name for the webhook secret secret
+      version in Secret Manager.
   """
 
   oauthClientIdName = _messages.StringField(1)
-  oauthSecretName = _messages.StringField(2)
-  privateKeyName = _messages.StringField(3)
-  webhookSecretName = _messages.StringField(4)
+  oauthClientIdVersionName = _messages.StringField(2)
+  oauthSecretName = _messages.StringField(3)
+  oauthSecretVersionName = _messages.StringField(4)
+  privateKeyName = _messages.StringField(5)
+  privateKeyVersionName = _messages.StringField(6)
+  webhookSecretName = _messages.StringField(7)
+  webhookSecretVersionName = _messages.StringField(8)
 
 
 class GitHubEventsConfig(_messages.Message):
@@ -1649,7 +1656,6 @@ class GitSource(_messages.Message):
   r"""Location of the source in any accessible Git repository.
 
   Fields:
-    credential: Secret containing the encrypted bytes.
     dir: Directory, relative to the source root, in which to run the build.
       This must be a relative path. If a step's `dir` is specified and is an
       absolute path, this value is ignored for that step's execution.
@@ -1663,10 +1669,9 @@ class GitSource(_messages.Message):
     url: Location of the Git repo to build.
   """
 
-  credential = _messages.MessageField('EncryptedCredential', 1)
-  dir = _messages.StringField(2)
-  revision = _messages.StringField(3)
-  url = _messages.StringField(4)
+  dir = _messages.StringField(1)
+  revision = _messages.StringField(2)
+  url = _messages.StringField(3)
 
 
 class HTTPDelivery(_messages.Message):
@@ -2152,6 +2157,48 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class PubsubConfig(_messages.Message):
+  r"""PubsubConfig [Experimental] describes the configuration of a trigger
+  that creates a build whenever a Pub/Sub message is published.
+
+  Enums:
+    StateValueValuesEnum: Potential issues with the underlying Pub/Sub
+      subscription configuration. Only populated on get requests.
+
+  Fields:
+    serviceAccountEmail: Service account that will make the push request.
+    state: Potential issues with the underlying Pub/Sub subscription
+      configuration. Only populated on get requests.
+    subscription: Output only. Name of the subscription. Format is
+      `projects/{project}/subscriptions/{subscription}`.
+    topic: The name of the topic from which this subscription is receiving
+      messages. Format is `projects/{project}/topics/{topic}`.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Potential issues with the underlying Pub/Sub subscription
+    configuration. Only populated on get requests.
+
+    Values:
+      STATE_UNSPECIFIED: The subscription configuration has not been checked.
+      OK: The Pub/Sub subscription is properly configured.
+      SUBSCRIPTION_DELETED: The subscription has been deleted.
+      TOPIC_DELETED: The topic has been deleted.
+      SUBSCRIPTION_MISCONFIGURED: Some of the subscription's field are
+        misconfigured.
+    """
+    STATE_UNSPECIFIED = 0
+    OK = 1
+    SUBSCRIPTION_DELETED = 2
+    TOPIC_DELETED = 3
+    SUBSCRIPTION_MISCONFIGURED = 4
+
+  serviceAccountEmail = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  subscription = _messages.StringField(3)
+  topic = _messages.StringField(4)
+
+
 class PullRequestFilter(_messages.Message):
   r"""PullRequestFilter contains filter properties for matching GitHub Pull
   Requests.
@@ -2209,6 +2256,13 @@ class PushFilter(_messages.Message):
   branch = _messages.StringField(1)
   invertRegex = _messages.BooleanField(2)
   tag = _messages.StringField(3)
+
+
+class ReceiveTriggerWebhookResponse(_messages.Message):
+  r"""ReceiveTriggerWebhookResponse [Experimental] is the response object for
+  the ReceiveTriggerWebhook method.
+  """
+
 
 
 class RepoSource(_messages.Message):
@@ -2674,6 +2728,18 @@ class Volume(_messages.Message):
 
   name = _messages.StringField(1)
   path = _messages.StringField(2)
+
+
+class WebhookConfig(_messages.Message):
+  r"""WebhookConfig [Experimental] describes the configuration of a trigger
+  that creates a build whenever a webhook is sent to a trigger's webhook URL.
+
+  Fields:
+    secret: Required. Resource name for the secret required as a URL
+      parameter.
+  """
+
+  secret = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

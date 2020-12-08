@@ -794,10 +794,10 @@ class ExportContext(_messages.Message):
     offload: Option for export offload.
     sqlExportOptions: Options for exporting data as SQL statements.
     uri: The path to the file in Google Cloud Storage where the export will be
-      stored. The URI is in the form *gs: //bucketName/fileName*. If the file
-      already exists, the requests // succeeds, but the operation fails. If
-      *fileType* is // *SQL* and the filename ends with .gz, the contents are
-      // compressed.
+      stored. The URI is in the form *gs://bucketName/fileName*. If the file
+      already exists, the request succeeds, but the operation fails. If
+      *fileType* is *SQL* and the filename ends with .gz, the contents are
+      compressed.
   """
 
   class FileTypeValueValuesEnum(_messages.Enum):
@@ -1021,9 +1021,9 @@ class ImportContext(_messages.Message):
     importUser: The PostgreSQL user for this import operation. PostgreSQL
       instances only.
     kind: This is always *sql#importContext*.
-    uri: Path to the import file in Cloud Storage, in the form *gs:
-      //bucketName/fileName*. Compressed gzip files (.gz) are supported //
-      when *fileType* is *SQL*. The instance must have // write permissions to
+    uri: Path to the import file in Cloud Storage, in the form
+      *gs://bucketName/fileName*. Compressed gzip files (.gz) are supported
+      when *fileType* is *SQL*. The instance must have write permissions to
       the bucket and read access to the file.
   """
 

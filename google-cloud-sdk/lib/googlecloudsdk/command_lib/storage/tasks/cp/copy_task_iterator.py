@@ -25,6 +25,7 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_task_factory
+from googlecloudsdk.core import log
 
 
 class CopyTaskIterator:
@@ -58,7 +59,7 @@ class CopyTaskIterator:
     raw_destination = self._get_raw_destination()
     for source in self._source_name_iterator:
       destination_resource = self._get_copy_destination(raw_destination, source)
-      print('Copying {} to {}'.format(
+      log.status.Print('Copying {} to {}'.format(
           source.resource.storage_url.versionless_url_string,
           destination_resource.storage_url.versionless_url_string))
       if self._custom_md5_digest:

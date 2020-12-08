@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.services import exceptions
@@ -252,7 +253,7 @@ def GenerateServiceIdentity(project, service):
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
-    The email and uid of the generated service identity.
+    A dict with the email and uniqueId of the generated service identity.
   """
   client = _GetClientInstance(version=_V1BETA1_VERSION)
   messages = client.MESSAGES_MODULE
@@ -261,18 +262,13 @@ def GenerateServiceIdentity(project, service):
       parent=_PROJECT_SERVICE_RESOURCE % (project, service))
   try:
     op = client.services.GenerateServiceIdentity(request)
-    return _GetOperationResponseProperty(
-        op, 'email'), _GetOperationResponseProperty(op, 'unique_id')
+    response = encoding.MessageToDict(op.response)
+    # Only keep email and uniqueId from the response.
+    return {k: response[k] for k in ('email', 'uniqueId')}
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
     exceptions.ReraiseError(
         e, exceptions.GenerateServiceIdentityPermissionDeniedException)
-
-
-def _GetOperationResponseProperty(op, key):
-  return next((p.value.string_value
-               for p in op.response.additionalProperties
-               if p.key == key), None)
 
 
 def ListQuotaMetrics(consumer, service, page_size=None, limit=None):

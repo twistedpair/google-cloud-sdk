@@ -43,20 +43,25 @@ NUM_ITEMS_PER_LIST_PAGE = 1000
 class RequestConfig(object):
   """Arguments object for parameters shared between cloud providers.
 
+  Subclasses may add more attributes.
+
   Attributes:
       md5_hash (str): MD5 digest to use for validation.
       predefined_acl_string (str): ACL to be set on the object.
+      size (int): Object size in bytes.
   """
 
-  def __init__(self, md5_hash=None, predefined_acl_string=None):
+  def __init__(self, md5_hash=None, predefined_acl_string=None, size=None):
     self.md5_hash = md5_hash
     self.predefined_acl_string = predefined_acl_string
+    self.size = size
 
   def __eq__(self, other):
-    return (isinstance(self, type(other)) and
-            isinstance(other, RequestConfig) and
-            self.md5_hash == other.md5_hash and
-            self.predefined_acl_string == other.predefined_acl_string)
+    if not isinstance(other, type(self)):
+      return NotImplemented
+    return (self.md5_hash == other.md5_hash and
+            self.predefined_acl_string == other.predefined_acl_string and
+            self.size == other.size)
 
 
 # TODO(b/172849424) Refactor RequestConfigs as a whole to avoid this.
@@ -77,7 +82,8 @@ def convert_to_provider_request_config(generic_request_config,
     return provider_request_config_type()
   return provider_request_config_type(
       md5_hash=generic_request_config.md5_hash,
-      predefined_acl_string=generic_request_config.predefined_acl_string)
+      predefined_acl_string=generic_request_config.predefined_acl_string,
+      size=generic_request_config.size)
 
 
 class CloudApi(object):

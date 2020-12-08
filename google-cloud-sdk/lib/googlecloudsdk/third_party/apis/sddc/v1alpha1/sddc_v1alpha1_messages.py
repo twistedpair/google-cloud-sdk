@@ -289,49 +289,47 @@ class CloudAuditOptions(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""A cluster in a cluater group. Cluster is a regional resource.
+  r"""A cluster in a cluster group. `Cluster` is a regional resource.
 
   Enums:
     StateValueValuesEnum: Output only. State of the resource.
 
   Messages:
-    LabelsValue: Labels are a way to attach lightweight metadata to resources
-      for filtering and querying resource data. No more than 64 user labels
-      can be associated with each resource. Label keys and values can be no
-      longer than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
+    LabelsValue: You can use labels to attach lightweight metadata to
+      resources for filtering and querying resource data. You can associate at
+      most 64 user labels with each resource. Label keys and values may
+      contain at most 63 characters and may only contain lowercase letters,
+      numeric characters, underscores, and dashes. Label keys must start with
+      a letter, and international characters are allowed. The empty string is
+      a valid label. Labels are set on creation and updated like any other
+      field. To add a new label, you must provide all of the existing labels
+      along with the new label. **If you only provide a map with the new
+      label, all of the old labels are removed.**
 
   Fields:
     createTime: Output only. Creation time of the resource.
     defaultZone: Required. Default zone to host nodes.
-    labels: Labels are a way to attach lightweight metadata to resources for
-      filtering and querying resource data. No more than 64 user labels can be
-      associated with each resource. Label keys and values can be no longer
-      than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
+    labels: You can use labels to attach lightweight metadata to resources for
+      filtering and querying resource data. You can associate at most 64 user
+      labels with each resource. Label keys and values may contain at most 63
+      characters and may only contain lowercase letters, numeric characters,
+      underscores, and dashes. Label keys must start with a letter, and
+      international characters are allowed. The empty string is a valid label.
+      Labels are set on creation and updated like any other field. To add a
+      new label, you must provide all of the existing labels along with the
+      new label. **If you only provide a map with the new label, all of the
+      old labels are removed.**
     management: If the resource to be created a management cluster or not.
-      There can only be one management cluster in an SDDC and it has to be the
-      first one.
-    name: Output only. The resource name of this Cluster. Resource names are
-      schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-
-      group/clusters/my-cluster`
+      There can only be one management cluster in a private cloud and it has
+      to be the first one.
+    name: Output only. The resource name of this `Cluster`. Resource names are
+      schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/REGION/clusterGroups/MY-
+      GROUP/clusters/MY-CLUSTER
     nodeCount: Required. Number of bare metal nodes in this cluster.
-    nodeType: Required. The baremetal node type used to create a VMWare
-      cluster. The only supported value is c1-highmem-72-metal.
+    nodeType: Required. The bare metal node type used to create a VMware
+      cluster. The only supported value is `c1-highmem-72-metal`.
     nodes: Output only. Nodes in the cluster.
     state: Output only. State of the resource.
     status: Output only. Deprecated. Use state instead. Status of the
@@ -361,16 +359,16 @@ class Cluster(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels are a way to attach lightweight metadata to resources for
-    filtering and querying resource data. No more than 64 user labels can be
-    associated with each resource. Label keys and values can be no longer than
-    63 characters, can only contain lowercase letters, numeric characters,
-    underscores and dashes, where label keys must start with a letter and
-    international characters are allowed. The empty string is a valid value.
-    Labels are set on creation and updated like any other field. Specifically,
-    to add a new label, you would need to provide all of the existing labels
-    along with the new label. If you only provide a map with the new label,
-    all of the old labels will be removed (probably not what is desired).
+    r"""You can use labels to attach lightweight metadata to resources for
+    filtering and querying resource data. You can associate at most 64 user
+    labels with each resource. Label keys and values may contain at most 63
+    characters and may only contain lowercase letters, numeric characters,
+    underscores, and dashes. Label keys must start with a letter, and
+    international characters are allowed. The empty string is a valid label.
+    Labels are set on creation and updated like any other field. To add a new
+    label, you must provide all of the existing labels along with the new
+    label. **If you only provide a map with the new label, all of the old
+    labels are removed.**
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -406,44 +404,42 @@ class Cluster(_messages.Message):
 
 
 class ClusterGroup(_messages.Message):
-  r"""A cluster group resource. ClusterGroup is a regional resource.
+  r"""A cluster group resource. `ClusterGroup` is a regional resource.
 
   Enums:
     StateValueValuesEnum: State of the resource.
 
   Messages:
-    LabelsValue: Labels are a way to attach lightweight metadata to resources
-      for filtering and querying resource data. No more than 64 user labels
-      can be associated with each resource. Label keys and values can be no
-      longer than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
+    LabelsValue: You can use labels to attach lightweight metadata to
+      resources for filtering and querying resource data. You can associate at
+      most 64 user labels with each resource. Label keys and values may
+      contain at most 63 characters and may only contain lowercase letters,
+      numeric characters, underscores, and dashes. Label keys must start with
+      a letter, and international characters are allowed. The empty string is
+      a valid label. Labels are set on creation and updated like any other
+      field. To add a new label, you must provide all of the existing labels
+      along with the new label. **If you only provide a map with the new
+      label, all of the old labels are removed.**
 
   Fields:
     createTime: Output only. Creation time of the resource.
     description: The description of this resource.
-    labels: Labels are a way to attach lightweight metadata to resources for
-      filtering and querying resource data. No more than 64 user labels can be
-      associated with each resource. Label keys and values can be no longer
-      than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
-    name: Output only. The resource name of this ClusterGroup. Resource names
-      are schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-group`
-    networkConfig: NetworkConfig passed in the param.
-    nsx: Output only. Nsx information.
+    labels: You can use labels to attach lightweight metadata to resources for
+      filtering and querying resource data. You can associate at most 64 user
+      labels with each resource. Label keys and values may contain at most 63
+      characters and may only contain lowercase letters, numeric characters,
+      underscores, and dashes. Label keys must start with a letter, and
+      international characters are allowed. The empty string is a valid label.
+      Labels are set on creation and updated like any other field. To add a
+      new label, you must provide all of the existing labels along with the
+      new label. **If you only provide a map with the new label, all of the
+      old labels are removed.**
+    name: Output only. The resource name of this `ClusterGroup`. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-central1/clusterGroups/MY-GROUP
+    networkConfig: `NetworkConfig` passed in the param.
+    nsx: Output only. NSX information.
     state: State of the resource.
     status: Output only. Deprecated. Use state instead. Status of the
       resource.
@@ -472,16 +468,16 @@ class ClusterGroup(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels are a way to attach lightweight metadata to resources for
-    filtering and querying resource data. No more than 64 user labels can be
-    associated with each resource. Label keys and values can be no longer than
-    63 characters, can only contain lowercase letters, numeric characters,
-    underscores and dashes, where label keys must start with a letter and
-    international characters are allowed. The empty string is a valid value.
-    Labels are set on creation and updated like any other field. Specifically,
-    to add a new label, you would need to provide all of the existing labels
-    along with the new label. If you only provide a map with the new label,
-    all of the old labels will be removed (probably not what is desired).
+    r"""You can use labels to attach lightweight metadata to resources for
+    filtering and querying resource data. You can associate at most 64 user
+    labels with each resource. Label keys and values may contain at most 63
+    characters and may only contain lowercase letters, numeric characters,
+    underscores, and dashes. Label keys must start with a letter, and
+    international characters are allowed. The empty string is a valid label.
+    Labels are set on creation and updated like any other field. To add a new
+    label, you must provide all of the existing labels along with the new
+    label. **If you only provide a map with the new label, all of the old
+    labels are removed.**
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -516,56 +512,54 @@ class ClusterGroup(_messages.Message):
 
 
 class ClusterGroupBackup(_messages.Message):
-  r"""Backup resource of the ClusterGroup.
+  r"""Backup resource of the `ClusterGroup`.
 
   Messages:
-    LabelsValue: Labels are a way to attach lightweight metadata to resources
-      for filtering and querying resource data. No more than 64 user labels
-      can be associated with each resource. Label keys and values can be no
-      longer than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
+    LabelsValue: You can use labels to attach lightweight metadata to
+      resources for filtering and querying resource data. You can associate at
+      most 64 user labels with each resource. Label keys and values may
+      contain at most 63 characters and may only contain lowercase letters,
+      numeric characters, underscores, and dashes. Label keys must start with
+      a letter, and international characters are allowed. The empty string is
+      a valid label. Labels are set on creation and updated like any other
+      field. To add a new label, you must provide all of the existing labels
+      along with the new label. **If you only provide a map with the new
+      label, all of the old labels are removed.**
 
   Fields:
-    clusterGroupId: Identity of the ClusterGroup of which this resource is a
+    clusterGroupId: Identity of the `ClusterGroup` of which this resource is a
       backup.
     createTime: Output only. Creation time of the resource.
-    labels: Labels are a way to attach lightweight metadata to resources for
-      filtering and querying resource data. No more than 64 user labels can be
-      associated with each resource. Label keys and values can be no longer
-      than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
-    name: Output only. The resource name of this ClusterGroupBackup. Resource
-      names are schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroupBackups/my-
-      backup`
+    labels: You can use labels to attach lightweight metadata to resources for
+      filtering and querying resource data. You can associate at most 64 user
+      labels with each resource. Label keys and values may contain at most 63
+      characters and may only contain lowercase letters, numeric characters,
+      underscores, and dashes. Label keys must start with a letter, and
+      international characters are allowed. The empty string is a valid label.
+      Labels are set on creation and updated like any other field. To add a
+      new label, you must provide all of the existing labels along with the
+      new label. **If you only provide a map with the new label, all of the
+      old labels are removed.**
+    name: Output only. The resource name of this `ClusterGroupBackup`.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-central1/clusterGroupBackups/MY-
+      BACKUP
     updateTime: Output only. Update time of the resource.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels are a way to attach lightweight metadata to resources for
-    filtering and querying resource data. No more than 64 user labels can be
-    associated with each resource. Label keys and values can be no longer than
-    63 characters, can only contain lowercase letters, numeric characters,
-    underscores and dashes, where label keys must start with a letter and
-    international characters are allowed. The empty string is a valid value.
-    Labels are set on creation and updated like any other field. Specifically,
-    to add a new label, you would need to provide all of the existing labels
-    along with the new label. If you only provide a map with the new label,
-    all of the old labels will be removed (probably not what is desired).
+    r"""You can use labels to attach lightweight metadata to resources for
+    filtering and querying resource data. You can associate at most 64 user
+    labels with each resource. Label keys and values may contain at most 63
+    characters and may only contain lowercase letters, numeric characters,
+    underscores, and dashes. Label keys must start with a letter, and
+    international characters are allowed. The empty string is a valid label.
+    Labels are set on creation and updated like any other field. To add a new
+    label, you must provide all of the existing labels along with the new
+    label. **If you only provide a map with the new label, all of the old
+    labels are removed.**
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1208,44 +1202,42 @@ class HttpRequest(_messages.Message):
 
 
 class IpAddress(_messages.Message):
-  r"""An IpAddress resource in a ClusterGroup.
+  r"""An `IpAddress` resource in a `ClusterGroup`.
 
   Enums:
     StateValueValuesEnum: Output only. State of the resource.
 
   Messages:
-    LabelsValue: Labels are a way to attach lightweight metadata to resources
-      for filtering and querying resource data. No more than 64 user labels
-      can be associated with each resource. Label keys and values can be no
-      longer than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
+    LabelsValue: You can use labels to attach lightweight metadata to
+      resources for filtering and querying resource data. You can associate at
+      most 64 user labels with each resource. Label keys and values may
+      contain at most 63 characters and may only contain lowercase letters,
+      numeric characters, underscores, and dashes. Label keys must start with
+      a letter, and international characters are allowed. The empty string is
+      a valid label. Labels are set on creation and updated like any other
+      field. To add a new label, you must provide all of the existing labels
+      along with the new label. **If you only provide a map with the new
+      label, all of the old labels are removed.**
 
   Fields:
     createTime: Output only. The create time of the resource.
-    externalIp: Output only. The external IP of an workload VM.
-    internalIp: The internal IP of an workload VM.
-    labels: Labels are a way to attach lightweight metadata to resources for
-      filtering and querying resource data. No more than 64 user labels can be
-      associated with each resource. Label keys and values can be no longer
-      than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
-    name: Output only. The resource name of this IpAddress. Resource names are
-      schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-
-      group/ipAddresses/my-ip`
+    externalIp: Output only. The external IP address of a workload VM.
+    internalIp: The internal IP address of a workload VM.
+    labels: You can use labels to attach lightweight metadata to resources for
+      filtering and querying resource data. You can associate at most 64 user
+      labels with each resource. Label keys and values may contain at most 63
+      characters and may only contain lowercase letters, numeric characters,
+      underscores, and dashes. Label keys must start with a letter, and
+      international characters are allowed. The empty string is a valid label.
+      Labels are set on creation and updated like any other field. To add a
+      new label, you must provide all of the existing labels along with the
+      new label. **If you only provide a map with the new label, all of the
+      old labels are removed.**
+    name: Output only. The resource name of this `IpAddress`. Resource names
+      are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-central1/clusterGroups/MY-
+      GROUP/ipAddresses/ MY-IP
     state: Output only. State of the resource.
     updateTime: Output only. The update time of the resource.
   """
@@ -1268,16 +1260,16 @@ class IpAddress(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels are a way to attach lightweight metadata to resources for
-    filtering and querying resource data. No more than 64 user labels can be
-    associated with each resource. Label keys and values can be no longer than
-    63 characters, can only contain lowercase letters, numeric characters,
-    underscores and dashes, where label keys must start with a letter and
-    international characters are allowed. The empty string is a valid value.
-    Labels are set on creation and updated like any other field. Specifically,
-    to add a new label, you would need to provide all of the existing labels
-    along with the new label. If you only provide a map with the new label,
-    all of the old labels will be removed (probably not what is desired).
+    r"""You can use labels to attach lightweight metadata to resources for
+    filtering and querying resource data. You can associate at most 64 user
+    labels with each resource. Label keys and values may contain at most 63
+    characters and may only contain lowercase letters, numeric characters,
+    underscores, and dashes. Label keys must start with a letter, and
+    international characters are allowed. The empty string is a valid label.
+    Labels are set on creation and updated like any other field. To add a new
+    label, you must provide all of the existing labels along with the new
+    label. **If you only provide a map with the new label, all of the old
+    labels are removed.**
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1329,13 +1321,13 @@ class LinearBuckets(_messages.Message):
 
 
 class ListClusterGroupBackupsResponse(_messages.Message):
-  r"""A list of SDDC cluster group backups.
+  r"""A list of private cloud cluster group backups.
 
   Fields:
-    clusterGroupBackups: A ClusterGroupBackup attribute.
-    nextPageToken: A token, which can be send as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    unreachable: List of Locations that could not be reached.
+    clusterGroupBackups: A list of private cloud cluster group backups.
+    nextPageToken: A token that you can send as `page_token` to retrieve the
+      next page. If you omit this field, there are no subsequent pages.
+    unreachable: List of locations that could not be reached.
   """
 
   clusterGroupBackups = _messages.MessageField('ClusterGroupBackup', 1, repeated=True)
@@ -1347,10 +1339,10 @@ class ListClusterGroupsResponse(_messages.Message):
   r"""A ListClusterGroupsResponse object.
 
   Fields:
-    clusterGroups: A list of SDDC cluster groups.
+    clusterGroups: A list of private cloud cluster groups.
     nextPageToken: A token, which can be send as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    unreachable: List of Locations that could not be reached.
+      next page. If you omit this field, there are no subsequent pages.
+    unreachable: List of locations that could not be reached.
   """
 
   clusterGroups = _messages.MessageField('ClusterGroup', 1, repeated=True)
@@ -1362,10 +1354,10 @@ class ListClustersResponse(_messages.Message):
   r"""A ListClustersResponse object.
 
   Fields:
-    clusters: A list of SDDC clusters.
-    nextPageToken: A token, which can be send as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    unreachable: List of Locations that could not be reached.
+    clusters: A list of private cloud clusters.
+    nextPageToken: A token that you can send as `page_token` to retrieve the
+      next page. If you omit this field, there are no subsequent pages.
+    unreachable: List of locations that could not be reached.
   """
 
   clusters = _messages.MessageField('Cluster', 1, repeated=True)
@@ -1374,12 +1366,12 @@ class ListClustersResponse(_messages.Message):
 
 
 class ListIpAddressesResponse(_messages.Message):
-  r"""The response of listing IpAddresses in a given ClusterGroup.
+  r"""The response of listing `IpAddress` objects in a given `ClusterGroup`.
 
   Fields:
-    ipAddresses: A list of IpAddresses.
+    ipAddresses: A list of `IpAddress` objects.
     nextPageToken: A token, which can be send as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
+      next page. If you omit this field, there are no subsequent pages.
   """
 
   ipAddresses = _messages.MessageField('IpAddress', 1, repeated=True)
@@ -1400,13 +1392,13 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListPrivateCloudBackupsResponse(_messages.Message):
-  r"""Response containing a list of SDDC private cloud backups.
+  r"""Response containing a list of private cloud backups.
 
   Fields:
-    nextPageToken: A token, which can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
+    nextPageToken: A token, which can be send as `page_token` to retrieve the
+      next page. If you omit this field, there are no subsequent pages.
     privateCloudBackups: A list of SDDC private cloud backup resources
-    unreachable: List of Locations that could not be reached.
+    unreachable: List of locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1418,10 +1410,10 @@ class ListPrivateCloudsResponse(_messages.Message):
   r"""A response with a list of zero or more private clouds in a region.
 
   Fields:
-    nextPageToken: A token, which can be send as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    privateClouds: A list of SDDC private clouds.
-    unreachable: List of Locations that could not be reached.
+    nextPageToken: A token that you can be send as `page_token` to retrieve
+      the next page. If you omit this field, there are no subsequent pages.
+    privateClouds: A list of private clouds.
+    unreachable: List of locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1835,21 +1827,22 @@ class Money(_messages.Message):
 
 
 class NetworkConfig(_messages.Message):
-  r"""Network configuration in the consumer project with which the peering has
-  to be done.
+  r"""Network configuration in the consumer project with which peering is
+  done.
 
   Fields:
-    externalIpAccess: controls if vCenter and NSX can be accessed via
-      internet. - FQDNs will resolve to the allocated external IPs for sddc
-      domain but remains mapping to the internal ip within consumer subnets. -
-      NAT will be set up on NSX for external ip ingress traffic. - users need
-      to manually configure NSX firewall to allow HTTPs traffic.
-    managementCidr: Management CIDR used by VMWare management applicances.
-    network: name of the network in the consumer project with which the tenant
+    externalIpAccess: Controls whether vCenter and NSX can be accessed via the
+      internet. - FQDNs resolve to the allocated external IPs for private
+      cloud domain but map to the internal IP within consumer subnets. - NAT
+      is set up on NSX for external IP ingress traffic. - Users must manually
+      configure NSX firewall rules to allow HTTPS traffic.
+    managementCidr: Management CIDR range used by VMware management
+      applicances.
+    network: Name of the network in the consumer project with which the tenant
       project will be peered. In the case of shared VPC where the network
-      lives inside another project the network should should be provided in
-      the form of /project/{host_project_id}/global/networks/{network}
-    workloadCidr: Workload CIDR used by VMWare workload VMs.
+      lives inside another project, provide the network in the following form:
+      /project/ HOST-PROJECT-NUMBER/global/networks/NETWORK
+    workloadCidr: Workload CIDR range used by VMware workload VMs.
   """
 
   externalIpAccess = _messages.BooleanField(1)
@@ -1875,7 +1868,7 @@ class Node(_messages.Message):
 
 
 class Nsx(_messages.Message):
-  r"""Nsx description of a cluster group
+  r"""NSX description of a cluster group
 
   Fields:
     clientUrl: NSX client URL.
@@ -2105,11 +2098,11 @@ class OperationMetadata(_messages.Message):
     apiVersion: Output only. API version used to start the operation.
     createTime: Output only. The time the operation was created.
     details: Output only. Human-readable status of the operation, if any.
-    endTime: Output only. The time the operation finished running.
+    endTime: Output only. The time at which the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      successfully been cancelled have value `Operation.error` with a
+      `google.rpc.Status.code` of 1, corresponding to `Code.CANCELLED`.
     target: Output only. Server-defined resource path for the target of the
       operation.
     verb: Output only. Name of the verb executed by the operation.
@@ -2207,43 +2200,41 @@ class Policy(_messages.Message):
 
 
 class PrivateCloud(_messages.Message):
-  r"""A private cloud resource. PrivateCloud is a regional resource.
+  r"""A private cloud resource. `PrivateCloud` is a regional resource.
 
   Enums:
     StateValueValuesEnum: State of the resource.
 
   Messages:
-    LabelsValue: Labels are a way to attach lightweight metadata to resources
-      for filtering and querying resource data. No more than 64 user labels
-      can be associated with each resource. Label keys and values can be no
-      longer than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
+    LabelsValue: You can use labels to attach lightweight metadata to
+      resources for filtering and querying resource data. You can associate at
+      most 64 user labels with each resource. Label keys and values may
+      contain at most 63 characters and may only contain lowercase letters,
+      numeric characters, underscores, and dashes. Label keys must start with
+      a letter, and international characters are allowed. The empty string is
+      a valid label. Labels are set on creation and updated like any other
+      field. To add a new label, you must provide all of the existing labels
+      along with the new label. **If you only provide a map with the new
+      label, all of the old labels are removed.**
 
   Fields:
     createTime: Output only. Creation time of the resource.
     description: The description of this resource.
-    labels: Labels are a way to attach lightweight metadata to resources for
-      filtering and querying resource data. No more than 64 user labels can be
-      associated with each resource. Label keys and values can be no longer
-      than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
-    name: Output only. The resource name of this PrivateCloud. Resource names
-      are schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/privateClouds/my-cloud`
-    networkConfig: NetworkConfig passed in the param.
+    labels: You can use labels to attach lightweight metadata to resources for
+      filtering and querying resource data. You can associate at most 64 user
+      labels with each resource. Label keys and values may contain at most 63
+      characters and may only contain lowercase letters, numeric characters,
+      underscores, and dashes. Label keys must start with a letter, and
+      international characters are allowed. The empty string is a valid label.
+      Labels are set on creation and updated like any other field. To add a
+      new label, you must provide all of the existing labels along with the
+      new label. **If you only provide a map with the new label, all of the
+      old labels are removed.**
+    name: Output only. The resource name of this `PrivateCloud`. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-central1/privateClouds/MY-CLOUD
+    networkConfig: `NetworkConfig` passed in the param.
     nsx: Output only. Nsx information.
     state: State of the resource.
     updateTime: Output only. Update time of the resource.
@@ -2271,16 +2262,16 @@ class PrivateCloud(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels are a way to attach lightweight metadata to resources for
-    filtering and querying resource data. No more than 64 user labels can be
-    associated with each resource. Label keys and values can be no longer than
-    63 characters, can only contain lowercase letters, numeric characters,
-    underscores and dashes, where label keys must start with a letter and
-    international characters are allowed. The empty string is a valid value.
-    Labels are set on creation and updated like any other field. Specifically,
-    to add a new label, you would need to provide all of the existing labels
-    along with the new label. If you only provide a map with the new label,
-    all of the old labels will be removed (probably not what is desired).
+    r"""You can use labels to attach lightweight metadata to resources for
+    filtering and querying resource data. You can associate at most 64 user
+    labels with each resource. Label keys and values may contain at most 63
+    characters and may only contain lowercase letters, numeric characters,
+    underscores, and dashes. Label keys must start with a letter, and
+    international characters are allowed. The empty string is a valid label.
+    Labels are set on creation and updated like any other field. To add a new
+    label, you must provide all of the existing labels along with the new
+    label. **If you only provide a map with the new label, all of the old
+    labels are removed.**
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2314,7 +2305,7 @@ class PrivateCloud(_messages.Message):
 
 
 class PrivateCloudBackup(_messages.Message):
-  r"""Backup resource of the PrivateCloud.
+  r"""Backup resource of the private cloud.
 
   Messages:
     LabelsValue: Labels are a way to attach lightweight metadata to resources
@@ -2324,10 +2315,9 @@ class PrivateCloudBackup(_messages.Message):
       characters, underscores and dashes, where label keys must start with a
       letter and international characters are allowed. The empty string is a
       valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
+      field. To add a new label, you must provide all of the existing labels
+      along with the new label. **If you only provide a map with the new
+      label, all of the old labels are removed.**
 
   Fields:
     createTime: Output only. Creation time of the resource.
@@ -2338,15 +2328,14 @@ class PrivateCloudBackup(_messages.Message):
       characters, underscores and dashes, where label keys must start with a
       letter and international characters are allowed. The empty string is a
       valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
-    name: Output only. The resource name of this PrivateCloudBackup. Resource
-      names are schemeless URI's that follow the conventions in
+      field. To add a new label, you must provide all of the existing labels
+      along with the new label. **If you only provide a map with the new
+      label, all of the old labels are removed.**
+    name: Output only. The resource name of this `PrivateCloudBackup`.
+      Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/privateCloudBackups/my-
-      backup`
+      projects/ PROJECT-NUMBER/locations/us-central1/clusterGroupBackups/MY-
+      BACKUP
     privateCloudId: Identity of the private cloud of which this resource is a
       backup.
     updateTime: Output only. Update time of the resource.
@@ -2360,10 +2349,10 @@ class PrivateCloudBackup(_messages.Message):
     63 characters, can only contain lowercase letters, numeric characters,
     underscores and dashes, where label keys must start with a letter and
     international characters are allowed. The empty string is a valid value.
-    Labels are set on creation and updated like any other field. Specifically,
-    to add a new label, you would need to provide all of the existing labels
-    along with the new label. If you only provide a map with the new label,
-    all of the old labels will be removed (probably not what is desired).
+    Labels are set on creation and updated like any other field. To add a new
+    label, you must provide all of the existing labels along with the new
+    label. **If you only provide a map with the new label, all of the old
+    labels are removed.**
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2426,8 +2415,8 @@ class QuotaProperties(_messages.Message):
 
 
 class RemoveNodesRequest(_messages.Message):
-  r"""Request for removing nodes from the given cluster until the target count
-  is reached.
+  r"""Request to remove nodes from the given cluster until the target count is
+  reached.
 
   Fields:
     nodeCount: Required. Number of desired bare metal nodes in this cluster.
@@ -2463,12 +2452,13 @@ class ReportRequest(_messages.Message):
 
 
 class ResetCloudAdminCredentialsRequest(_messages.Message):
-  r"""Request for resetting vCenter or NSX CloudAdmin accounts.
+  r"""Request to reset vCenter or NSX **CloudAdmin** accounts.
 
   Fields:
-    resetNsxCloudadmin: Required. If true, reset the NSX cloudadmin account.
-    resetVcenterCloudadmin: Required. If true, reset the vCenter cloudadmin
+    resetNsxCloudadmin: Required. If true, reset the NSX **CloudAdmin**
       account.
+    resetVcenterCloudadmin: Required. If true, reset the vCenter
+      **CloudAdmin** account.
   """
 
   resetNsxCloudadmin = _messages.BooleanField(1)
@@ -2553,13 +2543,13 @@ class SddcProjectsLocationsClusterGroupBackupsCreateRequest(_messages.Message):
   Fields:
     clusterGroupBackup: A ClusterGroupBackup resource to be passed as the
       request body.
-    clusterGroupBackupId: Required. The user-provided id of the
-      ClusterGroupBackup to be created. This id must be unique among
-      ClusterGroupBackups within the parent and will become the final token in
-      the name URI.
-    parent: Required. The location(region) and project where the new
-      ClusterGroupBackup will be created. For example: `projects/my-
-      project/locations/us-central1`
+    clusterGroupBackupId: Required. The user-provided ID of the
+      `ClusterGroupBackup` to create. This ID must be unique among
+      `ClusterGroupBackup` objects within the parent and becomes the final
+      token in the name URI.
+    parent: Required. The location (region) and project where the new
+      `ClusterGroupBackup` is created. For example, projects/PROJECT-NUMBER
+      /locations/us-central1
     requestId: UUID of this invocation for idempotent operation.
   """
 
@@ -2573,7 +2563,8 @@ class SddcProjectsLocationsClusterGroupBackupsDeleteRequest(_messages.Message):
   r"""A SddcProjectsLocationsClusterGroupBackupsDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the ClusterGroupBackup to be deleted.
+    name: Required. The resource name of the `ClusterGroupBackup` to be
+      deleted.
     requestId: UUID of this invocation for idempotent operation.
   """
 
@@ -2585,11 +2576,11 @@ class SddcProjectsLocationsClusterGroupBackupsGetRequest(_messages.Message):
   r"""A SddcProjectsLocationsClusterGroupBackupsGetRequest object.
 
   Fields:
-    name: Required. The resource name of the ClusterGroupBackup to retrieve.
-      Resource names are schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroupBackups/my-
-      backup`
+    name: Required. The resource name of the `ClusterGroupBackup` to retrieve.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-
+      central1/clusterGroupBackups/MY_BACKUP
   """
 
   name = _messages.StringField(1, required=True)
@@ -2600,15 +2591,15 @@ class SddcProjectsLocationsClusterGroupBackupsListRequest(_messages.Message):
 
   Fields:
     filter: List filter.
-    pageSize: The maximum number of clusterGroupBackups to return. The service
-      may return fewer than this value.
+    pageSize: The maximum number of `clusterGroupBackup` objects to return.
+      The service may return fewer cluster group backups.
     pageToken: A page token, received from a previous
       `ListClusterGroupBackupsRequest` call. Provide this to retrieve the
-      subsequent page. When paginating, all other parameters provided to
-      `ListClusterGroupBackupsRequest` must match the call that provided the
-      page token.
-    parent: Required. The location and project which will be queried for data
-      centers. For example: `projects/my-project/locations/us-central1`
+      subsequent page. When paginating, you must provide exactly the same
+      parameters to `ListClusterGroupBackupsRequest` as you provided to the
+      page token request.
+    parent: Required. The location and project that is queried for data
+      centers. For example, projects/PROJECT-NUMBER/locations/us-central1
   """
 
   filter = _messages.StringField(1)
@@ -2623,11 +2614,11 @@ class SddcProjectsLocationsClusterGroupsClustersAddNodesRequest(_messages.Messag
   Fields:
     addNodesRequest: A AddNodesRequest resource to be passed as the request
       body.
-    cluster: Required. The resource name of the Cluster to perform add nodes.
-      Resource names are schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-
-      group/clusters/my-cluster`
+    cluster: Required. The resource name of the `Cluster` to perform add
+      nodes. Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-
+      central1/clusterGroups/MY_GROUP/clusters/ MY_CLUSTER
   """
 
   addNodesRequest = _messages.MessageField('AddNodesRequest', 1)
@@ -2639,14 +2630,14 @@ class SddcProjectsLocationsClusterGroupsClustersCreateRequest(_messages.Message)
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    clusterId: Required. The user-provided id of the new Cluster. This id must
-      be unique among Clusters within the parent and will become the final
-      token in the name URI.
+    clusterId: Required. The user-provided ID of the `Cluster` to create. This
+      ID must be unique among `Clusters` within the parent and becomes the
+      final token in the name URI.
     managementCluster: Required. Deprecated. Use the management property in
-      the Cluster resource. Whether the cluster is the management cluster.
-    parent: Required. The ClusterGroup in where the new Cluster will be
-      created. For example: `projects/my-project/locations/us-
-      central1/clusterGroups/my-group`
+      the `Cluster` resource. Whether the cluster is the management cluster.
+    parent: Required. The `ClusterGroup` in where the new Cluster will be
+      created. For example, projects/PROJECT-NUMBER/locations/us-
+      central1/clusterGroups/ MY_GROUP
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -2659,7 +2650,7 @@ class SddcProjectsLocationsClusterGroupsClustersDeleteRequest(_messages.Message)
   r"""A SddcProjectsLocationsClusterGroupsClustersDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the Cluster to be deleted.
+    name: Required. The resource name of the `Cluster` to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2670,10 +2661,10 @@ class SddcProjectsLocationsClusterGroupsClustersGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the Cluster to retrieve. Resource
-      names are schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-
-      group/clusters/my-cluster`
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-
+      central1/clusterGroups/MY_GROUP/clusters/ MY_CLUSTER
   """
 
   name = _messages.StringField(1, required=True)
@@ -2684,15 +2675,15 @@ class SddcProjectsLocationsClusterGroupsClustersListRequest(_messages.Message):
 
   Fields:
     filter: List filter.
-    pageSize: The maximum number of clusters to return. The service may return
-      fewer than this value.
-    pageToken: A page token, received from a previous `ListClustersRequest`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListClustersRequest` must match the call
-      that provided the page token.
-    parent: Required. The project, location and cluster group which will be
-      queried for clusters. For example: `projects/my-project/locations/us-
-      central1/clusterGroups/my-group`
+    pageSize: The maximum number of clusters to return. The service might
+      return fewer clusters.
+    pageToken: A page token received from a previous `ListClustersRequest`.
+      Provide this to retrieve the subsequent page. When paginating, you must
+      provide exactly the same parameters to `ListClustersRequest` as you
+      provided to the page token request.
+    parent: Required. The project, location, and cluster group that is queried
+      for clusters. For example, projects/PROJECT-NUMBER /locations/us-
+      central1/clusterGroups/MY_GROUP
   """
 
   filter = _messages.StringField(1)
@@ -2706,12 +2697,12 @@ class SddcProjectsLocationsClusterGroupsClustersPatchRequest(_messages.Message):
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    name: Output only. The resource name of this Cluster. Resource names are
-      schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-
-      group/clusters/my-cluster`
-    updateMask: Mask of fields to update. At least one path must be supplied
+    name: Output only. The resource name of this `Cluster`. Resource names are
+      schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/REGION/clusterGroups/MY-
+      GROUP/clusters/MY-CLUSTER
+    updateMask: Mask of fields to update. You must provide at least one path
       in this field. The elements of the repeated paths field may only include
       these fields: "labels"
   """
@@ -2725,11 +2716,11 @@ class SddcProjectsLocationsClusterGroupsClustersRemoveNodesRequest(_messages.Mes
   r"""A SddcProjectsLocationsClusterGroupsClustersRemoveNodesRequest object.
 
   Fields:
-    cluster: Required. The resource name of the Cluster to perform remove
-      nodes. Resource names are schemeless URI's that follow the conventions
-      in https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-
-      group/clusters/my-cluster`
+    cluster: Required. The resource name of the `Cluster` to perform remove
+      nodes. Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-
+      central1/clusterGroups/MY_GROUP/clusters/ MY_CLUSTER
     removeNodesRequest: A RemoveNodesRequest resource to be passed as the
       request body.
   """
@@ -2743,12 +2734,12 @@ class SddcProjectsLocationsClusterGroupsCreateRequest(_messages.Message):
 
   Fields:
     clusterGroup: A ClusterGroup resource to be passed as the request body.
-    clusterGroupId: Required. The user-provided id of the ClusterGroup to be
-      created. This id must be unique among ClusterGroups within the parent
-      and will become the final token in the name URI.
-    parent: Required. The location(region) and project where the new
-      ClusterGroup will be created. For example: `projects/my-
-      project/locations/us-central1`
+    clusterGroupId: Required. The user-provided ID of the `ClusterGroup` to
+      create. This ID must be unique among `ClusterGroup` objects within the
+      parent and becomes the final token in the name URI.
+    parent: Required. The location (region) and project where the new
+      `ClusterGroup` is created. For example, projects/PROJECT-
+      NUMBER/locations/us-central1
   """
 
   clusterGroup = _messages.MessageField('ClusterGroup', 1)
@@ -2760,7 +2751,7 @@ class SddcProjectsLocationsClusterGroupsDeleteRequest(_messages.Message):
   r"""A SddcProjectsLocationsClusterGroupsDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the ClusterGroup to be deleted.
+    name: Required. The resource name of the `ClusterGroup` to be deleted.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2791,10 +2782,10 @@ class SddcProjectsLocationsClusterGroupsGetRequest(_messages.Message):
   r"""A SddcProjectsLocationsClusterGroupsGetRequest object.
 
   Fields:
-    name: Required. The resource name of the ClusterGroup to retrieve.
-      Resource names are schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-group`
+    name: Required. The resource name of the `ClusterGroup` to retrieve.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-central1/clusterGroups/MY_GROUP
   """
 
   name = _messages.StringField(1, required=True)
@@ -2805,12 +2796,12 @@ class SddcProjectsLocationsClusterGroupsIpAddressesCreateRequest(_messages.Messa
 
   Fields:
     ipAddress: A IpAddress resource to be passed as the request body.
-    ipAddressId: Required. The user-provided ID of the IpAddress to be
-      created. This id must be unique among IpAddresses within the parent and
-      will become the final token in the name URI.
-    parent: Required. The ClusterGroup or PrivateCloud in which the IpAddress
-      will be created. For example: `projects/my-project/locations/us-
-      central1/clusterGroups/my-group`
+    ipAddressId: Required. The user-provided ID of the `IpAddress` to create.
+      This ID must be unique among `IpAddress` within the parent and becomes
+      the final token in the name URI.
+    parent: Required. The ClusterGroup or private cloud in which the
+      `IpAddress` will be created. For example, projects/PROJECT-NUMBER
+      /locations/us-central1/clusterGroups/MY-GROUP
   """
 
   ipAddress = _messages.MessageField('IpAddress', 1)
@@ -2822,7 +2813,8 @@ class SddcProjectsLocationsClusterGroupsIpAddressesDeleteRequest(_messages.Messa
   r"""A SddcProjectsLocationsClusterGroupsIpAddressesDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the ClusterGroupBackup to be deleted.
+    name: Required. The resource name of the `ClusterGroupBackup` to be
+      deleted.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2832,11 +2824,11 @@ class SddcProjectsLocationsClusterGroupsIpAddressesGetRequest(_messages.Message)
   r"""A SddcProjectsLocationsClusterGroupsIpAddressesGetRequest object.
 
   Fields:
-    name: Required. The resource name of the IpAddress to retrieve. Resource
-      names are schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-
-      group/ipAddresses/my-ip`
+    name: Required. The resource name of the `IpAddress` to retrieve. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-
+      central1/clusterGroups/MY_GROUP/ipAddresses/ MY_IP
   """
 
   name = _messages.StringField(1, required=True)
@@ -2847,15 +2839,15 @@ class SddcProjectsLocationsClusterGroupsIpAddressesListRequest(_messages.Message
 
   Fields:
     filter: List filter.
-    pageSize: The maximum number of IpAddresses to return. The service may
-      return fewer than this value.
+    pageSize: The maximum number of `IpAddress` objects to return. The service
+      may return fewer than this value.
     pageToken: A page token, received from a previous `ListIpAddressesRequest`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListIpAddressesRequest` must match the
-      call that provided the page token.
+      call. Provide this to retrieve the subsequent page. When paginating, you
+      must provide exactly the same parameters to `ListIpAddressesRequest` as
+      you provided to the page token request
     parent: Required. The parent ClusterGroup or PrivateCloud of which the
-      IpAddresses belong to. For example: `projects/my-project/locations/us-
-      central1/clusterGroups/my-group`
+      IpAddresses belong to. For example: projects/PROJECT-NUMBER
+      /locations/us-central1/clusterGroups/MY-GROUP
   """
 
   filter = _messages.StringField(1)
@@ -2869,15 +2861,14 @@ class SddcProjectsLocationsClusterGroupsListRequest(_messages.Message):
 
   Fields:
     filter: List filter.
-    pageSize: The maximum number of clusterGroups to return. The service may
-      return fewer than this value.
+    pageSize: The maximum number of cluster groups to return. The service may
+      return fewer cluster groups.
     pageToken: A page token, received from a previous
       `ListClusterGroupsRequest` call. Provide this to retrieve the subsequent
-      page. When paginating, all other parameters provided to
-      `ListClusterGroupsRequest` must match the call that provided the page
-      token.
+      page. When paginating, you must provide exactly the same parameters to
+      `ListClusterGroupsRequest` as you provided to the page token request.
     parent: Required. The location and project which will be queried for data
-      centers. For example: `projects/my-project/locations/us-central1`
+      centers. For example, projects/PROJECT-NUMBER/locations/us-central1
   """
 
   filter = _messages.StringField(1)
@@ -2891,13 +2882,14 @@ class SddcProjectsLocationsClusterGroupsPatchRequest(_messages.Message):
 
   Fields:
     clusterGroup: A ClusterGroup resource to be passed as the request body.
-    name: Output only. The resource name of this ClusterGroup. Resource names
-      are schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-group`
-    updateMask: Mask of fields to update. At least one path must be supplied
+    name: Output only. The resource name of this `ClusterGroup`. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-central1/clusterGroups/MY-GROUP
+    updateMask: Mask of fields to update. You must provide at least one path
       in this field. The elements of the repeated paths field may only include
-      these fields: "description" "labels" "network_config.external_ip_access"
+      the following fields: "description" "labels"
+      "network_config.external_ip_access"
   """
 
   clusterGroup = _messages.MessageField('ClusterGroup', 1)
@@ -2910,9 +2902,9 @@ class SddcProjectsLocationsClusterGroupsResetCloudAdminCredentialsRequest(_messa
   object.
 
   Fields:
-    clusterGroup: Required. The resource name of the cluster group to reset
-      the cloudadmin password on. For example, `projects/my-
-      project/locations/us-central1/clusterGroups/my-group`
+    clusterGroup: Required. The resource name of the cluster group on which to
+      reset the **CloudAdmin** password. For example, projects/PROJECT-NUMBER
+      /locations/us-central1/clusterGroups/MY_GROUP
     resetCloudAdminCredentialsRequest: A ResetCloudAdminCredentialsRequest
       resource to be passed as the request body.
   """
@@ -3034,15 +3026,15 @@ class SddcProjectsLocationsPrivateCloudBackupsCreateRequest(_messages.Message):
   r"""A SddcProjectsLocationsPrivateCloudBackupsCreateRequest object.
 
   Fields:
-    parent: Required. The location(region) and project where the new
-      PrivateCloudBackup will be created. For example: `projects/my-
-      project/locations/us-central1`
+    parent: Required. The location (region) and project where the new
+      `PrivateCloudBackup` will be created. For example, projects/PROJECT-
+      NUMBER /locations/us-central1
     privateCloudBackup: A PrivateCloudBackup resource to be passed as the
       request body.
     privateCloudBackupId: Required. The user-provided id of the
-      PrivateCloudBackup to be created. This id must be unique among
-      PrivateCloudBackups within the parent and will become the final token in
-      the name URI.
+      `PrivateCloudBackup` to be created. This ID must be unique among
+      `PrivateCloudBackup` objects within the parent and becomes the final
+      token in the name URI.
     requestId: UUID of this invocation for idempotent operation.
   """
 
@@ -3056,7 +3048,8 @@ class SddcProjectsLocationsPrivateCloudBackupsDeleteRequest(_messages.Message):
   r"""A SddcProjectsLocationsPrivateCloudBackupsDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the PrivateCloudBackup to be deleted.
+    name: Required. The resource name of the `PrivateCloudBackup` to be
+      deleted.
     requestId: UUID of this invocation for idempotent operation.
   """
 
@@ -3070,9 +3063,9 @@ class SddcProjectsLocationsPrivateCloudBackupsGetRequest(_messages.Message):
   Fields:
     name: Required. The resource name of the PrivateCloudBackup to retrieve.
       Resource names are schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/privateCloudBackups/my-
-      backup`
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-central1/clusterGroupBackups/MY-
+      BACKUP
   """
 
   name = _messages.StringField(1, required=True)
@@ -3083,15 +3076,15 @@ class SddcProjectsLocationsPrivateCloudBackupsListRequest(_messages.Message):
 
   Fields:
     filter: List filter.
-    pageSize: The maximum number of privateCloudBackups to return. The service
-      may return fewer than this value. default page size is 500
+    pageSize: The maximum number of `PrivateCloudBackup' objects to return.
+      The service may return fewer than this value. The default is 500.
     pageToken: A page token, received from a previous
       `ListPrivateCloudBackupsRequest` call. Provide this to retrieve the
-      subsequent page. When paginating, all other parameters provided to
-      `ListPrivateCloudBackupsRequest` must match the call that provided the
-      page token.
+      subsequent page. When paginating, you must provide exactly the same
+      parameters to `ListPrivateCloudBackupsRequest` as you provided to the
+      page token request.
     parent: Required. The location and project which will be queried for data
-      centers. For example: `projects/my-project/locations/us-central1`
+      centers. For example, projects/PROJECT-NUMBER/locations/us-central1
   """
 
   filter = _messages.StringField(1)
@@ -3106,11 +3099,11 @@ class SddcProjectsLocationsPrivateCloudsClustersAddNodesRequest(_messages.Messag
   Fields:
     addNodesRequest: A AddNodesRequest resource to be passed as the request
       body.
-    cluster: Required. The resource name of the Cluster to perform add nodes.
-      Resource names are schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-
-      group/clusters/my-cluster`
+    cluster: Required. The resource name of the `Cluster` to perform add
+      nodes. Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-
+      central1/clusterGroups/MY_GROUP/clusters/ MY_CLUSTER
   """
 
   addNodesRequest = _messages.MessageField('AddNodesRequest', 1)
@@ -3122,14 +3115,14 @@ class SddcProjectsLocationsPrivateCloudsClustersCreateRequest(_messages.Message)
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    clusterId: Required. The user-provided id of the new Cluster. This id must
-      be unique among Clusters within the parent and will become the final
-      token in the name URI.
+    clusterId: Required. The user-provided ID of the `Cluster` to create. This
+      ID must be unique among `Clusters` within the parent and becomes the
+      final token in the name URI.
     managementCluster: Required. Deprecated. Use the management property in
-      the Cluster resource. Whether the cluster is the management cluster.
-    parent: Required. The ClusterGroup in where the new Cluster will be
-      created. For example: `projects/my-project/locations/us-
-      central1/clusterGroups/my-group`
+      the `Cluster` resource. Whether the cluster is the management cluster.
+    parent: Required. The `ClusterGroup` in where the new Cluster will be
+      created. For example, projects/PROJECT-NUMBER/locations/us-
+      central1/clusterGroups/ MY_GROUP
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -3142,7 +3135,7 @@ class SddcProjectsLocationsPrivateCloudsClustersDeleteRequest(_messages.Message)
   r"""A SddcProjectsLocationsPrivateCloudsClustersDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the Cluster to be deleted.
+    name: Required. The resource name of the `Cluster` to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3153,10 +3146,10 @@ class SddcProjectsLocationsPrivateCloudsClustersGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the Cluster to retrieve. Resource
-      names are schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-
-      group/clusters/my-cluster`
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-
+      central1/clusterGroups/MY_GROUP/clusters/ MY_CLUSTER
   """
 
   name = _messages.StringField(1, required=True)
@@ -3167,15 +3160,15 @@ class SddcProjectsLocationsPrivateCloudsClustersListRequest(_messages.Message):
 
   Fields:
     filter: List filter.
-    pageSize: The maximum number of clusters to return. The service may return
-      fewer than this value.
-    pageToken: A page token, received from a previous `ListClustersRequest`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListClustersRequest` must match the call
-      that provided the page token.
-    parent: Required. The project, location and cluster group which will be
-      queried for clusters. For example: `projects/my-project/locations/us-
-      central1/clusterGroups/my-group`
+    pageSize: The maximum number of clusters to return. The service might
+      return fewer clusters.
+    pageToken: A page token received from a previous `ListClustersRequest`.
+      Provide this to retrieve the subsequent page. When paginating, you must
+      provide exactly the same parameters to `ListClustersRequest` as you
+      provided to the page token request.
+    parent: Required. The project, location, and cluster group that is queried
+      for clusters. For example, projects/PROJECT-NUMBER /locations/us-
+      central1/clusterGroups/MY_GROUP
   """
 
   filter = _messages.StringField(1)
@@ -3189,12 +3182,12 @@ class SddcProjectsLocationsPrivateCloudsClustersPatchRequest(_messages.Message):
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    name: Output only. The resource name of this Cluster. Resource names are
-      schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-
-      group/clusters/my-cluster`
-    updateMask: Mask of fields to update. At least one path must be supplied
+    name: Output only. The resource name of this `Cluster`. Resource names are
+      schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/REGION/clusterGroups/MY-
+      GROUP/clusters/MY-CLUSTER
+    updateMask: Mask of fields to update. You must provide at least one path
       in this field. The elements of the repeated paths field may only include
       these fields: "labels"
   """
@@ -3208,11 +3201,11 @@ class SddcProjectsLocationsPrivateCloudsClustersRemoveNodesRequest(_messages.Mes
   r"""A SddcProjectsLocationsPrivateCloudsClustersRemoveNodesRequest object.
 
   Fields:
-    cluster: Required. The resource name of the Cluster to perform remove
-      nodes. Resource names are schemeless URI's that follow the conventions
-      in https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-
-      group/clusters/my-cluster`
+    cluster: Required. The resource name of the `Cluster` to perform remove
+      nodes. Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-
+      central1/clusterGroups/MY_GROUP/clusters/ MY_CLUSTER
     removeNodesRequest: A RemoveNodesRequest resource to be passed as the
       request body.
   """
@@ -3225,13 +3218,13 @@ class SddcProjectsLocationsPrivateCloudsCreateRequest(_messages.Message):
   r"""A SddcProjectsLocationsPrivateCloudsCreateRequest object.
 
   Fields:
-    parent: Required. The location(region) and project where the new
-      PrivateCloud will be created. For example: `projects/my-
-      project/locations/us-central1`
+    parent: Required. The location (region) and project where the new
+      `PrivateCloud` is created. For example, projects/PROJECT-
+      NUMBER/locations/us-central1
     privateCloud: A PrivateCloud resource to be passed as the request body.
-    privateCloudId: Required. The user-provided id of the PrivateCloud to be
-      created. This id must be unique among PrivateClouds within the parent
-      and will become the final token in the name URI.
+    privateCloudId: Required. The user-provided ID of the `PrivateCloud` to
+      create. This ID must be unique among `PrivateClouds` within the parent
+      and becomes the final token in the name URI.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -3243,7 +3236,7 @@ class SddcProjectsLocationsPrivateCloudsDeleteRequest(_messages.Message):
   r"""A SddcProjectsLocationsPrivateCloudsDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the PrivateCloud to be deleted.
+    name: Required. The resource name of the `PrivateCloud` to be deleted.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3253,10 +3246,10 @@ class SddcProjectsLocationsPrivateCloudsGetRequest(_messages.Message):
   r"""A SddcProjectsLocationsPrivateCloudsGetRequest object.
 
   Fields:
-    name: Required. The resource name of the PrivateCloud to retrieve.
-      Resource names are schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/privateClouds/my-cloud`
+    name: Required. The resource name of the `PrivateCloud` to retrieve.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-central1/privateClouds/MY_CLOUD
   """
 
   name = _messages.StringField(1, required=True)
@@ -3267,12 +3260,12 @@ class SddcProjectsLocationsPrivateCloudsIpAddressesCreateRequest(_messages.Messa
 
   Fields:
     ipAddress: A IpAddress resource to be passed as the request body.
-    ipAddressId: Required. The user-provided ID of the IpAddress to be
-      created. This id must be unique among IpAddresses within the parent and
-      will become the final token in the name URI.
-    parent: Required. The ClusterGroup or PrivateCloud in which the IpAddress
-      will be created. For example: `projects/my-project/locations/us-
-      central1/clusterGroups/my-group`
+    ipAddressId: Required. The user-provided ID of the `IpAddress` to create.
+      This ID must be unique among `IpAddress` within the parent and becomes
+      the final token in the name URI.
+    parent: Required. The ClusterGroup or private cloud in which the
+      `IpAddress` will be created. For example, projects/PROJECT-NUMBER
+      /locations/us-central1/clusterGroups/MY-GROUP
   """
 
   ipAddress = _messages.MessageField('IpAddress', 1)
@@ -3284,7 +3277,8 @@ class SddcProjectsLocationsPrivateCloudsIpAddressesDeleteRequest(_messages.Messa
   r"""A SddcProjectsLocationsPrivateCloudsIpAddressesDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the ClusterGroupBackup to be deleted.
+    name: Required. The resource name of the `ClusterGroupBackup` to be
+      deleted.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3294,11 +3288,11 @@ class SddcProjectsLocationsPrivateCloudsIpAddressesGetRequest(_messages.Message)
   r"""A SddcProjectsLocationsPrivateCloudsIpAddressesGetRequest object.
 
   Fields:
-    name: Required. The resource name of the IpAddress to retrieve. Resource
-      names are schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-
-      group/ipAddresses/my-ip`
+    name: Required. The resource name of the `IpAddress` to retrieve. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-
+      central1/clusterGroups/MY_GROUP/ipAddresses/ MY_IP
   """
 
   name = _messages.StringField(1, required=True)
@@ -3309,15 +3303,15 @@ class SddcProjectsLocationsPrivateCloudsIpAddressesListRequest(_messages.Message
 
   Fields:
     filter: List filter.
-    pageSize: The maximum number of IpAddresses to return. The service may
-      return fewer than this value.
+    pageSize: The maximum number of `IpAddress` objects to return. The service
+      may return fewer than this value.
     pageToken: A page token, received from a previous `ListIpAddressesRequest`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListIpAddressesRequest` must match the
-      call that provided the page token.
+      call. Provide this to retrieve the subsequent page. When paginating, you
+      must provide exactly the same parameters to `ListIpAddressesRequest` as
+      you provided to the page token request
     parent: Required. The parent ClusterGroup or PrivateCloud of which the
-      IpAddresses belong to. For example: `projects/my-project/locations/us-
-      central1/clusterGroups/my-group`
+      IpAddresses belong to. For example: projects/PROJECT-NUMBER
+      /locations/us-central1/clusterGroups/MY-GROUP
   """
 
   filter = _messages.StringField(1)
@@ -3331,15 +3325,14 @@ class SddcProjectsLocationsPrivateCloudsListRequest(_messages.Message):
 
   Fields:
     filter: List filter.
-    pageSize: The maximum number of privateClouds to return. The service may
-      return fewer than this value.
+    pageSize: The maximum number of private clouds to return. The service may
+      return fewer private clouds.
     pageToken: A page token, received from a previous
       `ListPrivateCloudsRequest` call. Provide this to retrieve the subsequent
-      page. When paginating, all other parameters provided to
-      `ListPrivateCloudsRequest` must match the call that provided the page
-      token.
+      page. When paginating, you must provide exactly the same parameters to
+      `ListPrivateCloudsRequest` as you provided to the page token request.
     parent: Required. The location and project which will be queried for data
-      centers. For example: `projects/my-project/locations/us-central1`
+      centers. For example, projects/PROJECT-NUMBER/locations/us-central1
   """
 
   filter = _messages.StringField(1)
@@ -3352,14 +3345,15 @@ class SddcProjectsLocationsPrivateCloudsPatchRequest(_messages.Message):
   r"""A SddcProjectsLocationsPrivateCloudsPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of this PrivateCloud. Resource names
-      are schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/privateClouds/my-cloud`
+    name: Output only. The resource name of this `PrivateCloud`. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example,
+      projects/ PROJECT-NUMBER/locations/us-central1/privateClouds/MY-CLOUD
     privateCloud: A PrivateCloud resource to be passed as the request body.
-    updateMask: Mask of fields to update. At least one path must be supplied
+    updateMask: Mask of fields to update. You must provide at least one path
       in this field. The elements of the repeated paths field may only include
-      these fields: "description" "labels" "network_config.external_ip_access"
+      the following fields: "description" "labels"
+      "network_config.external_ip_access"
   """
 
   name = _messages.StringField(1, required=True)

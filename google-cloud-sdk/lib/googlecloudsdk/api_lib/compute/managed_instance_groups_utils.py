@@ -95,7 +95,6 @@ class ResourceCannotBeResolvedException(Error):
 def AddAutoscalerArgs(
     parser,
     autoscaling_file_enabled=False,
-    stackdriver_metrics_flags=False,
     predictive=False,
     scheduled=False,
     patch_args=False):
@@ -120,26 +119,24 @@ def AddAutoscalerArgs(
                             'utilization.'))
   parser.add_argument('--target-cpu-utilization',
                       type=arg_parsers.BoundedFloat(0.0, 1.0),
-                      help='Autoscaler will aim to maintain CPU utilization at '
+                      help='Autoscaler aims to maintain CPU utilization at '
                       'target level (0.0 to 1.0).')
   parser.add_argument('--target-load-balancing-utilization',
                       type=arg_parsers.BoundedFloat(0.0, None),
-                      help='Autoscaler will aim to maintain the load balancing '
+                      help='Autoscaler aims to maintain the load balancing '
                       'utilization level (greater than 0.0).')
   custom_metric_utilization_help = """\
 Adds a target metric value for the Autoscaler to use.
 
 *metric*::: Protocol-free URL of a Google Cloud Monitoring metric.
 
-*utilization-target*::: Value of the metric Autoscaler will aim to
+*utilization-target*::: Value of the metric Autoscaler aims to
   maintain (greater than 0.0).
 
 *utilization-target-type*::: How target is expressed. Valid values: {0}.
-""".format(', '.join(_ALLOWED_UTILIZATION_TARGET_TYPES))
-  if stackdriver_metrics_flags:
-    custom_metric_utilization_help += """
+
 Mutually exclusive with `--update-stackdriver-metric`.
-"""
+""".format(', '.join(_ALLOWED_UTILIZATION_TARGET_TYPES))
   parser.add_argument(
       '--custom-metric-utilization',
       type=arg_parsers.ArgDict(
@@ -160,59 +157,58 @@ Mutually exclusive with `--update-stackdriver-metric`.
         help=('Path of the file from which autoscaling configuration will be '
               'loaded. This flag allows you to atomically setup complex '
               'autoscalers.'))
-  if stackdriver_metrics_flags:
-    parser.add_argument(
-        '--remove-stackdriver-metric',
-        metavar='METRIC',
-        help=('Stackdriver metric to remove from autoscaling configuration. '
-              'If the metric is the only input used for autoscaling the '
-              'command will fail.'))
-    parser.add_argument(
-        '--update-stackdriver-metric',
-        metavar='METRIC',
-        help=('Stackdriver metric to use as an input for autoscaling. '
-              'When using this flag you must also specify target value of the '
-              'metric by specifying '
-              '`--stackdriver-metric-single-instance-assignment` or '
-              '`--stackdriver-metric-utilization-target` and '
-              '`--stackdriver-metric-utilization-target-type`. '
-              'Mutually exclusive with `--custom-metric-utilization`.'))
-    parser.add_argument(
-        '--stackdriver-metric-filter',
-        metavar='FILTER',
-        help=('Expression for filtering samples used to autoscale, see '
-              'https://cloud.google.com/monitoring/api/v3/filters.'))
-    parser.add_argument(
-        '--stackdriver-metric-utilization-target',
-        metavar='TARGET',
-        type=float,
-        help=('Value of the metric Autoscaler will aim to maintain. When '
-              'specifying this flag you must also provide '
-              '`--stackdriver-metric-utilization-target-type`. Mutually '
-              'exclusive with '
-              '`--stackdriver-metric-single-instance-assignment` and '
-              '`--custom-metric-utilization`.'))
+  parser.add_argument(
+      '--remove-stackdriver-metric',
+      metavar='METRIC',
+      help=('Stackdriver metric to remove from autoscaling configuration. '
+            'If the metric is the only input used for autoscaling the '
+            'command will fail.'))
+  parser.add_argument(
+      '--update-stackdriver-metric',
+      metavar='METRIC',
+      help=('Stackdriver metric to use as an input for autoscaling. '
+            'When using this flag, the target value of the metric must also be '
+            'specified by using the following flags: '
+            '`--stackdriver-metric-single-instance-assignment` or '
+            '`--stackdriver-metric-utilization-target` and '
+            '`--stackdriver-metric-utilization-target-type`. '
+            'Mutually exclusive with `--custom-metric-utilization`.'))
+  parser.add_argument(
+      '--stackdriver-metric-filter',
+      metavar='FILTER',
+      help=('Expression for filtering samples used to autoscale, see '
+            'https://cloud.google.com/monitoring/api/v3/filters.'))
+  parser.add_argument(
+      '--stackdriver-metric-utilization-target',
+      metavar='TARGET',
+      type=float,
+      help=('Value of the metric Autoscaler aims to maintain. When '
+            'specifying this flag you must also provide '
+            '`--stackdriver-metric-utilization-target-type`. Mutually '
+            'exclusive with '
+            '`--stackdriver-metric-single-instance-assignment` and '
+            '`--custom-metric-utilization`.'))
 
-    parser.add_argument(
-        '--stackdriver-metric-utilization-target-type',
-        metavar='TARGET_TYPE',
-        choices=_ALLOWED_UTILIZATION_TARGET_TYPES_LOWER,
-        help=('Value of the metric Autoscaler will aim to maintain. When '
-              'specifying this flag you must also provide '
-              '`--stackdriver-metric-utilization-target`. Mutually '
-              'exclusive with '
-              '`--stackdriver-metric-single-instance-assignment` and '
-              '`--custom-metric-utilization`.'))
-    parser.add_argument(
-        '--stackdriver-metric-single-instance-assignment',
-        metavar='ASSIGNMENT',
-        type=float,
-        help=('Autoscaler will aim to maintain value of metric divided by '
-              'number of instances at this level. Mutually '
-              'exclusive with '
-              '`-stackdriver-metric-utilization-target-type`, '
-              '`-stackdriver-metric-utilization-target-type`, and '
-              '`--custom-metric-utilization`.'))
+  parser.add_argument(
+      '--stackdriver-metric-utilization-target-type',
+      metavar='TARGET_TYPE',
+      choices=_ALLOWED_UTILIZATION_TARGET_TYPES_LOWER,
+      help=('Value of the metric Autoscaler aims to maintain. When '
+            'specifying this flag you must also provide '
+            '`--stackdriver-metric-utilization-target`. Mutually '
+            'exclusive with '
+            '`--stackdriver-metric-single-instance-assignment` and '
+            '`--custom-metric-utilization`.'))
+  parser.add_argument(
+      '--stackdriver-metric-single-instance-assignment',
+      metavar='ASSIGNMENT',
+      type=float,
+      help=('Value that indicates the amount of work that each instance is '
+            'expected to handle. Autoscaler maintains enough VMs by dividing '
+            'the available work by this value. Mutually exclusive with '
+            '`-stackdriver-metric-utilization-target-type`, '
+            '`-stackdriver-metric-utilization-target-type`, and '
+            '`--custom-metric-utilization`.'))
 
   GetModeFlag().AddToParser(parser)
 
@@ -229,11 +225,11 @@ def AddMinMaxControl(parser, max_required=True):
   """Adds min and max num replicas controls to a given parser."""
   parser.add_argument('--min-num-replicas',
                       type=arg_parsers.BoundedInt(0, sys.maxsize),
-                      help='Minimum number of replicas Autoscaler will set.')
+                      help='Minimum number of replicas Autoscaler can set.')
   parser.add_argument('--max-num-replicas',
                       type=arg_parsers.BoundedInt(0, sys.maxsize),
                       required=max_required,
-                      help='Maximum number of replicas Autoscaler will set.')
+                      help='Maximum number of replicas Autoscaler can set.')
 
 
 def GetModeFlag():
@@ -338,41 +334,43 @@ def AddScheduledAutoscaling(parser, patch_args):
     arg_group_config = parser.add_group()
     arg_group.add_argument(
         '--set-schedule',
-        help='A unique name of the scaling schedule to be configured.')
+        help='A unique name for the scaling schedule to be configured.')
     arg_group.add_argument(
         '--update-schedule',
-        help='A unique name of the scaling schedule to be updated.')
+        help='Name of the scaling schedule to be updated.')
     arg_group.add_argument(
         '--remove-schedule',
         help="""\
-          A unique name of the scaling schedule to be removed.
+          Name of the scaling schedule to be removed.
 
           Be careful with this action as scaling schedule deletion cannot be
           undone.
 
           You can delete any schedule regardless of its status. If you delete
           a scaling schedule that is currently active, the deleted scaling
-          schedule will stop being effective immediately after it is deleted.
-          If this results in removing instances from MIG, the autoscaler will
-          respect the 10-minute stabilization period and if configured also
-          scale-in controls. This ensures you don't accidentally lose capacity
-          immediately after the scaling schedule ends.
+          schedule stops being effective immediately after it is deleted.
+          If there is no need to maintain capacity, the autoscaler starts
+          removing instances after a 10-minute stabilization period and (if
+          configured) following scale-in controls. This ensures you don't
+          accidentally lose capacity immediately after the scaling schedule
+          ends.
           """)
     arg_group.add_argument(
         '--enable-schedule',
-        help='A unique name of the scaling schedule to be enabled.')
+        help='Name of the scaling schedule to be enabled.')
     arg_group.add_argument(
         '--disable-schedule',
         help="""\
-          A unique name of the scaling schedule to be disabled.
+          Name of the scaling schedule to be disabled.
 
-          When the scaling schedule is disabled its configuration persists but
+          When a scaling schedule is disabled its configuration persists but
           the scaling schedule itself never becomes active. If you disable a
-          scaling schedule that is currently active the deleted scaling
-          schedule will stop being effective immediately after it moves into
-          DISABLED state. If this results in removing instances from
-          MIG, the autoscaler will respect the 10-minute stabilization period
-          and if configured also scale-in controls. This ensures you don't
+          scaling schedule that is currently active the disabled scaling
+          schedule stops being effective immediately after it moves into
+          DISABLED state.
+          If there is no need to maintain capacity, the autoscaler starts
+          removing instances after a 10-minute stabilization period and (if
+          configured) following scale-in controls. This ensures you don't
           accidentally lose capacity immediately after the scaling schedule
           ends.
           """)
@@ -392,11 +390,12 @@ def AddScheduledAutoscalingConfigurationArguments(arg_group):
       help="""\
         Start time of the scaling schedule in cron format.
 
-        This is when an autoscaler will start creating new VMs if MIG size is
-        lower than the minimum number of instances. Set the start time to allow
-        enough time for new VMs to boot and initialize. For example if your
-        workload takes 10 minutes from VM creation to start serving then set
-        start time 10 minutes earlier than the time you need VMs to be ready.
+        This is when the autoscaler starts creating new VMs, if the MIG's
+        current size is less than the minimum required instances. Set the start
+        time to allow enough time for new VMs to boot and initialize. For
+        example if your workload takes 10 minutes from VM creation to start
+        serving then set start time 10 minutes earlier than the time you need
+        VMs to be ready.
         """)
   arg_group.add_argument(
       '--schedule-duration-sec',
@@ -404,38 +403,41 @@ def AddScheduledAutoscalingConfigurationArguments(arg_group):
       help="""\
         How long should the scaling schedule be active, measured in seconds.
 
-        Minimum duration is 5 minutes. Scaling schedule is active from its start
-        time and for configured duration. During this time autoscaler will scale
-        MIG to have at least as many VMs as defined by the minimum number of
-        instances. After specified duration if there is no need to maintain
-        capacity, the autoscaler will start removing instances after a 10
-        minutes stabilization period and (if configured) following scale-in
-        controls.
+        Minimum duration is 5 minutes. A scaling schedule is active from its
+        start time and for its configured duration. During this time, the
+        autoscaler scales the MIG to have at least as many VMs as defined by the
+        minimum required instances. After the configured duration, if there is
+        no need to maintain capacity, the autoscaler starts removing instances
+        after a 10-minute stabilization period and (if configured) following
+        scale-in controls.
         """)
   arg_group.add_argument(
       '--schedule-min-required-replicas',
       type=arg_parsers.BoundedInt(0, sys.maxsize),
       help="""\
-        How many VMs autoscaler should ensure for the duration of this scaling
-        schedule.
+        How many VMs the autoscaler should provision for the duration of this
+        scaling schedule.
 
-        Autoscaler will provide at least this number of instances when the
-        scaling schedule is active. MIG can have more VMs if there are other
-        scaling schedules active with higher instance count or if autoscaling
-        policy (for example on CPU) requires more instances to meet its target.
+        Autoscaler provides at least this number of instances when the scaling
+        schedule is active. A MIG can have more VMs if there are other scaling
+        schedules active with more required instances or if another autoscaling
+        policy (for example, scaling based on CPU) requires more instances to
+        meet its target.
+
 
         This configuration does not change autoscaling minimum and maximum
-        instance limits which are always in effect. Autoscaler will not create
+        instance limits which are always in effect. Autoscaler does not create
         more than the maximum number of instances configured for MIG.
         """)
   arg_group.add_argument(
       '--schedule-time-zone',
       help="""\
-        Location of the scaling schedule's start time.
+        Name of the timezone scaling schedule's start time is in.
 
-        It should be provided provided as a location from the IANA tz database
-        (for example Europe/Paris). It will consider daylight saving time (DST)
-        adjustments. If no time zone is provided UTC is used as a default.
+        It should be provided as a name from the IANA tz database (for
+        example Europe/Paris or UTC). It automatically adjusts for daylight
+        savings time (DST). If no time zone is provided, UTC is used as a
+        default.
 
         See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for
         the list of valid timezones.

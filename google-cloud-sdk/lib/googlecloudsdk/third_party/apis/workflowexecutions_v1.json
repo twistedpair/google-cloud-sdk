@@ -100,9 +100,283 @@
       "location": "query"
     }
   },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
+        }
+      }
+    }
+  },
   "schemas": {
+    "ListExecutionsResponse": {
+      "id": "ListExecutionsResponse",
+      "description": "Response for the ListExecutions method.",
+      "type": "object",
+      "properties": {
+        "executions": {
+          "description": "The executions which match the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Execution"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "Execution": {
+      "id": "Execution",
+      "description": "A running instance of a [Workflow](\/workflows\/docs\/reference\/rest\/v1\/projects.locations.workflows).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the execution. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}\/executions\/{execution}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "startTime": {
+          "description": "Output only. Marks the beginning of execution.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. Marks the end of execution, successful or not.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. Current state of the execution.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid state.",
+            "The execution is in progress.",
+            "The execution finished successfully.",
+            "The execution failed with an error.",
+            "The execution was stopped intentionally."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "SUCCEEDED",
+            "FAILED",
+            "CANCELLED"
+          ]
+        },
+        "argument": {
+          "description": "Input parameters of the execution represented as a JSON string. The size limit is 32KB.",
+          "type": "string"
+        },
+        "result": {
+          "description": "Output only. Output of the execution represented as a JSON string. The value can only be present if the execution's state is `SUCCEEDED`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "error": {
+          "description": "Output only. The error which caused the execution to finish prematurely. The value is only present if the execution's state is `FAILED` or `CANCELLED`.",
+          "readOnly": true,
+          "$ref": "Error"
+        },
+        "workflowRevisionId": {
+          "description": "Output only. Revision of the workflow this execution is using.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "Error": {
+      "id": "Error",
+      "description": "Error describes why the execution was abnormally terminated.",
+      "type": "object",
+      "properties": {
+        "payload": {
+          "description": "Error payload returned by the execution, represented as a JSON string.",
+          "type": "string"
+        },
+        "context": {
+          "description": "Human readable error context, helpful for debugging purposes.",
+          "type": "string"
+        }
+      }
+    },
+    "CancelExecutionRequest": {
+      "id": "CancelExecutionRequest",
+      "description": "Request for the CancelExecution method.",
+      "type": "object",
+      "properties": {
+      }
+    }
   },
   "resources": {
+    "projects": {
+      "resources": {
+        "locations": {
+          "resources": {
+            "workflows": {
+              "resources": {
+                "executions": {
+                  "methods": {
+                    "list": {
+                      "id": "workflowexecutions.projects.locations.workflows.executions.list",
+                      "path": "v1/{+parent}/executions",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Name of the workflow for which the executions should be listed. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Maximum number of executions to return per call. Max supported value depends on the selected Execution view: it's 10000 for BASIC and 100 for FULL. The default value used if the field is not specified is 100, regardless of the selected view. Values greater than the max value will be coerced down to it.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous `ListExecutions` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListExecutions` must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "view": {
+                          "description": "Optional. A view defining which fields should be filled in the returned executions. The API will default to the BASIC view.",
+                          "location": "query",
+                          "type": "string",
+                          "enumDescriptions": [
+                            "The default \/ unset value.",
+                            "Includes only basic metadata about the execution. Following fields are returned: name, start_time, end_time, state and workflow_revision_id.",
+                            "Includes all data."
+                          ],
+                          "enum": [
+                            "EXECUTION_VIEW_UNSPECIFIED",
+                            "BASIC",
+                            "FULL"
+                          ]
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListExecutionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns a list of executions which belong to the workflow with the given name. The method returns executions of all workflow revisions. Returned executions are ordered by their start time (newest first)."
+                    },
+                    "create": {
+                      "id": "workflowexecutions.projects.locations.workflows.executions.create",
+                      "path": "v1/{+parent}/executions",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Name of the workflow for which an execution should be created. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow} The latest revision of the workflow will be used.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Execution"
+                      },
+                      "response": {
+                        "$ref": "Execution"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new execution using the latest revision of the given workflow."
+                    },
+                    "get": {
+                      "id": "workflowexecutions.projects.locations.workflows.executions.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions/{executionsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the execution to be retrieved. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}\/executions\/{execution}",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "view": {
+                          "description": "Optional. A view defining which fields should be filled in the returned execution. The API will default to the FULL view.",
+                          "location": "query",
+                          "type": "string",
+                          "enumDescriptions": [
+                            "The default \/ unset value.",
+                            "Includes only basic metadata about the execution. Following fields are returned: name, start_time, end_time, state and workflow_revision_id.",
+                            "Includes all data."
+                          ],
+                          "enum": [
+                            "EXECUTION_VIEW_UNSPECIFIED",
+                            "BASIC",
+                            "FULL"
+                          ]
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Execution"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns an execution of the given name."
+                    },
+                    "cancel": {
+                      "id": "workflowexecutions.projects.locations.workflows.executions.cancel",
+                      "path": "v1/{+name}:cancel",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions/{executionsId}:cancel",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the execution to be cancelled. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}\/executions\/{execution}",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "CancelExecutionRequest"
+                      },
+                      "response": {
+                        "$ref": "Execution"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Cancels an execution of the given name."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   },
   "basePath": ""
 }

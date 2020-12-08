@@ -283,7 +283,8 @@
               "Persistent forms allow persisting form values during actions.",
               "Fixed footer in card.",
               "Update the subject and recipients of a draft.",
-              "The grid widget."
+              "The grid widget.",
+              "A Gmail add-on action that applies to the addon compose UI."
             ],
             "enum": [
               "WIDGET_TYPE_UNSPECIFIED",
@@ -292,7 +293,8 @@
               "PERSISTENT_FORMS",
               "FIXED_FOOTER",
               "UPDATE_SUBJECT_AND_RECIPIENTS",
-              "GRID_WIDGET"
+              "GRID_WIDGET",
+              "ADDON_COMPOSE_UI_ACTION"
             ]
           }
         }
