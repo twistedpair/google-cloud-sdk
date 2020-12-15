@@ -895,6 +895,11 @@
                       "description": "Required. The user-provided ID to be assigned to the trigger.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Required. If set, validate the request and preview the review, but do not actually post it.",
+                      "location": "query",
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [
@@ -934,6 +939,11 @@
                       "description": "If set to true, and the trigger is not found, a new trigger will be created. In this situation, `update_mask` is ignored.",
                       "location": "query",
                       "type": "boolean"
+                    },
+                    "validateOnly": {
+                      "description": "Required. If set, validate the request and preview the review, but do not actually post it.",
+                      "location": "query",
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [
@@ -970,6 +980,11 @@
                     },
                     "allowMissing": {
                       "description": "If set to true, and the trigger is not found, the request will succeed but no action will be taken on the server.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "validateOnly": {
+                      "description": "Required. If set, validate the request and preview the review, but do not actually post it.",
                       "location": "query",
                       "type": "boolean"
                     }

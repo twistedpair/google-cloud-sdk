@@ -409,8 +409,10 @@ _KNOWN_ERRORS = {
     'googlecloudsdk.calliope.parser_errors.ArgumentError': lambda x: None,
     'googlecloudsdk.core.util.files.Error': lambda x: None,
     'httplib.ResponseNotReady': core_exceptions.NetworkIssueError,
+    'httplib.BadStatusLine': core_exceptions.NetworkIssueError,
     # Same error but different location on PY3.
     'http.client.ResponseNotReady': core_exceptions.NetworkIssueError,
+    'http.client.BadStatusLine': core_exceptions.NetworkIssueError,
     'oauth2client.client.AccessTokenRefreshError': _GetTokenRefreshError,
     'ssl.SSLError': core_exceptions.NetworkIssueError,
     'socket.error': core_exceptions.NetworkIssueError,

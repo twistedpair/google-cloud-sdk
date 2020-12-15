@@ -21,6 +21,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import requests as core_requests
 from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.credentials import requests
 
@@ -67,7 +68,7 @@ def GetApitoolsTransport(timeout='unset',
         ca_certs=ca_certs,
         allow_account_impersonation=allow_account_impersonation)
 
-    return requests.GetApitoolsRequests(session)
+    return core_requests.GetApitoolsRequests(session)
 
   return http.Http(timeout=timeout,
                    enable_resource_quota=enable_resource_quota,

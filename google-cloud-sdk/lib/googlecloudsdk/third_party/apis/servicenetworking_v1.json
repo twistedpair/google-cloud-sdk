@@ -318,6 +318,13 @@
           "items": {
             "$ref": "SecondaryIpRangeSpec"
           }
+        },
+        "requestedRanges": {
+          "description": "Optional. The name of one or more allocated IP address ranges associated with this private service access connection. If no range names are provided all ranges associated with this connection will be considered. If a CIDR range with the specified IP prefix length is not available within these ranges, the call fails.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -406,6 +413,13 @@
           "items": {
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "requestedRanges": {
+          "description": "Optional. The name of one or more allocated IP address ranges associated with this private service access connection. If no range names are provided all ranges associated with this connection will be considered. If a CIDR range with the specified IP prefix length is not available within these ranges the validation fails.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }

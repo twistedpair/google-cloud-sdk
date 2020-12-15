@@ -42,6 +42,8 @@ class AutoscalingConfig(_messages.Message):
       autoscaling is enabled.
 
   Fields:
+    currentCpu: Optional. Current number of CPU used in the environment.
+    currentMemory: Optional. Current memory in GB used in the environment.
     maximumCpu: Optional. Maximum number of CPU in the environment.
     maximumMemory: Optional. Memory limit in GB in the environment.
     minimumCpu: Optional. Minimum number of CPU in the environment.
@@ -62,11 +64,13 @@ class AutoscalingConfig(_messages.Message):
     DISABLED = 1
     ENABLED = 2
 
-  maximumCpu = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  maximumMemory = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  minimumCpu = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  minimumMemory = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  mode = _messages.EnumField('ModeValueValuesEnum', 5)
+  currentCpu = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  currentMemory = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maximumCpu = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maximumMemory = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  minimumCpu = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  minimumMemory = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  mode = _messages.EnumField('ModeValueValuesEnum', 7)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -652,7 +656,7 @@ class MaintenanceWindow(_messages.Message):
 
   Fields:
     endTime: Required. Maintenance window end time. It is used only to
-      calculate the duration of the maintenance window. The value for end-time
+      calculate the duration of the maintenance window. The value for end_time
       must be in the future, relative to `start_time`.
     recurrence: Required. Maintenance window recurrence. Format is a subset of
       [RFC-5545](https://tools.ietf.org/html/rfc5545) `RRULE`. The only

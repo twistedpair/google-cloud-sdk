@@ -156,10 +156,8 @@ apis:
       discovery_doc: certificatemanager_v1alpha1.json
       default: true
   cloudasset:
-    v1beta1:
-      default: true
-      discovery_doc: cloudasset_v1beta1.json
     v1:
+      default: true
       discovery_doc: cloudasset_v1.json
     v1p1beta1:
       discovery_doc: cloudasset_v1p1beta1.json
@@ -490,6 +488,9 @@ apis:
     v1alpha2:
       discovery_doc: domains_v1alpha2.json
   eventarc:
+    v1:
+      discovery_doc: eventarc_v1.json
+      default: true
     v1beta1:
       discovery_doc: eventarc_v1beta1.json
   eventflow:
@@ -547,6 +548,10 @@ apis:
     v1:
       discovery_doc: gsuiteaddons_v1.json
       default: true
+      unelidable_request_methods:
+      # This is required in order to properly generate a replaceDeployment message due to the
+      # signature issue as specified in b/174574785
+      - gsuiteaddons.projects.deployments.replaceDeployment
   healthcare:
     v1alpha2:
       discovery_doc: healthcare_v1alpha2.json
@@ -743,10 +748,8 @@ apis:
           path: iam
       discovery_doc: policytroubleshooter_v2alpha1.json
   privateca:
-    v1alpha1:
-      default: true
-      discovery_doc: privateca_v1alpha1.json
     v1beta1:
+      default: true
       discovery_doc: privateca_v1beta1.json
   pubsub:
     v1:
@@ -816,8 +819,12 @@ apis:
       discovery_doc: serviceconsumermanagement_v1beta1.json
       default: true
   servicedirectory:
+    v1:
+      discovery_doc: servicedirectory_v1.json
+      default: true
     v1beta1:
       discovery_doc: servicedirectory_v1beta1.json
+      default: false
   servicemanagement:
     v1:
       discovery_doc: servicemanagement_v1.json

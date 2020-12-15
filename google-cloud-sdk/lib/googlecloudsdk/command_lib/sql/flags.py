@@ -163,7 +163,7 @@ def AddType(parser):
                       'the method to authenticate the user during login. '
                       'See the list of user types at '
                       'https://cloud.google.com/sql/docs/postgres/admin-api/'
-                      'v1beta4/users#type')
+                      'rest/v1beta4/SqlUserType')
 
 
 # Instance create and patch flags
@@ -937,17 +937,12 @@ TIERS_FORMAT = """
 USERS_FORMAT = """
   table(
     name.yesno(no='(anonymous)'),
-    host
-  )
-"""
-
-USERS_FORMAT_BETA = """
-  table(
-    name.yesno(no='(anonymous)'),
     host,
     type.yesno(no='BUILT_IN')
   )
 """
+
+USERS_FORMAT_BETA = USERS_FORMAT
 
 
 USERS_FORMAT_ALPHA = USERS_FORMAT_BETA

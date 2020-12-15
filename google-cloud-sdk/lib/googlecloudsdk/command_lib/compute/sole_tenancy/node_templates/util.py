@@ -32,9 +32,7 @@ def _ParseNodeAffinityLabels(affinity_labels, messages):
 
 def CreateNodeTemplate(node_template_ref,
                        args,
-                       messages,
-                       enable_disk=False,
-                       enable_accelerator=False):
+                       messages):
   """Creates a Node Template message from args."""
   node_affinity_labels = None
   if args.node_affinity_labels:
@@ -58,13 +56,12 @@ def CreateNodeTemplate(node_template_ref,
       nodeType=args.node_type,
       nodeTypeFlexibility=node_type_flexbility)
 
-  if enable_disk:
-    if args.IsSpecified('disk'):
-      local_disk = messages.LocalDisk(
-          diskCount=args.disk.get('count'),
-          diskSizeGb=args.disk.get('size'),
-          diskType=args.disk.get('type'))
-      node_template.disks = [local_disk]
+  if args.IsSpecified('disk'):
+    local_disk = messages.LocalDisk(
+        diskCount=args.disk.get('count'),
+        diskSizeGb=args.disk.get('size'),
+        diskType=args.disk.get('type'))
+    node_template.disks = [local_disk]
 
   if args.IsSpecified('cpu_overcommit_type'):
     overcommit_type = arg_utils.ChoiceToEnum(
@@ -72,8 +69,7 @@ def CreateNodeTemplate(node_template_ref,
         messages.NodeTemplate.CpuOvercommitTypeValueValuesEnum)
     node_template.cpuOvercommitType = overcommit_type
 
-  if enable_accelerator:
-    node_template.accelerators = GetAccelerators(args, messages)
+  node_template.accelerators = GetAccelerators(args, messages)
 
   server_binding_flag = flags.GetServerBindingMapperFlag(messages)
   server_binding = messages.ServerBinding(

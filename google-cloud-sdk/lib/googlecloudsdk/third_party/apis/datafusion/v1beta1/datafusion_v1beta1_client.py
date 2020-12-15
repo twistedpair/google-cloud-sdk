@@ -561,7 +561,7 @@ class DatafusionV1beta1(base_api.BaseApiClient):
         request: (DatafusionProjectsRemoveIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (RemoveIAMPolicyResponse) The response message.
+        (RemoveIamPolicyResponse) The response message.
       """
       config = self.GetMethodConfig('RemoveIamPolicy')
       return self._RunMethod(
@@ -575,8 +575,8 @@ class DatafusionV1beta1(base_api.BaseApiClient):
         path_params=['resource'],
         query_params=[],
         relative_path='v1beta1/{+resource}:removeIamPolicy',
-        request_field='removeIAMPolicyRequest',
+        request_field='removeIamPolicyRequest',
         request_type_name='DatafusionProjectsRemoveIamPolicyRequest',
-        response_type_name='RemoveIAMPolicyResponse',
+        response_type_name='RemoveIamPolicyResponse',
         supports_download=False,
     )

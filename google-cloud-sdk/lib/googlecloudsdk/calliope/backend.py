@@ -249,6 +249,7 @@ class CommandCommon(object):
       notes.AddLine('')
       for alternate in alternates:
         notes.AddLine('  $ ' + alternate)
+        notes.AddLine('')
     return notes.GetContents()
 
   def _AssignParser(self, parser_group, allow_positional_args):

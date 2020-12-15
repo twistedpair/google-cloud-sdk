@@ -71,7 +71,11 @@ Example(YAML):
       machineType: n1-highmem-2
     replicaCount: 1
     containerSpec:
-      imageUri: gcr.io/ucaip-test/ucaip-training-test""")
+      imageUri: gcr.io/ucaip-test/ucaip-training-test
+      args:
+      - port=8500
+      command:
+      - start""")
 
 WORKER_POOL_SPEC = base.Argument(
     '--worker-pool-spec',
@@ -172,12 +176,32 @@ _TASK_NAME = base.Argument(
     default=None,
     help='If set, display only the logs for this particular task.')
 
+_CUSTOM_JOB_COMMAND = base.Argument(
+    '--command',
+    type=arg_parsers.ArgList(),
+    metavar='COMMAND',
+    action=arg_parsers.UpdateAction,
+    help="""\
+Command to be invoked when containers are started.
+It overrides the entrypoint instruction in Dockerfile when provided.
+""")
+_CUSTOM_JOB_ARGS = base.Argument(
+    '--args',
+    metavar='ARG',
+    type=arg_parsers.ArgList(),
+    action=arg_parsers.UpdateAction,
+    help="""\
+Comma-separated arguments passed to containers or python tasks.
+""")
+
 
 def AddCreateCustomJobFlags(parser):
   """Adds flags related to create a custom job."""
   AddRegionResourceArg(parser, 'to create a custom job')
   CUSTOM_JOB_DISPLAY_NAME.AddToParser(parser)
   PYTHON_PACKGE_URIS.AddToParser(parser)
+  _CUSTOM_JOB_ARGS.AddToParser(parser)
+  _CUSTOM_JOB_COMMAND.AddToParser(parser)
   worker_pool_spec_group = base.ArgumentGroup(
       help='Worker pool specification.', required=True)
   worker_pool_spec_group.AddArgument(CUSTOM_JOB_CONFIG)

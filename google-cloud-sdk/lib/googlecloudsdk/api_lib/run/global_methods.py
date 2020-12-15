@@ -18,9 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.container import api_adapter as container_api_adapter
+from googlecloudsdk.api_lib.resourcesettings import service as resourcesettings_service
 from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.api_lib.runtime_config import util
+from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.util import apis
 
 from googlecloudsdk.core import log
@@ -101,19 +105,23 @@ def ListServices(client, region=_ALL_REGIONS):
   ]
 
 
-def ListClusters(location=None):
+def ListClusters(location=None, project=None):
   """Get all clusters with Cloud Run enabled.
 
   Args:
     location: str optional name of location to search for clusters in. Leaving
       this field blank will search in all locations.
+    project: str optional name of project to search for clusters in. Leaving
+      this field blank will use the project defined by the corresponding
+      property.
 
   Returns:
     List of googlecloudsdk.third_party.apis.container.CONTAINER_API_VERSION
     import container_CONTAINER_API_VERSION_messages.Cluster objects
   """
   container_api = container_api_adapter.NewAPIAdapter(CONTAINER_API_VERSION)
-  project = properties.VALUES.core.project.Get(required=True)
+  if not project:
+    project = properties.VALUES.core.project.Get(required=True)
 
   response = container_api.ListClusters(project, location)
   if response.missingZones:
@@ -147,3 +155,89 @@ def ListVerifiedDomains(client):
       parent=project_resource_relname)
   response = client.projects_authorizeddomains.List(request)
   return response.domains
+
+
+def GetClusterRef(cluster, project=None):
+  """Returns a ref for the specified cluster.
+
+  Args:
+    cluster: container_CONTAINER_API_VERSION_messages.Cluster object
+    project: str optional project which overrides the default
+
+  Returns:
+    A Resource object
+  """
+  if not project:
+    project = properties.VALUES.core.project.Get(required=True)
+  return resources.REGISTRY.Parse(
+      cluster.name,
+      params={
+          'projectId': project,
+          'zone': cluster.zone
+      },
+      collection='container.projects.zones.clusters')
+
+
+def MultiTenantClustersForProject(project_id, cluster_location):
+  """Returns a list of clusters accounting for multi-tenant projects.
+
+  This function can also be used for non-multitenant projects and will
+  operate on the single passed-in project_id.
+
+  Args:
+    project_id: The id of the project, which may or may not be multi-tenant
+    cluster_location: The zone or region of the cluster
+
+  Returns:
+    A list of cluster refs
+  """
+  project_ids = _MultiTenantProjectsIfEnabled(project_id)
+  project_ids.insert(0, project_id)
+  return _ClustersForProjectIds(project_ids, cluster_location)
+
+
+def _ClustersForProjectIds(project_ids, cluster_location):
+  response = []
+  for project_id in project_ids:
+    clusters = ListClusters(cluster_location, project_id)
+    for cluster in clusters:
+      response.append(GetClusterRef(cluster, project_id))
+  return response
+
+
+def _MultiTenantProjectsIfEnabled(project):
+  if not _IsResourceSettingsEnabled(project):
+    return []
+  return _MultiTenantProjectIds(project)
+
+
+def _IsResourceSettingsEnabled(project):
+  api_endpoint = apis.GetEffectiveApiEndpoint(
+      resourcesettings_service.RESOURCE_SETTINGS_API_NAME,
+      resourcesettings_service.RESOURCE_SETTINGS_API_VERSION)
+  # removes initial https:// and trailing slash
+  api_endpoint = re.sub(r'https://(.*)/', r'\1', api_endpoint)
+
+  return enable_api.IsServiceEnabled(project, api_endpoint)
+
+
+def _MultiTenantProjectIds(project):
+  setting_name = 'projects/{}/settings/cloudrun-multiTenancy'.format(project)
+
+  messages = resourcesettings_service.ResourceSettingsMessages()
+
+  get_request = messages.ResourcesettingsProjectsSettingsLookupEffectiveValueRequest(
+      parent=setting_name)
+  settings_service = resourcesettings_service.ProjectsSettingsService()
+  service_value = settings_service.LookupEffectiveValue(get_request)
+  return [
+      _MulitTenantProjectId(project)
+      for project in service_value.value.stringSetValue.values
+  ]
+
+
+# The setting value has the format of projects/PROJECT-ID.
+# Returns only the PROJECT-ID.
+def _MulitTenantProjectId(setting_value):
+  return setting_value.split('/')[1]
+

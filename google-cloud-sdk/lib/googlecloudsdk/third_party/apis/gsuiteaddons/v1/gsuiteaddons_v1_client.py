@@ -218,7 +218,7 @@ class GsuiteaddonsV1(base_api.BaseApiClient):
       r"""Creates or replaces a deployment with the specified name. Requires: * `gsuiteaddons.deployments.update` permission on the project.
 
       Args:
-        request: (GoogleCloudGsuiteaddonsV1Deployment) input message
+        request: (GsuiteaddonsProjectsDeploymentsReplaceDeploymentRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleCloudGsuiteaddonsV1Deployment) The response message.
@@ -235,8 +235,8 @@ class GsuiteaddonsV1(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}',
-        request_field='<request>',
-        request_type_name='GoogleCloudGsuiteaddonsV1Deployment',
+        request_field='googleCloudGsuiteaddonsV1Deployment',
+        request_type_name='GsuiteaddonsProjectsDeploymentsReplaceDeploymentRequest',
         response_type_name='GoogleCloudGsuiteaddonsV1Deployment',
         supports_download=False,
     )

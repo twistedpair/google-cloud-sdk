@@ -237,10 +237,14 @@ class GoogleCloudVideointelligenceV1FaceDetectionAnnotation(_messages.Message):
   r"""Face detection annotation.
 
   Fields:
+    thumbnail: The thumbnail of a person's face.
+    tracks: The face tracks with attributes.
     version: Feature version.
   """
 
-  version = _messages.StringField(1)
+  thumbnail = _messages.BytesField(1)
+  tracks = _messages.MessageField('GoogleCloudVideointelligenceV1Track', 2, repeated=True)
+  version = _messages.StringField(3)
 
 
 class GoogleCloudVideointelligenceV1FaceDetectionConfig(_messages.Message):
@@ -1096,10 +1100,14 @@ class GoogleCloudVideointelligenceV1beta2FaceDetectionAnnotation(_messages.Messa
   r"""Face detection annotation.
 
   Fields:
+    thumbnail: The thumbnail of a person's face.
+    tracks: The face tracks with attributes.
     version: Feature version.
   """
 
-  version = _messages.StringField(1)
+  thumbnail = _messages.BytesField(1)
+  tracks = _messages.MessageField('GoogleCloudVideointelligenceV1beta2Track', 2, repeated=True)
+  version = _messages.StringField(3)
 
 
 class GoogleCloudVideointelligenceV1beta2FaceFrame(_messages.Message):
@@ -1725,10 +1733,14 @@ class GoogleCloudVideointelligenceV1p1beta1FaceDetectionAnnotation(_messages.Mes
   r"""Face detection annotation.
 
   Fields:
+    thumbnail: The thumbnail of a person's face.
+    tracks: The face tracks with attributes.
     version: Feature version.
   """
 
-  version = _messages.StringField(1)
+  thumbnail = _messages.BytesField(1)
+  tracks = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1Track', 2, repeated=True)
+  version = _messages.StringField(3)
 
 
 class GoogleCloudVideointelligenceV1p1beta1FaceFrame(_messages.Message):
@@ -2354,10 +2366,14 @@ class GoogleCloudVideointelligenceV1p2beta1FaceDetectionAnnotation(_messages.Mes
   r"""Face detection annotation.
 
   Fields:
+    thumbnail: The thumbnail of a person's face.
+    tracks: The face tracks with attributes.
     version: Feature version.
   """
 
-  version = _messages.StringField(1)
+  thumbnail = _messages.BytesField(1)
+  tracks = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1Track', 2, repeated=True)
+  version = _messages.StringField(3)
 
 
 class GoogleCloudVideointelligenceV1p2beta1FaceFrame(_messages.Message):
@@ -3028,10 +3044,14 @@ class GoogleCloudVideointelligenceV1p3beta1FaceDetectionAnnotation(_messages.Mes
   r"""Face detection annotation.
 
   Fields:
+    thumbnail: The thumbnail of a person's face.
+    tracks: The face tracks with attributes.
     version: Feature version.
   """
 
-  version = _messages.StringField(1)
+  thumbnail = _messages.BytesField(1)
+  tracks = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1Track', 2, repeated=True)
+  version = _messages.StringField(3)
 
 
 class GoogleCloudVideointelligenceV1p3beta1FaceFrame(_messages.Message):

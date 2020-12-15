@@ -200,8 +200,7 @@ def TransformCount(r):
     A dictionary mapping list elements to the number of them in the input list.
 
   Example:
-    `"b/a/b/c".split("/").count()`:::
-    Returns {a: 1, b: 2, c: 1}.
+    `"b/a/b/c".split("/").count()` returns `{a: 1, b: 2, c: 1}`.
   """
   if not r:
     return {}
@@ -229,7 +228,7 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='',
     undefined: Returns this value if the resource is not a valid time.
     tz: Return the time relative to the tz timezone if specified, the explicit
       timezone in the resource if it has one, otherwise the local timezone.
-      For example, ...date(tz=EST5EDT, tz_default=UTC).
+      For example: `date(tz=EST5EDT, tz_default=UTC)`.
     tz_default: The default timezone if the resource does not have a timezone
       suffix.
 
@@ -566,7 +565,7 @@ def TransformFilter(r, expression):
     The elements of r that match the filter expression.
 
   Example:
-    x.filter("key:val") selects elements of r that have 'key' fields containing
+    `x.filter("key:val")` selects elements of r that have 'key' fields containing
     'val'.
   """
 
@@ -824,8 +823,7 @@ def TransformJoin(r, sep='/', undefined=''):
     A new string containing the resource values joined by sep.
 
   Example:
-    `"a/b/c/d".split("/").join("!")`:::
-    Returns "a!b!c!d".
+    `"a/b/c/d".split("/").join("!")` returns `"a!b!c!d"`.
   """
   try:
     parts = [six.text_type(i) for i in r]
@@ -991,10 +989,9 @@ def TransformScope(r, *args):
       component in r if none found.
 
   Example:
-    `"http://abc/foo/projects/bar/xyz".scope("projects")`:::
-    Returns "bar/xyz".
-    `"http://xyz/foo/regions/abc".scope()`:::
-    Returns "abc".
+    `"http://abc/foo/projects/bar/xyz".scope("projects")` returns `"bar/xyz"`.
+
+    `"http://xyz/foo/regions/abc".scope()` returns `"abc"`.
   """
   if not r:
     return ''
@@ -1147,16 +1144,15 @@ def TransformSlice(r, op=':', undefined=''):
     A new array containing the specified slice of the resource.
 
   Example:
-    `[1,2,3].slice(1:)`:::
-    Returns [2,3].
-    `[1,2,3].slice(:2)`:::
-    Returns [1,2].
-    `[1,2,3].slice(-1:)`:::
-    Returns [3].
-    `[1,2,3].slice(: :-1)`:::
-    Returns [3,2,1].
-    `[1,2,3].slice(1)`:::
-    Returns [2].
+    `[1,2,3].slice(1:)` returns `[2,3]`.
+
+    `[1,2,3].slice(:2)` returns `[1,2]`.
+
+    `[1,2,3].slice(-1:)` returns `[3]`.
+
+    `[1,2,3].slice(: :-1)` returns `[3,2,1]`.
+
+    `[1,2,3].slice(1)` returns `[2]`.
   """
   op = op.strip()
   if not op:
@@ -1195,8 +1191,7 @@ def TransformSort(r, attr=''):
     A resource list ordered by the specified key.
 
   Example:
-    `"b/a/d/c".split("/").sort()`:::
-    Returns "[a, b, c, d]".
+    `"b/a/d/c".split("/").sort()` returns `[a, b, c, d]`.
   """
   if not r:
     return []
@@ -1220,8 +1215,7 @@ def TransformSplit(r, sep='/', undefined=''):
     A new array containing the split components of the resource.
 
   Example:
-    `"a/b/c/d".split()`:::
-    Returns ["a", "b", "c", "d"].
+    `"a/b/c/d".split()` returns `["a", "b", "c", "d"]`.
   """
   if not r:
     return undefined

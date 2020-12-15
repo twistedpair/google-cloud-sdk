@@ -528,6 +528,25 @@ class GoogleCloudMlV1ContainerSpec(_messages.Message):
   ports = _messages.MessageField('GoogleCloudMlV1ContainerPort', 5, repeated=True)
 
 
+class GoogleCloudMlV1DiskConfig(_messages.Message):
+  r"""Represents the config of disk options.
+
+  Fields:
+    bootDiskSizeGb: Size in GB of the boot disk (default is 100GB).
+    bootDiskType: Type of the boot disk (default is "pd-standard"). Valid
+      values: "pd-ssd" (Persistent Disk Solid State Drive) or "pd-standard"
+      (Persistent Disk Hard Disk Drive).
+    localSsdCount: Number of attached local SSDs, from 0 to 8 (default is 0).
+      The ssds are mounted on the node under `/mnt/disks/ssd{0...7}`. For
+      example, if `local_ssd_count=3`, the 3 ssds will be mounted at paths
+      `/mnt/disks/ssd0`, `/mnt/disks/ssd1` and `/mnt/disks/ssd2` respectively.
+  """
+
+  bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  bootDiskType = _messages.StringField(2)
+  localSsdCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudMlV1EncryptionConfig(_messages.Message):
   r"""Represents a custom encryption key configuration that can be applied to
   a resource.
@@ -1983,6 +2002,7 @@ class GoogleCloudMlV1ReplicaConfig(_messages.Message):
       be set if custom container image is not provided. Note that this field
       and [TrainingInput.args] are mutually exclusive, i.e., both cannot be
       set at the same time.
+    diskConfig: Represents the configuration of disk options.
     imageUri: The Docker image to run on the replica. This image must be in
       Container Registry. Learn more about [configuring custom
       containers](/ai-platform/training/docs/distributed-training-containers).
@@ -2003,8 +2023,9 @@ class GoogleCloudMlV1ReplicaConfig(_messages.Message):
   acceleratorConfig = _messages.MessageField('GoogleCloudMlV1AcceleratorConfig', 1)
   containerArgs = _messages.StringField(2, repeated=True)
   containerCommand = _messages.StringField(3, repeated=True)
-  imageUri = _messages.StringField(4)
-  tpuTfVersion = _messages.StringField(5)
+  diskConfig = _messages.MessageField('GoogleCloudMlV1DiskConfig', 4)
+  imageUri = _messages.StringField(5)
+  tpuTfVersion = _messages.StringField(6)
 
 
 class GoogleCloudMlV1RequestLoggingConfig(_messages.Message):

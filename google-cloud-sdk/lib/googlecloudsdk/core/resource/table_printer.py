@@ -136,8 +136,6 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       box, 2 otherwise.
     title=_TITLE_: Prints a centered _TITLE_ at the top of the table, within
       the table box if *box* is enabled.
-    width=N: The table width. The default is the terminal width or 80 if the
-      output is not a terminal.
 
   Attributes:
     _optional: True if at least one column is optional. An optional column is

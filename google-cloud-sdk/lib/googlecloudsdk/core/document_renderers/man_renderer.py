@@ -190,13 +190,14 @@ class ManRenderer(renderer.Renderer):
       self._out.write('.IP "%s" 2m\n' %
                       self._BULLET[(level - 1) % len(self._BULLET)])
 
-  def Synopsis(self, line):
+  def Synopsis(self, line, is_synopsis=False):
     """Renders NAME and SYNOPSIS lines as a hanging indent.
 
     Does not split top-level [...] or (...) groups.
 
     Args:
       line: The synopsis text.
+      is_synopsis: if it is the synopsis section
     """
     self._out.write('.HP\n')
     nest = 0

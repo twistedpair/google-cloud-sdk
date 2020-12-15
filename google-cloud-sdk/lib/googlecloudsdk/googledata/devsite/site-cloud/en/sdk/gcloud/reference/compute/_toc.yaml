@@ -1,0 +1,9 @@
+toc:
+- title: "gcloud compute"
+  path: /sdk/gcloud/reference/compute
+  section:
+  - title: "instances"
+    path: /sdk/gcloud/reference/compute/instances
+    section:
+    - title: "list"
+      path: /sdk/gcloud/reference/compute/instances/list

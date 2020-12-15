@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20201130",
+ "revision": "20201204",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -797,7 +797,7 @@
     },
     "hivePartitioningOptions": {
      "$ref": "HivePartitioningOptions",
-     "description": "[Optional, Trusted Tester] Options to configure hive partitioning support."
+     "description": "[Optional] Options to configure hive partitioning support."
     },
     "ignoreUnknownValues": {
      "type": "boolean",
@@ -1136,7 +1136,7 @@
     },
     "hivePartitioningOptions": {
      "$ref": "HivePartitioningOptions",
-     "description": "[Optional, Trusted Tester] Options to configure hive partitioning support."
+     "description": "[Optional] Options to configure hive partitioning support."
     },
     "ignoreUnknownValues": {
      "type": "boolean",

@@ -91,6 +91,8 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
     if not self._example:
       self._example = True
       self._in_command_block = False
+      # Set self._fill to indicate that we need to close a section in
+      # _Flush()
       self._fill = 2
       if not self._lang:
         self._out.write('<pre class="prettyprint lang-sh">\n')
@@ -119,7 +121,7 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
         self._out.write(line)
         self._out.write('</code>\n')
     else:
-      self._out.write(' ' * (self._fill + indent))
+      self._out.write(' ' * indent)
       self._out.write(line)
       self._out.write('\n')
 
@@ -160,5 +162,5 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
     """
     return re.sub(
         r'(--[-a-z]+)',
-        r'<a href="/sdk/{}/reference/#\1">\1</a>'.format(self.command[0]),
-        line)
+        r'<code><a href="/sdk/{}/reference/#\1">\1</a></code>'.format(
+            self.command[0]), line)

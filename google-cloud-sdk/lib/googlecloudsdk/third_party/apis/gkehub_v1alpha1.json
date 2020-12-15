@@ -979,6 +979,11 @@
           "description": "The number of vCPUs in the cluster according to the most recent measurement.",
           "type": "string",
           "format": "int64"
+        },
+        "preciseLastMeasuredClusterVcpuCapacity": {
+          "description": "The precise vCPUs capacity in the cluster according to the most recent measurement (including partial nodes).",
+          "type": "number",
+          "format": "float"
         }
       }
     },

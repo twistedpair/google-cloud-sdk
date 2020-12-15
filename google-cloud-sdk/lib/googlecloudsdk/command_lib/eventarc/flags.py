@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -77,20 +78,40 @@ def AddServiceAccountArg(parser, required=False):
       help='The IAM service account email associated with the trigger.')
 
 
-def AddMatchingCriteriaArg(parser, required=False):
-  """Adds an argument for the trigger's matching criteria."""
+def AddEventFiltersArg(parser, release_track, required=False):
+  """Adds an argument for the trigger's event filters."""
+  if release_track == base.ReleaseTrack.GA:
+    flag = '--event-filters'
+    help_text = (
+        "The trigger's list of filters that apply to CloudEvents attributes. "
+        "This flag can be repeated to add more filters to the list. Only "
+        "events that match all these filters will be sent to the destination. "
+        "The filters must include the ``type'' attribute, as well as any other "
+        "attributes that are expected for the chosen type.")
+  else:
+    flag = '--matching-criteria'
+    help_text = (
+        "The criteria by which events are filtered for the trigger, specified "
+        "as a comma-separated list of CloudEvents attribute names and values. "
+        "This flag can also be repeated to add more criteria to the list. Only "
+        "events that match with this criteria will be sent to the destination. "
+        "The criteria must include the ``type'' attribute, as well as any "
+        "other attributes that are expected for the chosen type.")
   parser.add_argument(
-      '--matching-criteria',
+      flag,
       action=arg_parsers.UpdateAction,
       type=arg_parsers.ArgDict(),
       required=required,
-      help="The criteria by which events are filtered for the trigger, "
-      "specified as a comma-separated list of CloudEvents attribute names and "
-      "values. This flag can also be repeated to add more criteria to the "
-      "list. Only events that match with this criteria will be sent to the "
-      "destination. The criteria must include the ``type'' attribute, as "
-      "well as any other attributes that are expected for the chosen type.",
+      help=help_text,
       metavar='ATTRIBUTE=VALUE')
+
+
+def GetEventFiltersArg(args, release_track):
+  """Gets the event filters from the arguments."""
+  if release_track == base.ReleaseTrack.GA:
+    return args.event_filters
+  else:
+    return args.matching_criteria
 
 
 def AddDestinationRunServiceArg(parser, required=False):

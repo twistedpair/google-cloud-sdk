@@ -22,6 +22,7 @@ from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import text
 
 
@@ -265,7 +266,7 @@ def ParseUpdateOptionsBase(args, locations):
   Returns:
     ClusterUpdateOptions, object with data used to update cluster.
   """
-  return api_adapter.UpdateClusterOptions(
+  opts = api_adapter.UpdateClusterOptions(
       monitoring_service=args.monitoring_service,
       logging_service=args.logging_service,
       enable_stackdriver_kubernetes=args.enable_stackdriver_kubernetes,
@@ -305,3 +306,16 @@ def ParseUpdateOptionsBase(args, locations):
       max_memory=args.max_memory,
       min_accelerator=args.min_accelerator,
       max_accelerator=args.max_accelerator)
+
+  if (args.disable_addons and
+      api_adapter.GCEPDCSIDRIVER in args.disable_addons):
+    pdcsi_disabled = args.disable_addons[api_adapter.GCEPDCSIDRIVER]
+    if pdcsi_disabled:
+      console_io.PromptContinue(
+          message='If the GCE Persistent Disk CSI Driver is disabled, then any '
+          'pods currently using PersistentVolumes owned by the driver '
+          'will fail to terminate. Any new pods that try to use those '
+          'PersistentVolumes will also fail to start.',
+          cancel_on_no=True)
+
+  return opts

@@ -22,19 +22,20 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import threading
+from googlecloudsdk.core import log
 
 
 class TaskWrapper:
   """Embeds a Task instance in a dependency graph.
 
   Attributes:
-    id (int): A unique identifier for this task wrapper.
+    id (Hashable): A unique identifier for this task wrapper.
     task (googlecloudsdk.command_lib.storage.tasks.task.Task): An instance of a
       task class.
     dependency_count (int): The number of unexecuted dependencies this task has,
       i.e. this node's in-degree in a graph where an edge from A to B indicates
       that A must be executed before B.
-    dependent_task_ids (Optional[Iterable[int]]): The id of the tasks that
+    dependent_task_ids (Optional[Iterable[Hashable]]): The id of the tasks that
       require this task to be completed for their own completion. This value
       should be None if no tasks depend on this one.
     is_submitted (bool): True if this task has been submitted for execution.
@@ -63,6 +64,10 @@ class TaskGraph:
   the Task class.
 
   The public methods in this class are thread safe.
+
+  Attributes:
+    is_empty (threading.Event): is_empty.is_set() is True when the graph has no
+      tasks in it.
   """
 
   def __init__(self, top_level_task_limit):
@@ -75,12 +80,12 @@ class TaskGraph:
         this number of top-level tasks in the graph.
     """
 
+    self.is_empty = threading.Event()
+    self.is_empty.set()
+
     # Used to synchronize graph updates. This needs to be an RLock since this
     # lock is acquired by each recursive call to TaskGraph.complete.
     self._lock = threading.RLock()
-
-    # Incremented every time a task is added.
-    self._id_counter = 0
 
     # A dict[int, TaskWrapper]. Maps ids to task wrapper instances for tasks
     # currently in the graph.
@@ -97,13 +102,15 @@ class TaskGraph:
     Args:
       task (googlecloudsdk.command_lib.storage.tasks.task.Task): The task to be
         added.
-      dependent_task_ids (Optional[List[int]]): TaskWrapper.id attributes for
-        tasks already in the graph that require the task being added to complete
-        before being executed. This argument should be None for top-level tasks,
-        which no other tasks depend on.
+      dependent_task_ids (Optional[List[Hashable]]): TaskWrapper.id attributes
+        for tasks already in the graph that require the task being added to
+        complete before being executed. This argument should be None for
+        top-level tasks, which no other tasks depend on.
 
     Returns:
-      A TaskWrapper instance for the task passed into this function.
+      A TaskWrapper instance for the task passed into this function, or None if
+      task.parallel_processing_key was the same as another task's
+      parallel_processing_key.
 
     Raises:
       InvalidDependencyError if any id in dependent_task_ids is not in the
@@ -113,8 +120,26 @@ class TaskGraph:
       self._top_level_task_semaphore.acquire()
 
     with self._lock:
-      task_wrapper = TaskWrapper(self._id_counter, task, dependent_task_ids)
-      self._id_counter += 1
+      if task.parallel_processing_key is not None:
+        identifier = task.parallel_processing_key
+      else:
+        identifier = hash(task)
+
+      if identifier in self._task_wrappers_in_graph:
+        if task.parallel_processing_key is not None:
+          log.warning('Skipping {} since another task is already using its '
+                      'key: {}. This can occur if a cp command results in '
+                      'multiple writes to the same resource.'.format(
+                          task.__class__.__name__,
+                          task.parallel_processing_key))
+        else:
+          log.warning('Skipping {}. This is probably because due to a bug that '
+                      'caused it to be submitted for execution more than once.'
+                      .format(task.__class__.__name__))
+
+        return
+
+      task_wrapper = TaskWrapper(identifier, task, dependent_task_ids)
 
       for task_id in dependent_task_ids or []:
         try:
@@ -123,6 +148,7 @@ class TaskGraph:
           raise InvalidDependencyError
 
       self._task_wrappers_in_graph[task_wrapper.id] = task_wrapper
+      self.is_empty.clear()
     return task_wrapper
 
   def complete(self, task_wrapper):
@@ -164,6 +190,8 @@ class TaskGraph:
       if task_wrapper.dependent_task_ids is None:
         # We've completed a top-level task, so we should allow more to be added.
         self._top_level_task_semaphore.release()
+        if not self._task_wrappers_in_graph:
+          self.is_empty.set()
         return []
 
       # After removing this task, some dependent tasks may now be executable.
@@ -177,7 +205,3 @@ class TaskGraph:
         # Aggregates all of the submittable tasks found by recursive calls.
         submittable_tasks += self.complete(dependent_task_wrapper)
       return submittable_tasks
-
-  def is_empty(self):
-    """Returns True if the graph has no tasks in it."""
-    return not self._task_wrappers_in_graph

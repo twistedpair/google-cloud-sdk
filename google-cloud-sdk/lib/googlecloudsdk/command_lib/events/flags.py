@@ -68,8 +68,10 @@ def AddEventTypeFlagArg(parser, release_track):
   if release_track == base.ReleaseTrack.ALPHA:
     help_text = 'Type of event (e.g. com.google.cloud.auditlog.event).'
   else:
-    help_text = 'Type of event (e.g. google.cloud.audit.log.v1.written).'
-  parser.add_argument('--type', required=True, help=help_text)
+    help_text = (
+        'Type of event (e.g. google.cloud.audit.log.v1.written). '
+        'Required for all sources, except optional for ApiServerSource.')
+  parser.add_argument('--type', default=None, required=False, help=help_text)
 
 
 def AddBrokerFlag(parser):
@@ -198,6 +200,18 @@ def AddCopyDefaultSecret(parser):
       required=True,
       help='Copy default secret google-cloud-sources-key from cloud-run-events'
       ' namespace.')
+
+
+def ValidateSourceOrTypeFlagSet(args):
+  if not args.type:
+    if not args.source:
+      raise calliope_exceptions.OneOfArgumentsRequiredException(
+          ['source', 'type'],
+          'Requires at least one of either --source or --type flag.')
+    elif args.source != 'ApiServerSource':
+      raise calliope_exceptions.InvalidArgumentException(
+          'type',
+          'Source {} requires --type to be specified.'.format(args.source))
 
 
 def _ParseSecretParameters(args):

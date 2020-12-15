@@ -121,8 +121,8 @@ class GCPProductOrganizationFallthrough(Fallthrough):
   def __init__(self):
     super(GCPProductOrganizationFallthrough, self).__init__(
         "set the property [project] or provide the argument [--project] on the "
-        "command line, using a GCP project with an associated Apigee "
-        "organization")
+        "command line, using a Cloud Platform project with an associated "
+        "Apigee organization")
 
   def _Call(self, parsed_args):
     return OrganizationFromGCPProduct()

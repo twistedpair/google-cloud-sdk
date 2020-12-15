@@ -1130,6 +1130,44 @@
           "type": "string"
         }
       }
+    },
+    "ListReferencesRequest": {
+      "id": "ListReferencesRequest",
+      "description": "The ListResourceMetadataRequest request.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "Required. The parent resource name (target_resource of this reference) For example: `projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}`.",
+          "type": "string"
+        },
+        "pageSize": {
+          "description": "The maximum number of items to return. If unspecified, server will pick an appropriate default. Server may return fewer items than requested. A caller should only rely on response's next_page_token to determine if there are more References left to be queried.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "description": "The next_page_token value returned from a previous List request, if any.",
+          "type": "string"
+        }
+      }
+    },
+    "ListReferencesResponse": {
+      "id": "ListReferencesResponse",
+      "description": "The ListReferencesResponse response.",
+      "type": "object",
+      "properties": {
+        "references": {
+          "description": "The list of references.",
+          "type": "array",
+          "items": {
+            "$ref": "Reference"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {

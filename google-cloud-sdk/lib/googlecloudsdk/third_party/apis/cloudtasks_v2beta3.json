@@ -578,6 +578,10 @@
           "description": "HTTP request that is sent to the task's target. An HTTP task is a task that has HttpRequest set.",
           "$ref": "HttpRequest"
         },
+        "pullMessage": {
+          "description": "Pull Message contained in a task in a PULL queue type. This payload type cannot be explicitly set through Cloud Tasks API. Its purpose, currently is to provide backward compatibility with App Engine Task Queue [pull](https:\/\/cloud.google.com\/appengine\/docs\/standard\/java\/taskqueue\/pull\/) queues to provide a way to inspect contents of pull tasks through the CloudTasks.",
+          "$ref": "PullMessage"
+        },
         "scheduleTime": {
           "description": "The time when the task is scheduled to be attempted. For App Engine queues, this is when the task will be attempted or retried. `schedule_time` will be truncated to the nearest microsecond.",
           "type": "string",
@@ -759,6 +763,22 @@
         },
         "audience": {
           "description": "Audience to be used when generating OIDC token. If not specified, the URI specified in target will be used.",
+          "type": "string"
+        }
+      }
+    },
+    "PullMessage": {
+      "id": "PullMessage",
+      "description": "Pull Message. This proto can only be used for tasks in a queue which has PULL type. It currently exists for backwards compatibility with the App Engine Task Queue SDK. This message type maybe returned with methods list and get, when the response view is FULL.",
+      "type": "object",
+      "properties": {
+        "payload": {
+          "description": "A data payload consumed by the worker to execute the task.",
+          "type": "string",
+          "format": "byte"
+        },
+        "tag": {
+          "description": "The tasks's tag. The tag is less than 500 characters. SDK compatibility: Although the SDK allows tags to be either string or [bytes](https:\/\/cloud.google.com\/appengine\/docs\/standard\/java\/javadoc\/com\/google\/appengine\/api\/taskqueue\/TaskOptions.html#tag-byte:A-), only UTF-8 encoded tags can be used in Cloud Tasks. If a tag isn't UTF-8 encoded, the tag will be empty when the task is returned by Cloud Tasks.",
           "type": "string"
         }
       }

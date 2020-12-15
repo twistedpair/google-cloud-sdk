@@ -3020,6 +3020,8 @@ class BackendBucketCdnPolicy(_messages.Message):
       take care to specify a cache TTL for all response codes that you wish to
       cache. Cloud CDN will not apply any default negative caching when a
       policy exists.
+    requestCoalescing: If true then Cloud CDN will combine multiple concurrent
+      cache fill requests into a small number of requests to the origin.
     serveWhileStale: Serve existing content from the cache (if available) when
       revalidating content with the origin, or when an error is encountered
       when refreshing the cache. This setting defines the default "max-stale"
@@ -3074,9 +3076,10 @@ class BackendBucketCdnPolicy(_messages.Message):
   maxTtl = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   negativeCaching = _messages.BooleanField(6)
   negativeCachingPolicy = _messages.MessageField('BackendBucketCdnPolicyNegativeCachingPolicy', 7, repeated=True)
-  serveWhileStale = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  signedUrlCacheMaxAgeSec = _messages.IntegerField(9)
-  signedUrlKeyNames = _messages.StringField(10, repeated=True)
+  requestCoalescing = _messages.BooleanField(8)
+  serveWhileStale = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  signedUrlCacheMaxAgeSec = _messages.IntegerField(10)
+  signedUrlKeyNames = _messages.StringField(11, repeated=True)
 
 
 class BackendBucketCdnPolicyBypassCacheOnRequestHeader(_messages.Message):
@@ -3879,6 +3882,8 @@ class BackendServiceCdnPolicy(_messages.Message):
       take care to specify a cache TTL for all response codes that you wish to
       cache. Cloud CDN will not apply any default negative caching when a
       policy exists.
+    requestCoalescing: If true then Cloud CDN will combine multiple concurrent
+      cache fill requests into a small number of requests to the origin.
     serveWhileStale: Serve existing content from the cache (if available) when
       revalidating content with the origin, or when an error is encountered
       when refreshing the cache. This setting defines the default "max-stale"
@@ -3934,9 +3939,10 @@ class BackendServiceCdnPolicy(_messages.Message):
   maxTtl = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   negativeCaching = _messages.BooleanField(7)
   negativeCachingPolicy = _messages.MessageField('BackendServiceCdnPolicyNegativeCachingPolicy', 8, repeated=True)
-  serveWhileStale = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  signedUrlCacheMaxAgeSec = _messages.IntegerField(10)
-  signedUrlKeyNames = _messages.StringField(11, repeated=True)
+  requestCoalescing = _messages.BooleanField(9)
+  serveWhileStale = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  signedUrlCacheMaxAgeSec = _messages.IntegerField(11)
+  signedUrlKeyNames = _messages.StringField(12, repeated=True)
 
 
 class BackendServiceCdnPolicyBypassCacheOnRequestHeader(_messages.Message):
@@ -23516,7 +23522,10 @@ class Disk(_messages.Message):
     sourceStorageObject: The full Google Cloud Storage URI where the disk
       image is stored. This file must be a gzip-compressed tarball whose name
       ends in .tar.gz or virtual machine disk whose name ends in vmdk. Valid
-      URIs may start with gs:// or https://storage.googleapis.com/.
+      URIs may start with gs:// or https://storage.googleapis.com/. This flag
+      is not optimized for creating multiple disks from a source storage
+      object. To create many disks from a source storage object, use gcloud
+      compute images import instead.
     status: [Output Only] The status of disk creation. CREATING: Disk is
       provisioning. RESTORING: Source data is being copied into the disk.
       FAILED: Disk creation failed. READY: Disk is ready for use. DELETING:
@@ -41024,6 +41033,7 @@ class Quota(_messages.Message):
       NVIDIA_T4_VWS_GPUS: <no description>
       NVIDIA_V100_GPUS: <no description>
       PACKET_MIRRORINGS: <no description>
+      PD_EXTREME_TOTAL_PROVISIONED_IOPS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
       PREEMPTIBLE_NVIDIA_A100_GPUS: <no description>
@@ -41134,47 +41144,48 @@ class Quota(_messages.Message):
     NVIDIA_T4_VWS_GPUS = 65
     NVIDIA_V100_GPUS = 66
     PACKET_MIRRORINGS = 67
-    PREEMPTIBLE_CPUS = 68
-    PREEMPTIBLE_LOCAL_SSD_GB = 69
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 70
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 71
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 72
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 73
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 74
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 75
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 76
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 77
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 78
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 79
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 80
-    PUBLIC_ADVERTISED_PREFIXES = 81
-    PUBLIC_DELEGATED_PREFIXES = 82
-    REGIONAL_AUTOSCALERS = 83
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 84
-    RESERVATIONS = 85
-    RESOURCE_POLICIES = 86
-    ROUTERS = 87
-    ROUTES = 88
-    SECURITY_POLICIES = 89
-    SECURITY_POLICY_CEVAL_RULES = 90
-    SECURITY_POLICY_RULES = 91
-    SNAPSHOTS = 92
-    SSD_TOTAL_GB = 93
-    SSL_CERTIFICATES = 94
-    STATIC_ADDRESSES = 95
-    STATIC_BYOIP_ADDRESSES = 96
-    SUBNETWORKS = 97
-    TARGET_HTTPS_PROXIES = 98
-    TARGET_HTTP_PROXIES = 99
-    TARGET_INSTANCES = 100
-    TARGET_POOLS = 101
-    TARGET_SSL_PROXIES = 102
-    TARGET_TCP_PROXIES = 103
-    TARGET_VPN_GATEWAYS = 104
-    URL_MAPS = 105
-    VPN_GATEWAYS = 106
-    VPN_TUNNELS = 107
-    XPN_SERVICE_PROJECTS = 108
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 68
+    PREEMPTIBLE_CPUS = 69
+    PREEMPTIBLE_LOCAL_SSD_GB = 70
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 71
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 72
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 73
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 74
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 75
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 76
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 77
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 78
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 79
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 80
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 81
+    PUBLIC_ADVERTISED_PREFIXES = 82
+    PUBLIC_DELEGATED_PREFIXES = 83
+    REGIONAL_AUTOSCALERS = 84
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 85
+    RESERVATIONS = 86
+    RESOURCE_POLICIES = 87
+    ROUTERS = 88
+    ROUTES = 89
+    SECURITY_POLICIES = 90
+    SECURITY_POLICY_CEVAL_RULES = 91
+    SECURITY_POLICY_RULES = 92
+    SNAPSHOTS = 93
+    SSD_TOTAL_GB = 94
+    SSL_CERTIFICATES = 95
+    STATIC_ADDRESSES = 96
+    STATIC_BYOIP_ADDRESSES = 97
+    SUBNETWORKS = 98
+    TARGET_HTTPS_PROXIES = 99
+    TARGET_HTTP_PROXIES = 100
+    TARGET_INSTANCES = 101
+    TARGET_POOLS = 102
+    TARGET_SSL_PROXIES = 103
+    TARGET_TCP_PROXIES = 104
+    TARGET_VPN_GATEWAYS = 105
+    URL_MAPS = 106
+    VPN_GATEWAYS = 107
+    VPN_TUNNELS = 108
+    XPN_SERVICE_PROJECTS = 109
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

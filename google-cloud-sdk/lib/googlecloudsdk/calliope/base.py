@@ -419,7 +419,12 @@ URI_FLAG = Argument(
     action='store_true',
     require_coverage_in_tests=False,
     category=LIST_COMMAND_FLAGS,
-    help='Print a list of resource URIs instead of the default output.')
+    help="""\
+    Print a list of resource URIs instead of the default output, and change the
+    command output to a list of URIs. If this flag is used with *--format*,
+    the formatting is applied on this URI list. To display URIs alongside other
+		keys instead, use the *uri()* transform.
+    """)
 
 # Binary Command Flags
 BINARY_BACKED_COMMAND_FLAGS = 'BINARY BACKED COMMAND'

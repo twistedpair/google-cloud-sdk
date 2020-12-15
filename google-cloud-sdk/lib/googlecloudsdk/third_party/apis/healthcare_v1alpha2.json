@@ -1186,15 +1186,15 @@
       "type": "object",
       "properties": {
         "dicom": {
-          "description": "Configures de-id of application\/DICOM content.",
+          "description": "Configures de-id of application\/DICOM content. Deprecated. Use `dicom_tag_config` instead.",
           "$ref": "DicomConfig"
         },
         "fhir": {
-          "description": "Configures de-id of application\/FHIR content.",
+          "description": "Configures de-id of application\/FHIR content. Deprecated. Use `fhir_field_config` instead.",
           "$ref": "FhirConfig"
         },
         "image": {
-          "description": "Configures the de-identification of image pixels in the source_dataset.",
+          "description": "Configures the de-identification of image pixels in the source_dataset. Deprecated. Use `dicom_tag_config.options.clean_image` instead.",
           "$ref": "ImageConfig"
         },
         "annotation": {
@@ -1342,7 +1342,7 @@
       "type": "object",
       "properties": {
         "transformations": {
-          "description": "The transformations to apply to the detected data.",
+          "description": "The transformations to apply to the detected data. Deprecated. Use `additional_transformations` instead.",
           "type": "array",
           "items": {
             "$ref": "InfoTypeTransformation"

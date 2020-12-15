@@ -188,7 +188,7 @@ class CDNPolicy(_messages.Message):
       cannot be larger than the defaultTtl (if set) - Fractions of a second
       are not allowed. Omit this field to use the defaultTtl, or the max-age
       set by the origin, as the client-facing TTL. When the cache mode is set
-      to "USE_ORIGIN_HEADERS", you must omit this field.
+      to "USE_ORIGIN_HEADERS" or "BYPASS_CACHE", you must omit this field.
     defaultTtl: Optional. Specifies the default TTL for cached content served
       by this origin for responses that do not have an existing valid TTL
       (max-age or s-max-age). Defaults to 3600s (1 hour). - The TTL must be >=
@@ -199,8 +199,8 @@ class CDNPolicy(_messages.Message):
       the defaultTTL will overwrite the TTL set in all responses. Note that
       infrequently accessed objects may be evicted from the cache before the
       defined TTL. Objects that expire will be revalidated with the origin.
-      When the cache mode is set to "USE_ORIGIN_HEADERS", you must omit this
-      field.
+      When the cache mode is set to "USE_ORIGIN_HEADERS" or "BYPASS_CACHE",
+      you must omit this field.
     maxTtl: Optional. Specifies the maximum allowed TTL for cached content
       served by this origin. Defaults to 86400s (1 day). Cache directives that
       attempt to set a max-age or s-maxage higher than this, or an Expires
@@ -209,8 +209,8 @@ class CDNPolicy(_messages.Message):
       directive. - The TTL must be >= 0 and <= 2592000 (1 month) - Setting a
       TTL of "0" means "always revalidate" - The value of maxTtl must be equal
       to or greater than defaultTtl. - Fractions of a second are not allowed.
-      When the cache mode is set to "USE_ORIGIN_HEADERS" or "FORCE_CACHE_ALL",
-      you must omit this field.
+      When the cache mode is set to "USE_ORIGIN_HEADERS", "FORCE_CACHE_ALL",
+      or "BYPASS_CACHE", you must omit this field.
     negativeCaching: Optional. Negative caching allows per-status code TTLs to
       be set, in order to apply fine-grained caching for common errors or
       redirects. This can reduce the load on your origin and improve end-user

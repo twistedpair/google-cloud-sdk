@@ -3451,3 +3451,15 @@ Specifies whether to enable GCFS on {}.""".format(target)
       default=None,
       hidden=hidden,
       action='store_true')
+
+
+def AddDisableAutopilotFlag(parser, hidden=True):
+  """Adds the argument to convert cluster from autopilot mode to standard mode."""
+  help_text = """\
+Convert an cluster from autopilot mode to standard mode."""
+  parser.add_argument(
+      '--disable-autopilot',
+      help=help_text,
+      default=None,
+      hidden=hidden,
+      action='store_true')

@@ -26,7 +26,8 @@ from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core.console import console_io
 import six
 
-VALID_REDIS_3_2_CONFIG_KEYS = ('maxmemory-policy', 'notify-keyspace-events')
+VALID_REDIS_3_2_CONFIG_KEYS = ('maxmemory-policy',
+                               'notify-keyspace-events')
 VALID_REDIS_4_0_CONFIG_KEYS = ('activedefrag', 'lfu-decay-time',
                                'lfu-log-factor', 'maxmemory-gb')
 VALID_REDIS_5_0_CONFIG_KEYS = ('stream-node-max-bytes',
@@ -47,7 +48,7 @@ def GetMessagesForResource(resource_ref):
 
 def InstanceRedisConfigArgDictSpec():
   valid_redis_config_keys = (
-      VALID_REDIS_3_2_CONFIG_KEYS + VALID_REDIS_4_0_CONFIG_KEYS +
+      ('timeout',) + VALID_REDIS_3_2_CONFIG_KEYS + VALID_REDIS_4_0_CONFIG_KEYS +
       VALID_REDIS_5_0_CONFIG_KEYS)
   return {k: six.text_type for k in valid_redis_config_keys}
 

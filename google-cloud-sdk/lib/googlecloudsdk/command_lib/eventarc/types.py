@@ -58,14 +58,13 @@ def IsPubsubType(name):
   return name == _PUBSUB_TYPE.name
 
 
-def MatchingCriteriaDictToType(matching_criteria):
+def EventFiltersDictToType(event_filters):
   return next(
-      (mc['value'] for mc in matching_criteria if mc['attribute'] == 'type'),
-      None)
+      (ef['value'] for ef in event_filters if ef['attribute'] == 'type'), None)
 
 
-def MatchingCriteriaMessageToType(matching_criteria):
-  return next((mc.value for mc in matching_criteria if mc.attribute == 'type'),
+def EventFiltersMessageToType(event_filters):
+  return next((ef.value for ef in event_filters if ef.attribute == 'type'),
               None)
 
 

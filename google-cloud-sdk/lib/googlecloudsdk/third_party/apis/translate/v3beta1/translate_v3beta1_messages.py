@@ -41,7 +41,7 @@ class BatchTranslateTextRequest(_messages.Message):
     glossaries: Optional. Glossaries to be applied for translation. It's keyed
       by target language code.
     inputConfigs: Required. Input configurations. The total number of files
-      matched should be <= 1000. The total content size should be <= 100M
+      matched should be <= 100. The total content size should be <= 100M
       Unicode codepoints. The files must use UTF-8 encoding.
     labels: Optional. The labels with user-defined metadata for the request.
       Label keys and values can be no longer than 63 characters (Unicode

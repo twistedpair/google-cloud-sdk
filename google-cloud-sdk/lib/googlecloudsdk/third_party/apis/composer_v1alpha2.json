@@ -583,7 +583,7 @@
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "Required. Maintenance window end time. It is used only to calculate the duration of the maintenance window. The value for end-time must be in the future, relative to `start_time`.",
+          "description": "Required. Maintenance window end time. It is used only to calculate the duration of the maintenance window. The value for end_time must be in the future, relative to `start_time`.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -629,6 +629,16 @@
         },
         "minimumMemory": {
           "description": "Optional. Minimum memory limit in GB in the environment.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "currentCpu": {
+          "description": "Optional. Current number of CPU used in the environment.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "currentMemory": {
+          "description": "Optional. Current memory in GB used in the environment.",
           "type": "integer",
           "format": "int32"
         }

@@ -29,7 +29,8 @@ def AddPathFlag(parser):
       '--path',
       required=True,
       type=files.ExpandHomeAndVars,
-      help='Path of the directory or file to output configuration(s).')
+      help=('Path of the directory or file to output configuration(s). To '
+            'output configurations to stdout, specify "--path=-".'))
 
 
 def AddFormatFlag(parser):

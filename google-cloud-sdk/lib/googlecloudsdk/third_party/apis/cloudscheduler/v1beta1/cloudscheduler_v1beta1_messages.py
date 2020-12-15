@@ -240,11 +240,16 @@ class CloudschedulerProjectsLocationsJobsDeleteRequest(_messages.Message):
   r"""A CloudschedulerProjectsLocationsJobsDeleteRequest object.
 
   Fields:
+    legacyAppEngineCron: This field is used to manage the legacy App Engine
+      Cron jobs using the Cloud Scheduler API. If the field is set to true,
+      the job in the __cron queue with the corresponding name will be deleted
+      instead.
     name: Required. The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.
   """
 
-  name = _messages.StringField(1, required=True)
+  legacyAppEngineCron = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class CloudschedulerProjectsLocationsJobsGetRequest(_messages.Message):
@@ -262,6 +267,9 @@ class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
   r"""A CloudschedulerProjectsLocationsJobsListRequest object.
 
   Fields:
+    legacyAppEngineCron: This field is used to manage the legacy App Engine
+      Cron jobs using the Cloud Scheduler API. If the field is set to true,
+      the jobs in the __cron queue will be listed instead.
     pageSize: Requested page size. The maximum page size is 500. If
       unspecified, the page size will be the maximum. Fewer jobs than
       requested might be returned, even if more jobs exist; use
@@ -276,9 +284,10 @@ class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
       `projects/PROJECT_ID/locations/LOCATION_ID`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  legacyAppEngineCron = _messages.BooleanField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class CloudschedulerProjectsLocationsJobsPatchRequest(_messages.Message):
@@ -520,6 +529,11 @@ class Job(_messages.Message):
       more than 500 characters.
     httpTarget: HTTP target.
     lastAttemptTime: Output only. The time the last job attempt started.
+    legacyAppEngineCron: Immutable. This field is used to manage the legacy
+      App Engine Cron jobs using the Cloud Scheduler API. If the field is set
+      to true, the job will be considered a legacy job. Note that App Engine
+      Cron jobs have fewer features than Cloud Scheduler jobs, e.g., are only
+      limited to App Engine targets.
     name: Optionally caller-specified in CreateJob, after which it becomes
       output only. The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`. * `PROJECT_ID`
@@ -590,15 +604,16 @@ class Job(_messages.Message):
   description = _messages.StringField(3)
   httpTarget = _messages.MessageField('HttpTarget', 4)
   lastAttemptTime = _messages.StringField(5)
-  name = _messages.StringField(6)
-  pubsubTarget = _messages.MessageField('PubsubTarget', 7)
-  retryConfig = _messages.MessageField('RetryConfig', 8)
-  schedule = _messages.StringField(9)
-  scheduleTime = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  status = _messages.MessageField('Status', 12)
-  timeZone = _messages.StringField(13)
-  userUpdateTime = _messages.StringField(14)
+  legacyAppEngineCron = _messages.BooleanField(6)
+  name = _messages.StringField(7)
+  pubsubTarget = _messages.MessageField('PubsubTarget', 8)
+  retryConfig = _messages.MessageField('RetryConfig', 9)
+  schedule = _messages.StringField(10)
+  scheduleTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  status = _messages.MessageField('Status', 13)
+  timeZone = _messages.StringField(14)
+  userUpdateTime = _messages.StringField(15)
 
 
 class ListJobsResponse(_messages.Message):
@@ -927,7 +942,16 @@ class RetryConfig(_messages.Message):
 
 
 class RunJobRequest(_messages.Message):
-  r"""Request message for forcing a job to run now using RunJob."""
+  r"""Request message for forcing a job to run now using RunJob.
+
+  Fields:
+    legacyAppEngineCron: This field is used to manage the legacy App Engine
+      Cron jobs using the Cloud Scheduler API. If the field is set to true,
+      the job in the __cron queue with the corresponding name will be forced
+      to run instead.
+  """
+
+  legacyAppEngineCron = _messages.BooleanField(1)
 
 
 class StandardQueryParameters(_messages.Message):

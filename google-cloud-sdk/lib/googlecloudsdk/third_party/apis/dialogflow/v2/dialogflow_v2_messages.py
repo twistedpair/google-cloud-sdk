@@ -1073,6 +1073,31 @@ class DialogflowProjectsSetAgentRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class GoogleCloudDialogflowCxV3CreateVersionOperationMetadata(_messages.Message):
+  r"""Metadata associated with the long running operation for
+  Versions.CreateVersion.
+
+  Fields:
+    version: Name of the created version. Format:
+      `projects//locations//agents//flows//versions/`.
+  """
+
+  version = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowCxV3ExportAgentResponse(_messages.Message):
+  r"""The response message for Agents.ExportAgent.
+
+  Fields:
+    agentContent: Uncompressed raw byte content for agent.
+    agentUri: The URI to a file containing the exported agent. This field is
+      populated only if `agent_uri` is specified in ExportAgentRequest.
+  """
+
+  agentContent = _messages.BytesField(1)
+  agentUri = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowCxV3PageInfo(_messages.Message):
   r"""Represents page information communicated to and from the webhook.
 

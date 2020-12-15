@@ -1,0 +1,299 @@
+<html devsite="">
+<head>
+<title>gcloud compute instances</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="project_path" value="/sdk/docs/_project.yaml">
+<meta name="book_path" value="/sdk/_book.yaml">
+<!--
+        THIS DOC IS GENERATED.  DO NOT EDIT.
+  -->
+<style>
+  dd {
+    margin-bottom: 1ex;
+  }
+  li {
+    margin-top: 1ex; margin-bottom: 1ex;
+  }
+  .flag {
+    white-space: nowrap;
+  }
+  .hangingindent {
+    padding-left: 1.5em;
+    text-indent: -1.5em;
+  }
+  .normalfont {
+    font-weight: normal;
+  }
+  .notopmargin {
+    margin-top: 0em;
+  }
+  .sectionbody {
+    margin-top: .2em;
+  }
+</style>
+</head>
+<body>
+<dl>
+
+<section id="NAME">
+<dt>NAME</dt>
+<dd class="sectionbody">
+<dl class="notopmargin"><dt class="hangingindent"><span class="normalfont">
+gcloud compute instances - read and manipulate Compute Engine virtual machine instances
+</span></dt></dl>
+</dd>
+</section>
+
+<section id="SYNOPSIS">
+<dt>SYNOPSIS</dt>
+<dd class="sectionbody">
+<dl class="notopmargin"><dt class="hangingindent"><span class="normalfont">
+<code>gcloud compute instances</code> <code><var><a href="#GROUP">GROUP</a></var></code> | <code><var><a href="#COMMAND">COMMAND</a></var></code> <span>[<code><var><a href="#GCLOUD-WIDE-FLAGS">GCLOUD_WIDE_FLAG</a> &hellip;</var></code>]</span>
+</span></dt></dl>
+</dd>
+</section>
+
+<section id="DESCRIPTION">
+<dt>DESCRIPTION</dt>
+<dd class="sectionbody">
+Read and manipulate Compute Engine virtual machine instances.
+<p>
+For more information about virtual machine instances, see the <a
+href="https://cloud.google.com/compute/docs/instances/">virtual machine
+instances documentation</a>.
+<p>
+See also: <a
+href="https://cloud.google.com/compute/docs/reference/rest/v1/instances">Instances
+API</a>.
+</dd>
+</section>
+
+<section id="GCLOUD-WIDE-FLAGS">
+<dt>GCLOUD WIDE FLAGS</dt>
+<dd class="sectionbody">
+These flags are available to all commands: <a
+href="/sdk/gcloud/reference/#--account">--account</a>, <a
+href="/sdk/gcloud/reference/#--billing-project">--billing-project</a>, <a
+href="/sdk/gcloud/reference/#--configuration">--configuration</a>, <a
+href="/sdk/gcloud/reference/#--flags-file">--flags-file</a>, <a
+href="/sdk/gcloud/reference/#--flatten">--flatten</a>, <a
+href="/sdk/gcloud/reference/#--format">--format</a>, <a
+href="/sdk/gcloud/reference/#--help">--help</a>, <a
+href="/sdk/gcloud/reference/#--impersonate-service-account">--impersonate-service-account</a>,
+<a href="/sdk/gcloud/reference/#--log-http">--log-http</a>, <a
+href="/sdk/gcloud/reference/#--project">--project</a>, <a
+href="/sdk/gcloud/reference/#--quiet">--quiet</a>, <a
+href="/sdk/gcloud/reference/#--trace-token">--trace-token</a>, <a
+href="/sdk/gcloud/reference/#--user-output-enabled">--user-output-enabled</a>,
+<a href="/sdk/gcloud/reference/#--verbosity">--verbosity</a>.
+<p>
+Run <code>$ <a href="/sdk/gcloud/reference">gcloud help</a></code> for details.
+</dd>
+</section>
+
+<section id="GROUP">
+<dt>GROUPS</dt>
+<dd class="sectionbody">
+<code><code><var>GROUP</var></code></code> is one of the following:
+<dl>
+<dt id="network-interfaces"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/network-interfaces">network-interfaces</a></code></span></dt>
+<dd>
+Read and manipulate Compute Engine VM instance network interfaces.
+</dd>
+<dt id="os-inventory"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/os-inventory">os-inventory</a></code></span></dt>
+<dd>
+Read Compute Engine OS Inventory Data and Related Resources.
+</dd>
+</dl>
+</dd>
+</section>
+
+<section id="COMMAND">
+<dt>COMMANDS</dt>
+<dd class="sectionbody">
+<code><code><var>COMMAND</var></code></code> is one of the following:
+<dl>
+<dt id="add-access-config"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/add-access-config">add-access-config</a></code></span></dt>
+<dd>
+Create a Compute Engine virtual machine access configuration.
+</dd>
+<dt id="add-iam-policy-binding"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/add-iam-policy-binding">add-iam-policy-binding</a></code></span></dt>
+<dd>
+Add IAM policy binding to a Compute Engine instance.
+</dd>
+<dt id="add-labels"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/add-labels">add-labels</a></code></span></dt>
+<dd>
+Add labels to Google Compute Engine virtual machine instances.
+</dd>
+<dt id="add-metadata"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/add-metadata">add-metadata</a></code></span></dt>
+<dd>
+Add or update instance metadata.
+</dd>
+<dt id="add-resource-policies"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/add-resource-policies">add-resource-policies</a></code></span></dt>
+<dd>
+Add resource policies to Compute Engine VM instances.
+</dd>
+<dt id="add-tags"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/add-tags">add-tags</a></code></span></dt>
+<dd>
+Add tags to Compute Engine virtual machine instances.
+</dd>
+<dt id="attach-disk"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/attach-disk">attach-disk</a></code></span></dt>
+<dd>
+Attach a disk to an instance.
+</dd>
+<dt id="create"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/create">create</a></code></span></dt>
+<dd>
+Create Compute Engine virtual machine instances.
+</dd>
+<dt id="create-with-container"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/create-with-container">create-with-container</a></code></span></dt>
+<dd>
+Creates Compute Engine virtual machine instances running container images.
+</dd>
+<dt id="delete"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/delete">delete</a></code></span></dt>
+<dd>
+Delete Compute Engine virtual machine instances.
+</dd>
+<dt id="delete-access-config"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/delete-access-config">delete-access-config</a></code></span></dt>
+<dd>
+Delete an access configuration from a virtual machine network interface.
+</dd>
+<dt id="describe"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/describe">describe</a></code></span></dt>
+<dd>
+Describe a virtual machine instance.
+</dd>
+<dt id="detach-disk"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/detach-disk">detach-disk</a></code></span></dt>
+<dd>
+Detach disks from Compute Engine virtual machine instances.
+</dd>
+<dt id="export"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/export">export</a></code></span></dt>
+<dd>
+Export a Compute Engine virtual machine instance's configuration to a file.
+</dd>
+<dt id="get-guest-attributes"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/get-guest-attributes">get-guest-attributes</a></code></span></dt>
+<dd>
+Get the Guest Attributes for a compute instance.
+</dd>
+<dt id="get-iam-policy"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/get-iam-policy">get-iam-policy</a></code></span></dt>
+<dd>
+Get the IAM policy for a Compute Engine instance.
+</dd>
+<dt id="get-screenshot"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/get-screenshot">get-screenshot</a></code></span></dt>
+<dd>
+Capture a screenshot (JPEG image) of the virtual machine instance's display.
+</dd>
+<dt id="get-serial-port-output"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/get-serial-port-output">get-serial-port-output</a></code></span></dt>
+<dd>
+Read output from a virtual machine instance's serial port.
+</dd>
+<dt id="get-shielded-identity"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/get-shielded-identity">get-shielded-identity</a></code></span></dt>
+<dd>
+Get the Shielded identity for a Compute Engine instance.
+</dd>
+<dt id="import"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/import">import</a></code></span></dt>
+<dd>
+Create Compute Engine virtual machine instances from virtual appliance in
+OVA/OVF format.
+</dd>
+<dt id="list"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/list">list</a></code></span></dt>
+<dd>
+List Google Compute Engine instances.
+</dd>
+<dt id="move"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/move">move</a></code></span></dt>
+<dd>
+Move an instance and its attached persistent disks between zones.
+</dd>
+<dt id="remove-iam-policy-binding"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/remove-iam-policy-binding">remove-iam-policy-binding</a></code></span></dt>
+<dd>
+Remove IAM policy binding from a Compute Engine instance.
+</dd>
+<dt id="remove-labels"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/remove-labels">remove-labels</a></code></span></dt>
+<dd>
+Remove labels from Google Compute Engine virtual machine instances.
+</dd>
+<dt id="remove-metadata"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/remove-metadata">remove-metadata</a></code></span></dt>
+<dd>
+Remove instance metadata.
+</dd>
+<dt id="remove-tags"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/remove-tags">remove-tags</a></code></span></dt>
+<dd>
+Remove tags from Compute Engine virtual machine instances.
+</dd>
+<dt id="reset"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/reset">reset</a></code></span></dt>
+<dd>
+Reset a virtual machine instance.
+</dd>
+<dt id="set-disk-auto-delete"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/set-disk-auto-delete">set-disk-auto-delete</a></code></span></dt>
+<dd>
+Set auto-delete behavior for disks.
+</dd>
+<dt id="set-iam-policy"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/set-iam-policy">set-iam-policy</a></code></span></dt>
+<dd>
+Set IAM policy for a Compute Engine instance.
+</dd>
+<dt id="set-machine-type"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/set-machine-type">set-machine-type</a></code></span></dt>
+<dd>
+Set machine type for Compute Engine virtual machines.
+</dd>
+<dt id="set-scheduling"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/set-scheduling">set-scheduling</a></code></span></dt>
+<dd>
+Set scheduling options for Compute Engine virtual machines.
+</dd>
+<dt id="set-service-account"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/set-service-account">set-service-account</a></code></span></dt>
+<dd>
+Set service account and scopes for a Compute Engine instance.
+</dd>
+<dt id="simulate-maintenance-event"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/simulate-maintenance-event">simulate-maintenance-event</a></code></span></dt>
+<dd>
+Simulate maintenance of virtual machine instances.
+</dd>
+<dt id="start"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/start">start</a></code></span></dt>
+<dd>
+Start a stopped virtual machine instance.
+</dd>
+<dt id="stop"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/stop">stop</a></code></span></dt>
+<dd>
+Stop a virtual machine instance.
+</dd>
+<dt id="tail-serial-port-output"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/tail-serial-port-output">tail-serial-port-output</a></code></span></dt>
+<dd>
+Periodically fetch new output from a virtual machine instance's serial port and
+display it as it becomes available.
+</dd>
+<dt id="update"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/update">update</a></code></span></dt>
+<dd>
+Update a Compute Engine virtual machine.
+</dd>
+<dt id="update-access-config"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/update-access-config">update-access-config</a></code></span></dt>
+<dd>
+Update a Compute Engine virtual machine access configuration.
+</dd>
+<dt id="update-container"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/update-container">update-container</a></code></span></dt>
+<dd>
+Updates Compute Engine virtual machine instances running container images.
+</dd>
+<dt id="update-from-file"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances/update-from-file">update-from-file</a></code></span></dt>
+<dd>
+Update a Compute Engine virtual machine instance using a configuration file.
+</dd>
+</dl>
+</dd>
+</section>
+
+<section id="NOTES">
+<dt>NOTES</dt>
+<dd class="sectionbody">
+These variants are also available:
+<pre class="prettyprint lang-sh">
+<code class="devsite-terminal"><a href="/sdk/gcloud/reference/alpha/compute/instances">gcloud alpha compute instances</a></code>
+</pre>
+
+<pre class="prettyprint lang-sh">
+<code class="devsite-terminal"><a href="/sdk/gcloud/reference/beta/compute/instances">gcloud beta compute instances</a></code>
+</pre>
+
+</dd>
+</section>
+
+</dl>
+</body>
+</html>

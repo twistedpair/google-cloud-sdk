@@ -1,0 +1,5 @@
+toc:
+- title: "gcloud Reference"
+  path: /sdk/gcloud/reference
+  section:
+  - include: /sdk/gcloud/reference/compute/_toc.yaml

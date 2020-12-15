@@ -21,6 +21,8 @@ import abc
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
@@ -31,6 +33,13 @@ _VISIBILITY_MODES = {
     'internal': 'Visible only within the cluster.',
     'external': 'Visible from outside the cluster.',
 }
+
+CONNECTION_GKE = 'GKE'
+CONNECTION_KUBECONFIG = 'KUBECONFIG'
+
+
+class ConfigurationError(exceptions.Error):
+  """Indicates an error in configuration."""
 
 
 class BinaryCommandFlag(six.with_metaclass(abc.ABCMeta, object)):
@@ -174,20 +183,14 @@ class ClusterConnectionFlags(BinaryCommandFlag):
   """Encapsulates logic for handling flags used for connecting to a cluster."""
 
   def AddToParser(self, parser):
+    # Import done here to avoid circular import
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.command_lib.kuberun import resource_args
+
     mutex_group = parser.add_mutually_exclusive_group()
     gke_group = mutex_group.add_group()
-    gke_group.add_argument(
-        '--cluster',
-        required=True,
-        help='ID of the cluster or fully qualified identifier for the cluster. '
-        'If specified, then --cluster-location is required. Cannot be '
-        'specified together with --context and --kubeconfig.')
-    gke_group.add_argument(
-        '--cluster-location',
-        required=True,
-        help='Zone in which the cluster is located. If specified, then --cluster '
-        'is required. Cannot be specified together with --context and '
-        '--kubeconfig.')
+    concept_parsers.ConceptParser(
+        [resource_args.CLUSTER_PRESENTATION]).AddToParser(gke_group)
     cluster_group = mutex_group.add_group()
     cluster_group.add_argument(
         '--context',
@@ -196,23 +199,106 @@ class ClusterConnectionFlags(BinaryCommandFlag):
         '--cluster-location.')
     cluster_group.add_argument(
         '--kubeconfig',
-        help='Absolute path to your kubectl config file. If not specified, '
-        'the colon- or semicolon-delimited list of paths specified by '
-        '$KUBECONFIG will be used. If $KUBECONFIG is unset, this defaults to '
-        '~/.kube/config. Cannot be specified together with --cluster and '
-        '--cluster-location.')
+        help='Absolute path to your kubectl config file. Cannot be specified '
+        'together with --cluster and --cluster-location.')
+    cluster_group.add_argument(
+        '--use-kubeconfig',
+        default=False,
+        action='store_true',
+        help='Use the kubectl config to connect to the cluster. If '
+        '--kubeconfig is not also provided, the colon- or semicolon-delimited '
+        'list of paths specified by $KUBECONFIG will be used. If $KUBECONFIG '
+        'is unset, this defaults to ~/.kube/config. Cannot be specified '
+        'together with --cluster and --cluster-location.')
 
   def FormatFlags(self, args):
     exec_args = []
-    if args.IsSpecified('cluster'):
-      exec_args.extend(['--cluster', args.cluster])
-    if args.IsSpecified('cluster_location'):
-      exec_args.extend(['--cluster-location', args.cluster_location])
-    if args.IsSpecified('kubeconfig'):
-      exec_args.extend(['--kubeconfig', args.kubeconfig])
-    if args.IsSpecified('context'):
-      exec_args.extend(['--context', args.context])
+    connection = ClusterConnectionMethod(args)
+
+    if connection == CONNECTION_GKE:
+      # This call to Parse() will resolve explicitly passed flags,
+      # configuration values, or finally prompt the user for a cluster.
+      cluster_ref = args.CONCEPTS.cluster.Parse()
+      if not cluster_ref:
+        raise ConfigurationError(
+            'You must specify a cluster in a given location. '
+            'Either use the `--cluster` and `--cluster-location` flags '
+            'or set the kuberun/cluster and kuberun/cluster_location '
+            'properties.')
+      # TODO(b/170321955): Change to passing cluster as URL
+      exec_args.extend(['--cluster', cluster_ref.Name(),
+                        '--cluster-location', cluster_ref.zone])
+
+    elif connection == CONNECTION_KUBECONFIG:
+      # The kuberun binary defaults to using kubeconfig. If none of these flags
+      # end up getting passed, that is OK and the execution will still use the
+      # default kubeconfig.
+      props = properties.VALUES.kuberun
+
+      if args.IsSpecified('kubeconfig'):
+        exec_args.extend(['--kubeconfig', args.kubeconfig])
+      elif props.kubeconfig.IsExplicitlySet():
+        exec_args.extend(['--kubeconfig', props.kubeconfig.Get()])
+
+      if args.IsSpecified('context'):
+        exec_args.extend(['--context', args.context])
+      elif props.context.IsExplicitlySet():
+        exec_args.extend(['--context', props.context.Get()])
+
     return exec_args
+
+
+def ClusterConnectionMethod(args):
+  """Returns the connection method resulting from args and configuration.
+
+  This functionality is broken out so that it can be used as a means to
+  determine whether the user should be prompted to select a cluster, although
+  the user is not prompted as part of this function's execution.
+
+  Args:
+    args: Namespace of parsed args
+
+  Returns:
+     Constant, one of CONNECTION_GKE or CONNECTION_KUBECONFIG.
+
+  Raises:
+    ConfigurationError: when the configuration is invalid.
+  """
+  # Explicit flags passed in take precedence. If no explicit flags are provided,
+  # the assumption is "GKE" unless use_kubeconfig or kubeconfig is configured.
+
+  # Explicit args
+  if args.IsSpecified('cluster') or args.IsSpecified('cluster_location'):
+    return CONNECTION_GKE
+  if (args.IsSpecified('use_kubeconfig') or args.IsSpecified('kubeconfig') or
+      args.IsSpecified('context')):
+    return CONNECTION_KUBECONFIG
+
+  configured_kubeconfig_options = _ExplicitlySetProperties(
+      ['kubeconfig', 'use_kubeconfig', 'context'])
+  configured_gke_options = _ExplicitlySetProperties(
+      ['cluster', 'cluster_location'])
+
+  if configured_kubeconfig_options and configured_gke_options:
+    raise ConfigurationError(
+        'Multiple cluster connection options are configured. '
+        'To remove one of the options, run `{}` or `{}`.'.format(
+            _UnsetCommandsAsString(configured_kubeconfig_options),
+            _UnsetCommandsAsString(configured_gke_options)))
+
+  if configured_kubeconfig_options:
+    return CONNECTION_KUBECONFIG
+  return CONNECTION_GKE
+
+
+def _UnsetCommandsAsString(names):
+  commands = ['gcloud config unset kuberun/{}'.format(name) for name in names]
+  return ' && '.join(commands)
+
+
+def _ExplicitlySetProperties(property_names):
+  return [name for name in property_names if
+          getattr(properties.VALUES.kuberun, name).IsExplicitlySet()]
 
 
 class TrafficFlags(BinaryCommandFlag):
@@ -571,8 +657,14 @@ def _GetEnvironment(args):
   raise ValueError('Please specify an ENVIRONMENT to use this command.')
 
 
-class EnvironmentFlags(StringFlag):
+class EnvironmentFlag(StringFlag):
   """Formats an environment flag by pulling it from the appropriate source."""
+
+  def __init__(self):
+    super(EnvironmentFlag, self).__init__(
+        '--environment',
+        help='Name of the target KubeRun environment. '
+             'Alternatively, set the property [kuberun/environment].')
 
   def FormatFlags(self, args):
     env = _GetEnvironment(args)

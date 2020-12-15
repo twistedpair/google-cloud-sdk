@@ -843,9 +843,138 @@
       "description": "Face detection annotation.",
       "type": "object",
       "properties": {
+        "tracks": {
+          "description": "The face tracks with attributes.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1beta2_Track"
+          }
+        },
+        "thumbnail": {
+          "description": "The thumbnail of a person's face.",
+          "type": "string",
+          "format": "byte"
+        },
         "version": {
           "description": "Feature version.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1beta2_Track": {
+      "id": "GoogleCloudVideointelligenceV1beta2_Track",
+      "description": "A track of an object instance.",
+      "type": "object",
+      "properties": {
+        "segment": {
+          "description": "Video segment of a track.",
+          "$ref": "GoogleCloudVideointelligenceV1beta2_VideoSegment"
+        },
+        "timestampedObjects": {
+          "description": "The object with timestamp and attributes per frame in the track.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1beta2_TimestampedObject"
+          }
+        },
+        "attributes": {
+          "description": "Optional. Attributes in the track level.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1beta2_DetectedAttribute"
+          }
+        },
+        "confidence": {
+          "description": "Optional. The confidence score of the tracked object.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1beta2_TimestampedObject": {
+      "id": "GoogleCloudVideointelligenceV1beta2_TimestampedObject",
+      "description": "For tracking related features. An object at time_offset with attributes, and located with normalized_bounding_box.",
+      "type": "object",
+      "properties": {
+        "normalizedBoundingBox": {
+          "description": "Normalized Bounding box in a frame, where the object is located.",
+          "$ref": "GoogleCloudVideointelligenceV1beta2_NormalizedBoundingBox"
+        },
+        "timeOffset": {
+          "description": "Time-offset, relative to the beginning of the video, corresponding to the video frame for this object.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "attributes": {
+          "description": "Optional. The attributes of the object in the bounding box.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1beta2_DetectedAttribute"
+          }
+        },
+        "landmarks": {
+          "description": "Optional. The detected landmarks.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1beta2_DetectedLandmark"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1beta2_DetectedAttribute": {
+      "id": "GoogleCloudVideointelligenceV1beta2_DetectedAttribute",
+      "description": "A generic detected attribute represented by name in string format.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the attribute, for example, glasses, dark_glasses, mouth_open. A full list of supported type names will be provided in the document.",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "Detected attribute confidence. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        },
+        "value": {
+          "description": "Text value of the detection result. For example, the value for \"HairColor\" can be \"black\", \"blonde\", etc.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1beta2_DetectedLandmark": {
+      "id": "GoogleCloudVideointelligenceV1beta2_DetectedLandmark",
+      "description": "A generic detected landmark represented by name in string format and a 2D location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of this landmark, for example, left_hand, right_shoulder.",
+          "type": "string"
+        },
+        "point": {
+          "description": "The 2D point of the detected landmark using the normalized image coordindate system. The normalized coordinates have the range from 0 to 1.",
+          "$ref": "GoogleCloudVideointelligenceV1beta2_NormalizedVertex"
+        },
+        "confidence": {
+          "description": "The confidence score of the detected landmark. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1beta2_NormalizedVertex": {
+      "id": "GoogleCloudVideointelligenceV1beta2_NormalizedVertex",
+      "description": "A vertex represents a 2D point in the image. NOTE: the normalized vertex coordinates are relative to the original image and range from 0 to 1.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "description": "X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "y": {
+          "description": "Y coordinate.",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -1051,23 +1180,6 @@
         }
       }
     },
-    "GoogleCloudVideointelligenceV1beta2_NormalizedVertex": {
-      "id": "GoogleCloudVideointelligenceV1beta2_NormalizedVertex",
-      "description": "A vertex represents a 2D point in the image. NOTE: the normalized vertex coordinates are relative to the original image and range from 0 to 1.",
-      "type": "object",
-      "properties": {
-        "x": {
-          "description": "X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "y": {
-          "description": "Y coordinate.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
     "GoogleCloudVideointelligenceV1beta2_ObjectTrackingAnnotation": {
       "id": "GoogleCloudVideointelligenceV1beta2_ObjectTrackingAnnotation",
       "description": "Annotations corresponding to one tracked object.",
@@ -1142,106 +1254,6 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1beta2_VideoSegment"
           }
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1beta2_Track": {
-      "id": "GoogleCloudVideointelligenceV1beta2_Track",
-      "description": "A track of an object instance.",
-      "type": "object",
-      "properties": {
-        "segment": {
-          "description": "Video segment of a track.",
-          "$ref": "GoogleCloudVideointelligenceV1beta2_VideoSegment"
-        },
-        "timestampedObjects": {
-          "description": "The object with timestamp and attributes per frame in the track.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1beta2_TimestampedObject"
-          }
-        },
-        "attributes": {
-          "description": "Optional. Attributes in the track level.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1beta2_DetectedAttribute"
-          }
-        },
-        "confidence": {
-          "description": "Optional. The confidence score of the tracked object.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1beta2_TimestampedObject": {
-      "id": "GoogleCloudVideointelligenceV1beta2_TimestampedObject",
-      "description": "For tracking related features. An object at time_offset with attributes, and located with normalized_bounding_box.",
-      "type": "object",
-      "properties": {
-        "normalizedBoundingBox": {
-          "description": "Normalized Bounding box in a frame, where the object is located.",
-          "$ref": "GoogleCloudVideointelligenceV1beta2_NormalizedBoundingBox"
-        },
-        "timeOffset": {
-          "description": "Time-offset, relative to the beginning of the video, corresponding to the video frame for this object.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "attributes": {
-          "description": "Optional. The attributes of the object in the bounding box.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1beta2_DetectedAttribute"
-          }
-        },
-        "landmarks": {
-          "description": "Optional. The detected landmarks.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1beta2_DetectedLandmark"
-          }
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1beta2_DetectedAttribute": {
-      "id": "GoogleCloudVideointelligenceV1beta2_DetectedAttribute",
-      "description": "A generic detected attribute represented by name in string format.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the attribute, for example, glasses, dark_glasses, mouth_open. A full list of supported type names will be provided in the document.",
-          "type": "string"
-        },
-        "confidence": {
-          "description": "Detected attribute confidence. Range [0, 1].",
-          "type": "number",
-          "format": "float"
-        },
-        "value": {
-          "description": "Text value of the detection result. For example, the value for \"HairColor\" can be \"black\", \"blonde\", etc.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1beta2_DetectedLandmark": {
-      "id": "GoogleCloudVideointelligenceV1beta2_DetectedLandmark",
-      "description": "A generic detected landmark represented by name in string format and a 2D location.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of this landmark, for example, left_hand, right_shoulder.",
-          "type": "string"
-        },
-        "point": {
-          "description": "The 2D point of the detected landmark using the normalized image coordindate system. The normalized coordinates have the range from 0 to 1.",
-          "$ref": "GoogleCloudVideointelligenceV1beta2_NormalizedVertex"
-        },
-        "confidence": {
-          "description": "The confidence score of the detected landmark. Range [0, 1].",
-          "type": "number",
-          "format": "float"
         }
       }
     },
@@ -1639,9 +1651,138 @@
       "description": "Face detection annotation.",
       "type": "object",
       "properties": {
+        "tracks": {
+          "description": "The face tracks with attributes.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1_Track"
+          }
+        },
+        "thumbnail": {
+          "description": "The thumbnail of a person's face.",
+          "type": "string",
+          "format": "byte"
+        },
         "version": {
           "description": "Feature version.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1_Track": {
+      "id": "GoogleCloudVideointelligenceV1_Track",
+      "description": "A track of an object instance.",
+      "type": "object",
+      "properties": {
+        "segment": {
+          "description": "Video segment of a track.",
+          "$ref": "GoogleCloudVideointelligenceV1_VideoSegment"
+        },
+        "timestampedObjects": {
+          "description": "The object with timestamp and attributes per frame in the track.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1_TimestampedObject"
+          }
+        },
+        "attributes": {
+          "description": "Optional. Attributes in the track level.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1_DetectedAttribute"
+          }
+        },
+        "confidence": {
+          "description": "Optional. The confidence score of the tracked object.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1_TimestampedObject": {
+      "id": "GoogleCloudVideointelligenceV1_TimestampedObject",
+      "description": "For tracking related features. An object at time_offset with attributes, and located with normalized_bounding_box.",
+      "type": "object",
+      "properties": {
+        "normalizedBoundingBox": {
+          "description": "Normalized Bounding box in a frame, where the object is located.",
+          "$ref": "GoogleCloudVideointelligenceV1_NormalizedBoundingBox"
+        },
+        "timeOffset": {
+          "description": "Time-offset, relative to the beginning of the video, corresponding to the video frame for this object.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "attributes": {
+          "description": "Optional. The attributes of the object in the bounding box.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1_DetectedAttribute"
+          }
+        },
+        "landmarks": {
+          "description": "Optional. The detected landmarks.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1_DetectedLandmark"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1_DetectedAttribute": {
+      "id": "GoogleCloudVideointelligenceV1_DetectedAttribute",
+      "description": "A generic detected attribute represented by name in string format.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the attribute, for example, glasses, dark_glasses, mouth_open. A full list of supported type names will be provided in the document.",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "Detected attribute confidence. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        },
+        "value": {
+          "description": "Text value of the detection result. For example, the value for \"HairColor\" can be \"black\", \"blonde\", etc.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1_DetectedLandmark": {
+      "id": "GoogleCloudVideointelligenceV1_DetectedLandmark",
+      "description": "A generic detected landmark represented by name in string format and a 2D location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of this landmark, for example, left_hand, right_shoulder.",
+          "type": "string"
+        },
+        "point": {
+          "description": "The 2D point of the detected landmark using the normalized image coordindate system. The normalized coordinates have the range from 0 to 1.",
+          "$ref": "GoogleCloudVideointelligenceV1_NormalizedVertex"
+        },
+        "confidence": {
+          "description": "The confidence score of the detected landmark. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1_NormalizedVertex": {
+      "id": "GoogleCloudVideointelligenceV1_NormalizedVertex",
+      "description": "A vertex represents a 2D point in the image. NOTE: the normalized vertex coordinates are relative to the original image and range from 0 to 1.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "description": "X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "y": {
+          "description": "Y coordinate.",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -1847,23 +1988,6 @@
         }
       }
     },
-    "GoogleCloudVideointelligenceV1_NormalizedVertex": {
-      "id": "GoogleCloudVideointelligenceV1_NormalizedVertex",
-      "description": "A vertex represents a 2D point in the image. NOTE: the normalized vertex coordinates are relative to the original image and range from 0 to 1.",
-      "type": "object",
-      "properties": {
-        "x": {
-          "description": "X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "y": {
-          "description": "Y coordinate.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
     "GoogleCloudVideointelligenceV1_ObjectTrackingAnnotation": {
       "id": "GoogleCloudVideointelligenceV1_ObjectTrackingAnnotation",
       "description": "Annotations corresponding to one tracked object.",
@@ -1938,106 +2062,6 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1_VideoSegment"
           }
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1_Track": {
-      "id": "GoogleCloudVideointelligenceV1_Track",
-      "description": "A track of an object instance.",
-      "type": "object",
-      "properties": {
-        "segment": {
-          "description": "Video segment of a track.",
-          "$ref": "GoogleCloudVideointelligenceV1_VideoSegment"
-        },
-        "timestampedObjects": {
-          "description": "The object with timestamp and attributes per frame in the track.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1_TimestampedObject"
-          }
-        },
-        "attributes": {
-          "description": "Optional. Attributes in the track level.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1_DetectedAttribute"
-          }
-        },
-        "confidence": {
-          "description": "Optional. The confidence score of the tracked object.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1_TimestampedObject": {
-      "id": "GoogleCloudVideointelligenceV1_TimestampedObject",
-      "description": "For tracking related features. An object at time_offset with attributes, and located with normalized_bounding_box.",
-      "type": "object",
-      "properties": {
-        "normalizedBoundingBox": {
-          "description": "Normalized Bounding box in a frame, where the object is located.",
-          "$ref": "GoogleCloudVideointelligenceV1_NormalizedBoundingBox"
-        },
-        "timeOffset": {
-          "description": "Time-offset, relative to the beginning of the video, corresponding to the video frame for this object.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "attributes": {
-          "description": "Optional. The attributes of the object in the bounding box.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1_DetectedAttribute"
-          }
-        },
-        "landmarks": {
-          "description": "Optional. The detected landmarks.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1_DetectedLandmark"
-          }
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1_DetectedAttribute": {
-      "id": "GoogleCloudVideointelligenceV1_DetectedAttribute",
-      "description": "A generic detected attribute represented by name in string format.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the attribute, for example, glasses, dark_glasses, mouth_open. A full list of supported type names will be provided in the document.",
-          "type": "string"
-        },
-        "confidence": {
-          "description": "Detected attribute confidence. Range [0, 1].",
-          "type": "number",
-          "format": "float"
-        },
-        "value": {
-          "description": "Text value of the detection result. For example, the value for \"HairColor\" can be \"black\", \"blonde\", etc.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1_DetectedLandmark": {
-      "id": "GoogleCloudVideointelligenceV1_DetectedLandmark",
-      "description": "A generic detected landmark represented by name in string format and a 2D location.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of this landmark, for example, left_hand, right_shoulder.",
-          "type": "string"
-        },
-        "point": {
-          "description": "The 2D point of the detected landmark using the normalized image coordindate system. The normalized coordinates have the range from 0 to 1.",
-          "$ref": "GoogleCloudVideointelligenceV1_NormalizedVertex"
-        },
-        "confidence": {
-          "description": "The confidence score of the detected landmark. Range [0, 1].",
-          "type": "number",
-          "format": "float"
         }
       }
     },
@@ -2452,9 +2476,138 @@
       "description": "Face detection annotation.",
       "type": "object",
       "properties": {
+        "tracks": {
+          "description": "The face tracks with attributes.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_Track"
+          }
+        },
+        "thumbnail": {
+          "description": "The thumbnail of a person's face.",
+          "type": "string",
+          "format": "byte"
+        },
         "version": {
           "description": "Feature version.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_Track": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_Track",
+      "description": "A track of an object instance.",
+      "type": "object",
+      "properties": {
+        "segment": {
+          "description": "Video segment of a track.",
+          "$ref": "GoogleCloudVideointelligenceV1p1beta1_VideoSegment"
+        },
+        "timestampedObjects": {
+          "description": "The object with timestamp and attributes per frame in the track.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_TimestampedObject"
+          }
+        },
+        "attributes": {
+          "description": "Optional. Attributes in the track level.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_DetectedAttribute"
+          }
+        },
+        "confidence": {
+          "description": "Optional. The confidence score of the tracked object.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_TimestampedObject": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_TimestampedObject",
+      "description": "For tracking related features. An object at time_offset with attributes, and located with normalized_bounding_box.",
+      "type": "object",
+      "properties": {
+        "normalizedBoundingBox": {
+          "description": "Normalized Bounding box in a frame, where the object is located.",
+          "$ref": "GoogleCloudVideointelligenceV1p1beta1_NormalizedBoundingBox"
+        },
+        "timeOffset": {
+          "description": "Time-offset, relative to the beginning of the video, corresponding to the video frame for this object.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "attributes": {
+          "description": "Optional. The attributes of the object in the bounding box.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_DetectedAttribute"
+          }
+        },
+        "landmarks": {
+          "description": "Optional. The detected landmarks.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_DetectedLandmark"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_DetectedAttribute": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_DetectedAttribute",
+      "description": "A generic detected attribute represented by name in string format.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the attribute, for example, glasses, dark_glasses, mouth_open. A full list of supported type names will be provided in the document.",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "Detected attribute confidence. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        },
+        "value": {
+          "description": "Text value of the detection result. For example, the value for \"HairColor\" can be \"black\", \"blonde\", etc.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_DetectedLandmark": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_DetectedLandmark",
+      "description": "A generic detected landmark represented by name in string format and a 2D location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of this landmark, for example, left_hand, right_shoulder.",
+          "type": "string"
+        },
+        "point": {
+          "description": "The 2D point of the detected landmark using the normalized image coordindate system. The normalized coordinates have the range from 0 to 1.",
+          "$ref": "GoogleCloudVideointelligenceV1p1beta1_NormalizedVertex"
+        },
+        "confidence": {
+          "description": "The confidence score of the detected landmark. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_NormalizedVertex": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_NormalizedVertex",
+      "description": "A vertex represents a 2D point in the image. NOTE: the normalized vertex coordinates are relative to the original image and range from 0 to 1.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "description": "X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "y": {
+          "description": "Y coordinate.",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -2660,23 +2813,6 @@
         }
       }
     },
-    "GoogleCloudVideointelligenceV1p1beta1_NormalizedVertex": {
-      "id": "GoogleCloudVideointelligenceV1p1beta1_NormalizedVertex",
-      "description": "A vertex represents a 2D point in the image. NOTE: the normalized vertex coordinates are relative to the original image and range from 0 to 1.",
-      "type": "object",
-      "properties": {
-        "x": {
-          "description": "X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "y": {
-          "description": "Y coordinate.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
     "GoogleCloudVideointelligenceV1p1beta1_ObjectTrackingAnnotation": {
       "id": "GoogleCloudVideointelligenceV1p1beta1_ObjectTrackingAnnotation",
       "description": "Annotations corresponding to one tracked object.",
@@ -2751,106 +2887,6 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p1beta1_VideoSegment"
           }
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p1beta1_Track": {
-      "id": "GoogleCloudVideointelligenceV1p1beta1_Track",
-      "description": "A track of an object instance.",
-      "type": "object",
-      "properties": {
-        "segment": {
-          "description": "Video segment of a track.",
-          "$ref": "GoogleCloudVideointelligenceV1p1beta1_VideoSegment"
-        },
-        "timestampedObjects": {
-          "description": "The object with timestamp and attributes per frame in the track.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p1beta1_TimestampedObject"
-          }
-        },
-        "attributes": {
-          "description": "Optional. Attributes in the track level.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p1beta1_DetectedAttribute"
-          }
-        },
-        "confidence": {
-          "description": "Optional. The confidence score of the tracked object.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p1beta1_TimestampedObject": {
-      "id": "GoogleCloudVideointelligenceV1p1beta1_TimestampedObject",
-      "description": "For tracking related features. An object at time_offset with attributes, and located with normalized_bounding_box.",
-      "type": "object",
-      "properties": {
-        "normalizedBoundingBox": {
-          "description": "Normalized Bounding box in a frame, where the object is located.",
-          "$ref": "GoogleCloudVideointelligenceV1p1beta1_NormalizedBoundingBox"
-        },
-        "timeOffset": {
-          "description": "Time-offset, relative to the beginning of the video, corresponding to the video frame for this object.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "attributes": {
-          "description": "Optional. The attributes of the object in the bounding box.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p1beta1_DetectedAttribute"
-          }
-        },
-        "landmarks": {
-          "description": "Optional. The detected landmarks.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p1beta1_DetectedLandmark"
-          }
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p1beta1_DetectedAttribute": {
-      "id": "GoogleCloudVideointelligenceV1p1beta1_DetectedAttribute",
-      "description": "A generic detected attribute represented by name in string format.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the attribute, for example, glasses, dark_glasses, mouth_open. A full list of supported type names will be provided in the document.",
-          "type": "string"
-        },
-        "confidence": {
-          "description": "Detected attribute confidence. Range [0, 1].",
-          "type": "number",
-          "format": "float"
-        },
-        "value": {
-          "description": "Text value of the detection result. For example, the value for \"HairColor\" can be \"black\", \"blonde\", etc.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p1beta1_DetectedLandmark": {
-      "id": "GoogleCloudVideointelligenceV1p1beta1_DetectedLandmark",
-      "description": "A generic detected landmark represented by name in string format and a 2D location.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of this landmark, for example, left_hand, right_shoulder.",
-          "type": "string"
-        },
-        "point": {
-          "description": "The 2D point of the detected landmark using the normalized image coordindate system. The normalized coordinates have the range from 0 to 1.",
-          "$ref": "GoogleCloudVideointelligenceV1p1beta1_NormalizedVertex"
-        },
-        "confidence": {
-          "description": "The confidence score of the detected landmark. Range [0, 1].",
-          "type": "number",
-          "format": "float"
         }
       }
     },
@@ -3265,9 +3301,138 @@
       "description": "Face detection annotation.",
       "type": "object",
       "properties": {
+        "tracks": {
+          "description": "The face tracks with attributes.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p2beta1_Track"
+          }
+        },
+        "thumbnail": {
+          "description": "The thumbnail of a person's face.",
+          "type": "string",
+          "format": "byte"
+        },
         "version": {
           "description": "Feature version.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p2beta1_Track": {
+      "id": "GoogleCloudVideointelligenceV1p2beta1_Track",
+      "description": "A track of an object instance.",
+      "type": "object",
+      "properties": {
+        "segment": {
+          "description": "Video segment of a track.",
+          "$ref": "GoogleCloudVideointelligenceV1p2beta1_VideoSegment"
+        },
+        "timestampedObjects": {
+          "description": "The object with timestamp and attributes per frame in the track.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p2beta1_TimestampedObject"
+          }
+        },
+        "attributes": {
+          "description": "Optional. Attributes in the track level.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p2beta1_DetectedAttribute"
+          }
+        },
+        "confidence": {
+          "description": "Optional. The confidence score of the tracked object.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p2beta1_TimestampedObject": {
+      "id": "GoogleCloudVideointelligenceV1p2beta1_TimestampedObject",
+      "description": "For tracking related features. An object at time_offset with attributes, and located with normalized_bounding_box.",
+      "type": "object",
+      "properties": {
+        "normalizedBoundingBox": {
+          "description": "Normalized Bounding box in a frame, where the object is located.",
+          "$ref": "GoogleCloudVideointelligenceV1p2beta1_NormalizedBoundingBox"
+        },
+        "timeOffset": {
+          "description": "Time-offset, relative to the beginning of the video, corresponding to the video frame for this object.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "attributes": {
+          "description": "Optional. The attributes of the object in the bounding box.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p2beta1_DetectedAttribute"
+          }
+        },
+        "landmarks": {
+          "description": "Optional. The detected landmarks.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p2beta1_DetectedLandmark"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p2beta1_DetectedAttribute": {
+      "id": "GoogleCloudVideointelligenceV1p2beta1_DetectedAttribute",
+      "description": "A generic detected attribute represented by name in string format.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the attribute, for example, glasses, dark_glasses, mouth_open. A full list of supported type names will be provided in the document.",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "Detected attribute confidence. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        },
+        "value": {
+          "description": "Text value of the detection result. For example, the value for \"HairColor\" can be \"black\", \"blonde\", etc.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p2beta1_DetectedLandmark": {
+      "id": "GoogleCloudVideointelligenceV1p2beta1_DetectedLandmark",
+      "description": "A generic detected landmark represented by name in string format and a 2D location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of this landmark, for example, left_hand, right_shoulder.",
+          "type": "string"
+        },
+        "point": {
+          "description": "The 2D point of the detected landmark using the normalized image coordindate system. The normalized coordinates have the range from 0 to 1.",
+          "$ref": "GoogleCloudVideointelligenceV1p2beta1_NormalizedVertex"
+        },
+        "confidence": {
+          "description": "The confidence score of the detected landmark. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p2beta1_NormalizedVertex": {
+      "id": "GoogleCloudVideointelligenceV1p2beta1_NormalizedVertex",
+      "description": "A vertex represents a 2D point in the image. NOTE: the normalized vertex coordinates are relative to the original image and range from 0 to 1.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "description": "X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "y": {
+          "description": "Y coordinate.",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -3473,23 +3638,6 @@
         }
       }
     },
-    "GoogleCloudVideointelligenceV1p2beta1_NormalizedVertex": {
-      "id": "GoogleCloudVideointelligenceV1p2beta1_NormalizedVertex",
-      "description": "A vertex represents a 2D point in the image. NOTE: the normalized vertex coordinates are relative to the original image and range from 0 to 1.",
-      "type": "object",
-      "properties": {
-        "x": {
-          "description": "X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "y": {
-          "description": "Y coordinate.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
     "GoogleCloudVideointelligenceV1p2beta1_ObjectTrackingAnnotation": {
       "id": "GoogleCloudVideointelligenceV1p2beta1_ObjectTrackingAnnotation",
       "description": "Annotations corresponding to one tracked object.",
@@ -3564,106 +3712,6 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p2beta1_VideoSegment"
           }
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p2beta1_Track": {
-      "id": "GoogleCloudVideointelligenceV1p2beta1_Track",
-      "description": "A track of an object instance.",
-      "type": "object",
-      "properties": {
-        "segment": {
-          "description": "Video segment of a track.",
-          "$ref": "GoogleCloudVideointelligenceV1p2beta1_VideoSegment"
-        },
-        "timestampedObjects": {
-          "description": "The object with timestamp and attributes per frame in the track.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p2beta1_TimestampedObject"
-          }
-        },
-        "attributes": {
-          "description": "Optional. Attributes in the track level.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p2beta1_DetectedAttribute"
-          }
-        },
-        "confidence": {
-          "description": "Optional. The confidence score of the tracked object.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p2beta1_TimestampedObject": {
-      "id": "GoogleCloudVideointelligenceV1p2beta1_TimestampedObject",
-      "description": "For tracking related features. An object at time_offset with attributes, and located with normalized_bounding_box.",
-      "type": "object",
-      "properties": {
-        "normalizedBoundingBox": {
-          "description": "Normalized Bounding box in a frame, where the object is located.",
-          "$ref": "GoogleCloudVideointelligenceV1p2beta1_NormalizedBoundingBox"
-        },
-        "timeOffset": {
-          "description": "Time-offset, relative to the beginning of the video, corresponding to the video frame for this object.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "attributes": {
-          "description": "Optional. The attributes of the object in the bounding box.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p2beta1_DetectedAttribute"
-          }
-        },
-        "landmarks": {
-          "description": "Optional. The detected landmarks.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p2beta1_DetectedLandmark"
-          }
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p2beta1_DetectedAttribute": {
-      "id": "GoogleCloudVideointelligenceV1p2beta1_DetectedAttribute",
-      "description": "A generic detected attribute represented by name in string format.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the attribute, for example, glasses, dark_glasses, mouth_open. A full list of supported type names will be provided in the document.",
-          "type": "string"
-        },
-        "confidence": {
-          "description": "Detected attribute confidence. Range [0, 1].",
-          "type": "number",
-          "format": "float"
-        },
-        "value": {
-          "description": "Text value of the detection result. For example, the value for \"HairColor\" can be \"black\", \"blonde\", etc.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p2beta1_DetectedLandmark": {
-      "id": "GoogleCloudVideointelligenceV1p2beta1_DetectedLandmark",
-      "description": "A generic detected landmark represented by name in string format and a 2D location.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of this landmark, for example, left_hand, right_shoulder.",
-          "type": "string"
-        },
-        "point": {
-          "description": "The 2D point of the detected landmark using the normalized image coordindate system. The normalized coordinates have the range from 0 to 1.",
-          "$ref": "GoogleCloudVideointelligenceV1p2beta1_NormalizedVertex"
-        },
-        "confidence": {
-          "description": "The confidence score of the detected landmark. Range [0, 1].",
-          "type": "number",
-          "format": "float"
         }
       }
     },
@@ -4082,9 +4130,138 @@
       "description": "Face detection annotation.",
       "type": "object",
       "properties": {
+        "tracks": {
+          "description": "The face tracks with attributes.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p3beta1_Track"
+          }
+        },
+        "thumbnail": {
+          "description": "The thumbnail of a person's face.",
+          "type": "string",
+          "format": "byte"
+        },
         "version": {
           "description": "Feature version.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_Track": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_Track",
+      "description": "A track of an object instance.",
+      "type": "object",
+      "properties": {
+        "segment": {
+          "description": "Video segment of a track.",
+          "$ref": "GoogleCloudVideointelligenceV1p3beta1_VideoSegment"
+        },
+        "timestampedObjects": {
+          "description": "The object with timestamp and attributes per frame in the track.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p3beta1_TimestampedObject"
+          }
+        },
+        "attributes": {
+          "description": "Optional. Attributes in the track level.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p3beta1_DetectedAttribute"
+          }
+        },
+        "confidence": {
+          "description": "Optional. The confidence score of the tracked object.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_TimestampedObject": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_TimestampedObject",
+      "description": "For tracking related features. An object at time_offset with attributes, and located with normalized_bounding_box.",
+      "type": "object",
+      "properties": {
+        "normalizedBoundingBox": {
+          "description": "Normalized Bounding box in a frame, where the object is located.",
+          "$ref": "GoogleCloudVideointelligenceV1p3beta1_NormalizedBoundingBox"
+        },
+        "timeOffset": {
+          "description": "Time-offset, relative to the beginning of the video, corresponding to the video frame for this object.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "attributes": {
+          "description": "Optional. The attributes of the object in the bounding box.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p3beta1_DetectedAttribute"
+          }
+        },
+        "landmarks": {
+          "description": "Optional. The detected landmarks.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p3beta1_DetectedLandmark"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_DetectedAttribute": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_DetectedAttribute",
+      "description": "A generic detected attribute represented by name in string format.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the attribute, for example, glasses, dark_glasses, mouth_open. A full list of supported type names will be provided in the document.",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "Detected attribute confidence. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        },
+        "value": {
+          "description": "Text value of the detection result. For example, the value for \"HairColor\" can be \"black\", \"blonde\", etc.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_DetectedLandmark": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_DetectedLandmark",
+      "description": "A generic detected landmark represented by name in string format and a 2D location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of this landmark, for example, left_hand, right_shoulder.",
+          "type": "string"
+        },
+        "point": {
+          "description": "The 2D point of the detected landmark using the normalized image coordindate system. The normalized coordinates have the range from 0 to 1.",
+          "$ref": "GoogleCloudVideointelligenceV1p3beta1_NormalizedVertex"
+        },
+        "confidence": {
+          "description": "The confidence score of the detected landmark. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_NormalizedVertex": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_NormalizedVertex",
+      "description": "A vertex represents a 2D point in the image. NOTE: the normalized vertex coordinates are relative to the original image and range from 0 to 1.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "description": "X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "y": {
+          "description": "Y coordinate.",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -4290,23 +4467,6 @@
         }
       }
     },
-    "GoogleCloudVideointelligenceV1p3beta1_NormalizedVertex": {
-      "id": "GoogleCloudVideointelligenceV1p3beta1_NormalizedVertex",
-      "description": "A vertex represents a 2D point in the image. NOTE: the normalized vertex coordinates are relative to the original image and range from 0 to 1.",
-      "type": "object",
-      "properties": {
-        "x": {
-          "description": "X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "y": {
-          "description": "Y coordinate.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
     "GoogleCloudVideointelligenceV1p3beta1_ObjectTrackingAnnotation": {
       "id": "GoogleCloudVideointelligenceV1p3beta1_ObjectTrackingAnnotation",
       "description": "Annotations corresponding to one tracked object.",
@@ -4381,106 +4541,6 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p3beta1_VideoSegment"
           }
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p3beta1_Track": {
-      "id": "GoogleCloudVideointelligenceV1p3beta1_Track",
-      "description": "A track of an object instance.",
-      "type": "object",
-      "properties": {
-        "segment": {
-          "description": "Video segment of a track.",
-          "$ref": "GoogleCloudVideointelligenceV1p3beta1_VideoSegment"
-        },
-        "timestampedObjects": {
-          "description": "The object with timestamp and attributes per frame in the track.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p3beta1_TimestampedObject"
-          }
-        },
-        "attributes": {
-          "description": "Optional. Attributes in the track level.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p3beta1_DetectedAttribute"
-          }
-        },
-        "confidence": {
-          "description": "Optional. The confidence score of the tracked object.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p3beta1_TimestampedObject": {
-      "id": "GoogleCloudVideointelligenceV1p3beta1_TimestampedObject",
-      "description": "For tracking related features. An object at time_offset with attributes, and located with normalized_bounding_box.",
-      "type": "object",
-      "properties": {
-        "normalizedBoundingBox": {
-          "description": "Normalized Bounding box in a frame, where the object is located.",
-          "$ref": "GoogleCloudVideointelligenceV1p3beta1_NormalizedBoundingBox"
-        },
-        "timeOffset": {
-          "description": "Time-offset, relative to the beginning of the video, corresponding to the video frame for this object.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "attributes": {
-          "description": "Optional. The attributes of the object in the bounding box.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p3beta1_DetectedAttribute"
-          }
-        },
-        "landmarks": {
-          "description": "Optional. The detected landmarks.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p3beta1_DetectedLandmark"
-          }
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p3beta1_DetectedAttribute": {
-      "id": "GoogleCloudVideointelligenceV1p3beta1_DetectedAttribute",
-      "description": "A generic detected attribute represented by name in string format.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the attribute, for example, glasses, dark_glasses, mouth_open. A full list of supported type names will be provided in the document.",
-          "type": "string"
-        },
-        "confidence": {
-          "description": "Detected attribute confidence. Range [0, 1].",
-          "type": "number",
-          "format": "float"
-        },
-        "value": {
-          "description": "Text value of the detection result. For example, the value for \"HairColor\" can be \"black\", \"blonde\", etc.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p3beta1_DetectedLandmark": {
-      "id": "GoogleCloudVideointelligenceV1p3beta1_DetectedLandmark",
-      "description": "A generic detected landmark represented by name in string format and a 2D location.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of this landmark, for example, left_hand, right_shoulder.",
-          "type": "string"
-        },
-        "point": {
-          "description": "The 2D point of the detected landmark using the normalized image coordindate system. The normalized coordinates have the range from 0 to 1.",
-          "$ref": "GoogleCloudVideointelligenceV1p3beta1_NormalizedVertex"
-        },
-        "confidence": {
-          "description": "The confidence score of the detected landmark. Range [0, 1].",
-          "type": "number",
-          "format": "float"
         }
       }
     },

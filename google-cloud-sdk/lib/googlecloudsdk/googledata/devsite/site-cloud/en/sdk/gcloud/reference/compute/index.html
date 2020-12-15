@@ -1,0 +1,368 @@
+<html devsite="">
+<head>
+<title>gcloud compute</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="project_path" value="/sdk/docs/_project.yaml">
+<meta name="book_path" value="/sdk/_book.yaml">
+<!--
+        THIS DOC IS GENERATED.  DO NOT EDIT.
+  -->
+<style>
+  dd {
+    margin-bottom: 1ex;
+  }
+  li {
+    margin-top: 1ex; margin-bottom: 1ex;
+  }
+  .flag {
+    white-space: nowrap;
+  }
+  .hangingindent {
+    padding-left: 1.5em;
+    text-indent: -1.5em;
+  }
+  .normalfont {
+    font-weight: normal;
+  }
+  .notopmargin {
+    margin-top: 0em;
+  }
+  .sectionbody {
+    margin-top: .2em;
+  }
+</style>
+</head>
+<body>
+<dl>
+
+<section id="NAME">
+<dt>NAME</dt>
+<dd class="sectionbody">
+<dl class="notopmargin"><dt class="hangingindent"><span class="normalfont">
+gcloud compute - create and manipulate Compute Engine resources
+</span></dt></dl>
+</dd>
+</section>
+
+<section id="SYNOPSIS">
+<dt>SYNOPSIS</dt>
+<dd class="sectionbody">
+<dl class="notopmargin"><dt class="hangingindent"><span class="normalfont">
+<code>gcloud compute</code> <code><var><a href="#GROUP">GROUP</a></var></code> | <code><var><a href="#COMMAND">COMMAND</a></var></code> <span>[<code><var><a href="#GCLOUD-WIDE-FLAGS">GCLOUD_WIDE_FLAG</a> &hellip;</var></code>]</span>
+</span></dt></dl>
+</dd>
+</section>
+
+<section id="DESCRIPTION">
+<dt>DESCRIPTION</dt>
+<dd class="sectionbody">
+The gcloud compute command group lets you create, configure, and manipulate
+Compute Engine virtual machine (VM) instances.
+<p>
+With Compute Engine, you can create and run VMs on Google's infrastructure.
+Compute Engine offers scale, performance, and value that lets you launch large
+compute clusters on Google's infrastructure.
+<p>
+For more information about Compute Engine, see the <a
+href="https://cloud.google.com/compute/">Compute Engine overview</a> and the <a
+href="https://cloud.google.com/compute/docs/">Compute Engine user
+documentation</a>.
+</dd>
+</section>
+
+<section id="GCLOUD-WIDE-FLAGS">
+<dt>GCLOUD WIDE FLAGS</dt>
+<dd class="sectionbody">
+These flags are available to all commands: <a
+href="/sdk/gcloud/reference/#--account">--account</a>, <a
+href="/sdk/gcloud/reference/#--billing-project">--billing-project</a>, <a
+href="/sdk/gcloud/reference/#--configuration">--configuration</a>, <a
+href="/sdk/gcloud/reference/#--flags-file">--flags-file</a>, <a
+href="/sdk/gcloud/reference/#--flatten">--flatten</a>, <a
+href="/sdk/gcloud/reference/#--format">--format</a>, <a
+href="/sdk/gcloud/reference/#--help">--help</a>, <a
+href="/sdk/gcloud/reference/#--impersonate-service-account">--impersonate-service-account</a>,
+<a href="/sdk/gcloud/reference/#--log-http">--log-http</a>, <a
+href="/sdk/gcloud/reference/#--project">--project</a>, <a
+href="/sdk/gcloud/reference/#--quiet">--quiet</a>, <a
+href="/sdk/gcloud/reference/#--trace-token">--trace-token</a>, <a
+href="/sdk/gcloud/reference/#--user-output-enabled">--user-output-enabled</a>,
+<a href="/sdk/gcloud/reference/#--verbosity">--verbosity</a>.
+<p>
+Run <code>$ <a href="/sdk/gcloud/reference">gcloud help</a></code> for details.
+</dd>
+</section>
+
+<section id="GROUP">
+<dt>GROUPS</dt>
+<dd class="sectionbody">
+<code><code><var>GROUP</var></code></code> is one of the following:
+<dl>
+<dt id="accelerator-types"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/accelerator-types">accelerator-types</a></code></span></dt>
+<dd>
+Read Compute Engine accelerator types.
+</dd>
+<dt id="addresses"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/addresses">addresses</a></code></span></dt>
+<dd>
+Read and manipulate Compute Engine addresses.
+</dd>
+<dt id="backend-buckets"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/backend-buckets">backend-buckets</a></code></span></dt>
+<dd>
+Read and manipulate backend buckets.
+</dd>
+<dt id="backend-services"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/backend-services">backend-services</a></code></span></dt>
+<dd>
+List, create, and delete backend services.
+</dd>
+<dt id="commitments"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/commitments">commitments</a></code></span></dt>
+<dd>
+Manage Compute Engine commitments.
+</dd>
+<dt id="diagnose"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/diagnose">diagnose</a></code></span></dt>
+<dd>
+Debugging tools for Compute Engine virtual machine instances.
+</dd>
+<dt id="disk-types"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/disk-types">disk-types</a></code></span></dt>
+<dd>
+Read Compute Engine virtual disk types.
+</dd>
+<dt id="disks"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/disks">disks</a></code></span></dt>
+<dd>
+Read and manipulate Compute Engine disks.
+</dd>
+<dt id="external-vpn-gateways"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/external-vpn-gateways">external-vpn-gateways</a></code></span></dt>
+<dd>
+List, create, delete and update External VPN Gateways.
+</dd>
+<dt id="firewall-rules"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/firewall-rules">firewall-rules</a></code></span></dt>
+<dd>
+List, create, update, and delete Compute Engine firewall rules.
+</dd>
+<dt id="forwarding-rules"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/forwarding-rules">forwarding-rules</a></code></span></dt>
+<dd>
+Read and manipulate traffic forwarding rules to network load balancers.
+</dd>
+<dt id="health-checks"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/health-checks">health-checks</a></code></span></dt>
+<dd>
+Read and manipulate health checks for load balanced instances.
+</dd>
+<dt id="http-health-checks"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/http-health-checks">http-health-checks</a></code></span></dt>
+<dd>
+Read and manipulate HTTP health checks for load balanced instances.
+</dd>
+<dt id="https-health-checks"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/https-health-checks">https-health-checks</a></code></span></dt>
+<dd>
+Read and manipulate HTTPS health checks for load balanced instances.
+</dd>
+<dt id="images"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/images">images</a></code></span></dt>
+<dd>
+List, create, and delete Compute Engine images.
+</dd>
+<dt id="instance-groups"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instance-groups">instance-groups</a></code></span></dt>
+<dd>
+Read and manipulate Compute Engine instance groups.
+</dd>
+<dt id="instance-templates"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instance-templates">instance-templates</a></code></span></dt>
+<dd>
+Read and manipulate Compute Engine instances templates.
+</dd>
+<dt id="instances"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/instances">instances</a></code></span></dt>
+<dd>
+Read and manipulate Compute Engine virtual machine instances.
+</dd>
+<dt id="interconnects"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/interconnects">interconnects</a></code></span></dt>
+<dd>
+Read and manipulate Compute Engine interconnects.
+</dd>
+<dt id="machine-types"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/machine-types">machine-types</a></code></span></dt>
+<dd>
+Read Compute Engine virtual machine types.
+</dd>
+<dt id="network-endpoint-groups"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/network-endpoint-groups">network-endpoint-groups</a></code></span></dt>
+<dd>
+Read and manipulate Compute Engine network endpoint groups.
+</dd>
+<dt id="networks"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/networks">networks</a></code></span></dt>
+<dd>
+List, create, and delete Compute Engine networks.
+</dd>
+<dt id="operations"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/operations">operations</a></code></span></dt>
+<dd>
+Read and manipulate Compute Engine operations.
+</dd>
+<dt id="os-config"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/os-config">os-config</a></code></span></dt>
+<dd>
+Manage OS Config tasks for Compute Engine VM instances.
+</dd>
+<dt id="os-login"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/os-login">os-login</a></code></span></dt>
+<dd>
+Create and manipulate Compute Engine OS Login resources.
+</dd>
+<dt id="packet-mirrorings"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/packet-mirrorings">packet-mirrorings</a></code></span></dt>
+<dd>
+Manage Compute Engine packet mirroring resources.
+</dd>
+<dt id="project-info"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/project-info">project-info</a></code></span></dt>
+<dd>
+Read and manipulate project-level data like quotas and metadata.
+</dd>
+<dt id="regions"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/regions">regions</a></code></span></dt>
+<dd>
+List Compute Engine regions.
+</dd>
+<dt id="reservations"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/reservations">reservations</a></code></span></dt>
+<dd>
+Manage Compute Engine reservations.
+</dd>
+<dt id="resource-policies"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/resource-policies">resource-policies</a></code></span></dt>
+<dd>
+Manage Compute Engine Resource Policies.
+</dd>
+<dt id="routers"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/routers">routers</a></code></span></dt>
+<dd>
+List, create, and delete Compute Engine routers.
+</dd>
+<dt id="routes"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/routes">routes</a></code></span></dt>
+<dd>
+Read and manipulate routes.
+</dd>
+<dt id="security-policies"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/security-policies">security-policies</a></code></span></dt>
+<dd>
+Read and manipulate Cloud Armor security policies.
+</dd>
+<dt id="shared-vpc"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/shared-vpc">shared-vpc</a></code></span></dt>
+<dd>
+Configure shared VPC.
+</dd>
+<dt id="snapshots"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/snapshots">snapshots</a></code></span></dt>
+<dd>
+List, describe, and delete Compute Engine snapshots.
+</dd>
+<dt id="sole-tenancy"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/sole-tenancy">sole-tenancy</a></code></span></dt>
+<dd>
+Read and manage Compute Engine sole-tenancy resources.
+</dd>
+<dt id="ssl-certificates"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/ssl-certificates">ssl-certificates</a></code></span></dt>
+<dd>
+List, create, and delete Compute Engine SSL certificates.
+</dd>
+<dt id="ssl-policies"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/ssl-policies">ssl-policies</a></code></span></dt>
+<dd>
+List, create, delete and update Compute Engine SSL policies.
+</dd>
+<dt id="target-grpc-proxies"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/target-grpc-proxies">target-grpc-proxies</a></code></span></dt>
+<dd>
+Manage Compute Engine target gRPC proxy resources.
+</dd>
+<dt id="target-http-proxies"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/target-http-proxies">target-http-proxies</a></code></span></dt>
+<dd>
+List, create, and delete target HTTP proxies.
+</dd>
+<dt id="target-https-proxies"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/target-https-proxies">target-https-proxies</a></code></span></dt>
+<dd>
+List, create, and delete target HTTPS proxies.
+</dd>
+<dt id="target-instances"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/target-instances">target-instances</a></code></span></dt>
+<dd>
+Read and manipulate Compute Engine virtual target instances.
+</dd>
+<dt id="target-pools"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/target-pools">target-pools</a></code></span></dt>
+<dd>
+Control Compute Engine target pools for network load balancing.
+</dd>
+<dt id="target-ssl-proxies"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/target-ssl-proxies">target-ssl-proxies</a></code></span></dt>
+<dd>
+List, create, and delete target SSL proxies.
+</dd>
+<dt id="target-tcp-proxies"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/target-tcp-proxies">target-tcp-proxies</a></code></span></dt>
+<dd>
+List, create, and delete target TCP proxies.
+</dd>
+<dt id="target-vpn-gateways"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/target-vpn-gateways">target-vpn-gateways</a></code></span></dt>
+<dd>
+Read and manipulate classic VPN gateways.
+</dd>
+<dt id="tpus"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/tpus">tpus</a></code></span></dt>
+<dd>
+List, create, and delete Cloud TPUs.
+</dd>
+<dt id="url-maps"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/url-maps">url-maps</a></code></span></dt>
+<dd>
+List, create, and delete URL maps.
+</dd>
+<dt id="vpn-gateways"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/vpn-gateways">vpn-gateways</a></code></span></dt>
+<dd>
+read and manipulate Highly Available VPN Gateways.
+</dd>
+<dt id="vpn-tunnels"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/vpn-tunnels">vpn-tunnels</a></code></span></dt>
+<dd>
+Read and manipulate Compute Engine VPN tunnels.
+</dd>
+<dt id="zones"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/zones">zones</a></code></span></dt>
+<dd>
+List Compute Engine zones.
+</dd>
+</dl>
+</dd>
+</section>
+
+<section id="COMMAND">
+<dt>COMMANDS</dt>
+<dd class="sectionbody">
+<code><code><var>COMMAND</var></code></code> is one of the following:
+<dl>
+<dt id="config-ssh"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/config-ssh">config-ssh</a></code></span></dt>
+<dd>
+Populate SSH config files with Host entries from each instance.
+</dd>
+<dt id="connect-to-serial-port"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/connect-to-serial-port">connect-to-serial-port</a></code></span></dt>
+<dd>
+Connect to the serial port of an instance.
+</dd>
+<dt id="copy-files"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/copy-files">copy-files</a></code></span></dt>
+<dd>
+<code>(DEPRECATED)</code> Copy files to and from Google Compute Engine virtual
+machines via scp.
+</dd>
+<dt id="reset-windows-password"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/reset-windows-password">reset-windows-password</a></code></span></dt>
+<dd>
+Reset and return a password for a Windows machine instance.
+</dd>
+<dt id="scp"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/scp">scp</a></code></span></dt>
+<dd>
+Copy files to and from Google Compute Engine virtual machines via scp.
+</dd>
+<dt id="sign-url"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/sign-url">sign-url</a></code></span></dt>
+<dd>
+Sign specified URL for use with Cloud CDN Signed URLs.
+</dd>
+<dt id="ssh"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/ssh">ssh</a></code></span></dt>
+<dd>
+SSH into a virtual machine instance.
+</dd>
+<dt id="start-iap-tunnel"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute/start-iap-tunnel">start-iap-tunnel</a></code></span></dt>
+<dd>
+Starts an IAP TCP forwarding tunnel.
+</dd>
+</dl>
+</dd>
+</section>
+
+<section id="NOTES">
+<dt>NOTES</dt>
+<dd class="sectionbody">
+These variants are also available:
+<pre class="prettyprint lang-sh">
+<code class="devsite-terminal"><a href="/sdk/gcloud/reference/alpha/compute">gcloud alpha compute</a></code>
+</pre>
+
+<pre class="prettyprint lang-sh">
+<code class="devsite-terminal"><a href="/sdk/gcloud/reference/beta/compute">gcloud beta compute</a></code>
+</pre>
+
+</dd>
+</section>
+
+</dl>
+</body>
+</html>

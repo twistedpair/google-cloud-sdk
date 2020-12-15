@@ -108,6 +108,8 @@ class ResourcePrinter(object):
       AddRecord() before calling _AddRecord(). It is called like this:
         record = process_record(record)
     _printer: The resource_printer.Printer method for nested formats.
+    _is_column_visible: List of Boolean values indicating if indexed column is
+      visible
   """
 
   def __init__(self, out=None, name=None, projector=None, by_columns=False,
@@ -175,6 +177,26 @@ class ResourcePrinter(object):
       self._pager_out = self._out
       self._out = io.StringIO()
       self._pager = True
+    self._SetVisibleColumns()
+
+  def _SetVisibleColumns(self):
+    """Sets visible columns list if column attributes have been loaded."""
+    if self.column_attributes:
+      self._is_column_visible = [
+          not column.attribute.hidden
+          for column in self.column_attributes.Columns()
+      ]
+    else:
+      self._is_column_visible = None
+
+  def RemoveHiddenColumns(self, row):
+    """Returns a list of visible columns given a row."""
+    if not self._is_column_visible:
+      self._SetVisibleColumns()
+    if self._is_column_visible:
+      return [col for i, col in enumerate(row) if self._is_column_visible[i]]
+    else:
+      return row
 
   def AddHeading(self, heading):
     """Overrides the default heading.

@@ -476,10 +476,14 @@ class BuildOptions(_messages.Message):
       UNSPECIFIED: Standard machine type.
       N1_HIGHCPU_8: Highcpu machine with 8 CPUs.
       N1_HIGHCPU_32: Highcpu machine with 32 CPUs.
+      E2_HIGHCPU_8: Highcpu e2 machine with 8 CPUs.
+      E2_HIGHCPU_32: Highcpu e2 machine with 32 CPUs.
     """
     UNSPECIFIED = 0
     N1_HIGHCPU_8 = 1
     N1_HIGHCPU_32 = 2
+    E2_HIGHCPU_8 = 3
+    E2_HIGHCPU_32 = 4
 
   class RequestedVerifyOptionValueValuesEnum(_messages.Enum):
     r"""Requested verifiability options.
@@ -2734,12 +2738,32 @@ class WebhookConfig(_messages.Message):
   r"""WebhookConfig [Experimental] describes the configuration of a trigger
   that creates a build whenever a webhook is sent to a trigger's webhook URL.
 
+  Enums:
+    StateValueValuesEnum: Potential issues with the underlying Pub/Sub
+      subscription configuration. Only populated on get requests.
+
   Fields:
     secret: Required. Resource name for the secret required as a URL
       parameter.
+    state: Potential issues with the underlying Pub/Sub subscription
+      configuration. Only populated on get requests.
   """
 
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Potential issues with the underlying Pub/Sub subscription
+    configuration. Only populated on get requests.
+
+    Values:
+      STATE_UNSPECIFIED: The webhook auth configuration not been checked.
+      OK: The auth configuration is properly setup.
+      SECRET_DELETED: The secret provided in auth_method has been deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    OK = 1
+    SECRET_DELETED = 2
+
   secret = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

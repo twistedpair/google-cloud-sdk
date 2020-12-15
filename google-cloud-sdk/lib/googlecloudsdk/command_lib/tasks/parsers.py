@@ -271,17 +271,38 @@ def ParseCreateOrUpdateQueueArgs(args,
             args, queue_type, messages, is_update))
 
 
-def ExtractTargetFromAppEngineHostUrl(host_url, project):
-  """Extracts any target (aka service) if it exists in the AppEngine host URL.
+def ExtractTargetFromAppEngineHostUrl(job, project):
+  """Extracts any target (service) if it exists in the appEngineRouting field.
 
   Args:
-    host_url: The full AppEngine host URL minus the scheme.
+    job: An instance of job fetched from the backend.
     project: The base name of the project.
   Returns:
-    The target if it exists in the URL, None otherwise. Some examples are:
-    'alpha.some_project.uk.r.appspot.com' => 'alpha'
-    'some_project.uk.r.appspot.com' => None
+    The target if it exists in the URL, or if it is present in the service
+    attribute of the appEngineRouting field, returns None otherwise.
+    Some examples are:
+      'alpha.some_project.uk.r.appspot.com' => 'alpha'
+      'some_project.uk.r.appspot.com' => None
   """
+  # For cron jobs created with the new scheduler FE API, target is stored as a
+  # service attribute in the appEngineRouting field
+  target = None
+  try:
+    target = job.appEngineHttpTarget.appEngineRouting.service
+  except AttributeError:
+    pass
+  if target:
+    return target
+
+  # For cron jobs created using admin-console-hr, target is prepended to the
+  # host url
+  host_url = None
+  try:
+    host_url = job.appEngineHttpTarget.appEngineRouting.host
+  except AttributeError:
+    pass
+  if not host_url:
+    return None
   delimiter = '.{}.'.format(project)
   return host_url.split(delimiter, 1)[0] if delimiter in host_url else None
 

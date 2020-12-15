@@ -1243,6 +1243,154 @@
         }
       }
     },
+    "SearchTransitiveMembershipsResponse": {
+      "id": "SearchTransitiveMembershipsResponse",
+      "description": "The response message for MembershipsService.SearchTransitiveMemberships.",
+      "type": "object",
+      "properties": {
+        "memberships": {
+          "description": "List of transitive members satisfying the query.",
+          "type": "array",
+          "items": {
+            "$ref": "MemberRelation"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results.",
+          "type": "string"
+        }
+      }
+    },
+    "MemberRelation": {
+      "id": "MemberRelation",
+      "description": "Message representing a transitive membership of a group.",
+      "type": "object",
+      "properties": {
+        "preferredMemberKey": {
+          "description": "Entity key has an id and a namespace. In case of discussion forums, the id will be an email address without a namespace.",
+          "type": "array",
+          "items": {
+            "$ref": "EntityKey"
+          }
+        },
+        "member": {
+          "description": "Resource name for this member if member is a GROUP, otherwise it is empty.",
+          "type": "string"
+        },
+        "roles": {
+          "description": "The membership role details (i.e name of role and expiry time).",
+          "type": "array",
+          "items": {
+            "$ref": "TransitiveMembershipRole"
+          }
+        },
+        "relationType": {
+          "description": "The relation between the group and the transitive member.",
+          "type": "string",
+          "enumDescriptions": [
+            "The relation type is undefined or undetermined.",
+            "The two entities have only a direct membership with each other.",
+            "The two entities have only an indirect membership with each other.",
+            "The two entities have both a direct and an indirect membership with each other."
+          ],
+          "enum": [
+            "RELATION_TYPE_UNSPECIFIED",
+            "DIRECT",
+            "INDIRECT",
+            "DIRECT_AND_INDIRECT"
+          ]
+        }
+      }
+    },
+    "TransitiveMembershipRole": {
+      "id": "TransitiveMembershipRole",
+      "description": "Message representing the role of a TransitiveMembership.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "description": "TransitiveMembershipRole in string format. Currently supported TransitiveMembershipRoles: `\"MEMBER\"`, `\"OWNER\"`, and `\"MANAGER\"`.",
+          "type": "string"
+        }
+      }
+    },
+    "SearchTransitiveGroupsResponse": {
+      "id": "SearchTransitiveGroupsResponse",
+      "description": "The response message for MembershipsService.SearchTransitiveGroups.",
+      "type": "object",
+      "properties": {
+        "memberships": {
+          "description": "List of transitive groups satisfying the query.",
+          "type": "array",
+          "items": {
+            "$ref": "GroupRelation"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results available for listing.",
+          "type": "string"
+        }
+      }
+    },
+    "GroupRelation": {
+      "id": "GroupRelation",
+      "description": "Message representing a transitive group of a user or a group.",
+      "type": "object",
+      "properties": {
+        "groupKey": {
+          "description": "Entity key has an id and a namespace. In case of discussion forums, the id will be an email address without a namespace.",
+          "$ref": "EntityKey"
+        },
+        "group": {
+          "description": "Resource name for this group.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Display name for this group.",
+          "type": "string"
+        },
+        "roles": {
+          "description": "Membership roles of the member for the group.",
+          "type": "array",
+          "items": {
+            "$ref": "TransitiveMembershipRole"
+          }
+        },
+        "relationType": {
+          "description": "The relation between the member and the transitive group.",
+          "type": "string",
+          "enumDescriptions": [
+            "The relation type is undefined or undetermined.",
+            "The two entities have only a direct membership with each other.",
+            "The two entities have only an indirect membership with each other.",
+            "The two entities have both a direct and an indirect membership with each other."
+          ],
+          "enum": [
+            "RELATION_TYPE_UNSPECIFIED",
+            "DIRECT",
+            "INDIRECT",
+            "DIRECT_AND_INDIRECT"
+          ]
+        },
+        "labels": {
+          "description": "Labels for Group resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "CheckTransitiveMembershipResponse": {
+      "id": "CheckTransitiveMembershipResponse",
+      "description": "The response message for MembershipsService.CheckTransitiveMembership.",
+      "type": "object",
+      "properties": {
+        "hasMembership": {
+          "description": "Response does not include the possible roles of a member since the behavior of this rpc is not all-or-nothing unlike the other rpcs. So, it may not be possible to list all the roles definitively, due to possible lack of authorization in some of the paths.",
+          "type": "boolean"
+        }
+      }
+    },
     "GoogleAppsCloudidentityDevicesV1ApproveDeviceUserResponse": {
       "id": "GoogleAppsCloudidentityDevicesV1ApproveDeviceUserResponse",
       "description": "Response message for approving the device to access user data.",
@@ -2667,6 +2815,131 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Modifies the `MembershipRole`s of a `Membership`."
+            },
+            "searchTransitiveMemberships": {
+              "id": "cloudidentity.groups.memberships.searchTransitiveMemberships",
+              "path": "v1/{+parent}/memberships:searchTransitiveMemberships",
+              "flatPath": "v1/groups/{groupsId}/memberships:searchTransitiveMemberships",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "[Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the group to search transitive memberships in. Format: `groups\/{group_id}`, where `group_id` is the unique ID assigned to the Group.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^groups\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The default page size is 200 (max 1000).",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The next_page_token value returned from a previous list request, if any.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "SearchTransitiveMembershipsResponse"
+              },
+              "description": "Search transitive memberships of a group. **Note:** This feature is only available to Google Workspace Enterprise Standard, Enterprise Plus, and Enterprise for Education; and Cloud Identity Premium accounts. If the account of the group is not one of these, a 403 (PERMISSION_DENIED) HTTP status code will be returned. A transitive membership is any direct or indirect membership of a group. Actor must have view permissions to all transitive memberships."
+            },
+            "searchTransitiveGroups": {
+              "id": "cloudidentity.groups.memberships.searchTransitiveGroups",
+              "path": "v1/{+parent}/memberships:searchTransitiveGroups",
+              "flatPath": "v1/groups/{groupsId}/memberships:searchTransitiveGroups",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "[Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the group to search transitive memberships in. Format: `groups\/{group_id}`, where `group_id` is always '-' as this API will search across all groups for a given member.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^groups\/[^\/]+$",
+                  "type": "string"
+                },
+                "query": {
+                  "description": "Required. A CEL expression that MUST include member specification AND label(s). This is a `required` field. Users can search on label attributes of groups. CONTAINS match ('in') is supported on labels. Certain groups are uniquely identified by both a 'member_key_id' and a 'member_key_namespace', which requires an additional query input: 'member_key_namespace'. Example query: `member_key_id == 'member_key_id_value' && in labels`",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The default page size is 200 (max 1000).",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The next_page_token value returned from a previous list request, if any.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "SearchTransitiveGroupsResponse"
+              },
+              "description": "Search transitive groups of a member. **Note:** This feature is only available to Google Workspace Enterprise Standard, Enterprise Plus, and Enterprise for Education; and Cloud Identity Premium accounts. If the account of the member is not one of these, a 403 (PERMISSION_DENIED) HTTP status code will be returned. A transitive group is any group that has a direct or indirect membership to the member. Actor must have view permissions all transitive groups."
+            },
+            "checkTransitiveMembership": {
+              "id": "cloudidentity.groups.memberships.checkTransitiveMembership",
+              "path": "v1/{+parent}/memberships:checkTransitiveMembership",
+              "flatPath": "v1/groups/{groupsId}/memberships:checkTransitiveMembership",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "[Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the group to check the transitive membership in. Format: `groups\/{group_id}`, where `group_id` is the unique id assigned to the Group to which the Membership belongs to.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^groups\/[^\/]+$",
+                  "type": "string"
+                },
+                "query": {
+                  "description": "Required. A CEL expression that MUST include member specification. This is a `required` field. Certain groups are uniquely identified by both a 'member_key_id' and a 'member_key_namespace', which requires an additional query input: 'member_key_namespace'. Example query: `member_key_id == 'member_key_id_value'`",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "CheckTransitiveMembershipResponse"
+              },
+              "description": "Check a potential member for membership in a group. **Note:** This feature is only available to Google Workspace Enterprise Standard, Enterprise Plus, and Enterprise for Education; and Cloud Identity Premium accounts. If the account of the member is not one of these, a 403 (PERMISSION_DENIED) HTTP status code will be returned. A member has membership to a group as long as there is a single viewable transitive membership between the group and the member. The actor must have view permissions to at least one transitive membership between the member and group."
+            },
+            "getMembershipGraph": {
+              "id": "cloudidentity.groups.memberships.getMembershipGraph",
+              "path": "v1/{+parent}/memberships:getMembershipGraph",
+              "flatPath": "v1/groups/{groupsId}/memberships:getMembershipGraph",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the group to search transitive memberships in. Format: `groups\/{group_id}`, where `group_id` is the unique ID assigned to the Group to which the Membership belongs to. group_id can be a wildcard collection id \"-\". When a group_id is specified, the membership graph will be constrained to paths between the member (defined in the query) and the parent. If a wildcard collection is provided, all membership paths connected to the member will be returned.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^groups\/[^\/]+$",
+                  "type": "string"
+                },
+                "query": {
+                  "description": "Required. A CEL expression that MUST include member specification AND label(s). Certain groups are uniquely identified by both a 'member_key_id' and a 'member_key_namespace', which requires an additional query input: 'member_key_namespace'. Example query: `member_key_id == 'member_key_id_value' && in labels`",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "Operation"
+              },
+              "description": "Get a membership graph of just a member or both a member and a group. **Note:** This feature is only available to Google Workspace Enterprise Standard, Enterprise Plus, and Enterprise for Education; and Cloud Identity Premium accounts. If the account of the member is not one of these, a 403 (PERMISSION_DENIED) HTTP status code will be returned. Given a member, the response will contain all membership paths from the member. Given both a group and a member, the response will contain all membership paths between the group and the member."
             }
           }
         }

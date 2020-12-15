@@ -818,10 +818,13 @@ class DeidentifyConfig(_messages.Message):
     annotation: Configures how annotations (such as the location and infoTypes
       of sensitive information) are created during de-identification. If
       unspecified, no annotations are created.
-    dicom: Configures de-id of application/DICOM content.
-    fhir: Configures de-id of application/FHIR content.
+    dicom: Configures de-id of application/DICOM content. Deprecated. Use
+      `dicom_tag_config` instead.
+    fhir: Configures de-id of application/FHIR content. Deprecated. Use
+      `fhir_field_config` instead.
     image: Configures the de-identification of image pixels in the
-      source_dataset.
+      source_dataset. Deprecated. Use `dicom_tag_config.options.clean_image`
+      instead.
     text: Configures the de-identification of text in `source_dataset`.
   """
 
@@ -5125,6 +5128,7 @@ class TextConfig(_messages.Message):
 
   Fields:
     transformations: The transformations to apply to the detected data.
+      Deprecated. Use `additional_transformations` instead.
   """
 
   transformations = _messages.MessageField('InfoTypeTransformation', 1, repeated=True)

@@ -22,13 +22,17 @@ from __future__ import unicode_literals
 from googlecloudsdk.core import exceptions as core_exceptions
 
 
-class HashMismatchError(core_exceptions.Error):
+class Error(core_exceptions.Error):
+  """Base exception for command_lib.storage modules."""
+
+
+class HashMismatchError(Error):
   """Error raised when hashes don't match after operation."""
 
 
-class InvalidUrlError(core_exceptions.Error):
+class InvalidUrlError(Error):
   """Error raised when the url string is not in the expected format."""
 
 
-class ValueCannotBeDeterminedError(core_exceptions.Error):
+class ValueCannotBeDeterminedError(Error):
   """Error raised when attempting to access unknown information."""

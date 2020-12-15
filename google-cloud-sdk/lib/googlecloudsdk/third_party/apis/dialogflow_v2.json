@@ -2327,6 +2327,33 @@
         }
       }
     },
+    "GoogleCloudDialogflowCxV3CreateVersionOperationMetadata": {
+      "id": "GoogleCloudDialogflowCxV3CreateVersionOperationMetadata",
+      "description": "Metadata associated with the long running operation for Versions.CreateVersion.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Name of the created version. Format: `projects\/\/locations\/\/agents\/\/flows\/\/versions\/`.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3ExportAgentResponse": {
+      "id": "GoogleCloudDialogflowCxV3ExportAgentResponse",
+      "description": "The response message for Agents.ExportAgent.",
+      "type": "object",
+      "properties": {
+        "agentUri": {
+          "description": "The URI to a file containing the exported agent. This field is populated only if `agent_uri` is specified in ExportAgentRequest.",
+          "type": "string"
+        },
+        "agentContent": {
+          "description": "Uncompressed raw byte content for agent.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
     "GoogleCloudDialogflowCxV3WebhookRequest": {
       "id": "GoogleCloudDialogflowCxV3WebhookRequest",
       "description": "The request message for a webhook call.",

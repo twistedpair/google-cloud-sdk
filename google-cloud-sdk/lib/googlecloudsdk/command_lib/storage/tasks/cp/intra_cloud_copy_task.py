@@ -52,6 +52,8 @@ class IntraCloudCopyTask(task.Task):
 
     self._source_resource = source_resource
     self._destination_resource = destination_resource
+    self.parallel_processing_key = (
+        self._destination_resource.storage_url.url_string)
 
   def execute(self, callback=None):
     # TODO(b/161900052): Support all of copy_object's parameters

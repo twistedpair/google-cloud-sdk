@@ -46,10 +46,11 @@ from googlecloudsdk.core import resources as core_resources
 import six
 
 ZONE_PROPERTY_EXPLANATION = """\
-If not specified, the user may be prompted to select a zone. `gcloud` will
-attempt to identify the zone by searching for resources in the user's project.
-If the zone cannot be determined, the user will then be prompted with all Google
-Cloud Platform zones.
+If not specified, you may be prompted to select a zone (interactive mode
+only). `gcloud` attempts to identify the appropriate zone by searching for
+resources in your currently active project. If the zone cannot be determined,
+`gcloud` prompts you for a selection with all available Google Cloud Platform
+zones.
 
 To avoid prompting when this flag is omitted, the user can set the
 ``compute/zone'' property:
@@ -342,10 +343,14 @@ def AddMaintenanceInterval():
   return base.Argument(
       '--maintenance-interval',
       type=lambda x: x.upper(),
-      hidden=True,
-      choices=['PERIODIC'],
+      choices={'PERIODIC': 'VMs receive infrastructure and hypervisor updates '
+                           'on a periodic basis, minimizing the number of'
+                           ' maintenance operations (live migrations or '
+                           'terminations) on an individual VM. Security updates'
+                           ' will still be applied as soon as they are '
+                           'available.'},
       help="""
-      Set maintenance interval for the instance.
+      Specifies how infrastructure upgrades should be applied to the VM.
       """)
 
 
@@ -1988,7 +1993,8 @@ def AddDeletionProtectionFlag(parser, use_default_value=True):
 
 def AddShieldedInstanceConfigArgs(parser,
                                   use_default_value=True,
-                                  for_update=False):
+                                  for_update=False,
+                                  for_container=False):
   """Adds flags for Shielded VM configuration.
 
   Args:
@@ -1997,6 +2003,8 @@ def AddShieldedInstanceConfigArgs(parser,
       False, else None. Update uses None as an indicator that no update needs to
       be done for deletion protection.
     for_update: Bool, if True, flags are intended for an update operation.
+    for_container: Bool, if True, flags intended for an instances with container
+      operation.
   """
   if use_default_value:
     default_action = 'store_true'
@@ -2048,16 +2056,25 @@ def AddShieldedInstanceConfigArgs(parser,
       **action_kwargs)
 
   # --shielded-integrity-monitoring
-  integrity_monitoring_help = """\
+  integrity_monitoring_help_format = """\
       Enables monitoring and attestation of the boot integrity of the
       instance. The attestation is performed against the integrity policy
       baseline. This baseline is initially derived from the implicitly
       trusted boot image when the instance is created. This baseline can be
-      updated by using `--shielded-vm-learn-integrity-policy`. On Shielded
-      VMs, integrity monitoring is enabled by default. For information about
-      how to modify Shielded VM options, see
+      updated by using
+      `gcloud compute instances {} --shielded-learn-integrity-policy`. On
+      Shielded VMs, integrity monitoring is enabled by default. For information
+      about how to modify Shielded VM options, see
       https://cloud.google.com/compute/docs/instances/modifying-shielded-vm.
+      For information about monitoring integrity on Shielded VMs, see
+      https://cloud.google.com/compute/docs/instances/integrity-monitoring."
       """
+  if for_container:
+    update_command = 'update-container'
+  else:
+    update_command = 'update'
+  integrity_monitoring_help = integrity_monitoring_help_format.format(
+      update_command)
   if for_update:
     integrity_monitoring_help += """\
       Changes to this setting with the update command only take effect
@@ -2596,6 +2613,7 @@ def _AddContainerArgs(parser):
 
 
 def AddUpdateContainerArgs(parser, container_mount_disk_enabled=False):
+  """Add all args to update the container environment."""
   INSTANCE_ARG.AddArgument(parser, operation_type='update')
   _AddContainerCommandGroup(parser)
   _AddContainerEnvGroup(parser)
@@ -2603,6 +2621,9 @@ def AddUpdateContainerArgs(parser, container_mount_disk_enabled=False):
   _AddContainerMountGroup(
       parser, container_mount_disk_enabled=container_mount_disk_enabled)
   _AddContainerArgs(parser)
+  AddShieldedInstanceConfigArgs(
+      parser, use_default_value=False, for_update=True, for_container=True)
+  AddShieldedInstanceIntegrityPolicyArgs(parser)
 
 
 def AddPostKeyRevocationActionTypeArgs(parser):

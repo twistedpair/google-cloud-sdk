@@ -39,7 +39,10 @@ class Execution(_messages.Message):
 
   Fields:
     argument: Input parameters of the execution represented as a JSON string.
-      The size limit is 32KB.
+      The size limit is 32KB. *Note*: If you are using the REST API directly
+      to run your workflow, you must escape any JSON string value of
+      `argument`. Example:
+      `'{"argument":"{\"firstName\":\"FIRST\",\"lastName\":\"LAST\"}"}'`
     endTime: Output only. Marks the end of execution, successful or not.
     error: Output only. The error which caused the execution to finish
       prematurely. The value is only present if the execution's state is

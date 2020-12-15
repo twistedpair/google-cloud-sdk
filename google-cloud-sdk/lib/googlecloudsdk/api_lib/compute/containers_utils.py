@@ -495,6 +495,13 @@ def UpdateInstance(holder, client, instance_ref, instance, args,
                    container_mount_disk_enabled=False,
                    container_mount_disk=None):
   """Update an instance and its container metadata."""
+  operation_poller = poller.Poller(client.apitools_client.instances)
+
+  result = _UpdateShieldedInstanceConfig(holder, client, operation_poller,
+                                         instance_ref, args)
+
+  result = _SetShieldedInstanceIntegrityPolicy(holder, client, operation_poller,
+                                               instance_ref, args) or result
 
   # find gce-container-declaration metadata entry
   for metadata in instance.metadata.items:
@@ -512,7 +519,6 @@ def UpdateInstance(holder, client, instance_ref, instance, args,
       operation_ref = holder.resources.Parse(
           operation.selfLink, collection='compute.zoneOperations')
 
-      operation_poller = poller.Poller(client.apitools_client.instances)
       set_metadata_waiter = waiter.WaitFor(
           operation_poller, operation_ref,
           'Updating specification of container [{0}]'.format(
@@ -520,15 +526,68 @@ def UpdateInstance(holder, client, instance_ref, instance, args,
 
       if (instance.status ==
           client.messages.Instance.StatusValueValuesEnum.TERMINATED):
-        return set_metadata_waiter
+        return set_metadata_waiter or result
       elif (instance.status ==
             client.messages.Instance.StatusValueValuesEnum.SUSPENDED):
-        return _StopVm(holder, client, instance_ref)
+        return _StopVm(holder, client, instance_ref) or result
       else:
         _StopVm(holder, client, instance_ref)
-        return _StartVm(holder, client, instance_ref)
+        return _StartVm(holder, client, instance_ref) or result
 
   raise NoGceContainerDeclarationMetadataKey()
+
+
+def _UpdateShieldedInstanceConfig(holder, client, operation_poller,
+                                  instance_ref, args):
+  """Update the Shielded Instance Config."""
+  if (args.shielded_vm_secure_boot is None and
+      args.shielded_vm_vtpm is None and
+      args.shielded_vm_integrity_monitoring is None):
+    return None
+  shielded_config_msg = client.messages.ShieldedInstanceConfig(
+      enableSecureBoot=args.shielded_vm_secure_boot,
+      enableVtpm=args.shielded_vm_vtpm,
+      enableIntegrityMonitoring=args.shielded_vm_integrity_monitoring)
+  request = client.messages.ComputeInstancesUpdateShieldedInstanceConfigRequest(
+      instance=instance_ref.Name(),
+      project=instance_ref.project,
+      shieldedInstanceConfig=shielded_config_msg,
+      zone=instance_ref.zone)
+
+  operation = client.apitools_client.instances.UpdateShieldedInstanceConfig(
+      request)
+  operation_ref = holder.resources.Parse(
+      operation.selfLink, collection='compute.zoneOperations')
+  return waiter.WaitFor(
+      operation_poller, operation_ref,
+      'Setting shieldedInstanceConfig of instance [{0}]'.format(
+          instance_ref.Name()))
+
+
+def _SetShieldedInstanceIntegrityPolicy(holder, client, operation_poller,
+                                        instance_ref, args):
+  """Set the Shielded Instance Integrity Policy."""
+  shielded_integrity_policy_msg = client.messages.ShieldedInstanceIntegrityPolicy(
+      updateAutoLearnPolicy=True
+  )
+
+  if not args.IsSpecified('shielded_vm_learn_integrity_policy'):
+    return None
+  request = client.messages.ComputeInstancesSetShieldedInstanceIntegrityPolicyRequest(
+      instance=instance_ref.Name(),
+      project=instance_ref.project,
+      shieldedInstanceIntegrityPolicy=shielded_integrity_policy_msg,
+      zone=instance_ref.zone)
+
+  operation = client.apitools_client.instances.SetShieldedInstanceIntegrityPolicy(
+      request)
+  operation_ref = holder.resources.Parse(
+      operation.selfLink, collection='compute.zoneOperations')
+
+  return waiter.WaitFor(
+      operation_poller, operation_ref,
+      'Setting shieldedInstanceIntegrityPolicy of instance [{0}]'.format(
+          instance_ref.Name()))
 
 
 def _StopVm(holder, client, instance_ref):
@@ -541,9 +600,8 @@ def _StopVm(holder, client, instance_ref):
       operation.selfLink, collection='compute.zoneOperations')
 
   operation_poller = poller.Poller(client.apitools_client.instances)
-  return waiter.WaitFor(
-      operation_poller, operation_ref,
-      'Stopping instance [{0}]'.format(instance_ref.Name()))
+  return waiter.WaitFor(operation_poller, operation_ref,
+                        'Stopping instance [{0}]'.format(instance_ref.Name()))
 
 
 def _StartVm(holder, client, instance_ref):
@@ -556,9 +614,8 @@ def _StartVm(holder, client, instance_ref):
       operation.selfLink, collection='compute.zoneOperations')
 
   operation_poller = poller.Poller(client.apitools_client.instances)
-  return waiter.WaitFor(
-      operation_poller, operation_ref,
-      'Starting instance [{0}]'.format(instance_ref.Name()))
+  return waiter.WaitFor(operation_poller, operation_ref,
+                        'Starting instance [{0}]'.format(instance_ref.Name()))
 
 
 def UpdateMetadata(holder, metadata, args, instance,

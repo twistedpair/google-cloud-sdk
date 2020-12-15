@@ -46,8 +46,27 @@ class CustomJobsClient(object):
              specs=None,
              config_path=None,
              display_name=None,
-             python_package_uri=None):
-    """Constructs a request and sends it to the endpoint to create a custom job instance."""
+             python_package_uri=None,
+             args=None,
+             command=None):
+    """Constructs a request and sends it to the endpoint to create a custom job instance.
+
+    Args:
+      parent: str, The proje resource path of the custom job to create.
+      specs: ArgDict, A dictionary of worker pool specification for the custom
+        job to create.
+      config_path: str, Local path of a yaml file which contains the worker pool
+        specification.
+      display_name: str, The display name of the custom job to create.
+      python_package_uri: str, The common python package uris that will be used
+        by python image.
+      args: ArgList, A list of argument that passed to containers or python
+        packge.
+      command: ArgList, A list of command that passed to containers.
+
+    Returns:
+      (GoogleCloudAiplatformV1alpha1CustomJob) The created custom job.
+    """
     if not python_package_uri:
       python_package_uri = []
 
@@ -80,15 +99,20 @@ class CustomJobsClient(object):
           worker_pool_spec.containerSpec = (
               self.messages.GoogleCloudAiplatformV1beta1ContainerSpec(
                   imageUri=container_image_uri))
+          if args is not None:
+            worker_pool_spec.containerSpec.args = args
+          if command is not None:
+            worker_pool_spec.containerSpec.command = command
 
-        # TODO(b/161753810): Pass args and commands to the python package
-        # and container.
         if python_package_uri or python_image_uri or python_module:
           worker_pool_spec.pythonPackageSpec = (
               self.messages.GoogleCloudAiplatformV1beta1PythonPackageSpec(
                   executorImageUri=python_image_uri,
                   packageUris=python_package_uri,
                   pythonModule=python_module))
+          if args is not None:
+            worker_pool_spec.pythonPackageSpec.args = args
+
         worker_pool_specs.append(worker_pool_spec)
 
     if worker_pool_specs:

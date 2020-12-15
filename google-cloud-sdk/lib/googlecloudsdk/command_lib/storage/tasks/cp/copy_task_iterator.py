@@ -58,6 +58,16 @@ class CopyTaskIterator:
   def __iter__(self):
     raw_destination = self._get_raw_destination()
     for source in self._source_name_iterator:
+
+      if (isinstance(source.resource, resource_reference.ObjectResource) and
+          isinstance(raw_destination.storage_url, storage_url.FileUrl) and
+          source.resource.storage_url.object_name.endswith(
+              raw_destination.storage_url.delimiter)):
+        log.debug('Skipping the object {} since its name ends with a file '
+                  'system delimiter.'.format(
+                      source.resource.storage_url.versionless_url_string))
+        continue
+
       destination_resource = self._get_copy_destination(raw_destination, source)
       log.status.Print('Copying {} to {}'.format(
           source.resource.storage_url.versionless_url_string,

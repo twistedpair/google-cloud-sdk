@@ -70,6 +70,11 @@ def AddImportFlags(parser, schema_path=None):
           the export/import format can be found in:
           {}.
       """.format(schema_path)
+    if '$CLOUDSDKROOT' in schema_path:
+      help_text += """
+
+      Note: $CLOUDSDKROOT represents the Cloud SDK's installation directory.
+      """
 
   parser.add_argument(
       '--source',

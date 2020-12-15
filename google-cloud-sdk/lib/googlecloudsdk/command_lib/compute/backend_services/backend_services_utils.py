@@ -314,8 +314,8 @@ def GetCacheKeyPolicy(client, args, backend_service):
     client: The client used by gcloud.
     args: The arguments passed to the gcloud command.
     backend_service: The backend service object. If the backend service object
-    contains a cache key policy already, it is used as the base to apply
-    changes based on args.
+      contains a cache key policy already, it is used as the base to apply
+      changes based on args.
 
   Returns:
     The cache key policy.
@@ -382,7 +382,8 @@ def ApplyCdnPolicyArgs(client,
                        is_update=False,
                        apply_signed_url_cache_max_age=False,
                        cleared_fields=None,
-                       support_flexible_cache_step_one=False):
+                       support_flexible_cache_step_one=False,
+                       support_negative_cache=False):
   """Applies the CdnPolicy arguments to the specified backend service.
 
   If there are no arguments related to CdnPolicy, the backend service remains
@@ -400,8 +401,9 @@ def ApplyCdnPolicyArgs(client,
     cleared_fields: Reference to list with fields that should be cleared. Valid
       only for update command.
     support_flexible_cache_step_one: If True then maps Flexible Cache Control
-    properties from milestone 1: cache mode, max ttl, default ttl, client ttl,
-      negative caching and negative caching policy
+    properties from milestone 1: cache mode, max ttl, default ttl, client ttl
+    support_negative_cache: If True then maps negative caching and negative
+      caching policy arguments
   """
   if backend_service.cdnPolicy is not None:
     cdn_policy = encoding.CopyProtoMessage(backend_service.cdnPolicy)
@@ -426,14 +428,6 @@ def ApplyCdnPolicyArgs(client,
       cdn_policy.defaultTtl = args.default_ttl
     if args.max_ttl:
       cdn_policy.maxTtl = args.max_ttl
-    if args.negative_caching is not None:
-      cdn_policy.negativeCaching = args.negative_caching
-    negative_caching_policy = GetNegativeCachingPolicy(client, args,
-                                                       backend_service)
-    if negative_caching_policy is not None:
-      cdn_policy.negativeCachingPolicy = negative_caching_policy
-    if args.negative_caching_policy:
-      cdn_policy.negativeCaching = True
 
     if is_update:
       # Takes care of resetting fields that are invalid for given cache modes.
@@ -455,6 +449,17 @@ def ApplyCdnPolicyArgs(client,
         cleared_fields.append('cdnPolicy.maxTtl')
         cdn_policy.maxTtl = None
 
+  if support_negative_cache:
+    if args.negative_caching is not None:
+      cdn_policy.negativeCaching = args.negative_caching
+    negative_caching_policy = GetNegativeCachingPolicy(client, args,
+                                                       backend_service)
+    if negative_caching_policy is not None:
+      cdn_policy.negativeCachingPolicy = negative_caching_policy
+    if args.negative_caching_policy:
+      cdn_policy.negativeCaching = True
+
+    if is_update:
       if args.no_negative_caching_policies or \
           (args.negative_caching is not None and not args.negative_caching):
         cleared_fields.append('cdnPolicy.negativeCachingPolicy')
@@ -494,9 +499,9 @@ def ApplyFailoverPolicyArgs(messages, args, backend_service, support_failover):
   if (support_failover and (args.IsSpecified('connection_drain_on_failover') or
                             args.IsSpecified('drop_traffic_if_unhealthy') or
                             args.IsSpecified('failover_ratio'))):
-    failover_policy = (backend_service.failoverPolicy
-                       if backend_service.failoverPolicy else
-                       messages.BackendServiceFailoverPolicy())
+    failover_policy = (
+        backend_service.failoverPolicy if backend_service.failoverPolicy else
+        messages.BackendServiceFailoverPolicy())
     if args.connection_drain_on_failover is not None:
       failover_policy.disableConnectionDrainOnFailover = (
           not args.connection_drain_on_failover)

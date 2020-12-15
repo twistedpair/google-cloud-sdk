@@ -1,0 +1,514 @@
+<html devsite="">
+<head>
+<title>gcloud</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="project_path" value="/sdk/docs/_project.yaml">
+<meta name="book_path" value="/sdk/_book.yaml">
+<!--
+        THIS DOC IS GENERATED.  DO NOT EDIT.
+  -->
+<style>
+  dd {
+    margin-bottom: 1ex;
+  }
+  li {
+    margin-top: 1ex; margin-bottom: 1ex;
+  }
+  .flag {
+    white-space: nowrap;
+  }
+  .hangingindent {
+    padding-left: 1.5em;
+    text-indent: -1.5em;
+  }
+  .normalfont {
+    font-weight: normal;
+  }
+  .notopmargin {
+    margin-top: 0em;
+  }
+  .sectionbody {
+    margin-top: .2em;
+  }
+</style>
+</head>
+<body>
+<dl>
+
+<section id="NAME">
+<dt>NAME</dt>
+<dd class="sectionbody">
+<dl class="notopmargin"><dt class="hangingindent"><span class="normalfont">
+gcloud - manage Google Cloud Platform resources and developer workflow
+</span></dt></dl>
+</dd>
+</section>
+
+<section id="SYNOPSIS">
+<dt>SYNOPSIS</dt>
+<dd class="sectionbody">
+<dl class="notopmargin"><dt class="hangingindent"><span class="normalfont">
+<span class="flag"><code><a href="#gcloud">gcloud</a></code></span> <code><var><a href="#GROUP">GROUP</a></var></code> | <code><var><a href="#COMMAND">COMMAND</a></var></code> <span>[<span class="flag"><code><a href="#--account">--account</a></code>=<code><var>ACCOUNT</var></code>]</span></span> <span>[<span class="flag"><code><a href="#--billing-project">--billing-project</a></code>=<code><var>BILLING_PROJECT</var></code>]</span></span> <span>[<span class="flag"><code><a href="#--configuration">--configuration</a></code>=<code><var>CONFIGURATION</var></code>]</span></span> <span>[<span class="flag"><code><a href="#--flags-file">--flags-file</a></code>=<code><var>YAML_FILE</var></code>]</span></span> <span>[<span class="flag"><code><a href="#--flatten">--flatten</a></code>=[<code><var>KEY</var></code>,&hellip;]]</span></span> <span>[<span class="flag"><code><a href="#--format">--format</a></code>=<code><var>FORMAT</var></code>]</span></span> <span>[<span class="flag"><code><a href="#--help">--help</a></code>]</span></span> <span>[<span class="flag"><code><a href="#--project">--project</a></code>=<code><var>PROJECT_ID</var></code>]</span></span> <span>[<span class="flag"><code><a href="#--quiet">--quiet</a></code>,</span> <span class="flag"><code><a href="#-q">-q</a></code>]</span></span> <span>[<span class="flag"><code><a href="#--verbosity">--verbosity</a></code>=<code><var>VERBOSITY</var></code>;</span> default="warning"]</span> <span>[<span class="flag"><code><a href="#--version">--version</a></code>,</span> <span class="flag"><code><a href="#-v">-v</a></code>]</span></span> <span>[<span class="flag"><code><a href="#-h">-h</a></code>]</span></span> <span>[<span class="flag"><code><a href="#--impersonate-service-account">--impersonate-service-account</a></code>=<code><var>SERVICE_ACCOUNT_EMAIL</var></code>]</span></span> <span>[<span class="flag"><code><a href="#--log-http">--log-http</a></code>]</span></span> <span>[<span class="flag"><code><a href="#--trace-token">--trace-token</a></code>=<code><var>TRACE_TOKEN</var></code>]</span></span> <span>[<span class="flag"><code><a href="#--user-output-enabled">--no-user-output-enabled</a></code>]</span></span>
+</span></dt></dl>
+</dd>
+</section>
+
+<section id="DESCRIPTION">
+<dt>DESCRIPTION</dt>
+<dd class="sectionbody">
+The <code>gcloud</code> CLI manages authentication, local configuration,
+developer workflow, and interactions with the Google Cloud Platform APIs.
+<p>
+For a quick introduction to the gcloud command-line tool, a list of commonly
+used commands, and a look at how these commands are structured, run <code><a
+href="/sdk/gcloud/reference/cheat-sheet">gcloud cheat-sheet</a></code> or refer
+to the gcloud command-line tool cheat sheet: <a
+href="https://cloud.google.com/sdk/docs/cheatsheet">https://cloud.google.com/sdk/docs/cheatsheet</a>
+</dd>
+</section>
+
+<section id="GLOBAL-FLAGS">
+<dt>GLOBAL FLAGS</dt>
+<dd class="sectionbody">
+<dl class="notopmargin">
+<dt id="--account"><span class="normalfont"><code>--account</code>=<code><var>ACCOUNT</var></code></span></dt>
+<dd>
+Google Cloud Platform user account to use for invocation. Overrides the default
+<code>core/account</code> property value for this command invocation.
+</dd>
+<dt id="--billing-project"><span class="normalfont"><code>--billing-project</code>=<code><var>BILLING_PROJECT</var></code></span></dt>
+<dd>
+The Google Cloud Platform project that will be charged quota for operations
+performed in gcloud. If you need to operate on one project, but need quota
+against a different project, you can use this flag to specify the billing
+project. If both <code>billing/quota_project</code> and
+<code>--billing-project</code> are specified, <code>--billing-project</code>
+takes precedence. Run <code>$ <a href="/sdk/gcloud/reference/config/set">gcloud
+config set</a> --help</code> to see more information about
+<code>billing/quota_project</code>.
+</dd>
+<dt id="--configuration"><span class="normalfont"><code>--configuration</code>=<code><var>CONFIGURATION</var></code></span></dt>
+<dd>
+The configuration to use for this command invocation. For more information on
+how to use configurations, run: <code><a
+href="/sdk/gcloud/reference/topic/configurations">gcloud topic
+configurations</a></code>. You can also use the CLOUDSDK_ACTIVE_CONFIG_NAME
+environment variable to set the equivalent of this flag for a terminal session.
+</dd>
+<dt id="--flags-file"><span class="normalfont"><code>--flags-file</code>=<code><var>YAML_FILE</var></code></span></dt>
+<dd>
+A YAML or JSON file that specifies a <code>--flag</code>:<code>value</code>
+dictionary. Useful for specifying complex flag values with special characters
+that work with any command interpreter. Additionally, each
+<code>--flags-file</code> arg is replaced by its constituent flags. See $ <a
+href="/sdk/gcloud/reference/topic/flags-file">gcloud topic flags-file</a> for
+more information.
+</dd>
+<dt id="--flatten"><span class="normalfont"><code>--flatten</code>=[<code><var>KEY</var></code>,&hellip;]</span></dt>
+<dd>
+Flatten <code><var>name</var></code>[] output resource slices in
+<code><var>KEY</var></code> into separate records for each item in each slice.
+Multiple keys and slices may be specified. This also flattens keys for
+<code>--format</code> and <code>--filter</code>. For example,
+<code>--flatten=abc.def</code> flattens <code>abc.def[].ghi</code> references to
+<code>abc.def.ghi</code>. A resource record containing <code>abc.def[]</code>
+with N elements will expand to N records in the flattened output. This flag
+interacts with other flags that are applied in this order:
+<code>--flatten</code>, <code>--sort-by</code>, <code>--filter</code>,
+<code>--limit</code>.
+</dd>
+<dt id="--format"><span class="normalfont"><code>--format</code>=<code><var>FORMAT</var></code></span></dt>
+<dd>
+Set the format for printing command output resources. The default is a
+command-specific human-friendly output format. The supported formats are:
+<code>config</code>, <code>csv</code>, <code>default</code>, <code>diff</code>,
+<code>disable</code>, <code>flattened</code>, <code>get</code>,
+<code>json</code>, <code>list</code>, <code>multi</code>, <code>none</code>,
+<code>object</code>, <code>table</code>, <code>text</code>, <code>value</code>,
+<code>yaml</code>. For more details run $ <a
+href="/sdk/gcloud/reference/topic/formats">gcloud topic formats</a>.
+</dd>
+<dt id="--help"><span class="normalfont"><code>--help</code></span></dt>
+<dd>
+Display detailed help.
+</dd>
+<dt id="--project"><span class="normalfont"><code>--project</code>=<code><var>PROJECT_ID</var></code></span></dt>
+<dd>
+The Google Cloud Platform project ID to use for this invocation. If omitted,
+then the current project is assumed; the current project can be listed using
+<code>gcloud config list --format='text(core.project)'</code> and can be set
+using <code>gcloud config set project PROJECTID</code>.
+<p>
+<code>--project</code> and its fallback <code>core/project</code> property play
+two roles in the invocation. It specifies the project of the resource to operate
+on. It also specifies the project for API enablement check, quota, and billing.
+To specify a different project for quota and billing, use
+<code>--billing-project</code> or <code>billing/quota_project</code> property.
+</dd>
+<dt id="--quiet"><span class="normalfont"><code>--quiet</code>, <code>-q</code></span></dt>
+<dd>
+Disable all interactive prompts when running gcloud commands. If input is
+required, defaults will be used, or an error will be raised. Overrides the
+default core/disable_prompts property value for this command invocation. This is
+equivalent to setting the environment variable
+<code>CLOUDSDK_CORE_DISABLE_PROMPTS</code> to 1.
+</dd>
+<dt id="--verbosity"><span class="normalfont"><code>--verbosity</code>=<code><var>VERBOSITY</var></code>; default="warning"</span></dt>
+<dd>
+Override the default verbosity for this command. Overrides the default
+<code>core/verbosity</code> property value for this command invocation.
+<code><var>VERBOSITY</var></code> must be one of: <code>debug</code>,
+<code>info</code>, <code>warning</code>, <code>error</code>,
+<code>critical</code>, <code>none</code>.
+</dd>
+<dt id="--version"><span class="normalfont"><code>--version</code>, <code>-v</code></span></dt>
+<dd>
+Print version information and exit. This flag is only available at the global
+level.
+</dd>
+<dt id="-h"><span class="normalfont"><code>-h</code></span></dt>
+<dd>
+Print a summary help and exit.
+</dd>
+</dl>
+</dd>
+</section>
+
+<section id="OTHER-FLAGS">
+<dt>OTHER FLAGS</dt>
+<dd class="sectionbody">
+<dl class="notopmargin">
+<dt id="--impersonate-service-account"><span class="normalfont"><code>--impersonate-service-account</code>=<code><var>SERVICE_ACCOUNT_EMAIL</var></code></span></dt>
+<dd>
+For this gcloud invocation, all API requests will be made as the given service
+account instead of the currently selected account. This is done without needing
+to create, download, and activate a key for the account. In order to perform
+operations as the service account, your currently selected account must have an
+IAM role that includes the iam.serviceAccounts.getAccessToken permission for the
+service account. The roles/iam.serviceAccountTokenCreator role has this
+permission or you may create a custom role. Overrides the default
+<code>auth/impersonate_service_account</code> property value for this command
+invocation.
+</dd>
+<dt id="--log-http"><span class="normalfont"><code>--log-http</code></span></dt>
+<dd>
+Log all HTTP server requests and responses to stderr. Overrides the default
+<code>core/log_http</code> property value for this command invocation.
+</dd>
+<dt id="--trace-token"><span class="normalfont"><code>--trace-token</code>=<code><var>TRACE_TOKEN</var></code></span></dt>
+<dd>
+Token used to route traces of service requests for investigation of issues.
+Overrides the default <code>core/trace_token</code> property value for this
+command invocation.
+</dd>
+<dt id="--user-output-enabled"><span class="normalfont"><code>--user-output-enabled</code></span></dt>
+<dd>
+Print user intended output to the console. Overrides the default
+<code>core/user_output_enabled</code> property value for this command
+invocation. Use <code>--no-user-output-enabled</code> to disable.
+</dd>
+</dl>
+</dd>
+</section>
+
+<section id="GROUP">
+<dt>GROUPS</dt>
+<dd class="sectionbody">
+<code><code><var>GROUP</var></code></code> is one of the following:
+<dl>
+<dt id="access-context-manager"><span class="normalfont"><code><a href="/sdk/gcloud/reference/access-context-manager">access-context-manager</a></code></span></dt>
+<dd>
+Manage Access Context Manager resources.
+</dd>
+<dt id="active-directory"><span class="normalfont"><code><a href="/sdk/gcloud/reference/active-directory">active-directory</a></code></span></dt>
+<dd>
+Manage Managed Microsoft AD resources.
+</dd>
+<dt id="ai-platform"><span class="normalfont"><code><a href="/sdk/gcloud/reference/ai-platform">ai-platform</a></code></span></dt>
+<dd>
+Manage AI Platform jobs and models.
+</dd>
+<dt id="alpha"><span class="normalfont"><code><a href="/sdk/gcloud/reference/alpha">alpha</a></code></span></dt>
+<dd>
+<code>(ALPHA)</code> Alpha versions of gcloud commands.
+</dd>
+<dt id="anthos"><span class="normalfont"><code><a href="/sdk/gcloud/reference/anthos">anthos</a></code></span></dt>
+<dd>
+Anthos command Group.
+</dd>
+<dt id="apigee"><span class="normalfont"><code><a href="/sdk/gcloud/reference/apigee">apigee</a></code></span></dt>
+<dd>
+Manage Apigee resources.
+</dd>
+<dt id="app"><span class="normalfont"><code><a href="/sdk/gcloud/reference/app">app</a></code></span></dt>
+<dd>
+Manage your App Engine deployments.
+</dd>
+<dt id="artifacts"><span class="normalfont"><code><a href="/sdk/gcloud/reference/artifacts">artifacts</a></code></span></dt>
+<dd>
+Manage Artifact Registry resources.
+</dd>
+<dt id="asset"><span class="normalfont"><code><a href="/sdk/gcloud/reference/asset">asset</a></code></span></dt>
+<dd>
+Manage the Cloud Asset Inventory.
+</dd>
+<dt id="auth"><span class="normalfont"><code><a href="/sdk/gcloud/reference/auth">auth</a></code></span></dt>
+<dd>
+Manage oauth2 credentials for the Google Cloud SDK.
+</dd>
+<dt id="beta"><span class="normalfont"><code><a href="/sdk/gcloud/reference/beta">beta</a></code></span></dt>
+<dd>
+<code>(BETA)</code> Beta versions of gcloud commands.
+</dd>
+<dt id="bigtable"><span class="normalfont"><code><a href="/sdk/gcloud/reference/bigtable">bigtable</a></code></span></dt>
+<dd>
+Manage your Cloud Bigtable storage.
+</dd>
+<dt id="billing"><span class="normalfont"><code><a href="/sdk/gcloud/reference/billing">billing</a></code></span></dt>
+<dd>
+Manage billing accounts and associate them with projects.
+</dd>
+<dt id="builds"><span class="normalfont"><code><a href="/sdk/gcloud/reference/builds">builds</a></code></span></dt>
+<dd>
+Create and manage builds for Google Cloud Build.
+</dd>
+<dt id="cloud-shell"><span class="normalfont"><code><a href="/sdk/gcloud/reference/cloud-shell">cloud-shell</a></code></span></dt>
+<dd>
+Manage Google Cloud Shell.
+</dd>
+<dt id="components"><span class="normalfont"><code><a href="/sdk/gcloud/reference/components">components</a></code></span></dt>
+<dd>
+List, install, update, or remove Google Cloud SDK components.
+</dd>
+<dt id="composer"><span class="normalfont"><code><a href="/sdk/gcloud/reference/composer">composer</a></code></span></dt>
+<dd>
+Create and manage Cloud Composer Environments.
+</dd>
+<dt id="compute"><span class="normalfont"><code><a href="/sdk/gcloud/reference/compute">compute</a></code></span></dt>
+<dd>
+Create and manipulate Compute Engine resources.
+</dd>
+<dt id="config"><span class="normalfont"><code><a href="/sdk/gcloud/reference/config">config</a></code></span></dt>
+<dd>
+View and edit Cloud SDK properties.
+</dd>
+<dt id="container"><span class="normalfont"><code><a href="/sdk/gcloud/reference/container">container</a></code></span></dt>
+<dd>
+Deploy and manage clusters of machines for running containers.
+</dd>
+<dt id="data-catalog"><span class="normalfont"><code><a href="/sdk/gcloud/reference/data-catalog">data-catalog</a></code></span></dt>
+<dd>
+Manage Cloud Data Catalog resources.
+</dd>
+<dt id="dataflow"><span class="normalfont"><code><a href="/sdk/gcloud/reference/dataflow">dataflow</a></code></span></dt>
+<dd>
+Manage Google Cloud Dataflow resources.
+</dd>
+<dt id="dataproc"><span class="normalfont"><code><a href="/sdk/gcloud/reference/dataproc">dataproc</a></code></span></dt>
+<dd>
+Create and manage Google Cloud Dataproc clusters and jobs.
+</dd>
+<dt id="datastore"><span class="normalfont"><code><a href="/sdk/gcloud/reference/datastore">datastore</a></code></span></dt>
+<dd>
+Manage your Cloud Datastore resources.
+</dd>
+<dt id="debug"><span class="normalfont"><code><a href="/sdk/gcloud/reference/debug">debug</a></code></span></dt>
+<dd>
+Commands for interacting with the Cloud Debugger.
+</dd>
+<dt id="deployment-manager"><span class="normalfont"><code><a href="/sdk/gcloud/reference/deployment-manager">deployment-manager</a></code></span></dt>
+<dd>
+Manage deployments of cloud resources.
+</dd>
+<dt id="dns"><span class="normalfont"><code><a href="/sdk/gcloud/reference/dns">dns</a></code></span></dt>
+<dd>
+Manage your Cloud DNS managed-zones and record-sets.
+</dd>
+<dt id="domains"><span class="normalfont"><code><a href="/sdk/gcloud/reference/domains">domains</a></code></span></dt>
+<dd>
+Manage domains for your Google Cloud projects.
+</dd>
+<dt id="endpoints"><span class="normalfont"><code><a href="/sdk/gcloud/reference/endpoints">endpoints</a></code></span></dt>
+<dd>
+Create, enable and manage API services.
+</dd>
+<dt id="filestore"><span class="normalfont"><code><a href="/sdk/gcloud/reference/filestore">filestore</a></code></span></dt>
+<dd>
+Create and manipulate Cloud Filestore resources.
+</dd>
+<dt id="firebase"><span class="normalfont"><code><a href="/sdk/gcloud/reference/firebase">firebase</a></code></span></dt>
+<dd>
+Work with Google Firebase.
+</dd>
+<dt id="firestore"><span class="normalfont"><code><a href="/sdk/gcloud/reference/firestore">firestore</a></code></span></dt>
+<dd>
+Manage your Cloud Firestore resources.
+</dd>
+<dt id="functions"><span class="normalfont"><code><a href="/sdk/gcloud/reference/functions">functions</a></code></span></dt>
+<dd>
+Manage Google Cloud Functions.
+</dd>
+<dt id="game"><span class="normalfont"><code><a href="/sdk/gcloud/reference/game">game</a></code></span></dt>
+<dd>
+Managed Cloud Game Services.
+</dd>
+<dt id="healthcare"><span class="normalfont"><code><a href="/sdk/gcloud/reference/healthcare">healthcare</a></code></span></dt>
+<dd>
+Manage Cloud Healthcare resources.
+</dd>
+<dt id="iam"><span class="normalfont"><code><a href="/sdk/gcloud/reference/iam">iam</a></code></span></dt>
+<dd>
+Manage IAM service accounts and keys.
+</dd>
+<dt id="iap"><span class="normalfont"><code><a href="/sdk/gcloud/reference/iap">iap</a></code></span></dt>
+<dd>
+Manage IAP policies.
+</dd>
+<dt id="identity"><span class="normalfont"><code><a href="/sdk/gcloud/reference/identity">identity</a></code></span></dt>
+<dd>
+Manage Cloud Identity Groups and Memberships resources.
+</dd>
+<dt id="iot"><span class="normalfont"><code><a href="/sdk/gcloud/reference/iot">iot</a></code></span></dt>
+<dd>
+Manage Cloud IoT resources.
+</dd>
+<dt id="kms"><span class="normalfont"><code><a href="/sdk/gcloud/reference/kms">kms</a></code></span></dt>
+<dd>
+Manage cryptographic keys in the cloud.
+</dd>
+<dt id="logging"><span class="normalfont"><code><a href="/sdk/gcloud/reference/logging">logging</a></code></span></dt>
+<dd>
+Manage Cloud Logging.
+</dd>
+<dt id="ml"><span class="normalfont"><code><a href="/sdk/gcloud/reference/ml">ml</a></code></span></dt>
+<dd>
+Use Google Cloud machine learning capabilities.
+</dd>
+<dt id="ml-engine"><span class="normalfont"><code><a href="/sdk/gcloud/reference/ml-engine">ml-engine</a></code></span></dt>
+<dd>
+Manage AI Platform jobs and models.
+</dd>
+<dt id="monitoring"><span class="normalfont"><code><a href="/sdk/gcloud/reference/monitoring">monitoring</a></code></span></dt>
+<dd>
+Manage Cloud Monitoring dashboards.
+</dd>
+<dt id="network-management"><span class="normalfont"><code><a href="/sdk/gcloud/reference/network-management">network-management</a></code></span></dt>
+<dd>
+Manage Network Management resources.
+</dd>
+<dt id="organizations"><span class="normalfont"><code><a href="/sdk/gcloud/reference/organizations">organizations</a></code></span></dt>
+<dd>
+Create and manage Google Cloud Platform Organizations.
+</dd>
+<dt id="policy-troubleshoot"><span class="normalfont"><code><a href="/sdk/gcloud/reference/policy-troubleshoot">policy-troubleshoot</a></code></span></dt>
+<dd>
+Troubleshoot Google Cloud Platform policies.
+</dd>
+<dt id="projects"><span class="normalfont"><code><a href="/sdk/gcloud/reference/projects">projects</a></code></span></dt>
+<dd>
+Create and manage project access policies.
+</dd>
+<dt id="pubsub"><span class="normalfont"><code><a href="/sdk/gcloud/reference/pubsub">pubsub</a></code></span></dt>
+<dd>
+Manage Cloud Pub/Sub topics, subscriptions, and snapshots.
+</dd>
+<dt id="recommender"><span class="normalfont"><code><a href="/sdk/gcloud/reference/recommender">recommender</a></code></span></dt>
+<dd>
+Manage Cloud recommendations and recommendation rules.
+</dd>
+<dt id="redis"><span class="normalfont"><code><a href="/sdk/gcloud/reference/redis">redis</a></code></span></dt>
+<dd>
+Manage Cloud Memorystore Redis resources.
+</dd>
+<dt id="resource-manager"><span class="normalfont"><code><a href="/sdk/gcloud/reference/resource-manager">resource-manager</a></code></span></dt>
+<dd>
+Manage Cloud Resources.
+</dd>
+<dt id="run"><span class="normalfont"><code><a href="/sdk/gcloud/reference/run">run</a></code></span></dt>
+<dd>
+Manage your Cloud Run applications.
+</dd>
+<dt id="scc"><span class="normalfont"><code><a href="/sdk/gcloud/reference/scc">scc</a></code></span></dt>
+<dd>
+Manage Cloud SCC resources.
+</dd>
+<dt id="scheduler"><span class="normalfont"><code><a href="/sdk/gcloud/reference/scheduler">scheduler</a></code></span></dt>
+<dd>
+Manage Cloud Scheduler jobs and schedules.
+</dd>
+<dt id="secrets"><span class="normalfont"><code><a href="/sdk/gcloud/reference/secrets">secrets</a></code></span></dt>
+<dd>
+Manage secrets on Google Cloud.
+</dd>
+<dt id="services"><span class="normalfont"><code><a href="/sdk/gcloud/reference/services">services</a></code></span></dt>
+<dd>
+List, enable and disable APIs and services.
+</dd>
+<dt id="source"><span class="normalfont"><code><a href="/sdk/gcloud/reference/source">source</a></code></span></dt>
+<dd>
+Cloud git repository commands.
+</dd>
+<dt id="spanner"><span class="normalfont"><code><a href="/sdk/gcloud/reference/spanner">spanner</a></code></span></dt>
+<dd>
+Command groups for Cloud Spanner.
+</dd>
+<dt id="sql"><span class="normalfont"><code><a href="/sdk/gcloud/reference/sql">sql</a></code></span></dt>
+<dd>
+Create and manage Google Cloud SQL databases.
+</dd>
+<dt id="tasks"><span class="normalfont"><code><a href="/sdk/gcloud/reference/tasks">tasks</a></code></span></dt>
+<dd>
+Manage Cloud Tasks queues and tasks.
+</dd>
+<dt id="topic"><span class="normalfont"><code><a href="/sdk/gcloud/reference/topic">topic</a></code></span></dt>
+<dd>
+gcloud supplementary help.
+</dd>
+</dl>
+</dd>
+</section>
+
+<section id="COMMAND">
+<dt>COMMANDS</dt>
+<dd class="sectionbody">
+<code><code><var>COMMAND</var></code></code> is one of the following:
+<dl>
+<dt id="cheat-sheet"><span class="normalfont"><code><a href="/sdk/gcloud/reference/cheat-sheet">cheat-sheet</a></code></span></dt>
+<dd>
+Display gcloud cheat sheet.
+</dd>
+<dt id="docker"><span class="normalfont"><code><a href="/sdk/gcloud/reference/docker">docker</a></code></span></dt>
+<dd>
+<code>(DEPRECATED)</code> Enable Docker CLI access to Google Container Registry.
+</dd>
+<dt id="feedback"><span class="normalfont"><code><a href="/sdk/gcloud/reference/feedback">feedback</a></code></span></dt>
+<dd>
+Provide feedback to the Google Cloud SDK team.
+</dd>
+<dt id="help"><span class="normalfont"><code><a href="/sdk/gcloud/reference">help</a></code></span></dt>
+<dd>
+Search gcloud help text.
+</dd>
+<dt id="info"><span class="normalfont"><code><a href="/sdk/gcloud/reference/info">info</a></code></span></dt>
+<dd>
+Display information about the current gcloud environment.
+</dd>
+<dt id="init"><span class="normalfont"><code><a href="/sdk/gcloud/reference/init">init</a></code></span></dt>
+<dd>
+Initialize or reinitialize gcloud.
+</dd>
+<dt id="survey"><span class="normalfont"><code><a href="/sdk/gcloud/reference/survey">survey</a></code></span></dt>
+<dd>
+Invoke a customer satisfaction survey for Cloud SDK.
+</dd>
+<dt id="version"><span class="normalfont"><code><a href="/sdk/gcloud/reference/version">version</a></code></span></dt>
+<dd>
+Print version information for Cloud SDK components.
+</dd>
+</dl>
+</dd>
+</section>
+
+</dl>
+</body>
+</html>

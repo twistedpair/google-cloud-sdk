@@ -485,7 +485,7 @@
             "API Config creation failed.",
             "API Config is being deleted.",
             "API Config is being updated.",
-            "API Config settings are being activated in downstream systems. API Configs in this state cannot be used by Gateways.."
+            "API Config settings are being activated in downstream systems. API Configs in this state cannot be used by Gateways."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -549,7 +549,7 @@
     },
     "ApigatewayBackendConfig": {
       "id": "ApigatewayBackendConfig",
-      "description": "Configuration for a backend.",
+      "description": "Configuration for all backends.",
       "type": "object",
       "properties": {
         "googleServiceAccount": {

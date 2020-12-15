@@ -25,7 +25,6 @@ from googlecloudsdk.core import requests
 from googlecloudsdk.core import transport as core_transport
 from googlecloudsdk.core.credentials import transport
 
-import httplib2
 from google.auth.transport import requests as google_auth_requests
 
 
@@ -153,66 +152,3 @@ class RequestWrapper(transport.CredentialWrappingMixin,
       http_client.request = wrapped_request
     return http_client
 
-
-class _GoogleAuthApitoolsCredentials():
-
-  def __init__(self, credentials):
-    self.credentials = credentials
-
-  def refresh(self, http_client):  # pylint: disable=invalid-name
-    auth_request = google_auth_requests.Request(http_client.session)
-    self.credentials.refresh(auth_request)
-
-
-def GetApitoolsRequests(session):
-  """Returns an authenticated httplib2.Http-like object for use by apitools."""
-  http_client = _ApitoolsRequests(session)
-  # apitools needs this attribute to do credential refreshes during batch API
-  # requests.
-  if hasattr(session, '_googlecloudsdk_credentials'):
-    creds = _GoogleAuthApitoolsCredentials(
-        session._googlecloudsdk_credentials)  # pylint: disable=protected-access
-
-    orig_request_method = http_client.request
-    # The closure that will replace 'httplib2.Http.request'.
-    def Request(*args, **kwargs):
-      return orig_request_method(*args, **kwargs)
-
-    http_client.request = Request
-    setattr(http_client.request, 'credentials', creds)
-
-  return http_client
-
-
-class _ApitoolsRequests():
-  """A httplib2.Http-like object for use by apitools."""
-
-  def __init__(self, session):
-    self.session = session
-    # Mocks the dictionary of connection instances that apitools iterates over
-    # to modify the underlying connection.
-    self.connections = {}
-
-  def request(
-      self,
-      uri,
-      method='GET',
-      body=None,
-      headers=None,
-      redirections=None,
-      connection_type=None,
-  ):  # pylint: disable=invalid-name
-    """Makes an HTTP request using httplib2 semantics."""
-    del connection_type  # Unused
-
-    self.session.max_redirects = redirections
-    response = self.session.request(method, uri, data=body, headers=headers)
-    headers = dict(response.headers)
-    headers['status'] = response.status_code
-
-    if response.encoding is not None:
-      content = response.text
-    else:
-      content = response.content
-
-    return httplib2.Response(headers), content

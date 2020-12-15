@@ -22,9 +22,10 @@ import io
 
 from googlecloudsdk.command_lib.util.anthos import binary_operations as bin_ops
 from googlecloudsdk.command_lib.util.declarative.clients import client_base
-from googlecloudsdk.core import execution_utils as exec_utils
+from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.credentials import store
 
 _ASSET_INVENTORY_STRING = '{{"name":"{}","asset_type":"{}"}}\n'
@@ -65,7 +66,7 @@ def _GetAssetInventoryInput(resource_uris, resource_type):
 def _ExecuteBinary(cmd, in_str=None):
   output_value = io.StringIO()
   error_value = io.StringIO()
-  exit_code = exec_utils.Exec(
+  exit_code = execution_utils.Exec(
       args=cmd,
       no_exit=True,
       in_str=in_str,
@@ -75,7 +76,7 @@ def _ExecuteBinary(cmd, in_str=None):
 
 
 def _ExecuteBinaryWithStreaming(cmd, in_str=None):
-  exit_code = exec_utils.ExecWithStreamingOutput(args=cmd, in_str=in_str)
+  exit_code = execution_utils.ExecWithStreamingOutput(args=cmd, in_str=in_str)
   if exit_code != 0:
     raise client_base.ClientException(
         'The bulk-export command could not finish correctly.')
@@ -84,6 +85,11 @@ def _ExecuteBinaryWithStreaming(cmd, in_str=None):
 class KccClient(client_base.DeclarativeClient):
   """KRM Yaml Export based Declarative Client."""
 
+  CC_PROMPT = (
+      'This command requires the `config-connector` binary to be installed '
+      'to export GCP resource configurations. Would you like to install the'
+      '`config-connector` binary to continue command execution?')
+
   def __init__(self, gcp_account=None, impersonated=False):
     if not gcp_account:
       gcp_account = properties.VALUES.core.account.Get()
@@ -91,7 +97,7 @@ class KccClient(client_base.DeclarativeClient):
       self._export_service = bin_ops.CheckForInstalledBinary('config-connector')
     except bin_ops.MissingExecutableException:
       self._export_service = bin_ops.InstallBinaryNoOverrides(
-          'config-connector')
+          'config-connector', prompt=self.CC_PROMPT)
     self._use_account_impersonation = impersonated
     self._account = gcp_account
 
@@ -154,9 +160,13 @@ class KccClient(client_base.DeclarativeClient):
 
   def Export(self, args, resource_uri):
     normalized_resource_uri = _NormalizeUri(resource_uri)
-    cmd = self._GetBinaryCommand(
-        args=args, command_name='export', resource_uri=normalized_resource_uri)
-    exit_code, output_value, error_value = _ExecuteBinary(cmd)
+    with progress_tracker.ProgressTracker(
+        message='Exporting resources', aborted_message='Aborted Export.'):
+      cmd = self._GetBinaryCommand(
+          args=args,
+          command_name='export',
+          resource_uri=normalized_resource_uri)
+      exit_code, output_value, error_value = _ExecuteBinary(cmd)
 
     if exit_code != 0:
       if 'resource not found' in error_value:
@@ -168,6 +178,7 @@ class KccClient(client_base.DeclarativeClient):
             'Error executing export:: [{}]'.format(error_value))
     if not self._OutputToFileOrDir(args):
       log.out.Print(output_value)
+    log.status.Print('Exported successfully.')
     return exit_code
 
   def ExportAll(self, args, resource_uris, resource_type):
@@ -178,7 +189,14 @@ class KccClient(client_base.DeclarativeClient):
         resource_uris=normalized_resource_uris, resource_type=resource_type)
 
     if self._OutputToFileOrDir(args):
-      return _ExecuteBinary(cmd=cmd, in_str=asset_inventory_input)
+      with progress_tracker.ProgressTracker(
+          message='Exporting resources', aborted_message='Aborted Export.'):
+        exit_code, _, error_value = _ExecuteBinary(
+            cmd=cmd, in_str=asset_inventory_input)
+        if exit_code != 0:
+          raise client_base.ClientException(
+              'Error executing export:: [{}]'.format(error_value))
+      return exit_code
     else:
       return _ExecuteBinaryWithStreaming(cmd=cmd, in_str=asset_inventory_input)
 
@@ -186,6 +204,14 @@ class KccClient(client_base.DeclarativeClient):
     cmd = self._GetBinaryCommand(args, 'bulk-export')
 
     if self._OutputToFileOrDir(args):
-      return _ExecuteBinary(cmd)
+      with progress_tracker.ProgressTracker(
+          message='Exporting resources', aborted_message='Aborted Export.'):
+        exit_code, _, error_value = _ExecuteBinary(cmd)
+
+        if exit_code != 0:
+          raise client_base.ClientException(
+              'Error executing export:: [{}]'.format(error_value))
+
+      return exit_code
     else:
       return _ExecuteBinaryWithStreaming(cmd)

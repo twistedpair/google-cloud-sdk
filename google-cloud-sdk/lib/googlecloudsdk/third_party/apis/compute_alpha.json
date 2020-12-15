@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20201130",
+ "revision": "20201204",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -3781,6 +3781,13 @@
      "type": "string",
      "description": "The string pattern used for the names of the VMs. Either name_pattern or predefined_names must be set. The pattern should contain one consecutive sequence of placeholder hash characters (#) with each character corresponding to one digit of the generated instance name. Example: name_pattern of inst-#### will generate instance names like inst-0001, inst-0002, ... . If there already exist instance(s) whose names match the name pattern in the same project and zone, then the generated instance numbers will start after the biggest existing number. For example, if there exists an instance with name inst-0050, then instance names generated using the pattern inst-#### will be inst-0051, inst-0052, etc. The name pattern placeholder #...# can contain up to 18 characters."
     },
+    "perInstanceProperties": {
+     "type": "object",
+     "description": "Per-instance properties to be set on individual instances. Keys of this map specify requested instance names. Can be empty if name_pattern is used.",
+     "additionalProperties": {
+      "$ref": "BulkInsertInstanceResourcePerInstanceProperties"
+     }
+    },
     "predefinedNames": {
      "type": "array",
      "description": "List of predefined names. The number of names provided must be equal to count.",
@@ -3791,6 +3798,17 @@
     "sourceInstanceTemplate": {
      "type": "string",
      "description": "Specifies the instance template from which to create instances. You may combine sourceInstanceTemplate with instanceProperties to override specific values from an existing instance template. Bulk API follows the semantics of JSON Merge Patch described by RFC 7396.\n\nIt can be a full or partial URL. For example, the following are all valid URLs to an instance template:  \n- https://www.googleapis.com/compute/v1/projects/project/global/instanceTemplates/instanceTemplate \n- projects/project/global/instanceTemplates/instanceTemplate \n- global/instanceTemplates/instanceTemplate  \n\nThis field is optional."
+    }
+   }
+  },
+  "BulkInsertInstanceResourcePerInstanceProperties": {
+   "id": "BulkInsertInstanceResourcePerInstanceProperties",
+   "type": "object",
+   "description": "Per-instance properties to be set on individual instances. To be extended in the future.",
+   "properties": {
+    "name": {
+     "type": "string",
+     "description": "This field is only temporary. It will be removed. Do not use it."
     }
    }
   },
@@ -4804,6 +4822,10 @@
       "type": "string"
      }
     },
+    "locationHint": {
+     "type": "string",
+     "description": "An opaque location hint used to place the disk close to other resources. This field is for use by internal tools that use the public API."
+    },
     "multiWriter": {
      "type": "boolean",
      "description": "Indicates whether or not the disk can be read/write attached to more than one instance."
@@ -4917,7 +4939,7 @@
     },
     "sourceStorageObject": {
      "type": "string",
-     "description": "The full Google Cloud Storage URI where the disk image is stored. This file must be a gzip-compressed tarball whose name ends in .tar.gz or virtual machine disk whose name ends in vmdk. Valid URIs may start with gs:// or https://storage.googleapis.com/."
+     "description": "The full Google Cloud Storage URI where the disk image is stored. This file must be a gzip-compressed tarball whose name ends in .tar.gz or virtual machine disk whose name ends in vmdk. Valid URIs may start with gs:// or https://storage.googleapis.com/. This flag is not optimized for creating multiple disks from a source storage object. To create many disks from a source storage object, use gcloud compute images import instead."
     },
     "status": {
      "type": "string",
@@ -22122,6 +22144,7 @@
       "NVIDIA_T4_VWS_GPUS",
       "NVIDIA_V100_GPUS",
       "PACKET_MIRRORINGS",
+      "PD_EXTREME_TOTAL_PROVISIONED_IOPS",
       "PREEMPTIBLE_CPUS",
       "PREEMPTIBLE_LOCAL_SSD_GB",
       "PREEMPTIBLE_NVIDIA_A100_GPUS",
@@ -22167,6 +22190,7 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -27096,6 +27120,10 @@
      "$ref": "SecurityPolicyRuleRateLimitOptions",
      "description": "Must be specified if the action is \"rate_based_blacklist\" or \"throttle\". Cannot be specified for any other actions."
     },
+    "redirectTarget": {
+     "type": "string",
+     "description": "This must be specified for redirect actions. Cannot be specified for any other actions."
+    },
     "ruleNumber": {
      "type": "string",
      "description": "Identifier for the rule. This is only unique within the given security policy. This can only be set during rule creation, if rule number is not specified it will be generated by the server.",
@@ -27446,6 +27474,10 @@
     "description": {
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "enableProxyProtocol": {
+     "type": "boolean",
+     "description": "If true, enable the proxy protocol which is for supplying client TCP/IP address data in TCP connections that traverse proxies on their way to destination servers."
     },
     "id": {
      "type": "string",
@@ -27854,6 +27886,10 @@
      "items": {
       "type": "string"
      }
+    },
+    "locationHint": {
+     "type": "string",
+     "description": "An opaque location hint used to place the snapshot close to other resources. This field is for use by internal tools that use the public API."
     },
     "name": {
      "type": "string",
@@ -45946,7 +45982,7 @@
      "id": "compute.instances.updateNetworkInterface",
      "path": "projects/{project}/zones/{zone}/instances/{instance}/updateNetworkInterface",
      "httpMethod": "PATCH",
-     "description": "Updates an instance's network interface. This method follows PATCH semantics.",
+     "description": "Updates an instance's network interface. This method can only update an interface's alias IP range and attached network. See Modifying alias IP ranges for an existing instance for instructions on changing alias IP ranges. See Migrating a VM between networks for instructions on migrating an interface. This method follows PATCH semantics.",
      "parameters": {
       "instance": {
        "type": "string",

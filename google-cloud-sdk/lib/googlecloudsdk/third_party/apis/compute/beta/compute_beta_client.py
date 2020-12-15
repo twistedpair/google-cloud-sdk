@@ -6188,7 +6188,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def UpdateNetworkInterface(self, request, global_params=None):
-      r"""Updates an instance's network interface. This method follows PATCH semantics.
+      r"""Updates an instance's network interface. This method can only update an interface's alias IP range and attached network. See Modifying alias IP ranges for an existing instance for instructions on changing alias IP ranges. See Migrating a VM between networks for instructions on migrating an interface. This method follows PATCH semantics.
 
       Args:
         request: (ComputeInstancesUpdateNetworkInterfaceRequest) input message

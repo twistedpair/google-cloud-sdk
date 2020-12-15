@@ -640,6 +640,48 @@ class KubernetesMetadata(_messages.Message):
   vcpuCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
+class KubernetesResource(_messages.Message):
+  r"""KubernetesResource contains the YAML manifests and configs for
+  Kubernetes resources of the Membership in the cluster. Upon
+  CreateMembership: - The caller should provide membership_cr_manifest if a
+  Membership CR exists in the cluster. - The caller should provide
+  connect_version if they wish to also install the Connect agent. - The caller
+  should then apply resources from the successful GetMembership request. Upon
+  UpdateMembership: - The caller should provide membership_cr_manifest if a
+  Membership CR exists in the cluster. - The caller should re-apply the
+  resources from the returned Membership.
+
+  Fields:
+    connectResources: Output only. The Kubernetes resources for installing GKE
+      Connect agent. This field is only populated in the Membership returned
+      after the long-running operation of Create/UpdateMembership finished,
+      but not in standalone Get/ListMembership requests. To get the resource
+      manifest after the initial registration, the caller could make an
+      UpdateMembership call with an empty field mask.
+    membershipCrManifest: Input only. The YAML representation of the
+      Membership CR if already exists in the cluster. Leave empty if no
+      Membership CR exists. The CR manifest will be used to validate that the
+      cluster has not been registered with another Membership. For GKE
+      clusters, the input from the caller will be ignored as Hub API server
+      will directly fetch the Membership CR from the cluster.
+    membershipResources: Output only. The additional Kubernetes resources that
+      need to be applied to the cluster after the membership creation and
+      every update. This field is only populated in the Membership returned
+      after the long-running operation of Create/UpdateMembership finished,
+      but not in standalone Get/ListMembership requests. To get the resource
+      manifest after the initial registration, the caller could make an
+      UpdateMembership call with an empty field mask.
+    resourceOptions: Optional. The options to generate Kubernetes resources
+      other than the default value supplied by the Hub API. Empty or unset
+      fields will use the default value.
+  """
+
+  connectResources = _messages.MessageField('ResourceManifest', 1, repeated=True)
+  membershipCrManifest = _messages.StringField(2)
+  membershipResources = _messages.MessageField('ResourceManifest', 3, repeated=True)
+  resourceOptions = _messages.MessageField('ResourceOptions', 4)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -881,10 +923,18 @@ class MembershipEndpoint(_messages.Message):
       information.
     kubernetesMetadata: Output only. For Memberships that point to Kubernetes
       Endpoints, this field provides useful metadata.
+    kubernetesResource: Optional. A correctly registered cluster should have
+      the Kubernetes resources applied to the clusters and settle at steady
+      states. These resources are needed in order to: * Ensure that the
+      cluster is exclusively registered to one and only one Hub Membership. *
+      Propagate Workload Pool Information available in the Membership
+      Authority field. * Ensure proper initial configuration of default Hub
+      Features.
   """
 
   gkeCluster = _messages.MessageField('GkeCluster', 1)
   kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 2)
+  kubernetesResource = _messages.MessageField('KubernetesResource', 3)
 
 
 class MembershipState(_messages.Message):
@@ -1130,6 +1180,41 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class ResourceManifest(_messages.Message):
+  r"""ResourceManifest represents a Kubernetes resource to be applied to the
+  cluster.
+
+  Fields:
+    clusterScoped: Specifies whether the resource provided in the manifest is
+      cluster_scoped. If set to false, the assumption is that it is namespace
+      scoped. This field is used for default REST mapper when applying the
+      resource to a cluster.
+    manifest: YAML manifest of the resource.
+  """
+
+  clusterScoped = _messages.BooleanField(1)
+  manifest = _messages.StringField(2)
+
+
+class ResourceOptions(_messages.Message):
+  r"""ResourceOptions represents the supported options for generating the
+  Kubernetes resources.
+
+  Fields:
+    connectVersion: Optional. The connect version to generate for
+      connect_resources. If unset, default to the latest GKE Connect version.
+      If set to a specific Connect version, the Connect resources of the
+      version will be generated. If the version does not exist or is already
+      out of support window, an INVALID_ARGUMENT error will be returned.
+    v1beta1Crd: Optional. Use apiextensions/v1beta1 instead of
+      apiextensions/v1 for CustomResourceDefinition resource. This option
+      should be set for clusters with Kubernetes apiserver version <1.16.
+  """
+
+  connectVersion = _messages.StringField(1)
+  v1beta1Crd = _messages.BooleanField(2)
 
 
 class SetIamPolicyRequest(_messages.Message):

@@ -457,12 +457,12 @@ class AnthosEventsOperations(object):
 
     return source.Source(response, messages, source_crd.source_kind)
 
-  def PollSource(self, source_obj, event_type, tracker):
+  def PollSource(self, source_obj, event_type_obj, tracker):
     """Wait for source to be Ready == True."""
     source_ref = util.GetSourceRef(source_obj.name, source_obj.namespace,
-                                   event_type.crd, True)
-    source_getter = functools.partial(
-        self.GetSource, source_ref, event_type.crd)
+                                   event_type_obj.crd, True)
+    source_getter = functools.partial(self.GetSource, source_ref,
+                                      event_type_obj.crd)
     poller = SourceConditionPoller(source_getter, tracker,
                                    stages.TriggerSourceDependencies())
     util.WaitForCondition(poller, exceptions.SourceCreationError)

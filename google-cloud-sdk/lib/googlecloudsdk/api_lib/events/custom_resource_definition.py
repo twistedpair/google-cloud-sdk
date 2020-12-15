@@ -68,6 +68,11 @@ class EventType(object):
       raise AttributeError(e.args[0])
 
   @property
+  def type(self):
+    """Returns a string of the event type."""
+    return self._properties.get('type', None)
+
+  @property
   def crd(self):
     """Returns a SourceCustomResourceDefinition."""
     return self._crd

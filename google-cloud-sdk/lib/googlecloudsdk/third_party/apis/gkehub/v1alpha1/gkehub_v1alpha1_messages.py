@@ -1509,10 +1509,14 @@ class MeteringFeatureState(_messages.Message):
       according to the most recent measurement.
     lastMeasurementTime: The time stamp of the most recent measurement of the
       number of vCPUs in the cluster.
+    preciseLastMeasuredClusterVcpuCapacity: The precise vCPUs capacity in the
+      cluster according to the most recent measurement (including partial
+      nodes).
   """
 
   lastMeasuredClusterVcpuCapacity = _messages.IntegerField(1)
   lastMeasurementTime = _messages.StringField(2)
+  preciseLastMeasuredClusterVcpuCapacity = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
 class MultiClusterIngressFeatureSpec(_messages.Message):

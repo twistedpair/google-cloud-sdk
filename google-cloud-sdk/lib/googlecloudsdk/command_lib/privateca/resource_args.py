@@ -40,17 +40,6 @@ PROJECT_PROPERTY_FALLTHROUGH = deps.PropertyFallthrough(
     properties.VALUES.core.project)
 
 
-def _GetFallthroughsSummary(fallthroughs):
-  if not fallthroughs:
-    return ''
-
-  if len(fallthroughs) == 1:
-    return ' Alternatively, you can {}.'.format(fallthroughs[0].hint)
-
-  return ' Alternatively, you can {}, or {}.'.format(
-      ', '.join([f.hint for f in fallthroughs[:-1]]), fallthroughs[-1].hint)
-
-
 def ReusableConfigAttributeConfig():
   # ReusableConfig is always an anchor attribute so help_text is unused.
   return concepts.ResourceParameterAttributeConfig(name='reusable_config')
@@ -67,8 +56,7 @@ def CertificateAuthorityAttributeConfig(arg_name='certificate_authority',
   fallthroughs = fallthroughs or []
   return concepts.ResourceParameterAttributeConfig(
       name=arg_name,
-      help_text='The issuing certificate authority of the {resource}.' +
-      _GetFallthroughsSummary(fallthroughs),
+      help_text='The issuing certificate authority of the {resource}.',
       fallthroughs=fallthroughs)
 
 
@@ -76,8 +64,7 @@ def LocationAttributeConfig(arg_name='location', fallthroughs=None):
   fallthroughs = fallthroughs or [LOCATION_PROPERTY_FALLTHROUGH]
   return concepts.ResourceParameterAttributeConfig(
       name=arg_name,
-      help_text='The location of the {resource}.' +
-      _GetFallthroughsSummary(fallthroughs),
+      help_text='The location of the {resource}.',
       fallthroughs=fallthroughs)
 
 
@@ -97,8 +84,7 @@ def ProjectAttributeConfig(arg_name='project', fallthroughs=None):
   """
   return concepts.ResourceParameterAttributeConfig(
       name=arg_name,
-      help_text='The project containing the {resource}.' +
-      _GetFallthroughsSummary(fallthroughs),
+      help_text='The project containing the {resource}.',
       fallthroughs=fallthroughs or [])
 
 

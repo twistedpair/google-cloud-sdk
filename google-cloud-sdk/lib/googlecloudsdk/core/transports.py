@@ -23,7 +23,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import http
 from googlecloudsdk.core import requests
-from googlecloudsdk.core.credentials import requests as cred_requests
 
 
 def GetApitoolsTransport(timeout='unset',
@@ -45,7 +44,7 @@ def GetApitoolsTransport(timeout='unset',
   if base.UseRequests():
     session = requests.GetSession(
         timeout=timeout, response_encoding=response_encoding, ca_certs=ca_certs)
-    return cred_requests.GetApitoolsRequests(session)
+    return requests.GetApitoolsRequests(session)
 
   return http.Http(
       timeout=timeout, response_encoding=response_encoding, ca_certs=ca_certs)

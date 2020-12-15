@@ -146,6 +146,11 @@ class AddSubnetworkRequest(_messages.Message):
       with the IP prefix range is the CIDR range for the subnet. The range
       must be within the allocated range that is assigned to the private
       connection. If the CIDR range isn't available, the call fails.
+    requestedRanges: Optional. The name of one or more allocated IP address
+      ranges associated with this private service access connection. If no
+      range names are provided all ranges associated with this connection will
+      be considered. If a CIDR range with the specified IP prefix length is
+      not available within these ranges, the call fails.
     secondaryIpRangeSpecs: Optional. A list of secondary IP ranges to be
       created within the new subnetwork.
     subnetwork: Required. A name for the new subnet. For information about the
@@ -162,9 +167,10 @@ class AddSubnetworkRequest(_messages.Message):
   ipPrefixLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   region = _messages.StringField(5)
   requestedAddress = _messages.StringField(6)
-  secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 7, repeated=True)
-  subnetwork = _messages.StringField(8)
-  subnetworkUsers = _messages.StringField(9, repeated=True)
+  requestedRanges = _messages.StringField(7, repeated=True)
+  secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 8, repeated=True)
+  subnetwork = _messages.StringField(9)
+  subnetworkUsers = _messages.StringField(10, repeated=True)
 
 
 class Api(_messages.Message):
@@ -2366,6 +2372,11 @@ class RangeReservation(_messages.Message):
       range notation. For example, '30' to find unused x.x.x.x/30 CIDR range.
       The goal is to determine if one of the allocated ranges has enough free
       space for a subnet of the requested size.
+    requestedRanges: Optional. The name of one or more allocated IP address
+      ranges associated with this private service access connection. If no
+      range names are provided all ranges associated with this connection will
+      be considered. If a CIDR range with the specified IP prefix length is
+      not available within these ranges the validation fails.
     secondaryRangeIpPrefixLengths: Optional. DO NOT USE - Under development.
       The size of the desired secondary ranges for the subnet. Use usual CIDR
       range notation. For example, '30' to find unused x.x.x.x/30 CIDR range.
@@ -2374,7 +2385,8 @@ class RangeReservation(_messages.Message):
   """
 
   ipPrefixLength = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  secondaryRangeIpPrefixLengths = _messages.IntegerField(2, repeated=True, variant=_messages.Variant.INT32)
+  requestedRanges = _messages.StringField(2, repeated=True)
+  secondaryRangeIpPrefixLengths = _messages.IntegerField(3, repeated=True, variant=_messages.Variant.INT32)
 
 
 class RemoveDnsRecordSetMetadata(_messages.Message):

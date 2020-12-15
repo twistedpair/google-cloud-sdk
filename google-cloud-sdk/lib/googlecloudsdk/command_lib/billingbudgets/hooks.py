@@ -197,6 +197,28 @@ def UpdateNotificationsRule(ref, args, req):
   return req
 
 
+class InvalidBudgetCreditTreatment(exceptions.Error):
+  """Error to raise when credit treatment doesn't match the credit filter."""
+  pass
+
+
+def ValidateCreditTreatment(unused_ref, args, req):
+  """Validates credit treatment matches credit types in filter."""
+  budget_tracks_credits = args.IsSpecified('credit_types_treatment') and (
+      args.credit_types_treatment == 'include-specified-credits')
+  populated_credits_filter = args.IsSpecified(
+      'filter_credit_types') and args.filter_credit_types
+  if budget_tracks_credits and not populated_credits_filter:
+    raise InvalidBudgetCreditTreatment(
+        "'--filter-credit-types' is required when " +
+        "'--credit-types-treatment=include-specified-credits'.")
+  if not budget_tracks_credits and populated_credits_filter:
+    raise InvalidBudgetCreditTreatment(
+        "'--credit-types-treatment' must be 'include-specified-credits' if " +
+        "'--filter-credit-types' is specified.")
+  return req
+
+
 class InvalidBudgetAmountInput(exceptions.Error):
   """Error to raise when user input does not match regex."""
   pass

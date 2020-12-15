@@ -36,7 +36,17 @@ import six
 
 
 class Task(six.with_metaclass(abc.ABCMeta, object)):
-  """Abstract class to represent one command operation."""
+  """Abstract class to represent one command operation.
+
+  Attributes:
+    parallel_processing_key (Optional[Hashable]): Identifies a task during
+    execution. If this value is not None, the executor will skip this task if
+    another task being executed is using the same key. If this value is None,
+    the executor will not skip any tasks based on it.
+  """
+
+  def __init__(self):
+    self.parallel_processing_key = None
 
   @abc.abstractmethod
   def execute(self, callback=None):

@@ -562,7 +562,7 @@ class TokenRenderer(renderer.Renderer):
         break
     return running_width
 
-  def Synopsis(self, line):
+  def Synopsis(self, line, is_synopsis=False):
     """Renders NAME and SYNOPSIS lines as a hanging indent.
 
     Collapses adjacent spaces to one space, deletes trailing space, and doesn't
@@ -571,6 +571,7 @@ class TokenRenderer(renderer.Renderer):
 
     Args:
       line: The NAME or SYNOPSIS text.
+      is_synopsis: if it is the synopsis section
     """
     # Split the line into token, token | token, and [...] groups.
     groups = []

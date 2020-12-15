@@ -258,6 +258,10 @@
           "description": "The deadline for job attempts. If the request handler does not respond by this deadline then the request is cancelled and the attempt is marked as a `DEADLINE_EXCEEDED` failure. The failed attempt can be viewed in execution logs. Cloud Scheduler will retry the job according to the RetryConfig. The allowed duration for this deadline is: * For HTTP targets, between 15 seconds and 30 minutes. * For App Engine HTTP targets, between 15 seconds and 24 hours. * For PubSub targets, this field is ignored.",
           "type": "string",
           "format": "google-duration"
+        },
+        "legacyAppEngineCron": {
+          "description": "Immutable. This field is used to manage the legacy App Engine Cron jobs using the Cloud Scheduler API. If the field is set to true, the job will be considered a legacy job. Note that App Engine Cron jobs have fewer features than Cloud Scheduler jobs, e.g., are only limited to App Engine targets.",
+          "type": "boolean"
         }
       }
     },
@@ -528,6 +532,10 @@
       "description": "Request message for forcing a job to run now using RunJob.",
       "type": "object",
       "properties": {
+        "legacyAppEngineCron": {
+          "description": "This field is used to manage the legacy App Engine Cron jobs using the Cloud Scheduler API. If the field is set to true, the job in the __cron queue with the corresponding name will be forced to run instead.",
+          "type": "boolean"
+        }
       }
     },
     "PubsubMessage": {
@@ -662,6 +670,11 @@
                       "description": "A token identifying a page of results the server will return. To request the first page results, page_token must be empty. To request the next page of results, page_token must be the value of next_page_token returned from the previous call to ListJobs. It is an error to switch the value of filter or order_by while iterating through pages.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "legacyAppEngineCron": {
+                      "description": "This field is used to manage the legacy App Engine Cron jobs using the Cloud Scheduler API. If the field is set to true, the jobs in the __cron queue will be listed instead.",
+                      "location": "query",
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [
@@ -774,6 +787,11 @@
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "type": "string"
+                    },
+                    "legacyAppEngineCron": {
+                      "description": "This field is used to manage the legacy App Engine Cron jobs using the Cloud Scheduler API. If the field is set to true, the job in the __cron queue with the corresponding name will be deleted instead.",
+                      "location": "query",
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [

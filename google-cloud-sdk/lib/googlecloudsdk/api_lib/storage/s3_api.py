@@ -19,6 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import threading
+
 import boto3
 import botocore
 from googlecloudsdk.api_lib.storage import cloud_api
@@ -31,6 +33,7 @@ from googlecloudsdk.core import exceptions as core_exceptions
 
 # S3 does not allow upload of size > 5 GiB for put_object.
 MAX_PUT_OBJECT_SIZE = 5 * (1024**3)  # 5 GiB
+BOTO3_CLIENT_LOCK = threading.Lock()
 
 
 def _catch_client_error_raise_s3_api_error(format_str=None):
@@ -150,7 +153,9 @@ class S3Api(cloud_api.CloudApi):
   """S3 Api client."""
 
   def __init__(self):
-    self.client = boto3.client(storage_url.ProviderPrefix.S3.value)
+    # Using a lock since the boto3.client creation is not thread-safe.
+    with BOTO3_CLIENT_LOCK:
+      self.client = boto3.client(storage_url.ProviderPrefix.S3.value)
 
   def get_bucket(self, bucket_name, fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""

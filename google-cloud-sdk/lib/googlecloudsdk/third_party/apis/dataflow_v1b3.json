@@ -2425,7 +2425,7 @@
           "type": "boolean"
         },
         "transformNameMappings": {
-          "description": "Users need to set transform_name_mappings Ex:{\"oldTransformName\":\"newTransformName\",...}'",
+          "description": "Use this to pass transform_name_mappings for streaming update jobs. Ex:{\"oldTransformName\":\"newTransformName\",...}'",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -2538,6 +2538,20 @@
         "enableStreamingEngine": {
           "description": "Whether to enable Streaming Engine for the job.",
           "type": "boolean"
+        },
+        "flexrsGoal": {
+          "description": "Set FlexRS goal for the job. https:\/\/cloud.google.com\/dataflow\/docs\/guides\/flexrs",
+          "type": "string",
+          "enumDescriptions": [
+            "Run in the default mode.",
+            "Optimize for lower execution time.",
+            "Optimize for lower cost."
+          ],
+          "enum": [
+            "FLEXRS_UNSPECIFIED",
+            "FLEXRS_SPEED_OPTIMIZED",
+            "FLEXRS_COST_OPTIMIZED"
+          ]
         }
       }
     },

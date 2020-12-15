@@ -41,7 +41,7 @@ import six
 
 ZONE_PROPERTY_EXPLANATION = """\
 If not specified and the ``compute/zone'' property isn't set, you
-may be prompted to select a zone.
+may be prompted to select a zone (interactive mode only).
 
 To avoid prompting when this flag is omitted, you can set the
 ``compute/zone'' property:
@@ -61,7 +61,7 @@ Alternatively, the zone can be stored in the environment variable
 """
 
 ZONE_PROPERTY_EXPLANATION_NO_DEFAULT = """\
-If not specified, you may be prompted to select a zone.
+If not specified, you may be prompted to select a zone (interactive mode only).
 
 A list of zones can be fetched by running:
 
@@ -69,7 +69,7 @@ A list of zones can be fetched by running:
 """
 
 REGION_PROPERTY_EXPLANATION = """\
-If not specified, you may be prompted to select a region.
+If not specified, you may be prompted to select a region (interactive mode only).
 
 To avoid prompting when this flag is omitted, you can set the
 ``compute/region'' property:
@@ -89,7 +89,7 @@ variable ``CLOUDSDK_COMPUTE_REGION''.
 """
 
 REGION_PROPERTY_EXPLANATION_NO_DEFAULT = """\
-If not specified, you may be prompted to select a region.
+If not specified, you may be prompted to select a region (interactive mode only).
 
 A list of regions can be fetched by running:
 

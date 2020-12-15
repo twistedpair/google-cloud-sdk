@@ -121,9 +121,6 @@ class TaskGraphExecutor:
     # Holds tasks without any dependencies.
     self._executable_tasks = task_buffer.TaskBuffer()
 
-    # True if no tasks remain in self._task_iterator.
-    self._task_iterator_exhausted = False
-
   def _get_tasks_from_iterator(self):
     """Adds tasks from self._task_iterator to the executor.
 
@@ -132,12 +129,15 @@ class TaskGraphExecutor:
     """
     for task in self._task_iterator:
       task_wrapper = self._task_graph.add(task)
+      if task_wrapper is None:
+        # self._task_graph rejected the task.
+        continue
+
       task_wrapper.is_submitted = True
       # Tasks from task_iterator should have a lower priority than tasks that
       # are spawned by other tasks. This helps keep memory usage under control
       # when a workload's task graph has a large branching factor.
       self._executable_tasks.put(task_wrapper, prioritize=False)
-    self._task_iterator_exhausted = True
 
   def _add_executable_tasks_to_queue(self):
     """Sends executable tasks to consumer threads in child processes."""
@@ -202,16 +202,11 @@ class TaskGraphExecutor:
   def _handle_task_output(self):
     """Updates a dependency graph based on information from executed tasks."""
     while True:
-      if self._task_iterator_exhausted and self._task_graph.is_empty():
-        # We can safely send the _SHUTDOWN signal here since no potential
-        # sources of new tasks remain.
-        self._executable_tasks.put(_SHUTDOWN)
-        for _ in range(self._worker_count):
-          self._task_queue.put(_SHUTDOWN)
+      task_output = self._task_output_queue.get()
+      if task_output == _SHUTDOWN:
         break
 
-      executed_task_wrapper, additional_task_iterators = (
-          self._task_output_queue.get())
+      executed_task_wrapper, additional_task_iterators = task_output
       submittable_tasks = self._update_graph_state_from_executed_task(
           executed_task_wrapper, additional_task_iterators)
 
@@ -233,9 +228,29 @@ class TaskGraphExecutor:
       process.start()
       processes.append(process)
 
-    threading.Thread(target=self._get_tasks_from_iterator).start()
-    threading.Thread(target=self._add_executable_tasks_to_queue).start()
-    threading.Thread(target=self._handle_task_output).start()
+    get_tasks_from_iterator_thread = threading.Thread(
+        target=self._get_tasks_from_iterator)
+    add_executable_tasks_to_queue_thread = threading.Thread(
+        target=self._add_executable_tasks_to_queue)
+    handle_task_output_thread = threading.Thread(
+        target=self._handle_task_output)
 
+    get_tasks_from_iterator_thread.start()
+    add_executable_tasks_to_queue_thread.start()
+    handle_task_output_thread.start()
+
+    get_tasks_from_iterator_thread.join()
+    self._task_graph.is_empty.wait()
+
+    self._executable_tasks.put(_SHUTDOWN)
+    for _ in range(self._worker_count):
+      self._task_queue.put(_SHUTDOWN)
+    self._task_output_queue.put(_SHUTDOWN)
+
+    handle_task_output_thread.join()
+    add_executable_tasks_to_queue_thread.join()
     for process in processes:
       process.join()
+
+    self._task_queue.close()
+    self._task_output_queue.close()

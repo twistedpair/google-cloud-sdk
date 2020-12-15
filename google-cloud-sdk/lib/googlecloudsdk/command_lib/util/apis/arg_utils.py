@@ -613,15 +613,23 @@ def FieldHelpDocs(message, section='Fields'):
   return field_helps
 
 
-def GetRecursiveMessageSpec(message):
+def GetRecursiveMessageSpec(message, definitions=None):
   """Gets the recursive representation of a message as a dictionary.
 
   Args:
     message: The apitools message.
+    definitions: A list of message definitions already encountered.
 
   Returns:
     {str: object}, A recursive mapping of field name to its data.
   """
+  if definitions is None:
+    definitions = []
+  if message in definitions:
+    # This message has already been seen along this path,
+    # don't recursive (forever).
+    return {}
+  definitions.append(message)
   field_helps = FieldHelpDocs(message)
   data = {}
   for field in message.all_fields():
@@ -629,7 +637,9 @@ def GetRecursiveMessageSpec(message):
     field_data['repeated'] = field.repeated
     if field.variant == messages.Variant.MESSAGE:
       field_data['type'] = field.type.__name__
-      field_data['fields'] = GetRecursiveMessageSpec(field.type)
+      fields = GetRecursiveMessageSpec(field.type, definitions=definitions)
+      if fields:
+        field_data['fields'] = fields
     else:
       field_data['type'] = field.variant
       if field.variant == messages.Variant.ENUM:
@@ -638,6 +648,7 @@ def GetRecursiveMessageSpec(message):
                                  for n in field.type.names()}
 
     data[field.name] = field_data
+  definitions.pop()
   return data
 
 

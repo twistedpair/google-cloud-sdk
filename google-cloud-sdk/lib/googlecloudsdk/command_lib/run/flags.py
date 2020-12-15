@@ -47,7 +47,6 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
@@ -1153,17 +1152,6 @@ def GetService(args):
       'Invalid service name [{}]. Service name must use only lowercase '
       'alphanumeric characters and dashes. Cannot begin or end with a dash, '
       'and cannot be longer than 63 characters.'.format(service_ref.servicesId))
-
-
-def GetClusterRef(cluster):
-  project = properties.VALUES.core.project.Get(required=True)
-  return resources.REGISTRY.Parse(
-      cluster.name,
-      params={
-          'projectId': project,
-          'zone': cluster.zone
-      },
-      collection='container.projects.zones.clusters')
 
 
 def PromptForRegion():

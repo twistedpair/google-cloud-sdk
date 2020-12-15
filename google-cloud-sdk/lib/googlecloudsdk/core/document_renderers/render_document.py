@@ -161,6 +161,7 @@ class MarkdownRenderer(object):
     self._line = None
     self.command_metadata = command_metadata
     self._example_regex = '$ gcloud'
+    self._last_list_level = None
 
   def _AnchorStyle1(self, buf, i):
     """Checks for link:target[text] hyperlink anchor markdown.
@@ -274,6 +275,7 @@ class MarkdownRenderer(object):
     if buf:
       buf = self._renderer.Escape(buf)
       i = 0
+      is_literal = False
       while i < len(buf):
         c = buf[i]
         if c == ':':
@@ -324,7 +326,13 @@ class MarkdownRenderer(object):
           elif l.isalnum() and r.isalnum():
             # No embellishment switching in words.
             pass
+          elif is_literal and c == '*':
+            # '*' should be considered as literal when contained in code block
+            pass
           else:
+            if c == '`':
+              # mark code block start or end
+              is_literal = not is_literal
             c = self._renderer.Font(self._EMPHASIS[c])
         ret += c
         i += 1
@@ -465,13 +473,18 @@ class MarkdownRenderer(object):
     self._renderer.Heading(i, heading)
     self._depth = 0
     if heading in ['NAME', 'SYNOPSIS']:
+      if heading == 'SYNOPSIS':
+        is_synopsis_section = True
+      else:
+        is_synopsis_section = False
       while True:
         self._buf = self._ReadLine()
         if not self._buf:
           break
         self._buf = self._buf.rstrip()
         if self._buf:
-          self._renderer.Synopsis(self._Attributes())
+          self._renderer.Synopsis(self._Attributes(),
+                                  is_synopsis=is_synopsis_section)
           break
     elif self._notes and heading == 'NOTES':
       self._buf = self._notes
@@ -692,6 +705,7 @@ class MarkdownRenderer(object):
     if index_at_definition_markdown < 0:
       return i
     level = 1
+    list_level = None
     i = index_at_definition_markdown + 2
     while i < len(self._line) and self._line[i] == ':':
       i += 1
@@ -702,6 +716,10 @@ class MarkdownRenderer(object):
     if end:
       # Bare ^:::$ is end of list which pops to previous list level.
       level -= 1
+    if self._line.endswith('::'):
+      self._last_list_level = level
+    elif self._last_list_level and not self._line.startswith('::'):
+      list_level = self._last_list_level + 1
     if (self._lists[self._depth].bullet or
         self._lists[self._depth].level < level):
       self._depth += 1
@@ -720,6 +738,8 @@ class MarkdownRenderer(object):
       self._lists[self._depth].level = level
       self._buf = self._line[:index_at_definition_markdown]
       definition = self._Attributes()
+    if list_level:
+      level = list_level
     self._renderer.List(level, definition=definition, end=end)
     if i < len(self._line):
       self._buf += self._line[i:]

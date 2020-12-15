@@ -883,12 +883,16 @@
           "enumDescriptions": [
             "Standard machine type.",
             "Highcpu machine with 8 CPUs.",
-            "Highcpu machine with 32 CPUs."
+            "Highcpu machine with 32 CPUs.",
+            "Highcpu e2 machine with 8 CPUs.",
+            "Highcpu e2 machine with 32 CPUs."
           ],
           "enum": [
             "UNSPECIFIED",
             "N1_HIGHCPU_8",
-            "N1_HIGHCPU_32"
+            "N1_HIGHCPU_32",
+            "E2_HIGHCPU_8",
+            "E2_HIGHCPU_32"
           ]
         },
         "diskSizeGb": {

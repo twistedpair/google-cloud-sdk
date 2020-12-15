@@ -419,13 +419,14 @@ class HTMLRenderer(renderer.Renderer):
         self._out.write('</li>\n')
       self._out.write('<li>\n')
 
-  def Synopsis(self, line):
+  def Synopsis(self, line, is_synopsis=False):
     """Renders NAME and SYNOPSIS lines as a hanging indent.
 
     Does not split top-level [...] or (...) groups.
 
     Args:
       line: The NAME or SYNOPSIS section text.
+      is_synopsis: if it is the synopsis section
     """
     self._out.write('<dl class="notopmargin"><dt class="hangingindent">'
                     '<span class="normalfont">\n')
@@ -447,6 +448,13 @@ class HTMLRenderer(renderer.Renderer):
                   r'(<[^>]*>|\S)*)',
                   r'<span class="flag">\1</span>',
                   line)
+    # Because there are long argdicts, and this is only looking at the
+    # synopsis section, lets end and start a new flag class at a comma so it
+    # doesn't overflow the width
+    if is_synopsis:
+      line = re.sub('(,)',
+                    r'\1</span><span class="flag">',
+                    line)
 
     # Add self.command[0].upper() WIDE FLAGS local link.
 

@@ -194,64 +194,6 @@ class ImageOperation(object):
   EXPORT = 'export'
 
 
-def AddCommonDaisyArgs(parser, operation='a build'):
-  """Common arguments for Daisy builds."""
-
-  parser.add_argument(
-      '--log-location',
-      help='Directory in Cloud Storage to hold build logs. If not '
-      'set, ```gs://<project num>.cloudbuild-logs.googleusercontent.com/``` '
-      'is created and used.',
-  )
-
-  parser.add_argument(
-      '--timeout',
-      type=arg_parsers.Duration(),
-      default='2h',
-      help=("""\
-          Maximum time {} can last before it fails as "TIMEOUT".
-          For example, specifying `2h` fails the process after 2 hours.
-          See $ gcloud topic datetimes for information about duration formats.
-          """).format(operation))
-  base.ASYNC_FLAG.AddToParser(parser)
-
-
-def AddExtraCommonDaisyArgs(parser):
-  """Extra common arguments for Daisy builds."""
-
-  parser.add_argument(
-      '--docker-image-tag',
-      default=_DEFAULT_BUILDER_VERSION,
-      hidden=True,
-      help="""\
-          Specify which docker image tag (of tools from compute-image-tools)
-          should be used for this command. By default it's "release", while
-          "latest" is supported as well. There may be more versions supported in
-          the future.
-          """
-  )
-
-
-def AddOVFSourceUriArg(parser):
-  """Adds OVF Source URI arg."""
-  parser.add_argument(
-      '--source-uri',
-      required=True,
-      help=('Cloud Storage path to one of:\n  OVF descriptor\n  '
-            'OVA file\n  Directory with OVF package'))
-
-
-def AddGuestEnvironmentArg(parser, resource='instance'):
-  """Adds Google Guest environment arg."""
-  parser.add_argument(
-      '--guest-environment',
-      action='store_true',
-      default=True,
-      help='The guest environment will be installed on the {}.'.format(
-          resource)
-  )
-
-
 def _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
                          compute_service_account_roles):
   """Check for needed IAM permissions and prompt to add if missing.
@@ -545,20 +487,6 @@ def GetSubnetRegion():
     return properties.VALUES.compute.region.Get()
 
   raise SubnetException('Region or zone should be specified.')
-
-
-def AppendNetworkAndSubnetArgs(args, builder_args):
-  """Extracts network/subnet out of CLI args and append for importer.
-
-  Args:
-    args: list of str, CLI args that might contain network/subnet args.
-    builder_args: list of str, args for builder.
-  """
-  if args.subnet:
-    AppendArg(builder_args, 'subnet', args.subnet.lower())
-
-  if args.network:
-    AppendArg(builder_args, 'network', args.network.lower())
 
 
 def RunImageImport(args,
@@ -1062,7 +990,7 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
   if release_track:
     AppendArg(ovf_importer_args, 'release-track', release_track)
   AppendArg(ovf_importer_args, 'client-version', config.CLOUD_SDK_VERSION)
-
+  AppendBoolArg(ovf_importer_args, 'no-external-ip', args.no_address)
   build_tags = ['gce-daisy', 'gce-ovf-machine-image-import']
 
   backoff = lambda elapsed: 2 if elapsed < 30 else 15
@@ -1169,6 +1097,111 @@ def _GetOSUpgradeRegion(args):  # pylint:disable=unused-argument
   return ''
 
 
+def AppendArg(args, name, arg, format_pattern='-{0}={1}'):
+  if arg:
+    args.append(format_pattern.format(name, arg))
+
+
+def AppendBoolArg(args, name, arg=True):
+  AppendArg(args, name, arg, '-{0}')
+
+
+def AppendBoolArgDefaultTrue(args, name, arg):
+  if not arg:
+    args.append('-{0}={1}'.format(name, arg))
+
+
+def AddCommonDaisyArgs(parser, operation='a build'):
+  """Common arguments for Daisy builds."""
+
+  parser.add_argument(
+      '--log-location',
+      help='Directory in Cloud Storage to hold build logs. If not '
+      'set, ```gs://<project num>.cloudbuild-logs.googleusercontent.com/``` '
+      'is created and used.',
+  )
+
+  parser.add_argument(
+      '--timeout',
+      type=arg_parsers.Duration(),
+      default='2h',
+      help=("""\
+          Maximum time {} can last before it fails as "TIMEOUT".
+          For example, specifying `2h` fails the process after 2 hours.
+          See $ gcloud topic datetimes for information about duration formats.
+          """).format(operation))
+  base.ASYNC_FLAG.AddToParser(parser)
+
+
+def AddExtraCommonDaisyArgs(parser):
+  """Extra common arguments for Daisy builds."""
+
+  parser.add_argument(
+      '--docker-image-tag',
+      default=_DEFAULT_BUILDER_VERSION,
+      hidden=True,
+      help="""\
+          Specify which docker image tag (of tools from compute-image-tools)
+          should be used for this command. By default it's "release", while
+          "latest" is supported as well. There may be more versions supported in
+          the future.
+          """
+  )
+
+
+def AddOVFSourceUriArg(parser):
+  """Adds OVF Source URI arg."""
+  parser.add_argument(
+      '--source-uri',
+      required=True,
+      help=('Cloud Storage path to one of:\n  OVF descriptor\n  '
+            'OVA file\n  Directory with OVF package'))
+
+
+def AddGuestEnvironmentArg(parser, resource='instance'):
+  """Adds Google Guest environment arg."""
+  parser.add_argument(
+      '--guest-environment',
+      action='store_true',
+      default=True,
+      help='The guest environment will be installed on the {}.'.format(
+          resource)
+  )
+
+
+def AppendNetworkAndSubnetArgs(args, builder_args):
+  """Extracts network/subnet out of CLI args and append for importer.
+
+  Args:
+    args: list of str, CLI args that might contain network/subnet args.
+    builder_args: list of str, args for builder.
+  """
+  if args.subnet:
+    AppendArg(builder_args, 'subnet', args.subnet.lower())
+
+  if args.network:
+    AppendArg(builder_args, 'network', args.network.lower())
+
+
+def AddNoAddressArg(parser, operation, docs_url=''):
+  """Adds no address arg."""
+  help_text = """\
+           Temporary VMs are created in your project during {operation}. Set
+           this flag so that these temporary VMs are not assigned external IP
+           addresses.
+
+           Note: The {operation} process requires package managers to be
+           installed on the operating system for the virtual disk. These package
+           managers might need to make requests to package repositories that are
+           outside Google Cloud. To allow access for these updates, you need to
+           configure Cloud NAT and Private Google Access.
+           """.format(operation=operation)
+  if docs_url:
+    help_text = help_text + ' For more information, see {}.'.format(docs_url)
+
+  parser.add_argument('--no-address', action='store_true', help=help_text)
+
+
 def _AppendNodeAffinityLabelArgs(
     ovf_importer_args, args, compute_client_messages):
   node_affinities = sole_tenancy_util.GetSchedulingNodeAffinityListFromArgs(
@@ -1184,20 +1217,6 @@ def _BuildOvfImporterNodeAffinityFlagValue(node_affinity):
   for value in node_affinity.values:
     node_affinity_flag += ',' + value
   return node_affinity_flag
-
-
-def AppendArg(args, name, arg, format_pattern='-{0}={1}'):
-  if arg:
-    args.append(format_pattern.format(name, arg))
-
-
-def AppendBoolArg(args, name, arg=True):
-  AppendArg(args, name, arg, '-{0}')
-
-
-def AppendBoolArgDefaultTrue(args, name, arg):
-  if not arg:
-    args.append('-{0}={1}'.format(name, arg))
 
 
 def MakeGcsUri(uri):

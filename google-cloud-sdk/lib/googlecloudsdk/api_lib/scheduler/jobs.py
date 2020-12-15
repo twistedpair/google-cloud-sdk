@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 
 
-class AlphaJobs(object):
+class BaseJobs(object):
   """Base API client for Cloud Scheduler jobs."""
 
   def __init__(self, messages, jobs_service, legacy_cron):

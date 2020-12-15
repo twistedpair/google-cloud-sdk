@@ -366,14 +366,6 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.cloudasset.v1',
                 client_classpath='cloudasset_v1_client.CloudassetV1',
                 messages_modulepath='cloudasset_v1_messages',
-                default_version=False,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
-        'v1beta1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.cloudasset.v1beta1',
-                client_classpath='cloudasset_v1beta1_client.CloudassetV1beta1',
-                messages_modulepath='cloudasset_v1beta1_messages',
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
@@ -977,12 +969,20 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'eventarc': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.eventarc.v1',
+                client_classpath='eventarc_v1_client.EventarcV1',
+                messages_modulepath='eventarc_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.eventarc.v1beta1',
                 client_classpath='eventarc_v1beta1_client.EventarcV1beta1',
                 messages_modulepath='eventarc_v1beta1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -1769,12 +1769,20 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'servicedirectory': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.servicedirectory.v1',
+                client_classpath='servicedirectory_v1_client.ServicedirectoryV1',
+                messages_modulepath='servicedirectory_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.servicedirectory.v1beta1',
                 client_classpath='servicedirectory_v1beta1_client.ServicedirectoryV1beta1',
                 messages_modulepath='servicedirectory_v1beta1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

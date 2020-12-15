@@ -777,10 +777,37 @@ class _SectionKubeRun(_Section):
         help_text='If True, experimental KubeRun commands will not prompt to '
         'continue.',
         hidden=True)
+
     self.environment = self._Add(
         'environment',
         help_text='If set, this environment will be used as the deployment'
         'target in all KubeRun commands.',
+        hidden=True)
+
+    self.cluster = self._Add(
+        'cluster',
+        help_text='ID of the cluster or fully qualified identifier '
+        'for the cluster',
+        hidden=True)
+
+    self.cluster_location = self._Add(
+        'cluster_location',
+        help_text='Zone or region in which the cluster is located.',
+        hidden=True)
+
+    self.use_kubeconfig = self._AddBool(
+        'use_kubeconfig',
+        help_text='Use the default or provided kubectl config file.',
+        hidden=True)
+
+    self.kubeconfig = self._Add(
+        'kubeconfig',
+        help_text='Absolute path to your kubectl config file.',
+        hidden=True)
+
+    self.context = self._Add(
+        'context',
+        help_text='Name of the context in your kubectl config file to use.',
         hidden=True)
 
 

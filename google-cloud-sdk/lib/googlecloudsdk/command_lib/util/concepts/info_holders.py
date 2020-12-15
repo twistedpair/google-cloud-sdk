@@ -261,6 +261,11 @@ class ResourceInfo(ConceptInfo):
         2 if self.plural else 1,
         self.resource_spec.name,
         plural=getattr(self.resource_spec, 'plural_name', None))
+    hints = self.GetHints(attribute.name)
+    if hints:
+      hint = ' To set the [{}] attribute: {}.'.format(attribute.name,
+                                                      '; '.join(hints))
+      help_text += hint
     return help_text.format(resource=expansion_name)
 
   def _IsRequiredArg(self, attribute):

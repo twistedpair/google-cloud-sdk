@@ -413,9 +413,9 @@ class Workflow(_messages.Message):
     revisionCreateTime: Output only. The timestamp that the latest revision of
       the workflow was created.
     revisionId: Output only. The revision of the workflow. A new revision of a
-      workflow is created as a result of updating the following fields of a
-      workflow: - `source_code` - `service_account` The format is
-      "000001-a4d", where the first 6 characters define the zero-padded
+      workflow is created as a result of updating the following properties of
+      a workflow: - Service account - Workflow code to be executed The format
+      is "000001-a4d", where the first 6 characters define the zero-padded
       revision ordinal number. They are followed by a hyphen and 3 hexadecimal
       random characters.
     serviceAccount: Name of the service account associated with the latest

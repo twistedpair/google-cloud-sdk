@@ -1498,7 +1498,7 @@ class GoogleFirestoreAdminV1IndexField(_messages.Message):
     ArrayConfigValueValuesEnum: Indicates that this field supports operations
       on `array_value`s.
     OrderValueValuesEnum: Indicates that this field supports ordering by the
-      specified order or comparing using =, <, <=, >, >=.
+      specified order or comparing using =, !=, <, <=, >, >=.
 
   Fields:
     arrayConfig: Indicates that this field supports operations on
@@ -1506,7 +1506,7 @@ class GoogleFirestoreAdminV1IndexField(_messages.Message):
     fieldPath: Can be __name__. For single field indexes, this must match the
       name of the field or may be omitted.
     order: Indicates that this field supports ordering by the specified order
-      or comparing using =, <, <=, >, >=.
+      or comparing using =, !=, <, <=, >, >=.
   """
 
   class ArrayConfigValueValuesEnum(_messages.Enum):
@@ -1522,7 +1522,7 @@ class GoogleFirestoreAdminV1IndexField(_messages.Message):
 
   class OrderValueValuesEnum(_messages.Enum):
     r"""Indicates that this field supports ordering by the specified order or
-    comparing using =, <, <=, >, >=.
+    comparing using =, !=, <, <=, >, >=.
 
     Values:
       ORDER_UNSPECIFIED: The ordering is unspecified. Not a valid option.

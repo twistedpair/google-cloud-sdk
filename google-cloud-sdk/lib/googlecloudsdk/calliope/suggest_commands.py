@@ -104,10 +104,9 @@ def _GetCanonicalCommandsHelper(tree, results, prefix):
     results.append(prefix[:])
     return
   for command, command_tree in six.iteritems(tree[lookup.LOOKUP_COMMANDS]):
-    if command not in ('alpha', 'beta'):
-      prefix.append(command)
-      _GetCanonicalCommandsHelper(command_tree, results, prefix)
-      prefix.pop()
+    prefix.append(command)
+    _GetCanonicalCommandsHelper(command_tree, results, prefix)
+    prefix.pop()
 
 
 def _GetCanonicalCommands(tree):
@@ -210,7 +209,9 @@ def _GetScoredCommandsContaining(command_words):
   normalized_command_words = [command_word.lower().replace('_', '-')
                               for command_word in command_words]
   scored_commands = []
-  for canonical_command_words in _GetCanonicalCommands(root):
+  all_canonical_commands = _GetCanonicalCommands(root)
+  canonical_command_set = set(map(tuple, all_canonical_commands))
+  for canonical_command_words in all_canonical_commands:
     canonical_command_length = len(canonical_command_words)
     matched = set()
     score = 0
@@ -241,7 +242,23 @@ def _GetScoredCommandsContaining(command_words):
       surface = '.'.join(canonical_command_words[:-1])
       if surface in surface_history:
         score += int(surface_history[surface] * FREQUENCY_FACTOR)
-      scored_commands.append((canonical_command_words, score))
+      # We want to display `alpha` and `beta` commands in the Maybe You Mean
+      # list as well, however we should display them with a lower confidence
+      # score, and not display them if their higher track counterpart exists.
+      better_track_exists = False
+      if 'alpha' == canonical_command_words[0]:
+        score -= 5
+        if tuple(canonical_command_words[1:]) in canonical_command_set:
+          better_track_exists = True
+        if tuple(['beta'] +
+                 canonical_command_words[1:]) in canonical_command_set:
+          better_track_exists = True
+      if 'beta' == canonical_command_words[0]:
+        score -= 5
+        if tuple(canonical_command_words[1:]) in canonical_command_set:
+          better_track_exists = True
+      if not better_track_exists:
+        scored_commands.append((canonical_command_words, score))
 
   # Sort scores descending, commands ascending.
   scored_commands.sort(key=lambda tuple: (-tuple[1], tuple[0]))

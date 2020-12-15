@@ -103,12 +103,15 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
         else:
           labels = self.column_attributes.Labels()
           if labels:
-            labels = [x.lower() for x in labels]
+            labels = [x.lower() for x in self.RemoveHiddenColumns(labels)]
         if labels:
-          self._out.write(self._separator.join(
-              [self._QuoteField(label) for label in labels]) + self._terminator)
+          self._out.write(
+              self._separator.join([
+                  self._QuoteField(label)
+                  for label in self.RemoveHiddenColumns(labels)
+              ]) + self._terminator)
     line = []
-    for col in record:
+    for col in self.RemoveHiddenColumns(record):
       if col is None:
         val = ''
       elif isinstance(col, dict):

@@ -406,7 +406,7 @@
           }
         },
         "kerberosConfig": {
-          "description": "Information used to configure the Hive metastore service as a service principal in a Kerberos realm.",
+          "description": "Information used to configure the Hive metastore service as a service principal in a Kerberos realm. To disable Kerberos, use the UpdateService method and specify this field's path (\"hive_metastore_config.kerberos_config\") in the request's update_mask while omitting this field from the request's service.",
           "$ref": "KerberosConfig"
         }
       }
@@ -504,6 +504,11 @@
       "description": "The details of a metadata export operation.",
       "type": "object",
       "properties": {
+        "destinationGcsUri": {
+          "description": "Output only. A Cloud Storage URI of a folder that metadata are exported to, in the form of gs:\/\/\/\/, where ` is automatically generated.",
+          "readOnly": true,
+          "type": "string"
+        },
         "startTime": {
           "description": "Output only. The time when the export started.",
           "readOnly": true,
@@ -534,11 +539,6 @@
             "FAILED",
             "CANCELLED"
           ]
-        },
-        "destinationGcsUri": {
-          "description": "Output only. A Cloud Storage URI of a folder that metadata are exported to, in the form of gs:\/\/\/\/, where ` is automatically generated.",
-          "readOnly": true,
-          "type": "string"
         }
       }
     },

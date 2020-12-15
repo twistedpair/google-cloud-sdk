@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 OS_CHOICES_IMAGE_IMPORT_GA = [
     'debian-8',
     'debian-9',
-    'centos-6',
     'centos-7',
     'centos-8',
     'opensuse-15',

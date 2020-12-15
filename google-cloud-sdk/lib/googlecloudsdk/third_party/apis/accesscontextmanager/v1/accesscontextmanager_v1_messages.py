@@ -496,6 +496,25 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
   updateMask = _messages.StringField(3)
 
 
+class ApiOperation(_messages.Message):
+  r"""Identification for an API Operation.
+
+  Fields:
+    methodSelectors: API methods or permissions to allow. Method or permission
+      must belong to the service specified by `service_name` field. A single
+      MethodSelector entry with `*` specified for the `method` field will
+      allow all methods AND permissions for the service specified in
+      `service_name`.
+    serviceName: The name of the API whose methods or permissions the
+      IngressPolicy or EgressPolicy want to allow. A single ApiOperation with
+      `service_name` field set to `*` will allow all methods AND permissions
+      for all services.
+  """
+
+  methodSelectors = _messages.MessageField('MethodSelector', 1, repeated=True)
+  serviceName = _messages.StringField(2)
+
+
 class BasicLevel(_messages.Message):
   r"""`BasicLevel` is an `AccessLevel` using a set of recommended features.
 
@@ -695,6 +714,97 @@ class DevicePolicy(_messages.Message):
   requireScreenlock = _messages.BooleanField(6)
 
 
+class EgressFrom(_messages.Message):
+  r"""Defines the conditions under which an EgressPolicy matches a request.
+  Conditions based on information about the source of the request. Note that
+  if the destination of the request is protected by a ServicePerimeter, then
+  that ServicePerimeter must have an IngressPolicy which allows access in
+  order for this request to succeed.
+
+  Enums:
+    IdentityTypeValueValuesEnum: Specifies the type of identities that are
+      allowed access to outside the perimeter. If left unspecified, then
+      members of `identities` field will be allowed access.
+
+  Fields:
+    identities: A list of identities that are allowed access through this
+      [EgressPolicy]. Should be in the format of email address. The email
+      address should represent individual user or service account only.
+    identityType: Specifies the type of identities that are allowed access to
+      outside the perimeter. If left unspecified, then members of `identities`
+      field will be allowed access.
+  """
+
+  class IdentityTypeValueValuesEnum(_messages.Enum):
+    r"""Specifies the type of identities that are allowed access to outside
+    the perimeter. If left unspecified, then members of `identities` field
+    will be allowed access.
+
+    Values:
+      IDENTITY_TYPE_UNSPECIFIED: No blanket identity group specified.
+      ANY_IDENTITY: Authorize access from all identities outside the
+        perimeter.
+      ANY_USER_ACCOUNT: Authorize access from all human users outside the
+        perimeter.
+      ANY_SERVICE_ACCOUNT: Authorize access from all service accounts outside
+        the perimeter.
+    """
+    IDENTITY_TYPE_UNSPECIFIED = 0
+    ANY_IDENTITY = 1
+    ANY_USER_ACCOUNT = 2
+    ANY_SERVICE_ACCOUNT = 3
+
+  identities = _messages.StringField(1, repeated=True)
+  identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 2)
+
+
+class EgressPolicy(_messages.Message):
+  r"""Policy for egress from perimeter. EgressPolicies match requests based on
+  `egress_from` and `egress_to` stanzas. For an EgressPolicy to match, both
+  `egress_from` and `egress_to` stanzas must be matched. If an EgressPolicy
+  matches a request, the request is allowed to span the ServicePerimeter
+  boundary. For example, an EgressPolicy can be used to allow VMs on networks
+  within the ServicePerimeter to access a defined set of projects outside the
+  perimeter in certain contexts (e.g. to read data from a Cloud Storage bucket
+  or query against a BigQuery dataset). EgressPolicies are concerned with the
+  *resources* that a request relates as well as the API services and API
+  actions being used. They do not related to the direction of data movement.
+  More detailed documentation for this concept can be found in the
+  descriptions of EgressFrom and EgressTo.
+
+  Fields:
+    egressFrom: Defines conditions on the source of a request causing this
+      EgressPolicy to apply.
+    egressTo: Defines the conditions on the ApiOperation and destination
+      resources that cause this EgressPolicy to apply.
+  """
+
+  egressFrom = _messages.MessageField('EgressFrom', 1)
+  egressTo = _messages.MessageField('EgressTo', 2)
+
+
+class EgressTo(_messages.Message):
+  r"""Defines the conditions under which an EgressPolicy matches a request.
+  Conditions are based on information about the ApiOperation intended to be
+  performed on the `resources` specified. Note that if the destination of the
+  request is protected by a ServicePerimeter, then that ServicePerimeter must
+  have an IngressPolicy which allows access in order for this request to
+  succeed.
+
+  Fields:
+    operations: A list of ApiOperations that this egress rule applies to. A
+      request matches if it contains an operation/service in this list.
+    resources: A list of resources, currently only projects in the form
+      `projects/`, that match this to stanza. A request matches if it contains
+      a resource in this list. If `*` is specified for resources, then this
+      EgressTo rule will authorize access to all resources outside the
+      perimeter.
+  """
+
+  operations = _messages.MessageField('ApiOperation', 1, repeated=True)
+  resources = _messages.StringField(2, repeated=True)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -770,6 +880,118 @@ class GcpUserAccessBinding(_messages.Message):
   name = _messages.StringField(3)
 
 
+class IngressFrom(_messages.Message):
+  r"""Defines the conditions under which an IngressPolicy matches a request.
+  Conditions are based on information about the source of the request.
+
+  Enums:
+    IdentityTypeValueValuesEnum: Specifies the type of identities that are
+      allowed access from outside the perimeter. If left unspecified, then
+      members of `identities` field will be allowed access.
+
+  Fields:
+    identities: A list of identities that are allowed access through this
+      ingress policy. Should be in the format of email address. The email
+      address should represent individual user or service account only.
+    identityType: Specifies the type of identities that are allowed access
+      from outside the perimeter. If left unspecified, then members of
+      `identities` field will be allowed access.
+    sources: Sources that this IngressPolicy authorizes access from.
+  """
+
+  class IdentityTypeValueValuesEnum(_messages.Enum):
+    r"""Specifies the type of identities that are allowed access from outside
+    the perimeter. If left unspecified, then members of `identities` field
+    will be allowed access.
+
+    Values:
+      IDENTITY_TYPE_UNSPECIFIED: No blanket identity group specified.
+      ANY_IDENTITY: Authorize access from all identities outside the
+        perimeter.
+      ANY_USER_ACCOUNT: Authorize access from all human users outside the
+        perimeter.
+      ANY_SERVICE_ACCOUNT: Authorize access from all service accounts outside
+        the perimeter.
+    """
+    IDENTITY_TYPE_UNSPECIFIED = 0
+    ANY_IDENTITY = 1
+    ANY_USER_ACCOUNT = 2
+    ANY_SERVICE_ACCOUNT = 3
+
+  identities = _messages.StringField(1, repeated=True)
+  identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 2)
+  sources = _messages.MessageField('IngressSource', 3, repeated=True)
+
+
+class IngressPolicy(_messages.Message):
+  r"""Policy for ingress into ServicePerimeter. IngressPolicies match requests
+  based on `ingress_from` and `ingress_to` stanzas. For an ingress policy to
+  match, both the `ingress_from` and `ingress_to` stanzas must be matched. If
+  an IngressPolicy matches a request, the request is allowed through the
+  perimeter boundary from outside the perimeter. For example, access from the
+  internet can be allowed either based on an AccessLevel or, for traffic
+  hosted on Google Cloud, the project of the source network. For access from
+  private networks, using the project of the hosting network is required.
+  Individual ingress policies can be limited by restricting which services
+  and/or actions they match using the `ingress_to` field.
+
+  Fields:
+    ingressFrom: Defines the conditions on the source of a request causing
+      this IngressPolicy to apply.
+    ingressTo: Defines the conditions on the ApiOperation and request
+      destination that cause this IngressPolicy to apply.
+  """
+
+  ingressFrom = _messages.MessageField('IngressFrom', 1)
+  ingressTo = _messages.MessageField('IngressTo', 2)
+
+
+class IngressSource(_messages.Message):
+  r"""The source that IngressPolicy authorizes access from.
+
+  Fields:
+    accessLevel: An AccessLevel resource name that allow resources within the
+      ServicePerimeters to be accessed from the internet. AccessLevels listed
+      must be in the same policy as this ServicePerimeter. Referencing a
+      nonexistent AccessLevel will cause an error. If no AccessLevel names are
+      listed, resources within the perimeter can only be accessed via Google
+      Cloud calls with request origins within the perimeter. Example:
+      `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If `*` is specified,
+      then all IngressSources will be allowed.
+    resource: A Google Cloud resource that is allowed to ingress the
+      perimeter. Requests from these resources will be allowed to access
+      perimeter data. Currently only projects are allowed. Format:
+      `projects/{project_number}` The project may be in any Google Cloud
+      organization, not just the organization that the perimeter is defined
+      in. `*` is not allowed, the case of allowing all Google Cloud resources
+      only is not supported.
+  """
+
+  accessLevel = _messages.StringField(1)
+  resource = _messages.StringField(2)
+
+
+class IngressTo(_messages.Message):
+  r"""Defines the conditions under which an IngressPolicy matches a request.
+  Conditions are based on information about the ApiOperation intended to be
+  performed on the destination of the request.
+
+  Fields:
+    operations: A list of ApiOperations the sources specified in corresponding
+      IngressFrom are allowed to perform in this ServicePerimeter.
+    resources: A list of resources, currently only projects in the form
+      `projects/`, protected by this ServicePerimeter that are allowed to be
+      accessed by sources defined in the corresponding IngressFrom. A request
+      matches if it contains a resource in this list. If `*` is specified for
+      resources, then this IngressTo rule will authorize access to all
+      resources inside the perimeter, provided that the request also matches
+      the `operations` field.
+  """
+
+  operations = _messages.MessageField('ApiOperation', 1, repeated=True)
+  resources = _messages.StringField(2, repeated=True)
+
+
 class ListAccessLevelsResponse(_messages.Message):
   r"""A response to `ListAccessLevelsRequest`.
 
@@ -833,6 +1055,21 @@ class ListServicePerimetersResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   servicePerimeters = _messages.MessageField('ServicePerimeter', 2, repeated=True)
+
+
+class MethodSelector(_messages.Message):
+  r"""An allowed method or permission of a service specified in ApiOperation.
+
+  Fields:
+    method: Value for `method` should be a valid method name for the
+      corresponding `service_name` in ApiOperation. If `*` used as value for
+      `method`, then ALL methods and permissions are allowed.
+    permission: Value for `permission` should be a valid Cloud IAM permission
+      for the corresponding `service_name` in ApiOperation.
+  """
+
+  method = _messages.StringField(1)
+  permission = _messages.StringField(2)
 
 
 class Operation(_messages.Message):
@@ -1137,6 +1374,14 @@ class ServicePerimeterConfig(_messages.Message):
       origins within the perimeter. Example:
       `"accessPolicies/MY_POLICY/accessLevels/MY_LEVEL"`. For Service
       Perimeter Bridge, must be empty.
+    egressPolicies: List of EgressPolicies to apply to the perimeter. A
+      perimeter may have multiple EgressPolicies, each of which is evaluated
+      separately. Access is granted if any EgressPolicy grants it. Must be
+      empty for a perimeter bridge.
+    ingressPolicies: List of IngressPolicies to apply to the perimeter. A
+      perimeter may have multiple IngressPolicies, each of which is evaluated
+      separately. Access is granted if any Ingress Policy grants it. Must be
+      empty for a perimeter bridge.
     resources: A list of Google Cloud resources that are inside of the service
       perimeter. Currently only projects are allowed. Format:
       `projects/{project_number}`
@@ -1148,9 +1393,11 @@ class ServicePerimeterConfig(_messages.Message):
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
-  resources = _messages.StringField(2, repeated=True)
-  restrictedServices = _messages.StringField(3, repeated=True)
-  vpcAccessibleServices = _messages.MessageField('VpcAccessibleServices', 4)
+  egressPolicies = _messages.MessageField('EgressPolicy', 2, repeated=True)
+  ingressPolicies = _messages.MessageField('IngressPolicy', 3, repeated=True)
+  resources = _messages.StringField(4, repeated=True)
+  restrictedServices = _messages.StringField(5, repeated=True)
+  vpcAccessibleServices = _messages.MessageField('VpcAccessibleServices', 6)
 
 
 class StandardQueryParameters(_messages.Message):

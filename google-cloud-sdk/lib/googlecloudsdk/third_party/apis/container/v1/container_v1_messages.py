@@ -1584,6 +1584,55 @@ class LegacyAbac(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class LinuxNodeConfig(_messages.Message):
+  r"""Parameters that can be configured on Linux nodes.
+
+  Messages:
+    SysctlsValue: The Linux kernel parameters to be applied to the nodes and
+      all pods running on the nodes. The following parameters are supported.
+      net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
+      net.core.wmem_max net.core.optmem_max net.core.somaxconn
+      net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
+
+  Fields:
+    sysctls: The Linux kernel parameters to be applied to the nodes and all
+      pods running on the nodes. The following parameters are supported.
+      net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
+      net.core.wmem_max net.core.optmem_max net.core.somaxconn
+      net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SysctlsValue(_messages.Message):
+    r"""The Linux kernel parameters to be applied to the nodes and all pods
+    running on the nodes. The following parameters are supported.
+    net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
+    net.core.wmem_max net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem
+    net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
+
+    Messages:
+      AdditionalProperty: An additional property for a SysctlsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type SysctlsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SysctlsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  sysctls = _messages.MessageField('SysctlsValue', 1)
+
+
 class ListClustersResponse(_messages.Message):
   r"""ListClustersResponse is the result of ListClustersRequest.
 
@@ -1933,6 +1982,7 @@ class NodeConfig(_messages.Message):
       standard'
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used.
+    kubeletConfig: Node kubelet configs.
     labels: The map of Kubernetes labels (key/value pairs) to be applied to
       each node. These will added in addition to any default label(s) that
       Kubernetes may apply to the node. In case of conflict in label keys, the
@@ -1941,6 +1991,7 @@ class NodeConfig(_messages.Message):
       more information, including usage and the valid values, see:
       https://kubernetes.io/docs/concepts/overview/working-with-
       objects/labels/
+    linuxNodeConfig: Parameters that can be configured on Linux nodes.
     localSsdCount: The number of local SSD disks to be attached to the node.
       The limit for this value is dependent upon the maximum number of disks
       available on a machine per zone. See:
@@ -2087,22 +2138,54 @@ class NodeConfig(_messages.Message):
   diskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   diskType = _messages.StringField(4)
   imageType = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  localSsdCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(8)
-  metadata = _messages.MessageField('MetadataValue', 9)
-  minCpuPlatform = _messages.StringField(10)
-  nodeGroup = _messages.StringField(11)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 12)
-  oauthScopes = _messages.StringField(13, repeated=True)
-  preemptible = _messages.BooleanField(14)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 15)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 16)
-  serviceAccount = _messages.StringField(17)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 18)
-  tags = _messages.StringField(19, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 20, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 21)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 8)
+  localSsdCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(10)
+  metadata = _messages.MessageField('MetadataValue', 11)
+  minCpuPlatform = _messages.StringField(12)
+  nodeGroup = _messages.StringField(13)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 14)
+  oauthScopes = _messages.StringField(15, repeated=True)
+  preemptible = _messages.BooleanField(16)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 17)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 18)
+  serviceAccount = _messages.StringField(19)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 20)
+  tags = _messages.StringField(21, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 22, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 23)
+
+
+class NodeKubeletConfig(_messages.Message):
+  r"""Node kubelet configs.
+
+  Fields:
+    cpuCfsQuota: Enable CPU CFS quota enforcement for containers that specify
+      CPU limits. This option is enabled by default which makes kubelet use
+      CFS quota (https://www.kernel.org/doc/Documentation/scheduler/sched-
+      bwc.txt) to enforce container CPU limits. Otherwise, CPU limits will not
+      be enforced at all. Disable this option to mitigate CPU throttling
+      problems while still having your pods to be in Guaranteed QoS class by
+      specifying the CPU limits. The default value is 'true' if unspecified.
+    cpuCfsQuotaPeriod: Set the CPU CFS quota period value 'cpu.cfs_period_us'.
+      The string must be a sequence of decimal numbers, each with optional
+      fraction and a unit suffix, such as "300ms". Valid time units are "ns",
+      "us" (or "\xb5s"), "ms", "s", "m", "h". The value must be a positive
+      duration.
+    cpuManagerPolicy: Control the CPU management policy on the node. See
+      https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-
+      policies/ The following values are allowed. - "none": the default, which
+      represents the existing scheduling behavior. - "static": allows pods
+      with certain resource characteristics to be granted increased CPU
+      affinity and exclusivity on the node. The default value is 'none' if
+      unspecified.
+  """
+
+  cpuCfsQuota = _messages.BooleanField(1)
+  cpuCfsQuotaPeriod = _messages.StringField(2)
+  cpuManagerPolicy = _messages.StringField(3)
 
 
 class NodeManagement(_messages.Message):
@@ -3376,6 +3459,8 @@ class UpdateNodePoolRequest(_messages.Message):
     imageProject: The project containing the desired image to use for this
       node pool. This is used to create clusters using a custom image.
     imageType: Required. The desired image type for the node pool.
+    kubeletConfig: Node kubelet configs.
+    linuxNodeConfig: Parameters that can be configured on Linux nodes.
     locations: The desired list of Google Compute Engine
       [zones](https://cloud.google.com/compute/docs/zones#available) in which
       the node pool's nodes should be located. Changing the locations for a
@@ -3411,14 +3496,16 @@ class UpdateNodePoolRequest(_messages.Message):
   image = _messages.StringField(2)
   imageProject = _messages.StringField(3)
   imageType = _messages.StringField(4)
-  locations = _messages.StringField(5, repeated=True)
-  name = _messages.StringField(6)
-  nodePoolId = _messages.StringField(7)
-  nodeVersion = _messages.StringField(8)
-  projectId = _messages.StringField(9)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 10)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 11)
-  zone = _messages.StringField(12)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 5)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 6)
+  locations = _messages.StringField(7, repeated=True)
+  name = _messages.StringField(8)
+  nodePoolId = _messages.StringField(9)
+  nodeVersion = _messages.StringField(10)
+  projectId = _messages.StringField(11)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 12)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 13)
+  zone = _messages.StringField(14)
 
 
 class UpgradeEvent(_messages.Message):
@@ -3426,21 +3513,20 @@ class UpgradeEvent(_messages.Message):
   when a resource is upgrading.
 
   Enums:
-    ResourceTypeValueValuesEnum: Required. The resource type that is
-      upgrading.
+    ResourceTypeValueValuesEnum: The resource type that is upgrading.
 
   Fields:
-    currentVersion: Required. The current version before the upgrade.
-    operation: Required. The operation associated with this upgrade.
-    operationStartTime: Required. The time when the operation was started.
-    resource: Optional. Optional relative path to the resource. For example in
-      node pool upgrades, the relative path of the node pool.
-    resourceType: Required. The resource type that is upgrading.
-    targetVersion: Required. The target version for the upgrade.
+    currentVersion: The current version before the upgrade.
+    operation: The operation associated with this upgrade.
+    operationStartTime: The time when the operation was started.
+    resource: Optional relative path to the resource. For example in node pool
+      upgrades, the relative path of the node pool.
+    resourceType: The resource type that is upgrading.
+    targetVersion: The target version for the upgrade.
   """
 
   class ResourceTypeValueValuesEnum(_messages.Enum):
-    r"""Required. The resource type that is upgrading.
+    r"""The resource type that is upgrading.
 
     Values:
       UPGRADE_RESOURCE_TYPE_UNSPECIFIED: Default value. This shouldn't be

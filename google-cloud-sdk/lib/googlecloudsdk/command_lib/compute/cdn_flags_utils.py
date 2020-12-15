@@ -22,7 +22,7 @@ from googlecloudsdk.calliope import arg_parsers
 
 
 def AddFlexibleCacheStepOne(parser, resource_name, update_command=False):
-  """Adds cache mode, max ttl, default ttl, client ttl, negative caching, negative caching policy and custom response header  args to the argparse."""
+  """Adds cache mode, max ttl, default ttl, client ttl and custom response header args to the argparse."""
   # TODO (b/165456063) document enums as lowercase-with-dash. Accept both forms.
   parser.add_argument(
       '--cache-mode',
@@ -149,77 +149,6 @@ def AddFlexibleCacheStepOne(parser, resource_name, update_command=False):
   if update_command:
     max_ttl_group.add_argument(
         '--no-max-ttl', action='store_true', help='Clears max TTL value.')
-  negative_caching_help = """\
-  Negative caching allows per-status code cache TTLs to be set, in order to
-  apply fine-grained caching for common errors or redirects. This can reduce
-  the load on your origin and improve the end-user experience by reducing response
-  latency.
-
-  Negative caching applies to a set of 3xx, 4xx, and 5xx status codes that are
-  typically useful to cache.
-
-  Status codes not listed here cannot have their TTL explicitly set and aren't
-  cached, in order to avoid cache poisoning attacks.
-
-  HTTP success codes (HTTP 2xx) are handled by the values of defaultTtl and
-  maxTtl.
-
-  When the cache mode is set to CACHE_ALL_STATIC or USE_ORIGIN_HEADERS, these
-  values apply to responses with the specified response code that lack any
-  `cache-control` or `expires` headers.
-
-  When the cache mode is set to FORCE_CACHE_ALL, these values apply to all
-  responses with the specified response code, and override any caching headers.
-
-  Cloud CDN applies the following default TTLs to these status codes:
-  - HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m
-  - HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s
-  - HTTP 405 (Method Not Found), 421 (Misdirected Request),
-    501 (Not Implemented): 60s
-
-  These defaults can be overridden in cdnPolicy.negativeCachingPolicy
-  """
-  negative_caching_group = parser.add_mutually_exclusive_group()
-  if update_command:
-    negative_caching_group.add_argument(
-        '--negative-caching',
-        action=arg_parsers.StoreTrueFalseAction,
-        help=negative_caching_help)
-  else:
-    parser.add_argument(
-        '--negative-caching',
-        action=arg_parsers.StoreTrueFalseAction,
-        help=negative_caching_help)
-  negative_caching_policy_help = """\
-  Sets a cache TTL for the specified HTTP status code.
-
-  NegativeCaching must be enabled to config the negativeCachingPolicy.
-
-  If you omit the policy and leave negativeCaching enabled, Cloud CDN's default
-  cache TTLs are used.
-
-  Note that when specifying an explicit negative caching policy, make sure that
-  you specify a cache TTL for all response codes that you want to cache. Cloud
-  CDN doesn't apply any default negative caching when a policy exists.
-
-  *CODE* is the HTTP status code to define a TTL against. Only HTTP status codes
-  300, 301, 308, 404, 405, 410, 421, 451, and 501 can be specified as values,
-  and you cannot specify a status code more than once.
-
-  TTL is the time to live (in seconds) for which to cache responses for the
-  specified *CODE*. The maximum allowed value is 1800s (30 minutes), noting that
-  infrequently accessed objects may be evicted from the cache before the defined TTL.
-  """
-  negative_caching_group.add_argument(
-      '--negative-caching-policy',
-      type=arg_parsers.ArgDict(key_type=int, value_type=int),
-      metavar='[CODE=TTL]',
-      help=negative_caching_policy_help)
-  if update_command:
-    negative_caching_group.add_argument(
-        '--no-negative-caching-policies',
-        action='store_true',
-        help='Remove all negative caching policies for the %s.' % resource_name)
   custom_response_header_help = """\
   Custom headers that the external HTTP(S) load balancer adds to proxied responses.
   For the list of headers, see [Creating custom headers](https://cloud.google.com/load-balancing/docs/custom-headers).
@@ -236,3 +165,78 @@ def AddFlexibleCacheStepOne(parser, resource_name, update_command=False):
         '--no-custom-response-headers',
         action='store_true',
         help='Remove all custom response headers for the %s.' % resource_name)
+
+
+def AddNegativeCache(parser, resource_name, update_command=False):
+  """Adds negative caching and negative caching policy args to the argparse."""
+  negative_caching_help = """\
+    Negative caching allows per-status code cache TTLs to be set, in order to
+    apply fine-grained caching for common errors or redirects. This can reduce
+    the load on your origin and improve the end-user experience by reducing response
+    latency.
+
+    Negative caching applies to a set of 3xx, 4xx, and 5xx status codes that are
+    typically useful to cache.
+
+    Status codes not listed here cannot have their TTL explicitly set and aren't
+    cached, in order to avoid cache poisoning attacks.
+
+    HTTP success codes (HTTP 2xx) are handled by the values of defaultTtl and
+    maxTtl.
+
+    When the cache mode is set to CACHE_ALL_STATIC or USE_ORIGIN_HEADERS, these
+    values apply to responses with the specified response code that lack any
+    `cache-control` or `expires` headers.
+
+    When the cache mode is set to FORCE_CACHE_ALL, these values apply to all
+    responses with the specified response code, and override any caching headers.
+
+    Cloud CDN applies the following default TTLs to these status codes:
+    - HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m
+    - HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s
+    - HTTP 405 (Method Not Found), 421 (Misdirected Request),
+      501 (Not Implemented): 60s
+
+    These defaults can be overridden in cdnPolicy.negativeCachingPolicy
+    """
+  negative_caching_group = parser.add_mutually_exclusive_group()
+  if update_command:
+    negative_caching_group.add_argument(
+        '--negative-caching',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=negative_caching_help)
+  else:
+    parser.add_argument(
+        '--negative-caching',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=negative_caching_help)
+  negative_caching_policy_help = """\
+    Sets a cache TTL for the specified HTTP status code.
+
+    NegativeCaching must be enabled to config the negativeCachingPolicy.
+
+    If you omit the policy and leave negativeCaching enabled, Cloud CDN's default
+    cache TTLs are used.
+
+    Note that when specifying an explicit negative caching policy, make sure that
+    you specify a cache TTL for all response codes that you want to cache. Cloud
+    CDN doesn't apply any default negative caching when a policy exists.
+
+    *CODE* is the HTTP status code to define a TTL against. Only HTTP status codes
+    300, 301, 308, 404, 405, 410, 421, 451, and 501 can be specified as values,
+    and you cannot specify a status code more than once.
+
+    TTL is the time to live (in seconds) for which to cache responses for the
+    specified *CODE*. The maximum allowed value is 1800s (30 minutes), noting that
+    infrequently accessed objects may be evicted from the cache before the defined TTL.
+    """
+  negative_caching_group.add_argument(
+      '--negative-caching-policy',
+      type=arg_parsers.ArgDict(key_type=int, value_type=int),
+      metavar='[CODE=TTL]',
+      help=negative_caching_policy_help)
+  if update_command:
+    negative_caching_group.add_argument(
+        '--no-negative-caching-policies',
+        action='store_true',
+        help='Remove all negative caching policies for the %s.' % resource_name)

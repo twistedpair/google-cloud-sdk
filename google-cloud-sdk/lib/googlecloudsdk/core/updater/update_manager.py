@@ -162,6 +162,13 @@ class NoRegisteredRepositoriesError(Error):
   """Error for when there are no repositories to remove."""
 
 
+def FilterMetaComponents(components):
+  """Filters out top level components with no installable ComponentData."""
+  return sorted(
+      [comp for comp in components if comp.data is not None],
+      key=lambda c: c.details.display_name)
+
+
 class UpdateManager(object):
   """Main class for performing updates for the Cloud SDK."""
 
@@ -929,12 +936,15 @@ version [{1}].  To clear your fixed version setting, run:
         diff, latest_msg=latest_msg)
 
     disable_backup = self._ShouldDoFastUpdate(allow_no_backup=allow_no_backup)
-    self._PrintPendingAction(diff.DetailsForCurrent(to_remove - to_install),
-                             'removed')
-    self._PrintPendingAction(diff.DetailsForLatest(to_remove & to_install),
-                             'updated')
-    self._PrintPendingAction(diff.DetailsForLatest(to_install - to_remove),
-                             'installed')
+    self._PrintPendingAction(
+        FilterMetaComponents(
+            diff.DetailsForCurrent(to_remove - to_install)), 'removed')
+    self._PrintPendingAction(
+        FilterMetaComponents(
+            diff.DetailsForLatest(to_remove & to_install)), 'updated')
+    self._PrintPendingAction(
+        FilterMetaComponents(
+            diff.DetailsForLatest(to_install - to_remove)), 'installed')
     self.__Write(log.status)
 
     release_notes.PrintReleaseNotesDiff(
@@ -1192,7 +1202,9 @@ To revert your SDK to the previously installed version, you may run:
     disable_backup = self._ShouldDoFastUpdate(allow_no_backup=allow_no_backup)
     components_to_remove = sorted(snapshot.ComponentsFromIds(to_remove),
                                   key=lambda c: c.details.display_name)
-    self._PrintPendingAction(components_to_remove, 'removed')
+    components_to_display = FilterMetaComponents(
+        components_to_remove)
+    self._PrintPendingAction(components_to_display, 'removed')
     self.__Write(log.status)
 
     # Ensure we have the rights to update the SDK now that we know an update is

@@ -54,7 +54,8 @@ def ApplyCdnPolicyArgs(client,
                        backend_bucket,
                        is_update=False,
                        cleared_fields=None,
-                       support_flexible_cache_step_one=False):
+                       support_flexible_cache_step_one=False,
+                       support_negative_cache=False):
   """Applies the CdnPolicy arguments to the specified backend bucket.
 
   If there are no arguments related to CdnPolicy, the backend bucket remains
@@ -69,8 +70,9 @@ def ApplyCdnPolicyArgs(client,
     cleared_fields: Reference to list with fields that should be cleared. Valid
       only for update command.
     support_flexible_cache_step_one: If True then maps Flexible Cache Control
-      properties from milestone 1: cache mode, max ttl, default ttl, client ttl,
-        negative caching and negative caching policy
+      properties from milestone 1: cache mode, max ttl, default ttl, client ttl
+    support_negative_cache: If True then maps negative caching and negative
+      caching policy arguments
   """
   if backend_bucket.cdnPolicy is not None:
     cdn_policy = encoding.CopyProtoMessage(backend_bucket.cdnPolicy)
@@ -90,14 +92,6 @@ def ApplyCdnPolicyArgs(client,
       cdn_policy.defaultTtl = args.default_ttl
     if args.max_ttl:
       cdn_policy.maxTtl = args.max_ttl
-    if args.negative_caching is not None:
-      cdn_policy.negativeCaching = args.negative_caching
-    negative_caching_policy = GetNegativeCachingPolicy(client, args,
-                                                       backend_bucket)
-    if negative_caching_policy is not None:
-      cdn_policy.negativeCachingPolicy = negative_caching_policy
-    if args.negative_caching_policy:
-      cdn_policy.negativeCaching = True
 
     if is_update:
       # Takes care of resetting fields that are invalid for given cache modes
@@ -120,6 +114,17 @@ def ApplyCdnPolicyArgs(client,
         cleared_fields.append('cdnPolicy.maxTtl')
         cdn_policy.maxTtl = None
 
+  if support_negative_cache:
+    if args.negative_caching is not None:
+      cdn_policy.negativeCaching = args.negative_caching
+    negative_caching_policy = GetNegativeCachingPolicy(client, args,
+                                                       backend_bucket)
+    if negative_caching_policy is not None:
+      cdn_policy.negativeCachingPolicy = negative_caching_policy
+    if args.negative_caching_policy:
+      cdn_policy.negativeCaching = True
+
+    if is_update:
       if (args.no_negative_caching_policies or
           (args.negative_caching is not None and not args.negative_caching)):
         cleared_fields.append('cdnPolicy.negativeCachingPolicy')

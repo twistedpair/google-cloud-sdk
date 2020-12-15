@@ -655,10 +655,6 @@ class SecretInfo(object):
                  '/local_development_service_account.json')
 
 
-class ADCMissingError(exceptions.Error):
-  """Application Default Credential is missing."""
-
-
 def GetServiceAccountSecret(account_name):
   """Get a service account secret file as text.
 
@@ -677,14 +673,9 @@ def GetUserCredential():
 
   Returns:
     Text version of the user's application default credential.
-  Raises:
-    ADCMissingError: Application Default Credential is not present.
   """
-  adc = auth_util.GetADCAsJson()
-  if not adc:
-    raise ADCMissingError('No user credential present. Run '
-                          '`$ gcloud auth application-default login`.')
-  return json.dumps(adc)
+  auth_util.AssertADCExists()
+  return json.dumps(auth_util.GetADCAsJson())
 
 
 class CredentialGenerator(KubeConfigGenerator):

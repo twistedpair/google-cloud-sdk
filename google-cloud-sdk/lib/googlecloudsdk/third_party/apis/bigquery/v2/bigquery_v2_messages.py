@@ -1148,8 +1148,8 @@ class ExternalDataConfiguration(_messages.Message):
     csvOptions: Additional properties to set if sourceFormat is set to CSV.
     googleSheetsOptions: [Optional] Additional options if sourceFormat is set
       to GOOGLE_SHEETS.
-    hivePartitioningOptions: [Optional, Trusted Tester] Options to configure
-      hive partitioning support.
+    hivePartitioningOptions: [Optional] Options to configure hive partitioning
+      support.
     ignoreUnknownValues: [Optional] Indicates if BigQuery should allow extra
       values that are not represented in the table schema. If true, the extra
       values are ignored. If false, records with extra columns are treated as
@@ -1532,8 +1532,8 @@ class JobConfigurationLoad(_messages.Message):
       first byte of the encoded string to split the data in its raw, binary
       state. BigQuery also supports the escape sequence "\t" to specify a tab
       separator. The default value is a comma (',').
-    hivePartitioningOptions: [Optional, Trusted Tester] Options to configure
-      hive partitioning support.
+    hivePartitioningOptions: [Optional] Options to configure hive partitioning
+      support.
     ignoreUnknownValues: [Optional] Indicates if BigQuery should allow extra
       values that are not represented in the table schema. If true, the extra
       values are ignored. If false, records with extra columns are treated as

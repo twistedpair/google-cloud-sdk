@@ -355,6 +355,30 @@ If you want to enable all scopes use the 'cloud-platform' scope.
         a short name ("node-group-name") or in the format
         "projects/{project-id}/zones/{zone}/nodeGroups/{node-group-name}".
         """)
+  parser.add_argument(
+      '--shielded-secure-boot',
+      hidden=True,
+      action='store_true',
+      help="""\
+        The cluster's VMs will boot with secure boot enabled.
+        """)
+  parser.add_argument(
+      '--shielded-vtpm',
+      hidden=True,
+      action='store_true',
+      help="""\
+        The cluster's VMs will boot with the TPM (Trusted Platform Module) enabled.
+        A TPM is a hardware module that can be used for different security
+        operations such as remote attestation, encryption, and sealing of keys.
+        """)
+  parser.add_argument(
+      '--shielded-integrity-monitoring',
+      hidden=True,
+      action='store_true',
+      help="""\
+        Enables monitoring and attestation of the boot integrity of the
+        cluster's VMs. vTPM must also be enabled.
+        """)
 
   autoscaling_group = parser.add_argument_group()
   flags.AddAutoscalingPolicyResourceArgForCluster(
@@ -791,6 +815,13 @@ def GetClusterConfig(args,
   if args.node_group:
     gce_cluster_config.nodeGroupAffinity = dataproc.messages.NodeGroupAffinity(
         nodeGroupUri=args.node_group)
+
+  if args.IsSpecified('shielded_secure_boot') or args.IsSpecified(
+      'shielded_vtpm') or args.IsSpecified('shielded_integrity_monitoring'):
+    gce_cluster_config.shieldedInstanceConfig = dataproc.messages.ShieldedInstanceConfig(
+        enableSecureBoot=args.shielded_secure_boot,
+        enableVtpm=args.shielded_vtpm,
+        enableIntegrityMonitoring=args.shielded_integrity_monitoring)
 
   if beta:
     if args.dataproc_metastore:

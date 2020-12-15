@@ -2013,6 +2013,10 @@
         "issuingCertificateAuthority": {
           "description": "issuing_certificate_authority controls issuance of workload mTLS certificates. If non-empty, it must be a Private CA resource URL of the form \"\/\/privateca.googleapis.com\/projects\/{project}\/locations\/{location}\/certificateAuthorities\/{name}\". If non-empty, Workload Identity (standard or Hub) must be active (workload_pool must be non-empty).",
           "type": "string"
+        },
+        "enableAlts": {
+          "description": "enable_alts controls whether the alts handshaker should be enabled or not for direct-path.",
+          "type": "boolean"
         }
       }
     },
@@ -3682,7 +3686,7 @@
       "type": "object",
       "properties": {
         "resourceType": {
-          "description": "Required. The resource type that is upgrading.",
+          "description": "The resource type that is upgrading.",
           "type": "string",
           "enumDescriptions": [
             "Default value. This shouldn't be used.",
@@ -3696,24 +3700,24 @@
           ]
         },
         "operation": {
-          "description": "Required. The operation associated with this upgrade.",
+          "description": "The operation associated with this upgrade.",
           "type": "string"
         },
         "operationStartTime": {
-          "description": "Required. The time when the operation was started.",
+          "description": "The time when the operation was started.",
           "type": "string",
           "format": "google-datetime"
         },
         "currentVersion": {
-          "description": "Required. The current version before the upgrade.",
+          "description": "The current version before the upgrade.",
           "type": "string"
         },
         "targetVersion": {
-          "description": "Required. The target version for the upgrade.",
+          "description": "The target version for the upgrade.",
           "type": "string"
         },
         "resource": {
-          "description": "Optional. Optional relative path to the resource. For example in node pool upgrades, the relative path of the node pool.",
+          "description": "Optional relative path to the resource. For example in node pool upgrades, the relative path of the node pool.",
           "type": "string"
         }
       }

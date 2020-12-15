@@ -5,6 +5,158 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 321.0.0 (2020-12-15)
+
+### Breaking Changes
+
+*   **(Dataproc Metastore)** Renamed `gcloud beta metastore services update --kerberos_principal` flag as
+  `--kerberos-principal`.
+
+
+### Cloud SDK
+
+* Added new regions for Artifact Registry: europe-west5, asia-northeast3,
+us-west3, us-west4, asia-southeast2.
+
+### AI
+
+* Added parameters args and command to `gcloud beta ai custom-jobs create` which provides ability to pass the parameters to containers or python tasks.
+
+### Cloud Access Context Manager
+
+* Added `ingress-policies` and `egress-policies` optional flags to the following
+ commands:
+    * `gcloud beta access-context-manager perimeters create`.
+    * `gcloud beta access-context-manager perimeters update`.
+    * `gcloud beta access-context-manager perimeters dry-run create`.
+    * `gcloud beta access-context-manager perimeters dry-run update`.
+* The `ingress-policies` and `egress-policies` flags accept paths to yaml files.
+ The content of the yaml files should contain valid representations of
+ IngressPolicies and EgressPolicies.
+* Added support for displaying the contents of Ingress and EgressPolicies for
+ following commands:
+    * `gcloud beta access-context-manager perimeters describe`.
+    * `gcloud beta access-context-manager perimeters dry-run describe`.
+
+### Cloud Composer
+
+* Added the following flags to `gcloud composer environments create` to manage Airflow web server network access control:
+  * `--web-server-allow-ip`
+  * `--web-server-deny-all`
+  * `--web-server-allow-all`
+* Added the following flags to `gcloud composer environments update` to manage Airflow web server network access control:
+  * `--update-web-server-allow-ip`
+  * `--web-server-deny-all`
+  * `--web-server-allow-all`
+
+### Cloud Dataproc
+
+*   Promoted `--dag-timeout` flag of `gcloud dataproc workflow-templates create`
+    to GA.
+*   Promoted `gcloud dataproc workflow-templates set-dag-timeout` to GA.
+*   Promoted `gcloud dataproc workflow-templates remove-dag-timeout` to GA.
+* Added `gcloud beta dataproc clusters stop` and
+  `gcloud beta dataproc clusters start` commands to enable stopping and starting
+  Dataproc clusters.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.11.11
+  * Fix listCollectionId not returning collections with nested docs.
+  * Fix listDocuments with showMissing returning 500 errors.
+
+### Cloud Run
+
+* Added multitenancy support to `gcloud run` commands <https://cloud.google.com/run/docs/gke/multi-tenancy>.
+* Promoted `--vpc-egress` flag of `gcloud run deploy` and
+  `gcloud run services update` to GA.
+* Promoted `--ingress` flag of `gcloud run deploy` and
+  `gcloud run services update` to beta.
+
+### Cloud SQL
+
+* Promoted `--type` flag of `gcloud sql users create` to GA to support the
+  creation of Cloud SQL database users for login using IAM database
+  authentication.
+
+### Cloud Services
+
+* Promoted `gcloud services peered-dns-domains <create|delete|list>` to GA.
+* Promoted `gcloud services vpc-peerings <enable-vpc-service-controls|disable-vpc-service-controls>` to GA.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.57.
+
+### Compute Engine
+
+* Removed centos-6 option from `--os` flag for `gcloud compute images import`,
+  `gcloud compute instances import`, and `gcloud compute machine-images import`.
+* Promoted TrafficDirector proxyBind property to v1 for:
+  * `gcloud compute target-http-proxies import`
+  * `gcloud compute target-http-proxies export`
+  * `gcloud compute target-https-proxies import`
+  * `gcloud compute target-https-proxies export`
+* Added `no-address` flag to:
+  * `gcloud beta compute images import`
+  * `gcloud beta compute machine-images import`
+* Promoted `--disk` and `--accelerator` flags in `gcloud compute sole-tenancy
+  node-templates create` command to GA.
+* Added `--shielded-vtpm`, `--shielded-secure-boot`, and `--shielded-integrity-monitoring` flags to `gcloud compute instances create-with-container` command.
+* Added `--shielded-vtpm`, `--shielded-secure-boot`, and `--shielded-integrity-monitoring` flags to `gcloud compute instance-templates create-with-container` command.
+* Added `--shielded-vtpm`, `--shielded-secure-boot`, `--shielded-integrity-monitoring`, and `--shielded-learn-integrity-policy` flags to `gcloud compute instances update-container` command.
+* Promoted the following flags in `gcloud compute backend-services create`, `gcloud compute backend-services update`,
+  `gcloud compute backend-buckets create` and `gcloud compute backend-buckets update` to GA:
+  * `--cache-mode`
+  * `--[no-]client-ttl`
+  * `--[no-]default-ttl`
+  * `--[no-]max-ttl`
+  * `--[no-]custom-response-header`
+* Added the following fields to `gcloud compute backend-services import` and `gcloud compute backend-services export`:
+  * customResponseHeader
+  * cdnPolicy:
+    * cacheMode
+    * clientTtl
+    * defaultTtl
+    * maxTtl
+
+### Events
+
+* Added URI support to `--target-service` of `gcloud events triggers create`.
+* Modify `--type` flag of `gcloud events triggers create` to be optional for ApiServerSource.
+
+### Kubernetes Engine
+
+*   Added `--addons=GcePersistentDiskCsiDriver` to `gcloud container clusters
+    create` and `--update-addons=GcePersistentDiskCsiDriver` to `gcloud
+    container clusters update` to enable/disable the GCP Compute Persistent
+    Disk Container Storage Interface (CSI) Driver.
+
+### Miscellaneous
+
+*   Informational messages printed during installation are now printed to
+    stderr, rather than stdout.
+
+### Pubsub Emulator
+
+*   Added dead letter queue feature to the emulator.
+
+### Transcoder
+
+*   Promoted `gcloud transcoder` to beta.
+
+### VPC Access
+
+* Added a new `subnet` flag to `gcloud compute networks vpc-access connectors
+    create` which can be used to specify a subnet to house the
+    connector rather than specifying `network` and `range` flags.
+    * If the provided subnet is a shared subnet, the flag `subnet-project` has
+        been added to specify the host project id.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 320.0.0 (2020-12-08)
 
 ### AI Platform

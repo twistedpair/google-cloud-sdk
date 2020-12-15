@@ -431,12 +431,12 @@ class DatafusionProjectsRemoveIamPolicyRequest(_messages.Message):
   r"""A DatafusionProjectsRemoveIamPolicyRequest object.
 
   Fields:
-    removeIAMPolicyRequest: A RemoveIAMPolicyRequest resource to be passed as
+    removeIamPolicyRequest: A RemoveIamPolicyRequest resource to be passed as
       the request body.
     resource: The resource on which IAM policy to be removed is attached to.
   """
 
-  removeIAMPolicyRequest = _messages.MessageField('RemoveIAMPolicyRequest', 1)
+  removeIamPolicyRequest = _messages.MessageField('RemoveIamPolicyRequest', 1)
   resource = _messages.StringField(2, required=True)
 
 
@@ -1034,12 +1034,12 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
-class RemoveIAMPolicyRequest(_messages.Message):
-  r"""Request message for RemoveIAMPolicy method."""
+class RemoveIamPolicyRequest(_messages.Message):
+  r"""Request message for RemoveIamPolicy method."""
 
 
-class RemoveIAMPolicyResponse(_messages.Message):
-  r"""Response message for RemoveIAMPolicy method."""
+class RemoveIamPolicyResponse(_messages.Message):
+  r"""Response message for RemoveIamPolicy method."""
 
 
 class RestartInstanceRequest(_messages.Message):

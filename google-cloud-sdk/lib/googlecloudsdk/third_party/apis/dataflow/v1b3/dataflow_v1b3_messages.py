@@ -2399,6 +2399,8 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
   r"""The environment values to be set at runtime for flex template.
 
   Enums:
+    FlexrsGoalValueValuesEnum: Set FlexRS goal for the job.
+      https://cloud.google.com/dataflow/docs/guides/flexrs
     IpConfigurationValueValuesEnum: Configuration for VM IPs.
 
   Messages:
@@ -2416,6 +2418,8 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
       resources#restrictions) page. An object containing a list of "key":
       value pairs. Example: { "name": "wrench", "mass": "1kg", "count": "3" }.
     enableStreamingEngine: Whether to enable Streaming Engine for the job.
+    flexrsGoal: Set FlexRS goal for the job.
+      https://cloud.google.com/dataflow/docs/guides/flexrs
     ipConfiguration: Configuration for VM IPs.
     kmsKeyName: Name for the Cloud KMS key for the job. Key format is:
       projects//locations//keyRings//cryptoKeys/
@@ -2454,6 +2458,19 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
       for launching worker instances to run your pipeline. In the future,
       worker_zone will take precedence.
   """
+
+  class FlexrsGoalValueValuesEnum(_messages.Enum):
+    r"""Set FlexRS goal for the job.
+    https://cloud.google.com/dataflow/docs/guides/flexrs
+
+    Values:
+      FLEXRS_UNSPECIFIED: Run in the default mode.
+      FLEXRS_SPEED_OPTIMIZED: Optimize for lower execution time.
+      FLEXRS_COST_OPTIMIZED: Optimize for lower cost.
+    """
+    FLEXRS_UNSPECIFIED = 0
+    FLEXRS_SPEED_OPTIMIZED = 1
+    FLEXRS_COST_OPTIMIZED = 2
 
   class IpConfigurationValueValuesEnum(_messages.Enum):
     r"""Configuration for VM IPs.
@@ -2500,18 +2517,19 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
   additionalExperiments = _messages.StringField(1, repeated=True)
   additionalUserLabels = _messages.MessageField('AdditionalUserLabelsValue', 2)
   enableStreamingEngine = _messages.BooleanField(3)
-  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 4)
-  kmsKeyName = _messages.StringField(5)
-  machineType = _messages.StringField(6)
-  maxWorkers = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  network = _messages.StringField(8)
-  numWorkers = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  serviceAccountEmail = _messages.StringField(10)
-  subnetwork = _messages.StringField(11)
-  tempLocation = _messages.StringField(12)
-  workerRegion = _messages.StringField(13)
-  workerZone = _messages.StringField(14)
-  zone = _messages.StringField(15)
+  flexrsGoal = _messages.EnumField('FlexrsGoalValueValuesEnum', 4)
+  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 5)
+  kmsKeyName = _messages.StringField(6)
+  machineType = _messages.StringField(7)
+  maxWorkers = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  network = _messages.StringField(9)
+  numWorkers = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  serviceAccountEmail = _messages.StringField(11)
+  subnetwork = _messages.StringField(12)
+  tempLocation = _messages.StringField(13)
+  workerRegion = _messages.StringField(14)
+  workerZone = _messages.StringField(15)
+  zone = _messages.StringField(16)
 
 
 class FloatingPointList(_messages.Message):
@@ -3304,8 +3322,8 @@ class LaunchFlexTemplateParameter(_messages.Message):
       common set of options across languages and templates. This should not be
       used to pass job parameters.
     ParametersValue: The parameters for FlexTemplate. Ex. {"num_workers":"5"}
-    TransformNameMappingsValue: Users need to set transform_name_mappings
-      Ex:{"oldTransformName":"newTransformName",...}'
+    TransformNameMappingsValue: Use this to pass transform_name_mappings for
+      streaming update jobs. Ex:{"oldTransformName":"newTransformName",...}'
 
   Fields:
     containerSpec: Spec about the container image to launch.
@@ -3318,8 +3336,8 @@ class LaunchFlexTemplateParameter(_messages.Message):
       set of options across languages and templates. This should not be used
       to pass job parameters.
     parameters: The parameters for FlexTemplate. Ex. {"num_workers":"5"}
-    transformNameMappings: Users need to set transform_name_mappings
-      Ex:{"oldTransformName":"newTransformName",...}'
+    transformNameMappings: Use this to pass transform_name_mappings for
+      streaming update jobs. Ex:{"oldTransformName":"newTransformName",...}'
     update: Set this to true if you are sending a request to update a running
       streaming job. When set, the job name should be the same as the running
       job.
@@ -3378,7 +3396,7 @@ class LaunchFlexTemplateParameter(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TransformNameMappingsValue(_messages.Message):
-    r"""Users need to set transform_name_mappings
+    r"""Use this to pass transform_name_mappings for streaming update jobs.
     Ex:{"oldTransformName":"newTransformName",...}'
 
     Messages:

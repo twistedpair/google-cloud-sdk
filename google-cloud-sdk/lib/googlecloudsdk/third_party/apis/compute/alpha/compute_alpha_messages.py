@@ -5041,6 +5041,11 @@ class Binding(_messages.Message):
 class BulkInsertInstanceResource(_messages.Message):
   r"""A BulkInsertInstanceResource object.
 
+  Messages:
+    PerInstancePropertiesValue: Per-instance properties to be set on
+      individual instances. Keys of this map specify requested instance names.
+      Can be empty if name_pattern is used.
+
   Fields:
     count: The maximum number of instances to create.
     instance: The instance defining the VM instances to be created.
@@ -5062,6 +5067,9 @@ class BulkInsertInstanceResource(_messages.Message):
       instance names generated using the pattern inst-#### will be inst-0051,
       inst-0052, etc. The name pattern placeholder #...# can contain up to 18
       characters.
+    perInstanceProperties: Per-instance properties to be set on individual
+      instances. Keys of this map specify requested instance names. Can be
+      empty if name_pattern is used.
     predefinedNames: List of predefined names. The number of names provided
       must be equal to count.
     sourceInstanceTemplate: Specifies the instance template from which to
@@ -5075,14 +5083,54 @@ class BulkInsertInstanceResource(_messages.Message):
       - global/instanceTemplates/instanceTemplate    This field is optional.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PerInstancePropertiesValue(_messages.Message):
+    r"""Per-instance properties to be set on individual instances. Keys of
+    this map specify requested instance names. Can be empty if name_pattern is
+    used.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        PerInstancePropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        PerInstancePropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PerInstancePropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A BulkInsertInstanceResourcePerInstanceProperties attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('BulkInsertInstanceResourcePerInstanceProperties', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   count = _messages.IntegerField(1)
   instance = _messages.MessageField('Instance', 2)
   instanceProperties = _messages.MessageField('InstanceProperties', 3)
   locationPolicy = _messages.MessageField('LocationPolicy', 4)
   minCount = _messages.IntegerField(5)
   namePattern = _messages.StringField(6)
-  predefinedNames = _messages.StringField(7, repeated=True)
-  sourceInstanceTemplate = _messages.StringField(8)
+  perInstanceProperties = _messages.MessageField('PerInstancePropertiesValue', 7)
+  predefinedNames = _messages.StringField(8, repeated=True)
+  sourceInstanceTemplate = _messages.StringField(9)
+
+
+class BulkInsertInstanceResourcePerInstanceProperties(_messages.Message):
+  r"""Per-instance properties to be set on individual instances. To be
+  extended in the future.
+
+  Fields:
+    name: This field is only temporary. It will be removed. Do not use it.
+  """
+
+  name = _messages.StringField(1)
 
 
 class CacheInvalidationRule(_messages.Message):
@@ -26528,6 +26576,9 @@ class Disk(_messages.Message):
     licenseCodes: Integer license codes indicating which licenses are attached
       to this disk.
     licenses: A list of publicly visible licenses. Reserved for Google's use.
+    locationHint: An opaque location hint used to place the disk close to
+      other resources. This field is for use by internal tools that use the
+      public API.
     multiWriter: Indicates whether or not the disk can be read/write attached
       to more than one instance.
     name: Name of the resource. Provided by the client when the resource is
@@ -26638,7 +26689,10 @@ class Disk(_messages.Message):
     sourceStorageObject: The full Google Cloud Storage URI where the disk
       image is stored. This file must be a gzip-compressed tarball whose name
       ends in .tar.gz or virtual machine disk whose name ends in vmdk. Valid
-      URIs may start with gs:// or https://storage.googleapis.com/.
+      URIs may start with gs:// or https://storage.googleapis.com/. This flag
+      is not optimized for creating multiple disks from a source storage
+      object. To create many disks from a source storage object, use gcloud
+      compute images import instead.
     status: [Output Only] The status of disk creation. CREATING: Disk is
       provisioning. RESTORING: Source data is being copied into the disk.
       FAILED: Disk creation failed. READY: Disk is ready for use. DELETING:
@@ -26741,37 +26795,38 @@ class Disk(_messages.Message):
   lastDetachTimestamp = _messages.StringField(12)
   licenseCodes = _messages.IntegerField(13, repeated=True)
   licenses = _messages.StringField(14, repeated=True)
-  multiWriter = _messages.BooleanField(15)
-  name = _messages.StringField(16)
-  options = _messages.StringField(17)
-  physicalBlockSizeBytes = _messages.IntegerField(18)
-  provisionedIops = _messages.IntegerField(19)
-  region = _messages.StringField(20)
-  replicaZones = _messages.StringField(21, repeated=True)
-  resourcePolicies = _messages.StringField(22, repeated=True)
-  satisfiesPzs = _messages.BooleanField(23)
-  selfLink = _messages.StringField(24)
-  selfLinkWithId = _messages.StringField(25)
-  sizeGb = _messages.IntegerField(26)
-  sourceDisk = _messages.StringField(27)
-  sourceDiskId = _messages.StringField(28)
-  sourceImage = _messages.StringField(29)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 30)
-  sourceImageId = _messages.StringField(31)
-  sourceInPlaceSnapshot = _messages.StringField(32)
-  sourceInPlaceSnapshotId = _messages.StringField(33)
-  sourceInstantSnapshot = _messages.StringField(34)
-  sourceInstantSnapshotId = _messages.StringField(35)
-  sourceSnapshot = _messages.StringField(36)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 37)
-  sourceSnapshotId = _messages.StringField(38)
-  sourceStorageObject = _messages.StringField(39)
-  status = _messages.EnumField('StatusValueValuesEnum', 40)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 41)
-  type = _messages.StringField(42)
-  userLicenses = _messages.StringField(43, repeated=True)
-  users = _messages.StringField(44, repeated=True)
-  zone = _messages.StringField(45)
+  locationHint = _messages.StringField(15)
+  multiWriter = _messages.BooleanField(16)
+  name = _messages.StringField(17)
+  options = _messages.StringField(18)
+  physicalBlockSizeBytes = _messages.IntegerField(19)
+  provisionedIops = _messages.IntegerField(20)
+  region = _messages.StringField(21)
+  replicaZones = _messages.StringField(22, repeated=True)
+  resourcePolicies = _messages.StringField(23, repeated=True)
+  satisfiesPzs = _messages.BooleanField(24)
+  selfLink = _messages.StringField(25)
+  selfLinkWithId = _messages.StringField(26)
+  sizeGb = _messages.IntegerField(27)
+  sourceDisk = _messages.StringField(28)
+  sourceDiskId = _messages.StringField(29)
+  sourceImage = _messages.StringField(30)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 31)
+  sourceImageId = _messages.StringField(32)
+  sourceInPlaceSnapshot = _messages.StringField(33)
+  sourceInPlaceSnapshotId = _messages.StringField(34)
+  sourceInstantSnapshot = _messages.StringField(35)
+  sourceInstantSnapshotId = _messages.StringField(36)
+  sourceSnapshot = _messages.StringField(37)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 38)
+  sourceSnapshotId = _messages.StringField(39)
+  sourceStorageObject = _messages.StringField(40)
+  status = _messages.EnumField('StatusValueValuesEnum', 41)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 42)
+  type = _messages.StringField(43)
+  userLicenses = _messages.StringField(44, repeated=True)
+  users = _messages.StringField(45, repeated=True)
+  zone = _messages.StringField(46)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -46789,6 +46844,7 @@ class Quota(_messages.Message):
       NVIDIA_T4_VWS_GPUS: <no description>
       NVIDIA_V100_GPUS: <no description>
       PACKET_MIRRORINGS: <no description>
+      PD_EXTREME_TOTAL_PROVISIONED_IOPS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
       PREEMPTIBLE_NVIDIA_A100_GPUS: <no description>
@@ -46909,49 +46965,50 @@ class Quota(_messages.Message):
     NVIDIA_T4_VWS_GPUS = 73
     NVIDIA_V100_GPUS = 74
     PACKET_MIRRORINGS = 75
-    PREEMPTIBLE_CPUS = 76
-    PREEMPTIBLE_LOCAL_SSD_GB = 77
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 78
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 79
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 80
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 81
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 82
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 83
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 84
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 85
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 86
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 87
-    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 88
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 89
-    PUBLIC_ADVERTISED_PREFIXES = 90
-    PUBLIC_DELEGATED_PREFIXES = 91
-    REGIONAL_AUTOSCALERS = 92
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 93
-    RESERVATIONS = 94
-    RESOURCE_POLICIES = 95
-    ROUTERS = 96
-    ROUTES = 97
-    SECURITY_POLICIES = 98
-    SECURITY_POLICY_CEVAL_RULES = 99
-    SECURITY_POLICY_RULES = 100
-    SNAPSHOTS = 101
-    SSD_TOTAL_GB = 102
-    SSL_CERTIFICATES = 103
-    STATIC_ADDRESSES = 104
-    STATIC_BYOIP_ADDRESSES = 105
-    SUBNETWORKS = 106
-    SUBNET_RANGES_PER_NETWORK = 107
-    TARGET_HTTPS_PROXIES = 108
-    TARGET_HTTP_PROXIES = 109
-    TARGET_INSTANCES = 110
-    TARGET_POOLS = 111
-    TARGET_SSL_PROXIES = 112
-    TARGET_TCP_PROXIES = 113
-    TARGET_VPN_GATEWAYS = 114
-    URL_MAPS = 115
-    VPN_GATEWAYS = 116
-    VPN_TUNNELS = 117
-    XPN_SERVICE_PROJECTS = 118
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 76
+    PREEMPTIBLE_CPUS = 77
+    PREEMPTIBLE_LOCAL_SSD_GB = 78
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 79
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 80
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 81
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 82
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 83
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 84
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 85
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 86
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 87
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 88
+    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 89
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 90
+    PUBLIC_ADVERTISED_PREFIXES = 91
+    PUBLIC_DELEGATED_PREFIXES = 92
+    REGIONAL_AUTOSCALERS = 93
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 94
+    RESERVATIONS = 95
+    RESOURCE_POLICIES = 96
+    ROUTERS = 97
+    ROUTES = 98
+    SECURITY_POLICIES = 99
+    SECURITY_POLICY_CEVAL_RULES = 100
+    SECURITY_POLICY_RULES = 101
+    SNAPSHOTS = 102
+    SSD_TOTAL_GB = 103
+    SSL_CERTIFICATES = 104
+    STATIC_ADDRESSES = 105
+    STATIC_BYOIP_ADDRESSES = 106
+    SUBNETWORKS = 107
+    SUBNET_RANGES_PER_NETWORK = 108
+    TARGET_HTTPS_PROXIES = 109
+    TARGET_HTTP_PROXIES = 110
+    TARGET_INSTANCES = 111
+    TARGET_POOLS = 112
+    TARGET_SSL_PROXIES = 113
+    TARGET_TCP_PROXIES = 114
+    TARGET_VPN_GATEWAYS = 115
+    URL_MAPS = 116
+    VPN_GATEWAYS = 117
+    VPN_TUNNELS = 118
+    XPN_SERVICE_PROJECTS = 119
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -52243,6 +52300,8 @@ class SecurityPolicyRule(_messages.Message):
     rateLimitOptions: Must be specified if the action is
       "rate_based_blacklist" or "throttle". Cannot be specified for any other
       actions.
+    redirectTarget: This must be specified for redirect actions. Cannot be
+      specified for any other actions.
     ruleNumber: Identifier for the rule. This is only unique within the given
       security policy. This can only be set during rule creation, if rule
       number is not specified it will be generated by the server.
@@ -52277,10 +52336,11 @@ class SecurityPolicyRule(_messages.Message):
   preview = _messages.BooleanField(7)
   priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 9)
-  ruleNumber = _messages.IntegerField(10)
-  ruleTupleCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  targetResources = _messages.StringField(12, repeated=True)
-  targetServiceAccounts = _messages.StringField(13, repeated=True)
+  redirectTarget = _messages.StringField(10)
+  ruleNumber = _messages.IntegerField(11)
+  ruleTupleCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  targetResources = _messages.StringField(13, repeated=True)
+  targetServiceAccounts = _messages.StringField(14, repeated=True)
 
 
 class SecurityPolicyRuleMatcher(_messages.Message):
@@ -52630,6 +52690,9 @@ class ServiceAttachment(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    enableProxyProtocol: If true, enable the proxy protocol which is for
+      supplying client TCP/IP address data in TCP connections that traverse
+      proxies on their way to destination servers.
     id: [Output Only] The unique identifier for the resource type. The server
       generates this identifier.
     kind: [Output Only] Type of the resource. Always compute#serviceAttachment
@@ -52670,13 +52733,14 @@ class ServiceAttachment(_messages.Message):
   consumerForwardingRules = _messages.MessageField('ServiceAttachmentConsumerForwardingRule', 2, repeated=True)
   creationTimestamp = _messages.StringField(3)
   description = _messages.StringField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default='compute#serviceAttachment')
-  name = _messages.StringField(7)
-  natSubnets = _messages.StringField(8, repeated=True)
-  producerForwardingRule = _messages.StringField(9)
-  region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
+  enableProxyProtocol = _messages.BooleanField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default='compute#serviceAttachment')
+  name = _messages.StringField(8)
+  natSubnets = _messages.StringField(9, repeated=True)
+  producerForwardingRule = _messages.StringField(10)
+  region = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
 
 
 class ServiceAttachmentConsumerForwardingRule(_messages.Message):
@@ -53028,6 +53092,9 @@ class Snapshot(_messages.Message):
     licenses: [Output Only] A list of public visible licenses that apply to
       this snapshot. This can be because the original image had licenses
       attached (such as a Windows image).
+    locationHint: An opaque location hint used to place the snapshot close to
+      other resources. This field is for use by internal tools that use the
+      public API.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -53138,18 +53205,19 @@ class Snapshot(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 12)
   licenseCodes = _messages.IntegerField(13, repeated=True)
   licenses = _messages.StringField(14, repeated=True)
-  name = _messages.StringField(15)
-  satisfiesPzs = _messages.BooleanField(16)
-  selfLink = _messages.StringField(17)
-  selfLinkWithId = _messages.StringField(18)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
-  sourceDisk = _messages.StringField(20)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
-  sourceDiskId = _messages.StringField(22)
-  status = _messages.EnumField('StatusValueValuesEnum', 23)
-  storageBytes = _messages.IntegerField(24)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 25)
-  storageLocations = _messages.StringField(26, repeated=True)
+  locationHint = _messages.StringField(15)
+  name = _messages.StringField(16)
+  satisfiesPzs = _messages.BooleanField(17)
+  selfLink = _messages.StringField(18)
+  selfLinkWithId = _messages.StringField(19)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
+  sourceDisk = _messages.StringField(21)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 22)
+  sourceDiskId = _messages.StringField(23)
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  storageBytes = _messages.IntegerField(25)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 26)
+  storageLocations = _messages.StringField(27, repeated=True)
 
 
 class SnapshotList(_messages.Message):

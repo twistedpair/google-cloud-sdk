@@ -356,6 +356,10 @@
           "description": "The AI Platform runtime version that includes a TensorFlow version matching the one used in the custom container. This field is required if the replica is a TPU worker that uses a custom container. Otherwise, do not specify this field. This must be a [runtime version that currently supports training with TPUs](\/ml-engine\/docs\/tensorflow\/runtime-version-list#tpu-support). Note that the version of TensorFlow included in a runtime version may differ from the numbering of the runtime version itself, because it may have a different [patch version](https:\/\/www.tensorflow.org\/guide\/version_compat#semantic_versioning_20). In this field, you must specify the runtime version (TensorFlow minor version). For example, if your custom container runs TensorFlow `1.x.y`, specify `1.x`.",
           "type": "string"
         },
+        "diskConfig": {
+          "description": "Represents the configuration of disk options.",
+          "$ref": "GoogleCloudMlV1__DiskConfig"
+        },
         "containerCommand": {
           "description": "The command with which the replica's custom container is run. If provided, it will override default ENTRYPOINT of the docker image. If not provided, the docker image's ENTRYPOINT is used. It cannot be set if custom container image is not provided. Note that this field and [TrainingInput.args] are mutually exclusive, i.e., both cannot be set at the same time.",
           "type": "array",
@@ -411,6 +415,27 @@
             "TPU_V2_POD",
             "TPU_V3_POD"
           ]
+        }
+      }
+    },
+    "GoogleCloudMlV1__DiskConfig": {
+      "id": "GoogleCloudMlV1__DiskConfig",
+      "description": "Represents the config of disk options.",
+      "type": "object",
+      "properties": {
+        "bootDiskType": {
+          "description": "Type of the boot disk (default is \"pd-standard\"). Valid values: \"pd-ssd\" (Persistent Disk Solid State Drive) or \"pd-standard\" (Persistent Disk Hard Disk Drive).",
+          "type": "string"
+        },
+        "bootDiskSizeGb": {
+          "description": "Size in GB of the boot disk (default is 100GB).",
+          "type": "integer",
+          "format": "int32"
+        },
+        "localSsdCount": {
+          "description": "Number of attached local SSDs, from 0 to 8 (default is 0). The ssds are mounted on the node under `\/mnt\/disks\/ssd{0...7}`. For example, if `local_ssd_count=3`, the 3 ssds will be mounted at paths `\/mnt\/disks\/ssd0`, `\/mnt\/disks\/ssd1` and `\/mnt\/disks\/ssd2` respectively.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

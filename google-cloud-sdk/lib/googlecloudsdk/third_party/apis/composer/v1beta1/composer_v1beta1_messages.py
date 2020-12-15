@@ -423,6 +423,15 @@ class EnvironmentConfig(_messages.Message):
       environment and its dependencies. Cannot be updated.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
       environment.
+    maintenanceWindow: Optional. The maintenance window is the period when
+      Cloud Composer components may undergo maintenance. It is defined so that
+      maintenance is not executed during peak hours or critical time periods.
+      The system will not be under maintenance for every occurrence of this
+      window, but when maintenance is planned, it will be scheduled during the
+      window. The maintenance window period must encompass at least 12 hours
+      per week. This may be split into multiple chunks, each with a size of at
+      least 4 hours. If this value is omitted, Cloud Composer components may
+      be subject to maintenance at any time.
     nodeConfig: The configuration used for the Kubernetes Engine cluster.
     nodeCount: The number of nodes in the Kubernetes Engine cluster that will
       be used to run this environment.
@@ -442,12 +451,13 @@ class EnvironmentConfig(_messages.Message):
   databaseConfig = _messages.MessageField('DatabaseConfig', 3)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
   gkeCluster = _messages.StringField(5)
-  nodeConfig = _messages.MessageField('NodeConfig', 6)
-  nodeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 8)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 9)
-  webServerConfig = _messages.MessageField('WebServerConfig', 10)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 11)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 6)
+  nodeConfig = _messages.MessageField('NodeConfig', 7)
+  nodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 9)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 10)
+  webServerConfig = _messages.MessageField('WebServerConfig', 11)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 12)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -557,6 +567,31 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class MaintenanceWindow(_messages.Message):
+  r"""The configuration settings for Cloud Composer maintenance window. The
+  following example: { "startTime":"2019-08-01T01:00:00Z"
+  "endTime":"2019-08-01T07:00:00Z" "recurrence":"FREQ=WEEKLY;BYDAY=TU,WE" }
+  would define a maintenance window between 01 and 07 hours UTC during each
+  Tuesday and Wednesday.
+
+  Fields:
+    endTime: Required. Maintenance window end time. It is used only to
+      calculate the duration of the maintenance window. The value for end_time
+      must be in the future, relative to `start_time`.
+    recurrence: Required. Maintenance window recurrence. Format is a subset of
+      [RFC-5545](https://tools.ietf.org/html/rfc5545) `RRULE`. The only
+      allowed values for `FREQ` field are `FREQ=DAILY` and
+      `FREQ=WEEKLY;BYDAY=...` Example values: `FREQ=WEEKLY;BYDAY=TU,WE`,
+      `FREQ=DAILY`.
+    startTime: Required. Start time of the first recurrence of the maintenance
+      window.
+  """
+
+  endTime = _messages.StringField(1)
+  recurrence = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+
+
 class NodeConfig(_messages.Message):
   r"""The configuration information for the Kubernetes Engine nodes running
   the Apache Airflow software.
@@ -595,6 +630,16 @@ class NodeConfig(_messages.Message):
       [shared-core machine type](/compute/docs/machine-types#sharedcore). If
       this field is unspecified, the `machineTypeId` defaults to
       "n1-standard-1".
+    maxPodsPerNode: Optional. The maximum number of pods per node in the Cloud
+      Composer GKE cluster. The value must be between 8 and 110 and it can be
+      set only if the environment is VPC-native. The default value is 32.
+      Values of this field will be propagated both to the `default-pool` node
+      pool of the newly created GKE cluster, and to the default "Maximum Pods
+      per Node" value which is used for newly created node pools if their
+      value is not explicitly set during node pool creation. For more
+      information, see [Optimizing IP address allocation]
+      (https://cloud.google.com/kubernetes-engine/docs/how-to/flexible-pod-
+      cidr). Cannot be updated.
     network: Optional. The Compute Engine network to be used for machine
       communications, specified as a [relative resource
       name](/apis/design/resource_names#relative_resource_name). For example:
@@ -627,11 +672,12 @@ class NodeConfig(_messages.Message):
   ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 2)
   location = _messages.StringField(3)
   machineType = _messages.StringField(4)
-  network = _messages.StringField(5)
-  oauthScopes = _messages.StringField(6, repeated=True)
-  serviceAccount = _messages.StringField(7)
-  subnetwork = _messages.StringField(8)
-  tags = _messages.StringField(9, repeated=True)
+  maxPodsPerNode = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  network = _messages.StringField(6)
+  oauthScopes = _messages.StringField(7, repeated=True)
+  serviceAccount = _messages.StringField(8)
+  subnetwork = _messages.StringField(9)
+  tags = _messages.StringField(10, repeated=True)
 
 
 class Operation(_messages.Message):

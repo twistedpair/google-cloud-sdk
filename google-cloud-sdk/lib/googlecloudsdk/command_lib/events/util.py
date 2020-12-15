@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.events import custom_resource_definition
 from googlecloudsdk.api_lib.events import trigger
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.events import exceptions
@@ -50,11 +51,23 @@ def EventTypeFromTypeString(source_crds, type_string, source=None):
 
   Args:
     source_crds: list[SourceCustomResourceDefinition]
-    type_string: str, matching an event type string
+    type_string: str, matching an event type string. Empty strings are allowed.
       (e.g. "google.cloud.pubsub.topic.v1.messagePublished").
     source: str, optional source to further specify which event type in the case
       of multiple sources having event types with the same type string.
+
+  Returns:
+    EventType: Details of the event type from custom resource definition.
   """
+  if type_string is None and source is not None:
+    for crd in source_crds:
+      if source == crd.source_kind:
+        # Since --type not included, this EventType only includes the crd.
+        return custom_resource_definition.EventType(crd)
+    raise exceptions.EventTypeNotFound(
+        "Unknown source: {}. Only source flag used. If you're trying to use a custom event type, "
+        'add the "--custom-type" flag.'.format(source))
+
   possible_matches = []
   for crd in source_crds:
     # Only match the specified source, if provided
@@ -129,7 +142,7 @@ def ValidateTrigger(trigger_obj, expected_source_obj, expected_event_type):
   Args:
     trigger_obj: trigger.Trigger, the trigger to validate.
     expected_source_obj: source.Source, the source the trigger should reference.
-    expected_event_type: custom_resource_definition.EventTYpe, the event type
+    expected_event_type: custom_resource_definition.EventType, the event type
       the trigger should reference.
 
   Raises:
@@ -138,8 +151,9 @@ def ValidateTrigger(trigger_obj, expected_source_obj, expected_event_type):
   source_obj_ref = trigger_obj.dependency
   assert source_obj_ref == expected_source_obj.AsObjectReference()
   try:
-    assert trigger_obj.filter_attributes[
-        trigger.EVENT_TYPE_FIELD] == expected_event_type.type
+    if expected_event_type.type is not None:
+      assert trigger_obj.filter_attributes[
+          trigger.EVENT_TYPE_FIELD] == expected_event_type.type
   except KeyError:
     raise AssertionError
 

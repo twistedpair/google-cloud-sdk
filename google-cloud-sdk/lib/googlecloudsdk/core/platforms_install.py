@@ -23,6 +23,7 @@ from __future__ import unicode_literals
 import os
 import re
 import shutil
+import sys
 
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
@@ -39,10 +40,9 @@ _SUPPORTED_SHELLS = [_DEFAULT_SHELL, 'zsh', 'ksh', 'fish']
 _COMPATIBLE_INC_SHELL = {'ksh': 'bash'}
 
 
-# TODO(b/34807345): print to stderr
 def _TraceAction(action):
-  """Prints action to the standard output -- not really standard practice."""
-  print(action)
+  """Prints action to standard error."""
+  print(action, file=sys.stderr)
 
 
 # pylint:disable=unused-argument

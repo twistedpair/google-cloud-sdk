@@ -1,0 +1,215 @@
+<html devsite="">
+<head>
+<title>gcloud compute instances list</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="project_path" value="/sdk/docs/_project.yaml">
+<meta name="book_path" value="/sdk/_book.yaml">
+<!--
+        THIS DOC IS GENERATED.  DO NOT EDIT.
+  -->
+<style>
+  dd {
+    margin-bottom: 1ex;
+  }
+  li {
+    margin-top: 1ex; margin-bottom: 1ex;
+  }
+  .flag {
+    white-space: nowrap;
+  }
+  .hangingindent {
+    padding-left: 1.5em;
+    text-indent: -1.5em;
+  }
+  .normalfont {
+    font-weight: normal;
+  }
+  .notopmargin {
+    margin-top: 0em;
+  }
+  .sectionbody {
+    margin-top: .2em;
+  }
+</style>
+</head>
+<body>
+<dl>
+
+<section id="NAME">
+<dt>NAME</dt>
+<dd class="sectionbody">
+<dl class="notopmargin"><dt class="hangingindent"><span class="normalfont">
+gcloud compute instances list - list Google Compute Engine instances
+</span></dt></dl>
+</dd>
+</section>
+
+<section id="SYNOPSIS">
+<dt>SYNOPSIS</dt>
+<dd class="sectionbody">
+<dl class="notopmargin"><dt class="hangingindent"><span class="normalfont">
+<code>gcloud compute instances list</code> <span>[<code><var><a href="#NAME">NAME</a></var></code> &hellip;]</span> <span>[<span class="flag"><code><a href="#--regexp">--regexp</a></code>=<code><var>REGEXP</var></code>,</span> <span class="flag"><code><a href="#-r">-r</a></code></span> <code><var><a href="#REGEXP">REGEXP</a></var></code>]</span> <span>[<span class="flag"><code><a href="#--zones">--zones</a></code>=<code><var>ZONE</var></code>,[<code><var><a href="#ZONE">ZONE</a></var></code>,&hellip;]]</span></span> <span>[<span class="flag"><code><a href="#--filter">--filter</a></code>=<code><var>EXPRESSION</var></code>]</span></span> <span>[<span class="flag"><code><a href="#--limit">--limit</a></code>=<code><var>LIMIT</var></code>]</span></span> <span>[<span class="flag"><code><a href="#--page-size">--page-size</a></code>=<code><var>PAGE_SIZE</var></code>]</span></span> <span>[<span class="flag"><code><a href="#--sort-by">--sort-by</a></code>=[<code><var>FIELD</var></code>,&hellip;]]</span></span> <span>[<span class="flag"><code><a href="#--uri">--uri</a></code>]</span></span> <span>[<code><var><a href="#GCLOUD-WIDE-FLAGS">GCLOUD_WIDE_FLAG</a> &hellip;</var></code>]</span>
+</span></dt></dl>
+</dd>
+</section>
+
+<section id="DESCRIPTION">
+<dt>DESCRIPTION</dt>
+<dd class="sectionbody">
+<code>gcloud compute instances list</code> displays all Google Compute Engine
+instances in a project.
+<p>
+By default, instances from all zones are listed. The results can be narrowed
+down using a filter: <code>--filter="zone:( ZONE &hellip; )"</code>.
+</dd>
+</section>
+
+<section id="POSITIONAL-ARGUMENTS">
+<dt>POSITIONAL ARGUMENTS</dt>
+<dd class="sectionbody">
+<dl class="notopmargin">
+<dt id="NAME-1"><span class="normalfont">[<code><var>NAME</var></code> &hellip;]</span></dt>
+<dd>
+(DEPRECATED) If provided, show details for the specified names and/or URIs of
+resources.
+<p>
+Argument <code>NAME</code> is deprecated. Use <code>--filter="name=( 'NAME'
+&hellip; )"</code> instead.
+</dd>
+</dl>
+</dd>
+</section>
+
+<section id="FLAGS">
+<dt>FLAGS</dt>
+<dd class="sectionbody">
+<dl class="notopmargin">
+<dt id="--regexp"><span class="normalfont"><code>--regexp</code>=<code><var>REGEXP</var></code>, <code>-r</code> <code><var>REGEXP</var></code></span></dt>
+<dd>
+(DEPRECATED) Regular expression to filter the names of the results on. Any names
+that do not match the entire regular expression will be filtered out.
+<p>
+Flag <code>--regexp</code> is deprecated. Use
+<code>--filter="name~'REGEXP'"</code> instead.
+</dd>
+<dt id="--zones"><span class="normalfont"><code>--zones</code>=<code><var>ZONE</var></code>,[<code><var>ZONE</var></code>,&hellip;]</span></dt>
+<dd>
+If provided, only resources from the given zones are queried.
+</dd>
+</dl>
+</dd>
+</section>
+
+<section id="LIST-COMMAND-FLAGS">
+<dt>LIST COMMAND FLAGS</dt>
+<dd class="sectionbody">
+<dl class="notopmargin">
+<dt id="--filter"><span class="normalfont"><code>--filter</code>=<code><var>EXPRESSION</var></code></span></dt>
+<dd>
+Apply a Boolean filter <code><var>EXPRESSION</var></code> to each resource item
+to be listed. If the expression evaluates <code>True</code>, then that item is
+listed. For more details and examples of filter expressions, run $ <a
+href="/sdk/gcloud/reference/topic/filters">gcloud topic filters</a>. This flag
+interacts with other flags that are applied in this order:
+<code>--flatten</code>, <code>--sort-by</code>, <code>--filter</code>,
+<code>--limit</code>.
+</dd>
+<dt id="--limit"><span class="normalfont"><code>--limit</code>=<code><var>LIMIT</var></code></span></dt>
+<dd>
+Maximum number of resources to list. The default is <code>unlimited</code>. This
+flag interacts with other flags that are applied in this order:
+<code>--flatten</code>, <code>--sort-by</code>, <code>--filter</code>,
+<code>--limit</code>.
+</dd>
+<dt id="--page-size"><span class="normalfont"><code>--page-size</code>=<code><var>PAGE_SIZE</var></code></span></dt>
+<dd>
+Some services group resource list output into pages. This flag specifies the
+maximum number of resources per page. The default is determined by the service
+if it supports paging, otherwise it is <code>unlimited</code> (no paging).
+Paging may be applied before or after <code>--filter</code> and
+<code>--limit</code> depending on the service.
+</dd>
+<dt id="--sort-by"><span class="normalfont"><code>--sort-by</code>=[<code><var>FIELD</var></code>,&hellip;]</span></dt>
+<dd>
+Comma-separated list of resource field key names to sort by. The default order
+is ascending. Prefix a field with ``~&acute;&acute; for descending order on that
+field. This flag interacts with other flags that are applied in this order:
+<code>--flatten</code>, <code>--sort-by</code>, <code>--filter</code>,
+<code>--limit</code>.
+</dd>
+<dt id="--uri"><span class="normalfont"><code>--uri</code></span></dt>
+<dd>
+Print a list of resource URIs instead of the default output, and change the
+command output to a list of URIs. If this flag is used with
+<code>--format</code>, the formatting is applied on this URI list. To display
+URIs alongside other keys instead, use the <code>uri()</code> transform.
+</dd>
+</dl>
+</dd>
+</section>
+
+<section id="GCLOUD-WIDE-FLAGS">
+<dt>GCLOUD WIDE FLAGS</dt>
+<dd class="sectionbody">
+These flags are available to all commands: <a
+href="/sdk/gcloud/reference/#--account">--account</a>, <a
+href="/sdk/gcloud/reference/#--billing-project">--billing-project</a>, <a
+href="/sdk/gcloud/reference/#--configuration">--configuration</a>, <a
+href="/sdk/gcloud/reference/#--flags-file">--flags-file</a>, <a
+href="/sdk/gcloud/reference/#--flatten">--flatten</a>, <a
+href="/sdk/gcloud/reference/#--format">--format</a>, <a
+href="/sdk/gcloud/reference/#--help">--help</a>, <a
+href="/sdk/gcloud/reference/#--impersonate-service-account">--impersonate-service-account</a>,
+<a href="/sdk/gcloud/reference/#--log-http">--log-http</a>, <a
+href="/sdk/gcloud/reference/#--project">--project</a>, <a
+href="/sdk/gcloud/reference/#--quiet">--quiet</a>, <a
+href="/sdk/gcloud/reference/#--trace-token">--trace-token</a>, <a
+href="/sdk/gcloud/reference/#--user-output-enabled">--user-output-enabled</a>,
+<a href="/sdk/gcloud/reference/#--verbosity">--verbosity</a>.
+<p>
+Run <code>$ <a href="/sdk/gcloud/reference">gcloud help</a></code> for details.
+</dd>
+</section>
+
+<section id="EXAMPLES">
+<dt>EXAMPLES</dt>
+<dd class="sectionbody">
+To list all instances in a project in table form, run:
+<pre class="prettyprint lang-sh">
+<code class="devsite-terminal">gcloud compute instances list</code>
+</pre>
+
+<p>
+To list the URIs of all instances in a project, run:
+<pre class="prettyprint lang-sh">
+<code class="devsite-terminal">gcloud compute instances list --uri</code>
+</pre>
+
+<p>
+To list all instances in the <code><code><var>us-central1-b</var></code></code>
+and <code><code><var>europe-west1-d</var></code></code> zones, run:
+<pre class="prettyprint lang-sh">
+<code class="devsite-terminal">gcloud compute instances list  --filter="zone:( us-central1-b europe-west1-d )"</code>
+</pre>
+
+</dd>
+</section>
+
+<section id="NOTES">
+<dt>NOTES</dt>
+<dd class="sectionbody">
+These variants are also available:
+<pre class="prettyprint lang-sh">
+<code class="devsite-terminal"><a href="/sdk/gcloud/reference/alpha/compute/instances/list">gcloud alpha compute instances list</a></code>
+</pre>
+
+<pre class="prettyprint lang-sh">
+<code class="devsite-terminal"><a href="/sdk/gcloud/reference/beta/compute/instances/list">gcloud beta compute instances list</a></code>
+</pre>
+
+</dd>
+</section>
+
+</dl>
+</body>
+</html>

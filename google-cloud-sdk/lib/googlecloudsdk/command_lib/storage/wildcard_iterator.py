@@ -175,7 +175,11 @@ class CloudWildcardIterator(WildcardIterator):
 
   def _fetch_objects(self, bucket_name):
     """Fetch all objects for the given bucket that match the URL."""
-    if not contains_wildcard(self._url.object_name) and not self._all_versions:
+    needs_further_expansion = (
+        contains_wildcard(self._url.object_name) or
+        self._all_versions or
+        self._url.object_name.endswith(self._url.delimiter))
+    if not needs_further_expansion:
       try:
         # Assume that the url represents a single object.
         return [
@@ -260,10 +264,14 @@ class CloudWildcardIterator(WildcardIterator):
     regex_string = fnmatch.translate(wildcard_pattern)
     regex_pattern = re.compile(regex_string)
     for resource in resource_iterator:
-      # A prefix resource returned by the API will always end with a slash.
-      # We strip the slash in the end to match cases like gs://bucket/folder1
-      object_name = storage_url.rstrip_one_delimiter(
-          resource.storage_url.object_name)
+      if isinstance(resource, resource_reference.PrefixResource):
+        object_name = (
+            storage_url.rstrip_one_delimiter(resource.storage_url.object_name))
+      else:
+        # Do not strip trailing delimiters for object resources, otherwise they
+        # will be filtered out incorrectly.
+        object_name = resource.storage_url.object_name
+
       if (self._url.generation and
           resource.storage_url.generation != self._url.generation):
         # Filter based on generation, if generation is present in the request.

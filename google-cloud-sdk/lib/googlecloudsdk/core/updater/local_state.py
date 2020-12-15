@@ -611,9 +611,11 @@ class InstallationState(object):
 
     This does not raise exceptions if compiling a given file fails.
     """
-    # Use two different regex exclusions (passed to compile_dir)
-    # based on the python runtime. We package some python code
-    # that is not valid python2 syntax.
+    # Some python code shipped in the SDK is not 2 + 3 compatible.
+    # Create execlusion patterns to avoid compilation errors.
+    # This is pretty hacky, ideally we would have this information in the
+    # component metadata and derive the exclusion patterns from that.
+    # However, this is an ok short-term solution until we have bundled python.
     if six.PY2:
       regex_exclusion = re.compile('(httplib2/python3|typing/python3'
                                    '|platform/bq/third_party/yaml/lib3)')
@@ -625,7 +627,17 @@ class InstallationState(object):
         regex_exclusion = re.compile(
             '(kubernetes/utils/create_from_yaml.py'
             '|platform/google_appengine'
-            '|gslib/vendored/boto/boto/iam/connection.py)')
+            '|gslib/vendored/boto/boto/iam/connection.py'
+            '|gslib/vendored/boto/tests/'
+            '|third_party/.*/python2/'
+            '|third_party/yaml/[a-z]*.py'
+            '|third_party/yaml/lib2/'
+            '|third_party/appengine/'
+            '|third_party/fancy_urllib/'
+            '|platform/bq/third_party/gflags'
+            '|platform/ext-runtime/nodejs/test/'
+            '|platform/gsutil/third_party/apitools/ez_setup'
+            '|platform/gsutil/third_party/crcmod_osx/crcmod/test)')
       else:
         regex_exclusion = None
 
@@ -640,8 +652,6 @@ class InstallationState(object):
           'platform',
       ]
       for d in to_compile:
-        # Using rx to skip unused Python3 directory vendored with gsutil's copy
-        # of httplib2.
         # Using 2 for quiet, in python 2.7 this value is used as a bool in the
         # implementation and bool(2) is True. Starting in python 3.5 this
         # parameter was changed to a multilevel value, where 1 hides files

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.eventarc import types
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
@@ -30,7 +31,8 @@ from googlecloudsdk.core.util import times
 MAX_ACTIVE_DELAY_MINUTES = 10
 
 _API_NAME = 'eventarc'
-_API_VERSION = 'v1beta1'
+_API_VERSION = 'v1'
+_API_VERSION_BETA = 'v1beta1'
 
 
 class NoFieldsSpecifiedError(exceptions.Error):
@@ -41,37 +43,11 @@ class NoRegionSpecifiedError(exceptions.Error):
   """Error when no destination region was specified for a global trigger."""
 
 
-def BuildUpdateMask(matching_criteria, service_account, destination_run_service,
-                    destination_run_path, destination_run_region):
-  """Builds an update mask for updating a trigger.
-
-  Args:
-    matching_criteria: bool, whether to update the matching criteria.
-    service_account: bool, whether to update the service account.
-    destination_run_service: bool, whether to update the destination service.
-    destination_run_path: bool, whether to update the destination path.
-    destination_run_region: bool, whether to update the destination region.
-
-  Returns:
-    The update mask as a string.
-
-  Raises:
-    NoFieldsSpecifiedError: No fields are being updated.
-  """
-  update_mask = []
-  if destination_run_path:
-    update_mask.append('destination.cloudRunService.path')
-  if destination_run_region:
-    update_mask.append('destination.cloudRunService.region')
-  if destination_run_service:
-    update_mask.append('destination.cloudRunService.service')
-  if matching_criteria:
-    update_mask.append('matchingCriteria')
-  if service_account:
-    update_mask.append('serviceAccount')
-  if not update_mask:
-    raise NoFieldsSpecifiedError('Must specify at least one field to update.')
-  return ','.join(update_mask)
+def CreateTriggersClient(release_track):
+  if release_track == base.ReleaseTrack.GA:
+    return _TriggersClient()
+  else:
+    return _TriggersClientBeta()
 
 
 def GetTriggerURI(resource):
@@ -101,43 +77,79 @@ def TriggerActiveTime(event_type, update_time):
   return times.FormatDateTime(active_dt, fmt='%H:%M:%S', tzinfo=times.LOCAL)
 
 
-class TriggersClient(object):
+class _TriggersClient(object):
   """Client for Triggers service in the Eventarc API."""
 
   def __init__(self):
-    client = apis.GetClientInstance(_API_NAME, _API_VERSION)
+    client = apis.GetClientInstance(_API_NAME, self._api_version)
     self._messages = client.MESSAGES_MODULE
     self._service = client.projects_locations_triggers
     self._operation_service = client.projects_locations_operations
 
-  def _BuildTriggerMessage(self, trigger_ref, matching_criteria,
-                           service_account, destination_run_service,
-                           destination_run_path, destination_run_region):
+  @property
+  def _api_version(self):
+    return _API_VERSION
+
+  def _BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
+                           destination_run_service, destination_run_path,
+                           destination_run_region):
     """Builds a Trigger message with the given data."""
-    matching_criteria_messages = [] if matching_criteria is None else [
-        self._messages.MatchingCriteria(attribute=key, value=value)
-        for key, value in matching_criteria.items()
+    filter_messages = [] if event_filters is None else [
+        self._messages.EventFilter(attribute=key, value=value)
+        for key, value in event_filters.items()
     ]
-    service_message = self._messages.CloudRunService(
+    run_message = self._messages.CloudRun(
         service=destination_run_service,
         path=destination_run_path,
         region=destination_run_region)
-    destination_message = self._messages.Destination(
-        cloudRunService=service_message)
+    destination_message = self._messages.Destination(cloudRun=run_message)
     return self._messages.Trigger(
         name=trigger_ref.RelativeName(),
-        matchingCriteria=matching_criteria_messages,
+        eventFilters=filter_messages,
         serviceAccount=service_account,
         destination=destination_message)
 
-  def Create(self, trigger_ref, matching_criteria, service_account,
+  def BuildUpdateMask(self, event_filters, service_account,
+                      destination_run_service, destination_run_path,
+                      destination_run_region):
+    """Builds an update mask for updating a trigger.
+
+    Args:
+      event_filters: bool, whether to update the event filters.
+      service_account: bool, whether to update the service account.
+      destination_run_service: bool, whether to update the destination service.
+      destination_run_path: bool, whether to update the destination path.
+      destination_run_region: bool, whether to update the destination region.
+
+    Returns:
+      The update mask as a string.
+
+    Raises:
+      NoFieldsSpecifiedError: No fields are being updated.
+    """
+    update_mask = []
+    if destination_run_path:
+      update_mask.append('destination.cloudRun.path')
+    if destination_run_region:
+      update_mask.append('destination.cloudRun.region')
+    if destination_run_service:
+      update_mask.append('destination.cloudRun.service')
+    if event_filters:
+      update_mask.append('eventFilters')
+    if service_account:
+      update_mask.append('serviceAccount')
+    if not update_mask:
+      raise NoFieldsSpecifiedError('Must specify at least one field to update.')
+    return ','.join(update_mask)
+
+  def Create(self, trigger_ref, event_filters, service_account,
              destination_run_service, destination_run_path,
              destination_run_region):
     """Creates a new Trigger.
 
     Args:
       trigger_ref: Resource, the Trigger to create.
-      matching_criteria: dict, the Trigger's matching criteria.
+      event_filters: dict, the Trigger's event filters.
       service_account: str or None, the Trigger's service account.
       destination_run_service: str, the Trigger's destination Cloud Run service.
       destination_run_path: str or None, the path on the destination service.
@@ -156,7 +168,7 @@ class TriggersClient(object):
         raise NoRegionSpecifiedError(
             'The `--destination-run-region` flag is required when creating a global trigger.'
         )
-    trigger_message = self._BuildTriggerMessage(trigger_ref, matching_criteria,
+    trigger_message = self._BuildTriggerMessage(trigger_ref, event_filters,
                                                 service_account,
                                                 destination_run_service,
                                                 destination_run_path,
@@ -193,6 +205,10 @@ class TriggersClient(object):
         name=trigger_ref.RelativeName())
     return self._service.Get(get_req)
 
+  def GetEventType(self, trigger_message):
+    """Gets the Trigger's event type."""
+    return types.EventFiltersMessageToType(trigger_message.eventFilters)
+
   def List(self, location_ref, limit, page_size):
     """Lists Triggers in a given location.
 
@@ -215,14 +231,14 @@ class TriggersClient(object):
         limit=limit,
         batch_size_attribute='pageSize')
 
-  def Patch(self, trigger_ref, matching_criteria, service_account,
+  def Patch(self, trigger_ref, event_filters, service_account,
             destination_run_service, destination_run_path,
             destination_run_region, update_mask):
     """Updates a Trigger.
 
     Args:
       trigger_ref: Resource, the Trigger to update.
-      matching_criteria: dict or None, the updated matching criteria.
+      event_filters: dict or None, the updated event filters.
       service_account: str or None, the updated service account.
       destination_run_service: str or None, the updated destination service.
       destination_run_path: str or None, the updated destination path.
@@ -232,7 +248,7 @@ class TriggersClient(object):
     Returns:
       A long-running operation for update.
     """
-    trigger_message = self._BuildTriggerMessage(trigger_ref, matching_criteria,
+    trigger_message = self._BuildTriggerMessage(trigger_ref, event_filters,
                                                 service_account,
                                                 destination_run_service,
                                                 destination_run_path,
@@ -258,3 +274,68 @@ class TriggersClient(object):
     message = 'Waiting for operation [{}] to complete'.format(
         operation_ref.Name())
     return waiter.WaitFor(poller, operation_ref, message)
+
+
+class _TriggersClientBeta(_TriggersClient):
+  """Client for Triggers service in the Eventarc beta API."""
+
+  @property
+  def _api_version(self):
+    return _API_VERSION_BETA
+
+  def _BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
+                           destination_run_service, destination_run_path,
+                           destination_run_region):
+    """Builds a Trigger message with the given data."""
+    criteria_messages = [] if event_filters is None else [
+        self._messages.MatchingCriteria(attribute=key, value=value)
+        for key, value in event_filters.items()
+    ]
+    run_message = self._messages.CloudRunService(
+        service=destination_run_service,
+        path=destination_run_path,
+        region=destination_run_region)
+    destination_message = self._messages.Destination(
+        cloudRunService=run_message)
+    return self._messages.Trigger(
+        name=trigger_ref.RelativeName(),
+        matchingCriteria=criteria_messages,
+        serviceAccount=service_account,
+        destination=destination_message)
+
+  def BuildUpdateMask(self, event_filters, service_account,
+                      destination_run_service, destination_run_path,
+                      destination_run_region):
+    """Builds an update mask for updating a trigger.
+
+    Args:
+      event_filters: bool, whether to update the event filters.
+      service_account: bool, whether to update the service account.
+      destination_run_service: bool, whether to update the destination service.
+      destination_run_path: bool, whether to update the destination path.
+      destination_run_region: bool, whether to update the destination region.
+
+    Returns:
+      The update mask as a string.
+
+    Raises:
+      NoFieldsSpecifiedError: No fields are being updated.
+    """
+    update_mask = []
+    if destination_run_path:
+      update_mask.append('destination.cloudRunService.path')
+    if destination_run_region:
+      update_mask.append('destination.cloudRunService.region')
+    if destination_run_service:
+      update_mask.append('destination.cloudRunService.service')
+    if event_filters:
+      update_mask.append('matchingCriteria')
+    if service_account:
+      update_mask.append('serviceAccount')
+    if not update_mask:
+      raise NoFieldsSpecifiedError('Must specify at least one field to update.')
+    return ','.join(update_mask)
+
+  def GetEventType(self, trigger_message):
+    """Gets the Trigger's event type."""
+    return types.EventFiltersMessageToType(trigger_message.matchingCriteria)

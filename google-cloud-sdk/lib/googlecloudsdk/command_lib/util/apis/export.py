@@ -182,7 +182,7 @@ class ExportSchemasGenerator(object):
 
       if value.get('repeated'):
         d['type'] = 'array'
-        items = collections.OrderedDict()
+        items = collections.OrderedDict(value.get('items', {}))
         d['items'] = items
         d = items
         depth += 2
@@ -202,14 +202,17 @@ class ExportSchemasGenerator(object):
           d['$ref'] = self._GetSchemaFileName(type_name)
           self.Generate(type_name, subfields)
       else:
-        type_name = _NormalizeTypeName(type_name)
-        if type_name == 'enum':
-          # Convert enums from proto to JSON schema.
-          enum = value.get('choices')
-          d['type'] = 'string'
-          d['enum'] = sorted([n for n, _ in six.iteritems(enum)])
+        if type_name in self._generated:
+          d['$ref'] = self._GetSchemaFileName(type_name)
         else:
-          d['type'] = type_name
+          type_name = _NormalizeTypeName(type_name)
+          if type_name == 'enum':
+            # Convert enums from proto to JSON schema.
+            enum = value.get('choices')
+            d['type'] = 'string'
+            d['enum'] = sorted([n for n, _ in six.iteritems(enum)])
+          else:
+            d['type'] = type_name
 
   def Generate(self, message_name, message_spec):
     """Recursively generates export/import YAML schemas for message_spec.

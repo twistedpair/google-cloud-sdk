@@ -82,4 +82,5 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
     if self._title:
       self._out.write(self._title + '\n')
       self._title = None
-    self._out.write(' - ' + self._separator.join(record) + '\n')
+    self._out.write(' - ' + self._separator.join(
+        map(six.text_type, self.RemoveHiddenColumns(record))) + '\n')

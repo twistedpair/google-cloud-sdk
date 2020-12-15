@@ -23,7 +23,6 @@ from collections import OrderedDict
 import contextlib
 import copy
 import datetime
-import errno
 import json
 import logging
 import os
@@ -358,7 +357,6 @@ class _ConsoleFormatter(logging.Formatter):
 
   def __init__(self, out_stream):
     super(_ConsoleFormatter, self).__init__()
-    # TODO(b/113585509): Remove this coloring code.
     use_color = not properties.VALUES.core.disable_color.GetBool(validate=False)
     use_color &= out_stream.isatty()
     use_color &= (platforms.OperatingSystem.Current() !=
@@ -723,9 +721,8 @@ class _LogManager(object):
     if self._GetMaxLogDays():
       try:
         self._CleanLogsDir(logs_dir)
-      except OSError as exp:
-        if exp.errno != errno.ENOENT:
-          raise
+      except OSError:
+        pass
 
   def _CleanLogsDir(self, logs_dir):
     """Cleans up old log files form the given logs directory.

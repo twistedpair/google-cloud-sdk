@@ -711,9 +711,10 @@ def DeployQueuesYamlFile(
       # new rate > 0
       queues_client.Resume(queue_ref)
     elif (
-        cur_queue_object and not rate_to_set and
+        cur_queue_object and
+        not rate_to_set and
         cur_queue_object.state == cur_queue_object.state.RUNNING and
-        queue.mode == constants.PUSH_QUEUE
+        queue.mode in (None, constants.PUSH_QUEUE)
     ):
       queues_client.Pause(queue_ref)
 
@@ -770,9 +771,9 @@ def _CreateUniqueJobKeyForExistingJob(job, project):
     A tuple of attributes used as a key to identify this job.
   """
   return (
-      job.schedule.schedule,
-      job.schedule.timeZone,
-      job.appEngineHttpTarget.relativeUrl,
+      job.schedule,
+      job.timeZone,
+      job.appEngineHttpTarget.relativeUri,
       job.description,
       convertors.CheckAndConvertStringToFloatIfApplicable(
           job.retryConfig.minBackoffDuration) if job.retryConfig else None,
@@ -782,8 +783,7 @@ def _CreateUniqueJobKeyForExistingJob(job, project):
       convertors.CheckAndConvertStringToFloatIfApplicable(
           job.retryConfig.maxRetryDuration) if job.retryConfig else None,
       job.retryConfig.retryCount if job.retryConfig else None,
-      parsers.ExtractTargetFromAppEngineHostUrl(
-          job.appEngineHttpTarget.appEngineRouting.host, project),
+      parsers.ExtractTargetFromAppEngineHostUrl(job, project),
     )
 
 
@@ -864,14 +864,13 @@ def CreateJobInstance(scheduler_api, yaml_job):
   return messages.Job(
       appEngineHttpTarget=messages.AppEngineHttpTarget(
           httpMethod=messages.AppEngineHttpTarget.HttpMethodValueValuesEnum.GET,
-          relativeUrl=yaml_job.url,
+          relativeUri=yaml_job.url,
           appEngineRouting=messages.AppEngineRouting(service=yaml_job.target)),
       retryConfig=retry_config,
       description=yaml_job.description,
       legacyAppEngineCron=scheduler_api.jobs.legacy_cron,
-      schedule=messages.Schedule(
-          schedule=yaml_job.schedule,
-          timeZone=yaml_job.timezone if yaml_job.timezone else 'UTC'))
+      schedule=yaml_job.schedule,
+      timeZone=yaml_job.timezone if yaml_job.timezone else 'UTC')
 
 
 def DeployCronYamlFile(scheduler_api, config, existing_jobs):

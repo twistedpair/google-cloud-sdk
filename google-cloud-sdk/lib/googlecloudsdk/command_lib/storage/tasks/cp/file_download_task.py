@@ -46,6 +46,8 @@ class FileDownloadTask(task.Task):
     super(FileDownloadTask, self).__init__()
     self._source_resource = source_resource
     self._destination_resource = destination_resource
+    self.parallel_processing_key = (
+        self._destination_resource.storage_url.url_string)
 
   def execute(self, callback=None):
     with files.BinaryFileWriter(

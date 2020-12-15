@@ -125,7 +125,7 @@ class RequiredFileMissingError(Error):
   def __init__(self, filename):
     super(RequiredFileMissingError, self).__init__(
         'Required file is not uploaded: [{}]. '
-        'This file should not be added to a ignore list ('
+        'This file should not be added to an ignore list ('
         'https://cloud.google.com/sdk/gcloud/reference/topic/gcloudignore)'
         .format(filename))
 
@@ -567,7 +567,8 @@ def RunDeploy(
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
     parallel_build=True,
     flex_image_build_option=FlexImageBuildOptions.ON_CLIENT,
-    dispatch_admin_api=False):
+    dispatch_admin_api=False,
+    use_ct_apis=False):
   """Perform a deployment based on the given args.
 
   Args:
@@ -587,6 +588,9 @@ def RunDeploy(
       image on client.
     dispatch_admin_api: bool, speak to the (new) Admin API rather than the (old)
       Admin Console for config push of dispatch.yaml.
+    use_ct_apis: bool, if true, use the new Cloud Tasks and Cloud Scheduler FE
+      APIs instead of the soon-to-be deprecated admin-console-hr superapp for
+      queue.yaml and cron.yaml uploads
 
   Returns:
     A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
@@ -689,6 +693,10 @@ def RunDeploy(
           api_client.UpdateDispatchRules(config.GetRules())
         elif config.name == yaml_parsing.ConfigYamlInfo.INDEX:
           index_api.CreateMissingIndexes(project, config.parsed)
+        elif use_ct_apis and config.name == yaml_parsing.ConfigYamlInfo.QUEUE:
+          RunDeployCloudTasks(config)
+        elif use_ct_apis and config.name == yaml_parsing.ConfigYamlInfo.CRON:
+          RunDeployCloudScheduler(config)
         else:
           ac_client.UpdateConfig(config.name, config.parsed)
     metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG)
@@ -704,82 +712,39 @@ def RunDeploy(
   }
 
 
-def _GetDeployableConfigsFromArgs(args):
-  """Get parsed YAML configs for any deployables specified in args.
-
-  Args:
-    args: argparse.Namespace, An object that contains the values for the
-        arguments specified in the ArgsDeploy() function.
-
-  Returns:
-    A list of yaml_parsing.ConfigYamlInfos object for the parsed YAML file(s)
-    we are going to process.
-
-  Raises:
-    FileNotFoundError: If the path specified for a deployable does not exist.
-  """
-  paths = [os.path.abspath(x) for x in args.deployables]
-  configs = []
-  for path in paths:
-    if not os.path.exists(path):
-      raise exceptions.FileNotFoundError(path)
-    config = yaml_parsing.ConfigYamlInfo.FromFile(path)
-    if config:
-      configs.append(config)
-  return configs
-
-
-def RunDeployCloudTasks(args):
+def RunDeployCloudTasks(config):
   """Perform a deployment using Cloud Tasks API based on the given args.
 
   Args:
-    args: argparse.Namespace, An object that contains the values for the
-        arguments specified in the ArgsDeploy() function.
+    config: A yaml_parsing.ConfigYamlInfo object for the parsed YAML file we
+        are going to process.
 
   Returns:
     A list of config file identifiers, see yaml_parsing.ConfigYamlInfo.
   """
-  configs = _GetDeployableConfigsFromArgs(args)
-  if configs:
-    # TODO(b/169069379): Confirm the same metric name can be used twice in the
-    # same run.
-    metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG_START)
-    # TODO(b/169069379): Upgrade to use GA once the relevant code is promoted
-    tasks_api = tasks.GetApiAdapter(base.ReleaseTrack.BETA)
-    queues_data = app_deploy_migration_util.FetchCurrentQueuesData(tasks_api)
-    for config in configs:
-      app_deploy_migration_util.ValidateQueueYamlFileConfig(config)
-      app_deploy_migration_util.DeployQueuesYamlFile(
-          tasks_api, config, queues_data)
-    metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG)
-  return [c.name for c in configs]
+  # TODO(b/169069379): Upgrade to use GA once the relevant code is promoted
+  tasks_api = tasks.GetApiAdapter(base.ReleaseTrack.BETA)
+  queues_data = app_deploy_migration_util.FetchCurrentQueuesData(tasks_api)
+  app_deploy_migration_util.ValidateQueueYamlFileConfig(config)
+  app_deploy_migration_util.DeployQueuesYamlFile(tasks_api, config, queues_data)
 
 
-def RunDeployCloudScheduler(args):
+def RunDeployCloudScheduler(config):
   """Perform a deployment using Cloud Scheduler APIs based on the given args.
 
   Args:
-    args: argparse.Namespace, An object that contains the values for the
-        arguments specified in the ArgsDeploy() function.
+    config: A yaml_parsing.ConfigYamlInfo object for the parsed YAML file we
+        are going to process.
 
   Returns:
     A list of config file identifiers, see yaml_parsing.ConfigYamlInfo.
   """
-  configs = _GetDeployableConfigsFromArgs(args)
-  if configs:
-    # TODO(b/169069379): Confirm the same metric name can be used twice in the
-    # same run.
-    metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG_START)
-    # TODO(b/169069379): Upgrade to use GA once the relevant code is promoted
-    scheduler_api = scheduler.GetApiAdapter(base.ReleaseTrack.ALPHA,
-                                            legacy_cron=True)
-    jobs_data = app_deploy_migration_util.FetchCurrentJobsData(scheduler_api)
-    for config in configs:
-      app_deploy_migration_util.ValidateCronYamlFileConfig(config)
-      app_deploy_migration_util.DeployCronYamlFile(
-          scheduler_api, config, jobs_data)
-    metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG)
-  return [c.name for c in configs]
+  # TODO(b/169069379): Upgrade to use GA once the relevant code is promoted
+  scheduler_api = scheduler.GetApiAdapter(base.ReleaseTrack.BETA,
+                                          legacy_cron=True)
+  jobs_data = app_deploy_migration_util.FetchCurrentJobsData(scheduler_api)
+  app_deploy_migration_util.ValidateCronYamlFileConfig(config)
+  app_deploy_migration_util.DeployCronYamlFile(scheduler_api, config, jobs_data)
 
 
 # TODO(b/30632016): Move to Epilog() when we have a good way to pass

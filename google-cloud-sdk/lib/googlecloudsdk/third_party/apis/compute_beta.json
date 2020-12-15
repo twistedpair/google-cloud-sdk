@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20201130",
+ "revision": "20201204",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2262,6 +2262,10 @@
       "$ref": "BackendBucketCdnPolicyNegativeCachingPolicy"
      }
     },
+    "requestCoalescing": {
+     "type": "boolean",
+     "description": "If true then Cloud CDN will combine multiple concurrent cache fill requests into a small number of requests to the origin."
+    },
     "serveWhileStale": {
      "type": "integer",
      "description": "Serve existing content from the cache (if available) when revalidating content with the origin, or when an error is encountered when refreshing the cache. This setting defines the default \"max-stale\" duration for any cached responses that do not specify a max-stale directive. Stale responses that exceed the TTL configured here will not be served. The default limit (max-stale) is 86400s (1 day), which will allow stale content to be served up to this limit beyond the max-age (or s-max-age) of a cached response. The maximum allowed value is 604800 (1 week). Set this to zero (0) to disable serve-while-stale.",
@@ -2830,6 +2834,10 @@
      "items": {
       "$ref": "BackendServiceCdnPolicyNegativeCachingPolicy"
      }
+    },
+    "requestCoalescing": {
+     "type": "boolean",
+     "description": "If true then Cloud CDN will combine multiple concurrent cache fill requests into a small number of requests to the origin."
     },
     "serveWhileStale": {
      "type": "integer",
@@ -4478,7 +4486,7 @@
     },
     "sourceStorageObject": {
      "type": "string",
-     "description": "The full Google Cloud Storage URI where the disk image is stored. This file must be a gzip-compressed tarball whose name ends in .tar.gz or virtual machine disk whose name ends in vmdk. Valid URIs may start with gs:// or https://storage.googleapis.com/."
+     "description": "The full Google Cloud Storage URI where the disk image is stored. This file must be a gzip-compressed tarball whose name ends in .tar.gz or virtual machine disk whose name ends in vmdk. Valid URIs may start with gs:// or https://storage.googleapis.com/. This flag is not optimized for creating multiple disks from a source storage object. To create many disks from a source storage object, use gcloud compute images import instead."
     },
     "status": {
      "type": "string",
@@ -19286,6 +19294,7 @@
       "NVIDIA_T4_VWS_GPUS",
       "NVIDIA_V100_GPUS",
       "PACKET_MIRRORINGS",
+      "PD_EXTREME_TOTAL_PROVISIONED_IOPS",
       "PREEMPTIBLE_CPUS",
       "PREEMPTIBLE_LOCAL_SSD_GB",
       "PREEMPTIBLE_NVIDIA_A100_GPUS",
@@ -19329,6 +19338,7 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -41350,7 +41360,7 @@
      "id": "compute.instances.updateNetworkInterface",
      "path": "projects/{project}/zones/{zone}/instances/{instance}/updateNetworkInterface",
      "httpMethod": "PATCH",
-     "description": "Updates an instance's network interface. This method follows PATCH semantics.",
+     "description": "Updates an instance's network interface. This method can only update an interface's alias IP range and attached network. See Modifying alias IP ranges for an existing instance for instructions on changing alias IP ranges. See Migrating a VM between networks for instructions on migrating an interface. This method follows PATCH semantics.",
      "parameters": {
       "instance": {
        "type": "string",

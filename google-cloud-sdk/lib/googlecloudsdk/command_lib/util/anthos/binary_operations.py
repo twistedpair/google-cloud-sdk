@@ -25,7 +25,7 @@ import os
 from googlecloudsdk.command_lib.util.anthos import structured_messages as sm
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
-from googlecloudsdk.core import execution_utils as exec_utils
+from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
@@ -434,20 +434,16 @@ def CheckForInstalledBinary(binary_name, custom_message=None):
   raise MissingExecutableException(binary_name, custom_message)
 
 
-def InstallBinaryNoOverrides(binary_name):
+def InstallBinaryNoOverrides(binary_name, prompt):
   """Helper method for installing binary dependencies within command execs."""
   console_io.PromptContinue(
       message='Pausing command execution:',
-      prompt_string=(
-          'Declarative configuration commands require the '
-          '`config-connector` binary to be installed, however the binary '
-          'could not be located on your system. Would you like to '
-          'install the `config-connector` binary?'),
+      prompt_string=prompt,
       cancel_on_no=True,
-      cancel_string='Aborting binary install and command execution.')
+      cancel_string='Aborting component install for {} and command execution.'
+      .format(binary_name))
   platform = platforms.Platform.Current()
-  update_manager_client = update_manager.UpdateManager(
-      platform_filter=platform)
+  update_manager_client = update_manager.UpdateManager(platform_filter=platform)
   update_manager_client.Install([binary_name])
 
   path_executable = files.FindExecutableOnPath(binary_name)
@@ -587,7 +583,7 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
       if working_dir and not os.path.isdir(working_dir):
         raise InvalidWorkingDirectoryError(short_cmd_name, working_dir)
 
-      exit_code = exec_utils.Exec(
+      exit_code = execution_utils.Exec(
           args=cmd,
           no_exit=True,
           out_func=std_out_handler,
@@ -595,7 +591,8 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
           in_str=stdin,
           cwd=working_dir,
           env=env)
-    except (exec_utils.PermissionError, exec_utils.InvalidCommandError) as e:
+    except (execution_utils.PermissionError,
+            execution_utils.InvalidCommandError) as e:
       raise ExecutionError(short_cmd_name, e)
     result_holder.exit_code = exit_code
     self.set_failure_status(result_holder, kwargs.get('show_exec_error', False))
@@ -694,7 +691,7 @@ class StreamingBinaryBackedOperation(
       working_dir = kwargs.get('execution_dir')
       if working_dir and not os.path.isdir(working_dir):
         raise InvalidWorkingDirectoryError(short_cmd_name, working_dir)
-      exit_code = exec_utils.ExecWithStreamingOutput(
+      exit_code = execution_utils.ExecWithStreamingOutput(
           args=cmd,
           no_exit=True,
           out_func=std_out_handler,
@@ -702,7 +699,8 @@ class StreamingBinaryBackedOperation(
           in_str=stdin,
           cwd=working_dir,
           env=env)
-    except (exec_utils.PermissionError, exec_utils.InvalidCommandError) as e:
+    except (execution_utils.PermissionError,
+            execution_utils.InvalidCommandError) as e:
       raise ExecutionError(short_cmd_name, e)
     result_holder.exit_code = exit_code
     self.set_failure_status(result_holder, kwargs.get('show_exec_error', False))

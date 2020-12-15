@@ -4321,21 +4321,20 @@ class UpgradeEvent(_messages.Message):
   when a resource is upgrading.
 
   Enums:
-    ResourceTypeValueValuesEnum: Required. The resource type that is
-      upgrading.
+    ResourceTypeValueValuesEnum: The resource type that is upgrading.
 
   Fields:
-    currentVersion: Required. The current version before the upgrade.
-    operation: Required. The operation associated with this upgrade.
-    operationStartTime: Required. The time when the operation was started.
-    resource: Optional. Optional relative path to the resource. For example in
-      node pool upgrades, the relative path of the node pool.
-    resourceType: Required. The resource type that is upgrading.
-    targetVersion: Required. The target version for the upgrade.
+    currentVersion: The current version before the upgrade.
+    operation: The operation associated with this upgrade.
+    operationStartTime: The time when the operation was started.
+    resource: Optional relative path to the resource. For example in node pool
+      upgrades, the relative path of the node pool.
+    resourceType: The resource type that is upgrading.
+    targetVersion: The target version for the upgrade.
   """
 
   class ResourceTypeValueValuesEnum(_messages.Enum):
-    r"""Required. The resource type that is upgrading.
+    r"""The resource type that is upgrading.
 
     Values:
       UPGRADE_RESOURCE_TYPE_UNSPECIFIED: Default value. This shouldn't be
@@ -4473,6 +4472,8 @@ class WorkloadIdentityConfig(_messages.Message):
   policies.
 
   Fields:
+    enableAlts: enable_alts controls whether the alts handshaker should be
+      enabled or not for direct-path.
     identityNamespace: IAM Identity Namespace to attach all Kubernetes Service
       Accounts to.
     identityProvider: identity provider is the third party identity provider.
@@ -4486,10 +4487,11 @@ class WorkloadIdentityConfig(_messages.Message):
       to.
   """
 
-  identityNamespace = _messages.StringField(1)
-  identityProvider = _messages.StringField(2)
-  issuingCertificateAuthority = _messages.StringField(3)
-  workloadPool = _messages.StringField(4)
+  enableAlts = _messages.BooleanField(1)
+  identityNamespace = _messages.StringField(2)
+  identityProvider = _messages.StringField(3)
+  issuingCertificateAuthority = _messages.StringField(4)
+  workloadPool = _messages.StringField(5)
 
 
 class WorkloadMetadataConfig(_messages.Message):

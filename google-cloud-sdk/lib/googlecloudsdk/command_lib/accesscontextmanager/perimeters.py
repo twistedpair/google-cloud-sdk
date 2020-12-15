@@ -231,6 +231,10 @@ def _GetResourceSpec():
       servicePerimetersId=_GetAttributeConfig())
 
 
+def _TrackSupportsDirectionalPolicies(track=None):
+  return track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)
+
+
 def AddResourceArg(parser, verb):
   """Add a resource argument for a service perimeter.
 
@@ -292,7 +296,6 @@ def GetPerimeterTypeEnumForShortName(perimeter_type_short_name, api_version):
 
 def AddPerimeterUpdateArgs(parser, version=None, track=None):
   """Add args for perimeters update command."""
-  del track  # Unused
   args = [
       common.GetDescriptionArg('service perimeter'),
       common.GetTitleArg('service perimeter'),
@@ -304,11 +307,11 @@ def AddPerimeterUpdateArgs(parser, version=None, track=None):
   _AddRestrictedServices(parser)
   _AddLevelsUpdate(parser)
   _AddVpcRestrictionArgs(parser)
-  AddUpdateDirectionalPoliciesGroupArgs(parser, version)
+  AddUpdateDirectionalPoliciesGroupArgs(parser, version, track)
 
 
-def AddUpdateDirectionalPoliciesGroupArgs(parser, version=None):
-  if version == 'v1alpha':
+def AddUpdateDirectionalPoliciesGroupArgs(parser, version=None, track=None):
+  if _TrackSupportsDirectionalPolicies(track):
     _AddUpdateIngressPoliciesGroupArgs(parser, version)
     _AddUpdateEgressPoliciesGroupArgs(parser, version)
 
@@ -409,8 +412,11 @@ def _AddUpdateIngressPoliciesGroupArgs(parser, api_version):
   set_ingress_policies_help_text = (
       'Path to a file containing a list of Ingress Policies.\n\nThis file '
       'contains a list of YAML-compliant objects representing Ingress Policies'
-      ' described in the API reference.\n\nFor more information, '
-      'see:\nhttps://cloud.google.com/access-context-manager/docs/reference/rest/v1alpha/accessPolicies.servicePerimeters'
+      ' described in the API reference.\n\nFor more information about the '
+      'alpha version, '
+      'see:\nhttps://cloud.google.com/access-context-manager/docs/reference/rest/v1alpha/accessPolicies.servicePerimeters\nFor'
+      ' more information about non-alpha versions, see: '
+      '\nhttps://cloud.google.com/access-context-manager/docs/reference/rest/v1/accessPolicies.servicePerimeters'
   )
   set_ingress_policies_arg = base.Argument(
       '--set-ingress-policies',
@@ -435,8 +441,11 @@ def _AddUpdateEgressPoliciesGroupArgs(parser, api_version):
   set_egress_policies_help_text = (
       'Path to a file containing a list of Egress Policies.\n\nThis file '
       'contains a list of YAML-compliant objects representing Egress Policies '
-      'described in the API reference.\n\nFor more information, '
-      'see:\nhttps://cloud.google.com/access-context-manager/docs/reference/rest/v1alpha/accessPolicies.servicePerimeters'
+      'described in the API reference.\n\nFor more information about the alpha'
+      ' version, '
+      'see:\nhttps://cloud.google.com/access-context-manager/docs/reference/rest/v1alpha/accessPolicies.servicePerimeters\nFor'
+      ' more information about non-alpha versions, see: '
+      '\nhttps://cloud.google.com/access-context-manager/docs/reference/rest/v1/accessPolicies.servicePerimeters'
   )
   set_egress_policies_arg = base.Argument(
       '--set-egress-policies',
@@ -453,9 +462,9 @@ def _AddUpdateEgressPoliciesGroupArgs(parser, api_version):
   clear_egress_policies_arg.AddToParser(group)
 
 
-def ParseUpdateDirectionalPoliciesArgs(args, version, arg_name):
+def ParseUpdateDirectionalPoliciesArgs(args, track, arg_name):
   """Return values for clear_/set_ ingress/egress-policies command line args."""
-  if version == 'v1alpha':
+  if _TrackSupportsDirectionalPolicies(track):
     underscored_name = arg_name.replace('-', '_')
     clear = getattr(args, 'clear_' + underscored_name)
     set_ = getattr(args, 'set_' + underscored_name, None)
@@ -558,19 +567,19 @@ def ParseIngressPolicies(api_version):
 
 def ParseEgressPolicies(api_version):
 
-  def ParseVersionedEgressPoliciesAlpha(path):
+  def ParseVersionedEgressPolicies(path):
     return ParseAccessContextManagerMessages(
         path,
         util.GetMessages(version=api_version).EgressPolicy)
 
-  return ParseVersionedEgressPoliciesAlpha
+  return ParseVersionedEgressPolicies
 
 
 def ParseAccessContextManagerMessages(path, message_class):
   """Parse a YAML representation of a list of messages.
 
   Args:
-    path: str, path to file containing Egress Policies
+    path: str, path to file containing Ingress/Egress Policies
     message_class: obj, message type to parse the contents of the yaml file to
 
   Returns:
@@ -753,9 +762,9 @@ def GenerateDryRunConfigDiff(perimeter, api_version):
   return '\n'.join(output)
 
 
-def PrintDirectionalPoliciesDryRunConfigDiff(perimeter, api_version):
+def PrintDirectionalPoliciesDryRunConfigDiff(perimeter, track):
   """Generates the diff of enforced and dry-run directional policies strings."""
-  if api_version != 'v1alpha':
+  if not _TrackSupportsDirectionalPolicies(track):
     return
   if perimeter.spec is None and perimeter.useExplicitDryRunSpec:
     return

@@ -255,11 +255,14 @@ class EventarcProjectsLocationsTriggersCreateRequest(_messages.Message):
     parent: Required. The parent collection in which to add this trigger.
     trigger: A Trigger resource to be passed as the request body.
     triggerId: Required. The user-provided ID to be assigned to the trigger.
+    validateOnly: Required. If set, validate the request and preview the
+      review, but do not actually post it.
   """
 
   parent = _messages.StringField(1, required=True)
   trigger = _messages.MessageField('Trigger', 2)
   triggerId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class EventarcProjectsLocationsTriggersDeleteRequest(_messages.Message):
@@ -271,11 +274,14 @@ class EventarcProjectsLocationsTriggersDeleteRequest(_messages.Message):
     etag: If provided, the trigger will only be deleted if the etag matches
       the current etag on the resource.
     name: Required. The name of the trigger to be deleted.
+    validateOnly: Required. If set, validate the request and preview the
+      review, but do not actually post it.
   """
 
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
   name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
 
 
 class EventarcProjectsLocationsTriggersGetIamPolicyRequest(_messages.Message):
@@ -346,12 +352,15 @@ class EventarcProjectsLocationsTriggersPatchRequest(_messages.Message):
       be updated. If no field mask is provided, all provided fields in the
       request will be updated. To update all fields, provide a field mask of
       "*".
+    validateOnly: Required. If set, validate the request and preview the
+      review, but do not actually post it.
   """
 
   allowMissing = _messages.BooleanField(1)
   name = _messages.StringField(2, required=True)
   trigger = _messages.MessageField('Trigger', 3)
   updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class EventarcProjectsLocationsTriggersSetIamPolicyRequest(_messages.Message):

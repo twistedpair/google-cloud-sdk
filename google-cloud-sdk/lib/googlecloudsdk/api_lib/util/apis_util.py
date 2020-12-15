@@ -49,7 +49,6 @@ class UnknownVersionError(exceptions.Error):
 # API name, and all property lookups should use the alias. Any api_name argument
 # expects to receive the name alias (if one exists). The _GetApiNameAndAlias
 # helper method can be used to convert it into a (name, alias) tuple.
-# TODO(b/31163851): remove the need for this alias map.
 _API_NAME_ALIASES = {
     'sql': 'sqladmin',
 }

@@ -608,7 +608,6 @@ class GoogleCloudGsuiteaddonsV1Deployment(_messages.Message):
 
   Fields:
     addOns: The G Suite Add-on configuration.
-    displayName: A free-form display name for the Deployment.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
@@ -619,10 +618,9 @@ class GoogleCloudGsuiteaddonsV1Deployment(_messages.Message):
   """
 
   addOns = _messages.MessageField('GoogleCloudGsuiteaddonsV1AddOns', 1)
-  displayName = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  name = _messages.StringField(4)
-  oauthScopes = _messages.StringField(5, repeated=True)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  oauthScopes = _messages.StringField(4, repeated=True)
 
 
 class GoogleCloudGsuiteaddonsV1InstallDeploymentRequest(_messages.Message):
@@ -756,6 +754,20 @@ class GsuiteaddonsProjectsDeploymentsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class GsuiteaddonsProjectsDeploymentsReplaceDeploymentRequest(_messages.Message):
+  r"""A GsuiteaddonsProjectsDeploymentsReplaceDeploymentRequest object.
+
+  Fields:
+    googleCloudGsuiteaddonsV1Deployment: A GoogleCloudGsuiteaddonsV1Deployment
+      resource to be passed as the request body.
+    name: The deployment resource name. This field is read-only. Example:
+      projects/my_project/deployments/my_deployment.
+  """
+
+  googleCloudGsuiteaddonsV1Deployment = _messages.MessageField('GoogleCloudGsuiteaddonsV1Deployment', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class GsuiteaddonsProjectsDeploymentsUninstallRequest(_messages.Message):

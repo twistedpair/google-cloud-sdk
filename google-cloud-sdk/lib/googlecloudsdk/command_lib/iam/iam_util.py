@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import binascii
 import re
+import textwrap
 
 from apitools.base.protorpclite import messages as apitools_messages
 from apitools.base.py import encoding
@@ -902,8 +903,9 @@ def GetDetailedHelpForSetIamPolicy(collection, example_id='',
       'DESCRIPTION':
           '{description}',
       'EXAMPLES':
-          """The following command will read an IAM policy defined in a JSON file
-          'policy.json' and set it for {a} {collection} with identifier '{id}'
+          textwrap.dedent("""\
+          The following command will read an IAM policy from 'policy.json' and
+          set it for {a} {collection} with '{id}' as the identifier:
 
             $ {{command}} {flags}{id} policy.json
 
@@ -912,7 +914,7 @@ def GetDetailedHelpForSetIamPolicy(collection, example_id='',
               id=example_id,
               see_more=example_see_more,
               flags=additional_flags,
-              a=a)
+              a=a))
   }
 
 

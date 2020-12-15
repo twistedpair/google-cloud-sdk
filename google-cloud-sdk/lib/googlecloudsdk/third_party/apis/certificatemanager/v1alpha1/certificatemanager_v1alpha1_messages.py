@@ -1182,6 +1182,39 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListReferencesRequest(_messages.Message):
+  r"""The ListResourceMetadataRequest request.
+
+  Fields:
+    pageSize: The maximum number of items to return. If unspecified, server
+      will pick an appropriate default. Server may return fewer items than
+      requested. A caller should only rely on response's next_page_token to
+      determine if there are more References left to be queried.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. The parent resource name (target_resource of this
+      reference) For example: `projects/{my-
+      project}/locations/{location}/instances/{my-instance}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3)
+
+
+class ListReferencesResponse(_messages.Message):
+  r"""The ListReferencesResponse response.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    references: The list of references.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  references = _messages.MessageField('Reference', 2, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 

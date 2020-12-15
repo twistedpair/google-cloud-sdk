@@ -1953,7 +1953,8 @@ class PublicKey(_messages.Message):
   r"""A PublicKey describes a public key.
 
   Enums:
-    TypeValueValuesEnum: Required. The type of public key.
+    TypeValueValuesEnum: Optional. The type of public key. If specified, it
+      must match the public key used for the`key` field.
 
   Fields:
     key: Required. A public key. When this is specified in a request, the
@@ -1962,20 +1963,23 @@ class PublicKey(_messages.Message):
       will always be an RFC 5280
       [SubjectPublicKeyInfo](https://tools.ietf.org/html/rfc5280#section-4.1)
       structure containing an algorithm identifier and a key.
-    type: Required. The type of public key.
+    type: Optional. The type of public key. If specified, it must match the
+      public key used for the`key` field.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. The type of public key.
+    r"""Optional. The type of public key. If specified, it must match the
+    public key used for the`key` field.
 
     Values:
       KEY_TYPE_UNSPECIFIED: Default unspecified value.
-      PEM_RSA_KEY: A PEM-encoded PKCS#1/RFC 3447 RSAPrivateKey structure, or
-        an RFC 5280 [SubjectPublicKeyInfo](https://tools.ietf.org/html/rfc5280
-        #section-4.1) structure containing the former.
-      PEM_EC_KEY: A PEM-encoded compressed NIST P-256/secp256r1/prime256v1 or
-        P-384 key, or an RFC 5280 [SubjectPublicKeyInfo](https://tools.ietf.or
-        g/html/rfc5280#section-4.1) structure containing the former.
+      PEM_RSA_KEY: A PEM-encoded PKCS#1/RFC 3447 RSAPublicKey structure, or an
+        RFC 5280 [SubjectPublicKeyInfo](https://tools.ietf.org/html/rfc5280#se
+        ction-4.1) structure containing the former.
+      PEM_EC_KEY: An RFC 5280
+        [SubjectPublicKeyInfo](https://tools.ietf.org/html/rfc5280#section-4.1
+        ) structure containing a PEM-encoded compressed NIST
+        P-256/secp256r1/prime256v1 or P-384 key.
     """
     KEY_TYPE_UNSPECIFIED = 0
     PEM_RSA_KEY = 1

@@ -168,7 +168,7 @@ class ApigatewayApiConfig(_messages.Message):
       DELETING: API Config is being deleted.
       UPDATING: API Config is being updated.
       ACTIVATING: API Config settings are being activated in downstream
-        systems. API Configs in this state cannot be used by Gateways..
+        systems. API Configs in this state cannot be used by Gateways.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -338,7 +338,7 @@ class ApigatewayAuditLogConfig(_messages.Message):
 
 
 class ApigatewayBackendConfig(_messages.Message):
-  r"""Configuration for a backend.
+  r"""Configuration for all backends.
 
   Fields:
     googleServiceAccount: Google Cloud IAM service account used to sign OIDC

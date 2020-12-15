@@ -239,7 +239,10 @@ class HiveMetastoreConfig(_messages.Message):
       to apply to the Hive metastore (configured in hive-site.xml). The
       mappings override system defaults (some keys cannot be overridden).
     kerberosConfig: Information used to configure the Hive metastore service
-      as a service principal in a Kerberos realm.
+      as a service principal in a Kerberos realm. To disable Kerberos, use the
+      UpdateService method and specify this field's path
+      ("hive_metastore_config.kerberos_config") in the request's update_mask
+      while omitting this field from the request's service.
     version: Immutable. The Hive metastore schema version.
   """
 

@@ -266,11 +266,11 @@ ADDONS_OPTIONS = DEFAULT_ADDONS + [
     CLOUDRUN,
     NODELOCALDNS,
     CONFIGCONNECTOR,
+    GCEPDCSIDRIVER,
 ]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
     ISTIO,
     APPLICATIONMANAGER,
-    GCEPDCSIDRIVER,
 ]
 ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [CLOUDBUILD]
 
@@ -747,7 +747,8 @@ class UpdateClusterOptions(object):
                notification_config=None,
                private_ipv6_google_access_type=None,
                kubernetes_objects_changes_target=None,
-               kubernetes_objects_snapshots_target=None):
+               kubernetes_objects_snapshots_target=None,
+               disable_autopilot=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -821,6 +822,7 @@ class UpdateClusterOptions(object):
     self.private_ipv6_google_access_type = private_ipv6_google_access_type
     self.kubernetes_objects_changes_target = kubernetes_objects_changes_target
     self.kubernetes_objects_snapshots_target = kubernetes_objects_snapshots_target
+    self.disable_autopilot = disable_autopilot
 
 
 class SetMasterAuthOptions(object):
@@ -2030,6 +2032,10 @@ class APIAdapter(object):
         addons.configConnectorConfig = (
             self.messages.ConfigConnectorConfig(
                 enabled=(not options.disable_addons.get(CONFIGCONNECTOR))))
+      if options.disable_addons.get(GCEPDCSIDRIVER) is not None:
+        addons.gcePersistentDiskCsiDriverConfig = (
+            self.messages.GcePersistentDiskCsiDriverConfig(
+                enabled=not options.disable_addons.get(GCEPDCSIDRIVER)))
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
     elif options.enable_autoscaling is not None:
       # For update, we can either enable or disable.
@@ -3255,6 +3261,11 @@ class V1Beta1Adapter(V1Adapter):
           desiredNotificationConfig=_GetNotificationConfigForClusterUpdate(
               options, self.messages))
 
+    if options.disable_autopilot is not None:
+      update = self.messages.ClusterUpdate(
+          desiredAutoGke=self.messages.AutoGKE(
+              enabled=False))
+
     if options.enable_stackdriver_kubernetes:
       update = self.messages.ClusterUpdate(
           desiredClusterTelemetry=self.messages.ClusterTelemetry(
@@ -3321,10 +3332,6 @@ class V1Beta1Adapter(V1Adapter):
         update.desiredAddonsConfig.cloudBuildConfig = (
             self.messages.CloudBuildConfig(
                 enabled=(not options.disable_addons.get(CLOUDBUILD))))
-      if options.disable_addons.get(GCEPDCSIDRIVER) is not None:
-        update.desiredAddonsConfig.gcePersistentDiskCsiDriverConfig = (
-            self.messages.GcePersistentDiskCsiDriverConfig(
-                enabled=not options.disable_addons.get(GCEPDCSIDRIVER)))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -3714,6 +3721,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           desiredNotificationConfig=_GetNotificationConfigForClusterUpdate(
               options, self.messages))
 
+    if options.disable_autopilot is not None:
+      update = self.messages.ClusterUpdate(
+          desiredAutoGke=self.messages.AutoGKE(
+              enabled=False))
+
     if options.enable_stackdriver_kubernetes:
       update = self.messages.ClusterUpdate(
           desiredClusterTelemetry=self.messages.ClusterTelemetry(
@@ -3780,10 +3792,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         update.desiredAddonsConfig.cloudBuildConfig = (
             self.messages.CloudBuildConfig(
                 enabled=(not options.disable_addons.get(CLOUDBUILD))))
-      if options.disable_addons.get(GCEPDCSIDRIVER) is not None:
-        update.desiredAddonsConfig.gcePersistentDiskCsiDriverConfig = (
-            self.messages.GcePersistentDiskCsiDriverConfig(
-                enabled=not options.disable_addons.get(GCEPDCSIDRIVER)))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(

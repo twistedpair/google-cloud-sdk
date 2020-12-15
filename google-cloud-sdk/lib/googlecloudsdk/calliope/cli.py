@@ -924,7 +924,6 @@ class CLI(object):
     # calliope argparse use cases.
     argparse.str = six.text_type
     # We need the argparse 1.2.1 patch in _SubParsersActionCall.
-    # TODO(b/77288697) delete after py3 tests use non-hermetic python
     if argparse.__version__ == '1.1':
       argparse._SubParsersAction.__call__ = _SubParsersActionCall  # pylint: disable=protected-access
 

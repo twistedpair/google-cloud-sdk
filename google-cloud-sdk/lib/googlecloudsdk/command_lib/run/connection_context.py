@@ -211,6 +211,10 @@ class _GKEConnectionContext(ConnectionInfo):
     return self.cluster_ref.zone
 
   @property
+  def cluster_project(self):
+    return self.cluster_ref.projectId
+
+  @property
   def supports_one_platform(self):
     return False
 

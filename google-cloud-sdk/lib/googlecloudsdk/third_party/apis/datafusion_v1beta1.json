@@ -487,16 +487,16 @@
       "properties": {
       }
     },
-    "RemoveIAMPolicyRequest": {
-      "id": "RemoveIAMPolicyRequest",
-      "description": "Request message for RemoveIAMPolicy method.",
+    "RemoveIamPolicyRequest": {
+      "id": "RemoveIamPolicyRequest",
+      "description": "Request message for RemoveIamPolicy method.",
       "type": "object",
       "properties": {
       }
     },
-    "RemoveIAMPolicyResponse": {
-      "id": "RemoveIAMPolicyResponse",
-      "description": "Response message for RemoveIAMPolicy method.",
+    "RemoveIamPolicyResponse": {
+      "id": "RemoveIamPolicyResponse",
+      "description": "Response message for RemoveIamPolicy method.",
       "type": "object",
       "properties": {
       }
@@ -780,10 +780,10 @@
             "resource"
           ],
           "request": {
-            "$ref": "RemoveIAMPolicyRequest"
+            "$ref": "RemoveIamPolicyRequest"
           },
           "response": {
-            "$ref": "RemoveIAMPolicyResponse"
+            "$ref": "RemoveIamPolicyResponse"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"

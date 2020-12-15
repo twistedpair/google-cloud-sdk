@@ -149,10 +149,6 @@
           "description": "The G Suite Add-on configuration.",
           "$ref": "GoogleCloudGsuiteaddonsV1AddOns"
         },
-        "displayName": {
-          "description": "A free-form display name for the Deployment.",
-          "type": "string"
-        },
         "etag": {
           "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"

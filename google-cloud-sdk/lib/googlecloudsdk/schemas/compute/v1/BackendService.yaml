@@ -74,6 +74,12 @@ properties:
     type: array
     items:
       type: string
+  customResponseHeaders:
+    description: |-
+      Headers that the HTTP/S load balancer should add to proxied responses.
+    type: array
+    items:
+      type: string
   description:
     description: |-
       An optional description of this resource. Provide this property

@@ -1272,6 +1272,26 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class PullMessage(_messages.Message):
+  r"""Pull Message. This proto can only be used for tasks in a queue which has
+  PULL type. It currently exists for backwards compatibility with the App
+  Engine Task Queue SDK. This message type maybe returned with methods list
+  and get, when the response view is FULL.
+
+  Fields:
+    payload: A data payload consumed by the worker to execute the task.
+    tag: The tasks's tag. The tag is less than 500 characters. SDK
+      compatibility: Although the SDK allows tags to be either string or [byte
+      s](https://cloud.google.com/appengine/docs/standard/java/javadoc/com/goo
+      gle/appengine/api/taskqueue/TaskOptions.html#tag-byte:A-), only UTF-8
+      encoded tags can be used in Cloud Tasks. If a tag isn't UTF-8 encoded,
+      the tag will be empty when the task is returned by Cloud Tasks.
+  """
+
+  payload = _messages.BytesField(1)
+  tag = _messages.StringField(2)
+
+
 class PurgeQueueRequest(_messages.Message):
   r"""Request message for PurgeQueue."""
 
@@ -1792,6 +1812,12 @@ class Task(_messages.Message):
       is 100 characters. * `TASK_ID` can contain only letters ([A-Za-z]),
       numbers ([0-9]), hyphens (-), or underscores (_). The maximum length is
       500 characters.
+    pullMessage: Pull Message contained in a task in a PULL queue type. This
+      payload type cannot be explicitly set through Cloud Tasks API. Its
+      purpose, currently is to provide backward compatibility with App Engine
+      Task Queue [pull](https://cloud.google.com/appengine/docs/standard/java/
+      taskqueue/pull/) queues to provide a way to inspect contents of pull
+      tasks through the CloudTasks.
     responseCount: Output only. The number of attempts which have received a
       response.
     scheduleTime: The time when the task is scheduled to be attempted. For App
@@ -1828,9 +1854,10 @@ class Task(_messages.Message):
   httpRequest = _messages.MessageField('HttpRequest', 6)
   lastAttempt = _messages.MessageField('Attempt', 7)
   name = _messages.StringField(8)
-  responseCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  scheduleTime = _messages.StringField(10)
-  view = _messages.EnumField('ViewValueValuesEnum', 11)
+  pullMessage = _messages.MessageField('PullMessage', 9)
+  responseCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  scheduleTime = _messages.StringField(11)
+  view = _messages.EnumField('ViewValueValuesEnum', 12)
 
 
 class TestIamPermissionsRequest(_messages.Message):
