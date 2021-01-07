@@ -33,10 +33,10 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import flags
+from googlecloudsdk.command_lib.run import platforms
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.util import files
-
 import httplib2
 import six
 from six.moves.urllib import parse as urlparse
@@ -166,11 +166,11 @@ def _CheckTLSSupport():
             min_required_version))
 
 
-class _GKEConnectionContext(ConnectionInfo):
+class GKEConnectionContext(ConnectionInfo):
   """Context manager to connect to the GKE Cloud Run add-in."""
 
   def __init__(self, cluster_ref, api_name, version):
-    super(_GKEConnectionContext, self).__init__(api_name, version)
+    super(GKEConnectionContext, self).__init__(api_name, version)
     self.cluster_ref = cluster_ref
 
   @contextlib.contextmanager
@@ -223,7 +223,7 @@ class _GKEConnectionContext(ConnectionInfo):
     return 'namespace'
 
 
-class _KubeconfigConnectionContext(ConnectionInfo):
+class KubeconfigConnectionContext(ConnectionInfo):
   """Context manager to connect to a cluster defined in a Kubeconfig file."""
 
   def __init__(self, kubeconfig, api_name, version, context=None):
@@ -235,7 +235,7 @@ class _KubeconfigConnectionContext(ConnectionInfo):
       version: str, api version to use for making requests
       context: str, current context name
     """
-    super(_KubeconfigConnectionContext, self).__init__(api_name, version)
+    super(KubeconfigConnectionContext, self).__init__(api_name, version)
     self.kubeconfig = kubeconfig
     self.kubeconfig.SetCurrentContext(context or kubeconfig.current_context)
     self.client_cert_data = None
@@ -476,22 +476,22 @@ def GetConnectionContext(args,
     A GKE or regional ConnectionInfo object.
   """
   if platform is None:
-    platform = flags.GetPlatform()
-  if platform == flags.PLATFORM_KUBERNETES:
-    kubeconfig = flags.GetKubeconfig(args)
+    platform = platforms.GetPlatform()
+  if platform == platforms.PLATFORM_KUBERNETES:
+    kubeconfig = flags.GetKubeconfig(getattr(args, 'kubeconfig', None))
     api_name = _GetApiName(product, release_track, is_cluster=True)
     api_version = _GetApiVersion(
         product,
         release_track,
         is_cluster=True,
         version_override=version_override)
-    return _KubeconfigConnectionContext(kubeconfig, api_name, api_version,
-                                        args.context)
+    return KubeconfigConnectionContext(kubeconfig, api_name, api_version,
+                                       args.context)
 
-  if platform == flags.PLATFORM_GKE:
+  if platform == platforms.PLATFORM_GKE:
     cluster_ref = args.CONCEPTS.cluster.Parse()
     if not cluster_ref:
-      raise flags.ArgumentError(
+      raise serverless_exceptions.ArgumentError(
           'You must specify a cluster in a given location. '
           'Either use the `--cluster` and `--cluster-location` flags '
           'or set the run/cluster and run/cluster_location properties.')
@@ -501,12 +501,12 @@ def GetConnectionContext(args,
         release_track,
         is_cluster=True,
         version_override=version_override)
-    return _GKEConnectionContext(cluster_ref, api_name, api_version)
+    return GKEConnectionContext(cluster_ref, api_name, api_version)
 
-  if platform == flags.PLATFORM_MANAGED:
+  if platform == platforms.PLATFORM_MANAGED:
     region = flags.GetRegion(args, prompt=True)
     if not region:
-      raise flags.ArgumentError(
+      raise serverless_exceptions.ArgumentError(
           'You must specify a region. Either use the `--region` flag '
           'or set the run/region property.')
     api_name = _GetApiName(product, release_track)

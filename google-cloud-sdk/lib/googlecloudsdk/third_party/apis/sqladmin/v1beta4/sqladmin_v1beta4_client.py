@@ -1038,7 +1038,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
         method_id='sql.projects.instances.startExternalSync',
         ordered_params=['project', 'instance'],
         path_params=['instance', 'project'],
-        query_params=['syncMode'],
+        query_params=['skipVerification', 'syncMode'],
         relative_path='sql/v1beta4/projects/{project}/instances/{instance}/startExternalSync',
         request_field='',
         request_type_name='SqlProjectsInstancesStartExternalSyncRequest',

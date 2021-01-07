@@ -1095,7 +1095,8 @@ class DynamicGroupMetadata(_messages.Message):
 
   Fields:
     queries: Memberships will be the union of all queries. Only one entry with
-      USER resource is currently supported.
+      USER resource is currently supported. Customers can create up to 100
+      dynamic groups.
     status: Output only. Status of the dynamic group.
   """
 
@@ -1197,6 +1198,21 @@ class ExpiryDetail(_messages.Message):
   """
 
   expireTime = _messages.StringField(1)
+
+
+class GetMembershipGraphResponse(_messages.Message):
+  r"""The response message for MembershipsService.GetMembershipGraph.
+
+  Fields:
+    adjacencyList: The membership graph's path information represented as an
+      adjacency list.
+    groups: The resources representing each group in the adjacency list. Each
+      group in this list can be correlated to a 'group' of the
+      MembershipAdjacencyList using the 'name' of the Group resource.
+  """
+
+  adjacencyList = _messages.MessageField('MembershipAdjacencyList', 1, repeated=True)
+  groups = _messages.MessageField('Group', 2, repeated=True)
 
 
 class GoogleAppsCloudidentityDevicesV1AndroidAttributes(_messages.Message):
@@ -2303,6 +2319,21 @@ class Membership(_messages.Message):
   roles = _messages.MessageField('MembershipRole', 4, repeated=True)
   type = _messages.EnumField('TypeValueValuesEnum', 5)
   updateTime = _messages.StringField(6)
+
+
+class MembershipAdjacencyList(_messages.Message):
+  r"""Membership graph's path information as an adjacency list.
+
+  Fields:
+    edges: Each edge contains information about the member that belongs to
+      this group. Note: Fields returned here will help identify the specific
+      Membership resource (e.g name, preferred_member_key and role), but may
+      not be a comprehensive list of all fields.
+    group: Resource name of the group that the members belong to.
+  """
+
+  edges = _messages.MessageField('Membership', 1, repeated=True)
+  group = _messages.StringField(2)
 
 
 class MembershipRole(_messages.Message):

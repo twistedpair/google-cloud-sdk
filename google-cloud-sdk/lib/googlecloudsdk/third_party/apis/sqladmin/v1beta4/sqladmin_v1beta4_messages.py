@@ -39,6 +39,7 @@ class ApiWarning(_messages.Message):
   Fields:
     code: Code to uniquely identify the warning type.
     message: The warning message.
+    region: The region name for REGION_UNREACHABLE warning.
   """
 
   class CodeValueValuesEnum(_messages.Enum):
@@ -55,6 +56,7 @@ class ApiWarning(_messages.Message):
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
+  region = _messages.StringField(3)
 
 
 class BackupConfiguration(_messages.Message):
@@ -359,13 +361,13 @@ class DatabaseInstance(_messages.Message):
       instance configured as a read-replica.
     StateValueValuesEnum: The current serving state of the Cloud SQL instance.
       This can be one of the following. *SQL_INSTANCE_STATE_UNSPECIFIED*: The
-      state of the instance is unknown. *RUNNABLE*: The instance has been
-      stopped by owner. It is not currently running, but it's ready to be
-      restarted. *SUSPENDED*: The instance is not available, for example due
-      to problems with billing. for example due to problems with billing.
-      *PENDING_DELETE*: The instance is being deleted. *PENDING_CREATE*: The
-      instance is being created. *MAINTENANCE*: The instance is down for
-      maintenance. *FAILED*: The instance creation failed.
+      state of the instance is unknown. *RUNNABLE*: The instance is running,
+      or has been stopped by owner. *SUSPENDED*: The instance is not
+      available, for example due to problems with billing. for example due to
+      problems with billing. *PENDING_DELETE*: The instance is being deleted.
+      *PENDING_CREATE*: The instance is being created. *MAINTENANCE*: The
+      instance is down for maintenance. *FAILED*: The instance creation
+      failed.
     SuspensionReasonValueListEntryValuesEnum:
 
   Messages:
@@ -445,13 +447,13 @@ class DatabaseInstance(_messages.Message):
     settings: The user settings.
     state: The current serving state of the Cloud SQL instance. This can be
       one of the following. *SQL_INSTANCE_STATE_UNSPECIFIED*: The state of the
-      instance is unknown. *RUNNABLE*: The instance has been stopped by owner.
-      It is not currently running, but it's ready to be restarted.
-      *SUSPENDED*: The instance is not available, for example due to problems
-      with billing. for example due to problems with billing.
-      *PENDING_DELETE*: The instance is being deleted. *PENDING_CREATE*: The
-      instance is being created. *MAINTENANCE*: The instance is down for
-      maintenance. *FAILED*: The instance creation failed.
+      instance is unknown. *RUNNABLE*: The instance is running, or has been
+      stopped by owner. *SUSPENDED*: The instance is not available, for
+      example due to problems with billing. for example due to problems with
+      billing. *PENDING_DELETE*: The instance is being deleted.
+      *PENDING_CREATE*: The instance is being created. *MAINTENANCE*: The
+      instance is down for maintenance. *FAILED*: The instance creation
+      failed.
     suspensionReason: If the instance state is SUSPENDED, the reason for the
       suspension.
   """
@@ -540,18 +542,16 @@ class DatabaseInstance(_messages.Message):
   class StateValueValuesEnum(_messages.Enum):
     r"""The current serving state of the Cloud SQL instance. This can be one
     of the following. *SQL_INSTANCE_STATE_UNSPECIFIED*: The state of the
-    instance is unknown. *RUNNABLE*: The instance has been stopped by owner.
-    It is not currently running, but it's ready to be restarted. *SUSPENDED*:
-    The instance is not available, for example due to problems with billing.
-    for example due to problems with billing. *PENDING_DELETE*: The instance
-    is being deleted. *PENDING_CREATE*: The instance is being created.
-    *MAINTENANCE*: The instance is down for maintenance. *FAILED*: The
-    instance creation failed.
+    instance is unknown. *RUNNABLE*: The instance is running, or has been
+    stopped by owner. *SUSPENDED*: The instance is not available, for example
+    due to problems with billing. for example due to problems with billing.
+    *PENDING_DELETE*: The instance is being deleted. *PENDING_CREATE*: The
+    instance is being created. *MAINTENANCE*: The instance is down for
+    maintenance. *FAILED*: The instance creation failed.
 
     Values:
       SQL_INSTANCE_STATE_UNSPECIFIED: The state of the instance is unknown.
-      RUNNABLE: The instance has been stopped by owner. It is not currently
-        running, but it's ready to be restarted.
+      RUNNABLE: The instance is running, or has been stopped by owner.
       SUSPENDED: The instance is not available, for example due to problems
         with billing.
       PENDING_DELETE: The instance is being deleted.
@@ -2546,6 +2546,7 @@ class SqlProjectsInstancesStartExternalSyncRequest(_messages.Message):
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: ID of the project that contains the instance.
+    skipVerification: Whether to skip the verification step (VESS).
     syncMode: External sync mode.
   """
 
@@ -2566,7 +2567,8 @@ class SqlProjectsInstancesStartExternalSyncRequest(_messages.Message):
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  syncMode = _messages.EnumField('SyncModeValueValuesEnum', 3)
+  skipVerification = _messages.BooleanField(3)
+  syncMode = _messages.EnumField('SyncModeValueValuesEnum', 4)
 
 
 class SqlProjectsInstancesVerifyExternalSyncSettingsRequest(_messages.Message):

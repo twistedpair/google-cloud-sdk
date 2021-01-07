@@ -19,6 +19,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import abc
+import os
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.kuberun import auth
@@ -90,6 +91,12 @@ class KubeRunCommand(base.BinaryBackedCommand):
     project = properties.VALUES.core.project.Get()
     command = self.Command()
     command.extend(self.BuildKubeRunArgs(args))
+
+    devkit_dir = ''  # '' to force Go binary to use the fdk-dir for gcloud_lite
+    if config.Paths().sdk_root is not None:
+      devkit_dir = os.path.join(config.Paths().sdk_root, 'lib', 'kuberun',
+                                'kuberun_devkits')
+
     response = self.command_executor(
         command=command,
         env=kuberuncli.GetEnvArgsForCommand(
@@ -102,6 +109,8 @@ class KubeRunCommand(base.BinaryBackedCommand):
                 'CLOUDSDK_USER_AGENT':  # Cloud SDK prefix + user agent string
                     '{} {}'.format(config.CLOUDSDK_USER_AGENT,
                                    transport.MakeUserAgentString()),
+                'KUBERUN_DEVKIT_DIRECTORY':
+                    devkit_dir,
             }),
         show_exec_error=args.show_exec_error)
     log.debug('Response: %s' % response.stdout)

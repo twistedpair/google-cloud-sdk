@@ -217,9 +217,13 @@ def CreatePersistentAttachedDiskMessages(
   return disks_messages
 
 
-def CreatePersistentCreateDiskMessages(
-    client, resources, user_project, create_disks, support_kms=False,
-    container_mount_disk=None):
+def CreatePersistentCreateDiskMessages(client,
+                                       resources,
+                                       user_project,
+                                       create_disks,
+                                       support_kms=False,
+                                       container_mount_disk=None,
+                                       support_multi_writer=False):
   """Returns a list of AttachedDisk messages.
 
   Args:
@@ -242,6 +246,7 @@ def CreatePersistentCreateDiskMessages(
 
     support_kms: if KMS is supported
     container_mount_disk: list of disks to be mounted to container, if any.
+    support_multi_writer: if multi writer disks are supported.
 
   Returns:
     list of API messages for attached disks
@@ -292,9 +297,11 @@ def CreatePersistentCreateDiskMessages(
     policies = disk.get('disk-resource-policy')
     if policies:
       init_params.resourcePolicies = policies
-    multi_writer = disk.get('multi-writer') == 'yes'
-    if multi_writer:
+
+    multi_writer = disk.get('multi-writer')
+    if support_multi_writer and multi_writer:
       init_params.multiWriter = True
+
     create_disk = client.messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=boot,

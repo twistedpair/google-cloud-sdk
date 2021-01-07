@@ -547,61 +547,6 @@ class File(_messages.Message):
   updateTime = _messages.StringField(6)
 
 
-class GoogleDevtoolsArtifactregistryV1alpha1ErrorInfo(_messages.Message):
-  r"""Error information explaining why a package was not imported.
-
-  Fields:
-    error: The detailed error status.
-    gcsSource: Google Cloud Storage location requested.
-  """
-
-  error = _messages.MessageField('Status', 1)
-  gcsSource = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1GcsSource', 2)
-
-
-class GoogleDevtoolsArtifactregistryV1alpha1GcsSource(_messages.Message):
-  r"""Google Cloud Storage location where the artifacts currently reside.
-
-  Fields:
-    uris: Cloud Storage paths URI (e.g., gs://my_bucket//my_object).
-    useWildcards: Supports URI wildcards for matching multiple objects from a
-      single URI.
-  """
-
-  uris = _messages.StringField(1, repeated=True)
-  useWildcards = _messages.BooleanField(2)
-
-
-class GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsResponse(_messages.Message):
-  r"""The response message from importing artifacts.
-
-  Fields:
-    errors: Detailed error info for packages that were not imported.
-    packages: The packages updated.
-  """
-
-  errors = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ErrorInfo', 1, repeated=True)
-  packages = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1Package', 2, repeated=True)
-
-
-class GoogleDevtoolsArtifactregistryV1alpha1Package(_messages.Message):
-  r"""Packages are named collections of versions.
-
-  Fields:
-    createTime: The time when the package was created.
-    displayName: The display name of the package.
-    name: The name of the package, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1".
-    updateTime: The time when the package was last updated. This includes
-      publishing a new version of the package.
-  """
-
-  createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
-
-
 class Hash(_messages.Message):
   r"""A hash of file content.
 

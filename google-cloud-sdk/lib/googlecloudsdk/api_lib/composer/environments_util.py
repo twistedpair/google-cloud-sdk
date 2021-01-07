@@ -50,6 +50,7 @@ def Create(environment_ref,
            services_secondary_range_name=None,
            cluster_ipv4_cidr_block=None,
            services_ipv4_cidr_block=None,
+           max_pods_per_node=None,
            private_environment=None,
            private_endpoint=None,
            master_ipv4_cidr=None,
@@ -59,6 +60,14 @@ def Create(environment_ref,
            cloud_sql_machine_type=None,
            web_server_machine_type=None,
            kms_key=None,
+           enable_autoscaling=None,
+           autoscaling_maximum_cpu=None,
+           autoscaling_minimum_cpu=None,
+           autoscaling_maximum_memory=None,
+           autoscaling_minimum_memory=None,
+           maintenance_window_start=None,
+           maintenance_window_end=None,
+           maintenance_window_recurrence=None,
            release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.Create method.
 
@@ -100,6 +109,8 @@ def Create(environment_ref,
         adresses to pods in GKE cluster.
     services_ipv4_cidr_block: str or None, the IP address range to allocate IP
         addresses to services in GKE cluster.
+    max_pods_per_node: int or None, the maximum number of pods that can be
+        assigned to a GKE cluster node.
     private_environment: bool or None, create env cluster nodes with no public
         IP addresses.
     private_endpoint: bool or None, managed env cluster using the private IP
@@ -115,6 +126,21 @@ def Create(environment_ref,
         server
     kms_key: str or None, the user-provided customer-managed
         encryption key resource name
+    enable_autoscaling: bool or None, enable GKE autoscaling.
+    autoscaling_maximum_cpu: int or None, maximum number of CPU allowed
+        in the Environment. Cannot be specified unless autoscaling is enabled.
+    autoscaling_minimum_cpu: int or None, minimum number of CPU allowed
+        in the Environment. Cannot be specified unless autoscaling is enabled.
+    autoscaling_maximum_memory: int or None, maximum memory (in GB) allowed
+        in the Environment. Cannot be specified unless autoscaling is enabled.
+    autoscaling_minimum_memory: int or None, minimum memory (in GB) allowed
+        in the Environment. Cannot be specified unless autoscaling is enabled.
+    maintenance_window_start: Datetime or None, the starting time of the
+        maintenance window
+    maintenance_window_end: Datetime or None, the ending time of the maintenance
+        window
+    maintenance_window_recurrence: str or None, the recurrence of the
+        maintenance window
     release_track: base.ReleaseTrack, the release track of command. Will dictate
         which Composer client library will be used.
 
@@ -147,6 +173,7 @@ def Create(environment_ref,
     if tags:
       config.nodeConfig.tags = list(
           collections.OrderedDict((t.strip(), None) for t in tags).keys())
+
   if (image_version or env_variables or airflow_config_overrides or
       python_version or airflow_executor_type):
     is_config_empty = False
@@ -167,6 +194,15 @@ def Create(environment_ref,
           messages.SoftwareConfig.AirflowExecutorTypeValueValuesEnum,
           airflow_executor_type)
 
+  if maintenance_window_start:
+    assert maintenance_window_end, 'maintenance_window_end is missing'
+    assert maintenance_window_recurrence, ('maintenance_window_recurrence ' +
+                                           'is missing')
+    config.maintenanceWindow = messages.MaintenanceWindow(
+        startTime=maintenance_window_start.isoformat(),
+        endTime=maintenance_window_end.isoformat(),
+        recurrence=maintenance_window_recurrence)
+
   if use_ip_aliases:
     is_config_empty = False
     config.nodeConfig.ipAllocationPolicy = messages.IPAllocationPolicy(
@@ -176,6 +212,9 @@ def Create(environment_ref,
         clusterIpv4CidrBlock=cluster_ipv4_cidr_block,
         servicesIpv4CidrBlock=services_ipv4_cidr_block,
     )
+
+    if max_pods_per_node:
+      config.nodeConfig.maxPodsPerNode = max_pods_per_node
 
     if private_environment:
       # Adds a PrivateClusterConfig, if necessary.
@@ -209,6 +248,13 @@ def Create(environment_ref,
   if web_server_machine_type:
     config.webServerConfig = messages.WebServerConfig(
         machineType=web_server_machine_type)
+  if enable_autoscaling:
+    config.autoscalingConfig = messages.AutoscalingConfig(
+        mode=messages.AutoscalingConfig.ModeValueValuesEnum.ENABLED,
+        maximumCpu=autoscaling_maximum_cpu,
+        maximumMemory=autoscaling_maximum_memory,
+        minimumCpu=autoscaling_minimum_cpu,
+        minimumMemory=autoscaling_minimum_memory)
 
   # Builds environment message and attaches the configuration
   environment = messages.Environment(name=environment_ref.RelativeName())
@@ -256,7 +302,7 @@ def Delete(environment_ref, release_track=base.ReleaseTrack.GA):
           name=environment_ref.RelativeName()))
 
 
-def RestartWebServer(environment_ref, release_track=base.ReleaseTrack.ALPHA):
+def RestartWebServer(environment_ref, release_track=base.ReleaseTrack.BETA):
   """Calls the Composer Environments.RestartWebServer method.
 
   Args:

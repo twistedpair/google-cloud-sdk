@@ -54,6 +54,13 @@ def AddCreatePdpArgsToParser(parser):
       '--description',
       help='Description of this public delegated prefix.'
   )
+  parser.add_argument(
+      '--enable-live-migration',
+      action='store_true',
+      default=None,
+      help='Specify if this public delegated prefix is meant to be live '
+           'migrated.'
+  )
 
 
 def _AddCommonSubPrefixArgs(parser, verb):

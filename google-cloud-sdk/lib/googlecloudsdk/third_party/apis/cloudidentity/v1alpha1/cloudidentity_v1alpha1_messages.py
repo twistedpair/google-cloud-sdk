@@ -328,9 +328,12 @@ class CloudidentityGroupsCreateRequest(_messages.Message):
       INITIAL_GROUP_CONFIG_UNSPECIFIED: Default. Should not be used.
       WITH_INITIAL_OWNER: The end user making the request will be added as the
         initial owner of the `Group`.
+      EMPTY: An empty group is created without any initial owners. This can
+        only be used by admins of the domain.
     """
     INITIAL_GROUP_CONFIG_UNSPECIFIED = 0
     WITH_INITIAL_OWNER = 1
+    EMPTY = 2
 
   group = _messages.MessageField('Group', 1)
   initialGroupConfig = _messages.EnumField('InitialGroupConfigValueValuesEnum', 2)
@@ -903,7 +906,7 @@ class DynamicGroupMetadata(_messages.Message):
 
   Fields:
     queries: Only one entry is supported for now. Memberships will be the
-      union of all queries.
+      union of all queries. Customers can create up to 100 dynamic groups.
     status: Status of the dynamic group. Output only.
   """
 

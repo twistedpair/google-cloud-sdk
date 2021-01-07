@@ -3189,7 +3189,8 @@ class BackendService(_messages.Message):
       true.
     timeoutSec: The backend service timeout has a different meaning depending
       on the type of load balancer. For more information see,  Backend service
-      settings The default is 30 seconds.
+      settings The default is 30 seconds. The full range of timeout values
+      allowed is 1 - 2,147,483,647 seconds.
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
@@ -6012,7 +6013,7 @@ class ComputeDisksInsertRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
-    sourceImage: Optional. Source image to restore onto a disk.
+    sourceImage: Source image to restore onto a disk. This field is optional.
     zone: The name of the zone for this request.
   """
 
@@ -6698,6 +6699,34 @@ class ComputeForwardingRulesPatchRequest(_messages.Message):
   requestId = _messages.StringField(5)
 
 
+class ComputeForwardingRulesSetLabelsRequest(_messages.Message):
+  r"""A ComputeForwardingRulesSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
+
+
 class ComputeForwardingRulesSetTargetRequest(_messages.Message):
   r"""A ComputeForwardingRulesSetTargetRequest object.
 
@@ -6970,6 +6999,21 @@ class ComputeGlobalForwardingRulesPatchRequest(_messages.Message):
   forwardingRuleResource = _messages.MessageField('ForwardingRule', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeGlobalForwardingRulesSetLabelsRequest(_messages.Message):
+  r"""A ComputeGlobalForwardingRulesSetLabelsRequest object.
+
+  Fields:
+    globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeGlobalForwardingRulesSetTargetRequest(_messages.Message):
@@ -13927,7 +13971,7 @@ class ComputeRegionDisksInsertRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
-    sourceImage: Optional. Source image to restore onto a disk.
+    sourceImage: Source image to restore onto a disk. This field is optional.
   """
 
   disk = _messages.MessageField('Disk', 1)
@@ -20945,8 +20989,8 @@ class CorsPolicy(_messages.Message):
       header.
     allowOriginRegexes: Specifies the regualar expression patterns that match
       allowed origins. For regular expression grammar please see
-      en.cppreference.com/w/cpp/regex/ecmascript  An origin is allowed if it
-      matches either an item in allowOrigins or an item in allowOriginRegexes.
+      github.com/google/re2/wiki/Syntax  An origin is allowed if it matches
+      either an item in allowOrigins or an item in allowOriginRegexes.
     allowOrigins: Specifies the list of origins that will be allowed to do
       CORS requests. An origin is allowed if it matches either an item in
       allowOrigins or an item in allowOriginRegexes.
@@ -21081,10 +21125,10 @@ class Disk(_messages.Message):
   {$api_version}.regionDisks ==)
 
   Enums:
-    StatusValueValuesEnum: [Output Only] The status of disk creation.
-      CREATING: Disk is provisioning. RESTORING: Source data is being copied
-      into the disk. FAILED: Disk creation failed. READY: Disk is ready for
-      use. DELETING: Disk is deleting.
+    StatusValueValuesEnum: [Output Only] The status of disk creation.   -
+      CREATING: Disk is provisioning.  - RESTORING: Source data is being
+      copied into the disk.  - FAILED: Disk creation failed.  - READY: Disk is
+      ready for use.  - DELETING: Disk is deleting.
 
   Messages:
     LabelsValue: Labels to apply to this disk. These can be later modified by
@@ -21126,6 +21170,9 @@ class Disk(_messages.Message):
     licenseCodes: Integer license codes indicating which licenses are attached
       to this disk.
     licenses: A list of publicly visible licenses. Reserved for Google's use.
+    locationHint: An opaque location hint used to place the disk close to
+      other resources. This field is for use by internal tools that use the
+      public API.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -21147,6 +21194,7 @@ class Disk(_messages.Message):
       Only applicable for regional resources.
     resourcePolicies: Resource policies applied to this disk for automatic
       snapshot creations.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
     sizeGb: Size, in GB, of the persistent disk. You can specify this field
@@ -21201,10 +21249,17 @@ class Disk(_messages.Message):
       persistent disk from a snapshot that was later deleted and recreated
       under the same name, the source snapshot ID would identify the exact
       version of the snapshot that was used.
-    status: [Output Only] The status of disk creation. CREATING: Disk is
-      provisioning. RESTORING: Source data is being copied into the disk.
-      FAILED: Disk creation failed. READY: Disk is ready for use. DELETING:
-      Disk is deleting.
+    sourceStorageObject: The full Google Cloud Storage URI where the disk
+      image is stored. This file must be a gzip-compressed tarball whose name
+      ends in .tar.gz or virtual machine disk whose name ends in vmdk. Valid
+      URIs may start with gs:// or https://storage.googleapis.com/. This flag
+      is not optimized for creating multiple disks from a source storage
+      object. To create many disks from a source storage object, use gcloud
+      compute images import instead.
+    status: [Output Only] The status of disk creation.   - CREATING: Disk is
+      provisioning.  - RESTORING: Source data is being copied into the disk.
+      - FAILED: Disk creation failed.  - READY: Disk is ready for use.  -
+      DELETING: Disk is deleting.
     type: URL of the disk type resource describing which disk type to use to
       create the disk. Provide this when creating the disk. For example:
       projects/project/zones/zone/diskTypes/pd-standard  or pd-ssd
@@ -21216,10 +21271,10 @@ class Disk(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The status of disk creation. CREATING: Disk is
-    provisioning. RESTORING: Source data is being copied into the disk.
-    FAILED: Disk creation failed. READY: Disk is ready for use. DELETING: Disk
-    is deleting.
+    r"""[Output Only] The status of disk creation.   - CREATING: Disk is
+    provisioning.  - RESTORING: Source data is being copied into the disk.  -
+    FAILED: Disk creation failed.  - READY: Disk is ready for use.  -
+    DELETING: Disk is deleting.
 
     Values:
       CREATING: <no description>
@@ -21271,26 +21326,29 @@ class Disk(_messages.Message):
   lastDetachTimestamp = _messages.StringField(10)
   licenseCodes = _messages.IntegerField(11, repeated=True)
   licenses = _messages.StringField(12, repeated=True)
-  name = _messages.StringField(13)
-  options = _messages.StringField(14)
-  physicalBlockSizeBytes = _messages.IntegerField(15)
-  region = _messages.StringField(16)
-  replicaZones = _messages.StringField(17, repeated=True)
-  resourcePolicies = _messages.StringField(18, repeated=True)
-  selfLink = _messages.StringField(19)
-  sizeGb = _messages.IntegerField(20)
-  sourceDisk = _messages.StringField(21)
-  sourceDiskId = _messages.StringField(22)
-  sourceImage = _messages.StringField(23)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
-  sourceImageId = _messages.StringField(25)
-  sourceSnapshot = _messages.StringField(26)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 27)
-  sourceSnapshotId = _messages.StringField(28)
-  status = _messages.EnumField('StatusValueValuesEnum', 29)
-  type = _messages.StringField(30)
-  users = _messages.StringField(31, repeated=True)
-  zone = _messages.StringField(32)
+  locationHint = _messages.StringField(13)
+  name = _messages.StringField(14)
+  options = _messages.StringField(15)
+  physicalBlockSizeBytes = _messages.IntegerField(16)
+  region = _messages.StringField(17)
+  replicaZones = _messages.StringField(18, repeated=True)
+  resourcePolicies = _messages.StringField(19, repeated=True)
+  satisfiesPzs = _messages.BooleanField(20)
+  selfLink = _messages.StringField(21)
+  sizeGb = _messages.IntegerField(22)
+  sourceDisk = _messages.StringField(23)
+  sourceDiskId = _messages.StringField(24)
+  sourceImage = _messages.StringField(25)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 26)
+  sourceImageId = _messages.StringField(27)
+  sourceSnapshot = _messages.StringField(28)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 29)
+  sourceSnapshotId = _messages.StringField(30)
+  sourceStorageObject = _messages.StringField(31)
+  status = _messages.EnumField('StatusValueValuesEnum', 32)
+  type = _messages.StringField(33)
+  users = _messages.StringField(34, repeated=True)
+  zone = _messages.StringField(35)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -23222,6 +23280,11 @@ class ForwardingRule(_messages.Message):
       If IPAddress is specified, this value must be equal to the networkTier
       of the Address.
 
+  Messages:
+    LabelsValue: Labels for this resource. These can only be added or modified
+      by the setLabels method. Each label key/value pair must comply with
+      RFC1035. Label values may be empty.
+
   Fields:
     IPAddress: IP address that this forwarding rule serves. When a client
       sends traffic to this IP address, the forwarding rule directs the
@@ -23288,6 +23351,17 @@ class ForwardingRule(_messages.Message):
       INTERNAL.
     kind: [Output Only] Type of the resource. Always compute#forwardingRule
       for Forwarding Rule resources.
+    labelFingerprint: A fingerprint for the labels being applied to this
+      resource, which is essentially a hash of the labels set used for
+      optimistic locking. The fingerprint is initially generated by Compute
+      Engine and changes after every request to modify or update labels. You
+      must always provide an up-to-date fingerprint hash in order to update or
+      change labels, otherwise the request will fail with error 412
+      conditionNotMet.  To see the latest fingerprint, make a get() request to
+      retrieve a ForwardingRule.
+    labels: Labels for this resource. These can only be added or modified by
+      the setLabels method. Each label key/value pair must comply with
+      RFC1035. Label values may be empty.
     loadBalancingScheme: Specifies the forwarding rule type.    - EXTERNAL is
       used for:   - Classic Cloud VPN gateways  - Protocol forwarding to VMs
       from an external IP address  - HTTP(S), SSL Proxy, TCP Proxy, and
@@ -23466,6 +23540,32 @@ class ForwardingRule(_messages.Message):
     PREMIUM = 0
     STANDARD = 1
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels for this resource. These can only be added or modified by the
+    setLabels method. Each label key/value pair must comply with RFC1035.
+    Label values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   IPAddress = _messages.StringField(1)
   IPProtocol = _messages.EnumField('IPProtocolValueValuesEnum', 2)
   allPorts = _messages.BooleanField(3)
@@ -23478,19 +23578,21 @@ class ForwardingRule(_messages.Message):
   ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 10)
   isMirroringCollector = _messages.BooleanField(11)
   kind = _messages.StringField(12, default='compute#forwardingRule')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 13)
-  metadataFilters = _messages.MessageField('MetadataFilter', 14, repeated=True)
-  name = _messages.StringField(15)
-  network = _messages.StringField(16)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 17)
-  portRange = _messages.StringField(18)
-  ports = _messages.StringField(19, repeated=True)
-  region = _messages.StringField(20)
-  selfLink = _messages.StringField(21)
-  serviceLabel = _messages.StringField(22)
-  serviceName = _messages.StringField(23)
-  subnetwork = _messages.StringField(24)
-  target = _messages.StringField(25)
+  labelFingerprint = _messages.BytesField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 15)
+  metadataFilters = _messages.MessageField('MetadataFilter', 16, repeated=True)
+  name = _messages.StringField(17)
+  network = _messages.StringField(18)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 19)
+  portRange = _messages.StringField(20)
+  ports = _messages.StringField(21, repeated=True)
+  region = _messages.StringField(22)
+  selfLink = _messages.StringField(23)
+  serviceLabel = _messages.StringField(24)
+  serviceName = _messages.StringField(25)
+  subnetwork = _messages.StringField(26)
+  target = _messages.StringField(27)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -25427,12 +25529,12 @@ class HttpHeaderMatch(_messages.Message):
       loadBalancingScheme set to EXTERNAL.
     regexMatch: The value of the header must match the regular expression
       specified in regexMatch. For regular expression grammar, please see:
-      en.cppreference.com/w/cpp/regex/ecmascript  For matching against a port
-      specified in the HTTP request, use a headerMatch with headerName set to
-      PORT and a regular expression that satisfies the RFC2616 Host header's
-      port specifier. Only one of exactMatch, prefixMatch, suffixMatch,
-      regexMatch, presentMatch or rangeMatch must be set. Note that regexMatch
-      only applies to Loadbalancers that have their loadBalancingScheme set to
+      github.com/google/re2/wiki/Syntax  For matching against a port specified
+      in the HTTP request, use a headerMatch with headerName set to PORT and a
+      regular expression that satisfies the RFC2616 Host header's port
+      specifier. Only one of exactMatch, prefixMatch, suffixMatch, regexMatch,
+      presentMatch or rangeMatch must be set. Note that regexMatch only
+      applies to Loadbalancers that have their loadBalancingScheme set to
       INTERNAL_SELF_MANAGED.
     suffixMatch: The value of the header must end with the contents of
       suffixMatch. Only one of exactMatch, prefixMatch, suffixMatch,
@@ -25665,10 +25767,10 @@ class HttpQueryParameterMatch(_messages.Message):
       regexMatch must be set.
     regexMatch: The queryParameterMatch matches if the value of the parameter
       matches the regular expression specified by regexMatch. For the regular
-      expression grammar, please see
-      en.cppreference.com/w/cpp/regex/ecmascript  Only one of presentMatch,
-      exactMatch or regexMatch must be set. Note that regexMatch only applies
-      when the loadBalancingScheme is set to INTERNAL_SELF_MANAGED.
+      expression grammar, please see github.com/google/re2/wiki/Syntax  Only
+      one of presentMatch, exactMatch or regexMatch must be set. Note that
+      regexMatch only applies when the loadBalancingScheme is set to
+      INTERNAL_SELF_MANAGED.
   """
 
   exactMatch = _messages.StringField(1)
@@ -25956,7 +26058,7 @@ class HttpRouteRuleMatch(_messages.Message):
       request must satisfy the regular expression specified in regexMatch
       after removing any query parameters and anchor supplied with the
       original URL. For regular expression grammar please see
-      en.cppreference.com/w/cpp/regex/ecmascript  Only one of prefixMatch,
+      github.com/google/re2/wiki/Syntax  Only one of prefixMatch,
       fullPathMatch or regexMatch must be specified. Note that regexMatch only
       applies to Loadbalancers that have their loadBalancingScheme set to
       INTERNAL_SELF_MANAGED.
@@ -26631,6 +26733,7 @@ class Instance(_messages.Message):
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
     resourcePolicies: Resource policies applied to this instance.
+    satisfiesPzs: [Output Only] Reserved for future use.
     scheduling: Sets the scheduling options for this instance.
     selfLink: [Output Only] Server-defined URL for this resource.
     serviceAccounts: A list of service accounts, with their specified scopes,
@@ -26753,16 +26856,17 @@ class Instance(_messages.Message):
   privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 25)
   reservationAffinity = _messages.MessageField('ReservationAffinity', 26)
   resourcePolicies = _messages.StringField(27, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 28)
-  selfLink = _messages.StringField(29)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 30, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 31)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 32)
-  startRestricted = _messages.BooleanField(33)
-  status = _messages.EnumField('StatusValueValuesEnum', 34)
-  statusMessage = _messages.StringField(35)
-  tags = _messages.MessageField('Tags', 36)
-  zone = _messages.StringField(37)
+  satisfiesPzs = _messages.BooleanField(28)
+  scheduling = _messages.MessageField('Scheduling', 29)
+  selfLink = _messages.StringField(30)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 31, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 32)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 33)
+  startRestricted = _messages.BooleanField(34)
+  status = _messages.EnumField('StatusValueValuesEnum', 35)
+  statusMessage = _messages.StringField(36)
+  tags = _messages.MessageField('Tags', 37)
+  zone = _messages.StringField(38)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -27823,22 +27927,24 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       instances across zones in the region.  - NONE: For non-autoscaled
       groups, proactive redistribution is disabled.
     maxSurge: The maximum number of instances that can be created above the
-      specified targetSize during the update process. By default, a fixed
-      value of 1 is used. This value can be either a fixed number or a
-      percentage if the instance group has 10 or more instances. If you set a
-      percentage, the number of instances will be rounded up if necessary.  At
-      least one of either maxSurge or maxUnavailable must be greater than 0.
-      Learn more about maxSurge.
+      specified targetSize during the update process. This value can be either
+      a fixed number or, if the group has 10 or more instances, a percentage.
+      If you set a percentage, the number of instances is rounded up if
+      necessary. The default value for maxSurge is a fixed value equal to the
+      number of zones in which the managed instance group operates.  At least
+      one of either maxSurge or maxUnavailable must be greater than 0. Learn
+      more about maxSurge.
     maxUnavailable: The maximum number of instances that can be unavailable
       during the update process. An instance is considered available if all of
       the following conditions are satisfied:    - The instance's status is
       RUNNING.  - If there is a health check on the instance group, the
-      instance's liveness health check result must be HEALTHY at least once.
-      If there is no health check on the group, then the instance only needs
-      to have a status of RUNNING to be considered available.  By default, a
-      fixed value of 1 is used. This value can be either a fixed number or a
-      percentage if the instance group has 10 or more instances. If you set a
-      percentage, the number of instances will be rounded up if necessary.  At
+      instance's health check status must be HEALTHY at least once. If there
+      is no health check on the group, then the instance only needs to have a
+      status of RUNNING to be considered available.  This value can be either
+      a fixed number or, if the group has 10 or more instances, a percentage.
+      If you set a percentage, the number of instances is rounded up if
+      necessary. The default value for maxUnavailable is a fixed value equal
+      to the number of zones in which the managed instance group operates.  At
       least one of either maxSurge or maxUnavailable must be greater than 0.
       Learn more about maxUnavailable.
     minimalAction: Minimal action to be taken on an instance. You can specify
@@ -32665,8 +32771,7 @@ class NetworkEndpoint(_messages.Message):
       aliased IP range). If the IP address is not specified, then the primary
       IP address for the VM instance in the network that the network endpoint
       group belongs to will be used.
-    port: Optional port number of network endpoint. If not specified and the
-      NetworkEndpointGroup.network_endpoint_type is GCE_IP_PORT, the
+    port: Optional port number of network endpoint. If not specified, the
       defaultPort for the network endpoint group will be used.
   """
 
@@ -37714,6 +37819,7 @@ class Quota(_messages.Message):
       CPUS: <no description>
       CPUS_ALL_REGIONS: <no description>
       DISKS_TOTAL_GB: <no description>
+      E2_CPUS: <no description>
       EXTERNAL_NETWORK_LB_FORWARDING_RULES: <no description>
       EXTERNAL_PROTOCOL_FORWARDING_RULES: <no description>
       EXTERNAL_VPN_GATEWAYS: <no description>
@@ -37824,91 +37930,92 @@ class Quota(_messages.Message):
     CPUS = 21
     CPUS_ALL_REGIONS = 22
     DISKS_TOTAL_GB = 23
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 24
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 25
-    EXTERNAL_VPN_GATEWAYS = 26
-    FIREWALLS = 27
-    FORWARDING_RULES = 28
-    GLOBAL_INTERNAL_ADDRESSES = 29
-    GPUS_ALL_REGIONS = 30
-    HEALTH_CHECKS = 31
-    IMAGES = 32
-    INSTANCES = 33
-    INSTANCE_GROUPS = 34
-    INSTANCE_GROUP_MANAGERS = 35
-    INSTANCE_TEMPLATES = 36
-    INTERCONNECTS = 37
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 38
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 39
-    INTERCONNECT_TOTAL_GBPS = 40
-    INTERNAL_ADDRESSES = 41
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 42
-    IN_PLACE_SNAPSHOTS = 43
-    IN_USE_ADDRESSES = 44
-    IN_USE_BACKUP_SCHEDULES = 45
-    IN_USE_SNAPSHOT_SCHEDULES = 46
-    LOCAL_SSD_TOTAL_GB = 47
-    M1_CPUS = 48
-    M2_CPUS = 49
-    MACHINE_IMAGES = 50
-    N2D_CPUS = 51
-    N2_CPUS = 52
-    NETWORKS = 53
-    NETWORK_ENDPOINT_GROUPS = 54
-    NETWORK_FIREWALL_POLICIES = 55
-    NODE_GROUPS = 56
-    NODE_TEMPLATES = 57
-    NVIDIA_A100_GPUS = 58
-    NVIDIA_K80_GPUS = 59
-    NVIDIA_P100_GPUS = 60
-    NVIDIA_P100_VWS_GPUS = 61
-    NVIDIA_P4_GPUS = 62
-    NVIDIA_P4_VWS_GPUS = 63
-    NVIDIA_T4_GPUS = 64
-    NVIDIA_T4_VWS_GPUS = 65
-    NVIDIA_V100_GPUS = 66
-    PACKET_MIRRORINGS = 67
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 68
-    PREEMPTIBLE_CPUS = 69
-    PREEMPTIBLE_LOCAL_SSD_GB = 70
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 71
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 72
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 73
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 74
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 75
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 76
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 77
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 78
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 79
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 80
-    PUBLIC_ADVERTISED_PREFIXES = 81
-    PUBLIC_DELEGATED_PREFIXES = 82
-    REGIONAL_AUTOSCALERS = 83
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 84
-    RESERVATIONS = 85
-    RESOURCE_POLICIES = 86
-    ROUTERS = 87
-    ROUTES = 88
-    SECURITY_POLICIES = 89
-    SECURITY_POLICY_CEVAL_RULES = 90
-    SECURITY_POLICY_RULES = 91
-    SNAPSHOTS = 92
-    SSD_TOTAL_GB = 93
-    SSL_CERTIFICATES = 94
-    STATIC_ADDRESSES = 95
-    STATIC_BYOIP_ADDRESSES = 96
-    SUBNETWORKS = 97
-    TARGET_HTTPS_PROXIES = 98
-    TARGET_HTTP_PROXIES = 99
-    TARGET_INSTANCES = 100
-    TARGET_POOLS = 101
-    TARGET_SSL_PROXIES = 102
-    TARGET_TCP_PROXIES = 103
-    TARGET_VPN_GATEWAYS = 104
-    URL_MAPS = 105
-    VPN_GATEWAYS = 106
-    VPN_TUNNELS = 107
-    XPN_SERVICE_PROJECTS = 108
+    E2_CPUS = 24
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 25
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 26
+    EXTERNAL_VPN_GATEWAYS = 27
+    FIREWALLS = 28
+    FORWARDING_RULES = 29
+    GLOBAL_INTERNAL_ADDRESSES = 30
+    GPUS_ALL_REGIONS = 31
+    HEALTH_CHECKS = 32
+    IMAGES = 33
+    INSTANCES = 34
+    INSTANCE_GROUPS = 35
+    INSTANCE_GROUP_MANAGERS = 36
+    INSTANCE_TEMPLATES = 37
+    INTERCONNECTS = 38
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 39
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 40
+    INTERCONNECT_TOTAL_GBPS = 41
+    INTERNAL_ADDRESSES = 42
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 43
+    IN_PLACE_SNAPSHOTS = 44
+    IN_USE_ADDRESSES = 45
+    IN_USE_BACKUP_SCHEDULES = 46
+    IN_USE_SNAPSHOT_SCHEDULES = 47
+    LOCAL_SSD_TOTAL_GB = 48
+    M1_CPUS = 49
+    M2_CPUS = 50
+    MACHINE_IMAGES = 51
+    N2D_CPUS = 52
+    N2_CPUS = 53
+    NETWORKS = 54
+    NETWORK_ENDPOINT_GROUPS = 55
+    NETWORK_FIREWALL_POLICIES = 56
+    NODE_GROUPS = 57
+    NODE_TEMPLATES = 58
+    NVIDIA_A100_GPUS = 59
+    NVIDIA_K80_GPUS = 60
+    NVIDIA_P100_GPUS = 61
+    NVIDIA_P100_VWS_GPUS = 62
+    NVIDIA_P4_GPUS = 63
+    NVIDIA_P4_VWS_GPUS = 64
+    NVIDIA_T4_GPUS = 65
+    NVIDIA_T4_VWS_GPUS = 66
+    NVIDIA_V100_GPUS = 67
+    PACKET_MIRRORINGS = 68
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 69
+    PREEMPTIBLE_CPUS = 70
+    PREEMPTIBLE_LOCAL_SSD_GB = 71
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 72
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 73
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 74
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 75
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 76
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 77
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 78
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 79
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 80
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 81
+    PUBLIC_ADVERTISED_PREFIXES = 82
+    PUBLIC_DELEGATED_PREFIXES = 83
+    REGIONAL_AUTOSCALERS = 84
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 85
+    RESERVATIONS = 86
+    RESOURCE_POLICIES = 87
+    ROUTERS = 88
+    ROUTES = 89
+    SECURITY_POLICIES = 90
+    SECURITY_POLICY_CEVAL_RULES = 91
+    SECURITY_POLICY_RULES = 92
+    SNAPSHOTS = 93
+    SSD_TOTAL_GB = 94
+    SSL_CERTIFICATES = 95
+    STATIC_ADDRESSES = 96
+    STATIC_BYOIP_ADDRESSES = 97
+    SUBNETWORKS = 98
+    TARGET_HTTPS_PROXIES = 99
+    TARGET_HTTP_PROXIES = 100
+    TARGET_INSTANCES = 101
+    TARGET_POOLS = 102
+    TARGET_SSL_PROXIES = 103
+    TARGET_TCP_PROXIES = 104
+    TARGET_VPN_GATEWAYS = 105
+    URL_MAPS = 106
+    VPN_GATEWAYS = 107
+    VPN_TUNNELS = 108
+    XPN_SERVICE_PROJECTS = 109
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -37957,6 +38064,7 @@ class Region(_messages.Message):
     quotas: [Output Only] Quotas assigned to this region.
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] Status of the region, either UP or DOWN.
+    supportsPzs: [Output Only] Reserved for future use.
     zones: [Output Only] A list of zones available in this region, in the form
       of resource URLs.
   """
@@ -37980,7 +38088,8 @@ class Region(_messages.Message):
   quotas = _messages.MessageField('Quota', 7, repeated=True)
   selfLink = _messages.StringField(8)
   status = _messages.EnumField('StatusValueValuesEnum', 9)
-  zones = _messages.StringField(10, repeated=True)
+  supportsPzs = _messages.BooleanField(10)
+  zones = _messages.StringField(11, repeated=True)
 
 
 class RegionAutoscalerList(_messages.Message):
@@ -42599,6 +42708,9 @@ class Snapshot(_messages.Message):
     licenses: [Output Only] A list of public visible licenses that apply to
       this snapshot. This can be because the original image had licenses
       attached (such as a Windows image).
+    locationHint: An opaque location hint used to place the snapshot close to
+      other resources. This field is for use by internal tools that use the
+      public API.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -42606,6 +42718,7 @@ class Snapshot(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined URL for the resource.
     snapshotEncryptionKey: Encrypts the snapshot using a customer-supplied
       encryption key.  After you encrypt a snapshot using a customer-supplied
@@ -42704,16 +42817,18 @@ class Snapshot(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 10)
   licenseCodes = _messages.IntegerField(11, repeated=True)
   licenses = _messages.StringField(12, repeated=True)
-  name = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
-  sourceDisk = _messages.StringField(16)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
-  sourceDiskId = _messages.StringField(18)
-  status = _messages.EnumField('StatusValueValuesEnum', 19)
-  storageBytes = _messages.IntegerField(20)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 21)
-  storageLocations = _messages.StringField(22, repeated=True)
+  locationHint = _messages.StringField(13)
+  name = _messages.StringField(14)
+  satisfiesPzs = _messages.BooleanField(15)
+  selfLink = _messages.StringField(16)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
+  sourceDisk = _messages.StringField(18)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
+  sourceDiskId = _messages.StringField(20)
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  storageBytes = _messages.IntegerField(22)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 23)
+  storageLocations = _messages.StringField(24, repeated=True)
 
 
 class SnapshotList(_messages.Message):
@@ -43245,7 +43360,9 @@ class SslCertificateManagedSslCertificate(_messages.Message):
     domainStatus: [Output only] Detailed statuses of the domains specified for
       managed certificate resource.
     domains: The domains for which a managed SSL certificate will be
-      generated. Currently only single-domain certs are supported.
+      generated. Each Google-managed SSL certificate supports up to the
+      [maximum number of domains per Google-managed SSL certificate](/load-
+      balancing/docs/quotas#ssl_certificates).
     status: [Output only] Status of the managed certificate resource.
   """
 
@@ -46395,9 +46512,8 @@ class TargetPool(_messages.Message):
       instance is healthy.
     healthChecks: The URL of the HttpHealthCheck resource. A member instance
       in this pool is considered healthy if and only if the health checks
-      pass. An empty list means all member instances will be considered
-      healthy at all times. Only legacy HttpHealthChecks are supported. Only
-      one health check may be specified.
+      pass. Only legacy HttpHealthChecks are supported. Only one health check
+      may be specified.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     instances: A list of resource URLs to the virtual machine instances
@@ -47878,17 +47994,31 @@ class TestFailure(_messages.Message):
   r"""A TestFailure object.
 
   Fields:
+    actualOutputUrl: The actual output URL evaluated by load balancer
+      containing the scheme, host, path and query parameters.
+    actualRedirectResponseCode: Actual HTTP status code for rule with
+      `urlRedirect` calculated by load balancer
     actualService: BackendService or BackendBucket returned by load balancer.
+    expectedOutputUrl: The expected output URL evaluated by load balancer
+      containing the scheme, host, path and query parameters.
+    expectedRedirectResponseCode: Expected HTTP status code for rule with
+      `urlRedirect` calculated by load balancer
     expectedService: Expected BackendService or BackendBucket resource the
       given URL should be mapped to.
+    headers: HTTP headers of the request.
     host: Host portion of the URL.
     path: Path portion including query parameters in the URL.
   """
 
-  actualService = _messages.StringField(1)
-  expectedService = _messages.StringField(2)
-  host = _messages.StringField(3)
-  path = _messages.StringField(4)
+  actualOutputUrl = _messages.StringField(1)
+  actualRedirectResponseCode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  actualService = _messages.StringField(3)
+  expectedOutputUrl = _messages.StringField(4)
+  expectedRedirectResponseCode = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  expectedService = _messages.StringField(6)
+  headers = _messages.MessageField('UrlMapTestHeader', 7, repeated=True)
+  host = _messages.StringField(8)
+  path = _messages.StringField(9)
 
 
 class TestPermissionsRequest(_messages.Message):
@@ -48161,6 +48291,26 @@ class UrlMapTest(_messages.Message):
 
   Fields:
     description: Description of this test case.
+    expectedOutputUrl: The expected output URL evaluated by load balancer
+      containing the scheme, host, path and query parameters. For rules that
+      forward requests to backends, the test passes only when
+      expectedOutputUrl matches the request forwarded by load balancer to
+      backends. For rules with urlRewrite, the test verifies that the
+      forwarded request matches hostRewrite and pathPrefixRewrite in the
+      urlRewrite action. When service is specified, expectedOutputUrl`s scheme
+      is ignored. For rules with urlRedirect, the test passes only if
+      expectedOutputUrl matches the URL in the load balancer's redirect
+      response. If urlRedirect specifies https_redirect, the test passes only
+      if the scheme in expectedOutputUrl is also set to https. If urlRedirect
+      specifies strip_query, the test passes only if expectedOutputUrl does
+      not contain any query parameters. expectedOutputUrl is optional when
+      service is specified.
+    expectedRedirectResponseCode: For rules with urlRedirect, the test passes
+      only if expectedRedirectResponseCode matches the HTTP status code in
+      load balancer's redirect response. expectedRedirectResponseCode cannot
+      be set when service is set.
+    headers: HTTP headers for this request. If headers contains a host header,
+      then host must also match the header value.
     host: Host portion of the URL. If headers contains a host header, then
       host must also match the header value.
     path: Path portion of the URL.
@@ -48170,9 +48320,24 @@ class UrlMapTest(_messages.Message):
   """
 
   description = _messages.StringField(1)
-  host = _messages.StringField(2)
-  path = _messages.StringField(3)
-  service = _messages.StringField(4)
+  expectedOutputUrl = _messages.StringField(2)
+  expectedRedirectResponseCode = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  headers = _messages.MessageField('UrlMapTestHeader', 4, repeated=True)
+  host = _messages.StringField(5)
+  path = _messages.StringField(6)
+  service = _messages.StringField(7)
+
+
+class UrlMapTestHeader(_messages.Message):
+  r"""HTTP headers used in UrlMapTests.
+
+  Fields:
+    name: Header name.
+    value: Header value.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class UrlMapValidationResult(_messages.Message):
@@ -50306,6 +50471,7 @@ class Zone(_messages.Message):
       zone.
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] Status of the zone, either UP or DOWN.
+    supportsPzs: [Output Only] Reserved for future use.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -50328,6 +50494,7 @@ class Zone(_messages.Message):
   region = _messages.StringField(8)
   selfLink = _messages.StringField(9)
   status = _messages.EnumField('StatusValueValuesEnum', 10)
+  supportsPzs = _messages.BooleanField(11)
 
 
 class ZoneList(_messages.Message):

@@ -1667,6 +1667,22 @@
         "force": {
           "description": "Use `write_disposition` instead. If `write_disposition` is specified, this parameter is ignored. force=false is equivalent to write_disposition=WRITE_EMPTY and force=true is equivalent to write_disposition=WRITE_TRUNCATE.",
           "type": "boolean"
+        },
+        "writeDisposition": {
+          "description": "Determines whether the existing table in the destination is to be overwritten or appended to. If a write_disposition is specified, the `force` parameter is ignored.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default behavior is the same as WRITE_EMPTY.",
+            "Only export data if the destination table is empty.",
+            "Erase all existing data in a table before writing the instances.",
+            "Append data to the existing table."
+          ],
+          "enum": [
+            "WRITE_DISPOSITION_UNSPECIFIED",
+            "WRITE_EMPTY",
+            "WRITE_TRUNCATE",
+            "WRITE_APPEND"
+          ]
         }
       }
     },
@@ -1906,6 +1922,26 @@
         "schemaConfig": {
           "description": "The configuration for the exported BigQuery schema.",
           "$ref": "SchemaConfig"
+        },
+        "force": {
+          "description": "Use `write_disposition` instead. If `write_disposition` is specified, this parameter is ignored. force=false is equivalent to write_disposition=WRITE_EMPTY and force=true is equivalent to write_disposition=WRITE_TRUNCATE.",
+          "type": "boolean"
+        },
+        "writeDisposition": {
+          "description": "Determines whether existing tables in the destination dataset are overwritten or appended to. If a write_disposition is specified, the `force` parameter is ignored.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default behavior is the same as WRITE_EMPTY.",
+            "Only export data if the destination tables are empty.",
+            "Erase all existing data in a tables before writing the instances.",
+            "Append data to the existing tables."
+          ],
+          "enum": [
+            "WRITE_DISPOSITION_UNSPECIFIED",
+            "WRITE_EMPTY",
+            "WRITE_TRUNCATE",
+            "WRITE_APPEND"
+          ]
         }
       }
     },

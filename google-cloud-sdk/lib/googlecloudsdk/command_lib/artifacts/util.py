@@ -27,6 +27,7 @@ import re
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib import artifacts
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
+from googlecloudsdk.api_lib.util import common_args
 
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.command_lib.projects import util as project_util
@@ -192,6 +193,28 @@ def SlashEscapePackageName(pkg_ref, unused_args, request):
   """Escapes slashes in package name for ListVersionsRequest."""
   request.parent = "{}/packages/{}".format(
       pkg_ref.Parent().RelativeName(), pkg_ref.packagesId.replace("/", "%2F"))
+  return request
+
+
+def AppendSortingToRequest(unused_ref, ver_args, request):
+  """Adds order_by and page_size parameters to the request."""
+  order_by = common_args.ParseSortByArg(ver_args.sort_by)
+  set_limit = True
+
+  # Multi-ordering is not supported yet on backend.
+  if order_by is not None:
+    if "," not in order_by:
+      request.orderBy = order_by
+    else:
+      set_limit = False
+
+  if (ver_args.limit is not None
+      and ver_args.filter is None
+      and set_limit):
+    request.pageSize = ver_args.limit
+    # Otherwise request gets overriden somewhere down the line.
+    ver_args.page_size = ver_args.limit
+
   return request
 
 

@@ -1,6 +1,102 @@
 # Google Cloud SDK - Release Notes
 
-Copyright 2014-2020 Google Inc. All rights reserved.
+Copyright 2014-2021 Google Inc. All rights reserved.
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 322.0.0 (2021-01-07)
+
+### Breaking Changes
+
+*   **(Miscellaneous)** Updated `--format=flattened` and `--format=text` to print labels if provided.
+  If a key is specified inside either of these formats but a label is not,
+  the child key will be printed in lower snake case. This is different
+  than done previously when the entire dotted key path was printed. Note that
+  this change does not apply to keys whose values are objects or lists.
+*   **(Miscellaneous)** 
+  If you would like to use the legacy version of `--format=flattened` or
+  `--format=text`, set the following configuration:
+  ```
+  gcloud config set core/use_legacy_flattened_format true
+  ```
+  Please note that this option will not be supported indefinitely.
+
+
+### Cloud API Gateway
+
+* Promote support for gRPC scoped `api-config` configurations via `grpc-files` flag to beta.
+
+### Cloud Composer
+
+* Added `--max-pods-per-node` option to `gcloud beta environment create
+  operation`. It allows to limit the number of pods that can be assigned to a
+  single GKE node and reduce the size of IP range assigned to it.
+* Added maintenance window flags for environment creation:
+  - `--maintenance-window-start`
+  - `--maintenance-window-end`
+  - `--maintenance-window-recurrence`.
+* Added maintenance window flags for environment update:
+  - `--maintenance-window-start`
+  - `--maintenance-window-end`
+  - `--maintenance-window-recurrence`
+  - `--clear-maintenance-window`.
+* Added `gcloud beta composer environments restart-web-server` to restart web server for a Cloud Composer environment.
+
+### Cloud Dataflow
+
+* Added `--enable-streaming-engine` flag to `gcloud beta dataflow jobs run`.
+* Added `--enable-streaming-engine` flag to `gcloud dataflow jobs run`.
+
+### Cloud Filestore
+
+* Promoted `nfs-export-options` key of `--file-shares` flag in `gcloud filestore instances` to GA.
+
+### Cloud Run
+
+* Fixed an issue with using `--clear-vpc-connector` when deploying new services.
+
+### Compute Engine
+
+* Promoted `--mtu` flag to beta and GA for `gcloud compute interconnects
+attachments <dedicated|partner> <create|update>`.
+* Changed `--os` flag to be optional for:
+  * `gcloud compute images import` in beta
+  * `gcloud compute instances import` in beta
+  * `gcloud compute machine-images import` in beta
+* Promoted `--maintenance-window-start-time` flag in `gcloud compute
+  sole-tenancy node-groups create` command to GA.
+* Added `--compute-service-account` to `gcloud compute images export` in beta.
+* Added `--service-directory-registration` to `gcloud compute forwarding-rules
+create` in beta.
+* Promoted `--no-address` flag to GA for `gcloud compute images import`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.33.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Eventarc
+
+* Added `gcloud beta eventarc locations list` which lists locations available for Eventarc.
+
+### Miscellaneous
+
+*   Updated `gcloud` to not attempt reauthentication if running in
+    non-interactive mode.
+
+### Service Directory
+
+*   Promoted `gcloud service-directory locations` to beta. Added a commands to
+    describe/list locations.
+*   Promoted `gcloud service-directory namespaces` to GA. Added commands to
+    create/delete/describe/list/update/add-iam-policy-binding/get-iam-policy/set-iam-policy/remove-iam-policy-binding.
+*   Promoted `gcloud service-directory services` to GA. Added commands to
+    create/delete/describe/list/resolve/update/add-iam-policy-binding/get-iam-policy/set-iam-policy/remove-iam-policy-binding.
+*   Promoted `gcloud service-directory endpoints` to GA. Added commands to
+    create/delete/describe/list/resolve/update.
+*   Updated `--metadata` flag to `--annotations` flag in GA only.
+
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 

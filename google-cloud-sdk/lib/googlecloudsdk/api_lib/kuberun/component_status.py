@@ -23,15 +23,23 @@ import six
 class ComponentStatus(object):
   """Class that wraps a KubeRun Component Status JSON object."""
 
-  def __init__(self, name, deployment_state, commit_id, deployment_time, url,
-               ingress_ip, log_url):
+  def __init__(self,
+               name,
+               deployment_state,
+               commit_id,
+               deployment_time,
+               url,
+               log_url,
+               services=None,
+               deployment_message=''):
     self.name = name
     self.deployment_state = deployment_state
     self.commit_id = commit_id
     self.deployment_time = deployment_time
     self.url = url
-    self.ingress_ip = ingress_ip
     self.log_url = log_url
+    self.services = [] if services is None else services
+    self.deployment_message = deployment_message
 
   @classmethod
   def FromJSON(cls, name, json_object):
@@ -41,7 +49,6 @@ class ComponentStatus(object):
         commit_id=json_object['commitId'],
         deployment_time=json_object['deploymentTimestamp'],
         url=json_object['url'],
-        ingress_ip=json_object['ingressIp'],
         log_url=json_object['logUrl'])
 
   def __repr__(self):

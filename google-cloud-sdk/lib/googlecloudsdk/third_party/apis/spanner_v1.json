@@ -259,9 +259,17 @@
           "$ref": "RestoreInfo"
         },
         "encryptionConfig": {
-          "description": "Output only. Custom encryption configuration (Cloud KMS keys). Applicable only for databases using the Customer Managed Encryption Keys feature.",
+          "description": "Output only. Custom encryption configuration (Cloud KMS keys). Applicable only for databases using the Customer Managed Encryption Keys (CMEK) feature. This is the encryption configuration that is intended to be used by the database. It may differ from encryption_info during CMEK migration.",
           "readOnly": true,
           "$ref": "EncryptionConfig"
+        },
+        "encryptionInfo": {
+          "description": "Output only. Custom encryption information (database encryption state and Cloud KMS key versions in use). Applicable only for databases using the Customer Managed Encryption Keys feature.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "EncryptionInfo"
+          }
         }
       }
     },
@@ -315,6 +323,38 @@
       "properties": {
         "kmsKeyName": {
           "description": "The resource name of the Cloud KMS key that was used to encrypt and decrypt the database. Values are of the form `projects\/\/locations\/\/keyRings\/\/cryptoKeys\/`.",
+          "type": "string"
+        }
+      }
+    },
+    "EncryptionInfo": {
+      "id": "EncryptionInfo",
+      "description": "Encryption information for a given resource. If this resource is protected with customer managed encryption, the in-use Cloud KMS key versions will be specified along with their status. CMEK is not currently available to end users.",
+      "type": "object",
+      "properties": {
+        "encryptionType": {
+          "description": "Output only. The type of encryption used to protect this resource.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Encryption type was not specified, though data at rest remains encrypted.",
+            "The data backing this resource is encrypted at rest with a key that is fully managed by Google. No key version or status will be populated. This is the default state.",
+            "The data backing this resource is encrypted at rest with a key that is managed by the customer. The active version of the key. 'kms_key_version' will be populated, and 'encryption_status' may be populated."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "GOOGLE_DEFAULT_ENCRYPTION",
+            "CUSTOMER_MANAGED_ENCRYPTION"
+          ]
+        },
+        "encryptionStatus": {
+          "description": "Output only. If present, the status of a recent encrypt\/decrypt calls on underlying data for this resource. Regardless of status, data is always encrypted at rest.",
+          "readOnly": true,
+          "$ref": "Status"
+        },
+        "kmsKeyVersion": {
+          "description": "Output only. The Cloud KMS key versions used for a CMEK-protected Spanner resource.",
+          "readOnly": true,
           "type": "string"
         }
       }

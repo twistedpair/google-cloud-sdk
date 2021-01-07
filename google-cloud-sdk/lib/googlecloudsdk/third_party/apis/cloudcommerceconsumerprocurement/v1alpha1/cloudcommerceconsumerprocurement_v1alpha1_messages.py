@@ -311,10 +311,12 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsDelet
   eleteRequest object.
 
   Fields:
+    etag: The weak etag of the order allocation, which can be optionally set.
     name: Required. The resource name of the OrderAllocation to delete.
   """
 
-  name = _messages.StringField(1, required=True)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsGetRequest(_messages.Message):
@@ -409,8 +411,8 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsPatch
     googleCloudCommerceConsumerProcurementV1alpha1OrderAllocation: A
       GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation resource
       to be passed as the request body.
-    name: Output only. The resource name of the allocation. This field is of
-      the form: `billingAccounts/{billing-account-id}/orders/{order-
+    name: The resource name of the allocation. This field is of the form:
+      `billingAccounts/{billing-account-id}/orders/{order-
       id}/orderAllocations/{order-allocation-id}`.
     updateMask: Optional. The update mask that applies to the resource. See
       the [FieldMask definition] (https://developers.google.com/protocol-
@@ -1485,7 +1487,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Order(_messages.Message):
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation(_messages.Message):
   r"""OrderAllocation represents the allocation of resources within a specific
-  order to a set of targets (projects). Next Id: 8
+  order to a set of targets (projects). Next Id: 9
 
   Enums:
     StateValueValuesEnum: Output only. The state of the allocation.
@@ -1495,8 +1497,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation(_messages.Me
     createTime: Output only. The time when the resource was created.
     displayName: Optional. The user-specified name of the allocation. Must be
       unique within an Order if specified.
-    name: Output only. The resource name of the allocation. This field is of
-      the form: `billingAccounts/{billing-account-id}/orders/{order-
+    etag: The weak etag of the order allocation, which can be optionally set.
+    name: The resource name of the allocation. This field is of the form:
+      `billingAccounts/{billing-account-id}/orders/{order-
       id}/orderAllocations/{order-allocation-id}`.
     pendingAllocationEntry: Output only. The upcoming allocation entry.
     state: Output only. The state of the allocation.
@@ -1524,10 +1527,11 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation(_messages.Me
   allocationEntry = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocationAllocationEntry', 1)
   createTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
-  name = _messages.StringField(4)
-  pendingAllocationEntry = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocationAllocationEntry', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  etag = _messages.StringField(4)
+  name = _messages.StringField(5)
+  pendingAllocationEntry = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocationAllocationEntry', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocationAllocationEntry(_messages.Message):

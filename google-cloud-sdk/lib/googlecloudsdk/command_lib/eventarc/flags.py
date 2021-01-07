@@ -144,6 +144,19 @@ def AddDestinationRunRegionArg(parser, required=False):
       'region as the trigger.')
 
 
+def AddTransportTopicArg(parser, release_track, required=False):
+  """Adds an argument for a customer-provided transport topic."""
+  parser.add_argument(
+      '--transport-topic',
+      required=required,
+      hidden=(release_track != base.ReleaseTrack.GA),
+      help='The Cloud Pub/Sub topic to use for the trigger\'s transport '
+      'intermediary. This feature is currently only available for triggers '
+      'of event type ``google.cloud.pubsub.topic.v1.messagePublished\'\'. '
+      'The topic must be in the same project as the trigger. '
+      'If not specified, a transport topic will be created.')
+
+
 def AddClearServiceAccountArg(parser):
   """Adds an argument for clearing the trigger's service account."""
   parser.add_argument(

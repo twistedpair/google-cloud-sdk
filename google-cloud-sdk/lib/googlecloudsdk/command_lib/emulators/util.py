@@ -262,7 +262,7 @@ def Exec(args, log_file=None):
   processes (and references to them) are not leaked.
 
   Args:
-    args: [str], The arguments to execute.  The first argument is the command.
+    args: [str], The arguments to execute. The first argument is the command.
     log_file: optional file argument to reroute process's output. If given,
       will be closed when the file is terminated.
 
@@ -270,13 +270,29 @@ def Exec(args, log_file=None):
     process, The process handle of the subprocess that has been started.
   """
   reroute_stdout = log_file or subprocess.PIPE
-  process = subprocess.Popen(args,
-                             stdout=reroute_stdout,
-                             stderr=subprocess.STDOUT)
-  yield process
-  if process.poll() is None:
-    process.terminate()
-    process.wait()
+  if platforms.OperatingSystem.IsWindows():
+    creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
+
+  # pylint: disable=subprocess-popen-preexec-fn start_new_session flag
+  # is only available on py3
+    process = subprocess.Popen(args,
+                               stdout=reroute_stdout,
+                               stderr=subprocess.STDOUT,
+                               creationflags=creationflags)
+  else:
+    os.setpgid(0, 0)
+    # pylint: disable=subprocess-popen-preexec-fn start_new_session flag
+    # is only available on py3
+    process = subprocess.Popen(args,
+                               stdout=reroute_stdout,
+                               stderr=subprocess.STDOUT,
+                               preexec_fn=os.setsid)
+  try:
+    yield process
+  finally:
+    if process.poll() is None:
+      process.terminate()
+      process.wait()
 
 
 def PrefixOutput(process, prefix):

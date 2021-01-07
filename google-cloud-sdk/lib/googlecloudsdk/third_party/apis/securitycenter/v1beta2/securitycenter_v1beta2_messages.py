@@ -273,6 +273,8 @@ class Finding(_messages.Message):
   App Engine application is a finding.
 
   Enums:
+    SeverityValueValuesEnum: The severity of the finding. This field is
+      managed by the source that writes the finding.
     StateValueValuesEnum: The state of the finding.
 
   Messages:
@@ -315,6 +317,8 @@ class Finding(_messages.Message):
     securityMarks: Output only. User specified security marks. These marks are
       entirely managed by the user and come from the SecurityMarks resource
       that belongs to the finding.
+    severity: The severity of the finding. This field is managed by the source
+      that writes the finding.
     sourceProperties: Source specific properties. These properties are managed
       by the source that writes the finding. The key names in the
       source_properties map must be between 1 and 255 characters, and must
@@ -322,6 +326,55 @@ class Finding(_messages.Message):
       only.
     state: The state of the finding.
   """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""The severity of the finding. This field is managed by the source that
+    writes the finding.
+
+    Values:
+      SEVERITY_UNSPECIFIED: This value is used for findings when a source
+        doesn't write a severity value.
+      CRITICAL: Vulnerability: A critical vulnerability is easily discoverable
+        by an external actor, exploitable, and results in the direct ability
+        to execute arbitrary code, exfiltrate data, and otherwise gain
+        additional access and privileges to cloud resources and workloads.
+        Examples include publicly accessible unprotected user data, public SSH
+        access with weak or no passwords, etc. Threat: Indicates a threat that
+        is able to access, modify, or delete data or execute unauthorized code
+        within existing resources.
+      HIGH: Vulnerability: A high risk vulnerability can be easily discovered
+        and exploited in combination with other vulnerabilities in order to
+        gain direct access and the ability to execute arbitrary code,
+        exfiltrate data, and otherwise gain additional access and privileges
+        to cloud resources and workloads. An example is a database with weak
+        or no passwords that is only accessible internally. This database
+        could easily be compromised by an actor that had access to the
+        internal network. Threat: Indicates a threat that is able to create
+        new computational resources in an environment but not able to access
+        data or execute code in existing resources.
+      MEDIUM: Vulnerability: A medium risk vulnerability could be used by an
+        actor to gain access to resources or privileges that enable them to
+        eventually (through multiple steps or a complex exploit) gain access
+        and the ability to execute arbitrary code or exfiltrate data. An
+        example is a service account with access to more projects than it
+        should have. If an actor gains access to the service account, they
+        could potentially use that access to manipulate a project the service
+        account was not intended to. Threat: Indicates a threat that is able
+        to cause operational impact but may not access data or execute
+        unauthorized code.
+      LOW: Vulnerability: A low risk vulnerability hampers a security
+        organization's ability to detect vulnerabilities or active threats in
+        their deployment, or prevents the root cause investigation of security
+        issues. An example is monitoring and logs being disabled for resource
+        configurations and access. Threat: Indicates a threat that has
+        obtained minimal access to an environment but is not able to access
+        data, execute code, or create resources.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The state of the finding.
@@ -373,8 +426,9 @@ class Finding(_messages.Message):
   parent = _messages.StringField(6)
   resourceName = _messages.StringField(7)
   securityMarks = _messages.MessageField('SecurityMarks', 8)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 9)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class Folder(_messages.Message):

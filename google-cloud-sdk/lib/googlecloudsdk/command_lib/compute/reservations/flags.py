@@ -22,8 +22,6 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute.instances import flags as instance_flags
 
-# TODO(b/129054682): fix the format in text render.
-
 
 def GetDescriptionFlag():
   return base.Argument(

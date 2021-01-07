@@ -1346,184 +1346,6 @@ class NetworkconnectivityProjectsLocationsGlobalHubsTestIamPermissionsRequest(_m
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
-class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest(_messages.Message):
-  r"""A
-  NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest
-  object.
-
-  Fields:
-    parent: Required. The parent resource's name of the PolicyBasedRoute.
-    policyBasedRoute: A PolicyBasedRoute resource to be passed as the request
-      body.
-    policyBasedRouteId: Optional. Unique id for the Policy Based Route to
-      create.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  parent = _messages.StringField(1, required=True)
-  policyBasedRoute = _messages.MessageField('PolicyBasedRoute', 2)
-  policyBasedRouteId = _messages.StringField(3)
-  requestId = _messages.StringField(4)
-
-
-class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest(_messages.Message):
-  r"""A
-  NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest
-  object.
-
-  Fields:
-    name: Required. Name of the PolicyBasedRoute resource to delete.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetIamPolic
-  yRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetRequest
-  object.
-
-  Fields:
-    name: Required. Name of the PolicyBasedRoute resource to get.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesListRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesListRequest
-  object.
-
-  Fields:
-    filter: A filter expression that filters the results listed in the
-      response.
-    orderBy: Sort the results by a certain order.
-    pageSize: The maximum number of results per page that should be returned.
-    pageToken: The page token.
-    parent: Required. The parent resource's name.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesPatchRequest(_messages.Message):
-  r"""A
-  NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesPatchRequest
-  object.
-
-  Fields:
-    name: Name of the resource. Provided by the client when the resource is
-      created. The name must be 1-63 characters long, and comply with RFC1035.
-      Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must
-      be a lowercase letter, and all following characters (except for the last
-      character) must be a dash, lowercase letter, or digit. The last
-      character must be a lowercase letter or digit.
-    policyBasedRoute: A PolicyBasedRoute resource to be passed as the request
-      body.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the PolicyBasedRoute resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
-  """
-
-  name = _messages.StringField(1, required=True)
-  policyBasedRoute = _messages.MessageField('PolicyBasedRoute', 2)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-
-
-class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesSetIamPolic
-  yRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesTestIamPerm
-  issionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
 class NetworkconnectivityProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsListRequest object.
 
@@ -1590,13 +1412,192 @@ class NetworkconnectivityProjectsLocationsOperationsListRequest(_messages.Messag
   pageToken = _messages.StringField(4)
 
 
+class NetworkconnectivityProjectsLocationsPolicyBasedRoutesCreateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsPolicyBasedRoutesCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource's name of the PolicyBasedRoute.
+    policyBasedRoute: A PolicyBasedRoute resource to be passed as the request
+      body.
+    policyBasedRouteId: Optional. Unique id for the Policy Based Route to
+      create.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  policyBasedRoute = _messages.MessageField('PolicyBasedRoute', 2)
+  policyBasedRouteId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsPolicyBasedRoutesDeleteRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsPolicyBasedRoutesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the PolicyBasedRoute resource to delete.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkconnectivityProjectsLocationsPolicyBasedRoutesGetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsPolicyBasedRoutesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsPolicyBasedRoutesGetRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsPolicyBasedRoutesGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the PolicyBasedRoute resource to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsPolicyBasedRoutesListRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsPolicyBasedRoutesListRequest
+  object.
+
+  Fields:
+    filter: A filter expression that filters the results listed in the
+      response.
+    orderBy: Sort the results by a certain order.
+    pageSize: The maximum number of results per page that should be returned.
+    pageToken: The page token.
+    parent: Required. The parent resource's name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsPolicyBasedRoutesPatchRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsPolicyBasedRoutesPatchRequest
+  object.
+
+  Fields:
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must
+      be a lowercase letter, and all following characters (except for the last
+      character) must be a dash, lowercase letter, or digit. The last
+      character must be a lowercase letter or digit.
+    policyBasedRoute: A PolicyBasedRoute resource to be passed as the request
+      body.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the PolicyBasedRoute resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  policyBasedRoute = _messages.MessageField('PolicyBasedRoute', 2)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsPolicyBasedRoutesSetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsPolicyBasedRoutesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkconnectivityProjectsLocationsPolicyBasedRoutesTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsPolicyBasedRoutesTestIamPermission
+  sRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class NetworkconnectivityProjectsLocationsPrivateRangesCreateRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsPrivateRangesCreateRequest object.
 
   Fields:
     parent: Required. The parent resource's name of the PrivateRange.
     privateRange: A PrivateRange resource to be passed as the request body.
-    privateRangeId: Optional. Unique id for the PrivateRange to be created.
+    privateRangeId: Optional. Resource ID (i.e. 'foo' in
+      '[...]/projects/p/locations/l/privateRanges/foo') See
+      https://google.aip.dev/122#resource-id-segments Unique per location.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1693,7 +1694,9 @@ class NetworkconnectivityProjectsLocationsPrivateRangesPatchRequest(_messages.Me
   r"""A NetworkconnectivityProjectsLocationsPrivateRangesPatchRequest object.
 
   Fields:
-    name: Immutable. The name of a PrivateRange. Unique per location
+    name: Immutable. Full resource name (i.e.
+      '[...]/projects/p/locations/l/privateRanges/foo') See
+      https://google.aip.dev/122#full-resource-names
     privateRange: A PrivateRange resource to be passed as the request body.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -1932,9 +1935,10 @@ class Operation(_messages.Message):
       `servicecontrol.googleapis.com/platform` describing the platform where
       the API is served, such as App Engine, Compute Engine, or Kubernetes
       Engine.
-    UserLabelsValue: User defined labels for the resource that this operation
-      is associated with. Only a combination of 1000 user labels per consumer
-      project are allowed.
+    UserLabelsValue: Private Preview. This feature is only available for
+      approved services. User defined labels for the resource that this
+      operation is associated with. Only a combination of 1000 user labels per
+      consumer project are allowed.
 
   Fields:
     consumerId: Identity of the consumer who is using the service. This field
@@ -1989,7 +1993,8 @@ class Operation(_messages.Message):
     traceSpans: Unimplemented. A list of Cloud Trace spans. The span names
       shall contain the id of the destination project which can be either the
       produce or the consumer project.
-    userLabels: User defined labels for the resource that this operation is
+    userLabels: Private Preview. This feature is only available for approved
+      services. User defined labels for the resource that this operation is
       associated with. Only a combination of 1000 user labels per consumer
       project are allowed.
   """
@@ -2075,7 +2080,8 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class UserLabelsValue(_messages.Message):
-    r"""User defined labels for the resource that this operation is associated
+    r"""Private Preview. This feature is only available for approved services.
+    User defined labels for the resource that this operation is associated
     with. Only a combination of 1000 user labels per consumer project are
     allowed.
 
@@ -2317,7 +2323,9 @@ class PrivateRange(_messages.Message):
   Fields:
     createTime: Time when the PrivateRange was created.
     labels: User-defined labels.
-    name: Immutable. The name of a PrivateRange. Unique per location
+    name: Immutable. Full resource name (i.e.
+      '[...]/projects/p/locations/l/privateRanges/foo') See
+      https://google.aip.dev/122#full-resource-names
     updateTime: Time when the PrivateRange was updated.
   """
 

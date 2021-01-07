@@ -163,8 +163,7 @@ class CloudSqlSettings(_messages.Message):
       off; it is not activated, even if a connection request arrives.
     DataDiskTypeValueValuesEnum: The type of storage: `PD_SSD` (default) or
       `PD_HDD`.
-    DatabaseVersionValueValuesEnum: The database engine type and version (such
-      as `MYSQL_5_7` / `POSTGRES_9_6`).
+    DatabaseVersionValueValuesEnum: The database engine type and version.
 
   Messages:
     DatabaseFlagsValue: The database flags passed to the Cloud SQL instance at
@@ -193,8 +192,7 @@ class CloudSqlSettings(_messages.Message):
     databaseFlags: The database flags passed to the Cloud SQL instance at
       startup. An object containing a list of "key": value pairs. Example: {
       "name": "wrench", "mass": "1.3kg", "count": "3" }.
-    databaseVersion: The database engine type and version (such as `MYSQL_5_7`
-      / `POSTGRES_9_6`).
+    databaseVersion: The database engine type and version.
     hasRootPassword: Output only. Indicates If this connection profile root
       password is stored.
     ipConfig: The settings for IP Management. This allows to enable or disable
@@ -248,8 +246,7 @@ class CloudSqlSettings(_messages.Message):
     PD_HDD = 2
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
-    r"""The database engine type and version (such as `MYSQL_5_7` /
-    `POSTGRES_9_6`).
+    r"""The database engine type and version.
 
     Values:
       SQL_DATABASE_VERSION_UNSPECIFIED: Unspecified version.

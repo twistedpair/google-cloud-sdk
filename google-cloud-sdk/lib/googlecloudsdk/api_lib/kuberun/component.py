@@ -17,36 +17,41 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import six
+from googlecloudsdk.api_lib.kuberun import mapobject
 
 
-class Component(object):
+class Component(mapobject.MapObject):
   """Class that wraps a KubeRun Component JSON object."""
 
-  def __init__(self, name, type_, devkit, ce_input, vars_):
-    self.name = name
-    self.type = type_
-    self.devkit = devkit
-    self.ce_input = ce_input
-    self.vars = vars_
+  @property
+  def name(self):
+    return self.props['metadata']['name']
+
+  @property
+  def type(self):
+    return self.props['spec'].get('type', '')
+
+  @property
+  def devkit(self):
+    return self.props['spec'].get('devkit', '')
 
   @classmethod
   def FromJSON(cls, json_object):
-    return cls(
-        name=json_object.get('name', ''),
-        type_=json_object.get('type', ''),
-        devkit=json_object.get('devkit', ''),
-        ce_input=json_object.get('input-cetype', ''),
-        vars_=json_object.get('fdk-vars', []),
-        )
+    # TODO(b/172370726) Remove handling of legacy json objects.
+    if 'apiVersion' not in json_object:
+      json_object = _LegacyComponentToAlpha(json_object)
+    return cls(json_object)
 
-  def __repr__(self):
-    # TODO(b/171419038): Create a common base class for these data wrappers
-    items = sorted(self.__dict__.items())
-    attrs_as_kv_strings = ['{}={!r}'.format(k, v) for (k, v) in items]
-    return six.text_type('Component({})').format(', '.join(attrs_as_kv_strings))
 
-  def __eq__(self, other):
-    if isinstance(other, self.__class__):
-      return self.__dict__ == other.__dict__
-    return False
+def _LegacyComponentToAlpha(data):
+  return {
+      'apiVersion': 'kuberun/v1alpha1',
+      'kind': 'Component',
+      'metadata': {
+          'name': data.get('name', ''),
+      },
+      'spec': {
+          'devkit': data.get('devkit', ''),
+          'type': data.get('type', ''),
+      },
+  }

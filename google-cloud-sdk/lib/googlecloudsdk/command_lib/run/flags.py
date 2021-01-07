@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import collections
 import enum
 import os
 import re
@@ -35,14 +34,16 @@ from googlecloudsdk.api_lib.services import exceptions as services_exceptions
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.functions.v1.deploy import env_vars_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
+from googlecloudsdk.command_lib.run import platforms
 from googlecloudsdk.command_lib.run import pretty_print
+from googlecloudsdk.command_lib.run import resource_args
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.command_lib.util.args import repeated
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -68,36 +69,9 @@ _INGRESS_MODES = {
         'Balancing are allowed.'
 }
 
-PLATFORM_MANAGED = 'managed'
-PLATFORM_GKE = 'gke'
-PLATFORM_KUBERNETES = 'kubernetes'
-
-_PLATFORMS = collections.OrderedDict([
-    (PLATFORM_MANAGED, 'Fully managed version of Cloud Run. '
-     'Use with the `--region` flag or set the [run/region] property '
-     'to specify a Cloud Run region.'),
-    (PLATFORM_GKE, 'Cloud Run for Anthos on Google Cloud. '
-     'Use with the `--cluster` and `--cluster-location` flags or set the '
-     '[run/cluster] and [run/cluster_location] properties to specify a '
-     'cluster in a given zone.'),
-    (PLATFORM_KUBERNETES, 'Use a Knative-compatible kubernetes cluster. '
-     'Use with the `--kubeconfig` and `--context` flags to specify a '
-     'kubeconfig file and the context for connecting.'),
-])
-
-_PLATFORM_SHORT_DESCRIPTIONS = {
-    PLATFORM_MANAGED: 'Cloud Run (fully managed)',
-    PLATFORM_GKE: 'Cloud Run for Anthos deployed on Google Cloud',
-    PLATFORM_KUBERNETES: 'Cloud Run for Anthos deployed on VMware',
-}
-
 _DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
 
 _FIFTEEN_MINUTES = 15 * 60
-
-
-class ArgumentError(exceptions.Error):
-  pass
 
 
 class KubeconfigError(exceptions.Error):
@@ -169,8 +143,9 @@ def GetManagedArgGroup(parser):
   return _GetOrAddArgGroup(
       parser,
       _ARG_GROUP_HELP_TEXT.format(
-          platform='`--platform={}`'.format(PLATFORM_MANAGED),
-          platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
+          platform='`--platform={}`'.format(platforms.PLATFORM_MANAGED),
+          platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+              platforms.PLATFORM_MANAGED]))
 
 
 def GetGkeArgGroup(parser):
@@ -178,8 +153,9 @@ def GetGkeArgGroup(parser):
   return _GetOrAddArgGroup(
       parser,
       _ARG_GROUP_HELP_TEXT.format(
-          platform='`--platform={}`'.format(PLATFORM_GKE),
-          platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+          platform='`--platform={}`'.format(platforms.PLATFORM_GKE),
+          platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+              platforms.PLATFORM_GKE]))
 
 
 def GetKubernetesArgGroup(parser):
@@ -187,8 +163,9 @@ def GetKubernetesArgGroup(parser):
   return _GetOrAddArgGroup(
       parser,
       _ARG_GROUP_HELP_TEXT.format(
-          platform='`--platform={}`'.format(PLATFORM_KUBERNETES),
-          platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_KUBERNETES]))
+          platform='`--platform={}`'.format(platforms.PLATFORM_KUBERNETES),
+          platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+              platforms.PLATFORM_KUBERNETES]))
 
 
 def GetClusterArgGroup(parser):
@@ -197,10 +174,40 @@ def GetClusterArgGroup(parser):
       parser,
       _ARG_GROUP_HELP_TEXT.format(
           platform='`--platform={}` or `--platform={}`'.format(
-              PLATFORM_GKE, PLATFORM_KUBERNETES),
+              platforms.PLATFORM_GKE, platforms.PLATFORM_KUBERNETES),
           platform_desc='{} or {}'.format(
-              _PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE],
-              _PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_KUBERNETES])))
+              platforms.PLATFORM_SHORT_DESCRIPTIONS[platforms.PLATFORM_GKE],
+              platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                  platforms.PLATFORM_KUBERNETES])))
+
+
+def AddPlatformAndLocationFlags(parser, managed_only=False, anthos_only=False):
+  """Adds flags used to determine the platform and the location of resource."""
+  assert not (managed_only and anthos_only)
+  AddPlatformArg(parser, managed_only, anthos_only)
+
+  if managed_only:
+    AddRegionArg(parser)
+    return None
+
+  # When multiple platforms are supported, add a arg group that covers the
+  # various ways to specify region/zone/cluster.
+  platform_helpers_group = parser.add_mutually_exclusive_group(
+      help='Arguments to locate resources, depending on the platform used.')
+
+  if not anthos_only:
+    # Add --region flag
+    managed_group = GetManagedArgGroup(platform_helpers_group)
+    AddRegionArg(managed_group)
+
+  # Add --cluster and --cluster-location (plus properties)
+  gke_group = GetGkeArgGroup(platform_helpers_group)
+  concept_parsers.ConceptParser([resource_args.CLUSTER_PRESENTATION
+                                ]).AddToParser(gke_group)
+
+  # Add --kubeconfig and --context
+  kubernetes_group = GetKubernetesArgGroup(platform_helpers_group)
+  AddKubeconfigFlags(kubernetes_group)
 
 
 def AddAllowUnauthenticatedFlag(parser):
@@ -335,11 +342,11 @@ def AddUpdateTrafficFlags(parser, release_track):
     try:
       result = int(value)
     except (TypeError, ValueError):
-      raise ArgumentError('Traffic percentage value %s is not an integer.' %
-                          value)
+      raise serverless_exceptions.ArgumentError(
+          'Traffic percentage value %s is not an integer.' % value)
 
     if result < 0 or result > 100:
-      raise ArgumentError(
+      raise serverless_exceptions.ArgumentError(
           'Traffic percentage value %s is not between 0 and 100.' % value)
     return result
 
@@ -543,15 +550,21 @@ def AddServiceAccountFlag(parser):
       'the name of a Kubernetes service account in the same namespace as the '
       'service. If not provided, the revision will use the default service '
       'account of the project, or default Kubernetes namespace service account '
-      'respectively.'.format(PLATFORM_MANAGED, PLATFORM_GKE,
-                             PLATFORM_KUBERNETES))
+      'respectively.'.format(platforms.PLATFORM_MANAGED, platforms.PLATFORM_GKE,
+                             platforms.PLATFORM_KUBERNETES))
 
 
-def AddPlatformArg(parser):
+def AddPlatformArg(parser, managed_only=False, anthos_only=False):
   """Add a platform arg."""
+  assert not (managed_only and anthos_only)
+  choices = platforms.PLATFORMS
+  if managed_only:
+    choices = platforms.PLATFORMS_MANAGED_ONLY
+  if anthos_only:
+    choices = platforms.PLATFORMS_ANTHOS_ONLY
   parser.add_argument(
       '--platform',
-      choices=_PLATFORMS,
+      choices=choices,
       action=actions.StoreProperty(properties.VALUES.run.platform),
       help='Target platform for running commands. '
       'Alternatively, set the property [run/platform]. '
@@ -675,11 +688,13 @@ class _ScaleValue(object):
       try:
         self.instance_count = int(value)
       except (TypeError, ValueError):
-        raise ArgumentError('Instance count value %s is not an integer '
-                            'or \'default\'.' % value)
+        raise serverless_exceptions.ArgumentError(
+            'Instance count value %s is not an integer '
+            'or \'default\'.' % value)
 
       if self.instance_count < 0:
-        raise ArgumentError('Instance count value %s is negative.' % value)
+        raise serverless_exceptions.ArgumentError(
+            'Instance count value %s is negative.' % value)
 
 
 def AddMinInstancesFlag(parser):
@@ -1024,8 +1039,8 @@ def _GetTrafficChanges(args):
 
 def _GetIngressChanges(args):
   """Returns changes to ingress traffic allowed based on the flags."""
-  platform = GetPlatform()
-  if platform == PLATFORM_MANAGED:
+  platform = platforms.GetPlatform()
+  if platform == platforms.PLATFORM_MANAGED:
     return config_changes.SetAnnotationChange(service.INGRESS_ANNOTATION,
                                               args.ingress)
   elif args.ingress == service.INGRESS_INTERNAL:
@@ -1148,7 +1163,7 @@ def GetService(args):
   service_re = re.compile(r'(?=^[a-z0-9-]{1,63}$)(?!^\-.*)(?!.*\-$)')
   if service_re.match(service_ref.servicesId):
     return service_ref
-  raise ArgumentError(
+  raise serverless_exceptions.ArgumentError(
       'Invalid service name [{}]. Service name must use only lowercase '
       'alphanumeric characters and dashes. Cannot begin or end with a dash, '
       'and cannot be longer than 63 characters.'.format(service_ref.servicesId))
@@ -1236,7 +1251,7 @@ def GetAllowUnauthenticated(args, client=None, service_ref=None, prompt=False):
   return None
 
 
-def GetKubeconfig(args):
+def GetKubeconfig(file_path=None):
   """Get config from kubeconfig file.
 
   Get config from potentially 3 different places, falling back to the next
@@ -1246,7 +1261,7 @@ def GetKubeconfig(args):
   3. Default config path (~/.kube/config)
 
   Args:
-    args: Namespace, The args namespace.
+    file_path: str, the path to the kubeconfig if provided by the user
 
   Returns:
     dict: config object
@@ -1254,9 +1269,9 @@ def GetKubeconfig(args):
   Raises:
     KubeconfigError: if $KUBECONFIG is set but contains no valid paths
   """
-  if getattr(args, 'kubeconfig', None):
+  if file_path:
     return kubeconfig.Kubeconfig.LoadFromFile(
-        files.ExpandHomeDir(args.kubeconfig))
+        files.ExpandHomeDir(file_path))
   if encoding.GetEncodedValue(os.environ, 'KUBECONFIG'):
     config_paths = encoding.GetEncodedValue(os.environ,
                                             'KUBECONFIG').split(os.pathsep)
@@ -1287,13 +1302,13 @@ def FlagIsExplicitlySet(args, flag):
 
 
 def VerifyManagedFlags(args, release_track, product):
-  """Raise ConfigurationError if args includes GKE only arguments."""
+  """Raise ConfigurationError if args aren't valid for managed Cloud Run."""
 
   if product == Product.EVENTS and release_track != base.ReleaseTrack.ALPHA:
     raise serverless_exceptions.ConfigurationError(
         'The flag --platform={} is only compatible with "gcloud alpha events".'
         ' Please provide an alternative platform value or use "gcloud alpha '
-        'events".'.format(PLATFORM_MANAGED))
+        'events".'.format(platforms.PLATFORM_MANAGED))
 
   error_msg = ('The `{flag}` flag is not supported on the fully managed '
                'version of Cloud Run. Specify `--platform {platform}` or run '
@@ -1304,43 +1319,49 @@ def VerifyManagedFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--connectivity=[internal|external]',
-            platform=PLATFORM_GKE,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+            platform=platforms.PLATFORM_GKE,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_GKE]))
 
   if FlagIsExplicitlySet(args, 'namespace'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--namespace',
-            platform=PLATFORM_GKE,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+            platform=platforms.PLATFORM_GKE,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_GKE]))
 
   if FlagIsExplicitlySet(args, 'cluster'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--cluster',
-            platform=PLATFORM_GKE,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+            platform=platforms.PLATFORM_GKE,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_GKE]))
 
   if FlagIsExplicitlySet(args, 'cluster_location'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--cluster-location',
-            platform=PLATFORM_GKE,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+            platform=platforms.PLATFORM_GKE,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_GKE]))
 
   if _HasSecretsChanges(args):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--[update|set|remove|clear]-secrets',
-            platform=PLATFORM_GKE,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+            platform=platforms.PLATFORM_GKE,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_GKE]))
 
   if _HasConfigMapsChanges(args):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--[update|set|remove|clear]-config-maps',
-            platform=PLATFORM_GKE,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+            platform=platforms.PLATFORM_GKE,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_GKE]))
 
   if FlagIsExplicitlySet(
       args, 'use_http2') and release_track != base.ReleaseTrack.ALPHA:
@@ -1349,36 +1370,39 @@ def VerifyManagedFlags(args, release_track, product):
         'track on the fully managed version of Cloud Run. Use `gcloud alpha` '
         'to set `--use-http2` on Cloud Run (fully managed). Alternatively, '
         'specify `--platform gke` or run '
-        '`gcloud config set run/platform gke`.'
-    )
+        '`gcloud config set run/platform gke`.')
 
   if FlagIsExplicitlySet(args, 'broker'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--broker',
-            platform=PLATFORM_GKE,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+            platform=platforms.PLATFORM_GKE,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_GKE]))
 
   if FlagIsExplicitlySet(args, 'custom_type') and product == Product.EVENTS:
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--custom-type',
-            platform=PLATFORM_GKE,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+            platform=platforms.PLATFORM_GKE,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_GKE]))
 
   if FlagIsExplicitlySet(args, 'kubeconfig'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--kubeconfig',
-            platform=PLATFORM_KUBERNETES,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_KUBERNETES]))
+            platform=platforms.PLATFORM_KUBERNETES,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_KUBERNETES]))
 
   if FlagIsExplicitlySet(args, 'context'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--context',
-            platform=PLATFORM_KUBERNETES,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_KUBERNETES]))
+            platform=platforms.PLATFORM_KUBERNETES,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_KUBERNETES]))
 
   if (FlagIsExplicitlySet(args, 'min_instances') and
       release_track == base.ReleaseTrack.GA):
@@ -1400,8 +1424,9 @@ def VerifyManagedFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--trigger-filters',
-            platform=PLATFORM_GKE,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+            platform=platforms.PLATFORM_GKE,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_GKE]))
 
 
 def VerifyGKEFlags(args, release_track, product):
@@ -1429,43 +1454,49 @@ def VerifyGKEFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--region',
-            platform=PLATFORM_MANAGED,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
 
   if FlagIsExplicitlySet(args, 'vpc_connector'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--vpc-connector',
-            platform=PLATFORM_MANAGED,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
 
   if FlagIsExplicitlySet(args, 'clear_vpc_connector'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--clear-vpc-connector',
-            platform=PLATFORM_MANAGED,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
 
   if FlagIsExplicitlySet(args, 'vpc_egress'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--vpc-egress',
-            platform=PLATFORM_MANAGED,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
 
   if FlagIsExplicitlySet(args, 'kubeconfig'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--kubeconfig',
-            platform=PLATFORM_KUBERNETES,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_KUBERNETES]))
+            platform=platforms.PLATFORM_KUBERNETES,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_KUBERNETES]))
 
   if FlagIsExplicitlySet(args, 'context'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--context',
-            platform=PLATFORM_KUBERNETES,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_KUBERNETES]))
+            platform=platforms.PLATFORM_KUBERNETES,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_KUBERNETES]))
 
 
 def VerifyKubernetesFlags(args, release_track, product):
@@ -1493,119 +1524,88 @@ def VerifyKubernetesFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--region',
-            platform=PLATFORM_MANAGED,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
 
   if FlagIsExplicitlySet(args, 'vpc_connector'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--vpc-connector',
             platform='managed',
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS['managed']))
 
   if FlagIsExplicitlySet(args, 'clear_vpc_connector'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--clear-vpc-connector',
-            platform=PLATFORM_MANAGED,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
 
   if FlagIsExplicitlySet(args, 'vpc_egress'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--vpc-egress',
-            platform=PLATFORM_MANAGED,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
 
   if FlagIsExplicitlySet(args, 'cluster'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--cluster',
-            platform=PLATFORM_GKE,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+            platform=platforms.PLATFORM_GKE,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_GKE]))
 
   if FlagIsExplicitlySet(args, 'cluster_location'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--cluster-location',
-            platform=PLATFORM_GKE,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+            platform=platforms.PLATFORM_GKE,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_GKE]))
 
 
-def GetPlatform():
-  """Returns the platform to run on.
+def GetAndValidatePlatform(args, release_track, product, allow_empty=False):
+  """Returns the platform to run on and validates specified flags.
 
-  If not set by the user, this prompts the user to choose a platform and sets
-  the property so future calls to this method do continue to prompt.
-
-  Raises:
-    ArgumentError: if not platform is specified and prompting is not allowed.
-  """
-  platform = properties.VALUES.run.platform.Get()
-  if platform is None:
-    if console_io.CanPrompt():
-      platform_descs = [_PLATFORM_SHORT_DESCRIPTIONS[k] for k in _PLATFORMS]
-      index = console_io.PromptChoice(
-          platform_descs,
-          message='Please choose a target platform:',
-          cancel_option=True)
-      platform = list(_PLATFORMS.keys())[index]
-      # Set platform so we don't re-prompt on future calls to this method
-      # and so it's available to anyone who wants to know the platform.
-      properties.VALUES.run.platform.Set(platform)
-      log.status.Print(
-          'To specify the platform yourself, pass `--platform {0}`. '
-          'Or, to make this the default target platform, run '
-          '`gcloud config set run/platform {0}`.\n'.format(platform))
-    else:
-      raise ArgumentError(
-          'No platform specified. Pass the `--platform` flag or set '
-          'the [run/platform] property to specify a target platform.\n'
-          'Available platforms:\n{}'.format('\n'.join(
-              ['- {}: {}'.format(k, v) for k, v in _PLATFORMS.items()])))
-  return platform
-
-
-def GetAndValidatePlatform(args, release_track, product):
-  """Returns the platform to run on."""
-  platform = GetPlatform()
-  if platform == PLATFORM_MANAGED:
-    VerifyManagedFlags(args, release_track, product)
-  elif platform == PLATFORM_GKE:
-    VerifyGKEFlags(args, release_track, product)
-  elif platform == PLATFORM_KUBERNETES:
-    VerifyKubernetesFlags(args, release_track, product)
-  if platform not in _PLATFORMS:
-    raise ArgumentError(
-        'Invalid target platform specified: [{}].\n'
-        'Available platforms:\n{}'.format(
-            platform,
-            '\n'.join(['- {}: {}'.format(k, v) for k, v in _PLATFORMS.items()
-                      ])))
-  return platform
-
-
-def ValidatePlatformIsManaged(unused_ref, unused_args, req):
-  """Validate the specified platform is managed.
-
-  This method is referenced by the declaritive iam commands which only work
-  against the managed platform.
+  A given command may support multiple platforms, but not every flag is
+  supported by every platform. This method validates that all specified flags
+  are supported by the specified platform.
 
   Args:
-    unused_ref: ref to the service.
-    unused_args: Namespace, The args namespace.
-    req: The request to be made.
+    args: Namespace, The args namespace.
+    release_track: base.ReleaseTrack, calliope release track.
+    product: Product, which product the command was executed for (e.g. Run or
+      Events).
+    allow_empty: bool, if True, allows the platform property to be unset and
+      will not prompt.
 
-  Returns:
-    Unmodified request
+  Raises:
+    ArgumentError if an unknown platform type is found.
   """
-  if GetPlatform() != PLATFORM_MANAGED:
-    raise calliope_exceptions.BadArgumentException(
-        '--platform', 'The platform [{platform}] is not supported by this '
-        'operation. Specify `--platform {managed}` or run '
-        '`gcloud config set run/platform {managed}`.'.format(
-            platform=GetPlatform(), managed=PLATFORM_MANAGED))
-  return req
+  platform = platforms.GetPlatform(prompt_if_unset=not allow_empty)
+  if platform == platforms.PLATFORM_MANAGED:
+    VerifyManagedFlags(args, release_track, product)
+  elif platform == platforms.PLATFORM_GKE:
+    VerifyGKEFlags(args, release_track, product)
+  elif platform == platforms.PLATFORM_KUBERNETES:
+    VerifyKubernetesFlags(args, release_track, product)
+  elif allow_empty and platform is None:
+    # No platform is allowed for commands that only support a single platform.
+    # It's assumed that only valid flags exist for these commands, so verifying
+    # supported flags are set is not necessary
+    return platform
+  if platform not in platforms.PLATFORMS:
+    raise serverless_exceptions.ArgumentError(
+        'Invalid target platform specified: [{}].\n'
+        'Available platforms:\n{}'.format(
+            platform, '\n'.join([
+                '- {}: {}'.format(k, v) for k, v in platforms.PLATFORMS.items()
+            ])))
+  return platform
 
 
 # TODO(b/165145546): Remove advanced build flags for 'gcloud run deploy'

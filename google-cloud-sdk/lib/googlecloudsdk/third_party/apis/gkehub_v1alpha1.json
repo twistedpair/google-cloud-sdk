@@ -210,7 +210,7 @@
       "type": "object",
       "properties": {
         "resources": {
-          "description": "The list of Features contained within the parent.",
+          "description": "The list of matching Features",
           "type": "array",
           "items": {
             "$ref": "Feature"
@@ -228,7 +228,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The unique name of this feature resource in the format: `projects\/[project_id]\/locations\/global\/features\/[feature_id]`.",
+          "description": "Output only. The full, unique name of this Feature resource in the format `projects\/*\/locations\/global\/features\/*`.",
           "readOnly": true,
           "type": "string"
         },
@@ -251,64 +251,64 @@
           "$ref": "AuthorizerFeatureSpec"
         },
         "multiclusteringressFeatureSpec": {
-          "description": "The specification for the Ingress for Anthos feature.",
+          "description": "The specification for Ingress for Anthos.",
           "$ref": "MultiClusterIngressFeatureSpec"
         },
         "helloworldFeatureSpec": {
-          "description": "A hello world feature to act as an example in codelab and to test our feature lifecycle code.",
+          "description": "A Hello World feature for codelab examples and testing.",
           "$ref": "HelloWorldFeatureSpec"
         },
         "meteringFeatureSpec": {
-          "description": "The specification for the metering feature.",
+          "description": "The specification for the Metering feature.",
           "$ref": "MeteringFeatureSpec"
         },
         "multiclusterservicediscoveryFeatureSpec": {
-          "description": "An EAP feature for GKE multi-cluster service discovery.",
+          "description": "The specification for GKE Multi-Cluster Service Discovery.",
           "$ref": "MultiClusterServiceDiscoveryFeatureSpec"
         },
         "configmanagementFeatureSpec": {
-          "description": "Feature for Anthos Config Management.",
+          "description": "The specification for Anthos Config Management.",
           "$ref": "ConfigManagementFeatureSpec"
         },
         "appdevexperienceFeatureSpec": {
-          "description": "Feature for App Dev Experience.",
+          "description": "The specification for App Dev Experience.",
           "$ref": "AppDevExperienceFeatureSpec"
         },
         "cloudauditloggingFeatureSpec": {
-          "description": "Feature for Anthos Cloud Audit Logging.",
+          "description": "The specification for Anthos Cloud Audit Logging.",
           "$ref": "CloudAuditLoggingFeatureSpec"
         },
         "apigeeFeatureSpec": {
-          "description": "Feature for Apigee.",
+          "description": "The specification for Apigee.",
           "$ref": "ApigeeFeatureSpec"
         },
         "servicedirectoryFeatureSpec": {
-          "description": "Feature for Service Directory.",
+          "description": "The specification for Service Directory.",
           "$ref": "ServiceDirectoryFeatureSpec"
         },
         "identityserviceFeatureSpec": {
-          "description": "The specification for the Anthos Identity Service Feature.",
+          "description": "The specification for Anthos Identity Service.",
           "$ref": "IdentityServiceFeatureSpec"
         },
         "featureState": {
-          "description": "Output only. State of the resource itself.",
+          "description": "Output only. State of the Feature resource itself.",
           "readOnly": true,
           "$ref": "FeatureState"
         },
         "createTime": {
-          "description": "Output only. Timestamp for when the Feature was created.",
+          "description": "Output only. When the Feature was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Timestamp for when the Feature was last updated.",
+          "description": "Output only. When the Feature was last updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "deleteTime": {
-          "description": "Output only. Timestamp for when the Feature was deleted.",
+          "description": "Output only. When the Feature was deleted.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -735,18 +735,19 @@
     },
     "FeatureState": {
       "id": "FeatureState",
-      "description": "FeatureState describes the status of any feature.",
+      "description": "FeatureState describes the state of a Feature resource.",
       "type": "object",
       "properties": {
         "lifecycleState": {
+          "description": "The current state of the Feature resource.",
           "type": "string",
           "enumDescriptions": [
-            "",
-            "",
-            "",
-            "",
-            "",
-            "SERVICE_UPDATING indicates the Feature is being updated by the Hub Service."
+            "State is unknown or not set.",
+            "The Feature is being enabled.",
+            "The Feature is active.",
+            "The Feature is being disabled.",
+            "The Feature is being updated.",
+            "The Feature is being updated by the Hub Service."
           ],
           "enum": [
             "LIFECYCLE_STATE_UNSPECIFIED",
@@ -762,14 +763,14 @@
           "$ref": "FeatureStateDetails"
         },
         "detailsByMembership": {
-          "description": "Messages pertaining to the current status of the feature for a given member, keyed by the fully-qualified member name. Example member name looks like `projects\/12345\/locations\/global\/memberships\/bar`. This is scoped to feature-level messages (e.g. CSM state on clusters)",
+          "description": "FeatureState for each Membership. Keys are the fully-qualified Membership name in the format `projects\/{NUMBER}\/locations\/*\/memberships\/*`.",
           "type": "object",
           "additionalProperties": {
             "$ref": "FeatureStateDetails"
           }
         },
         "hasResources": {
-          "description": "Indicates this Feature has outstanding resources that need to be cleaned up before it can be disabled.",
+          "description": "Whether this Feature has outstanding resources that need to be cleaned up before it can be disabled.",
           "type": "boolean"
         }
       }
@@ -1939,14 +1940,14 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The parent in whose context the features are listed. The parent value is in the format: `projects\/[project_id]\/locations\/global`.",
+                          "description": "The parent (project and location) where the Features will be listed. Specified in the format `projects\/*\/locations\/global`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, it defaults to 500.",
+                          "description": "When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -1957,12 +1958,12 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Lists the Features that match the filter expression. A filter expression filters the resources listed in the response. The expression must be of the form ` ` where operators: `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a HAS operator which is roughly synonymous with equality). can refer to a proto or JSON field, or a synthetic field. Field names can be camelCase or snake_case. Examples: - Filter by name: name = \"projects\/foo-proj\/locations\/global\/features\/servicemesh - Filter by labels: - Resources that have a key called `foo` labels.foo:* - Resources that have a key called `foo` whose value is `bar` labels.foo = bar - Filter by spec: - ServiceMesh feature with mtls set. servicemesh_feature_spec.mtls = true",
+                          "description": "Lists Features that match the filter expression, following the syntax outlined in https:\/\/google.aip.dev\/160. Examples: - Feature with the name \"servicemesh\" in project \"foo-proj\": name = \"projects\/foo-proj\/locations\/global\/features\/servicemesh\" - Service Mesh Feature with `mtls` enabled: servicemesh_feature_spec.mtls = true - Features that have a label called `foo`: labels.foo:* - Features that have a label called `foo` whose value is `bar`: labels.foo = bar",
                           "location": "query",
                           "type": "string"
                         },
                         "orderBy": {
-                          "description": "Field to use to sort the list.",
+                          "description": "One or more fields to compare and use to sort the output. See https:\/\/google.aip.dev\/132#ordering.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1985,7 +1986,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "The Feature resource name in the format: `projects\/[project_id]\/locations\/global\/features\/[feature_id]`",
+                          "description": "The Feature resource name in the format `projects\/*\/locations\/global\/features\/*`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global\/features\/[^\/]+$",
@@ -2010,14 +2011,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "The parent in whose context the feature is created. The parent value is in the format: `projects\/[project_id]\/locations\/global`.",
+                          "description": "The parent (project and location) where the Feature will be created. Specified in the format `projects\/*\/locations\/global`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "type": "string"
                         },
                         "featureId": {
-                          "description": "The ID of one of the supported features.",
+                          "description": "The ID of the feature to create.",
                           "location": "query",
                           "type": "string"
                         }
@@ -2043,14 +2044,14 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "The feature resource name in the format: `projects\/[project_id]\/locations\/global\/features\/[feature_id]`",
+                          "description": "The Feature resource name in the format `projects\/*\/locations\/global\/features\/*`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global\/features\/[^\/]+$",
                           "type": "string"
                         },
                         "force": {
-                          "description": "If set to true, then the delete will ignore any outstanding resources for this Feature (`FeatureState.has_resources` is set to true). These resources will NOT be cleaned up or modified in any way.",
+                          "description": "If set to true, the delete will ignore any outstanding resources for this Feature (that is, `FeatureState.has_resources` is set to true). These resources will NOT be cleaned up or modified in any way.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -2064,7 +2065,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Removes a single Feature."
+                      "description": "Removes a Feature."
                     },
                     "patch": {
                       "id": "gkehub.projects.locations.global.features.patch",
@@ -2073,14 +2074,14 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "The feature resource name in the format: `projects\/[project_id]\/locations\/global\/features\/[feature_id]`",
+                          "description": "The Feature resource name in the format `projects\/*\/locations\/global\/features\/*`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global\/features\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Mask of fields to update. At least one field path must be specified in this mask.",
+                          "description": "Mask of fields to update.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"

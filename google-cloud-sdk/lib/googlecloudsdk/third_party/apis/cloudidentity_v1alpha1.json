@@ -215,7 +215,7 @@
       "type": "object",
       "properties": {
         "queries": {
-          "description": "Only one entry is supported for now. Memberships will be the union of all queries.",
+          "description": "Only one entry is supported for now. Memberships will be the union of all queries. Customers can create up to 100 dynamic groups.",
           "type": "array",
           "items": {
             "$ref": "DynamicGroupQuery"
@@ -1909,11 +1909,13 @@
               "type": "string",
               "enumDescriptions": [
                 "Default. Should not be used.",
-                "The end user making the request will be added as the initial owner of the `Group`."
+                "The end user making the request will be added as the initial owner of the `Group`.",
+                "An empty group is created without any initial owners. This can only be used by admins of the domain."
               ],
               "enum": [
                 "INITIAL_GROUP_CONFIG_UNSPECIFIED",
-                "WITH_INITIAL_OWNER"
+                "WITH_INITIAL_OWNER",
+                "EMPTY"
               ]
             }
           },

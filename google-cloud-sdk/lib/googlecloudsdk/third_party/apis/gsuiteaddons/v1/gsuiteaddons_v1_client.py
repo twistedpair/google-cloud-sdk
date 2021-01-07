@@ -53,7 +53,7 @@ class GsuiteaddonsV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a deployment with the specified name and configuration. Requires: * `gsuiteaddons.deployments.create` permission on the project.
+      r"""Creates a deployment with the specified name and configuration.
 
       Args:
         request: (GsuiteaddonsProjectsDeploymentsCreateRequest) input message
@@ -80,7 +80,7 @@ class GsuiteaddonsV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the deployment with the given name. Requires: * `gsuiteaddons.deployments.delete` permission on the deployment.
+      r"""Deletes the deployment with the given name.
 
       Args:
         request: (GsuiteaddonsProjectsDeploymentsDeleteRequest) input message
@@ -107,7 +107,7 @@ class GsuiteaddonsV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the deployment with the specified name. Requires: * `gsuiteaddons.deployments.get` permission on the deployment.
+      r"""Gets the deployment with the specified name.
 
       Args:
         request: (GsuiteaddonsProjectsDeploymentsGetRequest) input message
@@ -134,7 +134,7 @@ class GsuiteaddonsV1(base_api.BaseApiClient):
     )
 
     def GetInstallStatus(self, request, global_params=None):
-      r"""Fetches the install status of a developer mode Deployment. Requires: * `gsuiteaddons.deployments.installStatus` permission on the deployment.
+      r"""Fetches the install status of a developer mode Deployment.
 
       Args:
         request: (GsuiteaddonsProjectsDeploymentsGetInstallStatusRequest) input message
@@ -161,7 +161,7 @@ class GsuiteaddonsV1(base_api.BaseApiClient):
     )
 
     def Install(self, request, global_params=None):
-      r"""Installs a Deployment in developer mode. See: https://developers.google.com/gsuite/add-ons/how-tos/testing-gsuite-addons. Requires: * `gsuiteaddons.deployments.install` permission on the deployment.
+      r"""Installs a Deployment in developer mode. See: https://developers.google.com/gsuite/add-ons/how-tos/testing-gsuite-addons.
 
       Args:
         request: (GsuiteaddonsProjectsDeploymentsInstallRequest) input message
@@ -188,7 +188,7 @@ class GsuiteaddonsV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all deployments in a particular project. Requires: * `gsuiteaddons.deployments.list` permission on the project.
+      r"""Lists all deployments in a particular project.
 
       Args:
         request: (GsuiteaddonsProjectsDeploymentsListRequest) input message
@@ -215,7 +215,7 @@ class GsuiteaddonsV1(base_api.BaseApiClient):
     )
 
     def ReplaceDeployment(self, request, global_params=None):
-      r"""Creates or replaces a deployment with the specified name. Requires: * `gsuiteaddons.deployments.update` permission on the project.
+      r"""Creates or replaces a deployment with the specified name.
 
       Args:
         request: (GsuiteaddonsProjectsDeploymentsReplaceDeploymentRequest) input message
@@ -242,7 +242,7 @@ class GsuiteaddonsV1(base_api.BaseApiClient):
     )
 
     def Uninstall(self, request, global_params=None):
-      r"""Uninstalls a developer mode Deployment. See: https://developers.google.com/gsuite/add-ons/how-tos/testing-gsuite-addons. Requires: * `gsuiteaddons.deployments.execute` permission on the deployment.
+      r"""Uninstalls a developer mode Deployment. See: https://developers.google.com/gsuite/add-ons/how-tos/testing-gsuite-addons.
 
       Args:
         request: (GsuiteaddonsProjectsDeploymentsUninstallRequest) input message
@@ -279,7 +279,7 @@ class GsuiteaddonsV1(base_api.BaseApiClient):
           }
 
     def GetAuthorization(self, request, global_params=None):
-      r"""Gets the authorization information for deployments in a given project. Requires: * `gsuiteaddons.authorizations.get` permission on the project.
+      r"""Gets the authorization information for deployments in a given project.
 
       Args:
         request: (GsuiteaddonsProjectsGetAuthorizationRequest) input message

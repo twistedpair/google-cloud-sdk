@@ -348,6 +348,12 @@
           "type": "string",
           "format": "google-datetime"
         },
+        "updateTime": {
+          "description": "Output only. The update timestamp of a Certificate Map.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
         "labels": {
           "description": "Set of labels associated with a Certificate Map.",
           "type": "object",
@@ -1088,7 +1094,7 @@
       "type": "object",
       "properties": {
         "parent": {
-          "description": "Required. The parent resource name (target_resource of this reference) For example: `projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}`.",
+          "description": "Required. The parent resource name (target_resource of this reference). For example: `targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}`.",
           "type": "string"
         },
         "referenceId": {
@@ -1111,7 +1117,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Resource name of the reference, in the following format: `{target_resource}\/references\/{reference_id}`. For example: `projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
+          "description": "Required. Resource name of the reference, in the following format: `{targer_service}\/{target_resource}\/references\/{reference_id}`. For example: `targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
           "type": "string"
         },
         "requestId": {
@@ -1126,7 +1132,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Resource name of the reference, in the following format: `{target_resource}\/references\/{reference_id}`. For example: `projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
+          "description": "Required. Resource name of the reference, in the following format: `{target_service}\/{target_resource}\/references\/{reference_id}`. For example: `targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
           "type": "string"
         }
       }
@@ -1137,7 +1143,7 @@
       "type": "object",
       "properties": {
         "parent": {
-          "description": "Required. The parent resource name (target_resource of this reference) For example: `projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}`.",
+          "description": "Required. The parent resource name (target_resource of this reference). For example: `targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}`.",
           "type": "string"
         },
         "pageSize": {

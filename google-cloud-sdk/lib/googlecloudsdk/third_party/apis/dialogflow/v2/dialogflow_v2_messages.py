@@ -1073,6 +1073,201 @@ class DialogflowProjectsSetAgentRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class GoogleCloudDialogflowCxV3AudioInput(_messages.Message):
+  r"""Represents the natural speech audio to be processed.
+
+  Fields:
+    audio: The natural language speech audio to be processed. A single request
+      can contain up to 1 minute of speech audio data. The transcribed text
+      cannot contain more than 256 bytes. For non-streaming audio detect
+      intent, both `config` and `audio` must be provided. For streaming audio
+      detect intent, `config` must be provided in the first request and
+      `audio` must be provided in all following requests.
+    config: Required. Instructs the speech recognizer how to process the
+      speech audio.
+  """
+
+  audio = _messages.BytesField(1)
+  config = _messages.MessageField('GoogleCloudDialogflowCxV3InputAudioConfig', 2)
+
+
+class GoogleCloudDialogflowCxV3BatchRunTestCasesMetadata(_messages.Message):
+  r"""Metadata returned for the TestCases.BatchRunTestCases long running
+  operation.
+
+  Fields:
+    errors: The test errors.
+  """
+
+  errors = _messages.MessageField('GoogleCloudDialogflowCxV3TestError', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3BatchRunTestCasesResponse(_messages.Message):
+  r"""The response message for TestCases.BatchRunTestCases.
+
+  Fields:
+    results: The test case results. The detailed conversation turns are empty
+      in this response.
+  """
+
+  results = _messages.MessageField('GoogleCloudDialogflowCxV3TestCaseResult', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3ConversationTurn(_messages.Message):
+  r"""One interaction between a human and virtual agent. The human provides
+  some input and the virtual agent provides a response.
+
+  Fields:
+    userInput: The user input.
+    virtualAgentOutput: The virtual agent output.
+  """
+
+  userInput = _messages.MessageField('GoogleCloudDialogflowCxV3ConversationTurnUserInput', 1)
+  virtualAgentOutput = _messages.MessageField('GoogleCloudDialogflowCxV3ConversationTurnVirtualAgentOutput', 2)
+
+
+class GoogleCloudDialogflowCxV3ConversationTurnUserInput(_messages.Message):
+  r"""The input from the human user.
+
+  Messages:
+    InjectedParametersValue: Parameters that need to be injected into the
+      conversation during intent detection.
+
+  Fields:
+    injectedParameters: Parameters that need to be injected into the
+      conversation during intent detection.
+    input: Supports text input, event input, dtmf input in the test case.
+    isWebhookEnabled: If webhooks should be allowed to trigger in response to
+      the user utterance. Often if parameters are injected, webhooks should
+      not be enabled.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InjectedParametersValue(_messages.Message):
+    r"""Parameters that need to be injected into the conversation during
+    intent detection.
+
+    Messages:
+      AdditionalProperty: An additional property for a InjectedParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InjectedParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  injectedParameters = _messages.MessageField('InjectedParametersValue', 1)
+  input = _messages.MessageField('GoogleCloudDialogflowCxV3QueryInput', 2)
+  isWebhookEnabled = _messages.BooleanField(3)
+
+
+class GoogleCloudDialogflowCxV3ConversationTurnVirtualAgentOutput(_messages.Message):
+  r"""The output from the virtual agent.
+
+  Messages:
+    DiagnosticInfoValue: Required. Input only. The diagnostic info output for
+      the turn.
+    SessionParametersValue: The session parameters available to the bot at
+      this point.
+
+  Fields:
+    currentPage: The Page on which the utterance was spoken. Only some fields
+      such as name and displayname will be set.
+    diagnosticInfo: Required. Input only. The diagnostic info output for the
+      turn.
+    differences: Output only. If this is part of a result conversation turn,
+      the list of differences between the original run and the replay for this
+      output, if any.
+    sessionParameters: The session parameters available to the bot at this
+      point.
+    status: Response error from the agent in the test result. If set, other
+      output is empty.
+    textResponses: The text responses from the agent for the turn.
+    triggeredIntent: The Intent that triggered the response. Only some fields
+      such as name and displayname will be set.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DiagnosticInfoValue(_messages.Message):
+    r"""Required. Input only. The diagnostic info output for the turn.
+
+    Messages:
+      AdditionalProperty: An additional property for a DiagnosticInfoValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DiagnosticInfoValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SessionParametersValue(_messages.Message):
+    r"""The session parameters available to the bot at this point.
+
+    Messages:
+      AdditionalProperty: An additional property for a SessionParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SessionParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  currentPage = _messages.MessageField('GoogleCloudDialogflowCxV3Page', 1)
+  diagnosticInfo = _messages.MessageField('DiagnosticInfoValue', 2)
+  differences = _messages.MessageField('GoogleCloudDialogflowCxV3TestRunDifference', 3, repeated=True)
+  sessionParameters = _messages.MessageField('SessionParametersValue', 4)
+  status = _messages.MessageField('GoogleRpcStatus', 5)
+  textResponses = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessageText', 6, repeated=True)
+  triggeredIntent = _messages.MessageField('GoogleCloudDialogflowCxV3Intent', 7)
+
+
+class GoogleCloudDialogflowCxV3CreateDocumentOperationMetadata(_messages.Message):
+  r"""Metadata for CreateDocument operation.
+
+  Fields:
+    genericMetadata: The generic information of the operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3GenericKnowledgeOperationMetadata', 1)
+
+
 class GoogleCloudDialogflowCxV3CreateVersionOperationMetadata(_messages.Message):
   r"""Metadata associated with the long running operation for
   Versions.CreateVersion.
@@ -1083,6 +1278,67 @@ class GoogleCloudDialogflowCxV3CreateVersionOperationMetadata(_messages.Message)
   """
 
   version = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowCxV3DeleteDocumentOperationMetadata(_messages.Message):
+  r"""Metadata for DeleteDocument operation.
+
+  Fields:
+    genericMetadata: The generic information of the operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3GenericKnowledgeOperationMetadata', 1)
+
+
+class GoogleCloudDialogflowCxV3DtmfInput(_messages.Message):
+  r"""Represents the input for dtmf event.
+
+  Fields:
+    digits: The dtmf digits.
+    finishDigit: The finish digit (if any).
+  """
+
+  digits = _messages.StringField(1)
+  finishDigit = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3EventHandler(_messages.Message):
+  r"""An event handler specifies an event that can be handled during a
+  session. When the specified event happens, the following actions are taken
+  in order: * If there is a `trigger_fulfillment` associated with the event,
+  it will be called. * If there is a `target_page` associated with the event,
+  the session will transition into the specified page. * If there is a
+  `target_flow` associated with the event, the session will transition into
+  the specified flow.
+
+  Fields:
+    event: Required. The name of the event to handle.
+    name: Output only. The unique identifier of this event handler.
+    targetFlow: The target flow to transition to. Format:
+      `projects//locations//agents//flows/`.
+    targetPage: The target page to transition to. Format:
+      `projects//locations//agents//flows//pages/`.
+    triggerFulfillment: The fulfillment to call when the event occurs.
+      Handling webhook errors with a fulfillment enabled with webhook could
+      cause infinite loop. It is invalid to specify such fulfillment for a
+      handler handling webhooks.
+  """
+
+  event = _messages.StringField(1)
+  name = _messages.StringField(2)
+  targetFlow = _messages.StringField(3)
+  targetPage = _messages.StringField(4)
+  triggerFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3Fulfillment', 5)
+
+
+class GoogleCloudDialogflowCxV3EventInput(_messages.Message):
+  r"""Represents the event to trigger.
+
+  Fields:
+    event: Name of the event.
+  """
+
+  event = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowCxV3ExportAgentResponse(_messages.Message):
@@ -1096,6 +1352,600 @@ class GoogleCloudDialogflowCxV3ExportAgentResponse(_messages.Message):
 
   agentContent = _messages.BytesField(1)
   agentUri = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3ExportTestCasesMetadata(_messages.Message):
+  r"""Metadata returned for the TestCases.ExportTestCases long running
+  operation.
+  """
+
+
+
+class GoogleCloudDialogflowCxV3ExportTestCasesResponse(_messages.Message):
+  r"""The response message for TestCases.ExportTestCases.
+
+  Fields:
+    content: Uncompressed raw byte content for test cases.
+    gcsUri: The URI to a file containing the exported test cases. This field
+      is populated only if `gcs_uri` is specified in ExportTestCasesRequest.
+  """
+
+  content = _messages.BytesField(1)
+  gcsUri = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3Form(_messages.Message):
+  r"""A form is a data model that groups related parameters that can be
+  collected from the user. The process in which the agent prompts the user and
+  collects parameter values from the user is called form filling. A form can
+  be added to a page. When form filling is done, the filled parameters will be
+  written to the session.
+
+  Fields:
+    parameters: Parameters to collect from the user.
+  """
+
+  parameters = _messages.MessageField('GoogleCloudDialogflowCxV3FormParameter', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3FormParameter(_messages.Message):
+  r"""Represents a form parameter.
+
+  Fields:
+    defaultValue: The default value of an optional parameter. If the parameter
+      is required, the default value will be ignored.
+    displayName: Required. The human-readable name of the parameter, unique
+      within the form.
+    entityType: Required. The entity type of the parameter. Format:
+      `projects/-/locations/-/agents/-/entityTypes/` for system entity types
+      (for example, `projects/-/locations/-/agents/-/entityTypes/sys.date`),
+      or `projects//locations//agents//entityTypes/` for developer entity
+      types.
+    fillBehavior: Required. Defines fill behavior for the parameter.
+    isList: Indicates whether the parameter represents a list of values.
+    redact: Indicates whether the parameter content is logged in text and
+      audio. If it is set to true, the parameter content will be replaced to
+      parameter name in both request and response. The default value is false.
+    required: Indicates whether the parameter is required. Optional parameters
+      will not trigger prompts; however, they are filled if the user specifies
+      them. Required parameters must be filled before form filling concludes.
+  """
+
+  defaultValue = _messages.MessageField('extra_types.JsonValue', 1)
+  displayName = _messages.StringField(2)
+  entityType = _messages.StringField(3)
+  fillBehavior = _messages.MessageField('GoogleCloudDialogflowCxV3FormParameterFillBehavior', 4)
+  isList = _messages.BooleanField(5)
+  redact = _messages.BooleanField(6)
+  required = _messages.BooleanField(7)
+
+
+class GoogleCloudDialogflowCxV3FormParameterFillBehavior(_messages.Message):
+  r"""Configuration for how the filling of a parameter should be handled.
+
+  Fields:
+    initialPromptFulfillment: Required. The fulfillment to provide the initial
+      prompt that the agent can present to the user in order to fill the
+      parameter.
+    repromptEventHandlers: The handlers for parameter-level events, used to
+      provide reprompt for the parameter or transition to a different
+      page/flow. The supported events are: * `sys.no-match-`, where N can be
+      from 1 to 6 * `sys.no-match-default` * `sys.no-input-`, where N can be
+      from 1 to 6 * `sys.no-input-default` * `sys.invalid-parameter`
+      `initial_prompt_fulfillment` provides the first prompt for the
+      parameter. If the user's response does not fill the parameter, a no-
+      match/no-input event will be triggered, and the fulfillment associated
+      with the `sys.no-match-1`/`sys.no-input-1` handler (if defined) will be
+      called to provide a prompt. The `sys.no-match-2`/`sys.no-input-2`
+      handler (if defined) will respond to the next no-match/no-input event,
+      and so on. A `sys.no-match-default` or `sys.no-input-default` handler
+      will be used to handle all following no-match/no-input events after all
+      numbered no-match/no-input handlers for the parameter are consumed. A
+      `sys.invalid-parameter` handler can be defined to handle the case where
+      the parameter values have been `invalidated` by webhook. For example, if
+      the user's response fill the parameter, however the parameter was
+      invalidated by webhook, the fulfillment associated with the
+      `sys.invalid-parameter` handler (if defined) will be called to provide a
+      prompt. If the event handler for the corresponding event can't be found
+      on the parameter, `initial_prompt_fulfillment` will be re-prompted.
+  """
+
+  initialPromptFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3Fulfillment', 1)
+  repromptEventHandlers = _messages.MessageField('GoogleCloudDialogflowCxV3EventHandler', 2, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3Fulfillment(_messages.Message):
+  r"""A fulfillment can do one or more of the following actions at the same
+  time: * Generate rich message responses. * Set parameter values. * Call the
+  webhook. Fulfillments can be called at various stages in the Page or Form
+  lifecycle. For example, when a DetectIntentRequest drives a session to enter
+  a new page, the page's entry fulfillment can add a static response to the
+  QueryResult in the returning DetectIntentResponse, call the webhook (for
+  example, to load user data from a database), or both.
+
+  Fields:
+    conditionalCases: Conditional cases for this fulfillment.
+    messages: The list of rich message responses to present to the user.
+    setParameterActions: Set parameter values before executing the webhook.
+    tag: The tag used by the webhook to identify which fulfillment is being
+      called. This field is required if `webhook` is specified.
+    webhook: The webhook to call. Format:
+      `projects//locations//agents//webhooks/`.
+  """
+
+  conditionalCases = _messages.MessageField('GoogleCloudDialogflowCxV3FulfillmentConditionalCases', 1, repeated=True)
+  messages = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessage', 2, repeated=True)
+  setParameterActions = _messages.MessageField('GoogleCloudDialogflowCxV3FulfillmentSetParameterAction', 3, repeated=True)
+  tag = _messages.StringField(4)
+  webhook = _messages.StringField(5)
+
+
+class GoogleCloudDialogflowCxV3FulfillmentConditionalCases(_messages.Message):
+  r"""A list of cascading if-else conditions. Cases are mutually exclusive.
+  The first one with a matching condition is selected, all the rest ignored.
+
+  Fields:
+    cases: A list of cascading if-else conditions.
+  """
+
+  cases = _messages.MessageField('GoogleCloudDialogflowCxV3FulfillmentConditionalCasesCase', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3FulfillmentConditionalCasesCase(_messages.Message):
+  r"""Each case has a Boolean condition. When it is evaluated to be True, the
+  corresponding messages will be selected and evaluated recursively.
+
+  Fields:
+    caseContent: A list of case content.
+    condition: The condition to activate and select this case. Empty means the
+      condition is always true. The condition is evaluated against form
+      parameters or session parameters. See the [conditions reference](https:/
+      /cloud.google.com/dialogflow/cx/docs/reference/condition).
+  """
+
+  caseContent = _messages.MessageField('GoogleCloudDialogflowCxV3FulfillmentConditionalCasesCaseCaseContent', 1, repeated=True)
+  condition = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3FulfillmentConditionalCasesCaseCaseContent(_messages.Message):
+  r"""The list of messages or conditional cases to activate for this case.
+
+  Fields:
+    additionalCases: Additional cases to be evaluated.
+    message: Returned message.
+  """
+
+  additionalCases = _messages.MessageField('GoogleCloudDialogflowCxV3FulfillmentConditionalCases', 1)
+  message = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessage', 2)
+
+
+class GoogleCloudDialogflowCxV3FulfillmentSetParameterAction(_messages.Message):
+  r"""Setting a parameter value.
+
+  Fields:
+    parameter: Display name of the parameter.
+    value: The new value of the parameter. A null value clears the parameter.
+  """
+
+  parameter = _messages.StringField(1)
+  value = _messages.MessageField('extra_types.JsonValue', 2)
+
+
+class GoogleCloudDialogflowCxV3GenericKnowledgeOperationMetadata(_messages.Message):
+  r"""Metadata in google::longrunning::Operation for Knowledge operations.
+
+  Enums:
+    StateValueValuesEnum: Required. Output only. The current state of this
+      operation.
+
+  Fields:
+    state: Required. Output only. The current state of this operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Required. Output only. The current state of this operation.
+
+    Values:
+      STATE_UNSPECIFIED: State unspecified.
+      PENDING: The operation has been created.
+      RUNNING: The operation is currently running.
+      DONE: The operation is done, either cancelled or completed.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    DONE = 3
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+
+
+class GoogleCloudDialogflowCxV3ImportDocumentsOperationMetadata(_messages.Message):
+  r"""Metadata for ImportDocuments operation.
+
+  Fields:
+    genericMetadata: The generic information of the operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3GenericKnowledgeOperationMetadata', 1)
+
+
+class GoogleCloudDialogflowCxV3ImportDocumentsResponse(_messages.Message):
+  r"""Response message for Documents.ImportDocuments.
+
+  Fields:
+    warnings: Includes details about skipped documents or any other warnings.
+  """
+
+  warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3ImportTestCasesMetadata(_messages.Message):
+  r"""Metadata returned for the TestCases.ImportTestCases long running
+  operation.
+
+  Fields:
+    errors: Errors for failed test cases.
+  """
+
+  errors = _messages.MessageField('GoogleCloudDialogflowCxV3TestCaseError', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3ImportTestCasesResponse(_messages.Message):
+  r"""The response message for TestCases.ImportTestCases.
+
+  Fields:
+    names: The unique identifiers of the new test cases. Format:
+      `projects//locations//agents//testCases/`.
+  """
+
+  names = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3InputAudioConfig(_messages.Message):
+  r"""Instructs the speech recognizer on how to process the audio content.
+
+  Enums:
+    AudioEncodingValueValuesEnum: Required. Audio encoding of the audio
+      content to process.
+    ModelVariantValueValuesEnum: Optional. Which variant of the Speech model
+      to use.
+
+  Fields:
+    audioEncoding: Required. Audio encoding of the audio content to process.
+    enableWordInfo: Optional. If `true`, Dialogflow returns SpeechWordInfo in
+      StreamingRecognitionResult with information about the recognized speech
+      words, e.g. start and end time offsets. If false or unspecified, Speech
+      doesn't return any word-level information.
+    model: Optional. Which Speech model to select for the given request.
+      Select the model best suited to your domain to get best results. If a
+      model is not explicitly specified, then we auto-select a model based on
+      the parameters in the InputAudioConfig. If enhanced speech model is
+      enabled for the agent and an enhanced version of the specified model for
+      the language does not exist, then the speech is recognized using the
+      standard version of the specified model. Refer to [Cloud Speech API
+      documentation](https://cloud.google.com/speech-to-
+      text/docs/basics#select-model) for more details.
+    modelVariant: Optional. Which variant of the Speech model to use.
+    phraseHints: Optional. A list of strings containing words and phrases that
+      the speech recognizer should recognize with higher likelihood. See [the
+      Cloud Speech documentation](https://cloud.google.com/speech-to-
+      text/docs/basics#phrase-hints) for more details.
+    sampleRateHertz: Sample rate (in Hertz) of the audio content sent in the
+      query. Refer to [Cloud Speech API
+      documentation](https://cloud.google.com/speech-to-text/docs/basics) for
+      more details.
+    singleUtterance: Optional. If `false` (default), recognition does not
+      cease until the client closes the stream. If `true`, the recognizer will
+      detect a single spoken utterance in input audio. Recognition ceases when
+      it detects the audio's voice has stopped or paused. In this case, once a
+      detected intent is received, the client should close the stream and
+      start a new request with a new stream as needed. Note: This setting is
+      relevant only for streaming methods.
+  """
+
+  class AudioEncodingValueValuesEnum(_messages.Enum):
+    r"""Required. Audio encoding of the audio content to process.
+
+    Values:
+      AUDIO_ENCODING_UNSPECIFIED: Not specified.
+      AUDIO_ENCODING_LINEAR_16: Uncompressed 16-bit signed little-endian
+        samples (Linear PCM).
+      AUDIO_ENCODING_FLAC: [`FLAC`](https://xiph.org/flac/documentation.html)
+        (Free Lossless Audio Codec) is the recommended encoding because it is
+        lossless (therefore recognition is not compromised) and requires only
+        about half the bandwidth of `LINEAR16`. `FLAC` stream encoding
+        supports 16-bit and 24-bit samples, however, not all fields in
+        `STREAMINFO` are supported.
+      AUDIO_ENCODING_MULAW: 8-bit samples that compand 14-bit audio samples
+        using G.711 PCMU/mu-law.
+      AUDIO_ENCODING_AMR: Adaptive Multi-Rate Narrowband codec.
+        `sample_rate_hertz` must be 8000.
+      AUDIO_ENCODING_AMR_WB: Adaptive Multi-Rate Wideband codec.
+        `sample_rate_hertz` must be 16000.
+      AUDIO_ENCODING_OGG_OPUS: Opus encoded audio frames in Ogg container
+        ([OggOpus](https://wiki.xiph.org/OggOpus)). `sample_rate_hertz` must
+        be 16000.
+      AUDIO_ENCODING_SPEEX_WITH_HEADER_BYTE: Although the use of lossy
+        encodings is not recommended, if a very low bitrate encoding is
+        required, `OGG_OPUS` is highly preferred over Speex encoding. The
+        [Speex](https://speex.org/) encoding supported by Dialogflow API has a
+        header byte in each block, as in MIME type `audio/x-speex-with-header-
+        byte`. It is a variant of the RTP Speex encoding defined in [RFC
+        5574](https://tools.ietf.org/html/rfc5574). The stream is a sequence
+        of blocks, one block per RTP packet. Each block starts with a byte
+        containing the length of the block, in bytes, followed by one or more
+        frames of Speex data, padded to an integral number of bytes (octets)
+        as specified in RFC 5574. In other words, each RTP header is replaced
+        with a single byte containing the block length. Only Speex wideband is
+        supported. `sample_rate_hertz` must be 16000.
+    """
+    AUDIO_ENCODING_UNSPECIFIED = 0
+    AUDIO_ENCODING_LINEAR_16 = 1
+    AUDIO_ENCODING_FLAC = 2
+    AUDIO_ENCODING_MULAW = 3
+    AUDIO_ENCODING_AMR = 4
+    AUDIO_ENCODING_AMR_WB = 5
+    AUDIO_ENCODING_OGG_OPUS = 6
+    AUDIO_ENCODING_SPEEX_WITH_HEADER_BYTE = 7
+
+  class ModelVariantValueValuesEnum(_messages.Enum):
+    r"""Optional. Which variant of the Speech model to use.
+
+    Values:
+      SPEECH_MODEL_VARIANT_UNSPECIFIED: No model variant specified. In this
+        case Dialogflow defaults to USE_BEST_AVAILABLE.
+      USE_BEST_AVAILABLE: Use the best available variant of the Speech model
+        that the caller is eligible for. Please see the [Dialogflow
+        docs](https://cloud.google.com/dialogflow/docs/data-logging) for how
+        to make your project eligible for enhanced models.
+      USE_STANDARD: Use standard model variant even if an enhanced model is
+        available. See the [Cloud Speech
+        documentation](https://cloud.google.com/speech-to-text/docs/enhanced-
+        models) for details about enhanced models.
+      USE_ENHANCED: Use an enhanced model variant: * If an enhanced variant
+        does not exist for the given model and request language, Dialogflow
+        falls back to the standard variant. The [Cloud Speech
+        documentation](https://cloud.google.com/speech-to-text/docs/enhanced-
+        models) describes which models have enhanced variants. * If the API
+        caller isn't eligible for enhanced models, Dialogflow returns an
+        error. Please see the [Dialogflow
+        docs](https://cloud.google.com/dialogflow/docs/data-logging) for how
+        to make your project eligible.
+    """
+    SPEECH_MODEL_VARIANT_UNSPECIFIED = 0
+    USE_BEST_AVAILABLE = 1
+    USE_STANDARD = 2
+    USE_ENHANCED = 3
+
+  audioEncoding = _messages.EnumField('AudioEncodingValueValuesEnum', 1)
+  enableWordInfo = _messages.BooleanField(2)
+  model = _messages.StringField(3)
+  modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 4)
+  phraseHints = _messages.StringField(5, repeated=True)
+  sampleRateHertz = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  singleUtterance = _messages.BooleanField(7)
+
+
+class GoogleCloudDialogflowCxV3Intent(_messages.Message):
+  r"""An intent represents a user's intent to interact with a conversational
+  agent. You can provide information for the Dialogflow API to use to match
+  user input to an intent by adding training phrases (i.e., examples of user
+  input) to your intent.
+
+  Messages:
+    LabelsValue: Optional. The key/value metadata to label an intent. Labels
+      can contain lowercase letters, digits and the symbols '-' and '_'.
+      International characters are allowed, including letters from unicase
+      alphabets. Keys must start with a letter. Keys and values can be no
+      longer than 63 characters and no more than 128 bytes. Prefix "sys." is
+      reserved for Dialogflow defined labels. Currently allowed Dialogflow
+      defined labels include: * sys.head * sys.contextual The above labels do
+      not require value. "sys.head" means the intent is a head intent.
+      "sys.contextual" means the intent is a contextual intent.
+
+  Fields:
+    description: Optional. Human readable description for better understanding
+      an intent like its scope, content, result etc. Maximum character limit:
+      140 characters.
+    displayName: Required. The human-readable name of the intent, unique
+      within the agent.
+    isFallback: Indicates whether this is a fallback intent. Currently only
+      default fallback intent is allowed in the agent, which is added upon
+      agent creation. Adding training phrases to fallback intent is useful in
+      the case of requests that are mistakenly matched, since training phrases
+      assigned to fallback intents act as negative examples that triggers no-
+      match event.
+    labels: Optional. The key/value metadata to label an intent. Labels can
+      contain lowercase letters, digits and the symbols '-' and '_'.
+      International characters are allowed, including letters from unicase
+      alphabets. Keys must start with a letter. Keys and values can be no
+      longer than 63 characters and no more than 128 bytes. Prefix "sys." is
+      reserved for Dialogflow defined labels. Currently allowed Dialogflow
+      defined labels include: * sys.head * sys.contextual The above labels do
+      not require value. "sys.head" means the intent is a head intent.
+      "sys.contextual" means the intent is a contextual intent.
+    name: The unique identifier of the intent. Required for the
+      Intents.UpdateIntent method. Intents.CreateIntent populates the name
+      automatically. Format: `projects//locations//agents//intents/`.
+    parameters: The collection of parameters associated with the intent.
+    priority: The priority of this intent. Higher numbers represent higher
+      priorities. - If the supplied value is unspecified or 0, the service
+      translates the value to 500,000, which corresponds to the `Normal`
+      priority in the console. - If the supplied value is negative, the intent
+      is ignored in runtime detect intent requests.
+    trainingPhrases: The collection of training phrases the agent is trained
+      on to identify the intent.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The key/value metadata to label an intent. Labels can
+    contain lowercase letters, digits and the symbols '-' and '_'.
+    International characters are allowed, including letters from unicase
+    alphabets. Keys must start with a letter. Keys and values can be no longer
+    than 63 characters and no more than 128 bytes. Prefix "sys." is reserved
+    for Dialogflow defined labels. Currently allowed Dialogflow defined labels
+    include: * sys.head * sys.contextual The above labels do not require
+    value. "sys.head" means the intent is a head intent. "sys.contextual"
+    means the intent is a contextual intent.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  isFallback = _messages.BooleanField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  parameters = _messages.MessageField('GoogleCloudDialogflowCxV3IntentParameter', 6, repeated=True)
+  priority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  trainingPhrases = _messages.MessageField('GoogleCloudDialogflowCxV3IntentTrainingPhrase', 8, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3IntentInput(_messages.Message):
+  r"""Represents the intent to trigger programmatically rather than as a
+  result of natural language processing.
+
+  Fields:
+    intent: Required. The unique identifier of the intent. Format:
+      `projects//locations//agents//intents/`.
+  """
+
+  intent = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowCxV3IntentParameter(_messages.Message):
+  r"""Represents an intent parameter.
+
+  Fields:
+    entityType: Required. The entity type of the parameter. Format:
+      `projects/-/locations/-/agents/-/entityTypes/` for system entity types
+      (for example, `projects/-/locations/-/agents/-/entityTypes/sys.date`),
+      or `projects//locations//agents//entityTypes/` for developer entity
+      types.
+    id: Required. The unique identifier of the parameter. This field is used
+      by training phrases to annotate their parts.
+    isList: Indicates whether the parameter represents a list of values.
+    redact: Indicates whether the parameter content is logged in text and
+      audio. If it is set to true, the parameter content will be replaced to
+      parameter id in both request and response. The default value is false.
+  """
+
+  entityType = _messages.StringField(1)
+  id = _messages.StringField(2)
+  isList = _messages.BooleanField(3)
+  redact = _messages.BooleanField(4)
+
+
+class GoogleCloudDialogflowCxV3IntentTrainingPhrase(_messages.Message):
+  r"""Represents an example that the agent is trained on to identify the
+  intent.
+
+  Fields:
+    id: Output only. The unique identifier of the training phrase.
+    parts: Required. The ordered list of training phrase parts. The parts are
+      concatenated in order to form the training phrase. Note: The API does
+      not automatically annotate training phrases like the Dialogflow Console
+      does. Note: Do not forget to include whitespace at part boundaries, so
+      the training phrase is well formatted when the parts are concatenated.
+      If the training phrase does not need to be annotated with parameters,
+      you just need a single part with only the Part.text field set. If you
+      want to annotate the training phrase, you must create multiple parts,
+      where the fields of each part are populated in one of two ways: -
+      `Part.text` is set to a part of the phrase that has no parameters. -
+      `Part.text` is set to a part of the phrase that you want to annotate,
+      and the `parameter_id` field is set.
+    repeatCount: Indicates how many times this example was added to the
+      intent.
+  """
+
+  id = _messages.StringField(1)
+  parts = _messages.MessageField('GoogleCloudDialogflowCxV3IntentTrainingPhrasePart', 2, repeated=True)
+  repeatCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDialogflowCxV3IntentTrainingPhrasePart(_messages.Message):
+  r"""Represents a part of a training phrase.
+
+  Fields:
+    parameterId: The parameter used to annotate this part of the training
+      phrase. This field is required for annotated parts of the training
+      phrase.
+    text: Required. The text for this part.
+  """
+
+  parameterId = _messages.StringField(1)
+  text = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3Page(_messages.Message):
+  r"""A Dialogflow CX conversation (session) can be described and visualized
+  as a state machine. The states of a CX session are represented by pages. For
+  each flow, you define many pages, where your combined pages can handle a
+  complete conversation on the topics the flow is designed for. At any given
+  moment, exactly one page is the current page, the current page is considered
+  active, and the flow associated with that page is considered active. Every
+  flow has a special start page. When a flow initially becomes active, the
+  start page page becomes the current page. For each conversational turn, the
+  current page will either stay the same or transition to another page. You
+  configure each page to collect information from the end-user that is
+  relevant for the conversational state represented by the page. For more
+  information, see the [Page
+  guide](https://cloud.google.com/dialogflow/cx/docs/concept/page).
+
+  Fields:
+    displayName: Required. The human-readable name of the page, unique within
+      the agent.
+    entryFulfillment: The fulfillment to call when the session is entering the
+      page.
+    eventHandlers: Handlers associated with the page to handle events such as
+      webhook errors, no match or no input.
+    form: The form associated with the page, used for collecting parameters
+      relevant to the page.
+    name: The unique identifier of the page. Required for the Pages.UpdatePage
+      method. Pages.CreatePage populates the name automatically. Format:
+      `projects//locations//agents//flows//pages/`.
+    transitionRouteGroups: Ordered list of `TransitionRouteGroups` associated
+      with the page. Transition route groups must be unique within a page. *
+      If multiple transition routes within a page scope refer to the same
+      intent, then the precedence order is: page's transition route -> page's
+      transition route group -> flow's transition routes. * If multiple
+      transition route groups within a page contain the same intent, then the
+      first group in the ordered list takes precedence.
+      Format:`projects//locations//agents//flows//transitionRouteGroups/`.
+    transitionRoutes: A list of transitions for the transition rules of this
+      page. They route the conversation to another page in the same flow, or
+      another flow. When we are in a certain page, the TransitionRoutes are
+      evalauted in the following order: * TransitionRoutes defined in the page
+      with intent specified. * TransitionRoutes defined in the transition
+      route groups. * TransitionRoutes defined in flow with intent specified.
+      * TransitionRoutes defined in the page with only condition specified.
+  """
+
+  displayName = _messages.StringField(1)
+  entryFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3Fulfillment', 2)
+  eventHandlers = _messages.MessageField('GoogleCloudDialogflowCxV3EventHandler', 3, repeated=True)
+  form = _messages.MessageField('GoogleCloudDialogflowCxV3Form', 4)
+  name = _messages.StringField(5)
+  transitionRouteGroups = _messages.StringField(6, repeated=True)
+  transitionRoutes = _messages.MessageField('GoogleCloudDialogflowCxV3TransitionRoute', 7, repeated=True)
 
 
 class GoogleCloudDialogflowCxV3PageInfo(_messages.Message):
@@ -1178,6 +2028,43 @@ class GoogleCloudDialogflowCxV3PageInfoFormInfoParameterInfo(_messages.Message):
   required = _messages.BooleanField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
   value = _messages.MessageField('extra_types.JsonValue', 5)
+
+
+class GoogleCloudDialogflowCxV3QueryInput(_messages.Message):
+  r"""Represents the query input. It can contain one of: 1. A conversational
+  query in the form of text. 2. An intent query that specifies which intent to
+  trigger. 3. Natural language speech audio to be processed. 4. An event to be
+  triggered.
+
+  Fields:
+    audio: The natural language speech audio to be processed.
+    dtmf: The DTMF event to be handled.
+    event: The event to be triggered.
+    intent: The intent to be triggered.
+    languageCode: Required. The language of the input. See [Language
+      Support](https://cloud.google.com/dialogflow/docs/reference/language)
+      for a list of the currently supported language codes. Note that queries
+      in the same session do not necessarily need to specify the same
+      language.
+    text: The natural language text to be processed.
+  """
+
+  audio = _messages.MessageField('GoogleCloudDialogflowCxV3AudioInput', 1)
+  dtmf = _messages.MessageField('GoogleCloudDialogflowCxV3DtmfInput', 2)
+  event = _messages.MessageField('GoogleCloudDialogflowCxV3EventInput', 3)
+  intent = _messages.MessageField('GoogleCloudDialogflowCxV3IntentInput', 4)
+  languageCode = _messages.StringField(5)
+  text = _messages.MessageField('GoogleCloudDialogflowCxV3TextInput', 6)
+
+
+class GoogleCloudDialogflowCxV3ReloadDocumentOperationMetadata(_messages.Message):
+  r"""Metadata for ReloadDocument operation.
+
+  Fields:
+    genericMetadata: The generic information of the operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3GenericKnowledgeOperationMetadata', 1)
 
 
 class GoogleCloudDialogflowCxV3ResponseMessage(_messages.Message):
@@ -1437,6 +2324,22 @@ class GoogleCloudDialogflowCxV3ResponseMessageText(_messages.Message):
   text = _messages.StringField(2, repeated=True)
 
 
+class GoogleCloudDialogflowCxV3RunTestCaseMetadata(_messages.Message):
+  r"""Metadata returned for the TestCases.RunTestCase long running operation.
+  """
+
+
+
+class GoogleCloudDialogflowCxV3RunTestCaseResponse(_messages.Message):
+  r"""The response message for TestCases.RunTestCase.
+
+  Fields:
+    result: The result.
+  """
+
+  result = _messages.MessageField('GoogleCloudDialogflowCxV3TestCaseResult', 1)
+
+
 class GoogleCloudDialogflowCxV3SessionInfo(_messages.Message):
   r"""Represents session information communicated to and from the webhook.
 
@@ -1491,6 +2394,211 @@ class GoogleCloudDialogflowCxV3SessionInfo(_messages.Message):
 
   parameters = _messages.MessageField('ParametersValue', 1)
   session = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3TestCase(_messages.Message):
+  r"""Represents a test case.
+
+  Fields:
+    creationTime: Output only. When the test was created.
+    displayName: Required. The human-readable name of the test case, unique
+      within the agent. Limit of 200 characters.
+    lastTestResult: The latest test result.
+    name: The unique identifier of the test case. TestCases.CreateTestCase
+      will populate the name automatically. Otherwise use format:
+      `projects//locations//agents/ /testCases/`.
+    notes: Additional freeform notes about the test case. Limit of 400
+      characters.
+    tags: Tags are short descriptions that users may apply to test cases for
+      organizational and filtering purposes. Each tag should start with "#"
+      and has a limit of 30 characters.
+    testCaseConversationTurns: The conversation turns uttered when the test
+      case was created, in chronological order. These include the canonical
+      set of agent utterances that should occur when the agent is working
+      properly.
+    testConfig: Config for the test case.
+  """
+
+  creationTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  lastTestResult = _messages.MessageField('GoogleCloudDialogflowCxV3TestCaseResult', 3)
+  name = _messages.StringField(4)
+  notes = _messages.StringField(5)
+  tags = _messages.StringField(6, repeated=True)
+  testCaseConversationTurns = _messages.MessageField('GoogleCloudDialogflowCxV3ConversationTurn', 7, repeated=True)
+  testConfig = _messages.MessageField('GoogleCloudDialogflowCxV3TestConfig', 8)
+
+
+class GoogleCloudDialogflowCxV3TestCaseError(_messages.Message):
+  r"""Error info for importing a test.
+
+  Fields:
+    status: The status associated with the test case.
+    testCase: The test case.
+  """
+
+  status = _messages.MessageField('GoogleRpcStatus', 1)
+  testCase = _messages.MessageField('GoogleCloudDialogflowCxV3TestCase', 2)
+
+
+class GoogleCloudDialogflowCxV3TestCaseResult(_messages.Message):
+  r"""Represents a result from running a test case in an agent environment.
+
+  Enums:
+    TestResultValueValuesEnum: Whether the test case passed in the agent
+      environment.
+
+  Fields:
+    conversationTurns: The conversation turns uttered during the test case
+      replay in chronological order.
+    environment: Optional. Environment where the test was run. If not set, it
+      indicates the draft environment.
+    name: The resource name for the test case result. Format:
+      `projects//locations//agents//testCases/ /results/`.
+    testResult: Whether the test case passed in the agent environment.
+    testTime: The time that the test was run.
+  """
+
+  class TestResultValueValuesEnum(_messages.Enum):
+    r"""Whether the test case passed in the agent environment.
+
+    Values:
+      TEST_RESULT_UNSPECIFIED: Not specified. Should never be used.
+      PASSED: The test passed.
+      FAILED: The test did not pass.
+    """
+    TEST_RESULT_UNSPECIFIED = 0
+    PASSED = 1
+    FAILED = 2
+
+  conversationTurns = _messages.MessageField('GoogleCloudDialogflowCxV3ConversationTurn', 1, repeated=True)
+  environment = _messages.StringField(2)
+  name = _messages.StringField(3)
+  testResult = _messages.EnumField('TestResultValueValuesEnum', 4)
+  testTime = _messages.StringField(5)
+
+
+class GoogleCloudDialogflowCxV3TestConfig(_messages.Message):
+  r"""Represents configurations for a test case.
+
+  Fields:
+    flow: Flow name. If not set, default start flow is assumed. Format:
+      `projects//locations//agents//flows/`.
+    trackingParameters: Session parameters to be compared when calculating
+      differences.
+  """
+
+  flow = _messages.StringField(1)
+  trackingParameters = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3TestError(_messages.Message):
+  r"""Error info for running a test.
+
+  Fields:
+    status: The status associated with the test.
+    testCase: The test case resource name.
+    testTime: The timestamp when the test was completed.
+  """
+
+  status = _messages.MessageField('GoogleRpcStatus', 1)
+  testCase = _messages.StringField(2)
+  testTime = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowCxV3TestRunDifference(_messages.Message):
+  r"""The description of differences between original and replayed agent
+  output.
+
+  Enums:
+    TypeValueValuesEnum: The type of diff.
+
+  Fields:
+    description: A description of the diff, showing the actual output vs
+      expected output.
+    type: The type of diff.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of diff.
+
+    Values:
+      DIFF_TYPE_UNSPECIFIED: Should never be used.
+      INTENT: The intent.
+      PAGE: The page.
+      PARAMETERS: The parameters.
+      UTTERANCE: The message utterance.
+    """
+    DIFF_TYPE_UNSPECIFIED = 0
+    INTENT = 1
+    PAGE = 2
+    PARAMETERS = 3
+    UTTERANCE = 4
+
+  description = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class GoogleCloudDialogflowCxV3TextInput(_messages.Message):
+  r"""Represents the natural language text to be processed.
+
+  Fields:
+    text: Required. The UTF-8 encoded natural language text to be processed.
+      Text length must not exceed 256 characters.
+  """
+
+  text = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowCxV3TransitionRoute(_messages.Message):
+  r"""A transition route specifies a intent that can be matched and/or a data
+  condition that can be evaluated during a session. When a specified
+  transition is matched, the following actions are taken in order: * If there
+  is a `trigger_fulfillment` associated with the transition, it will be
+  called. * If there is a `target_page` associated with the transition, the
+  session will transition into the specified page. * If there is a
+  `target_flow` associated with the transition, the session will transition
+  into the specified flow.
+
+  Fields:
+    condition: The condition to evaluate against form parameters or session
+      parameters. See the [conditions reference](https://cloud.google.com/dial
+      ogflow/cx/docs/reference/condition). At least one of `intent` or
+      `condition` must be specified. When both `intent` and `condition` are
+      specified, the transition can only happen when both are fulfilled.
+    intent: The unique identifier of an Intent. Format:
+      `projects//locations//agents//intents/`. Indicates that the transition
+      can only happen when the given intent is matched. At least one of
+      `intent` or `condition` must be specified. When both `intent` and
+      `condition` are specified, the transition can only happen when both are
+      fulfilled.
+    name: Output only. The unique identifier of this transition route.
+    targetFlow: The target flow to transition to. Format:
+      `projects//locations//agents//flows/`.
+    targetPage: The target page to transition to. Format:
+      `projects//locations//agents//flows//pages/`.
+    triggerFulfillment: The fulfillment to call when the condition is
+      satisfied. At least one of `trigger_fulfillment` and `target` must be
+      specified. When both are defined, `trigger_fulfillment` is executed
+      first.
+  """
+
+  condition = _messages.StringField(1)
+  intent = _messages.StringField(2)
+  name = _messages.StringField(3)
+  targetFlow = _messages.StringField(4)
+  targetPage = _messages.StringField(5)
+  triggerFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3Fulfillment', 6)
+
+
+class GoogleCloudDialogflowCxV3UpdateDocumentOperationMetadata(_messages.Message):
+  r"""Metadata for UpdateDocument operation.
+
+  Fields:
+    genericMetadata: The generic information of the operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3GenericKnowledgeOperationMetadata', 1)
 
 
 class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
@@ -1704,6 +2812,201 @@ class GoogleCloudDialogflowCxV3WebhookResponseFulfillmentResponse(_messages.Mess
   messages = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessage', 2, repeated=True)
 
 
+class GoogleCloudDialogflowCxV3beta1AudioInput(_messages.Message):
+  r"""Represents the natural speech audio to be processed.
+
+  Fields:
+    audio: The natural language speech audio to be processed. A single request
+      can contain up to 1 minute of speech audio data. The transcribed text
+      cannot contain more than 256 bytes. For non-streaming audio detect
+      intent, both `config` and `audio` must be provided. For streaming audio
+      detect intent, `config` must be provided in the first request and
+      `audio` must be provided in all following requests.
+    config: Required. Instructs the speech recognizer how to process the
+      speech audio.
+  """
+
+  audio = _messages.BytesField(1)
+  config = _messages.MessageField('GoogleCloudDialogflowCxV3beta1InputAudioConfig', 2)
+
+
+class GoogleCloudDialogflowCxV3beta1BatchRunTestCasesMetadata(_messages.Message):
+  r"""Metadata returned for the TestCases.BatchRunTestCases long running
+  operation.
+
+  Fields:
+    errors: The test errors.
+  """
+
+  errors = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TestError', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1BatchRunTestCasesResponse(_messages.Message):
+  r"""The response message for TestCases.BatchRunTestCases.
+
+  Fields:
+    results: The test case results. The detailed conversation turns are empty
+      in this response.
+  """
+
+  results = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TestCaseResult', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1ConversationTurn(_messages.Message):
+  r"""One interaction between a human and virtual agent. The human provides
+  some input and the virtual agent provides a response.
+
+  Fields:
+    userInput: The user input.
+    virtualAgentOutput: The virtual agent output.
+  """
+
+  userInput = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ConversationTurnUserInput', 1)
+  virtualAgentOutput = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ConversationTurnVirtualAgentOutput', 2)
+
+
+class GoogleCloudDialogflowCxV3beta1ConversationTurnUserInput(_messages.Message):
+  r"""The input from the human user.
+
+  Messages:
+    InjectedParametersValue: Parameters that need to be injected into the
+      conversation during intent detection.
+
+  Fields:
+    injectedParameters: Parameters that need to be injected into the
+      conversation during intent detection.
+    input: Supports text input, event input, dtmf input in the test case.
+    isWebhookEnabled: If webhooks should be allowed to trigger in response to
+      the user utterance. Often if parameters are injected, webhooks should
+      not be enabled.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InjectedParametersValue(_messages.Message):
+    r"""Parameters that need to be injected into the conversation during
+    intent detection.
+
+    Messages:
+      AdditionalProperty: An additional property for a InjectedParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InjectedParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  injectedParameters = _messages.MessageField('InjectedParametersValue', 1)
+  input = _messages.MessageField('GoogleCloudDialogflowCxV3beta1QueryInput', 2)
+  isWebhookEnabled = _messages.BooleanField(3)
+
+
+class GoogleCloudDialogflowCxV3beta1ConversationTurnVirtualAgentOutput(_messages.Message):
+  r"""The output from the virtual agent.
+
+  Messages:
+    DiagnosticInfoValue: Required. Input only. The diagnostic info output for
+      the turn.
+    SessionParametersValue: The session parameters available to the bot at
+      this point.
+
+  Fields:
+    currentPage: The Page on which the utterance was spoken. Only some fields
+      such as name and displayname will be set.
+    diagnosticInfo: Required. Input only. The diagnostic info output for the
+      turn.
+    differences: Output only. If this is part of a result conversation turn,
+      the list of differences between the original run and the replay for this
+      output, if any.
+    sessionParameters: The session parameters available to the bot at this
+      point.
+    status: Response error from the agent in the test result. If set, other
+      output is empty.
+    textResponses: The text responses from the agent for the turn.
+    triggeredIntent: The Intent that triggered the response. Only some fields
+      such as name and displayname will be set.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DiagnosticInfoValue(_messages.Message):
+    r"""Required. Input only. The diagnostic info output for the turn.
+
+    Messages:
+      AdditionalProperty: An additional property for a DiagnosticInfoValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DiagnosticInfoValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SessionParametersValue(_messages.Message):
+    r"""The session parameters available to the bot at this point.
+
+    Messages:
+      AdditionalProperty: An additional property for a SessionParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SessionParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  currentPage = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Page', 1)
+  diagnosticInfo = _messages.MessageField('DiagnosticInfoValue', 2)
+  differences = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TestRunDifference', 3, repeated=True)
+  sessionParameters = _messages.MessageField('SessionParametersValue', 4)
+  status = _messages.MessageField('GoogleRpcStatus', 5)
+  textResponses = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageText', 6, repeated=True)
+  triggeredIntent = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Intent', 7)
+
+
+class GoogleCloudDialogflowCxV3beta1CreateDocumentOperationMetadata(_messages.Message):
+  r"""Metadata for CreateDocument operation.
+
+  Fields:
+    genericMetadata: The generic information of the operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3beta1GenericKnowledgeOperationMetadata', 1)
+
+
 class GoogleCloudDialogflowCxV3beta1CreateVersionOperationMetadata(_messages.Message):
   r"""Metadata associated with the long running operation for
   Versions.CreateVersion.
@@ -1714,6 +3017,67 @@ class GoogleCloudDialogflowCxV3beta1CreateVersionOperationMetadata(_messages.Mes
   """
 
   version = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowCxV3beta1DeleteDocumentOperationMetadata(_messages.Message):
+  r"""Metadata for DeleteDocument operation.
+
+  Fields:
+    genericMetadata: The generic information of the operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3beta1GenericKnowledgeOperationMetadata', 1)
+
+
+class GoogleCloudDialogflowCxV3beta1DtmfInput(_messages.Message):
+  r"""Represents the input for dtmf event.
+
+  Fields:
+    digits: The dtmf digits.
+    finishDigit: The finish digit (if any).
+  """
+
+  digits = _messages.StringField(1)
+  finishDigit = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3beta1EventHandler(_messages.Message):
+  r"""An event handler specifies an event that can be handled during a
+  session. When the specified event happens, the following actions are taken
+  in order: * If there is a `trigger_fulfillment` associated with the event,
+  it will be called. * If there is a `target_page` associated with the event,
+  the session will transition into the specified page. * If there is a
+  `target_flow` associated with the event, the session will transition into
+  the specified flow.
+
+  Fields:
+    event: Required. The name of the event to handle.
+    name: Output only. The unique identifier of this event handler.
+    targetFlow: The target flow to transition to. Format:
+      `projects//locations//agents//flows/`.
+    targetPage: The target page to transition to. Format:
+      `projects//locations//agents//flows//pages/`.
+    triggerFulfillment: The fulfillment to call when the event occurs.
+      Handling webhook errors with a fulfillment enabled with webhook could
+      cause infinite loop. It is invalid to specify such fulfillment for a
+      handler handling webhooks.
+  """
+
+  event = _messages.StringField(1)
+  name = _messages.StringField(2)
+  targetFlow = _messages.StringField(3)
+  targetPage = _messages.StringField(4)
+  triggerFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Fulfillment', 5)
+
+
+class GoogleCloudDialogflowCxV3beta1EventInput(_messages.Message):
+  r"""Represents the event to trigger.
+
+  Fields:
+    event: Name of the event.
+  """
+
+  event = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowCxV3beta1ExportAgentResponse(_messages.Message):
@@ -1727,6 +3091,600 @@ class GoogleCloudDialogflowCxV3beta1ExportAgentResponse(_messages.Message):
 
   agentContent = _messages.BytesField(1)
   agentUri = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3beta1ExportTestCasesMetadata(_messages.Message):
+  r"""Metadata returned for the TestCases.ExportTestCases long running
+  operation.
+  """
+
+
+
+class GoogleCloudDialogflowCxV3beta1ExportTestCasesResponse(_messages.Message):
+  r"""The response message for TestCases.ExportTestCases.
+
+  Fields:
+    content: Uncompressed raw byte content for test cases.
+    gcsUri: The URI to a file containing the exported test cases. This field
+      is populated only if `gcs_uri` is specified in ExportTestCasesRequest.
+  """
+
+  content = _messages.BytesField(1)
+  gcsUri = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3beta1Form(_messages.Message):
+  r"""A form is a data model that groups related parameters that can be
+  collected from the user. The process in which the agent prompts the user and
+  collects parameter values from the user is called form filling. A form can
+  be added to a page. When form filling is done, the filled parameters will be
+  written to the session.
+
+  Fields:
+    parameters: Parameters to collect from the user.
+  """
+
+  parameters = _messages.MessageField('GoogleCloudDialogflowCxV3beta1FormParameter', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1FormParameter(_messages.Message):
+  r"""Represents a form parameter.
+
+  Fields:
+    defaultValue: The default value of an optional parameter. If the parameter
+      is required, the default value will be ignored.
+    displayName: Required. The human-readable name of the parameter, unique
+      within the form.
+    entityType: Required. The entity type of the parameter. Format:
+      `projects/-/locations/-/agents/-/entityTypes/` for system entity types
+      (for example, `projects/-/locations/-/agents/-/entityTypes/sys.date`),
+      or `projects//locations//agents//entityTypes/` for developer entity
+      types.
+    fillBehavior: Required. Defines fill behavior for the parameter.
+    isList: Indicates whether the parameter represents a list of values.
+    redact: Indicates whether the parameter content is logged in text and
+      audio. If it is set to true, the parameter content will be replaced to
+      parameter name in both request and response. The default value is false.
+    required: Indicates whether the parameter is required. Optional parameters
+      will not trigger prompts; however, they are filled if the user specifies
+      them. Required parameters must be filled before form filling concludes.
+  """
+
+  defaultValue = _messages.MessageField('extra_types.JsonValue', 1)
+  displayName = _messages.StringField(2)
+  entityType = _messages.StringField(3)
+  fillBehavior = _messages.MessageField('GoogleCloudDialogflowCxV3beta1FormParameterFillBehavior', 4)
+  isList = _messages.BooleanField(5)
+  redact = _messages.BooleanField(6)
+  required = _messages.BooleanField(7)
+
+
+class GoogleCloudDialogflowCxV3beta1FormParameterFillBehavior(_messages.Message):
+  r"""Configuration for how the filling of a parameter should be handled.
+
+  Fields:
+    initialPromptFulfillment: Required. The fulfillment to provide the initial
+      prompt that the agent can present to the user in order to fill the
+      parameter.
+    repromptEventHandlers: The handlers for parameter-level events, used to
+      provide reprompt for the parameter or transition to a different
+      page/flow. The supported events are: * `sys.no-match-`, where N can be
+      from 1 to 6 * `sys.no-match-default` * `sys.no-input-`, where N can be
+      from 1 to 6 * `sys.no-input-default` * `sys.invalid-parameter`
+      `initial_prompt_fulfillment` provides the first prompt for the
+      parameter. If the user's response does not fill the parameter, a no-
+      match/no-input event will be triggered, and the fulfillment associated
+      with the `sys.no-match-1`/`sys.no-input-1` handler (if defined) will be
+      called to provide a prompt. The `sys.no-match-2`/`sys.no-input-2`
+      handler (if defined) will respond to the next no-match/no-input event,
+      and so on. A `sys.no-match-default` or `sys.no-input-default` handler
+      will be used to handle all following no-match/no-input events after all
+      numbered no-match/no-input handlers for the parameter are consumed. A
+      `sys.invalid-parameter` handler can be defined to handle the case where
+      the parameter values have been `invalidated` by webhook. For example, if
+      the user's response fill the parameter, however the parameter was
+      invalidated by webhook, the fulfillment associated with the
+      `sys.invalid-parameter` handler (if defined) will be called to provide a
+      prompt. If the event handler for the corresponding event can't be found
+      on the parameter, `initial_prompt_fulfillment` will be re-prompted.
+  """
+
+  initialPromptFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Fulfillment', 1)
+  repromptEventHandlers = _messages.MessageField('GoogleCloudDialogflowCxV3beta1EventHandler', 2, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1Fulfillment(_messages.Message):
+  r"""A fulfillment can do one or more of the following actions at the same
+  time: * Generate rich message responses. * Set parameter values. * Call the
+  webhook. Fulfillments can be called at various stages in the Page or Form
+  lifecycle. For example, when a DetectIntentRequest drives a session to enter
+  a new page, the page's entry fulfillment can add a static response to the
+  QueryResult in the returning DetectIntentResponse, call the webhook (for
+  example, to load user data from a database), or both.
+
+  Fields:
+    conditionalCases: Conditional cases for this fulfillment.
+    messages: The list of rich message responses to present to the user.
+    setParameterActions: Set parameter values before executing the webhook.
+    tag: The tag used by the webhook to identify which fulfillment is being
+      called. This field is required if `webhook` is specified.
+    webhook: The webhook to call. Format:
+      `projects//locations//agents//webhooks/`.
+  """
+
+  conditionalCases = _messages.MessageField('GoogleCloudDialogflowCxV3beta1FulfillmentConditionalCases', 1, repeated=True)
+  messages = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 2, repeated=True)
+  setParameterActions = _messages.MessageField('GoogleCloudDialogflowCxV3beta1FulfillmentSetParameterAction', 3, repeated=True)
+  tag = _messages.StringField(4)
+  webhook = _messages.StringField(5)
+
+
+class GoogleCloudDialogflowCxV3beta1FulfillmentConditionalCases(_messages.Message):
+  r"""A list of cascading if-else conditions. Cases are mutually exclusive.
+  The first one with a matching condition is selected, all the rest ignored.
+
+  Fields:
+    cases: A list of cascading if-else conditions.
+  """
+
+  cases = _messages.MessageField('GoogleCloudDialogflowCxV3beta1FulfillmentConditionalCasesCase', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1FulfillmentConditionalCasesCase(_messages.Message):
+  r"""Each case has a Boolean condition. When it is evaluated to be True, the
+  corresponding messages will be selected and evaluated recursively.
+
+  Fields:
+    caseContent: A list of case content.
+    condition: The condition to activate and select this case. Empty means the
+      condition is always true. The condition is evaluated against form
+      parameters or session parameters. See the [conditions reference](https:/
+      /cloud.google.com/dialogflow/cx/docs/reference/condition).
+  """
+
+  caseContent = _messages.MessageField('GoogleCloudDialogflowCxV3beta1FulfillmentConditionalCasesCaseCaseContent', 1, repeated=True)
+  condition = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3beta1FulfillmentConditionalCasesCaseCaseContent(_messages.Message):
+  r"""The list of messages or conditional cases to activate for this case.
+
+  Fields:
+    additionalCases: Additional cases to be evaluated.
+    message: Returned message.
+  """
+
+  additionalCases = _messages.MessageField('GoogleCloudDialogflowCxV3beta1FulfillmentConditionalCases', 1)
+  message = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 2)
+
+
+class GoogleCloudDialogflowCxV3beta1FulfillmentSetParameterAction(_messages.Message):
+  r"""Setting a parameter value.
+
+  Fields:
+    parameter: Display name of the parameter.
+    value: The new value of the parameter. A null value clears the parameter.
+  """
+
+  parameter = _messages.StringField(1)
+  value = _messages.MessageField('extra_types.JsonValue', 2)
+
+
+class GoogleCloudDialogflowCxV3beta1GenericKnowledgeOperationMetadata(_messages.Message):
+  r"""Metadata in google::longrunning::Operation for Knowledge operations.
+
+  Enums:
+    StateValueValuesEnum: Required. Output only. The current state of this
+      operation.
+
+  Fields:
+    state: Required. Output only. The current state of this operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Required. Output only. The current state of this operation.
+
+    Values:
+      STATE_UNSPECIFIED: State unspecified.
+      PENDING: The operation has been created.
+      RUNNING: The operation is currently running.
+      DONE: The operation is done, either cancelled or completed.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    DONE = 3
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+
+
+class GoogleCloudDialogflowCxV3beta1ImportDocumentsOperationMetadata(_messages.Message):
+  r"""Metadata for ImportDocuments operation.
+
+  Fields:
+    genericMetadata: The generic information of the operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3beta1GenericKnowledgeOperationMetadata', 1)
+
+
+class GoogleCloudDialogflowCxV3beta1ImportDocumentsResponse(_messages.Message):
+  r"""Response message for Documents.ImportDocuments.
+
+  Fields:
+    warnings: Includes details about skipped documents or any other warnings.
+  """
+
+  warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1ImportTestCasesMetadata(_messages.Message):
+  r"""Metadata returned for the TestCases.ImportTestCases long running
+  operation.
+
+  Fields:
+    errors: Errors for failed test cases.
+  """
+
+  errors = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TestCaseError', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1ImportTestCasesResponse(_messages.Message):
+  r"""The response message for TestCases.ImportTestCases.
+
+  Fields:
+    names: The unique identifiers of the new test cases. Format:
+      `projects//locations//agents//testCases/`.
+  """
+
+  names = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1InputAudioConfig(_messages.Message):
+  r"""Instructs the speech recognizer on how to process the audio content.
+
+  Enums:
+    AudioEncodingValueValuesEnum: Required. Audio encoding of the audio
+      content to process.
+    ModelVariantValueValuesEnum: Optional. Which variant of the Speech model
+      to use.
+
+  Fields:
+    audioEncoding: Required. Audio encoding of the audio content to process.
+    enableWordInfo: Optional. If `true`, Dialogflow returns SpeechWordInfo in
+      StreamingRecognitionResult with information about the recognized speech
+      words, e.g. start and end time offsets. If false or unspecified, Speech
+      doesn't return any word-level information.
+    model: Optional. Which Speech model to select for the given request.
+      Select the model best suited to your domain to get best results. If a
+      model is not explicitly specified, then we auto-select a model based on
+      the parameters in the InputAudioConfig. If enhanced speech model is
+      enabled for the agent and an enhanced version of the specified model for
+      the language does not exist, then the speech is recognized using the
+      standard version of the specified model. Refer to [Cloud Speech API
+      documentation](https://cloud.google.com/speech-to-
+      text/docs/basics#select-model) for more details.
+    modelVariant: Optional. Which variant of the Speech model to use.
+    phraseHints: Optional. A list of strings containing words and phrases that
+      the speech recognizer should recognize with higher likelihood. See [the
+      Cloud Speech documentation](https://cloud.google.com/speech-to-
+      text/docs/basics#phrase-hints) for more details.
+    sampleRateHertz: Sample rate (in Hertz) of the audio content sent in the
+      query. Refer to [Cloud Speech API
+      documentation](https://cloud.google.com/speech-to-text/docs/basics) for
+      more details.
+    singleUtterance: Optional. If `false` (default), recognition does not
+      cease until the client closes the stream. If `true`, the recognizer will
+      detect a single spoken utterance in input audio. Recognition ceases when
+      it detects the audio's voice has stopped or paused. In this case, once a
+      detected intent is received, the client should close the stream and
+      start a new request with a new stream as needed. Note: This setting is
+      relevant only for streaming methods.
+  """
+
+  class AudioEncodingValueValuesEnum(_messages.Enum):
+    r"""Required. Audio encoding of the audio content to process.
+
+    Values:
+      AUDIO_ENCODING_UNSPECIFIED: Not specified.
+      AUDIO_ENCODING_LINEAR_16: Uncompressed 16-bit signed little-endian
+        samples (Linear PCM).
+      AUDIO_ENCODING_FLAC: [`FLAC`](https://xiph.org/flac/documentation.html)
+        (Free Lossless Audio Codec) is the recommended encoding because it is
+        lossless (therefore recognition is not compromised) and requires only
+        about half the bandwidth of `LINEAR16`. `FLAC` stream encoding
+        supports 16-bit and 24-bit samples, however, not all fields in
+        `STREAMINFO` are supported.
+      AUDIO_ENCODING_MULAW: 8-bit samples that compand 14-bit audio samples
+        using G.711 PCMU/mu-law.
+      AUDIO_ENCODING_AMR: Adaptive Multi-Rate Narrowband codec.
+        `sample_rate_hertz` must be 8000.
+      AUDIO_ENCODING_AMR_WB: Adaptive Multi-Rate Wideband codec.
+        `sample_rate_hertz` must be 16000.
+      AUDIO_ENCODING_OGG_OPUS: Opus encoded audio frames in Ogg container
+        ([OggOpus](https://wiki.xiph.org/OggOpus)). `sample_rate_hertz` must
+        be 16000.
+      AUDIO_ENCODING_SPEEX_WITH_HEADER_BYTE: Although the use of lossy
+        encodings is not recommended, if a very low bitrate encoding is
+        required, `OGG_OPUS` is highly preferred over Speex encoding. The
+        [Speex](https://speex.org/) encoding supported by Dialogflow API has a
+        header byte in each block, as in MIME type `audio/x-speex-with-header-
+        byte`. It is a variant of the RTP Speex encoding defined in [RFC
+        5574](https://tools.ietf.org/html/rfc5574). The stream is a sequence
+        of blocks, one block per RTP packet. Each block starts with a byte
+        containing the length of the block, in bytes, followed by one or more
+        frames of Speex data, padded to an integral number of bytes (octets)
+        as specified in RFC 5574. In other words, each RTP header is replaced
+        with a single byte containing the block length. Only Speex wideband is
+        supported. `sample_rate_hertz` must be 16000.
+    """
+    AUDIO_ENCODING_UNSPECIFIED = 0
+    AUDIO_ENCODING_LINEAR_16 = 1
+    AUDIO_ENCODING_FLAC = 2
+    AUDIO_ENCODING_MULAW = 3
+    AUDIO_ENCODING_AMR = 4
+    AUDIO_ENCODING_AMR_WB = 5
+    AUDIO_ENCODING_OGG_OPUS = 6
+    AUDIO_ENCODING_SPEEX_WITH_HEADER_BYTE = 7
+
+  class ModelVariantValueValuesEnum(_messages.Enum):
+    r"""Optional. Which variant of the Speech model to use.
+
+    Values:
+      SPEECH_MODEL_VARIANT_UNSPECIFIED: No model variant specified. In this
+        case Dialogflow defaults to USE_BEST_AVAILABLE.
+      USE_BEST_AVAILABLE: Use the best available variant of the Speech model
+        that the caller is eligible for. Please see the [Dialogflow
+        docs](https://cloud.google.com/dialogflow/docs/data-logging) for how
+        to make your project eligible for enhanced models.
+      USE_STANDARD: Use standard model variant even if an enhanced model is
+        available. See the [Cloud Speech
+        documentation](https://cloud.google.com/speech-to-text/docs/enhanced-
+        models) for details about enhanced models.
+      USE_ENHANCED: Use an enhanced model variant: * If an enhanced variant
+        does not exist for the given model and request language, Dialogflow
+        falls back to the standard variant. The [Cloud Speech
+        documentation](https://cloud.google.com/speech-to-text/docs/enhanced-
+        models) describes which models have enhanced variants. * If the API
+        caller isn't eligible for enhanced models, Dialogflow returns an
+        error. Please see the [Dialogflow
+        docs](https://cloud.google.com/dialogflow/docs/data-logging) for how
+        to make your project eligible.
+    """
+    SPEECH_MODEL_VARIANT_UNSPECIFIED = 0
+    USE_BEST_AVAILABLE = 1
+    USE_STANDARD = 2
+    USE_ENHANCED = 3
+
+  audioEncoding = _messages.EnumField('AudioEncodingValueValuesEnum', 1)
+  enableWordInfo = _messages.BooleanField(2)
+  model = _messages.StringField(3)
+  modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 4)
+  phraseHints = _messages.StringField(5, repeated=True)
+  sampleRateHertz = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  singleUtterance = _messages.BooleanField(7)
+
+
+class GoogleCloudDialogflowCxV3beta1Intent(_messages.Message):
+  r"""An intent represents a user's intent to interact with a conversational
+  agent. You can provide information for the Dialogflow API to use to match
+  user input to an intent by adding training phrases (i.e., examples of user
+  input) to your intent.
+
+  Messages:
+    LabelsValue: Optional. The key/value metadata to label an intent. Labels
+      can contain lowercase letters, digits and the symbols '-' and '_'.
+      International characters are allowed, including letters from unicase
+      alphabets. Keys must start with a letter. Keys and values can be no
+      longer than 63 characters and no more than 128 bytes. Prefix "sys-" is
+      reserved for Dialogflow defined labels. Currently allowed Dialogflow
+      defined labels include: * sys-head * sys-contextual The above labels do
+      not require value. "sys-head" means the intent is a head intent. "sys-
+      contextual" means the intent is a contextual intent.
+
+  Fields:
+    description: Optional. Human readable description for better understanding
+      an intent like its scope, content, result etc. Maximum character limit:
+      140 characters.
+    displayName: Required. The human-readable name of the intent, unique
+      within the agent.
+    isFallback: Indicates whether this is a fallback intent. Currently only
+      default fallback intent is allowed in the agent, which is added upon
+      agent creation. Adding training phrases to fallback intent is useful in
+      the case of requests that are mistakenly matched, since training phrases
+      assigned to fallback intents act as negative examples that triggers no-
+      match event.
+    labels: Optional. The key/value metadata to label an intent. Labels can
+      contain lowercase letters, digits and the symbols '-' and '_'.
+      International characters are allowed, including letters from unicase
+      alphabets. Keys must start with a letter. Keys and values can be no
+      longer than 63 characters and no more than 128 bytes. Prefix "sys-" is
+      reserved for Dialogflow defined labels. Currently allowed Dialogflow
+      defined labels include: * sys-head * sys-contextual The above labels do
+      not require value. "sys-head" means the intent is a head intent. "sys-
+      contextual" means the intent is a contextual intent.
+    name: The unique identifier of the intent. Required for the
+      Intents.UpdateIntent method. Intents.CreateIntent populates the name
+      automatically. Format: `projects//locations//agents//intents/`.
+    parameters: The collection of parameters associated with the intent.
+    priority: The priority of this intent. Higher numbers represent higher
+      priorities. - If the supplied value is unspecified or 0, the service
+      translates the value to 500,000, which corresponds to the `Normal`
+      priority in the console. - If the supplied value is negative, the intent
+      is ignored in runtime detect intent requests.
+    trainingPhrases: The collection of training phrases the agent is trained
+      on to identify the intent.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The key/value metadata to label an intent. Labels can
+    contain lowercase letters, digits and the symbols '-' and '_'.
+    International characters are allowed, including letters from unicase
+    alphabets. Keys must start with a letter. Keys and values can be no longer
+    than 63 characters and no more than 128 bytes. Prefix "sys-" is reserved
+    for Dialogflow defined labels. Currently allowed Dialogflow defined labels
+    include: * sys-head * sys-contextual The above labels do not require
+    value. "sys-head" means the intent is a head intent. "sys-contextual"
+    means the intent is a contextual intent.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  isFallback = _messages.BooleanField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  parameters = _messages.MessageField('GoogleCloudDialogflowCxV3beta1IntentParameter', 6, repeated=True)
+  priority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  trainingPhrases = _messages.MessageField('GoogleCloudDialogflowCxV3beta1IntentTrainingPhrase', 8, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1IntentInput(_messages.Message):
+  r"""Represents the intent to trigger programmatically rather than as a
+  result of natural language processing.
+
+  Fields:
+    intent: Required. The unique identifier of the intent. Format:
+      `projects//locations//agents//intents/`.
+  """
+
+  intent = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowCxV3beta1IntentParameter(_messages.Message):
+  r"""Represents an intent parameter.
+
+  Fields:
+    entityType: Required. The entity type of the parameter. Format:
+      `projects/-/locations/-/agents/-/entityTypes/` for system entity types
+      (for example, `projects/-/locations/-/agents/-/entityTypes/sys.date`),
+      or `projects//locations//agents//entityTypes/` for developer entity
+      types.
+    id: Required. The unique identifier of the parameter. This field is used
+      by training phrases to annotate their parts.
+    isList: Indicates whether the parameter represents a list of values.
+    redact: Indicates whether the parameter content is logged in text and
+      audio. If it is set to true, the parameter content will be replaced to
+      parameter id in both request and response. The default value is false.
+  """
+
+  entityType = _messages.StringField(1)
+  id = _messages.StringField(2)
+  isList = _messages.BooleanField(3)
+  redact = _messages.BooleanField(4)
+
+
+class GoogleCloudDialogflowCxV3beta1IntentTrainingPhrase(_messages.Message):
+  r"""Represents an example that the agent is trained on to identify the
+  intent.
+
+  Fields:
+    id: Output only. The unique identifier of the training phrase.
+    parts: Required. The ordered list of training phrase parts. The parts are
+      concatenated in order to form the training phrase. Note: The API does
+      not automatically annotate training phrases like the Dialogflow Console
+      does. Note: Do not forget to include whitespace at part boundaries, so
+      the training phrase is well formatted when the parts are concatenated.
+      If the training phrase does not need to be annotated with parameters,
+      you just need a single part with only the Part.text field set. If you
+      want to annotate the training phrase, you must create multiple parts,
+      where the fields of each part are populated in one of two ways: -
+      `Part.text` is set to a part of the phrase that has no parameters. -
+      `Part.text` is set to a part of the phrase that you want to annotate,
+      and the `parameter_id` field is set.
+    repeatCount: Indicates how many times this example was added to the
+      intent.
+  """
+
+  id = _messages.StringField(1)
+  parts = _messages.MessageField('GoogleCloudDialogflowCxV3beta1IntentTrainingPhrasePart', 2, repeated=True)
+  repeatCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDialogflowCxV3beta1IntentTrainingPhrasePart(_messages.Message):
+  r"""Represents a part of a training phrase.
+
+  Fields:
+    parameterId: The parameter used to annotate this part of the training
+      phrase. This field is required for annotated parts of the training
+      phrase.
+    text: Required. The text for this part.
+  """
+
+  parameterId = _messages.StringField(1)
+  text = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3beta1Page(_messages.Message):
+  r"""A Dialogflow CX conversation (session) can be described and visualized
+  as a state machine. The states of a CX session are represented by pages. For
+  each flow, you define many pages, where your combined pages can handle a
+  complete conversation on the topics the flow is designed for. At any given
+  moment, exactly one page is the current page, the current page is considered
+  active, and the flow associated with that page is considered active. Every
+  flow has a special start page. When a flow initially becomes active, the
+  start page page becomes the current page. For each conversational turn, the
+  current page will either stay the same or transition to another page. You
+  configure each page to collect information from the end-user that is
+  relevant for the conversational state represented by the page. For more
+  information, see the [Page
+  guide](https://cloud.google.com/dialogflow/cx/docs/concept/page).
+
+  Fields:
+    displayName: Required. The human-readable name of the page, unique within
+      the agent.
+    entryFulfillment: The fulfillment to call when the session is entering the
+      page.
+    eventHandlers: Handlers associated with the page to handle events such as
+      webhook errors, no match or no input.
+    form: The form associated with the page, used for collecting parameters
+      relevant to the page.
+    name: The unique identifier of the page. Required for the Pages.UpdatePage
+      method. Pages.CreatePage populates the name automatically. Format:
+      `projects//locations//agents//flows//pages/`.
+    transitionRouteGroups: Ordered list of `TransitionRouteGroups` associated
+      with the page. Transition route groups must be unique within a page. *
+      If multiple transition routes within a page scope refer to the same
+      intent, then the precedence order is: page's transition route -> page's
+      transition route group -> flow's transition routes. * If multiple
+      transition route groups within a page contain the same intent, then the
+      first group in the ordered list takes precedence.
+      Format:`projects//locations//agents//flows//transitionRouteGroups/`.
+    transitionRoutes: A list of transitions for the transition rules of this
+      page. They route the conversation to another page in the same flow, or
+      another flow. When we are in a certain page, the TransitionRoutes are
+      evalauted in the following order: * TransitionRoutes defined in the page
+      with intent specified. * TransitionRoutes defined in the transition
+      route groups. * TransitionRoutes defined in flow with intent specified.
+      * TransitionRoutes defined in the page with only condition specified.
+  """
+
+  displayName = _messages.StringField(1)
+  entryFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Fulfillment', 2)
+  eventHandlers = _messages.MessageField('GoogleCloudDialogflowCxV3beta1EventHandler', 3, repeated=True)
+  form = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Form', 4)
+  name = _messages.StringField(5)
+  transitionRouteGroups = _messages.StringField(6, repeated=True)
+  transitionRoutes = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TransitionRoute', 7, repeated=True)
 
 
 class GoogleCloudDialogflowCxV3beta1PageInfo(_messages.Message):
@@ -1809,6 +3767,43 @@ class GoogleCloudDialogflowCxV3beta1PageInfoFormInfoParameterInfo(_messages.Mess
   required = _messages.BooleanField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
   value = _messages.MessageField('extra_types.JsonValue', 5)
+
+
+class GoogleCloudDialogflowCxV3beta1QueryInput(_messages.Message):
+  r"""Represents the query input. It can contain one of: 1. A conversational
+  query in the form of text. 2. An intent query that specifies which intent to
+  trigger. 3. Natural language speech audio to be processed. 4. An event to be
+  triggered.
+
+  Fields:
+    audio: The natural language speech audio to be processed.
+    dtmf: The DTMF event to be handled.
+    event: The event to be triggered.
+    intent: The intent to be triggered.
+    languageCode: Required. The language of the input. See [Language
+      Support](https://cloud.google.com/dialogflow/docs/reference/language)
+      for a list of the currently supported language codes. Note that queries
+      in the same session do not necessarily need to specify the same
+      language.
+    text: The natural language text to be processed.
+  """
+
+  audio = _messages.MessageField('GoogleCloudDialogflowCxV3beta1AudioInput', 1)
+  dtmf = _messages.MessageField('GoogleCloudDialogflowCxV3beta1DtmfInput', 2)
+  event = _messages.MessageField('GoogleCloudDialogflowCxV3beta1EventInput', 3)
+  intent = _messages.MessageField('GoogleCloudDialogflowCxV3beta1IntentInput', 4)
+  languageCode = _messages.StringField(5)
+  text = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TextInput', 6)
+
+
+class GoogleCloudDialogflowCxV3beta1ReloadDocumentOperationMetadata(_messages.Message):
+  r"""Metadata for ReloadDocument operation.
+
+  Fields:
+    genericMetadata: The generic information of the operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3beta1GenericKnowledgeOperationMetadata', 1)
 
 
 class GoogleCloudDialogflowCxV3beta1ResponseMessage(_messages.Message):
@@ -2068,6 +4063,22 @@ class GoogleCloudDialogflowCxV3beta1ResponseMessageText(_messages.Message):
   text = _messages.StringField(2, repeated=True)
 
 
+class GoogleCloudDialogflowCxV3beta1RunTestCaseMetadata(_messages.Message):
+  r"""Metadata returned for the TestCases.RunTestCase long running operation.
+  """
+
+
+
+class GoogleCloudDialogflowCxV3beta1RunTestCaseResponse(_messages.Message):
+  r"""The response message for TestCases.RunTestCase.
+
+  Fields:
+    result: The result.
+  """
+
+  result = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TestCaseResult', 1)
+
+
 class GoogleCloudDialogflowCxV3beta1SessionInfo(_messages.Message):
   r"""Represents session information communicated to and from the webhook.
 
@@ -2122,6 +4133,211 @@ class GoogleCloudDialogflowCxV3beta1SessionInfo(_messages.Message):
 
   parameters = _messages.MessageField('ParametersValue', 1)
   session = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3beta1TestCase(_messages.Message):
+  r"""Represents a test case.
+
+  Fields:
+    creationTime: Output only. When the test was created.
+    displayName: Required. The human-readable name of the test case, unique
+      within the agent. Limit of 200 characters.
+    lastTestResult: The latest test result.
+    name: The unique identifier of the test case. TestCases.CreateTestCase
+      will populate the name automatically. Otherwise use format:
+      `projects//locations//agents/ /testCases/`.
+    notes: Additional freeform notes about the test case. Limit of 400
+      characters.
+    tags: Tags are short descriptions that users may apply to test cases for
+      organizational and filtering purposes. Each tag should start with "#"
+      and has a limit of 30 characters.
+    testCaseConversationTurns: The conversation turns uttered when the test
+      case was created, in chronological order. These include the canonical
+      set of agent utterances that should occur when the agent is working
+      properly.
+    testConfig: Config for the test case.
+  """
+
+  creationTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  lastTestResult = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TestCaseResult', 3)
+  name = _messages.StringField(4)
+  notes = _messages.StringField(5)
+  tags = _messages.StringField(6, repeated=True)
+  testCaseConversationTurns = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ConversationTurn', 7, repeated=True)
+  testConfig = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TestConfig', 8)
+
+
+class GoogleCloudDialogflowCxV3beta1TestCaseError(_messages.Message):
+  r"""Error info for importing a test.
+
+  Fields:
+    status: The status associated with the test case.
+    testCase: The test case.
+  """
+
+  status = _messages.MessageField('GoogleRpcStatus', 1)
+  testCase = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TestCase', 2)
+
+
+class GoogleCloudDialogflowCxV3beta1TestCaseResult(_messages.Message):
+  r"""Represents a result from running a test case in an agent environment.
+
+  Enums:
+    TestResultValueValuesEnum: Whether the test case passed in the agent
+      environment.
+
+  Fields:
+    conversationTurns: The conversation turns uttered during the test case
+      replay in chronological order.
+    environment: Optional. Environment where the test was run. If not set, it
+      indicates the draft environment.
+    name: The resource name for the test case result. Format:
+      `projects//locations//agents//testCases/ /results/`.
+    testResult: Whether the test case passed in the agent environment.
+    testTime: The time that the test was run.
+  """
+
+  class TestResultValueValuesEnum(_messages.Enum):
+    r"""Whether the test case passed in the agent environment.
+
+    Values:
+      TEST_RESULT_UNSPECIFIED: Not specified. Should never be used.
+      PASSED: The test passed.
+      FAILED: The test did not pass.
+    """
+    TEST_RESULT_UNSPECIFIED = 0
+    PASSED = 1
+    FAILED = 2
+
+  conversationTurns = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ConversationTurn', 1, repeated=True)
+  environment = _messages.StringField(2)
+  name = _messages.StringField(3)
+  testResult = _messages.EnumField('TestResultValueValuesEnum', 4)
+  testTime = _messages.StringField(5)
+
+
+class GoogleCloudDialogflowCxV3beta1TestConfig(_messages.Message):
+  r"""Represents configurations for a test case.
+
+  Fields:
+    flow: Flow name. If not set, default start flow is assumed. Format:
+      `projects//locations//agents//flows/`.
+    trackingParameters: Session parameters to be compared when calculating
+      differences.
+  """
+
+  flow = _messages.StringField(1)
+  trackingParameters = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1TestError(_messages.Message):
+  r"""Error info for running a test.
+
+  Fields:
+    status: The status associated with the test.
+    testCase: The test case resource name.
+    testTime: The timestamp when the test was completed.
+  """
+
+  status = _messages.MessageField('GoogleRpcStatus', 1)
+  testCase = _messages.StringField(2)
+  testTime = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowCxV3beta1TestRunDifference(_messages.Message):
+  r"""The description of differences between original and replayed agent
+  output.
+
+  Enums:
+    TypeValueValuesEnum: The type of diff.
+
+  Fields:
+    description: A description of the diff, showing the actual output vs
+      expected output.
+    type: The type of diff.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of diff.
+
+    Values:
+      DIFF_TYPE_UNSPECIFIED: Should never be used.
+      INTENT: The intent.
+      PAGE: The page.
+      PARAMETERS: The parameters.
+      UTTERANCE: The message utterance.
+    """
+    DIFF_TYPE_UNSPECIFIED = 0
+    INTENT = 1
+    PAGE = 2
+    PARAMETERS = 3
+    UTTERANCE = 4
+
+  description = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class GoogleCloudDialogflowCxV3beta1TextInput(_messages.Message):
+  r"""Represents the natural language text to be processed.
+
+  Fields:
+    text: Required. The UTF-8 encoded natural language text to be processed.
+      Text length must not exceed 256 characters.
+  """
+
+  text = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowCxV3beta1TransitionRoute(_messages.Message):
+  r"""A transition route specifies a intent that can be matched and/or a data
+  condition that can be evaluated during a session. When a specified
+  transition is matched, the following actions are taken in order: * If there
+  is a `trigger_fulfillment` associated with the transition, it will be
+  called. * If there is a `target_page` associated with the transition, the
+  session will transition into the specified page. * If there is a
+  `target_flow` associated with the transition, the session will transition
+  into the specified flow.
+
+  Fields:
+    condition: The condition to evaluate against form parameters or session
+      parameters. See the [conditions reference](https://cloud.google.com/dial
+      ogflow/cx/docs/reference/condition). At least one of `intent` or
+      `condition` must be specified. When both `intent` and `condition` are
+      specified, the transition can only happen when both are fulfilled.
+    intent: The unique identifier of an Intent. Format:
+      `projects//locations//agents//intents/`. Indicates that the transition
+      can only happen when the given intent is matched. At least one of
+      `intent` or `condition` must be specified. When both `intent` and
+      `condition` are specified, the transition can only happen when both are
+      fulfilled.
+    name: Output only. The unique identifier of this transition route.
+    targetFlow: The target flow to transition to. Format:
+      `projects//locations//agents//flows/`.
+    targetPage: The target page to transition to. Format:
+      `projects//locations//agents//flows//pages/`.
+    triggerFulfillment: The fulfillment to call when the condition is
+      satisfied. At least one of `trigger_fulfillment` and `target` must be
+      specified. When both are defined, `trigger_fulfillment` is executed
+      first.
+  """
+
+  condition = _messages.StringField(1)
+  intent = _messages.StringField(2)
+  name = _messages.StringField(3)
+  targetFlow = _messages.StringField(4)
+  targetPage = _messages.StringField(5)
+  triggerFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Fulfillment', 6)
+
+
+class GoogleCloudDialogflowCxV3beta1UpdateDocumentOperationMetadata(_messages.Message):
+  r"""Metadata for UpdateDocument operation.
+
+  Fields:
+    genericMetadata: The generic information of the operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3beta1GenericKnowledgeOperationMetadata', 1)
 
 
 class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
@@ -2652,10 +4868,11 @@ class GoogleCloudDialogflowV2Context(_messages.Message):
       this is a map, associative array, symbol table, dictionary, or JSON
       object composed of a collection of (MapKey, MapValue) pairs: - MapKey
       type: string - MapKey value: parameter name - MapValue type: - If
-      parameter's entity type is a composite entity: map - Else: string or
-      number, depending on parameter value type - MapValue value: - If
-      parameter's entity type is a composite entity: map from composite entity
-      property names to property values - Else: parameter value
+      parameter's entity type is a composite entity: map - Else: depending on
+      parameter value type, could be one of string, number, boolean, null,
+      list or map - MapValue value: - If parameter's entity type is a
+      composite entity: map from composite entity property names to property
+      values - Else: parameter value
 
   Fields:
     lifespanCount: Optional. The number of conversational query requests after
@@ -2677,10 +4894,11 @@ class GoogleCloudDialogflowV2Context(_messages.Message):
       a map, associative array, symbol table, dictionary, or JSON object
       composed of a collection of (MapKey, MapValue) pairs: - MapKey type:
       string - MapKey value: parameter name - MapValue type: - If parameter's
-      entity type is a composite entity: map - Else: string or number,
-      depending on parameter value type - MapValue value: - If parameter's
-      entity type is a composite entity: map from composite entity property
-      names to property values - Else: parameter value
+      entity type is a composite entity: map - Else: depending on parameter
+      value type, could be one of string, number, boolean, null, list or map -
+      MapValue value: - If parameter's entity type is a composite entity: map
+      from composite entity property names to property values - Else:
+      parameter value
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2690,10 +4908,10 @@ class GoogleCloudDialogflowV2Context(_messages.Message):
     associative array, symbol table, dictionary, or JSON object composed of a
     collection of (MapKey, MapValue) pairs: - MapKey type: string - MapKey
     value: parameter name - MapValue type: - If parameter's entity type is a
-    composite entity: map - Else: string or number, depending on parameter
-    value type - MapValue value: - If parameter's entity type is a composite
-    entity: map from composite entity property names to property values -
-    Else: parameter value
+    composite entity: map - Else: depending on parameter value type, could be
+    one of string, number, boolean, null, list or map - MapValue value: - If
+    parameter's entity type is a composite entity: map from composite entity
+    property names to property values - Else: parameter value
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -2992,10 +5210,10 @@ class GoogleCloudDialogflowV2EventInput(_messages.Message):
       associative array, symbol table, dictionary, or JSON object composed of
       a collection of (MapKey, MapValue) pairs: - MapKey type: string - MapKey
       value: parameter name - MapValue type: - If parameter's entity type is a
-      composite entity: map - Else: string or number, depending on parameter
-      value type - MapValue value: - If parameter's entity type is a composite
-      entity: map from composite entity property names to property values -
-      Else: parameter value
+      composite entity: map - Else: depending on parameter value type, could
+      be one of string, number, boolean, null, list or map - MapValue value: -
+      If parameter's entity type is a composite entity: map from composite
+      entity property names to property values - Else: parameter value
 
   Fields:
     languageCode: Required. The language of this query. See [Language
@@ -3009,10 +5227,10 @@ class GoogleCloudDialogflowV2EventInput(_messages.Message):
       associative array, symbol table, dictionary, or JSON object composed of
       a collection of (MapKey, MapValue) pairs: - MapKey type: string - MapKey
       value: parameter name - MapValue type: - If parameter's entity type is a
-      composite entity: map - Else: string or number, depending on parameter
-      value type - MapValue value: - If parameter's entity type is a composite
-      entity: map from composite entity property names to property values -
-      Else: parameter value
+      composite entity: map - Else: depending on parameter value type, could
+      be one of string, number, boolean, null, list or map - MapValue value: -
+      If parameter's entity type is a composite entity: map from composite
+      entity property names to property values - Else: parameter value
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -3022,10 +5240,10 @@ class GoogleCloudDialogflowV2EventInput(_messages.Message):
     array, symbol table, dictionary, or JSON object composed of a collection
     of (MapKey, MapValue) pairs: - MapKey type: string - MapKey value:
     parameter name - MapValue type: - If parameter's entity type is a
-    composite entity: map - Else: string or number, depending on parameter
-    value type - MapValue value: - If parameter's entity type is a composite
-    entity: map from composite entity property names to property values -
-    Else: parameter value
+    composite entity: map - Else: depending on parameter value type, could be
+    one of string, number, boolean, null, list or map - MapValue value: - If
+    parameter's entity type is a composite entity: map from composite entity
+    property names to property values - Else: parameter value
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -4428,12 +6646,13 @@ class GoogleCloudDialogflowV2QueryParameters(_messages.Message):
       field sent to your webhook.
     WebhookHeadersValue: This field can be used to pass HTTP headers for a
       webhook call. These headers will be sent to webhook along with the
-      headers that have been configured through Dialogflow web console. The
-      headers defined within this field will overwrite the headers configured
-      through Dialogflow console if there is a conflict. Header names are
-      case-insensitive. Google's specified headers are not allowed. Including:
-      "Host", "Content-Length", "Connection", "From", "User-Agent", "Accept-
-      Encoding", "If-Modified-Since", "If-None-Match", "X-Forwarded-For", etc.
+      headers that have been configured through the Dialogflow web console.
+      The headers defined within this field will overwrite the headers
+      configured through the Dialogflow console if there is a conflict. Header
+      names are case-insensitive. Google's specified headers are not allowed.
+      Including: "Host", "Content-Length", "Connection", "From", "User-Agent",
+      "Accept-Encoding", "If-Modified-Since", "If-None-Match", "X-Forwarded-
+      For", etc.
 
   Fields:
     contexts: The collection of contexts to be activated before this query is
@@ -4456,9 +6675,9 @@ class GoogleCloudDialogflowV2QueryParameters(_messages.Message):
       is used.
     webhookHeaders: This field can be used to pass HTTP headers for a webhook
       call. These headers will be sent to webhook along with the headers that
-      have been configured through Dialogflow web console. The headers defined
-      within this field will overwrite the headers configured through
-      Dialogflow console if there is a conflict. Header names are case-
+      have been configured through the Dialogflow web console. The headers
+      defined within this field will overwrite the headers configured through
+      the Dialogflow console if there is a conflict. Header names are case-
       insensitive. Google's specified headers are not allowed. Including:
       "Host", "Content-Length", "Connection", "From", "User-Agent", "Accept-
       Encoding", "If-Modified-Since", "If-None-Match", "X-Forwarded-For", etc.
@@ -4495,12 +6714,12 @@ class GoogleCloudDialogflowV2QueryParameters(_messages.Message):
   class WebhookHeadersValue(_messages.Message):
     r"""This field can be used to pass HTTP headers for a webhook call. These
     headers will be sent to webhook along with the headers that have been
-    configured through Dialogflow web console. The headers defined within this
-    field will overwrite the headers configured through Dialogflow console if
-    there is a conflict. Header names are case-insensitive. Google's specified
-    headers are not allowed. Including: "Host", "Content-Length",
-    "Connection", "From", "User-Agent", "Accept-Encoding", "If-Modified-
-    Since", "If-None-Match", "X-Forwarded-For", etc.
+    configured through the Dialogflow web console. The headers defined within
+    this field will overwrite the headers configured through the Dialogflow
+    console if there is a conflict. Header names are case-insensitive.
+    Google's specified headers are not allowed. Including: "Host", "Content-
+    Length", "Connection", "From", "User-Agent", "Accept-Encoding", "If-
+    Modified-Since", "If-None-Match", "X-Forwarded-For", etc.
 
     Messages:
       AdditionalProperty: An additional property for a WebhookHeadersValue
@@ -4546,10 +6765,10 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
       symbol table, dictionary, or JSON object composed of a collection of
       (MapKey, MapValue) pairs: - MapKey type: string - MapKey value:
       parameter name - MapValue type: - If parameter's entity type is a
-      composite entity: map - Else: string or number, depending on parameter
-      value type - MapValue value: - If parameter's entity type is a composite
-      entity: map from composite entity property names to property values -
-      Else: parameter value
+      composite entity: map - Else: depending on parameter value type, could
+      be one of string, number, boolean, null, list or map - MapValue value: -
+      If parameter's entity type is a composite entity: map from composite
+      entity property names to property values - Else: parameter value
     WebhookPayloadValue: If the query was fulfilled by a webhook call, this
       field is set to the value of the `payload` field returned in the webhook
       response.
@@ -4593,10 +6812,10 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
       symbol table, dictionary, or JSON object composed of a collection of
       (MapKey, MapValue) pairs: - MapKey type: string - MapKey value:
       parameter name - MapValue type: - If parameter's entity type is a
-      composite entity: map - Else: string or number, depending on parameter
-      value type - MapValue value: - If parameter's entity type is a composite
-      entity: map from composite entity property names to property values -
-      Else: parameter value
+      composite entity: map - Else: depending on parameter value type, could
+      be one of string, number, boolean, null, list or map - MapValue value: -
+      If parameter's entity type is a composite entity: map from composite
+      entity property names to property values - Else: parameter value
     queryText: The original conversational query text: - If natural language
       text was provided as input, `query_text` contains a copy of the input. -
       If natural language speech audio was provided as input, `query_text`
@@ -4656,9 +6875,10 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
     dictionary, or JSON object composed of a collection of (MapKey, MapValue)
     pairs: - MapKey type: string - MapKey value: parameter name - MapValue
     type: - If parameter's entity type is a composite entity: map - Else:
-    string or number, depending on parameter value type - MapValue value: - If
-    parameter's entity type is a composite entity: map from composite entity
-    property names to property values - Else: parameter value
+    depending on parameter value type, could be one of string, number,
+    boolean, null, list or map - MapValue value: - If parameter's entity type
+    is a composite entity: map from composite entity property names to
+    property values - Else: parameter value
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -4955,7 +7175,7 @@ class GoogleCloudDialogflowV2ValidationError(_messages.Message):
 
     Values:
       SEVERITY_UNSPECIFIED: Not specified. This value should never be used.
-      INFO: The agent doesn't follow Dialogflow best practicies.
+      INFO: The agent doesn't follow Dialogflow best practices.
       WARNING: The agent may not behave as expected.
       ERROR: The agent may experience partial failures.
       CRITICAL: The agent may completely fail.
@@ -5188,10 +7408,11 @@ class GoogleCloudDialogflowV2beta1Context(_messages.Message):
       this is a map, associative array, symbol table, dictionary, or JSON
       object composed of a collection of (MapKey, MapValue) pairs: - MapKey
       type: string - MapKey value: parameter name - MapValue type: - If
-      parameter's entity type is a composite entity: map - Else: string or
-      number, depending on parameter value type - MapValue value: - If
-      parameter's entity type is a composite entity: map from composite entity
-      property names to property values - Else: parameter value
+      parameter's entity type is a composite entity: map - Else: depending on
+      parameter value type, could be one of string, number, boolean, null,
+      list or map - MapValue value: - If parameter's entity type is a
+      composite entity: map from composite entity property names to property
+      values - Else: parameter value
 
   Fields:
     lifespanCount: Optional. The number of conversational query requests after
@@ -5215,10 +7436,11 @@ class GoogleCloudDialogflowV2beta1Context(_messages.Message):
       a map, associative array, symbol table, dictionary, or JSON object
       composed of a collection of (MapKey, MapValue) pairs: - MapKey type:
       string - MapKey value: parameter name - MapValue type: - If parameter's
-      entity type is a composite entity: map - Else: string or number,
-      depending on parameter value type - MapValue value: - If parameter's
-      entity type is a composite entity: map from composite entity property
-      names to property values - Else: parameter value
+      entity type is a composite entity: map - Else: depending on parameter
+      value type, could be one of string, number, boolean, null, list or map -
+      MapValue value: - If parameter's entity type is a composite entity: map
+      from composite entity property names to property values - Else:
+      parameter value
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -5228,10 +7450,10 @@ class GoogleCloudDialogflowV2beta1Context(_messages.Message):
     associative array, symbol table, dictionary, or JSON object composed of a
     collection of (MapKey, MapValue) pairs: - MapKey type: string - MapKey
     value: parameter name - MapValue type: - If parameter's entity type is a
-    composite entity: map - Else: string or number, depending on parameter
-    value type - MapValue value: - If parameter's entity type is a composite
-    entity: map from composite entity property names to property values -
-    Else: parameter value
+    composite entity: map - Else: depending on parameter value type, could be
+    one of string, number, boolean, null, list or map - MapValue value: - If
+    parameter's entity type is a composite entity: map from composite entity
+    property names to property values - Else: parameter value
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -5358,10 +7580,10 @@ class GoogleCloudDialogflowV2beta1EventInput(_messages.Message):
       associative array, symbol table, dictionary, or JSON object composed of
       a collection of (MapKey, MapValue) pairs: - MapKey type: string - MapKey
       value: parameter name - MapValue type: - If parameter's entity type is a
-      composite entity: map - Else: string or number, depending on parameter
-      value type - MapValue value: - If parameter's entity type is a composite
-      entity: map from composite entity property names to property values -
-      Else: parameter value
+      composite entity: map - Else: depending on parameter value type, could
+      be one of string, number, boolean, null, list or map - MapValue value: -
+      If parameter's entity type is a composite entity: map from composite
+      entity property names to property values - Else: parameter value
 
   Fields:
     languageCode: Required. The language of this query. See [Language
@@ -5375,10 +7597,10 @@ class GoogleCloudDialogflowV2beta1EventInput(_messages.Message):
       associative array, symbol table, dictionary, or JSON object composed of
       a collection of (MapKey, MapValue) pairs: - MapKey type: string - MapKey
       value: parameter name - MapValue type: - If parameter's entity type is a
-      composite entity: map - Else: string or number, depending on parameter
-      value type - MapValue value: - If parameter's entity type is a composite
-      entity: map from composite entity property names to property values -
-      Else: parameter value
+      composite entity: map - Else: depending on parameter value type, could
+      be one of string, number, boolean, null, list or map - MapValue value: -
+      If parameter's entity type is a composite entity: map from composite
+      entity property names to property values - Else: parameter value
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -5388,10 +7610,10 @@ class GoogleCloudDialogflowV2beta1EventInput(_messages.Message):
     array, symbol table, dictionary, or JSON object composed of a collection
     of (MapKey, MapValue) pairs: - MapKey type: string - MapKey value:
     parameter name - MapValue type: - If parameter's entity type is a
-    composite entity: map - Else: string or number, depending on parameter
-    value type - MapValue value: - If parameter's entity type is a composite
-    entity: map from composite entity property names to property values -
-    Else: parameter value
+    composite entity: map - Else: depending on parameter value type, could be
+    one of string, number, boolean, null, list or map - MapValue value: - If
+    parameter's entity type is a composite entity: map from composite entity
+    property names to property values - Else: parameter value
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -6751,10 +8973,10 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
       symbol table, dictionary, or JSON object composed of a collection of
       (MapKey, MapValue) pairs: - MapKey type: string - MapKey value:
       parameter name - MapValue type: - If parameter's entity type is a
-      composite entity: map - Else: string or number, depending on parameter
-      value type - MapValue value: - If parameter's entity type is a composite
-      entity: map from composite entity property names to property values -
-      Else: parameter value
+      composite entity: map - Else: depending on parameter value type, could
+      be one of string, number, boolean, null, list or map - MapValue value: -
+      If parameter's entity type is a composite entity: map from composite
+      entity property names to property values - Else: parameter value
     WebhookPayloadValue: If the query was fulfilled by a webhook call, this
       field is set to the value of the `payload` field returned in the webhook
       response.
@@ -6800,10 +9022,10 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
       symbol table, dictionary, or JSON object composed of a collection of
       (MapKey, MapValue) pairs: - MapKey type: string - MapKey value:
       parameter name - MapValue type: - If parameter's entity type is a
-      composite entity: map - Else: string or number, depending on parameter
-      value type - MapValue value: - If parameter's entity type is a composite
-      entity: map from composite entity property names to property values -
-      Else: parameter value
+      composite entity: map - Else: depending on parameter value type, could
+      be one of string, number, boolean, null, list or map - MapValue value: -
+      If parameter's entity type is a composite entity: map from composite
+      entity property names to property values - Else: parameter value
     queryText: The original conversational query text: - If natural language
       text was provided as input, `query_text` contains a copy of the input. -
       If natural language speech audio was provided as input, `query_text`
@@ -6863,9 +9085,10 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
     dictionary, or JSON object composed of a collection of (MapKey, MapValue)
     pairs: - MapKey type: string - MapKey value: parameter name - MapValue
     type: - If parameter's entity type is a composite entity: map - Else:
-    string or number, depending on parameter value type - MapValue value: - If
-    parameter's entity type is a composite entity: map from composite entity
-    property names to property values - Else: parameter value
+    depending on parameter value type, could be one of string, number,
+    boolean, null, list or map - MapValue value: - If parameter's entity type
+    is a composite entity: map from composite entity property names to
+    property values - Else: parameter value
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -7150,6 +9373,94 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
   payload = _messages.MessageField('PayloadValue', 6)
   sessionEntityTypes = _messages.MessageField('GoogleCloudDialogflowV2beta1SessionEntityType', 7, repeated=True)
   source = _messages.StringField(8)
+
+
+class GoogleCloudDialogflowV3alpha1CreateDocumentOperationMetadata(_messages.Message):
+  r"""Metadata for CreateDocument operation.
+
+  Fields:
+    genericMetadata: The generic information of the operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudDialogflowV3alpha1GenericKnowledgeOperationMetadata', 1)
+
+
+class GoogleCloudDialogflowV3alpha1DeleteDocumentOperationMetadata(_messages.Message):
+  r"""Metadata for DeleteDocument operation.
+
+  Fields:
+    genericMetadata: The generic information of the operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudDialogflowV3alpha1GenericKnowledgeOperationMetadata', 1)
+
+
+class GoogleCloudDialogflowV3alpha1GenericKnowledgeOperationMetadata(_messages.Message):
+  r"""Metadata in google::longrunning::Operation for Knowledge operations.
+
+  Enums:
+    StateValueValuesEnum: Required. Output only. The current state of this
+      operation.
+
+  Fields:
+    state: Required. Output only. The current state of this operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Required. Output only. The current state of this operation.
+
+    Values:
+      STATE_UNSPECIFIED: State unspecified.
+      PENDING: The operation has been created.
+      RUNNING: The operation is currently running.
+      DONE: The operation is done, either cancelled or completed.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    DONE = 3
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+
+
+class GoogleCloudDialogflowV3alpha1ImportDocumentsOperationMetadata(_messages.Message):
+  r"""Metadata for ImportDocuments operation.
+
+  Fields:
+    genericMetadata: The generic information of the operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudDialogflowV3alpha1GenericKnowledgeOperationMetadata', 1)
+
+
+class GoogleCloudDialogflowV3alpha1ImportDocumentsResponse(_messages.Message):
+  r"""Response message for Documents.ImportDocuments.
+
+  Fields:
+    warnings: Includes details about skipped documents or any other warnings.
+  """
+
+  warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV3alpha1ReloadDocumentOperationMetadata(_messages.Message):
+  r"""Metadata for ReloadDocument operation.
+
+  Fields:
+    genericMetadata: The generic information of the operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudDialogflowV3alpha1GenericKnowledgeOperationMetadata', 1)
+
+
+class GoogleCloudDialogflowV3alpha1UpdateDocumentOperationMetadata(_messages.Message):
+  r"""Metadata for UpdateDocument operation.
+
+  Fields:
+    genericMetadata: The generic information of the operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudDialogflowV3alpha1GenericKnowledgeOperationMetadata', 1)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):

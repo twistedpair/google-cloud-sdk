@@ -589,6 +589,12 @@ class LogBucket(_messages.Message):
       supported locations are: "global"For the location of global it is
       unspecified where logs are actually stored. Once a bucket has been
       created, the location can not be changed.
+    restrictedFields: Log entry field paths that are denied access in this
+      bucket. The following fields and their children are eligible:
+      textPayload, jsonPayload, protoPayload, httpRequest, labels,
+      sourceLocation. Restricting a repeated field will restrict all values.
+      Adding a parent will block all child fields e.g. foo.bar will block
+      foo.bar.baz.
     retentionDays: Logs will be retained by default for this amount of time,
       after which they will automatically be deleted. The minimum retention
       period is 1 day. If this value is set to zero at bucket creation time,
@@ -616,8 +622,9 @@ class LogBucket(_messages.Message):
   locked = _messages.BooleanField(5)
   logLink = _messages.MessageField('LogLink', 6)
   name = _messages.StringField(7)
-  retentionDays = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(9)
+  restrictedFields = _messages.StringField(8, repeated=True)
+  retentionDays = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(10)
 
 
 class LogEntry(_messages.Message):
@@ -1159,10 +1166,10 @@ class LogMetric(_messages.Message):
 
 class LogSink(_messages.Message):
   r"""Describes a sink used to export log entries to one of the following
-  destinations in any project: a Cloud Storage bucket, a BigQuery dataset, or
-  a Cloud Pub/Sub topic. A logs filter controls which log entries are
-  exported. The sink must be created within a project, organization, billing
-  account, or folder.
+  destinations in any project: a Cloud Storage bucket, a BigQuery dataset, a
+  Cloud Pub/Sub topic or a Cloud Logging Bucket. A logs filter controls which
+  log entries are exported. The sink must be created within a project,
+  organization, billing account, or folder.
 
   Enums:
     OutputVersionFormatValueValuesEnum: Deprecated. This field is unused.

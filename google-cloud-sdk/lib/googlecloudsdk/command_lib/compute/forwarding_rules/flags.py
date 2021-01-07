@@ -645,6 +645,20 @@ def AddIsMirroringCollector(parser):
       """)
 
 
+def AddServiceDirectoryRegistration(parser):
+  """Adds service-directory-registration flag to the argparse."""
+  parser.add_argument(
+      '--service-directory-registration',
+      type=str,
+      action='store',
+      default=None,
+      help="""\
+      The Service Directory service in which to register this forwarding rule.
+      The Service Directory service must be in the same project and
+      region as the forwarding rule you are creating.
+      """)
+
+
 class PortRangesWithAll(object):
   """Particular keyword 'all' or a range of integer values."""
 

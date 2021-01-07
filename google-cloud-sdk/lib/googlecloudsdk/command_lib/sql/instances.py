@@ -18,8 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import getpass
-
 from googlecloudsdk.api_lib.sql import constants
 from googlecloudsdk.api_lib.sql import instance_prop_reducers as reducers
 from googlecloudsdk.api_lib.sql import validate
@@ -592,7 +590,8 @@ class _BaseInstances(object):
 
       # Get password if not specified on command line.
       if args.prompt_for_master_password:
-        args.master_password = getpass.getpass('Master Instance Password: ')
+        args.master_password = console_io.PromptPassword(
+            'Master Instance Password: ')
 
       instance_resource.replicaConfiguration = reducers.ReplicaConfiguration(
           sql_messages, args.master_username, args.master_password,

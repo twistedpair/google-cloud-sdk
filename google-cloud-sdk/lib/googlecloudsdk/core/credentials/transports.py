@@ -21,6 +21,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests as core_requests
 from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.credentials import requests
@@ -32,7 +33,8 @@ def GetApitoolsTransport(timeout='unset',
                          response_encoding=None,
                          ca_certs=None,
                          allow_account_impersonation=True,
-                         use_google_auth=None):
+                         use_google_auth=None,
+                         response_handler=None):
   """Get an transport client for use with apitools.
 
   Args:
@@ -55,20 +57,38 @@ def GetApitoolsTransport(timeout='unset',
     use_google_auth: bool, True if the calling command indicates to use
       google-auth library for authentication. If False, authentication will
       fallback to using the oauth2client library.
+    response_handler: requests.ResponseHandler, handler that gets executed
+      before any other response handling.
 
   Returns:
     1. A httplib2.Http-like object backed by httplib2 or requests.
   """
   if base.UseRequests():
+    if response_handler:
+      if not isinstance(response_handler, core_requests.ResponseHandler):
+        raise ValueError('response_handler should be of type ResponseHandler.')
+      if (properties.VALUES.core.log_http.GetBool() and
+          properties.VALUES.core.log_http_streaming_body.GetBool()):
+        # We want to print the actual body instead of printing the placeholder.
+        # To achieve this, we need to set streaming_response_body as False.
+        # Not that the body will be empty if the response_handler has already
+        # consumed the stream.
+        streaming_response_body = False
+      else:
+        streaming_response_body = response_handler.use_stream
+    else:
+      streaming_response_body = False
     session = requests.GetSession(
         timeout=timeout,
         enable_resource_quota=enable_resource_quota,
         force_resource_quota=force_resource_quota,
         response_encoding=response_encoding,
         ca_certs=ca_certs,
-        allow_account_impersonation=allow_account_impersonation)
+        allow_account_impersonation=allow_account_impersonation,
+        streaming_response_body=streaming_response_body)
 
-    return core_requests.GetApitoolsRequests(session)
+    return core_requests.GetApitoolsRequests(session, response_handler,
+                                             response_encoding)
 
   return http.Http(timeout=timeout,
                    enable_resource_quota=enable_resource_quota,

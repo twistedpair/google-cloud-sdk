@@ -33,13 +33,22 @@ import six
 from six.moves import http_client
 from six.moves import urllib_error
 
+SslCertificateError = None  # pylint: disable=invalid-name
+try:
+  import ssl  # pylint: disable=g-import-not-at-top
+except ImportError:
+  pass
+if ssl is not None:
+  SslCertificateError = getattr(ssl, 'CertificateError', None)
+
 _GCE_CACHE_MAX_AGE = 10 * 60  # 10 minutes
 
 # Depending on how a firewall/ NAT behaves, we can have different
 # exceptions at different levels in the networking stack when trying to
 # access an address that we can't reach. Capture all these exceptions.
 _POSSIBLE_ERRORS_GCE_METADATA_CONNECTION = (urllib_error.URLError, socket.error,
-                                            http_client.HTTPException)
+                                            http_client.HTTPException,
+                                            SslCertificateError)
 
 _DOMAIN_NAME_RESOLVE_ERROR_MSG = 'Name or service not known'
 

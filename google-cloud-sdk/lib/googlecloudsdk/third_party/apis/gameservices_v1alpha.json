@@ -332,7 +332,7 @@
       "type": "object",
       "properties": {
         "membership": {
-          "description": "The full or partial name of a GKE Hub membership, using one of the following forms: * `https: \/\/gkehub.googleapis.com\/v1beta1\/projects \/\/ \/{project_id}\/locations\/global\/memberships\/{membership_id}` * `projects\/{project_id}\/locations\/global\/memberships\/{membership_id}` * `{membership_id}` If project is not specified, the project of the GameServerCluster resource is used to generate the full name of the GKE Hub membership.",
+          "description": "The full or partial name of a GKE Hub membership, using one of the following forms: * `https:\/\/gkehub.googleapis.com\/v1beta1\/projects\/{project_id}\/locations\/global\/memberships\/{membership_id}` * `projects\/{project_id}\/locations\/global\/memberships\/{membership_id}` * `{membership_id}` If project is not specified, the project of the GameServerCluster resource is used to generate the full name of the GKE Hub membership.",
           "type": "string"
         }
       }
@@ -2036,7 +2036,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. For the `FieldMask` definition, see https: \/\/developers.google.com\/protocol-buffers \/\/ \/docs\/reference\/google.protobuf#fieldmask",
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2095,7 +2095,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. For the `FieldMask` definition, see https: \/\/developers.google.com\/protocol-buffers \/\/ \/docs\/reference\/google.protobuf#fieldmask",
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2129,7 +2129,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Optional. Mask of fields to update. At least one path must be supplied in this field. For the `FieldMask` definition, see https: \/\/developers.google.com\/protocol-buffers \/\/ \/docs\/reference\/google.protobuf#fieldmask",
+                      "description": "Optional. Mask of fields to update. At least one path must be supplied in this field. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2553,7 +2553,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see https: \/\/developers.google.com\/protocol-buffers \/\/ \/docs\/reference\/google.protobuf#fieldmask",
+                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2587,7 +2587,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see https: \/\/developers.google.com\/protocol-buffers \/\/ \/docs\/reference\/google.protobuf#fieldmask",
+                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2831,7 +2831,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. For the `FieldMask` definition, see https: \/\/developers.google.com\/protocol-buffers \/\/ \/docs\/reference\/google.protobuf#fieldmask",
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -2865,7 +2865,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. For the `FieldMask` definition, see https: \/\/developers.google.com\/protocol-buffers \/\/ \/docs\/reference\/google.protobuf#fieldmask",
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"

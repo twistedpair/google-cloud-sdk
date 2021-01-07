@@ -819,7 +819,7 @@ def AddCreateDiskArgs(parser,
     spec['image-csek-key-file'] = str
 
   if support_multi_writer:
-    spec['multi-writer'] = str
+    spec['multi-writer'] = arg_parsers.ArgBoolean()
     disk_help += """
       *multi-writer*::: If ``yes'', create the disk in multi-writer mode so that
       it can be attached with read-write access to multiple VMs. Can only be

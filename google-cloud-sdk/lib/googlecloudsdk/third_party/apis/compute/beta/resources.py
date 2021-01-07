@@ -129,6 +129,14 @@ class Collections(enum.Enum):
       ['operation'],
       True
   )
+  GLOBALPUBLICDELEGATEDPREFIXES = (
+      'globalPublicDelegatedPrefixes',
+      'projects/{project}/global/publicDelegatedPrefixes/'
+      '{publicDelegatedPrefix}',
+      {},
+      ['project', 'publicDelegatedPrefix'],
+      True
+  )
   HEALTHCHECKS = (
       'healthChecks',
       'projects/{project}/global/healthChecks/{healthCheck}',
@@ -298,6 +306,22 @@ class Collections(enum.Enum):
       'projects/{project}',
       {},
       ['project'],
+      True
+  )
+  PUBLICADVERTISEDPREFIXES = (
+      'publicAdvertisedPrefixes',
+      'projects/{project}/global/publicAdvertisedPrefixes/'
+      '{publicAdvertisedPrefix}',
+      {},
+      ['project', 'publicAdvertisedPrefix'],
+      True
+  )
+  PUBLICDELEGATEDPREFIXES = (
+      'publicDelegatedPrefixes',
+      'projects/{project}/regions/{region}/publicDelegatedPrefixes/'
+      '{publicDelegatedPrefix}',
+      {},
+      ['project', 'region', 'publicDelegatedPrefix'],
       True
   )
   REGIONACCELERATORTYPES = (
@@ -473,6 +497,14 @@ class Collections(enum.Enum):
       'securityPolicyRules/{securityPolicyRule}',
       {},
       ['project', 'securityPolicy', 'securityPolicyRule'],
+      True
+  )
+  SERVICEATTACHMENTS = (
+      'serviceAttachments',
+      'projects/{project}/regions/{region}/serviceAttachments/'
+      '{serviceAttachment}',
+      {},
+      ['project', 'region', 'serviceAttachment'],
       True
   )
   SNAPSHOTS = (

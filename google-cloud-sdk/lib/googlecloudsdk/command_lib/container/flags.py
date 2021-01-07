@@ -334,9 +334,9 @@ the default node pool if --node-pool is not provided.""",
   group.add_argument(
       '--max-nodes',
       help="""\
-Maximum number of nodes in the node pool.
+Maximum number of nodes per zone in the node pool.
 
-Maximum number of nodes to which the node pool specified by --node-pool
+Maximum number of nodes per zone to which the node pool specified by --node-pool
 (or default node pool if unspecified) can scale. Ignored unless
 --enable-autoscaling is also specified.""",
       hidden=hidden,
@@ -344,9 +344,9 @@ Maximum number of nodes to which the node pool specified by --node-pool
   group.add_argument(
       '--min-nodes',
       help="""\
-Minimum number of nodes in the node pool.
+Minimum number of nodes per zone in the node pool.
 
-Minimum number of nodes to which the node pool specified by --node-pool
+Minimum number of nodes per zone to which the node pool specified by --node-pool
 (or default node pool if unspecified) can scale. Ignored unless
 --enable-autoscaling is also specified.""",
       hidden=hidden,

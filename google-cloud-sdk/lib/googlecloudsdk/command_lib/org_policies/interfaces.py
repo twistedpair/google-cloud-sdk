@@ -19,11 +19,13 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import copy
 
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.orgpolicy import service as org_policy_service
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.org_policies import arguments
+from googlecloudsdk.command_lib.org_policies import exceptions
 from googlecloudsdk.command_lib.org_policies import utils
 from googlecloudsdk.core import log
 import six
@@ -94,7 +96,11 @@ class OrgPolicyGetAndUpdateCommand(
     policy = self._GetPolicy(args)
     if not policy:
       return self._CreatePolicy(args)
-
+    for rule in policy.spec.rules:
+      if rule.condition:
+        raise exceptions.OperationNotSupportedError(
+            'Cannot be used to modify a conditional policy. Use set-policy instead.'
+        )
     return self._UpdateOrDeletePolicy(policy, args)
 
   @abc.abstractmethod
@@ -177,7 +183,9 @@ class OrgPolicyGetAndUpdateCommand(
       If the policy is deleted, then messages.GoogleProtobufEmpty. If the policy
       is updated, then the updated policy.
     """
-    updated_policy = self.UpdatePolicy(policy, args)
+    policy_copy = copy.deepcopy(policy)
+    policy_copy.spec.reset = None
+    updated_policy = self.UpdatePolicy(policy_copy, args)
     if updated_policy == policy:
       return policy
 

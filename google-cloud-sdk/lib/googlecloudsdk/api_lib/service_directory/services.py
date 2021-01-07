@@ -19,24 +19,21 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.service_directory import base as sd_base
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.iam import iam_util
 
-_API_NAME = 'servicedirectory'
-_API_VERSION = 'v1beta1'
 
-
-class ServicesClient(object):
+class ServicesClient(sd_base.ServiceDirectoryApiLibBase):
   """Client for service in the Service Directory API."""
 
-  def __init__(self):
-    self.client = apis.GetClientInstance(_API_NAME, _API_VERSION)
-    self.msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)
+  def __init__(self, release_track=base.ReleaseTrack.GA):
+    super(ServicesClient, self).__init__(release_track)
     self.service = self.client.projects_locations_namespaces_services
 
-  def Create(self, service_ref, metadata=None):
+  def Create(self, service_ref, annotations=None):
     """Services create request."""
-    service = self.msgs.Service(metadata=metadata)
+    service = self.msgs.Service(annotations=annotations)
     create_req = self.msgs.ServicedirectoryProjectsLocationsNamespacesServicesCreateRequest(
         parent=service_ref.Parent().RelativeName(),
         service=service,
@@ -69,27 +66,26 @@ class ServicesClient(object):
         field='services',
         batch_size_attribute='pageSize')
 
-  def Resolve(self, service_ref, max_endpoints=None, endpoint_filter=None):
-    """Services resolve request."""
-    resolve_req = self.msgs.ServicedirectoryProjectsLocationsNamespacesServicesResolveRequest(
-        name=service_ref.RelativeName(),
-        resolveServiceRequest=self.msgs.ResolveServiceRequest(
-            maxEndpoints=max_endpoints,
-            endpointFilter=endpoint_filter))
-    return self.service.Resolve(resolve_req)
-
-  def Update(self, service_ref, metadata=None):
+  def Update(self, service_ref, annotations=None):
     """Services update request."""
     mask_parts = []
-    if metadata:
-      mask_parts.append('metadata')
+    if annotations:
+      mask_parts.append('annotations')
 
-    service = self.msgs.Service(metadata=metadata)
+    service = self.msgs.Service(annotations=annotations)
     update_req = self.msgs.ServicedirectoryProjectsLocationsNamespacesServicesPatchRequest(
         name=service_ref.RelativeName(),
         service=service,
         updateMask=','.join(mask_parts))
     return self.service.Patch(update_req)
+
+  def Resolve(self, service_ref, max_endpoints=None, endpoint_filter=None):
+    """Services resolve request."""
+    resolve_req = self.msgs.ServicedirectoryProjectsLocationsNamespacesServicesResolveRequest(
+        name=service_ref.RelativeName(),
+        resolveServiceRequest=self.msgs.ResolveServiceRequest(
+            maxEndpoints=max_endpoints, endpointFilter=endpoint_filter))
+    return self.service.Resolve(resolve_req)
 
   def AddIamPolicyBinding(self, service_ref, member, role):
     """Services add iam policy binding request."""
@@ -115,3 +111,32 @@ class ServicesClient(object):
         resource=service_ref.RelativeName(),
         setIamPolicyRequest=self.msgs.SetIamPolicyRequest(policy=policy))
     return self.service.SetIamPolicy(set_req)
+
+
+class ServicesClientBeta(ServicesClient):
+  """Client for service in the Service Directory API."""
+
+  def __init__(self):
+    super(ServicesClientBeta, self).__init__(base.ReleaseTrack.BETA)
+
+  def Create(self, service_ref, metadata=None):
+    """Services create request."""
+    service = self.msgs.Service(metadata=metadata)
+    create_req = self.msgs.ServicedirectoryProjectsLocationsNamespacesServicesCreateRequest(
+        parent=service_ref.Parent().RelativeName(),
+        service=service,
+        serviceId=service_ref.servicesId)
+    return self.service.Create(create_req)
+
+  def Update(self, service_ref, metadata=None):
+    """Services update request."""
+    mask_parts = []
+    if metadata:
+      mask_parts.append('metadata')
+
+    service = self.msgs.Service(metadata=metadata)
+    update_req = self.msgs.ServicedirectoryProjectsLocationsNamespacesServicesPatchRequest(
+        name=service_ref.RelativeName(),
+        service=service,
+        updateMask=','.join(mask_parts))
+    return self.service.Patch(update_req)

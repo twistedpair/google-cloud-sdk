@@ -57,7 +57,7 @@ class GkehubV1alpha2(base_api.BaseApiClient):
           }
 
     def InitializeHub(self, request, global_params=None):
-      r"""Initializes the project to start creating Hub Memberships and Features. Using this API is optional and customers can instead directly create the Membership or Feature. Using this API is required only if IAM permissions need to be added for the default Hub Service Account or Hub Workload Identity Pool before registering the first Membership. Calling this API will create the default Hub Service Account and Hub Workload Identity Pool.
+      r"""Initializes the Hub in this project, which includes creating the default Hub Service Account and the Hub Workload Identity Pool. Initialization is optional, and happens automatically when the first Membership is created. InitializeHub should be called when the first Membership cannot be registered without these resources. A common example is granting the Hub Service Account access to another project, which requires the account to exist first.
 
       Args:
         request: (GkehubProjectsLocationsGlobalMembershipsInitializeHubRequest) input message
@@ -131,7 +131,7 @@ class GkehubV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Removes a single Membership.
+      r"""Removes a Membership.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsDeleteRequest) input message
@@ -158,7 +158,7 @@ class GkehubV1alpha2(base_api.BaseApiClient):
     )
 
     def GenerateConnectManifest(self, request, global_params=None):
-      r"""Generate the manifest for deployment of GKE connect agent.
+      r"""Generates the manifest for deployment of the GKE connect agent.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest) input message
@@ -185,7 +185,7 @@ class GkehubV1alpha2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Membership.
+      r"""Gets the details of a Membership.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsGetRequest) input message

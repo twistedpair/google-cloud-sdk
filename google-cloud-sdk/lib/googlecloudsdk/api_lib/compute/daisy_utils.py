@@ -195,7 +195,8 @@ class ImageOperation(object):
 
 
 def _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
-                         compute_service_account_roles):
+                         compute_service_account_roles,
+                         custom_compute_service_account=''):
   """Check for needed IAM permissions and prompt to add if missing.
 
   Args:
@@ -204,6 +205,7 @@ def _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
       service account.
     compute_service_account_roles: A set of roles required for compute service
       account.
+    custom_compute_service_account: Custom compute service account
   """
   project = projects_api.Get(project_id)
   # If the user's project doesn't have cloudbuild enabled yet, then the service
@@ -229,6 +231,9 @@ def _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
   compute_account = (
       'serviceAccount:{0}-compute@developer.gserviceaccount.com'.format(
           project.projectNumber))
+  if custom_compute_service_account:
+    compute_account = 'serviceAccount:{0}'.format(
+        custom_compute_service_account)
 
   # Now that we're sure the service account exists, actually check permissions.
   try:
@@ -705,7 +710,9 @@ def RunImageCloudBuild(args, builder, builder_args, tags, output_filter,
       properties.VALUES.core.project.GetOrFail())
 
   _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
-                       compute_service_account_roles)
+                       compute_service_account_roles,
+                       args.compute_service_account
+                       if 'compute_service_account' in args else '')
 
   return _RunCloudBuild(args, builder, builder_args,
                         ['gce-daisy'] + tags, output_filter, args.log_location)

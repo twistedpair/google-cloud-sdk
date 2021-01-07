@@ -19,41 +19,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import uuid
-
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 
-_BUCKET_NAMING_PATTERN = 'privateca_content_{uuid}'
-
 
 def _BucketAllowsPublicObjectReads(bucket):
   return any([acl.entity.lower() == 'allusers' and acl.role.lower() == 'reader'
               for acl in bucket.defaultObjectAcl])
-
-
-def CreateBucketForCertificateAuthority(ca_ref):
-  """Creates a GCS bucket for use by the given Certificate Authority."""
-  client = storage_util.GetClient()
-  messages = storage_util.GetMessages()
-
-  location = ca_ref.Parent().Name()
-  project = ca_ref.Parent().Parent().Name()
-  bucket_name = _BUCKET_NAMING_PATTERN.format(uuid=uuid.uuid4())
-
-  client.buckets.Insert(
-      messages.StorageBucketsInsertRequest(
-          project=project,
-          predefinedDefaultObjectAcl=messages.StorageBucketsInsertRequest
-          .PredefinedDefaultObjectAclValueValuesEnum.publicRead,
-          bucket=messages.Bucket(
-              name=bucket_name,
-              location=location,
-              versioning=messages.Bucket.VersioningValue(enabled=True))))
-
-  return storage_util.BucketReference(bucket_name)
 
 
 def ValidateBucketForCertificateAuthority(bucket_name):

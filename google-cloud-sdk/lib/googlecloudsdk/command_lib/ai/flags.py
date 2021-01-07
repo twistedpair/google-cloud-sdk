@@ -320,8 +320,9 @@ value is 1.
   base.Argument(
       '--machine-type',
       help="""\
-Type of machine on which to serve the model. Currently only applies to online prediction.
-If the uploaded models use dedicated resources, the machine type is a required field for deployment.
+The machine resources to be used for each node of this deployment.
+For available machine types, see
+https://cloud.google.com/ai-platform-unified/docs/predictions/machine-types.
 """).AddToParser(parser)
 
   base.Argument(

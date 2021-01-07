@@ -19,8 +19,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import encoding
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import extra_types
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.ai.models import client as model_client
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import errors
@@ -43,6 +45,31 @@ def _ParseModel(model_id, location_id):
 
 def _ConvertPyListToMessageList(message_type, values):
   return [encoding.PyValueToMessage(message_type, v) for v in values]
+
+
+def _GetModelDeploymentResourceType(model_ref):
+  """Gets the deployment resource type of a model.
+
+  Each model resource belongs to exactly one supported deployment resource type.
+  The value is the first item in the list, the length of which must be one.
+
+  Args:
+    model_ref: a model resource object.
+
+  Returns:
+    A string which value must be 'DEDICATED_RESOURCES' or 'AUTOMATIC_RESOURCES'.
+
+  Raises:
+    ArgumentError: if the model resource object is not found.
+  """
+  try:
+    model_msg = model_client.ModelsClient().Get(model_ref)
+  except apitools_exceptions.HttpError:
+    raise errors.ArgumentError(
+        ('There is an error while getting the model information. '
+         'Please make sure the model %r exists.' % model_ref.RelativeName()))
+  model_resource = encoding.MessageToPyValue(model_msg)
+  return model_resource['supportedDeploymentResourcesTypes'][0]
 
 
 class EndpointsClient(object):
@@ -168,11 +195,13 @@ class EndpointsClient(object):
     """Deploy a model to an existing endpoint."""
     model_ref = _ParseModel(args.model, args.region)
 
+    resource_type = _GetModelDeploymentResourceType(model_ref)
     deployed_model = None
-    if args.machine_type is not None:
+    if resource_type == 'DEDICATED_RESOURCES':
       # dedicated resources
-      machine_spec = self.messages.GoogleCloudAiplatformV1beta1MachineSpec(
-          machineType=args.machine_type)
+      machine_spec = self.messages.GoogleCloudAiplatformV1beta1MachineSpec()
+      if args.IsSpecified('machine_type'):
+        machine_spec.machineType = args.machine_type
       accelerator = flags.ParseAcceleratorFlag(args.accelerator,
                                                constants.BETA_VERSION)
       if accelerator is not None:

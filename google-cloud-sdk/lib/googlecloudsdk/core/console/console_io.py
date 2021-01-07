@@ -19,7 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from collections import OrderedDict
+import collections
 import contextlib
 import enum
 import getpass
@@ -1040,7 +1040,7 @@ class TickableProgressBar(object):
 
 def JsonUXStub(ux_type, **kwargs):
   """Generates a stub message for UX console output."""
-  output = OrderedDict()
+  output = collections.OrderedDict()
   output['ux'] = ux_type.name
   extra_args = list(set(kwargs) - set(ux_type.GetDataFields()))
   if extra_args:
@@ -1082,11 +1082,13 @@ def PromptPassword(prompt,
   """Prompt user for password with optional validation."""
   if properties.VALUES.core.disable_prompts.GetBool():
     return None
-  pass_wd = getpass.getpass(prompt)
+
+  str_prompt = six.ensure_str(prompt)
+  pass_wd = getpass.getpass(str_prompt)
   encoder = encoder_callable if callable(encoder_callable) else six.ensure_str
   if callable(validation_callable):
     while not validation_callable(pass_wd):
       sys.stderr.write(_DoWrap(error_message) + '\n')
-      pass_wd = getpass.getpass(prompt)
+      pass_wd = getpass.getpass(str_prompt)
 
   return encoder(pass_wd)

@@ -704,6 +704,7 @@ class UpdateClusterOptions(object):
                enable_binauthz=None,
                enable_vertical_pod_autoscaling=None,
                enable_intra_node_visibility=None,
+               enable_l4_ilb_subsetting=None,
                security_profile=None,
                security_profile_runtime_rules=None,
                autoscaling_profile=None,
@@ -780,6 +781,7 @@ class UpdateClusterOptions(object):
     self.security_profile_runtime_rules = security_profile_runtime_rules
     self.autoscaling_profile = autoscaling_profile
     self.enable_intra_node_visibility = enable_intra_node_visibility
+    self.enable_l4_ilb_subsetting = enable_l4_ilb_subsetting
     self.enable_peering_route_sharing = enable_peering_route_sharing
     self.workload_pool = workload_pool
     self.identity_provider = identity_provider
@@ -2164,7 +2166,11 @@ class APIAdapter(object):
           disabled=options.disable_default_snat)
       update = self.messages.ClusterUpdate(
           desiredDefaultSnatStatus=disable_default_snat)
-
+    if options.enable_l4_ilb_subsetting is not None:
+      ilb_subsettting_config = self.messages.ILBSubsettingConfig(
+          enabled=options.enable_l4_ilb_subsetting)
+      update = self.messages.ClusterUpdate(
+          desiredL4ilbSubsettingConfig=ilb_subsettting_config)
     if options.private_ipv6_google_access_type is not None:
       update = self.messages.ClusterUpdate(
           desiredPrivateIpv6GoogleAccess=util

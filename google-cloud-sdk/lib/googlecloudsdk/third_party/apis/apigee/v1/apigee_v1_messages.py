@@ -1472,24 +1472,27 @@ class ApigeeOrganizationsEnvironmentsKeystoresAliasesCreateRequest(_messages.Mes
   r"""A ApigeeOrganizationsEnvironmentsKeystoresAliasesCreateRequest object.
 
   Fields:
-    _password: DEPRECATED: For improved security, send the password in the
-      body instead of using this query param. To send it in the body, use a
-      multipart/form-data part with name "password". The password for the
-      private key file, if it exists.
-    alias: The alias for the key, certificate pair. Values must match regular
+    _password: DEPRECATED: For improved security, specify the password in the
+      request body instead of using the query parameter. To specify the
+      password in the request body, set `Content-type: multipart/form-data`
+      part with name `password`. Password for the private key file, if
+      required.
+    alias: Alias for the key/certificate pair. Values must match the regular
       expression `[\w\s-.]{1,255}`. This must be provided for all formats
-      except 'selfsignedcert'; self-signed certs may specify the alias in
+      except `selfsignedcert`; self-signed certs may specify the alias in
       either this parameter or the JSON body.
-    format: Required. The format of the data. Must be either `selfsignedcert`,
-      `keycertfile`, or `pkcs12`.
+    format: Required. Format of the data. Valid values include:
+      `selfsignedcert`, `keycertfile`, or `pkcs12`
     googleApiHttpBody: A GoogleApiHttpBody resource to be passed as the
       request body.
-    ignoreExpiryValidation: If `true`, no expiry validation will be performed.
-    ignoreNewlineValidation: If `true`, do not throw an error when the file
-      contains a chain with no newline between each certificate. By default, a
-      newline is needed between each certificate in a chain.
-    parent: Required. The name of the keystore. Must be of the form `organizat
-      ions/{organization}/environments/{environment}/keystores/{keystore}`.
+    ignoreExpiryValidation: Flag that specifies whether to ignore expiry
+      validation. If set to `true`, no expiry validation will be performed.
+    ignoreNewlineValidation: Flag that specifies whether to ignore newline
+      validation. If set to `true`, no error is thrown when the file contains
+      a certificate chain with no newline between each certificate. Defaults
+      to `false`.
+    parent: Required. Name of the keystore. Use the following format in your
+      request: `organizations/{org}/environments/{env}/keystores/{keystore}`.
   """
 
   _password = _messages.StringField(1)
@@ -1505,9 +1508,9 @@ class ApigeeOrganizationsEnvironmentsKeystoresAliasesCsrRequest(_messages.Messag
   r"""A ApigeeOrganizationsEnvironmentsKeystoresAliasesCsrRequest object.
 
   Fields:
-    name: Required. The name of the alias. Must be of the form `organizations/
-      {organization}/environments/{environment}/keystores/{keystore}/aliases/{
-      alias}`.
+    name: Required. Name of the alias. Use the following format in your
+      request: `organizations/{org}/environments/{env}/keystores/{keystore}/al
+      iases/{alias}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1517,9 +1520,9 @@ class ApigeeOrganizationsEnvironmentsKeystoresAliasesDeleteRequest(_messages.Mes
   r"""A ApigeeOrganizationsEnvironmentsKeystoresAliasesDeleteRequest object.
 
   Fields:
-    name: Required. The name of the alias. Must be of the form `organizations/
-      {organization}/environments/{environment}/keystores/{keystore}/aliases/{
-      alias}`.
+    name: Required. Name of the alias. Use the following format in your
+      request: `organizations/{org}/environments/{env}/keystores/{keystore}/al
+      iases/{alias}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1530,9 +1533,9 @@ class ApigeeOrganizationsEnvironmentsKeystoresAliasesGetCertificateRequest(_mess
   object.
 
   Fields:
-    name: Required. The name of the alias. Must be of the form `organizations/
-      {organization}/environments/{environment}/keystores/{keystore}/aliases/{
-      alias}`.
+    name: Required. Name of the alias. Use the following format in your
+      request: `organizations/{org}/environments/{env}/keystores/{keystore}/al
+      iases/{alias}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1542,9 +1545,9 @@ class ApigeeOrganizationsEnvironmentsKeystoresAliasesGetRequest(_messages.Messag
   r"""A ApigeeOrganizationsEnvironmentsKeystoresAliasesGetRequest object.
 
   Fields:
-    name: Required. The name of the alias. Must be of the form `organizations/
-      {organization}/environments/{environment}/keystores/{keystore}/aliases/{
-      alias}`.
+    name: Required. Name of the alias. Use the following format in your
+      request: `organizations/{org}/environments/{env}/keystores/{keystore}/al
+      iases/{alias}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1556,14 +1559,16 @@ class ApigeeOrganizationsEnvironmentsKeystoresAliasesUpdateRequest(_messages.Mes
   Fields:
     googleApiHttpBody: A GoogleApiHttpBody resource to be passed as the
       request body.
-    ignoreExpiryValidation: Required. If `true`, no expiry validation will be
+    ignoreExpiryValidation: Required. Flag that specifies whether to ignore
+      expiry validation. If set to `true`, no expiry validation will be
       performed.
-    ignoreNewlineValidation: If `true`, do not throw an error when the file
-      contains a chain with no newline between each certificate. By default, a
-      newline is needed between each certificate in a chain.
-    name: Required. The name of the alias. Must be of the form `organizations/
-      {organization}/environments/{environment}/keystores/{keystore}/aliases/{
-      alias}`.
+    ignoreNewlineValidation: Flag that specifies whether to ignore newline
+      validation. If set to `true`, no error is thrown when the file contains
+      a certificate chain with no newline between each certificate. Defaults
+      to `false`.
+    name: Required. Name of the alias. Use the following format in your
+      request: `organizations/{org}/environments/{env}/keystores/{keystore}/al
+      iases/{alias}`
   """
 
   googleApiHttpBody = _messages.MessageField('GoogleApiHttpBody', 1)
@@ -1578,10 +1583,10 @@ class ApigeeOrganizationsEnvironmentsKeystoresCreateRequest(_messages.Message):
   Fields:
     googleCloudApigeeV1Keystore: A GoogleCloudApigeeV1Keystore resource to be
       passed as the request body.
-    name: Optional. Overrides the value in Keystore.
-    parent: Required. The name of the environment in which to create the
-      keystore. Must be of the form
-      `organizations/{organization}/environments/{environment}`.
+    name: Optional. Name of the keystore. Overrides the value in Keystore.
+    parent: Required. Name of the environment in which to create the keystore.
+      Use the following format in your request:
+      `organizations/{org}/environments/{env}`
   """
 
   googleCloudApigeeV1Keystore = _messages.MessageField('GoogleCloudApigeeV1Keystore', 1)
@@ -1593,9 +1598,8 @@ class ApigeeOrganizationsEnvironmentsKeystoresDeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsKeystoresDeleteRequest object.
 
   Fields:
-    name: Required. The name of keystore to delete. Must be of the form `organ
-      izations/{organization}/environments/{environment}/keystores/{keystore}`
-      .
+    name: Required. Name of the keystore. Use the following format in your
+      request: `organizations/{org}/environments/{env}/keystores/{keystore}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1605,8 +1609,8 @@ class ApigeeOrganizationsEnvironmentsKeystoresGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsKeystoresGetRequest object.
 
   Fields:
-    name: Required. The name of keystore. Must be of the form `organizations/{
-      organization}/environments/{environment}/keystores/{keystore}`.
+    name: Required. Name of the keystore. Use the following format in your
+      request: `organizations/{org}/environments/{env}/keystores/{keystore}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3040,25 +3044,25 @@ class GoogleCloudApigeeV1ActivateNatAddressRequest(_messages.Message):
 
 
 class GoogleCloudApigeeV1Alias(_messages.Message):
-  r"""A reference to a certificate or key, certificate pair.
+  r"""Reference to a certificate or key/certificate pair.
 
   Enums:
-    TypeValueValuesEnum: The type of alias.
+    TypeValueValuesEnum: Type of alias.
 
   Fields:
-    alias: The resource ID for this alias. Values must match regular
+    alias: Resource ID for this alias. Values must match the regular
       expression `[^/]{1,255}`.
-    certsInfo: The chain of certificates under this alias.
-    type: The type of alias.
+    certsInfo: Chain of certificates under this alias.
+    type: Type of alias.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of alias.
+    r"""Type of alias.
 
     Values:
-      ALIAS_TYPE_UNSPECIFIED: <no description>
-      CERT: <no description>
-      KEY_CERT: <no description>
+      ALIAS_TYPE_UNSPECIFIED: Alias type is not specified.
+      CERT: Certificate.
+      KEY_CERT: Key/certificate pair.
     """
     ALIAS_TYPE_UNSPECIFIED = 0
     CERT = 1
@@ -3088,9 +3092,9 @@ class GoogleCloudApigeeV1AliasRevisionConfig(_messages.Message):
     r"""TypeValueValuesEnum enum type.
 
     Values:
-      ALIAS_TYPE_UNSPECIFIED: <no description>
-      CERT: <no description>
-      KEY_CERT: <no description>
+      ALIAS_TYPE_UNSPECIFIED: Alias type is not specified.
+      CERT: Certificate.
+      KEY_CERT: Key/certificate pair.
     """
     ALIAS_TYPE_UNSPECIFIED = 0
     CERT = 1
@@ -3601,22 +3605,22 @@ class GoogleCloudApigeeV1CanaryEvaluationMetricLabels(_messages.Message):
 
 
 class GoogleCloudApigeeV1CertInfo(_messages.Message):
-  r"""An X.509 certificate as defined in RFC 5280.
+  r"""X.509 certificate as defined in RFC 5280.
 
   Fields:
-    basicConstraints: The X.509 basic constraints extension.
-    expiryDate: The X.509 validity / notAfter in milliseconds since the epoch.
-    isValid: "Yes" if certificate is valid, "No" if expired and "Not yet" if
+    basicConstraints: X.509 basic constraints extension.
+    expiryDate: X.509 `notAfter` validity period in milliseconds since epoch.
+    isValid: Flag that specifies whether the certificate is valid. Flag is set
+      to `Yes` if the certificate is valid, `No` if expired, or `Not yet` if
       not yet valid.
-    issuer: The X.509 issuer.
-    publicKey: The public key component of the X.509 subject public key info.
-    serialNumber: The X.509 serial number.
-    sigAlgName: The X.509 signatureAlgorithm.
-    subject: The X.509 subject.
-    subjectAlternativeNames: The X.509 subject alternative names (SANs)
-      extension.
-    validFrom: The X.509 validity / notBefore in milliseconds since the epoch.
-    version: The X.509 version.
+    issuer: X.509 issuer.
+    publicKey: Public key component of the X.509 subject public key info.
+    serialNumber: X.509 serial number.
+    sigAlgName: X.509 signatureAlgorithm.
+    subject: X.509 subject.
+    subjectAlternativeNames: X.509 subject alternative names (SANs) extension.
+    validFrom: X.509 `notBefore` validity period in milliseconds since epoch.
+    version: X.509 version.
   """
 
   basicConstraints = _messages.StringField(1)
@@ -3636,7 +3640,7 @@ class GoogleCloudApigeeV1Certificate(_messages.Message):
   r"""A GoogleCloudApigeeV1Certificate object.
 
   Fields:
-    certInfo: The chain of certificates under this name.
+    certInfo: Chain of certificates under this name.
   """
 
   certInfo = _messages.MessageField('GoogleCloudApigeeV1CertInfo', 1, repeated=True)
@@ -4224,7 +4228,8 @@ class GoogleCloudApigeeV1Developer(_messages.Message):
     developerId: ID of the developer. **Note**: IDs are generated internally
       by Apigee and are not guaranteed to stay the same over time.
     email: Required. Email address of the developer. This value is used to
-      uniquely identify the developer in Apigee hybrid.
+      uniquely identify the developer in Apigee hybrid. Note that the email
+      address has to be in lowercase only.
     firstName: Required. First name of the developer.
     lastModifiedAt: Output only. Time at which the developer was last modified
       in milliseconds since epoch.
@@ -4653,8 +4658,10 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
     createdAt: Output only. Time the instance was created in milliseconds
       since epoch.
     description: Optional. Description of the instance.
-    diskEncryptionKeyName: Optional. Customer Managed Encryption Key (CMEK)
-      used for disk & volume encryption.
+    diskEncryptionKeyName: Customer Managed Encryption Key (CMEK) used for
+      disk and volume encryption. Required for Apigee paid subscriptions only.
+      Use the following format:
+      `projects/([^/]+)/locations/([^/]+)/keyRings/([^/]+)/cryptoKeys/([^/]+)`
     displayName: Optional. Display name for the instance.
     host: Output only. Hostname or IP address of the exposed Apigee endpoint
       used by clients to connect to the service.
@@ -4782,11 +4789,11 @@ class GoogleCloudApigeeV1KeyValueMap(_messages.Message):
 
 
 class GoogleCloudApigeeV1Keystore(_messages.Message):
-  r"""A datastore for Certificates and Aliases
+  r"""Datastore for Certificates and Aliases.
 
   Fields:
-    aliases: Output only. The aliases in this keystore.
-    name: Required. The resource ID for this keystore. Values must match the
+    aliases: Output only. Aliases in this keystore.
+    name: Required. Resource ID for this keystore. Values must match the
       regular expression `[\w[:space:]-.]{1,255}`.
   """
 

@@ -623,7 +623,7 @@ class InstallationState(object):
       # Do not compile anything on python 3.4.x
       if sys.version_info[1] == 4:
         regex_exclusion = re.compile('.*')
-      elif sys.version_info[1] == 8:
+      elif sys.version_info[1] >= 7:
         regex_exclusion = re.compile(
             '(kubernetes/utils/create_from_yaml.py'
             '|platform/google_appengine'

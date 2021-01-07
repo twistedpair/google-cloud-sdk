@@ -425,7 +425,7 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
 
     code = PromptForAuthCode(authorization_prompt_message, auth_url)
 
-    self.fetch_token(code=code)
+    self.fetch_token(code=code, include_client_id=True)
 
     return self.credentials
 

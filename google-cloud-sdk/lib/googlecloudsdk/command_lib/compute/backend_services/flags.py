@@ -631,6 +631,8 @@ def AddTimeout(parser, default='30s'):
       the load balancer returns a 502 Bad Gateway error to the client.
 
       If the ``protocol'' is SSL or TCP, ``timeout'' is an idle timeout.
+
+      The full range of timeout values allowed is 1 - 2,147,483,647 seconds.
       """)
 
 

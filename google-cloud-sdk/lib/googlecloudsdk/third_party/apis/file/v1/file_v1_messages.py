@@ -738,13 +738,20 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messag
     rolloutManagementPolicy: The rollout management policy this maintenance
       schedule is associated with. When doing reschedule update request, the
       reschedule should be against this given policy.
+    scheduleDeadlineTime: schedule_deadline_time is the time deadline any
+      schedule start time cannot go beyond, including reschedule. It's
+      normally the initial schedule start time plus a week. If the reschedule
+      type is next window, simply take this value as start time. If reschedule
+      type is IMMEDIATELY or BY_TIME, current or selected time cannot go
+      beyond this deadline.
     startTime: The scheduled start time for the maintenance.
   """
 
   canReschedule = _messages.BooleanField(1)
   endTime = _messages.StringField(2)
   rolloutManagementPolicy = _messages.StringField(3)
-  startTime = _messages.StringField(4)
+  scheduleDeadlineTime = _messages.StringField(4)
+  startTime = _messages.StringField(5)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messages.Message):
@@ -966,6 +973,8 @@ class Instance(_messages.Message):
       ERROR: The instance is experiencing an issue and might be unusable. You
         can get further details from the `statusMessage` field of the
         `Instance` resource.
+      RESTORING: The instance is restoring a backup to an existing file share
+        and may be unusable during this time.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -973,6 +982,7 @@ class Instance(_messages.Message):
     REPAIRING = 3
     DELETING = 4
     ERROR = 5
+    RESTORING = 6
 
   class TierValueValuesEnum(_messages.Enum):
     r"""The service tier of the instance.

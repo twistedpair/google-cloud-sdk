@@ -1456,7 +1456,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent, which owns this collection of phrase set. Format: {api_version}\/projects\/{project}\/locations\/{location}\/phraseSets",
+                      "description": "Required. The parent, which owns this collection of phrase set. Format: projects\/{project}\/locations\/{location}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",

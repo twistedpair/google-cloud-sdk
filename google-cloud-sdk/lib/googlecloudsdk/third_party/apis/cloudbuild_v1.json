@@ -353,7 +353,7 @@
           "$ref": "BuildApproval"
         },
         "serviceAccount": {
-          "description": "IAM service account whose credentials will be used at build runtime. Must be of the format `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. ACCOUNT can be email address or uniqueId of the service account. This field is in alpha and is not publicly available.",
+          "description": "IAM service account whose credentials will be used at build runtime. Must be of the format `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. ACCOUNT can be email address or uniqueId of the service account. This field is in beta.",
           "type": "string"
         },
         "availableSecrets": {
@@ -850,7 +850,7 @@
           ]
         },
         "workerPool": {
-          "description": "Option to specify a `WorkerPool` for the build. Format: projects\/{project}\/locations\/{location}\/workerPools\/{workerPool} This field is experimental.",
+          "description": "Option to specify a `WorkerPool` for the build. Format: projects\/{project}\/locations\/{location}\/workerPools\/{workerPool} This field is in beta and is available only to restricted users.",
           "type": "string"
         },
         "logging": {
@@ -862,7 +862,7 @@
             "Only Cloud Storage logging is enabled.",
             "This option is the same as CLOUD_LOGGING_ONLY.",
             "Only Cloud Logging is enabled. Note that logs for both the Cloud Console UI and Cloud SDK are based on Cloud Storage logs, so neither will provide logs if this option is chosen.",
-            "Turn off all logging. No build logs will be captured. Next ID: 6"
+            "Turn off all logging. No build logs will be captured."
           ],
           "enum": [
             "LOGGING_UNSPECIFIED",
@@ -1741,6 +1741,10 @@
         "name": {
           "description": "Name of the GitHub App",
           "type": "string"
+        },
+        "slug": {
+          "description": "Slug (URL friendly name) of the GitHub App. This can be found on the settings page for the GitHub App (e.g. https:\/\/github.com\/settings\/apps\/:app_slug) GitHub docs: https:\/\/docs.github.com\/en\/free-pro-team@latest\/rest\/reference\/apps#get-an-app",
+          "type": "string"
         }
       }
     },
@@ -2246,6 +2250,202 @@
                   "description": "Creates a new build based on the specified build. This method creates a new build using the original build request, which may or may not result in an identical build. For triggered builds: * Triggered builds resolve to a precise revision; therefore a retry of a triggered build will result in a build that uses the same revision. For non-triggered builds that specify `RepoSource`: * If the original build built from the tip of a branch, the retried build will build from the tip of that branch, which may not be the same revision as the original build. * If the original build specified a commit sha or revision ID, the retried build will use the identical source. For builds that specify `StorageSource`: * If the original build pulled source from Google Cloud Storage without specifying the generation of the object, the new build will use the current object, which may be different from the original build source. * If the original build pulled source from Cloud Storage and specified the generation of the object, the new build will attempt to use the same object, which may or may not be available depending on the bucket's lifecycle management settings."
                 }
               }
+            },
+            "githubEnterpriseConfigs": {
+              "methods": {
+                "create": {
+                  "id": "cloudbuild.projects.locations.githubEnterpriseConfigs.create",
+                  "path": "v1/{+parent}/githubEnterpriseConfigs",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/githubEnterpriseConfigs",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Name of the parent project. For example: projects\/{$project_number} or projects\/{$project_id}",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "projectId": {
+                      "description": "ID of the project.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GitHubEnterpriseConfig"
+                  },
+                  "response": {
+                    "$ref": "GitHubEnterpriseConfig"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Create an association between a GCP project and a GitHub Enterprise server. This API is experimental."
+                },
+                "patch": {
+                  "id": "cloudbuild.projects.locations.githubEnterpriseConfigs.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/githubEnterpriseConfigs/{githubEnterpriseConfigsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Optional. The full resource name for the GitHubEnterpriseConfig For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Update mask for the resource. If this is set, the server will only update the fields specified in the field mask. Otherwise, a full update of the mutable resource fields will be performed.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GitHubEnterpriseConfig"
+                  },
+                  "response": {
+                    "$ref": "GitHubEnterpriseConfig"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update an association between a GCP project and a GitHub Enterprise server. This API is experimental."
+                },
+                "get": {
+                  "id": "cloudbuild.projects.locations.githubEnterpriseConfigs.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/githubEnterpriseConfigs/{githubEnterpriseConfigsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "This field should contain the name of the enterprise config resource. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "projectId": {
+                      "description": "ID of the project",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "configId": {
+                      "description": "Unique identifier of the `GitHubEnterpriseConfig`",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GitHubEnterpriseConfig"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Retrieve a GitHubEnterpriseConfig. This API is experimental."
+                },
+                "list": {
+                  "id": "cloudbuild.projects.locations.githubEnterpriseConfigs.list",
+                  "path": "v1/{+parent}/githubEnterpriseConfigs",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/githubEnterpriseConfigs",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Name of the parent project. For example: projects\/{$project_number} or projects\/{$project_id}",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "projectId": {
+                      "description": "ID of the project",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListGithubEnterpriseConfigsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List all GitHubEnterpriseConfigs for a given project. This API is experimental."
+                },
+                "delete": {
+                  "id": "cloudbuild.projects.locations.githubEnterpriseConfigs.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/githubEnterpriseConfigs/{githubEnterpriseConfigsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "This field should contain the name of the enterprise config resource. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "projectId": {
+                      "description": "ID of the project",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "configId": {
+                      "description": "Unique identifier of the `GitHubEnterpriseConfig`",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Delete an association between a GCP project and a GitHub Enterprise server. This API is experimental."
+                },
+                "getApp": {
+                  "id": "cloudbuild.projects.locations.githubEnterpriseConfigs.getApp",
+                  "path": "v1/{+enterpriseConfigResource}/app",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/githubEnterpriseConfigs/{githubEnterpriseConfigsId}/app",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "enterpriseConfigResource": {
+                      "description": "Required. The name of the enterprise config resource associated with the GitHub App. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "enterpriseConfigResource"
+                  ],
+                  "response": {
+                    "$ref": "GitHubEnterpriseApp"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get the GitHub App associated with a GitHub Enterprise Config. Uses the GitHub API: https:\/\/developer.github.com\/enterprise\/2.21\/v3\/apps\/#get-an-app This API is experimental."
+                }
+              }
             }
           }
         },
@@ -2658,20 +2858,20 @@
             },
             "webhook": {
               "id": "cloudbuild.projects.triggers.webhook",
-              "path": "v1/{+trigger}:webhook",
-              "flatPath": "v1/projects/{projectsId}/triggers/{triggersId}:webhook",
+              "path": "v1/projects/{projectId}/triggers/{trigger}:webhook",
+              "flatPath": "v1/projects/{projectId}/triggers/{trigger}:webhook",
               "httpMethod": "POST",
               "parameters": {
+                "projectId": {
+                  "description": "Project in which the specified trigger lives",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
                 "trigger": {
                   "description": "Name of the trigger to run the payload against",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/triggers\/[^\/]+$",
-                  "type": "string"
-                },
-                "projectId": {
-                  "description": "Project in which the specified trigger lives",
-                  "location": "query",
                   "type": "string"
                 },
                 "secret": {
@@ -2681,6 +2881,7 @@
                 }
               },
               "parameterOrder": [
+                "projectId",
                 "trigger"
               ],
               "request": {
@@ -3215,7 +3416,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Get the GitHub App associated with a GitHub Enterprise Config. Uses the GitHub API: https:\/\/developer.github.com\/enterprise\/2.21\/v3\/apps\/#get-the-authenticated-app This API is experimental."
+              "description": "Get the GitHub App associated with a GitHub Enterprise Config. Uses the GitHub API: https:\/\/developer.github.com\/enterprise\/2.21\/v3\/apps\/#get-an-app This API is experimental."
             }
           }
         }

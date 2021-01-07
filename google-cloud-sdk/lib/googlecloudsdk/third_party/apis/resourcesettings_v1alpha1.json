@@ -156,13 +156,15 @@
             "Unspecified data type.",
             "A boolean setting.",
             "A string setting.",
-            "A string set setting."
+            "A string set setting.",
+            "A Enum setting"
           ],
           "enum": [
             "DATA_TYPE_UNSPECIFIED",
             "BOOLEAN",
             "STRING",
-            "STRING_SET"
+            "STRING_SET",
+            "ENUM_VALUE"
           ]
         },
         "defaultValue": {
@@ -187,6 +189,10 @@
         "stringSetValue": {
           "description": "Defines this value as being a StringSet.",
           "$ref": "GoogleCloudResourcesettingsV1alpha1ValueStringSet"
+        },
+        "enumValue": {
+          "description": "Defines this value as being a Enum.",
+          "$ref": "GoogleCloudResourcesettingsV1alpha1ValueEnumValue"
         }
       }
     },
@@ -201,6 +207,16 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GoogleCloudResourcesettingsV1alpha1ValueEnumValue": {
+      "id": "GoogleCloudResourcesettingsV1alpha1ValueEnumValue",
+      "description": "A enum value that can hold any enum type setting values. Each enum type is represented by a number, this representation is stored in the definitions.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
         }
       }
     },

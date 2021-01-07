@@ -196,12 +196,55 @@
       "type": "object",
       "properties": {
         "payload": {
-          "description": "Error payload returned by the execution, represented as a JSON string.",
+          "description": "Error message and data returned represented as a JSON string.",
           "type": "string"
         },
         "context": {
-          "description": "Human readable error context, helpful for debugging purposes.",
+          "description": "Human readable stack trace string.",
           "type": "string"
+        },
+        "stackTrace": {
+          "description": "Stack trace with detailed information of where error was generated.",
+          "$ref": "StackTrace"
+        }
+      }
+    },
+    "StackTrace": {
+      "id": "StackTrace",
+      "description": "A collection of stack elements (frames) where an error occurred.",
+      "type": "object",
+      "properties": {
+        "elements": {
+          "description": "An array of Stack elements.",
+          "type": "array",
+          "items": {
+            "$ref": "StackTraceElement"
+          }
+        }
+      }
+    },
+    "StackTraceElement": {
+      "id": "StackTraceElement",
+      "description": "A single stack element (frame) where an error occurred.",
+      "type": "object",
+      "properties": {
+        "step": {
+          "description": "The step the error occurred at.",
+          "type": "string"
+        },
+        "routine": {
+          "description": "The routine where the error occurred.",
+          "type": "string"
+        },
+        "line": {
+          "description": "The source code line number the current instruction was generated from.",
+          "type": "string",
+          "format": "int64"
+        },
+        "column": {
+          "description": "The source code column position (of the line) the current instruction was generated from.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

@@ -58,31 +58,6 @@ FILE_SHARE_ARG_SPEC = {
 }
 
 
-FILE_SHARE_ARG_SPEC_BETA = {
-    'name':
-        str,
-    'capacity':
-        arg_parsers.BinarySize(
-            default_unit='GB',
-            suggested_binary_size_scales=['GB', 'GiB', 'TB', 'TiB']),
-    'nfs-export-options':
-        list
-}
-FILE_SHARE_ARG_SPEC_GA = {
-    'name':
-        str,
-    'capacity':
-        arg_parsers.BinarySize(
-            default_unit='GB',
-            lower_bound='1TB',
-            upper_bound='65434GB',
-            suggested_binary_size_scales=['GB', 'GiB', 'TB', 'TiB']),
-}
-FILE_SHARE_API_VER = {
-    filestore_client.V1_API_VERSION: FILE_SHARE_ARG_SPEC_GA,
-    filestore_client.ALPHA_API_VERSION: FILE_SHARE_ARG_SPEC,
-    filestore_client.BETA_API_VERSION: FILE_SHARE_ARG_SPEC_BETA
-}
 FILE_TIER_TO_TYPE = {
     'TIER_UNSPECIFIED': 'BASIC',
     'STANDARD': 'BASIC',
@@ -224,16 +199,50 @@ def AddFileShareArg(parser,
     required: bool, passthrough to parser.add_argument.
   """
   file_share_help = {
-      filestore_client.V1_API_VERSION: """\
+      filestore_client.V1_API_VERSION:
+          """\
 File share configuration for an instance.  Specifying both `name` and `capacity`
 is required.
 *capacity*::: The desired capacity of the volume. The capacity must be a whole
 number followed by a capacity unit such as ``TB'' for terabyte. If no capacity
 unit is specified, GB is assumed. The minimum capacity for a standard instance
 is 1TB. The minimum capacity for a premium instance is 2.5TB.
+
 *name*::: The desired logical name of the volume.
+
+*nfs-export-options*::: The NfsExportOptions for the Cloud Filestore instance file share.
+Configuring NfsExportOptions is optional.
+Use the `--flags-file` flag to specify the path to a JSON or YAML configuration file that contains the required NfsExportOptions flags.
+
+*ip-ranges*::: A list of IPv4 addresses or CIDR ranges that are allowed to mount the file share.
+IPv4 addresses format: {octet 1}.{octet 2}.{octet 3}.{octet 4}.
+CIDR range format: {octet 1}.{octet 2}.{octet 3}.{octet 4}/{mask size}.
+Overlapping IP ranges, even across NfsExportOptions, are not allowed and will return an error.
+The limit of IP ranges/addresses for each FileShareConfig among all NfsExportOptions is 64 per instance.
+
+*access-mode*::: The type of access allowed for the specified IP-addresses or CIDR ranges.
+READ_ONLY: Allows only read requests on the exported file share.
+READ_WRITE: Allows both read and write requests on the exported file share.
+The default setting is READ_WRITE.
+
+*squash-mode*::: Enables or disables root squash for the specified
+IP addresses or CIDR ranges.
+NO_ROOT_SQUASH: Disables root squash to allow root access on the exported file share.
+ROOT_SQUASH. Enables root squash to remove root access on the exported file share.
+The default setting is NO_ROOT_SQUASH.
+
+*anon_uid*::: An integer that represents the user ID of anonymous users.
+Anon_uid may only be set when squash_mode is set to ROOT_SQUASH.
+If NO_ROOT_SQUASH is specified, an error will be returned.
+The default value is 65534.
+
+*anon_gid*::: An integer that represents the group ID of anonymous groups.
+Anon_gid may only be set when squash_mode is set to ROOT_SQUASH.
+If NO_ROOT_SQUASH is specified, an error will be returned.
+The default value is 65534.
 """,
-      filestore_client.ALPHA_API_VERSION: """
+      filestore_client.ALPHA_API_VERSION:
+          """
 File share configuration for an instance. Specifying both `name` and `capacity`
 is required.
 
@@ -276,7 +285,8 @@ Anon_gid may only be set when squash_mode is set to ROOT_SQUASH.
 If NO_ROOT_SQUASH is specified, an error will be returned.
 The default value is 65534.
 """,
-      filestore_client.BETA_API_VERSION: """
+      filestore_client.BETA_API_VERSION:
+          """
 File share configuration for an instance. Specifying both `name` and `capacity`
 is required.
 
@@ -335,7 +345,7 @@ instance-zone will be used.
 *source-backup-region*::: The region of the source backup.
 """
 
-  spec = FILE_SHARE_API_VER[api_version].copy()
+  spec = FILE_SHARE_ARG_SPEC.copy()
   if include_backup_flags:
     spec['source-backup'] = str
     spec['source-backup-region'] = str

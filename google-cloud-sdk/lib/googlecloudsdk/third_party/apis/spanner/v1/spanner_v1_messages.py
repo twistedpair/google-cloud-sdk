@@ -345,7 +345,12 @@ class Database(_messages.Message):
       creation started.
     encryptionConfig: Output only. Custom encryption configuration (Cloud KMS
       keys). Applicable only for databases using the Customer Managed
-      Encryption Keys feature.
+      Encryption Keys (CMEK) feature. This is the encryption configuration
+      that is intended to be used by the database. It may differ from
+      encryption_info during CMEK migration.
+    encryptionInfo: Output only. Custom encryption information (database
+      encryption state and Cloud KMS key versions in use). Applicable only for
+      databases using the Customer Managed Encryption Keys feature.
     name: Required. The name of the database. Values are of the form
       `projects//instances//databases/`, where `` is as specified in the
       `CREATE DATABASE` statement. This name can be passed to other API
@@ -377,9 +382,10 @@ class Database(_messages.Message):
 
   createTime = _messages.StringField(1)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
-  name = _messages.StringField(3)
-  restoreInfo = _messages.MessageField('RestoreInfo', 4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 3, repeated=True)
+  name = _messages.StringField(4)
+  restoreInfo = _messages.MessageField('RestoreInfo', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class Delete(_messages.Message):
@@ -419,6 +425,49 @@ class EncryptionConfig(_messages.Message):
   """
 
   kmsKeyName = _messages.StringField(1)
+
+
+class EncryptionInfo(_messages.Message):
+  r"""Encryption information for a given resource. If this resource is
+  protected with customer managed encryption, the in-use Cloud KMS key
+  versions will be specified along with their status. CMEK is not currently
+  available to end users.
+
+  Enums:
+    EncryptionTypeValueValuesEnum: Output only. The type of encryption used to
+      protect this resource.
+
+  Fields:
+    encryptionStatus: Output only. If present, the status of a recent
+      encrypt/decrypt calls on underlying data for this resource. Regardless
+      of status, data is always encrypted at rest.
+    encryptionType: Output only. The type of encryption used to protect this
+      resource.
+    kmsKeyVersion: Output only. The Cloud KMS key versions used for a CMEK-
+      protected Spanner resource.
+  """
+
+  class EncryptionTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of encryption used to protect this resource.
+
+    Values:
+      TYPE_UNSPECIFIED: Encryption type was not specified, though data at rest
+        remains encrypted.
+      GOOGLE_DEFAULT_ENCRYPTION: The data backing this resource is encrypted
+        at rest with a key that is fully managed by Google. No key version or
+        status will be populated. This is the default state.
+      CUSTOMER_MANAGED_ENCRYPTION: The data backing this resource is encrypted
+        at rest with a key that is managed by the customer. The active version
+        of the key. 'kms_key_version' will be populated, and
+        'encryption_status' may be populated.
+    """
+    TYPE_UNSPECIFIED = 0
+    GOOGLE_DEFAULT_ENCRYPTION = 1
+    CUSTOMER_MANAGED_ENCRYPTION = 2
+
+  encryptionStatus = _messages.MessageField('Status', 1)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 2)
+  kmsKeyVersion = _messages.StringField(3)
 
 
 class ExecuteBatchDmlRequest(_messages.Message):

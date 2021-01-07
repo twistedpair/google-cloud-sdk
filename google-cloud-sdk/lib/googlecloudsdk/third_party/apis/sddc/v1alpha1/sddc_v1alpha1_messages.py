@@ -1908,9 +1908,10 @@ class Operation(_messages.Message):
       `servicecontrol.googleapis.com/platform` describing the platform where
       the API is served, such as App Engine, Compute Engine, or Kubernetes
       Engine.
-    UserLabelsValue: User defined labels for the resource that this operation
-      is associated with. Only a combination of 1000 user labels per consumer
-      project are allowed.
+    UserLabelsValue: Private Preview. This feature is only available for
+      approved services. User defined labels for the resource that this
+      operation is associated with. Only a combination of 1000 user labels per
+      consumer project are allowed.
 
   Fields:
     consumerId: Identity of the consumer who is using the service. This field
@@ -1965,7 +1966,8 @@ class Operation(_messages.Message):
     traceSpans: Unimplemented. A list of Cloud Trace spans. The span names
       shall contain the id of the destination project which can be either the
       produce or the consumer project.
-    userLabels: User defined labels for the resource that this operation is
+    userLabels: Private Preview. This feature is only available for approved
+      services. User defined labels for the resource that this operation is
       associated with. Only a combination of 1000 user labels per consumer
       project are allowed.
   """
@@ -2051,7 +2053,8 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class UserLabelsValue(_messages.Message):
-    r"""User defined labels for the resource that this operation is associated
+    r"""Private Preview. This feature is only available for approved services.
+    User defined labels for the resource that this operation is associated
     with. Only a combination of 1000 user labels per consumer project are
     allowed.
 

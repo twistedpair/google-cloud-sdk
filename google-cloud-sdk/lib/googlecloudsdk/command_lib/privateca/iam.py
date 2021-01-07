@@ -47,7 +47,7 @@ def _CheckAllPermissions(actual_permissions, expected_permissions, resource):
         resource=resource, missing_permissions=diff)
 
 
-def CheckCreateCertificateAuthorityPermissions(project_ref, kms_key_ref):
+def CheckCreateCertificateAuthorityPermissions(project_ref, kms_key_ref=None):
   """Ensures that the current user has the required permissions to create a CA.
 
   Args:

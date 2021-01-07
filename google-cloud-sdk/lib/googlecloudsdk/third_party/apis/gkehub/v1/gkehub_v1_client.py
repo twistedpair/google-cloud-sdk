@@ -82,7 +82,7 @@ class GkehubV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Removes a single Membership.
+      r"""Removes a Membership.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsDeleteRequest) input message
@@ -109,7 +109,7 @@ class GkehubV1(base_api.BaseApiClient):
     )
 
     def GenerateConnectManifest(self, request, global_params=None):
-      r"""Generate the manifest for deployment of GKE connect agent.
+      r"""Generates the manifest for deployment of the GKE connect agent.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest) input message
@@ -136,7 +136,7 @@ class GkehubV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Membership.
+      r"""Gets the details of a Membership.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsGetRequest) input message

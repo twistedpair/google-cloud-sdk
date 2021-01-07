@@ -1785,7 +1785,7 @@ class ValidateMessageRequest(_messages.Message):
   Fields:
     encoding: The encoding expected for messages
     message: Message to validate against the provided `schema_spec`.
-    name: Required. Name of the schema against which to validate. Format is
+    name: Name of the schema against which to validate. Format is
       `projects/{project}/schemas/{schema}`.
     schema: Ad-hoc schema against which to validate
   """

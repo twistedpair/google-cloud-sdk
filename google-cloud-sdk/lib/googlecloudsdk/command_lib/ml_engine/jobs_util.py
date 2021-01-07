@@ -341,8 +341,6 @@ def GetStreamLogs(asyncronous, stream_logs):
     raise ValueError('--async and --stream-logs cannot both be set.')
 
   if asyncronous:
-    # TODO(b/36195821): Use the flag deprecation machinery when it supports the
-    # store_true action
     log.warning('The --async flag is deprecated, as the default behavior is to '
                 'submit the job asynchronously; it can be omitted. '
                 'For synchronous behavior, please pass --stream-logs.\n')

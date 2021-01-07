@@ -596,14 +596,14 @@ def _GenerateVolumeName(prefix):
   return name_generator.GenerateName(sections=3, separator='-', prefix=prefix)
 
 
-class VolumeChanges(ConfigChanger):
+class _VolumeChanges(ConfigChanger):
   """Represents the user intent to modify volumes and mounts."""
 
   def __init__(self,
                mounts_to_update=None,
                mounts_to_remove=None,
                clear_others=False):
-    """Initialize a new VolumeChanges object.
+    """Initialize a new _VolumeChanges object.
 
     Args:
       mounts_to_update: {str, str}, Update mount path and volume fields.
@@ -611,9 +611,9 @@ class VolumeChanges(ConfigChanger):
       clear_others: bool, If true, clear all non-updated volumes and mounts of
         the given [volume_type].
     """
-    super(VolumeChanges, self).__init__()
-    self._to_update = None
-    self._to_remove = None
+    super(_VolumeChanges, self).__init__()
+    self._to_update = None  # type: Dict[str, List[str, str]]
+    self._to_remove = None  # type: List[str]
     self._clear_others = clear_others
     if mounts_to_update:
       self._to_update = {}
@@ -673,7 +673,8 @@ class VolumeChanges(ConfigChanger):
         while volume_name is None or volume_name in resource.template.volumes:
           volume_name = _GenerateVolumeName(source_name)
 
-        # Set the mount and volume
+        # volume_mounts is a special mapping that filters for the current kind
+        # of mount and KeyErrors on existing keys with other types.
         try:
           volume_mounts[path] = volume_name
         except KeyError:
@@ -691,7 +692,7 @@ class VolumeChanges(ConfigChanger):
     return resource
 
 
-class SecretVolumeChanges(VolumeChanges):
+class SecretVolumeChanges(_VolumeChanges):
   """Represents the user intent to change volumes with secret source types."""
 
   def _MakeVolumeSource(self, messages, name, key=None):
@@ -707,7 +708,7 @@ class SecretVolumeChanges(VolumeChanges):
     return resource.template.volume_mounts.secrets
 
 
-class ConfigMapVolumeChanges(VolumeChanges):
+class ConfigMapVolumeChanges(_VolumeChanges):
   """Represents the user intent to change volumes with config map source types."""
 
   def _MakeVolumeSource(self, messages, name, key=None):

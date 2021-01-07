@@ -143,6 +143,17 @@ def CreateConfigManagementFeatureSpec():
       membershipConfigs=empty_config_map)
 
 
+def CreateIdentityServiceFeatureSpec():
+  """Creates an empty Hub Feature Spec for the Anthos Identity Service.
+
+  Returns:
+    The empty Anthos Identity Service Hub Feature Spec.
+  """
+  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
+  messages = client.MESSAGES_MODULE
+  return messages.IdentityServiceFeatureSpec()
+
+
 def CreateFeature(project, feature_id, feature_display_name, **kwargs):
   """Creates a Feature resource in Hub.
 

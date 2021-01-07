@@ -250,3 +250,44 @@ def GetOccurrenceFilterFlag():
       '--occurrence-filter',
       default='kind="BUILD" OR kind="IMAGE" OR kind="DISCOVERY"',
       help='A filter for the Occurrences which will be summarized.')
+
+
+def GetResourceURIArg():
+  """Gets RESOURCE_URI required positional argument."""
+  return base.Argument(
+      'RESOURCE_URI',
+      help=('A container image in a Google Cloud registry (Artifact Registry '
+            'or Container Registry), or a local container image.'))
+
+
+def GetRemoteFlag():
+  return base.Argument(
+      '--remote',
+      action='store_true',
+      default=False,
+      help=('Whether the container image is located remotely or '
+            'on your local machine.'))
+
+
+def GetOnDemandScanningLocationFlag():
+  return base.Argument(
+      '--location',
+      choices={
+          'us': 'Perform analysis in the US',
+          'europe': 'Perform analysis in Europe',
+          'asia': 'Perform analysis in Asia',
+      },
+      default='us',
+      help=('The API location in which to perform package analysis. Consider '
+            'choosing a location closest to where you are located. Proximity '
+            'to the container image does not affect response time.'))
+
+
+def GetOnDemandScanningFakeExtractionFlag():
+  return base.Argument(
+      '--fake-extraction',
+      action='store_true',
+      default=False,
+      hidden=True,
+      help=('Whether to use fake packages/versions instead of performing '
+            'extraction. This flag is for test purposes only.'))

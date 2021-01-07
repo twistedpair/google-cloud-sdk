@@ -1246,12 +1246,11 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation",
-      "description": "OrderAllocation represents the allocation of resources within a specific order to a set of targets (projects). Next Id: 8",
+      "description": "OrderAllocation represents the allocation of resources within a specific order to a set of targets (projects). Next Id: 9",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the allocation. This field is of the form: `billingAccounts\/{billing-account-id}\/orders\/{order-id}\/orderAllocations\/{order-allocation-id}`.",
-          "readOnly": true,
+          "description": "The resource name of the allocation. This field is of the form: `billingAccounts\/{billing-account-id}\/orders\/{order-id}\/orderAllocations\/{order-allocation-id}`.",
           "type": "string"
         },
         "displayName": {
@@ -1297,6 +1296,10 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "etag": {
+          "description": "The weak etag of the order allocation, which can be optionally set.",
+          "type": "string"
         }
       }
     },
@@ -2039,7 +2042,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. The resource name of the allocation. This field is of the form: `billingAccounts\/{billing-account-id}\/orders\/{order-id}\/orderAllocations\/{order-allocation-id}`.",
+                      "description": "The resource name of the allocation. This field is of the form: `billingAccounts\/{billing-account-id}\/orders\/{order-id}\/orderAllocations\/{order-allocation-id}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+$",
@@ -2077,6 +2080,11 @@
                       "location": "path",
                       "required": true,
                       "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "etag": {
+                      "description": "The weak etag of the order allocation, which can be optionally set.",
+                      "location": "query",
                       "type": "string"
                     }
                   },

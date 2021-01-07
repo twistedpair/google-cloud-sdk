@@ -175,7 +175,7 @@ class GkehubV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Removes a single Feature.
+      r"""Removes a Feature.
 
       Args:
         request: (GkehubProjectsLocationsGlobalFeaturesDeleteRequest) input message

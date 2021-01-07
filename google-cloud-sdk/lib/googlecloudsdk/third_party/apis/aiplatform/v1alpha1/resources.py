@@ -76,10 +76,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_DATALABELINGJOBS = (
       'projects.locations.dataLabelingJobs',
-      'projects/{projectsId}/locations/{locationsId}/dataLabelingJobs/'
-      '{dataLabelingJobsId}',
-      {},
-      ['projectsId', 'locationsId', 'dataLabelingJobsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'dataLabelingJobs/{dataLabelingJobsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_DATALABELINGJOBS_OPERATIONS = (

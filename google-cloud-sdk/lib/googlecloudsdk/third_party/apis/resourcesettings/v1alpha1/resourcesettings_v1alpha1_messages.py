@@ -77,11 +77,13 @@ class GoogleCloudResourcesettingsV1alpha1Setting(_messages.Message):
       BOOLEAN: A boolean setting.
       STRING: A string setting.
       STRING_SET: A string set setting.
+      ENUM_VALUE: A Enum setting
     """
     DATA_TYPE_UNSPECIFIED = 0
     BOOLEAN = 1
     STRING = 2
     STRING_SET = 3
+    ENUM_VALUE = 4
 
   dataType = _messages.EnumField('DataTypeValueValuesEnum', 1)
   defaultValue = _messages.MessageField('GoogleCloudResourcesettingsV1alpha1Value', 2)
@@ -128,13 +130,27 @@ class GoogleCloudResourcesettingsV1alpha1Value(_messages.Message):
 
   Fields:
     booleanValue: Defines this value as being a boolean value.
+    enumValue: Defines this value as being a Enum.
     stringSetValue: Defines this value as being a StringSet.
     stringValue: Defines this value as being a string value.
   """
 
   booleanValue = _messages.BooleanField(1)
-  stringSetValue = _messages.MessageField('GoogleCloudResourcesettingsV1alpha1ValueStringSet', 2)
-  stringValue = _messages.StringField(3)
+  enumValue = _messages.MessageField('GoogleCloudResourcesettingsV1alpha1ValueEnumValue', 2)
+  stringSetValue = _messages.MessageField('GoogleCloudResourcesettingsV1alpha1ValueStringSet', 3)
+  stringValue = _messages.StringField(4)
+
+
+class GoogleCloudResourcesettingsV1alpha1ValueEnumValue(_messages.Message):
+  r"""A enum value that can hold any enum type setting values. Each enum type
+  is represented by a number, this representation is stored in the
+  definitions.
+
+  Fields:
+    value: A string attribute.
+  """
+
+  value = _messages.StringField(1)
 
 
 class GoogleCloudResourcesettingsV1alpha1ValueStringSet(_messages.Message):

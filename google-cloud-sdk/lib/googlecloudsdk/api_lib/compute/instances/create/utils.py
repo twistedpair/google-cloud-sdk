@@ -90,7 +90,8 @@ def CreateDiskMessages(args,
                        support_create_disk_snapshots=False,
                        support_persistent_attached_disks=True,
                        support_replica_zones=False,
-                       use_disk_type_uri=True):
+                       use_disk_type_uri=True,
+                       support_multi_writer=False):
   """Creates disk messages for a single instance."""
 
   container_mount_disk = []
@@ -127,7 +128,8 @@ def CreateDiskMessages(args,
           enable_source_snapshot_csek=support_source_snapshot_csek,
           enable_image_csek=support_image_csek,
           support_replica_zones=support_replica_zones,
-          use_disk_type_uri=use_disk_type_uri))
+          use_disk_type_uri=use_disk_type_uri,
+          support_multi_writer=support_multi_writer))
 
   local_nvdimms = []
   if support_nvdimm:
@@ -246,7 +248,8 @@ def CreatePersistentCreateDiskMessages(compute_client,
                                        enable_source_snapshot_csek=False,
                                        enable_image_csek=False,
                                        support_replica_zones=False,
-                                       use_disk_type_uri=True):
+                                       use_disk_type_uri=True,
+                                       support_multi_writer=False):
   """Returns a list of AttachedDisk messages for newly creating disks.
 
   Args:
@@ -278,6 +281,7 @@ def CreatePersistentCreateDiskMessages(compute_client,
     enable_image_csek: True if image CSK files are enabled
     support_replica_zones: True if we allow creation of regional disks
     use_disk_type_uri: True to use disk type URI, False if naked type.
+    support_multi_writer: True if we allow multiple instances to write to disk.
 
   Returns:
     list of API messages for attached disks
@@ -379,9 +383,11 @@ def CreatePersistentCreateDiskMessages(compute_client,
       if snapshot_key_file:
         initialize_params.snapshotKeyFile = snapshot_key_file
     boot = disk.get('boot') == 'yes'
-    multi_writer = disk.get('multi-writer') == 'yes'
-    if multi_writer:
+
+    multi_writer = disk.get('multi-writer')
+    if support_multi_writer and multi_writer:
       initialize_params.multiWriter = True
+
     device_name = instance_utils.GetDiskDeviceName(disk, name,
                                                    container_mount_disk)
     create_disk = messages.AttachedDisk(

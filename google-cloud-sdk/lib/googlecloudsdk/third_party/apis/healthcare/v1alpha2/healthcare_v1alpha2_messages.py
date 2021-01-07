@@ -1755,6 +1755,11 @@ class GoogleCloudHealthcareV1alpha2DeidentifyDeidentifyFhirStoreSummary(_message
 class GoogleCloudHealthcareV1alpha2DicomBigQueryDestination(_messages.Message):
   r"""The BigQuery table where the server writes output.
 
+  Enums:
+    WriteDispositionValueValuesEnum: Determines whether the existing table in
+      the destination is to be overwritten or appended to. If a
+      write_disposition is specified, the `force` parameter is ignored.
+
   Fields:
     force: Use `write_disposition` instead. If `write_disposition` is
       specified, this parameter is ignored. force=false is equivalent to
@@ -1762,10 +1767,32 @@ class GoogleCloudHealthcareV1alpha2DicomBigQueryDestination(_messages.Message):
       write_disposition=WRITE_TRUNCATE.
     tableUri: BigQuery URI to a table, up to 2000 characters long, in the
       format `bq://projectId.bqDatasetId.tableId`
+    writeDisposition: Determines whether the existing table in the destination
+      is to be overwritten or appended to. If a write_disposition is
+      specified, the `force` parameter is ignored.
   """
+
+  class WriteDispositionValueValuesEnum(_messages.Enum):
+    r"""Determines whether the existing table in the destination is to be
+    overwritten or appended to. If a write_disposition is specified, the
+    `force` parameter is ignored.
+
+    Values:
+      WRITE_DISPOSITION_UNSPECIFIED: Default behavior is the same as
+        WRITE_EMPTY.
+      WRITE_EMPTY: Only export data if the destination table is empty.
+      WRITE_TRUNCATE: Erase all existing data in a table before writing the
+        instances.
+      WRITE_APPEND: Append data to the existing table.
+    """
+    WRITE_DISPOSITION_UNSPECIFIED = 0
+    WRITE_EMPTY = 1
+    WRITE_TRUNCATE = 2
+    WRITE_APPEND = 3
 
   force = _messages.BooleanField(1)
   tableUri = _messages.StringField(2)
+  writeDisposition = _messages.EnumField('WriteDispositionValueValuesEnum', 3)
 
 
 class GoogleCloudHealthcareV1alpha2DicomGcsDestination(_messages.Message):
@@ -1832,14 +1859,46 @@ class GoogleCloudHealthcareV1alpha2DicomGcsSource(_messages.Message):
 class GoogleCloudHealthcareV1alpha2FhirBigQueryDestination(_messages.Message):
   r"""The configuration for exporting to BigQuery.
 
+  Enums:
+    WriteDispositionValueValuesEnum: Determines whether existing tables in the
+      destination dataset are overwritten or appended to. If a
+      write_disposition is specified, the `force` parameter is ignored.
+
   Fields:
     datasetUri: BigQuery URI to an existing dataset, up to 2000 characters
       long, in the format `bq://projectId.bqDatasetId`.
+    force: Use `write_disposition` instead. If `write_disposition` is
+      specified, this parameter is ignored. force=false is equivalent to
+      write_disposition=WRITE_EMPTY and force=true is equivalent to
+      write_disposition=WRITE_TRUNCATE.
     schemaConfig: The configuration for the exported BigQuery schema.
+    writeDisposition: Determines whether existing tables in the destination
+      dataset are overwritten or appended to. If a write_disposition is
+      specified, the `force` parameter is ignored.
   """
 
+  class WriteDispositionValueValuesEnum(_messages.Enum):
+    r"""Determines whether existing tables in the destination dataset are
+    overwritten or appended to. If a write_disposition is specified, the
+    `force` parameter is ignored.
+
+    Values:
+      WRITE_DISPOSITION_UNSPECIFIED: Default behavior is the same as
+        WRITE_EMPTY.
+      WRITE_EMPTY: Only export data if the destination tables are empty.
+      WRITE_TRUNCATE: Erase all existing data in a tables before writing the
+        instances.
+      WRITE_APPEND: Append data to the existing tables.
+    """
+    WRITE_DISPOSITION_UNSPECIFIED = 0
+    WRITE_EMPTY = 1
+    WRITE_TRUNCATE = 2
+    WRITE_APPEND = 3
+
   datasetUri = _messages.StringField(1)
-  schemaConfig = _messages.MessageField('SchemaConfig', 2)
+  force = _messages.BooleanField(2)
+  schemaConfig = _messages.MessageField('SchemaConfig', 3)
+  writeDisposition = _messages.EnumField('WriteDispositionValueValuesEnum', 4)
 
 
 class GoogleCloudHealthcareV1alpha2FhirExportResourcesResponse(_messages.Message):

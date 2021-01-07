@@ -92,7 +92,7 @@ class _TriggersClient(object):
 
   def _BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
                            destination_run_service, destination_run_path,
-                           destination_run_region):
+                           destination_run_region, transport_topic):
     """Builds a Trigger message with the given data."""
     filter_messages = [] if event_filters is None else [
         self._messages.EventFilter(attribute=key, value=value)
@@ -103,11 +103,14 @@ class _TriggersClient(object):
         path=destination_run_path,
         region=destination_run_region)
     destination_message = self._messages.Destination(cloudRun=run_message)
+    pubsub = self._messages.Pubsub(topic=transport_topic)
+    transport = self._messages.Transport(pubsub=pubsub)
     return self._messages.Trigger(
         name=trigger_ref.RelativeName(),
         eventFilters=filter_messages,
         serviceAccount=service_account,
-        destination=destination_message)
+        destination=destination_message,
+        transport=transport)
 
   def BuildUpdateMask(self, event_filters, service_account,
                       destination_run_service, destination_run_path,
@@ -144,7 +147,7 @@ class _TriggersClient(object):
 
   def Create(self, trigger_ref, event_filters, service_account,
              destination_run_service, destination_run_path,
-             destination_run_region):
+             destination_run_region, transport_topic):
     """Creates a new Trigger.
 
     Args:
@@ -154,6 +157,7 @@ class _TriggersClient(object):
       destination_run_service: str, the Trigger's destination Cloud Run service.
       destination_run_path: str or None, the path on the destination service.
       destination_run_region: str or None, the destination service's region.
+      transport_topic: str or None, the user-provided transport topic.
 
     Returns:
       A long-running operation for create.
@@ -172,7 +176,8 @@ class _TriggersClient(object):
                                                 service_account,
                                                 destination_run_service,
                                                 destination_run_path,
-                                                destination_run_region)
+                                                destination_run_region,
+                                                transport_topic)
     create_req = self._messages.EventarcProjectsLocationsTriggersCreateRequest(
         parent=trigger_ref.Parent().RelativeName(),
         trigger=trigger_message,
@@ -252,7 +257,7 @@ class _TriggersClient(object):
                                                 service_account,
                                                 destination_run_service,
                                                 destination_run_path,
-                                                destination_run_region)
+                                                destination_run_region, None)
     patch_req = self._messages.EventarcProjectsLocationsTriggersPatchRequest(
         name=trigger_ref.RelativeName(),
         trigger=trigger_message,
@@ -285,7 +290,7 @@ class _TriggersClientBeta(_TriggersClient):
 
   def _BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
                            destination_run_service, destination_run_path,
-                           destination_run_region):
+                           destination_run_region, transport_topic):
     """Builds a Trigger message with the given data."""
     criteria_messages = [] if event_filters is None else [
         self._messages.MatchingCriteria(attribute=key, value=value)
@@ -297,11 +302,16 @@ class _TriggersClientBeta(_TriggersClient):
         region=destination_run_region)
     destination_message = self._messages.Destination(
         cloudRunService=run_message)
+    transport = None
+    if transport_topic:
+      pubsub = self._messages.Pubsub(topic=transport_topic)
+      transport = self._messages.Transport(pubsub=pubsub)
     return self._messages.Trigger(
         name=trigger_ref.RelativeName(),
         matchingCriteria=criteria_messages,
         serviceAccount=service_account,
-        destination=destination_message)
+        destination=destination_message,
+        transport=transport)
 
   def BuildUpdateMask(self, event_filters, service_account,
                       destination_run_service, destination_run_path,

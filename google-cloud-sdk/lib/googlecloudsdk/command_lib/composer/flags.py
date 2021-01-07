@@ -211,6 +211,9 @@ GENERAL_REMOVAL_FLAG_GROUP_DESCRIPTION = 'Arguments available for item removal.'
 PYPI_PACKAGES_FLAG_GROUP_DESCRIPTION = (
     'Group of arguments for modifying the PyPI package configuration.')
 
+AUTOSCALING_FLAG_GROUP_DESCRIPTION = (
+    'Group of arguments for modifying GKE cluster autoscaling.')
+
 CLEAR_PYPI_PACKAGES_FLAG = base.Argument(
     '--clear-pypi-packages',
     action='store_true',
@@ -291,6 +294,16 @@ SERVICES_SECONDARY_RANGE_NAME_FLAG = base.Argument(
     Cannot be specified unless '--enable-ip-alias' is also specified.
     """)
 
+MAX_PODS_PER_NODE = base.Argument(
+    '--max-pods-per-node',
+    type=int,
+    help="""\
+    Maximum number of pods that can be assigned to a single node, can be used to
+    limit the size of IP range assigned to the node in VPC native cluster setup.
+
+    Cannot be specified unless '--enable-ip-alias' is also specified.
+    """)
+
 WEB_SERVER_ALLOW_IP = base.Argument(
     '--web-server-allow-ip',
     type=arg_parsers.ArgDict(spec={
@@ -359,6 +372,59 @@ WEB_SERVER_MACHINE_TYPE = base.Argument(
     help="""\
     machine type used by the Airflow web server. The list of available machine
     types is available here: https://cloud.google.com/composer/pricing.
+    """)
+
+ENABLE_AUTOSCALING = base.Argument(
+    '--enable-autoscaling',
+    hidden=True,
+    default=None,
+    required=True,
+    action='store_true',
+    help="""\
+     Enable GKE autoscaling. Can only be enabled when creating an environment.
+     Can not be disabled.
+     """)
+
+AUTOSCALING_MINIMUM_CPU = base.Argument(
+    '--autoscaling-minimum-cpu',
+    hidden=True,
+    type=int,
+    default=None,
+    help="""\
+    Minimum number of CPU allowed in the Environment. Cannot be specified
+    unless autoscaling is enabled. If not specified, will be set to 1.
+    """)
+
+AUTOSCALING_MAXIMUM_CPU = base.Argument(
+    '--autoscaling-maximum-cpu',
+    hidden=True,
+    type=int,
+    default=None,
+    help="""\
+    Maximum number of CPU allowed in the Environment. Cannot be specified
+    unless autoscaling is enabled. If not specified, will be set to a maximum
+    capacity GKE nodes provide.
+    """)
+
+AUTOSCALING_MINIMUM_MEMORY = base.Argument(
+    '--autoscaling-minimum-memory',
+    hidden=True,
+    type=int,
+    default=None,
+    help="""\
+    Minimum memory (in GB) allowed in the Environment. Cannot be specified
+    unless autoscaling is enabled. If not specified, will be set to 1.
+    """)
+
+AUTOSCALING_MAXIMUM_MEMORY = base.Argument(
+    '--autoscaling-maximum-memory',
+    hidden=True,
+    type=int,
+    default=None,
+    help="""\
+    Maximum memory (in GB) allowed in the Environment. Cannot be specified
+    unless autoscaling is enabled. If not specified, will be set to a maximum
+    capacity GKE nodes provide.
     """)
 
 
@@ -530,6 +596,43 @@ CLOUD_SQL_IPV4_CIDR_FLAG = base.Argument(
     Cannot be specified unless '--enable-private-environment' is also
     specified.
     """)
+
+MAINTENANCE_WINDOW_START_FLAG = base.Argument(
+    '--maintenance-window-start',
+    type=arg_parsers.Datetime.Parse,
+    required=True,
+    help="""\
+    Start time of the mantenance window in the form of the full date. Only the
+    time of the day is used as a reference for a starting time of the window
+    with a provided recurrence.
+    See $ gcloud topic datetimes for information on time formats.
+    """)
+
+MAINTENANCE_WINDOW_END_FLAG = base.Argument(
+    '--maintenance-window-end',
+    type=arg_parsers.Datetime.Parse,
+    required=True,
+    help="""\
+    End time of the mantenance window in the form of the full date. Only the
+    time of the day is used as a reference for an ending time of the window
+    with a provided recurrence. Specified date must take place after the one
+    specified as a start date, the difference between will be used as a length
+    of a single maintenance window.
+    See $ gcloud topic datetimes for information on time formats.
+    """)
+
+MAINTENANCE_WINDOW_RECURRENCE_FLAG = base.Argument(
+    '--maintenance-window-recurrence',
+    type=str,
+    required=True,
+    help="""\
+    An RFC 5545 RRULE, specifying how the maintenance window will recur. The
+    minimum requirement for the length of the maintenance window is 12 hours a
+    week. Only FREQ=DAILY and FREQ=WEEKLY rules are supported.
+    """)
+
+MAINTENANCE_WINDOW_FLAG_GROUP_DESCRIPTION = (
+    'Group of arguments for setting the maintenance window value.')
 
 
 def GetAndValidateKmsEncryptionKey(args):
@@ -740,7 +843,7 @@ def AddNodeCountUpdateFlagToGroup(update_type_group):
       help='The new number of nodes running the environment. Must be >= 3.')
 
 
-def AddIpAliasEnvironmentFlags(update_type_group):
+def AddIpAliasEnvironmentFlags(update_type_group, support_max_pods_per_node):
   """Adds flags related to IP aliasing to parser.
 
   IP alias flags are related to similar flags found within GKE SDK:
@@ -748,6 +851,8 @@ def AddIpAliasEnvironmentFlags(update_type_group):
 
   Args:
     update_type_group: argument group, the group to which flag should be added.
+    support_max_pods_per_node: bool, if specifying maximum number of pods is
+                         supported.
   """
   group = update_type_group.add_group(help='IP Alias (VPC-native)')
   ENABLE_IP_ALIAS_FLAG.AddToParser(group)
@@ -755,6 +860,8 @@ def AddIpAliasEnvironmentFlags(update_type_group):
   SERVICES_IPV4_CIDR_FLAG.AddToParser(group)
   CLUSTER_SECONDARY_RANGE_NAME_FLAG.AddToParser(group)
   SERVICES_SECONDARY_RANGE_NAME_FLAG.AddToParser(group)
+  if support_max_pods_per_node:
+    MAX_PODS_PER_NODE.AddToParser(group)
 
 
 def AddPrivateIpEnvironmentFlags(update_type_group):
@@ -836,6 +943,32 @@ def AddLabelsUpdateFlagsToGroup(update_type_group):
   labels_util.AddUpdateLabelsFlags(labels_update_group)
 
 
+def AddAutoscalingUpdateFlagsToGroup(update_type_group):
+  """Adds flags related to updating autoscaling.
+
+  Args:
+    update_type_group: argument group, the group to which flags should be added.
+  """
+  update_group = update_type_group.add_argument_group(
+      AUTOSCALING_FLAG_GROUP_DESCRIPTION, hidden=True)
+  AUTOSCALING_MAXIMUM_MEMORY.AddToParser(update_group)
+  AUTOSCALING_MINIMUM_MEMORY.AddToParser(update_group)
+  AUTOSCALING_MAXIMUM_CPU.AddToParser(update_group)
+  AUTOSCALING_MINIMUM_CPU.AddToParser(update_group)
+
+
+def AddMaintenanceWindowFlagsGroup(update_type_group):
+  """Adds flag group for maintenance window.
+
+  Args:
+    update_type_group: argument group, the group to which flags should be added.
+  """
+  group = update_type_group.add_group(MAINTENANCE_WINDOW_FLAG_GROUP_DESCRIPTION)
+  MAINTENANCE_WINDOW_START_FLAG.AddToParser(group)
+  MAINTENANCE_WINDOW_END_FLAG.AddToParser(group)
+  MAINTENANCE_WINDOW_RECURRENCE_FLAG.AddToParser(group)
+
+
 def FallthroughToLocationProperty(location_refs, flag_name, failure_msg):
   """Provides a list containing composer/location if `location_refs` is empty.
 
@@ -847,12 +980,12 @@ def FallthroughToLocationProperty(location_refs, flag_name, failure_msg):
 
   Args:
     location_refs: [core.resources.Resource], a possibly empty list of location
-        resource references
+      resource references
     flag_name: str, if `location_refs` is empty, and the composer/location
-        property is also missing, an error message will be reported that will
-        advise the user to set this flag name
+      property is also missing, an error message will be reported that will
+      advise the user to set this flag name
     failure_msg: str, an error message to accompany the advisory described in
-        the docs for `flag_name`.
+      the docs for `flag_name`.
 
   Returns:
     [core.resources.Resource]: a non-empty list of location resourc references.

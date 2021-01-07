@@ -28,7 +28,7 @@ from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.run import exceptions
-from googlecloudsdk.command_lib.run import flags
+from googlecloudsdk.command_lib.run import platforms
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -109,14 +109,14 @@ class DefaultFallthrough(deps.Fallthrough):
         'Otherwise, defaults to project ID.')
 
   def _Call(self, parsed_args):
-    if (flags.GetPlatform() == flags.PLATFORM_GKE or
-        flags.GetPlatform() == flags.PLATFORM_KUBERNETES):
+    if (platforms.GetPlatform() == platforms.PLATFORM_GKE or
+        platforms.GetPlatform() == platforms.PLATFORM_KUBERNETES):
       return 'default'
     elif not (getattr(parsed_args, 'project', None) or
               properties.VALUES.core.project.Get()):
       # HACK: Compensate for how "namespace" is actually "project" in Cloud Run
       # by providing an error message explicitly early here.
-      raise flags.ArgumentError(
+      raise exceptions.ArgumentError(
           'The [project] resource is not properly specified. '
           'Please specify the argument [--project] on the command line or '
           'set the property [core/project].')
@@ -190,7 +190,7 @@ class ClusterPromptFallthrough(PromptFallthrough):
     Returns:
       A cluster name string
     """
-    if flags.GetPlatform() != flags.PLATFORM_GKE:
+    if platforms.GetPlatform() != platforms.PLATFORM_GKE:
       return
 
     project = properties.VALUES.core.project.Get(required=True)
@@ -284,7 +284,7 @@ class ClusterLocationPromptFallthrough(PromptFallthrough):
     cluster_name = (
         getattr(parsed_args, 'cluster', None) or
         properties.VALUES.run.cluster.Get())
-    if flags.GetPlatform() == flags.PLATFORM_GKE and cluster_name:
+    if platforms.GetPlatform() == platforms.PLATFORM_GKE and cluster_name:
       clusters = [
           c for c in global_methods.ListClusters() if c.name == cluster_name
       ]

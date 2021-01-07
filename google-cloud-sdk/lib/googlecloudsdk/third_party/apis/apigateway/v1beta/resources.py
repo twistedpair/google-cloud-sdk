@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://apigateway.googleapis.com/v1beta/'
-DOCS_URL = ' https://cloud.google.com/api-gateway/docs'
+DOCS_URL = 'https://cloud.google.com/api-gateway/docs'
 
 
 class Collections(enum.Enum):

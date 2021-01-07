@@ -24,8 +24,10 @@ from __future__ import unicode_literals
 import multiprocessing
 import threading
 
+from googlecloudsdk.command_lib import crash_handling
 from googlecloudsdk.command_lib.storage.tasks import task_buffer
 from googlecloudsdk.command_lib.storage.tasks import task_graph as task_graph_module
+from googlecloudsdk.core import log
 
 # When threads get this value, they should prepare to exit.
 #
@@ -39,6 +41,7 @@ from googlecloudsdk.command_lib.storage.tasks import task_graph as task_graph_mo
 _SHUTDOWN = 'SHUTDOWN'
 
 
+@crash_handling.CrashManager
 def _thread_worker(task_queue, task_output_queue):
   """A consumer thread run in a child process.
 
@@ -57,10 +60,20 @@ def _thread_worker(task_queue, task_output_queue):
     if task_wrapper == _SHUTDOWN:
       break
 
-    additional_task_iterators = task_wrapper.task.execute()
+    try:
+      additional_task_iterators = task_wrapper.task.execute()
+    # pylint: disable=broad-except
+    # If any exception is raised, it will prevent the executor from exiting.
+    except Exception as exception:
+      log.error(exception)
+      # TODO(b/174488717): Skip parent tasks when a child task raises an error.
+      additional_task_iterators = None
+    # pylint: enable=broad-except
+
     task_output_queue.put((task_wrapper, additional_task_iterators))
 
 
+@crash_handling.CrashManager
 def _process_worker(task_queue, task_output_queue, thread_count):
   """Starts a consumer thread pool.
 
@@ -121,6 +134,7 @@ class TaskGraphExecutor:
     # Holds tasks without any dependencies.
     self._executable_tasks = task_buffer.TaskBuffer()
 
+  @crash_handling.CrashManager
   def _get_tasks_from_iterator(self):
     """Adds tasks from self._task_iterator to the executor.
 
@@ -139,9 +153,9 @@ class TaskGraphExecutor:
       # when a workload's task graph has a large branching factor.
       self._executable_tasks.put(task_wrapper, prioritize=False)
 
+  @crash_handling.CrashManager
   def _add_executable_tasks_to_queue(self):
     """Sends executable tasks to consumer threads in child processes."""
-    # TODO(b/172676913): Ensure the executor exits gracefully on interrupts.
     while True:
       task_wrapper = self._executable_tasks.get()
       if task_wrapper == _SHUTDOWN:
@@ -199,6 +213,7 @@ class TaskGraphExecutor:
 
     return parent_tasks_for_next_layer
 
+  @crash_handling.CrashManager
   def _handle_task_output(self):
     """Updates a dependency graph based on information from executed tasks."""
     while True:

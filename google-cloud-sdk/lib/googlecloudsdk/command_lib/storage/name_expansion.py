@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
+from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.core import log
 
@@ -57,11 +58,13 @@ class NameExpansionIterator:
       resources = plurality_checkable_iterator.PluralityCheckableIterator(
           wildcard_iterator.get_wildcard_iterator(url))
       is_name_expansion_iterator_empty = True
+      original_storage_url = storage_url.storage_url_from_string(url)
 
       # Iterate over all the resource_reference.Resource objects.
       for resource in resources:
         if not resource.is_container():
-          yield NameExpansionResult(resource, resource.storage_url)
+          yield NameExpansionResult(resource, resource.storage_url,
+                                    original_storage_url)
           is_name_expansion_iterator_empty = False
           continue
 
@@ -75,7 +78,8 @@ class NameExpansionIterator:
         child_resources = wildcard_iterator.get_wildcard_iterator(
             new_storage_url.url_string)
         for child_resource in child_resources:
-          yield NameExpansionResult(child_resource, resource.storage_url)
+          yield NameExpansionResult(child_resource, resource.storage_url,
+                                    original_storage_url)
           is_name_expansion_iterator_empty = False
 
       if is_name_expansion_iterator_empty:
@@ -103,9 +107,10 @@ class NameExpansionResult:
   Attributes:
     resource (Resource): Yielded by the WildcardIterator.
     expanded_url (StorageUrl): The expanded wildcard url.
+    original_url (StorageUrl): Pre-expanded URL.
   """
 
-  def __init__(self, resource, expanded_url):
+  def __init__(self, resource, expanded_url, original_url):
     """Initialize NameExpansionResult.
 
     Args:
@@ -114,9 +119,11 @@ class NameExpansionResult:
           This should be same as the resource.storage_url if recursion was not
           requested. This field is only used for cp and rsync commands.
           For everything else, this field can be ignored.
+      original_url (StorageUrl): Pre-expanded URL. Useful for knowing intention.
     """
     self.resource = resource
     self.expanded_url = expanded_url
+    self.original_url = original_url
 
   def __str__(self):
     return self.resource.storage_url.url_string
@@ -124,5 +131,7 @@ class NameExpansionResult:
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
+    # Leave out original_url because two different URLs can expand to the same
+    # result. This is a "results" class.
     return (self.resource == other.resource
             and self.expanded_url == other.expanded_url)

@@ -1507,7 +1507,7 @@ class SpeechProjectsLocationsPhraseSetsListRequest(_messages.Message):
       parameters provided to `ListPhraseSet` must match the call that provided
       the page token.
     parent: Required. The parent, which owns this collection of phrase set.
-      Format: {api_version}/projects/{project}/locations/{location}/phraseSets
+      Format: projects/{project}/locations/{location}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

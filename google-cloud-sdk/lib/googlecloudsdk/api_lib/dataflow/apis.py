@@ -398,7 +398,8 @@ class Templates(object):
             kmsKeyName=template_args.kms_key_name,
             ipConfiguration=ip_configuration,
             workerRegion=template_args.worker_region,
-            workerZone=template_args.worker_zone),
+            workerZone=template_args.worker_zone,
+            enableStreamingEngine=template_args.enable_streaming_engine),
         parameters=Templates.PARAMETERS_VALUE(
             additionalProperties=params_list) if parameters else None)
     request = GetMessagesModule(
@@ -645,7 +646,8 @@ class Templates(object):
     """
     with files.TemporaryDirectory() as temp_dir:
       local_path = os.path.join(temp_dir, 'template-file.json')
-      files.WriteFileContents(local_path, container_spec_json)
+      # Use Unix style line-endings on all platforms (especially Windows)
+      files.WriteFileContents(local_path, container_spec_json, newline='\n')
       storage_client = storage_api.StorageClient()
       obj_ref = storage_util.ObjectReference.FromUrl(template_file_gcs_location)
       return storage_client.CopyFileToGCS(local_path, obj_ref)

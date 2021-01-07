@@ -25,12 +25,14 @@ import six
 class ApplicationStatus(object):
   """Class that wraps a KubeRun Application Status JSON object."""
 
-  def __init__(self, modules):
+  def __init__(self, ingress_ip, modules):
     """Initializes a new ApplicationStatus object.
 
     Args:
+      ingress_ip: the ingress IP address for the application
       modules: a list of ModuleStatus objects
     """
+    self.ingress_ip = ingress_ip
     self.modules = modules
 
   @classmethod
@@ -50,7 +52,7 @@ class ApplicationStatus(object):
         for mod_name, json in json_map['modules'].items()
     ],
                   key=lambda m: m.name)
-    return cls(modules=mods)
+    return cls(ingress_ip=json_map['ingressIp'], modules=mods)
 
   def __repr__(self):
     # TODO(b/171419038): Create a common base class for these data wrappers

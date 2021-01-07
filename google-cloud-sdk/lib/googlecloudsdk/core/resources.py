@@ -50,7 +50,8 @@ _METHOD_ID_RE = re.compile(r'(?P<collection>{collection})\.get'.format(
     collection=_COLLECTION_SUB_RE))
 _GCS_URL_RE = re.compile('^gs://([^/]*)(?:/(.*))?$')
 _GCS_URL = 'https://www.googleapis.com/storage/v1/'
-_GCS_ALT_URL = 'https://storage.googleapis.com/'
+_GCS_ALT_URL = 'https://storage.googleapis.com/storage/v1/'
+_GCS_ALT_URL_SHORT = 'https://storage.googleapis.com/'
 
 
 class Error(Exception):
@@ -1123,15 +1124,24 @@ class Registry(object):
               raise e
             if (bucket_prefix, object_prefix) != ('b', 'o'):
               raise
-          elif line.startswith(_GCS_ALT_URL):
-            line = line[len(_GCS_ALT_URL):]
-            if '/' in line:
-              bucket, objectpath = line.split('/', 1)
-            else:
-              return self.ParseResourceId(
-                  collection='storage.buckets',
-                  resource_id=None,
-                  kwargs={'bucket': line})
+          elif line.startswith(_GCS_ALT_URL_SHORT):
+            try:
+              try:
+                bucket_prefix, bucket, object_prefix, objectpath = (
+                    line[len(_GCS_ALT_URL):].split('/', 3))
+              except ValueError:
+                raise e
+              if (bucket_prefix, object_prefix) != ('b', 'o'):
+                raise
+            except InvalidResourceException as e:
+              line = line[len(_GCS_ALT_URL_SHORT):]
+              if '/' in line:
+                bucket, objectpath = line.split('/', 1)
+              else:
+                return self.ParseResourceId(
+                    collection='storage.buckets',
+                    resource_id=None,
+                    kwargs={'bucket': line})
           if bucket is not None:
             return self.ParseResourceId(
                 collection='storage.objects',

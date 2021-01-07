@@ -249,6 +249,13 @@
         "logLink": {
           "description": "Configures a linked dataset in BigQuery corresponding to this log bucket. Requires analytics_enabled to be True. A log link can only be enabled by updating an existing bucket with analytics enabled.",
           "$ref": "LogLink"
+        },
+        "restrictedFields": {
+          "description": "Log entry field paths that are denied access in this bucket. The following fields and their children are eligible: textPayload, jsonPayload, protoPayload, httpRequest, labels, sourceLocation. Restricting a repeated field will restrict all values. Adding a parent will block all child fields e.g. foo.bar will block foo.bar.baz.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -356,7 +363,7 @@
     },
     "LogSink": {
       "id": "LogSink",
-      "description": "Describes a sink used to export log entries to one of the following destinations in any project: a Cloud Storage bucket, a BigQuery dataset, or a Cloud Pub\/Sub topic. A logs filter controls which log entries are exported. The sink must be created within a project, organization, billing account, or folder.",
+      "description": "Describes a sink used to export log entries to one of the following destinations in any project: a Cloud Storage bucket, a BigQuery dataset, a Cloud Pub\/Sub topic or a Cloud Logging Bucket. A logs filter controls which log entries are exported. The sink must be created within a project, organization, billing account, or folder.",
       "type": "object",
       "properties": {
         "name": {
@@ -2928,7 +2935,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted."
+              "description": "Deletes all the log entries in a log for the _Default Log Bucket. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted."
             },
             "list": {
               "id": "logging.projects.logs.list",
@@ -3980,7 +3987,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted."
+              "description": "Deletes all the log entries in a log for the _Default Log Bucket. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted."
             },
             "list": {
               "id": "logging.folders.logs.list",
@@ -4885,7 +4892,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted."
+              "description": "Deletes all the log entries in a log for the _Default Log Bucket. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted."
             },
             "list": {
               "id": "logging.billingAccounts.logs.list",
@@ -6244,7 +6251,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted."
+              "description": "Deletes all the log entries in a log for the _Default Log Bucket. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted."
             },
             "list": {
               "id": "logging.organizations.logs.list",
@@ -6321,7 +6328,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin"
           ],
-          "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted."
+          "description": "Deletes all the log entries in a log for the _Default Log Bucket. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted. Entries received after the delete operation with a timestamp before the operation will be deleted."
         },
         "list": {
           "id": "logging.logs.list",

@@ -78,28 +78,26 @@ class AuditLogConfig(_messages.Message):
 
 class Authority(_messages.Message):
   r"""Authority encodes how Google will recognize identities from this
-  Membership. A workload with a token from this oidc_issuer can call the IAM
-  credentials API for the provided identity_namespace and identity_provider;
-  the workload will receive a Google OAuth token that it can use for further
-  API calls. See the workload identity documentation for more details:
+  Membership. See the workload identity documentation for more details:
   https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
 
   Fields:
-    identityProvider: Output only. An identity provider that reflects this
-      issuer in the workload identity pool.
-    issuer: Optional. A JWT issuer URI. If set, then Google will attempt OIDC
-      discovery on this URI, and allow valid OIDC tokens from this issuer to
-      authenticate within the below identity namespace. This can be updated
-      from a non-empty to empty value and vice-versa. But cannot be changed
-      from one non-empty value to another. Setting to empty will disable
-      Workload Identity. issuer should be a valid URL of length < 2000 that
-      can be parsed, and must start with https://.
+    identityProvider: Output only. An identity provider that reflects the
+      `issuer` in the workload identity pool.
+    issuer: Optional. A JSON Web Token (JWT) issuer URI. `issuer` must start
+      with `https://` and be a valid URL with length <2000 characters. If set,
+      then Google will allow valid OIDC tokens from this issuer to
+      authenticate within the workload_identity_pool. OIDC discovery will be
+      performed on this URI to validate tokens from the issuer. Clearing
+      `issuer` disables Workload Identity. `issuer` cannot be directly
+      modified; it must be cleared (and Workload Identity disabled) before
+      using a new issuer (and re-enabling Workload Identity).
     workloadIdentityPool: Output only. The name of the workload identity pool
-      in which the above issuer will be recognized. There is a single Workload
+      in which `issuer` will be recognized. There is a single Workload
       Identity Pool per Hub that is shared between all Memberships that belong
-      to this Hub. For a Hub hosted in {PROJECT_ID}, the workload pool format
-      is {PROJECT_ID}.hub.id.goog, although this is subject to change in newer
-      versions of this API.
+      to that Hub. For a Hub hosted in {PROJECT_ID}, the workload pool format
+      is `{PROJECT_ID}.hub.id.goog`, although this is subject to change in
+      newer versions of this API.
   """
 
   identityProvider = _messages.StringField(1)
@@ -165,7 +163,7 @@ class CancelOperationRequest(_messages.Message):
 
 class ConnectAgentResource(_messages.Message):
   r"""ConnectAgentResource represents a Kubernetes resource manifest for
-  connect agent deployment.
+  Connect Agent deployment.
 
   Fields:
     manifest: YAML manifest of the resource.
@@ -223,7 +221,8 @@ class Expr(_messages.Message):
 
 
 class GenerateConnectManifestResponse(_messages.Message):
-  r"""Response message for `GkeHubService.GenerateConnectManifest` method.
+  r"""GenerateConnectManifestResponse contains manifest information for
+  installing/upgrading a Connect agent.
 
   Fields:
     manifest: The ordered list of Kubernetes resources that need to be applied
@@ -249,14 +248,13 @@ class GenerateExclusivityManifestResponse(_messages.Message):
 
 
 class GkeCluster(_messages.Message):
-  r"""GkeCluster represents a k8s cluster on GKE.
+  r"""GkeCluster contains information specific to GKE clusters.
 
   Fields:
     resourceLink: Immutable. Self-link of the GCP resource for the GKE
       cluster. For example: //container.googleapis.com/projects/my-
-      project/locations/us-west1-a/clusters/my-cluster Using "zones" instead
-      of "locations" is also valid. It can be at the most 1000 characters in
-      length.
+      project/locations/us-west1-a/clusters/my-cluster Zonal clusters are also
+      supported.
   """
 
   resourceLink = _messages.StringField(1)
@@ -293,15 +291,14 @@ class GkehubProjectsLocationsMembershipsCreateRequest(_messages.Message):
 
   Fields:
     membership: A Membership resource to be passed as the request body.
-    membershipId: Required. Client chosen ID for the membership. The ID must
-      be a valid RFC 1123 compliant DNS label. In particular, the ID must be:
-      1. At most 63 characters in length 2. It must consist of lower case
-      alphanumeric characters or `-` 3. It must start and end with an
-      alphanumeric character I.e. ID must match the regex:
-      `[a-z0-9]([-a-z0-9]*[a-z0-9])?` with at most 63 characters.
-    parent: Required. The parent in whose context the membership is created.
-      The parent value is in the format:
-      `projects/[project_id]/locations/global`.
+    membershipId: Required. Client chosen ID for the membership.
+      `membership_id` must be a valid RFC 1123 compliant DNS label: 1. At most
+      63 characters in length 2. It must consist of lower case alphanumeric
+      characters or `-` 3. It must start and end with an alphanumeric
+      character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+    parent: Required. The parent (project and location) where the Memberships
+      will be created. Specified in the format `projects/*/locations/*`.
   """
 
   membership = _messages.MessageField('Membership', 1)
@@ -313,8 +310,8 @@ class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsDeleteRequest object.
 
   Fields:
-    name: Required. The membership resource name in the format:
-      `projects/[project_id]/locations/global/memberships/[membership_id]`
+    name: Required. The Membership resource name in the format
+      `projects/*/locations/*/memberships/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -325,26 +322,27 @@ class GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(_messages
   object.
 
   Fields:
-    connectAgent_name: Optional. Deprecated. Do not set.
+    connectAgent_name: Do not set.
     connectAgent_namespace: Optional. Namespace for GKE Connect agent
-      resources. If empty, uses 'gke-connect'.
-    connectAgent_proxy: Optional. URI of the proxy to reach
-      gkeconnect.googleapis.com. The format must be in the form
-      http(s)://{proxy_address}, depends on HTTP/HTTPS protocol supported by
-      the proxy. This will direct connect agent's outbound traffic through a
-      HTTP(S) proxy.
+      resources. Defaults to `gke-connect`. The Connect Agent is authorized
+      automatically when run in the default namespace. Otherwise, explicit
+      authorization must be granted with an additional IAM binding.
+    connectAgent_proxy: Optional. URI of a proxy if connectivity from the
+      agent to gkeconnect.googleapis.com requires the use of a proxy. Format
+      must be in the form `http(s)://{proxy_address}`, depending on the
+      HTTP/HTTPS protocol supported by the proxy. This will direct the connect
+      agent's outbound traffic through a HTTP(S) proxy.
     imagePullSecretContent: Optional. The image pull secret content for the
       registry, if not public.
     isUpgrade: Optional. If true, generate the resources for upgrade only.
-      Some resources (e.g. secrets) generated for installation will be
+      Some resources generated only for installation (e.g. secrets) will be
       excluded.
-    name: Required. The membership resource the connect agent is associated
-      with.
-      `projects/[project_id]/locations/global/memberships/[membership_id]`.
-    registry: Optional. The registry to fetch connect agent image; default to
-      gcr.io/gkeconnect.
-    version: Optional. The version to use for connect agent. If empty, the
-      current default version will be used.
+    name: Required. The Membership resource name the Agent will associate
+      with, in the format `projects/*/locations/*/memberships/*`.
+    registry: Optional. The registry to fetch the connect agent image from.
+      Defaults to gcr.io/gkeconnect.
+    version: Optional. The Connect agent version to use. Defaults to the most
+      current version.
   """
 
   connectAgent_name = _messages.StringField(1)
@@ -368,8 +366,8 @@ class GkehubProjectsLocationsMembershipsGenerateExclusivityManifestRequest(_mess
     crdManifest: Optional. The YAML manifest of the membership CRD retrieved
       by `kubectl get customresourcedefinitions membership`. Leave empty if
       the resource does not exist.
-    name: Required. The membership the cluster corresponds to in the format:
-      `projects/[project_id]/locations/global/memberships/[membership_id]`.
+    name: Required. The Membership resource name in the format
+      `projects/*/locations/*/memberships/*`.
   """
 
   crManifest = _messages.StringField(1)
@@ -402,8 +400,8 @@ class GkehubProjectsLocationsMembershipsGetRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsGetRequest object.
 
   Fields:
-    name: Required. The Membership resource name in the format:
-      `projects/[project_id]/locations/global/memberships/[membership_id]`
+    name: Required. The Membership resource name in the format
+      `projects/*/locations/*/memberships/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -413,27 +411,23 @@ class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsListRequest object.
 
   Fields:
-    filter: Optional. Lists the Memberships that match the filter expression.
-      A filter expression filters the resources listed in the response. The
-      expression must be of the form ` ` where operators: `<`, `>`, `<=`,
-      `>=`, `!=`, `=`, `:` are supported (colon `:` represents a HAS operator
-      which is roughly synonymous with equality). can refer to a proto or JSON
-      field, or a synthetic field. Field names can be camelCase or snake_case.
-      Examples: - Filter by name: name = "projects/foo-
-      proj/locations/global/membership/bar - Filter by labels: - Resources
-      that have a key called `foo` labels.foo:* - Resources that have a key
-      called `foo` whose value is `bar` labels.foo = bar - Filter by state: -
-      Members in CREATING state. state = CREATING
-    orderBy: Optional. Field to use to sort the list.
+    filter: Optional. Lists Memberships that match the filter expression,
+      following the syntax outlined in https://google.aip.dev/160. Examples: -
+      Name is `bar` in project `foo-proj` and location `global`: name =
+      "projects/foo-proj/locations/global/membership/bar" - Memberships that
+      have a label called `foo`: labels.foo:* - Memberships that have a label
+      called `foo` whose value is `bar`: labels.foo = bar - Memberships in the
+      CREATING state: state = CREATING
+    orderBy: Optional. One or more fields to compare and use to sort the
+      output. See https://google.aip.dev/132#ordering.
     pageSize: Optional. When requesting a 'page' of resources, `page_size`
       specifies number of resources to return. If unspecified or set to 0, all
       resources will be returned.
     pageToken: Optional. Token returned by previous call to `ListMemberships`
       which specifies the position in the list from where to continue listing
       the resources.
-    parent: Required. The parent in whose context the memberships are listed.
-      The parent value is in the format:
-      `projects/[project_id]/locations/global`.
+    parent: Required. The parent (project and location) where the Memberships
+      will be listed. Specified in the format `projects/*/locations/*`.
   """
 
   filter = _messages.StringField(1)
@@ -495,11 +489,11 @@ class GkehubProjectsLocationsMembershipsValidateExclusivityRequest(_messages.Mes
   Fields:
     crManifest: Optional. The YAML of the membership CR in the cluster. Empty
       if the membership CR does not exist.
-    intendedMembership: Required. The membership name under the "name" that
-      could be created if the validation succeed. The method only does
-      validation in anticipation of a CreateMembership call.
-    parent: Required. The desired parent collection of the membership to be
-      created in the format: `projects/[project_id]/locations/global`.
+    intendedMembership: Required. The intended membership name under the
+      `parent`. This method only does validation in anticipation of a
+      CreateMembership call with the same name.
+    parent: Required. The parent (project and location) where the Memberships
+      will be created. Specified in the format `projects/*/locations/*`.
   """
 
   crManifest = _messages.StringField(1)
@@ -608,9 +602,8 @@ class GoogleRpcStatus(_messages.Message):
 
 
 class KubernetesMetadata(_messages.Message):
-  r"""KubernetesMetadata provides informational metadata for Memberships that
-  are created from Kubernetes Endpoints (currently, these are equivalent to
-  Kubernetes clusters).
+  r"""KubernetesMetadata provides informational metadata for Memberships
+  representing Kubernetes clusters.
 
   Fields:
     kubernetesApiServerVersion: Output only. Kubernetes API server version
@@ -620,10 +613,9 @@ class KubernetesMetadata(_messages.Message):
     nodeCount: Output only. Node count as reported by Kubernetes nodes
       resources.
     nodeProviderId: Output only. Node providerID as reported by the first node
-      in the list of nodes on the Kubernetes endpoint. It should be noted that
-      some Kubernetes platforms (like GKE-on-GCP) support zero-node clusters.
-      For these platforms, the node_count will be zero and the
-      node_provider_id will be empty.
+      in the list of nodes on the Kubernetes endpoint. On Kubernetes platforms
+      that support zero-node clusters (like GKE-on-GCP), the node_count will
+      be zero and the node_provider_id will be empty.
     updateTime: Output only. The time at which these details were last
       updated. This update_time is different from the Membership-level
       update_time since EndpointDetails are updated internally for API
@@ -641,39 +633,33 @@ class KubernetesMetadata(_messages.Message):
 
 
 class KubernetesResource(_messages.Message):
-  r"""KubernetesResource contains the YAML manifests and configs for
-  Kubernetes resources of the Membership in the cluster. Upon
-  CreateMembership: - The caller should provide membership_cr_manifest if a
-  Membership CR exists in the cluster. - The caller should provide
-  connect_version if they wish to also install the Connect agent. - The caller
-  should then apply resources from the successful GetMembership request. Upon
-  UpdateMembership: - The caller should provide membership_cr_manifest if a
-  Membership CR exists in the cluster. - The caller should re-apply the
-  resources from the returned Membership.
+  r"""KubernetesResource contains the YAML manifests and configuration for
+  Membership Kubernetes resources in the cluster. After CreateMembership or
+  UpdateMembership, these resources should be re-applied in the cluster.
 
   Fields:
-    connectResources: Output only. The Kubernetes resources for installing GKE
-      Connect agent. This field is only populated in the Membership returned
-      after the long-running operation of Create/UpdateMembership finished,
-      but not in standalone Get/ListMembership requests. To get the resource
-      manifest after the initial registration, the caller could make an
-      UpdateMembership call with an empty field mask.
+    connectResources: Output only. The Kubernetes resources for installing the
+      GKE Connect agent This field is only populated in the Membership
+      returned from a successful long-running operation from CreateMembership
+      or UpdateMembership. It is not populated during normal GetMembership or
+      ListMemberships requests. To get the resource manifest after the initial
+      registration, the caller should make a UpdateMembership call with an
+      empty field mask.
     membershipCrManifest: Input only. The YAML representation of the
-      Membership CR if already exists in the cluster. Leave empty if no
-      Membership CR exists. The CR manifest will be used to validate that the
-      cluster has not been registered with another Membership. For GKE
-      clusters, the input from the caller will be ignored as Hub API server
-      will directly fetch the Membership CR from the cluster.
-    membershipResources: Output only. The additional Kubernetes resources that
-      need to be applied to the cluster after the membership creation and
+      Membership CR. This field is ignored for GKE clusters where Hub can read
+      the CR directly. Callers should provide the CR that is currently present
+      in the cluster during CreateMembership or UpdateMembership, or leave
+      this field empty if none exists. The CR manifest is used to validate the
+      cluster has not been registered with another Membership.
+    membershipResources: Output only. Additional Kubernetes resources that
+      need to be applied to the cluster after Membership creation, and after
       every update. This field is only populated in the Membership returned
-      after the long-running operation of Create/UpdateMembership finished,
-      but not in standalone Get/ListMembership requests. To get the resource
-      manifest after the initial registration, the caller could make an
-      UpdateMembership call with an empty field mask.
-    resourceOptions: Optional. The options to generate Kubernetes resources
-      other than the default value supplied by the Hub API. Empty or unset
-      fields will use the default value.
+      from a successful long-running operation from CreateMembership or
+      UpdateMembership. It is not populated during normal GetMembership or
+      ListMemberships requests. To get the resource manifest after the initial
+      registration, the caller should make a UpdateMembership call with an
+      empty field mask.
+    resourceOptions: Optional. Options for Kubernetes resource generation.
   """
 
   connectResources = _messages.MessageField('ResourceManifest', 1, repeated=True)
@@ -703,7 +689,7 @@ class ListMembershipsResponse(_messages.Message):
     nextPageToken: A token to request the next page of resources from the
       `ListMemberships` method. The value of an empty string means that there
       are no more resources to return.
-    resources: The list of Memberships contained within the parent.
+    resources: The list of matching Memberships.
     unreachable: List of locations that could not be reached while fetching
       this list.
   """
@@ -810,66 +796,61 @@ class Membership(_messages.Message):
   r"""Membership contains information about a member cluster.
 
   Enums:
-    InfrastructureTypeValueValuesEnum: Optional. Specifies the infrastructure
-      type that the API server represented by membership is running on.
+    InfrastructureTypeValueValuesEnum: Optional. The infrastructure type this
+      Membership is running on.
 
   Messages:
     LabelsValue: Optional. GCP labels for this membership.
 
   Fields:
     authority: Optional. How to identify workloads from this Membership. See
-      the documentation on workload identity for more details:
+      the documentation on Workload Identity for more details:
       https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
-    createTime: Output only. Timestamp for when the Membership was created.
-    deleteTime: Output only. Timestamp for when the Membership was deleted.
+    createTime: Output only. When the Membership was created.
+    deleteTime: Output only. When the Membership was deleted.
     description: Required. Description of this membership, limited to 63
-      characters. It must match the regex: `a-zA-Z0-9*`
+      characters. Must match the regex: `a-zA-Z0-9*`
     endpoint: Optional. Endpoint information to reach this member.
     externalId: Optional. An externally-generated and managed ID for this
-      Membership. This ID may still be modified after creation but it is not
-      recommended to do so. The ID must match the regex: `a-zA-Z0-9*` If this
-      Membership represents a Kubernetes cluster, this value should be set to
-      the UUID of the kube-system namespace object.
-    infrastructureType: Optional. Specifies the infrastructure type that the
-      API server represented by membership is running on.
+      Membership. This ID may be modified after creation, but this is not
+      recommended. For GKE clusters, external_id is managed by the Hub API and
+      updates will be ignored. The ID must match the regex: `a-zA-Z0-9*` If
+      this Membership represents a Kubernetes cluster, this value should be
+      set to the UID of the `kube-system` namespace object.
+    infrastructureType: Optional. The infrastructure type this Membership is
+      running on.
     labels: Optional. GCP labels for this membership.
     lastConnectionTime: Output only. For clusters using Connect, the timestamp
       of the most recent connection established with Google Cloud. This time
       is updated every several minutes, not continuously. For clusters that do
       not use GKE Connect, or that have never connected successfully, this
       field will be unset.
-    name: Output only. The unique name of this domain resource in the format:
-      `projects/[project_id]/locations/global/memberships/[membership_id]`.
-      `membership_id` can only be set at creation time using the
-      `membership_id` field in the creation request. `membership_id` must be a
-      valid RFC 1123 compliant DNS label. In particular, it must be: 1. At
-      most 63 characters in length 2. It must consist of lower case
-      alphanumeric characters or `-` 3. It must start and end with an
-      alphanumeric character I.e. `membership_id` must match the regex:
-      `[a-z0-9]([-a-z0-9]*[a-z0-9])?` with at most 63 characters.
+    name: Output only. The full, unique name of this Membership resource in
+      the format `projects/*/locations/*/memberships/{membership_id}`, set
+      during creation. `membership_id` must be a valid RFC 1123 compliant DNS
+      label: 1. At most 63 characters in length 2. It must consist of lower
+      case alphanumeric characters or `-` 3. It must start and end with an
+      alphanumeric character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
     state: Output only. State of the Membership resource.
     uniqueId: Output only. Google-generated UUID for this resource. This is
       unique across all Membership resources. If a Membership resource is
       deleted and another resource with the same name is created, it gets a
       different unique_id.
-    updateTime: Output only. Timestamp for when the Membership was last
-      updated.
+    updateTime: Output only. When the Membership was last updated.
   """
 
   class InfrastructureTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. Specifies the infrastructure type that the API server
-    represented by membership is running on.
+    r"""Optional. The infrastructure type this Membership is running on.
 
     Values:
-      INFRASTRUCTURE_TYPE_UNSPECIFIED: Default value for backward
-        compatibility. Some Hub functionality may require users to set this
-        value if left unspecified.
-      ON_PREM: OnPrem specifies Memberships running on infrastructure that is
-        owned or operated by customers on private infrastructure. GKE
-        Distributions like GKE-OnPrem and GKE-OnBareMetal will set this value
-        at Membership creation time by default.
-      MULTI_CLOUD: This value indicates the membership is running on public
-        cloud infrastructure.
+      INFRASTRUCTURE_TYPE_UNSPECIFIED: No type was specified. Some Hub
+        functionality may require a type be specified, and will not support
+        Memberships with this value.
+      ON_PREM: Private infrastructure that is owned or operated by customer.
+        This includes GKE distributions such as GKE-OnPrem and GKE-
+        OnBareMetal.
+      MULTI_CLOUD: Public cloud infrastructure.
     """
     INFRASTRUCTURE_TYPE_UNSPECIFIED = 0
     ON_PREM = 1
@@ -915,21 +896,19 @@ class Membership(_messages.Message):
 
 
 class MembershipEndpoint(_messages.Message):
-  r"""MembershipEndpoint contains the information to reach a member.
+  r"""MembershipEndpoint contains information needed to contact a Kubernetes
+  API, endpoint and any additional Kubernetes metadata.
 
   Fields:
-    gkeCluster: Optional. If this Membership is a Kubernetes API server hosted
-      on GKE, this field will be populated and contain GKE-specific
-      information.
-    kubernetesMetadata: Output only. For Memberships that point to Kubernetes
-      Endpoints, this field provides useful metadata.
-    kubernetesResource: Optional. A correctly registered cluster should have
-      the Kubernetes resources applied to the clusters and settle at steady
-      states. These resources are needed in order to: * Ensure that the
-      cluster is exclusively registered to one and only one Hub Membership. *
-      Propagate Workload Pool Information available in the Membership
-      Authority field. * Ensure proper initial configuration of default Hub
-      Features.
+    gkeCluster: Optional. GKE-specific information. Only present if this
+      Membership is a GKE cluster.
+    kubernetesMetadata: Output only. Useful Kubernetes-specific metadata.
+    kubernetesResource: Optional. The in-cluster Kubernetes Resources that
+      should be applied for a correctly registered cluster, in the steady
+      state. These resources: * Ensure that the cluster is exclusively
+      registered to one and only one Hub Membership. * Propagate Workload Pool
+      Information available in the Membership Authority field. * Ensure proper
+      initial configuration of default Hub Features.
   """
 
   gkeCluster = _messages.MessageField('GkeCluster', 1)
@@ -941,28 +920,25 @@ class MembershipState(_messages.Message):
   r"""State of the Membership resource.
 
   Enums:
-    CodeValueValuesEnum: Output only. Code indicating the state of the
-      Membership resource.
+    CodeValueValuesEnum: Output only. The current state of the Membership
+      resource.
 
   Fields:
-    code: Output only. Code indicating the state of the Membership resource.
-    description: Human readable description of the issue. This field is
-      deprecated, and is never set by the Hub Service.
-    updateTime: The last update time of this state by the controllers This
-      field is deprecated, and is never set by the Hub Service.
+    code: Output only. The current state of the Membership resource.
+    description: This field is never set by the Hub Service.
+    updateTime: This field is never set by the Hub Service.
   """
 
   class CodeValueValuesEnum(_messages.Enum):
-    r"""Output only. Code indicating the state of the Membership resource.
+    r"""Output only. The current state of the Membership resource.
 
     Values:
-      CODE_UNSPECIFIED: Not set.
-      CREATING: CREATING indicates the cluster is being registered.
-      READY: READY indicates the cluster is registered.
-      DELETING: DELETING indicates that the cluster is being unregistered.
-      UPDATING: UPDATING indicates the Membership is being updated.
-      SERVICE_UPDATING: SERVICE_UPDATING indicates the Membership is being
-        updated by the Hub Service.
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The cluster is being registered.
+      READY: The cluster is registered.
+      DELETING: The cluster is being unregistered.
+      UPDATING: The Membership is being updated.
+      SERVICE_UPDATING: The Membership is being updated by the Hub Service.
     """
     CODE_UNSPECIFIED = 0
     CREATING = 1
@@ -1183,14 +1159,14 @@ class Policy(_messages.Message):
 
 
 class ResourceManifest(_messages.Message):
-  r"""ResourceManifest represents a Kubernetes resource to be applied to the
-  cluster.
+  r"""ResourceManifest represents a single Kubernetes resource to be applied
+  to the cluster.
 
   Fields:
-    clusterScoped: Specifies whether the resource provided in the manifest is
-      cluster_scoped. If set to false, the assumption is that it is namespace
-      scoped. This field is used for default REST mapper when applying the
-      resource to a cluster.
+    clusterScoped: Whether the resource provided in the manifest is
+      `cluster_scoped`. If unset, the manifest is assumed to be namespace
+      scoped. This field is used for REST mapping when applying the resource
+      in a cluster.
     manifest: YAML manifest of the resource.
   """
 
@@ -1199,18 +1175,16 @@ class ResourceManifest(_messages.Message):
 
 
 class ResourceOptions(_messages.Message):
-  r"""ResourceOptions represents the supported options for generating the
-  Kubernetes resources.
+  r"""ResourceOptions represent options for Kubernetes resource generation.
 
   Fields:
-    connectVersion: Optional. The connect version to generate for
-      connect_resources. If unset, default to the latest GKE Connect version.
-      If set to a specific Connect version, the Connect resources of the
-      version will be generated. If the version does not exist or is already
-      out of support window, an INVALID_ARGUMENT error will be returned.
-    v1beta1Crd: Optional. Use apiextensions/v1beta1 instead of
-      apiextensions/v1 for CustomResourceDefinition resource. This option
-      should be set for clusters with Kubernetes apiserver version <1.16.
+    connectVersion: Optional. The Connect agent version to use for
+      connect_resources. Defaults to the latest GKE Connect version. The
+      version must be a currently supported version, obsolete versions will be
+      rejected.
+    v1beta1Crd: Optional. Use `apiextensions/v1beta1` instead of
+      `apiextensions/v1` for CustomResourceDefinition resources. This option
+      should be set for clusters with Kubernetes apiserver versions <1.16.
   """
 
   connectVersion = _messages.StringField(1)
@@ -1322,7 +1296,7 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class TypeMeta(_messages.Message):
-  r"""TypeMeta is the type information needed for content unmarshalling of the
+  r"""TypeMeta is the type information needed for content unmarshalling of
   Kubernetes resources in the manifest.
 
   Fields:
@@ -1338,11 +1312,11 @@ class ValidateExclusivityResponse(_messages.Message):
   r"""The response of exclusivity artifacts validation result status.
 
   Fields:
-    status: The status.Code contains the validation result. As such, * OK
-      means that exclusivity may be obtained if the manifest produced by
-      GenerateExclusivityManifest can successfully be applied. *
-      ALREADY_EXISTS means that the Membership CRD is already owned by another
-      Hub. See status.message for more information when this occurs.
+    status: The validation result. * `OK` means that exclusivity is validated,
+      assuming the manifest produced by GenerateExclusivityManifest is
+      successfully applied. * `ALREADY_EXISTS` means that the Membership CRD
+      is already owned by another Hub. See `status.message` for more
+      information.
   """
 
   status = _messages.MessageField('GoogleRpcStatus', 1)

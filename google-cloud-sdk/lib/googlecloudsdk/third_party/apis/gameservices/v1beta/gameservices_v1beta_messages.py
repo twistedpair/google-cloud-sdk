@@ -553,11 +553,22 @@ class FleetConfig(_messages.Message):
 class GameServerCluster(_messages.Message):
   r"""A game server cluster resource.
 
+  Enums:
+    AllocationPriorityValueValuesEnum: Optional. The allocation priority
+      assigned to the game server cluster. Game server clusters receive new
+      game server allocations based on the relative allocation priorites set
+      for each cluster, if the realm is configured for multicluster
+      allocation.
+
   Messages:
     LabelsValue: The labels associated with this game server cluster. Each
       label is a key-value pair.
 
   Fields:
+    allocationPriority: Optional. The allocation priority assigned to the game
+      server cluster. Game server clusters receive new game server allocations
+      based on the relative allocation priorites set for each cluster, if the
+      realm is configured for multicluster allocation.
     connectionInfo: The game server cluster connection information. This
       information is used to manage game server clusters.
     createTime: Output only. The creation time.
@@ -572,6 +583,26 @@ class GameServerCluster(_messages.Message):
       onprem-cluster`.
     updateTime: Output only. The last-modified time.
   """
+
+  class AllocationPriorityValueValuesEnum(_messages.Enum):
+    r"""Optional. The allocation priority assigned to the game server cluster.
+    Game server clusters receive new game server allocations based on the
+    relative allocation priorites set for each cluster, if the realm is
+    configured for multicluster allocation.
+
+    Values:
+      PRIORITY_UNSPECIFIED: The default allocation priority.
+        `PRIORITY_UNSPECIFIED` is the lowest possible priority.
+      P1: Priority 1, the highest priority.
+      P2: Priority 2.
+      P3: Priority 3.
+      P4: Priority 4.
+    """
+    PRIORITY_UNSPECIFIED = 0
+    P1 = 1
+    P2 = 2
+    P3 = 3
+    P4 = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -598,13 +629,14 @@ class GameServerCluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  connectionInfo = _messages.MessageField('GameServerClusterConnectionInfo', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  allocationPriority = _messages.EnumField('AllocationPriorityValueValuesEnum', 1)
+  connectionInfo = _messages.MessageField('GameServerClusterConnectionInfo', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class GameServerClusterConnectionInfo(_messages.Message):
@@ -613,13 +645,17 @@ class GameServerClusterConnectionInfo(_messages.Message):
   Fields:
     gkeClusterReference: Reference to the GKE cluster where the game servers
       are installed.
+    gkeHubClusterReference: Reference to a Kubernetes cluster registered
+      through GKE Hub. See https://cloud.google.com/anthos/multicluster-
+      management/ for more information about registering Kubernetes clusters.
     namespace: Namespace designated on the game server cluster where the
       Agones game server instances will be created. Existence of the namespace
       will be validated during creation.
   """
 
   gkeClusterReference = _messages.MessageField('GkeClusterReference', 1)
-  namespace = _messages.StringField(2)
+  gkeHubClusterReference = _messages.MessageField('GkeHubClusterReference', 2)
+  namespace = _messages.StringField(3)
 
 
 class GameServerConfig(_messages.Message):
@@ -973,9 +1009,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsPatchRequest(_messages.M
       ployment}`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-deployment`.
     updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see https:
-      //developers.google.com/protocol-buffers //
-      /docs/reference/google.protobuf#fieldmask
+      supplied in this field. For the `FieldMask` definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   gameServerDeployment = _messages.MessageField('GameServerDeployment', 1)
@@ -998,9 +1034,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsPreviewRolloutRequest(_m
     previewTime: Optional. The target timestamp to compute the preview.
       Defaults to the immediately after the proposed rollout completes.
     updateMask: Optional. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see https:
-      //developers.google.com/protocol-buffers //
-      /docs/reference/google.protobuf#fieldmask
+      supplied in this field. For the `FieldMask` definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   gameServerDeploymentRollout = _messages.MessageField('GameServerDeploymentRollout', 1)
@@ -1054,9 +1090,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsUpdateRolloutRequest(_me
       yments/{deployment}/rollout`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-deployment/rollout`.
     updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see https:
-      //developers.google.com/protocol-buffers //
-      /docs/reference/google.protobuf#fieldmask
+      supplied in this field. For the `FieldMask` definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   gameServerDeploymentRollout = _messages.MessageField('GameServerDeploymentRollout', 1)
@@ -1251,9 +1287,9 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPatchRequest(_message
       project/locations/{location}/realms/zanzibar/gameServerClusters/my-
       onprem-cluster`.
     updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see https:
-      //developers.google.com/protocol-buffers //
-      /docs/reference/google.protobuf#fieldmask
+      supplied in this field. For the `FieldMask` definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   gameServerCluster = _messages.MessageField('GameServerCluster', 1)
@@ -1313,9 +1349,9 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPreviewUpdateRequest(
       onprem-cluster`.
     previewTime: Optional. The target timestamp to compute the preview.
     updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see https:
-      //developers.google.com/protocol-buffers //
-      /docs/reference/google.protobuf#fieldmask
+      supplied in this field. For the `FieldMask` definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   gameServerCluster = _messages.MessageField('GameServerCluster', 1)
@@ -1368,8 +1404,8 @@ class GameservicesProjectsLocationsRealmsPatchRequest(_messages.Message):
       `projects/my-project/locations/{location}/realms/my-realm`.
     realm: A Realm resource to be passed as the request body.
     updateMask: Required. The update mask applies to the resource. For the
-      `FieldMask` definition, see https: //developers.google.com/protocol-
-      buffers // /docs/reference/google.protobuf#fieldmask
+      `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   name = _messages.StringField(1, required=True)
@@ -1387,8 +1423,8 @@ class GameservicesProjectsLocationsRealmsPreviewUpdateRequest(_messages.Message)
     previewTime: Optional. The target timestamp to compute the preview.
     realm: A Realm resource to be passed as the request body.
     updateMask: Required. The update mask applies to the resource. For the
-      `FieldMask` definition, see https: //developers.google.com/protocol-
-      buffers // /docs/reference/google.protobuf#fieldmask
+      `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   name = _messages.StringField(1, required=True)
@@ -1411,6 +1447,23 @@ class GkeClusterReference(_messages.Message):
   """
 
   cluster = _messages.StringField(1)
+
+
+class GkeHubClusterReference(_messages.Message):
+  r"""GkeHubClusterReference represents a reference to a Kubernetes cluster
+  registered through GKE Hub.
+
+  Fields:
+    membership: The full or partial name of a GKE Hub membership, using one of
+      the following forms: * `https://gkehub.googleapis.com/v1beta1/projects/{
+      project_id}/locations/global/memberships/{membership_id}` *
+      `projects/{project_id}/locations/global/memberships/{membership_id}` *
+      `{membership_id}` If project is not specified, the project of the
+      GameServerCluster resource is used to generate the full name of the GKE
+      Hub membership.
+  """
+
+  membership = _messages.StringField(1)
 
 
 class LabelSelector(_messages.Message):

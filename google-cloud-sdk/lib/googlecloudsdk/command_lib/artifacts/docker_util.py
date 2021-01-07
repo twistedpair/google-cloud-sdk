@@ -22,6 +22,7 @@ import re
 
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
+from googlecloudsdk.api_lib.util import common_args
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.artifacts import containeranalysis_util as ca_util
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
@@ -219,6 +220,8 @@ def _ParseDockerTag(tag):
 def _GetDockerPackagesAndVersions(docker_repo,
                                   include_tags,
                                   page_size,
+                                  order_by,
+                                  limit,
                                   is_nested=False):
   """Gets a list of packages with versions for a Docker repository."""
   client = ar_requests.GetClient()
@@ -231,19 +234,24 @@ def _GetDockerPackagesAndVersions(docker_repo,
       raise ar_exceptions.ArtifactRegistryError(
           "Internal error. Corrupted package name: {}".format(pkg.name))
     img = DockerImage(DockerRepo(parts[1], parts[3], parts[5]), parts[7])
-    img_list.extend(_GetDockerVersions(img, include_tags, page_size, is_nested))
+    img_list.extend(_GetDockerVersions(img, include_tags,
+                                       page_size, order_by, limit, is_nested))
   return img_list
 
 
 def _GetDockerNestedVersions(docker_img,
                              include_tags,
                              page_size,
+                             order_by,
+                             limit,
                              is_nested=False):
   """Gets a list of versions for a Docker nested image."""
   prefix = docker_img.GetDockerString() + "/"
+  all_versions = _GetDockerPackagesAndVersions(
+      docker_img.docker_repo, include_tags,
+      page_size, order_by, limit, is_nested)
   return [
-      ver for ver in _GetDockerPackagesAndVersions(
-          docker_img.docker_repo, include_tags, page_size, is_nested)
+      ver for ver in all_versions
       if ver["package"].startswith(prefix)
   ]
 
@@ -251,6 +259,8 @@ def _GetDockerNestedVersions(docker_img,
 def _GetDockerVersions(docker_img,
                        include_tags,
                        page_size=None,
+                       order_by=None,
+                       limit=None,
                        is_nested=False):
   """Gets a list of versions for a Docker image."""
   client = ar_requests.GetClient()
@@ -266,7 +276,7 @@ def _GetDockerVersions(docker_img,
         .ViewValueValuesEnum.FULL)
   ver_list = ar_requests.ListVersions(client, messages,
                                       docker_img.GetPackageName(), ver_view,
-                                      page_size)
+                                      page_size, order_by, limit)
 
   # If there's no result, the package name might be part of a nested package.
   # E.g. us-west1-docker.pkg.dev/fake-project/docker-repo/nested1 in
@@ -274,7 +284,7 @@ def _GetDockerVersions(docker_img,
   # Try to get the list of versions through the list of all packages.
   if not ver_list and not is_nested:
     return _GetDockerNestedVersions(
-        docker_img, include_tags, page_size, is_nested=True)
+        docker_img, include_tags, page_size, order_by, limit, is_nested=True)
 
   img_list = []
   for ver in ver_list:
@@ -501,20 +511,35 @@ class DockerVersion(object):
 
 def GetDockerImages(resource, args):
   """Gets Docker images."""
+  limit = args.limit
+  # If filter is set, we leave limiting to gcloud SDK.
+  if args.filter is not None:
+    limit = None
+
+  order_by = common_args.ParseSortByArg(args.sort_by)
+
+  # Multi-ordering is not supported yet on backend.
+  if order_by is not None:
+    if "," in order_by:
+      order_by = None
+      limit = None
+
   if isinstance(resource, DockerRepo):
     _ValidateDockerRepo(resource.GetRepositoryName())
+
     log.status.Print(
         "Listing items under project {}, location {}, repository {}.\n".format(
             resource.project, resource.location, resource.repo))
     return _GetDockerPackagesAndVersions(resource, args.include_tags,
-                                         args.page_size)
+                                         args.page_size, order_by, limit)
   elif isinstance(resource, DockerImage):
     _ValidateDockerRepo(resource.docker_repo.GetRepositoryName())
     log.status.Print(
         "Listing items under project {}, location {}, repository {}.\n".format(
             resource.docker_repo.project, resource.docker_repo.location,
             resource.docker_repo.repo))
-    return _GetDockerVersions(resource, args.include_tags, args.page_size)
+    return _GetDockerVersions(resource, args.include_tags,
+                              args.page_size, order_by, limit)
   return []
 
 

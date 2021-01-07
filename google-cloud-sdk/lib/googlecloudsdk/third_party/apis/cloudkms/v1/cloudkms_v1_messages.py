@@ -44,6 +44,10 @@ class AsymmetricDecryptRequest(_messages.Message):
 class AsymmetricDecryptResponse(_messages.Message):
   r"""Response message for KeyManagementService.AsymmetricDecrypt.
 
+  Enums:
+    ProtectionLevelValueValuesEnum: The ProtectionLevel of the
+      CryptoKeyVersion used in decryption.
+
   Fields:
     plaintext: The decrypted data originally encrypted with the matching
       public key.
@@ -59,6 +63,8 @@ class AsymmetricDecryptResponse(_messages.Message):
       integer, which will never exceed 2^32-1, and can be safely downconverted
       to uint32 in languages that support this type. NOTE: This field is in
       Beta.
+    protectionLevel: The ProtectionLevel of the CryptoKeyVersion used in
+      decryption.
     verifiedCiphertextCrc32c: Integrity verification field. A flag indicating
       whether AsymmetricDecryptRequest.ciphertext_crc32c was received by
       KeyManagementService and used for the integrity verification of the
@@ -70,9 +76,24 @@ class AsymmetricDecryptResponse(_messages.Message):
       NOTE: This field is in Beta.
   """
 
+  class ProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""The ProtectionLevel of the CryptoKeyVersion used in decryption.
+
+    Values:
+      PROTECTION_LEVEL_UNSPECIFIED: Not specified.
+      SOFTWARE: Crypto operations are performed in software.
+      HSM: Crypto operations are performed in a Hardware Security Module.
+      EXTERNAL: Crypto operations are performed by an external key manager.
+    """
+    PROTECTION_LEVEL_UNSPECIFIED = 0
+    SOFTWARE = 1
+    HSM = 2
+    EXTERNAL = 3
+
   plaintext = _messages.BytesField(1)
   plaintextCrc32c = _messages.IntegerField(2)
-  verifiedCiphertextCrc32c = _messages.BooleanField(3)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 3)
+  verifiedCiphertextCrc32c = _messages.BooleanField(4)
 
 
 class AsymmetricSignRequest(_messages.Message):
@@ -104,10 +125,16 @@ class AsymmetricSignRequest(_messages.Message):
 class AsymmetricSignResponse(_messages.Message):
   r"""Response message for KeyManagementService.AsymmetricSign.
 
+  Enums:
+    ProtectionLevelValueValuesEnum: The ProtectionLevel of the
+      CryptoKeyVersion used for signing.
+
   Fields:
     name: The resource name of the CryptoKeyVersion used for signing. Check
       this field to verify that the intended resource was used for signing.
       NOTE: This field is in Beta.
+    protectionLevel: The ProtectionLevel of the CryptoKeyVersion used for
+      signing.
     signature: The created signature.
     signatureCrc32c: Integrity verification field. A CRC32C checksum of the
       returned AsymmetricSignResponse.signature. An integrity check of
@@ -132,10 +159,25 @@ class AsymmetricSignResponse(_messages.Message):
       field is in Beta.
   """
 
+  class ProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""The ProtectionLevel of the CryptoKeyVersion used for signing.
+
+    Values:
+      PROTECTION_LEVEL_UNSPECIFIED: Not specified.
+      SOFTWARE: Crypto operations are performed in software.
+      HSM: Crypto operations are performed in a Hardware Security Module.
+      EXTERNAL: Crypto operations are performed by an external key manager.
+    """
+    PROTECTION_LEVEL_UNSPECIFIED = 0
+    SOFTWARE = 1
+    HSM = 2
+    EXTERNAL = 3
+
   name = _messages.StringField(1)
-  signature = _messages.BytesField(2)
-  signatureCrc32c = _messages.IntegerField(3)
-  verifiedDigestCrc32c = _messages.BooleanField(4)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
+  signature = _messages.BytesField(3)
+  signatureCrc32c = _messages.IntegerField(4)
+  verifiedDigestCrc32c = _messages.BooleanField(5)
 
 
 class AuditConfig(_messages.Message):
@@ -1273,6 +1315,10 @@ class DecryptRequest(_messages.Message):
 class DecryptResponse(_messages.Message):
   r"""Response message for KeyManagementService.Decrypt.
 
+  Enums:
+    ProtectionLevelValueValuesEnum: The ProtectionLevel of the
+      CryptoKeyVersion used in decryption.
+
   Fields:
     plaintext: The decrypted data originally supplied in
       EncryptRequest.plaintext.
@@ -1289,10 +1335,30 @@ class DecryptResponse(_messages.Message):
       it is a non-negative integer, which will never exceed 2^32-1, and can be
       safely downconverted to uint32 in languages that support this type.
       NOTE: This field is in Beta.
+    protectionLevel: The ProtectionLevel of the CryptoKeyVersion used in
+      decryption.
+    usedPrimary: Whether the Decryption was performed using the primary key
+      version.
   """
+
+  class ProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""The ProtectionLevel of the CryptoKeyVersion used in decryption.
+
+    Values:
+      PROTECTION_LEVEL_UNSPECIFIED: Not specified.
+      SOFTWARE: Crypto operations are performed in software.
+      HSM: Crypto operations are performed in a Hardware Security Module.
+      EXTERNAL: Crypto operations are performed by an external key manager.
+    """
+    PROTECTION_LEVEL_UNSPECIFIED = 0
+    SOFTWARE = 1
+    HSM = 2
+    EXTERNAL = 3
 
   plaintext = _messages.BytesField(1)
   plaintextCrc32c = _messages.IntegerField(2)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 3)
+  usedPrimary = _messages.BooleanField(4)
 
 
 class DestroyCryptoKeyVersionRequest(_messages.Message):
@@ -1367,6 +1433,10 @@ class EncryptRequest(_messages.Message):
 class EncryptResponse(_messages.Message):
   r"""Response message for KeyManagementService.Encrypt.
 
+  Enums:
+    ProtectionLevelValueValuesEnum: The ProtectionLevel of the
+      CryptoKeyVersion used in encryption.
+
   Fields:
     ciphertext: The encrypted data.
     ciphertextCrc32c: Integrity verification field. A CRC32C checksum of the
@@ -1382,6 +1452,8 @@ class EncryptResponse(_messages.Message):
       languages that support this type. NOTE: This field is in Beta.
     name: The resource name of the CryptoKeyVersion used in encryption. Check
       this field to verify that the intended resource was used for encryption.
+    protectionLevel: The ProtectionLevel of the CryptoKeyVersion used in
+      encryption.
     verifiedAdditionalAuthenticatedDataCrc32c: Integrity verification field. A
       flag indicating whether
       EncryptRequest.additional_authenticated_data_crc32c was received by
@@ -1403,11 +1475,26 @@ class EncryptResponse(_messages.Message):
       is in Beta.
   """
 
+  class ProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""The ProtectionLevel of the CryptoKeyVersion used in encryption.
+
+    Values:
+      PROTECTION_LEVEL_UNSPECIFIED: Not specified.
+      SOFTWARE: Crypto operations are performed in software.
+      HSM: Crypto operations are performed in a Hardware Security Module.
+      EXTERNAL: Crypto operations are performed by an external key manager.
+    """
+    PROTECTION_LEVEL_UNSPECIFIED = 0
+    SOFTWARE = 1
+    HSM = 2
+    EXTERNAL = 3
+
   ciphertext = _messages.BytesField(1)
   ciphertextCrc32c = _messages.IntegerField(2)
   name = _messages.StringField(3)
-  verifiedAdditionalAuthenticatedDataCrc32c = _messages.BooleanField(4)
-  verifiedPlaintextCrc32c = _messages.BooleanField(5)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 4)
+  verifiedAdditionalAuthenticatedDataCrc32c = _messages.BooleanField(5)
+  verifiedPlaintextCrc32c = _messages.BooleanField(6)
 
 
 class Expr(_messages.Message):
@@ -1963,6 +2050,8 @@ class PublicKey(_messages.Message):
 
   Enums:
     AlgorithmValueValuesEnum: The Algorithm associated with this key.
+    ProtectionLevelValueValuesEnum: The ProtectionLevel of the
+      CryptoKeyVersion public key.
 
   Fields:
     algorithm: The Algorithm associated with this key.
@@ -1984,6 +2073,7 @@ class PublicKey(_messages.Message):
       integer, which will never exceed 2^32-1, and can be safely downconverted
       to uint32 in languages that support this type. NOTE: This field is in
       Beta.
+    protectionLevel: The ProtectionLevel of the CryptoKeyVersion public key.
   """
 
   class AlgorithmValueValuesEnum(_messages.Enum):
@@ -2035,10 +2125,25 @@ class PublicKey(_messages.Message):
     EC_SIGN_P384_SHA384 = 15
     EXTERNAL_SYMMETRIC_ENCRYPTION = 16
 
+  class ProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""The ProtectionLevel of the CryptoKeyVersion public key.
+
+    Values:
+      PROTECTION_LEVEL_UNSPECIFIED: Not specified.
+      SOFTWARE: Crypto operations are performed in software.
+      HSM: Crypto operations are performed in a Hardware Security Module.
+      EXTERNAL: Crypto operations are performed by an external key manager.
+    """
+    PROTECTION_LEVEL_UNSPECIFIED = 0
+    SOFTWARE = 1
+    HSM = 2
+    EXTERNAL = 3
+
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   name = _messages.StringField(2)
   pem = _messages.StringField(3)
   pemCrc32c = _messages.IntegerField(4)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 5)
 
 
 class RestoreCryptoKeyVersionRequest(_messages.Message):

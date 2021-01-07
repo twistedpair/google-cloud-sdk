@@ -1987,6 +1987,32 @@ Example request body:
         supports_download=False,
     )
 
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeForwardingRulesSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.forwardingRules.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/forwardingRules/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeForwardingRulesSetLabelsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetTarget(self, request, global_params=None):
       r"""Changes target URL for forwarding rule. The new target should be of the same type as the old target.
 
@@ -2263,6 +2289,32 @@ Example request body:
         relative_path='projects/{project}/global/forwardingRules/{forwardingRule}',
         request_field='forwardingRuleResource',
         request_type_name='ComputeGlobalForwardingRulesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeGlobalForwardingRulesSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.globalForwardingRules.setLabels',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/forwardingRules/{resource}/setLabels',
+        request_field='globalSetLabelsRequest',
+        request_type_name='ComputeGlobalForwardingRulesSetLabelsRequest',
         response_type_name='Operation',
         supports_download=False,
     )

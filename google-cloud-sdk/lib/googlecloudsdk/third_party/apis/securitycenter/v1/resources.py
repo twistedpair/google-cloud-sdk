@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://securitycenter.googleapis.com/v1/'
-DOCS_URL = 'https://console.cloud.google.com/apis/api/securitycenter.googleapis.com/overview'
+DOCS_URL = 'https://cloud.google.com/security-command-center'
 
 
 class Collections(enum.Enum):

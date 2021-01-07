@@ -155,8 +155,8 @@ def _AddSubjectFlag(parser, required):
       '--subject',
       required=required,
       metavar='SUBJECT',
-      help='X.501 name of the certificate subject. Example:'
-      '--subject \"C=US,ST=California,L=Mountain View,O=Google LLC,CN=google.com\"',
+      help='X.501 name of the certificate subject. Example: --subject '
+      '"C=US,ST=California,L=Mountain View,O=Google LLC,CN=google.com"',
       type=arg_parsers.ArgDict(key_type=_StripVal,
                                value_type=_StripVal)).AddToParser(parser)
 

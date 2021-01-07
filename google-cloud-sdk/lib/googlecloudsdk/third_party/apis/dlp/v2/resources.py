@@ -89,6 +89,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_JOBTRIGGERS = (
+      'organizations.locations.jobTriggers',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'jobTriggers/{jobTriggersId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_STOREDINFOTYPES = (
       'organizations.locations.storedInfoTypes',
       '{+name}',

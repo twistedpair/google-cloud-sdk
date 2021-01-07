@@ -113,6 +113,10 @@ class PlatformError(exceptions.Error):
   """Command not supported for the platform."""
 
 
+class ArgumentError(exceptions.Error):
+  pass
+
+
 class NoTLSError(exceptions.Error):
   """TLS 1.2 support is required to connect to GKE.
 

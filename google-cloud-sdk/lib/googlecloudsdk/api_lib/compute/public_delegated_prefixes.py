@@ -37,7 +37,8 @@ class PublicDelegatedPrefixesClient(object):
     self._global_service = self.client.apitools_client.globalPublicDelegatedPrefixes
     self._regional_service = self.client.apitools_client.publicDelegatedPrefixes
 
-  def Create(self, pdp_ref, parent_prefix, ip_cidr_range, description):
+  def Create(self, pdp_ref, parent_prefix, ip_cidr_range, description,
+             enable_live_migration):
     """Creates a public delegated prefix."""
     is_regional = hasattr(pdp_ref, 'region')
 
@@ -50,7 +51,8 @@ class PublicDelegatedPrefixesClient(object):
         name=pdp_ref.Name(),
         parentPrefix=parent_prefix_uri,
         ipCidrRange=ip_cidr_range,
-        description=description)
+        description=description,
+        isLiveMigration=enable_live_migration)
 
     if is_regional:
       request = self.messages.ComputePublicDelegatedPrefixesInsertRequest(
@@ -58,15 +60,15 @@ class PublicDelegatedPrefixesClient(object):
           project=pdp_ref.project,
           region=pdp_ref.region)
 
-      return self.client.MakeRequests(
-          [(self._regional_service, 'Insert', request)])[0]
+      return self.client.MakeRequests([(self._regional_service, 'Insert',
+                                        request)])[0]
     else:
       request = self.messages.ComputeGlobalPublicDelegatedPrefixesInsertRequest(
           publicDelegatedPrefix=public_delegated_prefix,
           project=pdp_ref.project)
 
-      return self.client.MakeRequests(
-          [(self._global_service, 'Insert', request)])[0]
+      return self.client.MakeRequests([(self._global_service, 'Insert', request)
+                                      ])[0]
 
   def Delete(self, pdp_ref):
     """Deletes a public delegated prefix."""
@@ -79,14 +81,14 @@ class PublicDelegatedPrefixesClient(object):
           project=pdp_ref.project,
           region=pdp_ref.region)
 
-      return self.client.MakeRequests(
-          [(self._regional_service, 'Delete', request)])
+      return self.client.MakeRequests([(self._regional_service, 'Delete',
+                                        request)])
     else:
       request = self.messages.ComputeGlobalPublicDelegatedPrefixesDeleteRequest(
           publicDelegatedPrefix=pdp_ref.Name(), project=pdp_ref.project)
 
-      return self.client.MakeRequests(
-          [(self._global_service, 'Delete', request)])
+      return self.client.MakeRequests([(self._global_service, 'Delete', request)
+                                      ])
 
   def Get(self, pdp_ref):
     """Gets a public delegated prefix."""
@@ -99,14 +101,14 @@ class PublicDelegatedPrefixesClient(object):
           project=pdp_ref.project,
           region=pdp_ref.region)
 
-      return self.client.MakeRequests(
-          [(self._regional_service, 'Get', request)])[0]
+      return self.client.MakeRequests([(self._regional_service, 'Get', request)
+                                      ])[0]
     else:
       request = self.messages.ComputeGlobalPublicDelegatedPrefixesGetRequest(
           publicDelegatedPrefix=pdp_ref.Name(), project=pdp_ref.project)
 
-      return self.client.MakeRequests(
-          [(self._global_service, 'Get', request)])[0]
+      return self.client.MakeRequests([(self._global_service, 'Get', request)
+                                      ])[0]
 
   def _Patch(self, pdp_ref, resource):
     """Patches a public delegated prefix resource.
@@ -190,8 +192,7 @@ class PublicDelegatedPrefixesClient(object):
             description=description,
             ipCidrRange=ip_cidr_range,
             delegateeProject=delegatee_project,
-            isAddress=is_addresses
-        ))
+            isAddress=is_addresses))
 
     return self._Patch(pdp_ref, resource)
 

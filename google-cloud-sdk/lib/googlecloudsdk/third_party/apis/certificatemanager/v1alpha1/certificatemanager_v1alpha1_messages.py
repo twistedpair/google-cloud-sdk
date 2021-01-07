@@ -240,6 +240,7 @@ class CertificateMap(_messages.Message):
     name: A user-defined name of the Certificate Map. Certificate Map names
       must be unique globally and match pattern
       `projects/*/locations/*/certificateMaps/*`
+    updateTime: Output only. The update timestamp of a Certificate Map.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -271,6 +272,7 @@ class CertificateMap(_messages.Message):
   gclbTargets = _messages.MessageField('GclbTarget', 3, repeated=True)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class CertificateMapEntry(_messages.Message):
@@ -929,7 +931,7 @@ class CreateReferenceRequest(_messages.Message):
 
   Fields:
     parent: Required. The parent resource name (target_resource of this
-      reference) For example: `projects/{my-
+      reference). For example: `targetservice.googleapis.com/projects/{my-
       project}/locations/{location}/instances/{my-instance}`.
     reference: Required. The reference to be created.
     referenceId: The unique id of this resource. Can be any arbitrary string,
@@ -1004,9 +1006,9 @@ class DeleteReferenceRequest(_messages.Message):
 
   Fields:
     name: Required. Resource name of the reference, in the following format:
-      `{target_resource}/references/{reference_id}`. For example:
-      `projects/{my-project}/locations/{location}/instances/{my-
-      instance}/references/{xyz}`.
+      `{targer_service}/{target_resource}/references/{reference_id}`. For
+      example: `targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
     requestId: Optional. Request ID is an idempotency ID of the request. It
       must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
       is not supported.
@@ -1084,9 +1086,9 @@ class GetReferenceRequest(_messages.Message):
 
   Fields:
     name: Required. Resource name of the reference, in the following format:
-      `{target_resource}/references/{reference_id}`. For example:
-      `projects/{my-project}/locations/{location}/instances/{my-
-      instance}/references/{xyz}`.
+      `{target_service}/{target_resource}/references/{reference_id}`. For
+      example: `targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
   """
 
   name = _messages.StringField(1)
@@ -1193,7 +1195,7 @@ class ListReferencesRequest(_messages.Message):
     pageToken: The next_page_token value returned from a previous List
       request, if any.
     parent: Required. The parent resource name (target_resource of this
-      reference) For example: `projects/{my-
+      reference). For example: `targetservice.googleapis.com/projects/{my-
       project}/locations/{location}/instances/{my-instance}`.
   """
 

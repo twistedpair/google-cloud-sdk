@@ -43,8 +43,7 @@ def AddExportFlags(parser, schema_path=None):
           The exported data will not contain any output-only fields.
           Alternatively, you may omit this flag to write to standard output."""
   if schema_path is not None:
-    help_text += """ A
-          schema describing the export/import format can be found in:
+    help_text += """ For a schema describing the export/import format, see:
           {}.
       """.format(schema_path)
   parser.add_argument(
@@ -66,8 +65,7 @@ def AddImportFlags(parser, schema_path=None):
           YAML file must not contain any output-only fields. Alternatively, you
           may omit this flag to read from standard input."""
   if schema_path is not None:
-    help_text += """ A schema describing
-          the export/import format can be found in:
+    help_text += """For a schema describing the export/import format, see:
           {}.
       """.format(schema_path)
     if '$CLOUDSDKROOT' in schema_path:

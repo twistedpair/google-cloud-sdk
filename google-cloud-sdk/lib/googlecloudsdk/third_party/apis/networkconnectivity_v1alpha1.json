@@ -605,7 +605,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. The name of a PrivateRange. Unique per location",
+          "description": "Immutable. Full resource name (i.e. '[...]\/projects\/p\/locations\/l\/privateRanges\/foo') See https:\/\/google.aip.dev\/122#full-resource-names",
           "type": "string"
         },
         "createTime": {
@@ -942,7 +942,7 @@
           ]
         },
         "userLabels": {
-          "description": "User defined labels for the resource that this operation is associated with. Only a combination of 1000 user labels per consumer project are allowed.",
+          "description": "Private Preview. This feature is only available for approved services. User defined labels for the resource that this operation is associated with. Only a combination of 1000 user labels per consumer project are allowed.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -2049,275 +2049,6 @@
                       "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                     }
                   }
-                },
-                "policyBasedRoutes": {
-                  "methods": {
-                    "list": {
-                      "id": "networkconnectivity.projects.locations.global.policyBasedRoutes.list",
-                      "path": "v1alpha1/{+parent}/policyBasedRoutes",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The parent resource's name.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global$",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The maximum number of results per page that should be returned.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "The page token.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "A filter expression that filters the results listed in the response.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "orderBy": {
-                          "description": "Sort the results by a certain order.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListPolicyBasedRoutesResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists PolicyBasedRoutes in a given project and location."
-                    },
-                    "get": {
-                      "id": "networkconnectivity.projects.locations.global.policyBasedRoutes.get",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. Name of the PolicyBasedRoute resource to get.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/policyBasedRoutes\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "PolicyBasedRoute"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets details of a single PolicyBasedRoute."
-                    },
-                    "create": {
-                      "id": "networkconnectivity.projects.locations.global.policyBasedRoutes.create",
-                      "path": "v1alpha1/{+parent}/policyBasedRoutes",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The parent resource's name of the PolicyBasedRoute.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global$",
-                          "type": "string"
-                        },
-                        "policyBasedRouteId": {
-                          "description": "Optional. Unique id for the Policy Based Route to create.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "requestId": {
-                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "PolicyBasedRoute"
-                      },
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Creates a new PolicyBasedRoute in a given project and location."
-                    },
-                    "patch": {
-                      "id": "networkconnectivity.projects.locations.global.policyBasedRoutes.patch",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}",
-                      "httpMethod": "PATCH",
-                      "parameters": {
-                        "name": {
-                          "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must be a lowercase letter, and all following characters (except for the last character) must be a dash, lowercase letter, or digit. The last character must be a lowercase letter or digit.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/policyBasedRoutes\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "updateMask": {
-                          "description": "Optional. Field mask is used to specify the fields to be overwritten in the PolicyBasedRoute resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        },
-                        "requestId": {
-                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "PolicyBasedRoute"
-                      },
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Updates the parameters of a single PolicyBasedRoute."
-                    },
-                    "delete": {
-                      "id": "networkconnectivity.projects.locations.global.policyBasedRoutes.delete",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. Name of the PolicyBasedRoute resource to delete.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/policyBasedRoutes\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "requestId": {
-                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes a single PolicyBasedRoute."
-                    },
-                    "setIamPolicy": {
-                      "id": "networkconnectivity.projects.locations.global.policyBasedRoutes.setIamPolicy",
-                      "path": "v1alpha1/{+resource}:setIamPolicy",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}:setIamPolicy",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/policyBasedRoutes\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "request": {
-                        "$ref": "SetIamPolicyRequest"
-                      },
-                      "response": {
-                        "$ref": "Policy"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
-                    },
-                    "getIamPolicy": {
-                      "id": "networkconnectivity.projects.locations.global.policyBasedRoutes.getIamPolicy",
-                      "path": "v1alpha1/{+resource}:getIamPolicy",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}:getIamPolicy",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/policyBasedRoutes\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "options.requestedPolicyVersion": {
-                          "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "response": {
-                        "$ref": "Policy"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
-                    },
-                    "testIamPermissions": {
-                      "id": "networkconnectivity.projects.locations.global.policyBasedRoutes.testIamPermissions",
-                      "path": "v1alpha1/{+resource}:testIamPermissions",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}:testIamPermissions",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/policyBasedRoutes\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "request": {
-                        "$ref": "TestIamPermissionsRequest"
-                      },
-                      "response": {
-                        "$ref": "TestIamPermissionsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
-                    }
-                  }
                 }
               }
             },
@@ -2590,6 +2321,275 @@
                 }
               }
             },
+            "policyBasedRoutes": {
+              "methods": {
+                "list": {
+                  "id": "networkconnectivity.projects.locations.policyBasedRoutes.list",
+                  "path": "v1alpha1/{+parent}/policyBasedRoutes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource's name.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of results per page that should be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "A filter expression that filters the results listed in the response.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Sort the results by a certain order.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListPolicyBasedRoutesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists PolicyBasedRoutes in a given project and location."
+                },
+                "get": {
+                  "id": "networkconnectivity.projects.locations.policyBasedRoutes.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes/{policyBasedRoutesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the PolicyBasedRoute resource to get.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "PolicyBasedRoute"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single PolicyBasedRoute."
+                },
+                "create": {
+                  "id": "networkconnectivity.projects.locations.policyBasedRoutes.create",
+                  "path": "v1alpha1/{+parent}/policyBasedRoutes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource's name of the PolicyBasedRoute.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "policyBasedRouteId": {
+                      "description": "Optional. Unique id for the Policy Based Route to create.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "PolicyBasedRoute"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new PolicyBasedRoute in a given project and location."
+                },
+                "patch": {
+                  "id": "networkconnectivity.projects.locations.policyBasedRoutes.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes/{policyBasedRoutesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must be a lowercase letter, and all following characters (except for the last character) must be a dash, lowercase letter, or digit. The last character must be a lowercase letter or digit.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the PolicyBasedRoute resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "PolicyBasedRoute"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single PolicyBasedRoute."
+                },
+                "delete": {
+                  "id": "networkconnectivity.projects.locations.policyBasedRoutes.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes/{policyBasedRoutesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the PolicyBasedRoute resource to delete.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single PolicyBasedRoute."
+                },
+                "setIamPolicy": {
+                  "id": "networkconnectivity.projects.locations.policyBasedRoutes.setIamPolicy",
+                  "path": "v1alpha1/{+resource}:setIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes/{policyBasedRoutesId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "networkconnectivity.projects.locations.policyBasedRoutes.getIamPolicy",
+                  "path": "v1alpha1/{+resource}:getIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes/{policyBasedRoutesId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "networkconnectivity.projects.locations.policyBasedRoutes.testIamPermissions",
+                  "path": "v1alpha1/{+resource}:testIamPermissions",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes/{policyBasedRoutesId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
             "privateRanges": {
               "methods": {
                 "list": {
@@ -2677,7 +2677,7 @@
                       "type": "string"
                     },
                     "privateRangeId": {
-                      "description": "Optional. Unique id for the PrivateRange to be created.",
+                      "description": "Optional. Resource ID (i.e. 'foo' in '[...]\/projects\/p\/locations\/l\/privateRanges\/foo') See https:\/\/google.aip.dev\/122#resource-id-segments Unique per location.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2708,7 +2708,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Immutable. The name of a PrivateRange. Unique per location",
+                      "description": "Immutable. Full resource name (i.e. '[...]\/projects\/p\/locations\/l\/privateRanges\/foo') See https:\/\/google.aip.dev\/122#full-resource-names",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateRanges\/[^\/]+$",

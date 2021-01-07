@@ -19,19 +19,16 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.service_directory import base as sd_base
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.iam import iam_util
 
-_API_NAME = 'servicedirectory'
-_API_VERSION = 'v1beta1'
 
-
-class NamespacesClient(object):
+class NamespacesClient(sd_base.ServiceDirectoryApiLibBase):
   """Client for namespaces in the Service Directory API."""
 
-  def __init__(self):
-    self.client = apis.GetClientInstance(_API_NAME, _API_VERSION)
-    self.msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)
+  def __init__(self, release_track=base.ReleaseTrack.GA):
+    super(NamespacesClient, self).__init__(release_track)
     self.service = self.client.projects_locations_namespaces
 
   def Create(self, namespace_ref, labels=None):

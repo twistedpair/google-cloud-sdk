@@ -236,6 +236,89 @@ class AiplatformProjectsLocationsCustomJobsOperationsWaitRequest(_messages.Messa
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectsLocationsDataLabelingJobsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDataLabelingJobsCancelRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1CancelDataLabelingJobRequest: A
+      GoogleCloudAiplatformV1beta1CancelDataLabelingJobRequest resource to be
+      passed as the request body.
+    name: Required. The name of the DataLabelingJob. Format: `projects/{projec
+      t}/locations/{location}/dataLabelingJobs/{data_labeling_job}`
+  """
+
+  googleCloudAiplatformV1beta1CancelDataLabelingJobRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1CancelDataLabelingJobRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsDataLabelingJobsCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDataLabelingJobsCreateRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1DataLabelingJob: A
+      GoogleCloudAiplatformV1beta1DataLabelingJob resource to be passed as the
+      request body.
+    parent: Required. The parent of the DataLabelingJob. Format:
+      `projects/{project}/locations/{location}`
+  """
+
+  googleCloudAiplatformV1beta1DataLabelingJob = _messages.MessageField('GoogleCloudAiplatformV1beta1DataLabelingJob', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsDataLabelingJobsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDataLabelingJobsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the DataLabelingJob to be deleted. Format: `pr
+      ojects/{project}/locations/{location}/dataLabelingJobs/{data_labeling_jo
+      b}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDataLabelingJobsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDataLabelingJobsGetRequest object.
+
+  Fields:
+    name: Required. The name of the DataLabelingJob. Format: `projects/{projec
+      t}/locations/{location}/dataLabelingJobs/{data_labeling_job}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDataLabelingJobsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDataLabelingJobsListRequest object.
+
+  Fields:
+    filter: The standard list filter. Supported fields: * `display_name`
+      supports = and !=. * `state` supports = and !=. Some examples of using
+      the filter are: * `state="JOB_STATE_SUCCEEDED" AND
+      display_name="my_job"` * `state="JOB_STATE_RUNNING" OR
+      display_name="my_job"` * `NOT display_name="my_job"` *
+      `state="JOB_STATE_FAILED"`
+    orderBy: A comma-separated list of fields to order by, sorted in ascending
+      order by default. Use `desc` after a field name for descending.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+    parent: Required. The parent of the DataLabelingJob. Format:
+      `projects/{project}/locations/{location}`
+    readMask: Mask specifying which fields to read. FieldMask represents a set
+      of symbolic field paths. For example, the mask can be `paths: "name"`.
+      The "name" here is a field in DataLabelingJob. If this field is not set,
+      all fields of the DataLabelingJob are returned.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  readMask = _messages.StringField(6)
+
+
 class AiplatformProjectsLocationsDataLabelingJobsOperationsCancelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsDataLabelingJobsOperationsCancelRequest
   object.
@@ -638,10 +721,16 @@ class AiplatformProjectsLocationsDatasetsListRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsDatasetsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: An expression for filtering the results of the request. For field
+      names both snake_case and camelCase are supported. * `display_name`:
+      supports = and != * `metadata_schema_uri`: supports = and != * `labels`
+      supports general map functions that is: * `labels.key=value` - key:value
+      equality * `labels.key:* or labels:key - key existence * A key including
+      a space must be quoted. `labels."a key"`. Some examples: *
+      `displayName="myDisplayName"` * `labels.myKey="myValue"`
     orderBy: A comma-separated list of fields to order by, sorted in ascending
       order. Use "desc" after a field name for descending. Supported fields: *
-      `display_name` * `data_item_count` * `create_time` * `update_time`
+      `display_name` * `create_time` * `update_time`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
     parent: Required. The name of the Dataset's parent resource. Format:
@@ -877,15 +966,13 @@ class AiplatformProjectsLocationsEndpointsListRequest(_messages.Message):
   Fields:
     filter: Optional. An expression for filtering the results of the request.
       For field names both snake_case and camelCase are supported. *
-      `endpoint` supports = and !=. `endpoint` represents the Endpoint ID, ie.
-      the last segment of the Endpoint's resource name. * `display_name`
-      supports =, != and regex() (uses
-      [re2](https://github.com/google/re2/wiki/Syntax) syntax) * `labels`
-      supports general map functions that is: `labels.key=value` - key:value
-      equality `labels.key:* or labels:key - key existence A key including a
-      space must be quoted. `labels."a key"`. Some examples: * `endpoint=1` *
-      `displayName="myDisplayName"` * `regex(display_name, "^A") -> The
-      display name starts with an A. * `labels.myKey="myValue"`
+      `endpoint` supports = and !=. `endpoint` represents the Endpoint ID,
+      i.e. the last segment of the Endpoint's resource name. * `display_name`
+      supports = and, != * `labels` supports general map functions that is: *
+      `labels.key=value` - key:value equality * `labels.key:* or labels:key -
+      key existence * A key including a space must be quoted. `labels."a
+      key"`. Some examples: * `endpoint=1` * `displayName="myDisplayName"` *
+      `labels.myKey="myValue"`
     pageSize: Optional. The standard list page size.
     pageToken: Optional. The standard list page token. Typically obtained via
       ListEndpointsResponse.next_page_token of the previous
@@ -1736,7 +1823,14 @@ class AiplatformProjectsLocationsModelsListRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsModelsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: An expression for filtering the results of the request. For field
+      names both snake_case and camelCase are supported. * `model` supports =
+      and !=. `model` represents the Model ID, i.e. the last segment of the
+      Model's resource name. * `display_name` supports = and != * `labels`
+      supports general map functions that is: * `labels.key=value` - key:value
+      equality * `labels.key:* or labels:key - key existence * A key including
+      a space must be quoted. `labels."a key"`. Some examples: * `model=1234`
+      * `displayName="myDisplayName"` * `labels.myKey="myValue"`
     pageSize: The standard list page size.
     pageToken: The standard list page token. Typically obtained via
       ListModelsResponse.next_page_token of the previous
@@ -6156,6 +6250,29 @@ class GoogleCloudAiplatformV1alpha1UploadModelResponse(_messages.Message):
   model = _messages.StringField(1)
 
 
+class GoogleCloudAiplatformV1beta1ActiveLearningConfig(_messages.Message):
+  r"""Parameters that configure active learning pipeline. Active learning will
+  label the data incrementally by several iterations. For every iteration, it
+  will select a batch of data based on the sampling strategy.
+
+  Fields:
+    maxDataItemCount: Max number of human labeled DataItems.
+    maxDataItemPercentage: Max percent of total DataItems for human labeling.
+    sampleConfig: Active learning data sampling config. For every active
+      learning labeling iteration, it will select a batch of data based on the
+      sampling strategy.
+    trainingConfig: CMLE training config. For every active learning labeling
+      iteration, system will train a machine learning model on CMLE. The
+      trained model will be used by data sampling algorithm to select
+      DataItems.
+  """
+
+  maxDataItemCount = _messages.IntegerField(1)
+  maxDataItemPercentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  sampleConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SampleConfig', 3)
+  trainingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1TrainingConfig', 4)
+
+
 class GoogleCloudAiplatformV1beta1Annotation(_messages.Message):
   r"""Used to assign specific AnnotationSpec to a particular area of a
   DataItem or the whole part of the DataItem.
@@ -6442,6 +6559,9 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
       may be provided (and the job will use these resources), if the Model
       doesn't support AUTOMATIC_RESOURCES, this config must be provided.
     displayName: Required. The user-defined name of this BatchPredictionJob.
+    encryptionSpec: Customer-managed encryption key options for a
+      BatchPredictionJob. If this is set, then all resources created by the
+      BatchPredictionJob will be encrypted with the provided encryption key.
     endTime: Output only. Time when the BatchPredictionJob entered any of the
       following states: `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED`,
       `JOB_STATE_CANCELLED`.
@@ -6561,23 +6681,24 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
   createTime = _messages.StringField(2)
   dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchDedicatedResources', 3)
   displayName = _messages.StringField(4)
-  endTime = _messages.StringField(5)
-  error = _messages.MessageField('GoogleRpcStatus', 6)
-  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 7)
-  generateExplanation = _messages.BooleanField(8)
-  inputConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobInputConfig', 9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  manualBatchTuningParameters = _messages.MessageField('GoogleCloudAiplatformV1beta1ManualBatchTuningParameters', 11)
-  model = _messages.StringField(12)
-  modelParameters = _messages.MessageField('extra_types.JsonValue', 13)
-  name = _messages.StringField(14)
-  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobOutputConfig', 15)
-  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobOutputInfo', 16)
-  partialFailures = _messages.MessageField('GoogleRpcStatus', 17, repeated=True)
-  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1beta1ResourcesConsumed', 18)
-  startTime = _messages.StringField(19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  updateTime = _messages.StringField(21)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 5)
+  endTime = _messages.StringField(6)
+  error = _messages.MessageField('GoogleRpcStatus', 7)
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 8)
+  generateExplanation = _messages.BooleanField(9)
+  inputConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobInputConfig', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  manualBatchTuningParameters = _messages.MessageField('GoogleCloudAiplatformV1beta1ManualBatchTuningParameters', 12)
+  model = _messages.StringField(13)
+  modelParameters = _messages.MessageField('extra_types.JsonValue', 14)
+  name = _messages.StringField(15)
+  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobOutputConfig', 16)
+  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobOutputInfo', 17)
+  partialFailures = _messages.MessageField('GoogleRpcStatus', 18, repeated=True)
+  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1beta1ResourcesConsumed', 19)
+  startTime = _messages.StringField(20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  updateTime = _messages.StringField(22)
 
 
 class GoogleCloudAiplatformV1beta1BatchPredictionJobInputConfig(_messages.Message):
@@ -6692,6 +6813,10 @@ class GoogleCloudAiplatformV1beta1CancelCustomJobRequest(_messages.Message):
   r"""Request message for JobService.CancelCustomJob."""
 
 
+class GoogleCloudAiplatformV1beta1CancelDataLabelingJobRequest(_messages.Message):
+  r"""Request message for DataLabelingJobService.CancelDataLabelingJob."""
+
+
 class GoogleCloudAiplatformV1beta1CancelHyperparameterTuningJobRequest(_messages.Message):
   r"""Request message for JobService.CancelHyperparameterTuningJob."""
 
@@ -6804,6 +6929,9 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
     createTime: Output only. Time when the CustomJob was created.
     displayName: Required. The display name of the CustomJob. The name can be
       up to 128 characters long and can be consist of any UTF-8 characters.
+    encryptionSpec: Customer-managed encryption key options for a CustomJob.
+      If this is set, then all resources created by the CustomJob will be
+      encrypted with the provided encryption key.
     endTime: Output only. Time when the CustomJob entered any of the following
       states: `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED`,
       `JOB_STATE_CANCELLED`.
@@ -6880,14 +7008,15 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
 
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  error = _messages.MessageField('GoogleRpcStatus', 4)
-  jobSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1CustomJobSpec', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  startTime = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 3)
+  endTime = _messages.StringField(4)
+  error = _messages.MessageField('GoogleRpcStatus', 5)
+  jobSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1CustomJobSpec', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  startTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
@@ -6917,7 +7046,8 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
     scheduling: Scheduling options for a CustomJob.
     serviceAccount: Specifies the service account for workload run-as account.
       Users submitting jobs must have act-as permission on this run-as
-      account.
+      account. If unspecified, the AI Platform Custom Code Service Agent for
+      the CustomJob's project is used.
     workerPoolSpecs: Required. The spec of the worker pools including machine
       type and Docker image.
   """
@@ -7001,6 +7131,194 @@ class GoogleCloudAiplatformV1beta1DataItem(_messages.Message):
   updateTime = _messages.StringField(6)
 
 
+class GoogleCloudAiplatformV1beta1DataLabelingJob(_messages.Message):
+  r"""DataLabelingJob is used to trigger a human labeling job on unlabeled
+  data from the following Dataset:
+
+  Enums:
+    StateValueValuesEnum: Output only. The detailed state of the job.
+
+  Messages:
+    AnnotationLabelsValue: Labels to assign to annotations generated by this
+      DataLabelingJob. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels. System reserved label keys are prefixed with
+      "aiplatform.googleapis.com/" and are immutable.
+    LabelsValue: The labels with user-defined metadata to organize your
+      DataLabelingJobs. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels. System reserved label keys are prefixed with
+      "aiplatform.googleapis.com/" and are immutable. Following system labels
+      exist for each DataLabelingJob: * "aiplatform.googleapis.com/schema":
+      output only, its value is the inputs_schema's title.
+
+  Fields:
+    activeLearningConfig: Parameters that configure active learning pipeline.
+      Active learning will label the data incrementally via several
+      iterations. For every iteration, it will select a batch of data based on
+      the sampling strategy.
+    annotationLabels: Labels to assign to annotations generated by this
+      DataLabelingJob. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels. System reserved label keys are prefixed with
+      "aiplatform.googleapis.com/" and are immutable.
+    createTime: Output only. Timestamp when this DataLabelingJob was created.
+    currentSpend: Output only. Estimated cost(in US dollars) that the
+      DataLabelingJob has incurred to date.
+    datasets: Required. Dataset resource names. Right now we only support
+      labeling from a single Dataset. Format:
+      `projects/{project}/locations/{location}/datasets/{dataset}`
+    displayName: Required. The user-defined name of the DataLabelingJob. The
+      name can be up to 128 characters long and can be consist of any UTF-8
+      characters. Display name of a DataLabelingJob.
+    error: Output only. DataLabelingJob errors. It is only populated when
+      job's state is `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.
+    inputs: Required. Input config parameters for the DataLabelingJob.
+    inputsSchemaUri: Required. Points to a YAML file stored on Google Cloud
+      Storage describing the config for a specific type of DataLabelingJob.
+      The schema files that can be used here are found in the
+      https://storage.googleapis.com/google-cloud-aiplatform bucket in the
+      /schema/datalabelingjob/inputs/ folder.
+    instructionUri: Required. The Google Cloud Storage location of the
+      instruction pdf. This pdf is shared with labelers, and provides detailed
+      description on how to label DataItems in Datasets.
+    labelerCount: Required. Number of labelers to work on each DataItem.
+    labelingProgress: Output only. Current labeling job progress percentage
+      scaled in interval [0, 100], indicating the percentage of DataItems that
+      has been finished.
+    labels: The labels with user-defined metadata to organize your
+      DataLabelingJobs. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels. System reserved label keys are prefixed with
+      "aiplatform.googleapis.com/" and are immutable. Following system labels
+      exist for each DataLabelingJob: * "aiplatform.googleapis.com/schema":
+      output only, its value is the inputs_schema's title.
+    name: Output only. Resource name of the DataLabelingJob.
+    specialistPools: The SpecialistPools' resource names associated with this
+      job.
+    state: Output only. The detailed state of the job.
+    updateTime: Output only. Timestamp when this DataLabelingJob was updated
+      most recently.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The detailed state of the job.
+
+    Values:
+      JOB_STATE_UNSPECIFIED: The job state is unspecified.
+      JOB_STATE_QUEUED: The job has been just created or resumed and
+        processing has not yet begun.
+      JOB_STATE_PENDING: The service is preparing to run the job.
+      JOB_STATE_RUNNING: The job is in progress.
+      JOB_STATE_SUCCEEDED: The job completed successfully.
+      JOB_STATE_FAILED: The job failed.
+      JOB_STATE_CANCELLING: The job is being cancelled. From this state the
+        job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or
+        `JOB_STATE_CANCELLED`.
+      JOB_STATE_CANCELLED: The job has been cancelled.
+      JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+    """
+    JOB_STATE_UNSPECIFIED = 0
+    JOB_STATE_QUEUED = 1
+    JOB_STATE_PENDING = 2
+    JOB_STATE_RUNNING = 3
+    JOB_STATE_SUCCEEDED = 4
+    JOB_STATE_FAILED = 5
+    JOB_STATE_CANCELLING = 6
+    JOB_STATE_CANCELLED = 7
+    JOB_STATE_PAUSED = 8
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationLabelsValue(_messages.Message):
+    r"""Labels to assign to annotations generated by this DataLabelingJob.
+    Label keys and values can be no longer than 64 characters (Unicode
+    codepoints), can only contain lowercase letters, numeric characters,
+    underscores and dashes. International characters are allowed. See
+    https://goo.gl/xmQnxf for more information and examples of labels. System
+    reserved label keys are prefixed with "aiplatform.googleapis.com/" and are
+    immutable.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AnnotationLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels with user-defined metadata to organize your
+    DataLabelingJobs. Label keys and values can be no longer than 64
+    characters (Unicode codepoints), can only contain lowercase letters,
+    numeric characters, underscores and dashes. International characters are
+    allowed. See https://goo.gl/xmQnxf for more information and examples of
+    labels. System reserved label keys are prefixed with
+    "aiplatform.googleapis.com/" and are immutable. Following system labels
+    exist for each DataLabelingJob: * "aiplatform.googleapis.com/schema":
+    output only, its value is the inputs_schema's title.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  activeLearningConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ActiveLearningConfig', 1)
+  annotationLabels = _messages.MessageField('AnnotationLabelsValue', 2)
+  createTime = _messages.StringField(3)
+  currentSpend = _messages.MessageField('GoogleTypeMoney', 4)
+  datasets = _messages.StringField(5, repeated=True)
+  displayName = _messages.StringField(6)
+  error = _messages.MessageField('GoogleRpcStatus', 7)
+  inputs = _messages.MessageField('extra_types.JsonValue', 8)
+  inputsSchemaUri = _messages.StringField(9)
+  instructionUri = _messages.StringField(10)
+  labelerCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  labelingProgress = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  labels = _messages.MessageField('LabelsValue', 13)
+  name = _messages.StringField(14)
+  specialistPools = _messages.StringField(15, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  updateTime = _messages.StringField(17)
+
+
 class GoogleCloudAiplatformV1beta1Dataset(_messages.Message):
   r"""A collection of DataItems and Annotations on them.
 
@@ -7021,6 +7339,9 @@ class GoogleCloudAiplatformV1beta1Dataset(_messages.Message):
     createTime: Output only. Timestamp when this Dataset was created.
     displayName: Required. The user-defined name of the Dataset. The name can
       be up to 128 characters long and can be consist of any UTF-8 characters.
+    encryptionSpec: Customer-managed encryption key spec for a Dataset. If
+      set, this Dataset and all sub-resources of this Dataset will be secured
+      by this key.
     etag: Used to perform consistent read-modify-write updates. If not set, a
       blind "overwrite" update happens.
     labels: The labels with user-defined metadata to organize your Datasets.
@@ -7079,12 +7400,13 @@ class GoogleCloudAiplatformV1beta1Dataset(_messages.Message):
 
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  metadata = _messages.MessageField('extra_types.JsonValue', 5)
-  metadataSchemaUri = _messages.StringField(6)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  metadata = _messages.MessageField('extra_types.JsonValue', 6)
+  metadataSchemaUri = _messages.StringField(7)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
@@ -7288,6 +7610,21 @@ class GoogleCloudAiplatformV1beta1DiskSpec(_messages.Message):
   bootDiskType = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1beta1EncryptionSpec(_messages.Message):
+  r"""Represents a customer-managed encryption key spec that can be applied to
+  a top-level resource.
+
+  Fields:
+    kmsKeyName: Required. The Cloud KMS resource identifier of the customer
+      managed encryption key used to protect a resource. Has the form:
+      `projects/my-project/locations/my-region/keyRings/my-kr/cryptoKeys/my-
+      key`. The key needs to be in the same region as where the compute
+      resource is created.
+  """
+
+  kmsKeyName = _messages.StringField(1)
+
+
 class GoogleCloudAiplatformV1beta1Endpoint(_messages.Message):
   r"""Models are deployed into it, and afterwards Endpoint is called to obtain
   predictions and explanations.
@@ -7313,6 +7650,9 @@ class GoogleCloudAiplatformV1beta1Endpoint(_messages.Message):
     description: The description of the Endpoint.
     displayName: Required. The display name of the Endpoint. The name can be
       up to 128 characters long and can be consist of any UTF-8 characters.
+    encryptionSpec: Customer-managed encryption key spec for an Endpoint. If
+      set, this Endpoint and all sub-resources of this Endpoint will be
+      secured by this key.
     etag: Used to perform consistent read-modify-write updates. If not set, a
       blind "overwrite" update happens.
     labels: The labels with user-defined metadata to organize your Endpoints.
@@ -7390,11 +7730,12 @@ class GoogleCloudAiplatformV1beta1Endpoint(_messages.Message):
   deployedModels = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedModel', 2, repeated=True)
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  trafficSplit = _messages.MessageField('TrafficSplitValue', 8)
-  updateTime = _messages.StringField(9)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  trafficSplit = _messages.MessageField('TrafficSplitValue', 9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudAiplatformV1beta1EnvVar(_messages.Message):
@@ -8211,6 +8552,10 @@ class GoogleCloudAiplatformV1beta1HyperparameterTuningJob(_messages.Message):
     displayName: Required. The display name of the HyperparameterTuningJob.
       The name can be up to 128 characters long and can be consist of any
       UTF-8 characters.
+    encryptionSpec: Customer-managed encryption key options for a
+      HyperparameterTuningJob. If this is set, then all resources created by
+      the HyperparameterTuningJob will be encrypted with the provided
+      encryption key.
     endTime: Output only. Time when the HyperparameterTuningJob entered any of
       the following states: `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED`,
       `JOB_STATE_CANCELLED`.
@@ -8298,19 +8643,20 @@ class GoogleCloudAiplatformV1beta1HyperparameterTuningJob(_messages.Message):
 
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  error = _messages.MessageField('GoogleRpcStatus', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  maxFailedTrialCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  maxTrialCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  name = _messages.StringField(8)
-  parallelTrialCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  startTime = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  studySpec = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpec', 12)
-  trialJobSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1CustomJobSpec', 13)
-  trials = _messages.MessageField('GoogleCloudAiplatformV1beta1Trial', 14, repeated=True)
-  updateTime = _messages.StringField(15)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 3)
+  endTime = _messages.StringField(4)
+  error = _messages.MessageField('GoogleRpcStatus', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  maxFailedTrialCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  maxTrialCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  name = _messages.StringField(9)
+  parallelTrialCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  studySpec = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpec', 13)
+  trialJobSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1CustomJobSpec', 14)
+  trials = _messages.MessageField('GoogleCloudAiplatformV1beta1Trial', 15, repeated=True)
+  updateTime = _messages.StringField(16)
 
 
 class GoogleCloudAiplatformV1beta1ImportDataConfig(_messages.Message):
@@ -8560,6 +8906,19 @@ class GoogleCloudAiplatformV1beta1ListDataItemsResponse(_messages.Message):
   """
 
   dataItems = _messages.MessageField('GoogleCloudAiplatformV1beta1DataItem', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1ListDataLabelingJobsResponse(_messages.Message):
+  r"""Response message for JobService.ListDataLabelingJobs.
+
+  Fields:
+    dataLabelingJobs: A list of DataLabelingJobs that matches the specified
+      filter in the request.
+    nextPageToken: The standard List next-page token.
+  """
+
+  dataLabelingJobs = _messages.MessageField('GoogleCloudAiplatformV1beta1DataLabelingJob', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -9010,6 +9369,9 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
     description: The description of the Model.
     displayName: Required. The display name of the Model. The name can be up
       to 128 characters long and can be consist of any UTF-8 characters.
+    encryptionSpec: Customer-managed encryption key spec for a Model. If set,
+      this Model and all sub-resources of this Model will be secured by this
+      key.
     etag: Used to perform consistent read-modify-write updates. If not set, a
       blind "overwrite" update happens.
     explanationSpec: The default explanation specification for this Model. The
@@ -9140,19 +9502,20 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
   deployedModels = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedModelRef', 4, repeated=True)
   description = _messages.StringField(5)
   displayName = _messages.StringField(6)
-  etag = _messages.StringField(7)
-  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  metadata = _messages.MessageField('extra_types.JsonValue', 10)
-  metadataSchemaUri = _messages.StringField(11)
-  name = _messages.StringField(12)
-  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictSchemata', 13)
-  supportedDeploymentResourcesTypes = _messages.EnumField('SupportedDeploymentResourcesTypesValueListEntryValuesEnum', 14, repeated=True)
-  supportedExportFormats = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelExportFormat', 15, repeated=True)
-  supportedInputStorageFormats = _messages.StringField(16, repeated=True)
-  supportedOutputStorageFormats = _messages.StringField(17, repeated=True)
-  trainingPipeline = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 7)
+  etag = _messages.StringField(8)
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  metadata = _messages.MessageField('extra_types.JsonValue', 11)
+  metadataSchemaUri = _messages.StringField(12)
+  name = _messages.StringField(13)
+  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictSchemata', 14)
+  supportedDeploymentResourcesTypes = _messages.EnumField('SupportedDeploymentResourcesTypesValueListEntryValuesEnum', 15, repeated=True)
+  supportedExportFormats = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelExportFormat', 16, repeated=True)
+  supportedInputStorageFormats = _messages.StringField(17, repeated=True)
+  supportedOutputStorageFormats = _messages.StringField(18, repeated=True)
+  trainingPipeline = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
 
 
 class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
@@ -9568,6 +9931,40 @@ class GoogleCloudAiplatformV1beta1ResourcesConsumed(_messages.Message):
   replicaHours = _messages.FloatField(1)
 
 
+class GoogleCloudAiplatformV1beta1SampleConfig(_messages.Message):
+  r"""Active learning data sampling config. For every active learning labeling
+  iteration, it will select a batch of data based on the sampling strategy.
+
+  Enums:
+    SampleStrategyValueValuesEnum: Field to chose sampling strategy. Sampling
+      strategy will decide which data should be selected for human labeling in
+      every batch.
+
+  Fields:
+    followingBatchSamplePercentage: The percentage of data needed to be
+      labeled in each following batch (except the first batch).
+    initialBatchSamplePercentage: The percentage of data needed to be labeled
+      in the first batch.
+    sampleStrategy: Field to chose sampling strategy. Sampling strategy will
+      decide which data should be selected for human labeling in every batch.
+  """
+
+  class SampleStrategyValueValuesEnum(_messages.Enum):
+    r"""Field to chose sampling strategy. Sampling strategy will decide which
+    data should be selected for human labeling in every batch.
+
+    Values:
+      SAMPLE_STRATEGY_UNSPECIFIED: Default will be treated as UNCERTAINTY.
+      UNCERTAINTY: Sample the most uncertain data to label.
+    """
+    SAMPLE_STRATEGY_UNSPECIFIED = 0
+    UNCERTAINTY = 1
+
+  followingBatchSamplePercentage = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  initialBatchSamplePercentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  sampleStrategy = _messages.EnumField('SampleStrategyValueValuesEnum', 3)
+
+
 class GoogleCloudAiplatformV1beta1SampledShapleyAttribution(_messages.Message):
   r"""An attribution method that approximates Shapley values for features that
   contribute to the label being predicted. A sampling strategy is used to
@@ -9844,8 +10241,8 @@ class GoogleCloudAiplatformV1beta1SchemaPredictInstanceVideoActionRecognitionPre
     timeSegmentEnd: The end, exclusive, of the video's time segment on which
       to perform the prediction. Expressed as a number of seconds as measured
       from the start of the video, with "s" appended at the end. Fractions are
-      allowed, up to a microsecond precision, and "Infinity" is allowed, which
-      means the end of the video.
+      allowed, up to a microsecond precision, and "inf" or "Infinity" is
+      allowed, which means the end of the video.
     timeSegmentStart: The beginning, inclusive, of the video's time segment on
       which to perform the prediction. Expressed as a number of seconds as
       measured from the start of the video, with "s" appended at the end.
@@ -9869,8 +10266,8 @@ class GoogleCloudAiplatformV1beta1SchemaPredictInstanceVideoClassificationPredic
     timeSegmentEnd: The end, exclusive, of the video's time segment on which
       to perform the prediction. Expressed as a number of seconds as measured
       from the start of the video, with "s" appended at the end. Fractions are
-      allowed, up to a microsecond precision, and "Infinity" is allowed, which
-      means the end of the video.
+      allowed, up to a microsecond precision, and "inf" or "Infinity" is
+      allowed, which means the end of the video.
     timeSegmentStart: The beginning, inclusive, of the video's time segment on
       which to perform the prediction. Expressed as a number of seconds as
       measured from the start of the video, with "s" appended at the end.
@@ -9894,8 +10291,8 @@ class GoogleCloudAiplatformV1beta1SchemaPredictInstanceVideoObjectTrackingPredic
     timeSegmentEnd: The end, exclusive, of the video's time segment on which
       to perform the prediction. Expressed as a number of seconds as measured
       from the start of the video, with "s" appended at the end. Fractions are
-      allowed, up to a microsecond precision, and "Infinity" is allowed, which
-      means the end of the video.
+      allowed, up to a microsecond precision, and "inf" or "Infinity" is
+      allowed, which means the end of the video.
     timeSegmentStart: The beginning, inclusive, of the video's time segment on
       which to perform the prediction. Expressed as a number of seconds as
       measured from the start of the video, with "s" appended at the end.
@@ -10320,13 +10717,15 @@ class GoogleCloudAiplatformV1beta1SchemaPredictionResult(_messages.Message):
       convert the proto to JSON.
 
   Fields:
+    error: The error result. Do not set prediction if this is set.
     instance: User's input instance. Struct is used here instead of Any so
       that JsonFormat does not append an extra "@type" field when we convert
       the proto to JSON.
     key: Optional user-provided key from the input instance.
     prediction: The prediction result. Value is used here instead of Any so
       that JsonFormat does not append an extra "@type" field when we convert
-      the proto to JSON and so we can represent array of objects.
+      the proto to JSON and so we can represent array of objects. Do not set
+      error if this is set.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -10355,9 +10754,134 @@ class GoogleCloudAiplatformV1beta1SchemaPredictionResult(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  instance = _messages.MessageField('InstanceValue', 1)
-  key = _messages.StringField(2)
-  prediction = _messages.MessageField('extra_types.JsonValue', 3)
+  error = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPredictionResultError', 1)
+  instance = _messages.MessageField('InstanceValue', 2)
+  key = _messages.StringField(3)
+  prediction = _messages.MessageField('extra_types.JsonValue', 4)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictionResultError(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaPredictionResultError object.
+
+  Enums:
+    StatusValueValuesEnum: Error status. This will be serialized into the enum
+      name e.g. "NOT_FOUND".
+
+  Fields:
+    message: Error message with additional details.
+    status: Error status. This will be serialized into the enum name e.g.
+      "NOT_FOUND".
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Error status. This will be serialized into the enum name e.g.
+    "NOT_FOUND".
+
+    Values:
+      OK: Not an error; returned on success HTTP Mapping: 200 OK
+      CANCELLED: The operation was cancelled, typically by the caller. HTTP
+        Mapping: 499 Client Closed Request
+      UNKNOWN: Unknown error. For example, this error may be returned when a
+        `Status` value received from another address space belongs to an error
+        space that is not known in this address space. Also errors raised by
+        APIs that do not return enough error information may be converted to
+        this error. HTTP Mapping: 500 Internal Server Error
+      INVALID_ARGUMENT: The client specified an invalid argument. Note that
+        this differs from `FAILED_PRECONDITION`. `INVALID_ARGUMENT` indicates
+        arguments that are problematic regardless of the state of the system
+        (e.g., a malformed file name). HTTP Mapping: 400 Bad Request
+      DEADLINE_EXCEEDED: The deadline expired before the operation could
+        complete. For operations that change the state of the system, this
+        error may be returned even if the operation has completed
+        successfully. For example, a successful response from a server could
+        have been delayed long enough for the deadline to expire. HTTP
+        Mapping: 504 Gateway Timeout
+      NOT_FOUND: Some requested entity (e.g., file or directory) was not
+        found. Note to server developers: if a request is denied for an entire
+        class of users, such as gradual feature rollout or undocumented
+        allowlist, `NOT_FOUND` may be used. If a request is denied for some
+        users within a class of users, such as user-based access control,
+        `PERMISSION_DENIED` must be used. HTTP Mapping: 404 Not Found
+      ALREADY_EXISTS: The entity that a client attempted to create (e.g., file
+        or directory) already exists. HTTP Mapping: 409 Conflict
+      PERMISSION_DENIED: The caller does not have permission to execute the
+        specified operation. `PERMISSION_DENIED` must not be used for
+        rejections caused by exhausting some resource (use
+        `RESOURCE_EXHAUSTED` instead for those errors). `PERMISSION_DENIED`
+        must not be used if the caller can not be identified (use
+        `UNAUTHENTICATED` instead for those errors). This error code does not
+        imply the request is valid or the requested entity exists or satisfies
+        other pre-conditions. HTTP Mapping: 403 Forbidden
+      UNAUTHENTICATED: The request does not have valid authentication
+        credentials for the operation. HTTP Mapping: 401 Unauthorized
+      RESOURCE_EXHAUSTED: Some resource has been exhausted, perhaps a per-user
+        quota, or perhaps the entire file system is out of space. HTTP
+        Mapping: 429 Too Many Requests
+      FAILED_PRECONDITION: The operation was rejected because the system is
+        not in a state required for the operation's execution. For example,
+        the directory to be deleted is non-empty, an rmdir operation is
+        applied to a non-directory, etc. Service implementors can use the
+        following guidelines to decide between `FAILED_PRECONDITION`,
+        `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can
+        retry just the failing call. (b) Use `ABORTED` if the client should
+        retry at a higher level (e.g., when a client-specified test-and-set
+        fails, indicating the client should restart a read-modify-write
+        sequence). (c) Use `FAILED_PRECONDITION` if the client should not
+        retry until the system state has been explicitly fixed. E.g., if an
+        "rmdir" fails because the directory is non-empty,
+        `FAILED_PRECONDITION` should be returned since the client should not
+        retry unless the files are deleted from the directory. HTTP Mapping:
+        400 Bad Request
+      ABORTED: The operation was aborted, typically due to a concurrency issue
+        such as a sequencer check failure or transaction abort. See the
+        guidelines above for deciding between `FAILED_PRECONDITION`,
+        `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 409 Conflict
+      OUT_OF_RANGE: The operation was attempted past the valid range. E.g.,
+        seeking or reading past end-of-file. Unlike `INVALID_ARGUMENT`, this
+        error indicates a problem that may be fixed if the system state
+        changes. For example, a 32-bit file system will generate
+        `INVALID_ARGUMENT` if asked to read at an offset that is not in the
+        range [0,2^32-1], but it will generate `OUT_OF_RANGE` if asked to read
+        from an offset past the current file size. There is a fair bit of
+        overlap between `FAILED_PRECONDITION` and `OUT_OF_RANGE`. We recommend
+        using `OUT_OF_RANGE` (the more specific error) when it applies so that
+        callers who are iterating through a space can easily look for an
+        `OUT_OF_RANGE` error to detect when they are done. HTTP Mapping: 400
+        Bad Request
+      UNIMPLEMENTED: The operation is not implemented or is not
+        supported/enabled in this service. HTTP Mapping: 501 Not Implemented
+      INTERNAL: Internal errors. This means that some invariants expected by
+        the underlying system have been broken. This error code is reserved
+        for serious errors. HTTP Mapping: 500 Internal Server Error
+      UNAVAILABLE: The service is currently unavailable. This is most likely a
+        transient condition, which can be corrected by retrying with a
+        backoff. Note that it is not always safe to retry non-idempotent
+        operations. See the guidelines above for deciding between
+        `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 503
+        Service Unavailable
+      DATA_LOSS: Unrecoverable data loss or corruption. HTTP Mapping: 500
+        Internal Server Error
+    """
+    OK = 0
+    CANCELLED = 1
+    UNKNOWN = 2
+    INVALID_ARGUMENT = 3
+    DEADLINE_EXCEEDED = 4
+    NOT_FOUND = 5
+    ALREADY_EXISTS = 6
+    PERMISSION_DENIED = 7
+    UNAUTHENTICATED = 8
+    RESOURCE_EXHAUSTED = 9
+    FAILED_PRECONDITION = 10
+    ABORTED = 11
+    OUT_OF_RANGE = 12
+    UNIMPLEMENTED = 13
+    INTERNAL = 14
+    UNAVAILABLE = 15
+    DATA_LOSS = 16
+
+  message = _messages.StringField(1)
+  status = _messages.EnumField('StatusValueValuesEnum', 2)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTablesDatasetMetadata(_messages.Message):
@@ -10703,7 +11227,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
   Fields:
     quantity: The number of units per period, e.g. 3 weeks or 2 months.
     unit: The time granularity unit of this time period. The supported unit
-      are: "hour" "day" "week" "month" "year"
+      are: "minute" "hour" "day" "week" "month" "year"
   """
 
   quantity = _messages.IntegerField(1)
@@ -11941,15 +12465,15 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
   Enums:
     AlgorithmValueValuesEnum: The search algorithm specified for the Study.
     ObservationNoiseValueValuesEnum: The observation noise level of the study.
-      Currently only supported by the Optimizer service. Not supported by
+      Currently only supported by the Vizier service. Not supported by
       HyperparamterTuningJob or TrainingPipeline.
 
   Fields:
     algorithm: The search algorithm specified for the Study.
     metrics: Required. Metric specs for the Study.
     observationNoise: The observation noise level of the study. Currently only
-      supported by the Optimizer service. Not supported by
-      HyperparamterTuningJob or TrainingPipeline.
+      supported by the Vizier service. Not supported by HyperparamterTuningJob
+      or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
   """
 
@@ -11970,16 +12494,16 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
 
   class ObservationNoiseValueValuesEnum(_messages.Enum):
     r"""The observation noise level of the study. Currently only supported by
-    the Optimizer service. Not supported by HyperparamterTuningJob or
+    the Vizier service. Not supported by HyperparamterTuningJob or
     TrainingPipeline.
 
     Values:
       OBSERVATION_NOISE_UNSPECIFIED: The default noise level chosen by the AI
         Platform service.
-      LOW: AI Platform Optimizer assumes that the objective function is
-        (nearly) perfectly reproducible, and will never repeat the same Trial
+      LOW: AI Platform Vizier assumes that the objective function is (nearly)
+        perfectly reproducible, and will never repeat the same Trial
         parameters.
-      HIGH: AI Platform Optimizer will estimate the amount of noise in metric
+      HIGH: AI Platform Vizier will estimate the amount of noise in metric
         evaluations, it may repeat the same Trial parameters more than once.
     """
     OBSERVATION_NOISE_UNSPECIFIED = 0
@@ -12197,6 +12721,19 @@ class GoogleCloudAiplatformV1beta1TimestampSplit(_messages.Message):
   validationFraction = _messages.FloatField(4)
 
 
+class GoogleCloudAiplatformV1beta1TrainingConfig(_messages.Message):
+  r"""CMLE training config. For every active learning labeling iteration,
+  system will train a machine learning model on CMLE. The trained model will
+  be used by data sampling algorithm to select DataItems.
+
+  Fields:
+    timeoutTrainingMilliHours: The timeout hours for the CMLE training job,
+      expressed in milli hours i.e. 1,000 value in this field means 1 hour.
+  """
+
+  timeoutTrainingMilliHours = _messages.IntegerField(1)
+
+
 class GoogleCloudAiplatformV1beta1TrainingPipeline(_messages.Message):
   r"""The TrainingPipeline orchestrates tasks associated with training a
   Model. It always executes the training task, and optionally may also export
@@ -12217,6 +12754,10 @@ class GoogleCloudAiplatformV1beta1TrainingPipeline(_messages.Message):
   Fields:
     createTime: Output only. Time when the TrainingPipeline was created.
     displayName: Required. The user-defined name of this TrainingPipeline.
+    encryptionSpec: Customer-managed encryption key spec for a
+      TrainingPipeline. If set, this TrainingPipeline will be secured by this
+      key. Note: Model trained by this TrainingPipeline is also secured by
+      this key if model_to_upload is not set separately.
     endTime: Output only. Time when the TrainingPipeline entered any of the
       following states: `PIPELINE_STATE_SUCCEEDED`, `PIPELINE_STATE_FAILED`,
       `PIPELINE_STATE_CANCELLED`.
@@ -12329,18 +12870,19 @@ class GoogleCloudAiplatformV1beta1TrainingPipeline(_messages.Message):
 
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  error = _messages.MessageField('GoogleRpcStatus', 4)
-  inputDataConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1InputDataConfig', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  modelToUpload = _messages.MessageField('GoogleCloudAiplatformV1beta1Model', 7)
-  name = _messages.StringField(8)
-  startTime = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  trainingTaskDefinition = _messages.StringField(11)
-  trainingTaskInputs = _messages.MessageField('extra_types.JsonValue', 12)
-  trainingTaskMetadata = _messages.MessageField('extra_types.JsonValue', 13)
-  updateTime = _messages.StringField(14)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 3)
+  endTime = _messages.StringField(4)
+  error = _messages.MessageField('GoogleRpcStatus', 5)
+  inputDataConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1InputDataConfig', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  modelToUpload = _messages.MessageField('GoogleCloudAiplatformV1beta1Model', 8)
+  name = _messages.StringField(9)
+  startTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  trainingTaskDefinition = _messages.StringField(12)
+  trainingTaskInputs = _messages.MessageField('extra_types.JsonValue', 13)
+  trainingTaskMetadata = _messages.MessageField('extra_types.JsonValue', 14)
+  updateTime = _messages.StringField(15)
 
 
 class GoogleCloudAiplatformV1beta1Trial(_messages.Message):

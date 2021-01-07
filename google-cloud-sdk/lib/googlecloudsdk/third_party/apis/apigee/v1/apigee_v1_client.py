@@ -3032,7 +3032,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an alias from a key, certificate pair. The structure of the request is controlled by the `format` query parameter: * `keycertfile` - Separate PEM-encoded key and certificate files are uploaded. The request must have `Content-Type: multipart/form-data` and include fields `keyFile` and `certFile`. If uploading to a truststore, omit `keyFile`. A `password` field should be provided for encrypted keys. * `pkcs12` - A PKCS12 file is uploaded. The request must have `Content-Type: multipart/form-data` with the file provided in the `file` field and a `password` field if the file is encrypted. * `selfsignedcert` - A new private key and certificate are generated. The request must have `Content-Type: application/json` and a body of CertificateGenerationSpec.
+      r"""Creates an alias from a key/certificate pair. The structure of the request is controlled by the `format` query parameter: - `keycertfile` - Separate PEM-encoded key and certificate files are uploaded. Set `Content-Type: multipart/form-data` and include the `keyFile`, `certFile`, and `password` (if keys are encrypted) fields in the request body. If uploading to a truststore, omit `keyFile`. - `pkcs12` - A PKCS12 file is uploaded. Set `Content-Type: multipart/form-data`, provide the file in the `file` field, and include the `password` field if the file is encrypted in the request body. - `selfsignedcert` - A new private key and certificate are generated. Set `Content-Type: application/json` and include CertificateGenerationSpec in the request body.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsKeystoresAliasesCreateRequest) input message
@@ -3204,7 +3204,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a keystore or truststore: * Keystore: Contains certificates and their associated keys. * Truststore: Contains trusted certificates used to validate a server's certificate. These certificates are typically self-signed certificates or certificates that are not signed by a trusted CA.
+      r"""Creates a keystore or truststore. - Keystore: Contains certificates and their associated keys. - Truststore: Contains trusted certificates used to validate a server's certificate. These certificates are typically self-signed certificates or certificates that are not signed by a trusted CA.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsKeystoresCreateRequest) input message

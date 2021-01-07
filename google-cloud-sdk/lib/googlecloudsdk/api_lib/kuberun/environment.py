@@ -23,9 +23,10 @@ import six
 class Environment(object):
   """Class that wraps a KubeRun Environment JSON object."""
 
-  def __init__(self, name, namespace, target_configs=''):
+  def __init__(self, name, namespace, source, target_configs=''):
     self.name = name
     self.namespace = namespace
+    self.source = source
     self.target_configs = target_configs
 
   @classmethod
@@ -45,25 +46,36 @@ class Environment(object):
     cluster = spec.get('cluster', {})
     kubeconfig = spec.get('kubeconfig', {})
     if cluster:
+      # build target configs
       cluster_name = cluster.get('name', '')
       cluster_location = cluster.get('location', '')
+      project = cluster.get('project', '')
+      target_configs = 'cluster: \'{0}\', cluster location: \'{1}\''.format(
+          cluster_name, cluster_location)
+      if project:
+        target_configs += ', project: \'{0}\''.format(project)
+      target_configs = '{' + target_configs + '}'
+
       return cls(
           name=json_object.get('name', ''),
           namespace=cluster.get('namespace', ''),
-          target_configs=(
-              '{{cluster: \'{0}\', cluster location: \'{1}\'}}'.format(
-                  cluster_name, cluster_location)))
+          source=json_object.get('source', ''),
+          target_configs=(target_configs))
 
     if kubeconfig:
       context = kubeconfig.get('context', '')
       return cls(
           name=json_object.get('name', ''),
           namespace=kubeconfig.get('namespace', ''),
+          source=json_object.get('source', ''),
           target_configs=('{{kubeconfig context: \'{0}\'}}'.format(context)))
 
     # Should never happen - return default values.
     return cls(
-        name=json_object.get('name', ''), namespace='', target_configs='')
+        name=json_object.get('name', ''),
+        namespace='',
+        source=json_object.get('source', ''),
+        target_configs='')
 
   def __repr__(self):
     # TODO(b/171419038): Create a common base class for these data wrappers

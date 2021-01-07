@@ -46,7 +46,7 @@ __author__ = 'arb@google.com (Anthony Baxter)'
 # that it be run in an environment without pytz. So, we except the ImportError
 # for that module and set the field to None. This allows us to selectively
 # operate on time data without pytz.
-# Ex: //third_party/py/appengine/google/appengine/cron/groctimespecification.py.
+# Ex: //borg/borgcron/py/groctimespecification.py.
 pytz = None
 
 HOURS = 'hours'

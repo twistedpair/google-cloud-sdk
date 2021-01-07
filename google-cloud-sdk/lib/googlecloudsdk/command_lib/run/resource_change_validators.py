@@ -40,7 +40,8 @@ def ValidateClearVpcConnector(service, args):
     console_io.OperationCancelledError: If the user answers no to the
       confirmation prompt.
   """
-  if (not flags.FlagIsExplicitlySet(args, 'clear_vpc_connector') or
+  if (service is None or
+      not flags.FlagIsExplicitlySet(args, 'clear_vpc_connector') or
       not args.clear_vpc_connector):
     return
 

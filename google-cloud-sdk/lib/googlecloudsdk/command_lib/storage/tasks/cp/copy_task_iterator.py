@@ -40,7 +40,7 @@ class CopyTaskIterator:
     Args:
       source_name_iterator (name_expansion.NameExpansionIterator):
         yields resource_reference.Resource objects with expanded source URLs.
-      destination_string (str): The copy destination path/url.
+      destination_string (str): The copy destination path or url.
       custom_md5_digest (str|None): User-added MD5 hash output to send to server
           for validating a single resource upload.
     """
@@ -69,8 +69,14 @@ class CopyTaskIterator:
         continue
 
       destination_resource = self._get_copy_destination(raw_destination, source)
+
+      if source.original_url.generation:
+        source_url_string = source.resource.storage_url.url_string
+      else:
+        source_url_string = source.resource.storage_url.versionless_url_string
+
       log.status.Print('Copying {} to {}'.format(
-          source.resource.storage_url.versionless_url_string,
+          source_url_string,
           destination_resource.storage_url.versionless_url_string))
       if self._custom_md5_digest:
         source.resource.md5_hash = self._custom_md5_digest

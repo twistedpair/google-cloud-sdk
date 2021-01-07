@@ -142,7 +142,9 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       the number of nodes in the environment. An integer greater than or equal
       to 3 must be provided in the `config.nodeCount` field.
       config.webServerNetworkAccessControl Replace the environment's current
-      WebServerNetworkAccessControl.
+      WebServerNetworkAccessControl. config.databaseConfig Replace the
+      environment's current DatabaseConfig. config.webServerConfig Replace the
+      environment's current WebServerConfig.
       config.softwareConfig.airflowConfigOverrides Replace all Apache Airflow
       config overrides. If a replacement config overrides map is not included
       in `environment`, all config overrides are cleared. It is an error to
@@ -219,6 +221,19 @@ class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class DatabaseConfig(_messages.Message):
+  r"""The configuration of Cloud SQL instance that is used by the Apache
+  Airflow software.
+
+  Fields:
+    machineType: Optional. Cloud SQL machine type used by Airflow database. It
+      has to be one of: db-n1-standard-2, db-n1-standard-4, db-n1-standard-8
+      or db-n1-standard-16. If not specified, db-n1-standard-2 will be used.
+  """
+
+  machineType = _messages.StringField(1)
 
 
 class Date(_messages.Message):
@@ -361,6 +376,8 @@ class EnvironmentConfig(_messages.Message):
       a hierarchical file tree can be simulated using "/"-delimited object
       name prefixes. DAG objects for this environment reside in a simulated
       directory with the given prefix.
+    databaseConfig: Optional. The configuration settings for Cloud SQL
+      instance used internally by Apache Airflow software.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
       environment.
     nodeConfig: The configuration used for the Kubernetes Engine cluster.
@@ -370,6 +387,8 @@ class EnvironmentConfig(_messages.Message):
       Composer environment.
     softwareConfig: The configuration settings for software inside the
       environment.
+    webServerConfig: Optional. The configuration settings for the Airflow web
+      server App Engine instance.
     webServerNetworkAccessControl: Optional. The network-level access control
       policy for the Airflow web server. If unspecified, no network-level
       access restrictions will be applied.
@@ -377,12 +396,14 @@ class EnvironmentConfig(_messages.Message):
 
   airflowUri = _messages.StringField(1)
   dagGcsPrefix = _messages.StringField(2)
-  gkeCluster = _messages.StringField(3)
-  nodeConfig = _messages.MessageField('NodeConfig', 4)
-  nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 6)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 7)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 8)
+  databaseConfig = _messages.MessageField('DatabaseConfig', 3)
+  gkeCluster = _messages.StringField(4)
+  nodeConfig = _messages.MessageField('NodeConfig', 5)
+  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 7)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 8)
+  webServerConfig = _messages.MessageField('WebServerConfig', 9)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 10)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -1089,6 +1110,22 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class WebServerConfig(_messages.Message):
+  r"""The configuration settings for the Airflow web server App Engine
+  instance.
+
+  Fields:
+    machineType: Optional. Machine type on which Airflow web server is
+      running. It has to be one of: composer-n1-webserver-2,
+      composer-n1-webserver-4 or composer-n1-webserver-8. If not specified,
+      composer-n1-webserver-2 will be used. Value custom is returned only in
+      response, if Airflow web server parameters were manually changed to a
+      non-standard values.
+  """
+
+  machineType = _messages.StringField(1)
 
 
 class WebServerNetworkAccessControl(_messages.Message):

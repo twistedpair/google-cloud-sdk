@@ -673,9 +673,13 @@ class CommandBuilder(object):
             help="""
             Path to a YAML file containing the configuration export data. The
             YAML file must not contain any output-only fields. Alternatively, you
-            may omit this flag to read from standard input. A schema describing
-            the export/import format can be found in:
+            may omit this flag to read from standard input. For a schema
+            describing the export/import format, see:
             $CLOUDSDKROOT/lib/googlecloudsdk/schemas/...
+
+            $CLOUDSDKROOT is can be obtained with the following command:
+
+              $ gcloud info --format='value(installation.sdk_root)'
           """)
 
       def Run(self_, args):
@@ -772,8 +776,8 @@ class CommandBuilder(object):
             help="""
             Path to a YAML file where the configuration will be exported.
             The exported data will not contain any output-only fields.
-            Alternatively, you may omit this flag to write to standard output. A
-            schema describing the export/import format can be found in
+            Alternatively, you may omit this flag to write to standard output.
+            For a schema describing the export/import format, see
             $CLOUDSDKROOT/lib/googlecloudsdk/schemas/...
           """)
 

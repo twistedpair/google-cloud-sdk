@@ -19,13 +19,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from google.auth.transport import requests as google_auth_requests
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import requests
 from googlecloudsdk.core import transport as core_transport
 from googlecloudsdk.core.credentials import transport
-
-from google.auth.transport import requests as google_auth_requests
 
 
 class Error(exceptions.Error):
@@ -38,7 +37,8 @@ def GetSession(timeout='unset',
                enable_resource_quota=True,
                force_resource_quota=False,
                allow_account_impersonation=True,
-               session=None):
+               session=None,
+               streaming_response_body=False):
   """Get requests.Session object for working with the Google API.
 
   Args:
@@ -53,13 +53,15 @@ def GetSession(timeout='unset',
         gcloud's quota, so you can explicitly disable that behavior by passing
         False here.
     force_resource_quota: bool, If true resource project quota will be used by
-      this client regardless of the settings in gcloud. This should be used for
-      newer APIs that cannot work with legacy project quota.
+        this client regardless of the settings in gcloud. This should be used
+        for newer APIs that cannot work with legacy project quota.
     allow_account_impersonation: bool, True to allow use of impersonated service
-      account credentials for calls made with this client. If False, the active
-      user credentials will always be used.
+        account credentials for calls made with this client. If False, the
+        active user credentials will always be used.
     session: requests.Session instance. Otherwise, a new requests.Session will
         be initialized.
+    streaming_response_body: bool, True indicates that the response body will
+        be a streaming body.
 
   Returns:
     1. A regular requests.Session object if no credentials are available;
@@ -69,10 +71,12 @@ def GetSession(timeout='unset',
   Raises:
     c_store.Error: If an error loading the credentials occurs.
   """
-  session = requests.GetSession(timeout=timeout,
-                                response_encoding=response_encoding,
-                                ca_certs=ca_certs,
-                                session=session)
+  session = requests.GetSession(
+      timeout=timeout,
+      response_encoding=response_encoding,
+      ca_certs=ca_certs,
+      session=session,
+      streaming_response_body=streaming_response_body)
   request_wrapper = RequestWrapper()
   session = request_wrapper.WrapQuota(session, enable_resource_quota,
                                       force_resource_quota,
@@ -151,4 +155,3 @@ class RequestWrapper(transport.CredentialWrappingMixin,
     else:
       http_client.request = wrapped_request
     return http_client
-

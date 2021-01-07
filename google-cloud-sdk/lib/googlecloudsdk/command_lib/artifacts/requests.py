@@ -160,15 +160,21 @@ def ListPackages(client, messages, repo, page_size=None):
           field="packages"))
 
 
-def ListVersions(client, messages, pkg, version_view, page_size=None):
+def ListVersions(client, messages, pkg, version_view,
+                 page_size=None, order_by=None, limit=None):
   """Lists all versions under a package."""
+  page_limit = limit
+  if limit is None or (page_size is not None and page_size < limit):
+    page_limit = page_size
+
   list_vers_req = messages.ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest(
-      parent=pkg, view=version_view)
+      parent=pkg, view=version_view, orderBy=order_by)
   return list(
       list_pager.YieldFromList(
           client.projects_locations_repositories_packages_versions,
           list_vers_req,
-          batch_size=page_size,
+          limit=limit,
+          batch_size=page_limit,
           batch_size_attribute="pageSize",
           field="versions"))
 

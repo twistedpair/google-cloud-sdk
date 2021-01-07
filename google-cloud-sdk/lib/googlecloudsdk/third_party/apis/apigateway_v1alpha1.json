@@ -13,7 +13,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": " https://cloud.google.com/api-gateway/docs",
+  "documentationLink": "https://cloud.google.com/api-gateway/docs",
   "protocol": "rest",
   "rootUrl": "https://apigateway.googleapis.com/",
   "mtlsRootUrl": "https://apigateway.mtls.googleapis.com/",
@@ -325,7 +325,7 @@
     },
     "ApigatewayApi": {
       "id": "ApigatewayApi",
-      "description": "A consumable API that can be used by multiple Gateways.",
+      "description": "An API that can be served by one or more Gateways.",
       "type": "object",
       "properties": {
         "name": {
@@ -466,8 +466,12 @@
           "type": "string"
         },
         "gatewayConfig": {
-          "description": "Immutable. Gateway specific configuration. If not specified, backend authentication will be set to use OIDC authentication using the default compute service account.",
+          "description": "Immutable. Gateway specific configuration.",
           "$ref": "ApigatewayGatewayConfig"
+        },
+        "gatewayServiceAccount": {
+          "description": "Immutable. The Google Cloud IAM Service Account that Gateways serving this config should use to authenticate to other services. This may either be the Service Account's email (`{ACCOUNT_ID}@{PROJECT}.iam.gserviceaccount.com`) or its full resource name (`projects\/{PROJECT}\/accounts\/{UNIQUE_ID}`). This is most often used when the service is a GCP resource such as a Cloud Run Service or an IAP-secured service.",
+          "type": "string"
         },
         "serviceConfigId": {
           "description": "Output only. The ID of the associated Service Config ( https:\/\/cloud.google.com\/service-infrastructure\/docs\/glossary#config).",
@@ -512,7 +516,7 @@
           }
         },
         "managedServiceConfigs": {
-          "description": "Optional. Service Configuration files. At least one must be included when using gRPC service definitions. See https: \/\/cloud.google.com\/endpoints\/docs\/grpc\/g \/\/ rpc-service-config#service_configuration_overview for the expected file contents. If multiple files are specified, the files are merged with the following rules: * All singular scalar fields are merged using \"last one wins\" semantics in the order of the files uploaded. * Repeated fields are concatenated. * Singular embedded messages are merged using these rules for nested fields.",
+          "description": "Optional. Service Configuration files. At least one must be included when using gRPC service definitions. See https:\/\/cloud.google.com\/endpoints\/docs\/grpc\/grpc-service-config#service_configuration_overview for the expected file contents. If multiple files are specified, the files are merged with the following rules: * All singular scalar fields are merged using \"last one wins\" semantics in the order of the files uploaded. * Repeated fields are concatenated. * Singular embedded messages are merged using these rules for nested fields.",
           "type": "array",
           "items": {
             "$ref": "ApigatewayApiConfigFile"
@@ -553,7 +557,7 @@
       "type": "object",
       "properties": {
         "googleServiceAccount": {
-          "description": "Google Cloud IAM service account used to sign OIDC tokens for backends that have authentication configured (https: \/\/cloud.google.com\/service-infrastructur \/\/ e\/docs\/service-management\/reference\/rest\/v1\/services.configs#backend). This may either be the Service Account's email (i.e. \"{ACCOUNT_ID}@{PROJECT}.iam.gserviceaccount.com\") or its full resource name (i.e. \"projects\/{PROJECT}\/accounts\/{UNIQUE_ID}\"). This is most often used when the backend is a GCP resource such as a Cloud Run Service or an IAP-secured service. Note that this token is always sent as an authorization header bearer token. The audience of the OIDC token is configured in the associated Service Config in the BackendRule option (https: \/\/github.com\/googleapis\/googleapis\/blob\/ \/\/ master\/google\/api\/backend.proto#L125).",
+          "description": "Google Cloud IAM service account used to sign OIDC tokens for backends that have authentication configured (https:\/\/cloud.google.com\/service-infrastructure\/docs\/service-management\/reference\/rest\/v1\/services.configs#backend). This may either be the Service Account's email (i.e. \"{ACCOUNT_ID}@{PROJECT}.iam.gserviceaccount.com\") or its full resource name (i.e. \"projects\/{PROJECT}\/accounts\/{UNIQUE_ID}\"). This is most often used when the backend is a GCP resource such as a Cloud Run Service or an IAP-secured service. Note that this token is always sent as an authorization header bearer token. The audience of the OIDC token is configured in the associated Service Config in the BackendRule option (https:\/\/github.com\/googleapis\/googleapis\/blob\/master\/google\/api\/backend.proto#L125).",
           "type": "string"
         }
       }

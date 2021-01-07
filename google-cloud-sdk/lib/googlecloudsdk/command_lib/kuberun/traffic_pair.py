@@ -18,6 +18,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import operator
+
 from googlecloudsdk.api_lib.kuberun import traffic
 
 import six
@@ -66,6 +68,34 @@ def SortKeyFromTarget(target):
   return result
 
 
+class TrafficTag(object):
+  """Contains the spec and status state for a traffic tag.
+
+  Attributes:
+    tag: The name of the tag.
+    url: The tag's URL, or an empty string if the tag does not have a URL
+      assigned yet. Defaults to an empty string.
+    inSpec: Boolean that is true if the tag is present in the spec. Defaults to
+      False.
+    inStatus: Boolean that is true if the tag is present in the status. Defaults
+      to False.
+  """
+
+  def __init__(self, tag, url='', in_spec=False, in_status=False):
+    """Returns a new TrafficTag.
+
+    Args:
+      tag: The name of the tag.
+      url: The tag's URL.
+      in_spec: Boolean that is true if the tag is present in the spec.
+      in_status: Boolean that is true if the tag is present in the status.
+    """
+    self.tag = tag
+    self.url = url
+    self.inSpec = in_spec  # pylint: disable=invalid-name
+    self.inStatus = in_status  # pylint: disable=invalid-name
+
+
 class TrafficTargetPair(object):
   """Holder for TrafficTarget status information.
 
@@ -104,6 +134,8 @@ class TrafficTargetPair(object):
     statusTags: Tags assigned to the referenced revision in the service's status
       as a comma and space separated string.
     urls: A list of urls that directly address the referenced revision.
+    tags: A list of TrafficTag objects containing both the spec and status
+      state for each traffic tag.
     displayPercent: Human-readable representation of the current percent
       assigned to the referenced revision.
     displayRevisionId: Human-readable representation of the name of the
@@ -149,6 +181,7 @@ class TrafficTargetPair(object):
     self._revision_name = revision_name
     self._latest = latest
     self._service_url = service_url
+    self._tags = None
 
   @property
   def latestRevision(self):  # pylint: disable=invalid-name
@@ -188,6 +221,30 @@ class TrafficTargetPair(object):
   @property
   def urls(self):
     return sorted(t.url for t in self._status_targets if t.url)
+
+  @property
+  def tags(self):
+    if self._tags is None:
+      self._ExtractTags()
+    return self._tags
+
+  def _ExtractTags(self):
+    """Extracts the traffic tag state from spec and status into TrafficTags."""
+    tags = {}
+    for spec_target in self._spec_targets:
+      if not spec_target.tag:
+        continue
+      tags[spec_target.tag] = TrafficTag(spec_target.tag, in_spec=True)
+    for status_target in self._status_targets:
+      if not status_target.tag:
+        continue
+      if status_target.tag in tags:
+        tag = tags[status_target.tag]
+      else:
+        tag = tags.setdefault(status_target.tag, TrafficTag(status_target.tag))
+      tag.url = status_target.url if status_target.url is not None else ''
+      tag.inStatus = True
+    self._tags = sorted(tags.values(), key=operator.attrgetter('tag'))
 
   @property
   def displayPercent(self):  # pylint: disable=invalid-name

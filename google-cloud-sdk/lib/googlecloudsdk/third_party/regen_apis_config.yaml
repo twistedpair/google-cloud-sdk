@@ -284,6 +284,8 @@ apis:
       discovery_doc: cloudresourcemanager_v2beta1.json
     v2:
       discovery_doc: cloudresourcemanager_v2.json
+    v3:
+      discovery_doc: cloudresourcemanager_v3.json
   cloudshell:
     v1alpha1:
       discovery_doc: cloudshell_v1alpha1.json
@@ -491,8 +493,14 @@ apis:
     v1:
       discovery_doc: eventarc_v1.json
       default: true
+      resources:
+        projects.topics:
+          path: 'projects/{projectsId}/topics/{topicsId}'
     v1beta1:
       discovery_doc: eventarc_v1beta1.json
+      resources:
+        projects.topics:
+          path: 'projects/{projectsId}/topics/{topicsId}'
   eventflow:
     v1beta2:
       discovery_doc: eventflow_v1beta2.json

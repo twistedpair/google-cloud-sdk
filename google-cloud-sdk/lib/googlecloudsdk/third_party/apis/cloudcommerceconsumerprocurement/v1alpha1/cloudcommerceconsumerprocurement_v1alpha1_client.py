@@ -579,7 +579,7 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['etag'],
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsDeleteRequest',

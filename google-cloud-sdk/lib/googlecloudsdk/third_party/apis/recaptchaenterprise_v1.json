@@ -308,6 +308,10 @@
           "description": "The timestamp corresponding to the creation of this Key.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "testingOptions": {
+          "description": "Options for user acceptance testing.",
+          "$ref": "GoogleCloudRecaptchaenterpriseV1TestingOptions"
         }
       }
     },
@@ -390,6 +394,32 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GoogleCloudRecaptchaenterpriseV1TestingOptions": {
+      "id": "GoogleCloudRecaptchaenterpriseV1TestingOptions",
+      "description": "Options for user acceptance testing.",
+      "type": "object",
+      "properties": {
+        "testingScore": {
+          "description": "All assessments for this Key will return this score. Must be between 0 (likely not legitimate) and 1 (likely legitimate) inclusive.",
+          "type": "number",
+          "format": "float"
+        },
+        "testingChallenge": {
+          "description": "For challenge-based keys only (CHECKBOX, INVISIBLE), all challenge requests for this site will return nocaptcha if NOCAPTCHA, or an unsolvable challenge if CHALLENGE.",
+          "type": "string",
+          "enumDescriptions": [
+            "Perform the normal risk analysis and return either nocaptcha or a challenge depending on risk and trust factors.",
+            "Challenge requests for this key will always return a nocaptcha, which does not require a solution.",
+            "Challenge requests for this key will always return an unsolvable challenge."
+          ],
+          "enum": [
+            "TESTING_CHALLENGE_UNSPECIFIED",
+            "NOCAPTCHA",
+            "CHALLENGE"
+          ]
         }
       }
     },

@@ -41,14 +41,6 @@ class BooleanPolicyValidationError(OrgPolicyError):
   """Exception for an invalid boolean policy."""
 
 
-class LabelKeyNotFoundError(OrgPolicyError):
-  """Exception for a nonexistent label key."""
-
-
-class LabelValueNotFoundError(OrgPolicyError):
-  """Exception for a nonexistent label value."""
-
-
 class ConcurrencyError(OrgPolicyError):
   """Exception for a concurrency issue."""
 

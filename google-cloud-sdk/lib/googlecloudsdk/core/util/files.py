@@ -1090,7 +1090,8 @@ def WriteFileContents(path,
                       contents,
                       overwrite=True,
                       private=False,
-                      create_path=True):
+                      create_path=True,
+                      newline=None):
   """Writes the given text contents to a file at the given path.
 
   Args:
@@ -1099,13 +1100,15 @@ def WriteFileContents(path,
     overwrite: bool, False to error out if the file already exists.
     private: bool, True to make the file have 0o600 permissions.
     create_path: bool, True to create intermediate directories, if needed.
+    newline: str, The line ending style to use, or None to use platform default.
 
   Raises:
     Error: If the file cannot be written.
   """
   try:
     _CheckOverwrite(path, overwrite)
-    with FileWriter(path, private=private, create_path=create_path) as f:
+    with FileWriter(
+        path, private=private, create_path=create_path, newline=newline) as f:
       # This decode is here because a lot of libraries on Python 2 can return
       # both text or bytes depending on if unicode is present. If you truly
       # pass binary data to this, the decode will fail (as it should). If you
@@ -1175,7 +1178,11 @@ def BinaryFileReader(path):
   return _FileOpener(encoding_util.Encode(path, encoding='utf-8'), 'rb', 'read')
 
 
-def FileWriter(path, private=False, append=False, create_path=False):
+def FileWriter(path,
+               private=False,
+               append=False,
+               create_path=False,
+               newline=None):
   """Opens the given file for text write for use in a 'with' statement.
 
   Args:
@@ -1183,6 +1190,7 @@ def FileWriter(path, private=False, append=False, create_path=False):
     private: bool, True to create or update the file permission to be 0o600.
     append: bool, True to append to an existing file.
     create_path: bool, True to create intermediate directories, if needed.
+    newline: str, The line ending style to use, or None to use plaform default.
 
   Returns:
     A file-like object opened for write in text mode.
@@ -1194,7 +1202,8 @@ def FileWriter(path, private=False, append=False, create_path=False):
       'write',
       encoding='utf-8',
       private=private,
-      create_path=create_path)
+      create_path=create_path,
+      newline=newline)
 
 
 def BinaryFileWriter(path, private=False, create_path=False):
@@ -1217,14 +1226,15 @@ def _FileOpener(path,
                 verb,
                 encoding=None,
                 private=False,
-                create_path=False):
+                create_path=False,
+                newline=None):
   """Opens a file in various modes and does error handling."""
   if private:
     PrivatizeFile(path)
   if create_path:
     _MakePathToFile(path)
   try:
-    return io.open(path, mode, encoding=encoding)
+    return io.open(path, mode, encoding=encoding, newline=newline)
   except EnvironmentError as e:
     # EnvironmentError is parent of IOError, OSError and WindowsError.
     # Raised when file does not exist or can't be opened/read.

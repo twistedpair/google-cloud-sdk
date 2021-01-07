@@ -152,6 +152,7 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
     labels: See Creating and managing labels.
     name: The resource name for the Key in the format
       "projects/{project}/keys/{key}".
+    testingOptions: Options for user acceptance testing.
     webSettings: Settings for keys that can be used by websites.
   """
 
@@ -185,7 +186,8 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
   iosSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1IOSKeySettings', 4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  webSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettings', 7)
+  testingOptions = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TestingOptions', 7)
+  webSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettings', 8)
 
 
 class GoogleCloudRecaptchaenterpriseV1ListKeysResponse(_messages.Message):
@@ -344,6 +346,44 @@ class GoogleCloudRecaptchaenterpriseV1ScoreMetrics(_messages.Message):
 
   actionMetrics = _messages.MessageField('ActionMetricsValue', 1)
   overallMetrics = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ScoreDistribution', 2)
+
+
+class GoogleCloudRecaptchaenterpriseV1TestingOptions(_messages.Message):
+  r"""Options for user acceptance testing.
+
+  Enums:
+    TestingChallengeValueValuesEnum: For challenge-based keys only (CHECKBOX,
+      INVISIBLE), all challenge requests for this site will return nocaptcha
+      if NOCAPTCHA, or an unsolvable challenge if CHALLENGE.
+
+  Fields:
+    testingChallenge: For challenge-based keys only (CHECKBOX, INVISIBLE), all
+      challenge requests for this site will return nocaptcha if NOCAPTCHA, or
+      an unsolvable challenge if CHALLENGE.
+    testingScore: All assessments for this Key will return this score. Must be
+      between 0 (likely not legitimate) and 1 (likely legitimate) inclusive.
+  """
+
+  class TestingChallengeValueValuesEnum(_messages.Enum):
+    r"""For challenge-based keys only (CHECKBOX, INVISIBLE), all challenge
+    requests for this site will return nocaptcha if NOCAPTCHA, or an
+    unsolvable challenge if CHALLENGE.
+
+    Values:
+      TESTING_CHALLENGE_UNSPECIFIED: Perform the normal risk analysis and
+        return either nocaptcha or a challenge depending on risk and trust
+        factors.
+      NOCAPTCHA: Challenge requests for this key will always return a
+        nocaptcha, which does not require a solution.
+      CHALLENGE: Challenge requests for this key will always return an
+        unsolvable challenge.
+    """
+    TESTING_CHALLENGE_UNSPECIFIED = 0
+    NOCAPTCHA = 1
+    CHALLENGE = 2
+
+  testingChallenge = _messages.EnumField('TestingChallengeValueValuesEnum', 1)
+  testingScore = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudRecaptchaenterpriseV1TokenProperties(_messages.Message):

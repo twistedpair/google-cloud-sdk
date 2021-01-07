@@ -19,8 +19,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.run import service
-from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.command_lib.run import k8s_object_printer
 from googlecloudsdk.command_lib.run import revision_printer
 from googlecloudsdk.command_lib.run import traffic_printer
@@ -29,7 +27,6 @@ from googlecloudsdk.core.resource import custom_printer_base as cp
 
 
 SERVICE_PRINTER_FORMAT = 'service'
-_INGRESS_UNSPECIFIED = '-'
 
 
 class ServicePrinter(k8s_object_printer.K8sObjectPrinter):
@@ -38,23 +35,6 @@ class ServicePrinter(k8s_object_printer.K8sObjectPrinter):
   Format specific to Cloud Run services. Only available on Cloud Run commands
   that print services.
   """
-
-  def _GetIngress(self, record):
-    """Gets the ingress traffic allowed to call the service."""
-    if flags.GetPlatform() == flags.PLATFORM_MANAGED:
-      spec_ingress = record.annotations.get(service.INGRESS_ANNOTATION)
-      status_ingress = record.annotations.get(service.INGRESS_STATUS_ANNOTATION)
-      if spec_ingress == status_ingress:
-        return spec_ingress
-      else:
-        spec_ingress = spec_ingress or _INGRESS_UNSPECIFIED
-        status_ingress = status_ingress or _INGRESS_UNSPECIFIED
-        return '{} (currently {})'.format(spec_ingress, status_ingress)
-    elif (record.labels.get(
-        service.ENDPOINT_VISIBILITY) == service.CLUSTER_LOCAL):
-      return service.INGRESS_INTERNAL
-    else:
-      return service.INGRESS_ALL
 
   def _GetRevisionHeader(self, record):
     return console_attr.GetConsoleAttr().Emphasize('Revision {}'.format(
@@ -73,10 +53,8 @@ class ServicePrinter(k8s_object_printer.K8sObjectPrinter):
     fmt = cp.Lines([
         self._GetHeader(record),
         self._GetLabels(record.labels), ' ',
-        cp.Section([
-            traffic_printer.TransformTraffic(record),
-            cp.Labeled([('Ingress', self._GetIngress(record))]), ' ',
-        ], max_column_width=60),
+        traffic_printer.TransformRouteFields(record),
+        ' ',
         cp.Labeled([(self._GetLastUpdated(record),
                      self._RevisionPrinters(record))]),
         self._GetReadyMessage(record)

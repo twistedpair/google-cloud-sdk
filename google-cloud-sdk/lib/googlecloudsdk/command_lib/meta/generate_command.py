@@ -89,7 +89,7 @@ def WriteYaml(command_tpl_name, collection_dict, output_dir,
   if command_name == 'describe':
     command_name_capitalized = 'Get'
   collection_prefix = ''.join([
-      word.capitalize()
+      _GetResourceMessageClassName(word)
       for word in collection_dict['collection_name'].split('.')
   ])
   expected_message_name = collection_prefix + command_name_capitalized + 'Request'
@@ -223,7 +223,8 @@ def _MakeApiDict(message_module, collection_dict):
   api_dict = {}
   try:
     resource_message = getattr(message_module,
-                               collection_dict['singular_name'].capitalize())
+                               _GetResourceMessageClassName(
+                                   collection_dict['singular_name']))
     args = [
         field.__dict__['name']
         for field in resource_message.all_fields()
@@ -237,6 +238,16 @@ def _MakeApiDict(message_module, collection_dict):
   except AttributeError:
     api_dict['create_args'] = {}
     log.status.Print('Cannot find ' +
-                     collection_dict['singular_name'].capitalize() +
+                     _GetResourceMessageClassName(
+                         collection_dict['singular_name']) +
                      ' in message module.')
   return api_dict
+
+
+def _GetResourceMessageClassName(singular_name):
+  """Returns the properly capitalized resource class name."""
+  resource_name = singular_name.strip()
+  if len(resource_name) > 1:
+    return resource_name[0].upper() + resource_name[1:]
+
+  return resource_name.capitalize()

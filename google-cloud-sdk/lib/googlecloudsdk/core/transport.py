@@ -154,12 +154,17 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
   def DecodeResponse(self, response, response_encoding):
     """Decodes the response body according to response_encoding."""
 
-  def WrapWithDefaults(self, http_client, response_encoding):
+  def WrapWithDefaults(self,
+                       http_client,
+                       response_encoding,
+                       streaming_response_body=False):
     """Wraps request with user-agent, and trace reporting.
 
     Args:
       http_client: The original http client to be wrapped.
       response_encoding: str, the encoding to use to decode the response.
+      streaming_response_body: bool, True indicates that the response body will
+          be a streaming body.
 
     Returns:
       http, The same http object but with the request method wrapped.
@@ -190,7 +195,9 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
     # Do this one last so that it sees the effects of the other modifiers.
     if properties.VALUES.core.log_http.GetBool():
       redact_token = properties.VALUES.core.log_http_redact_token.GetBool()
-      handlers.append(Handler(LogRequest(redact_token), LogResponse()))
+      handlers.append(
+          Handler(
+              LogRequest(redact_token), LogResponse(streaming_response_body)))
 
     self.WrapRequest(http_client, handlers, response_encoding=response_encoding)
     return http_client
@@ -455,8 +462,12 @@ def LogRequest(redact_token=True):
   return _LogRequest
 
 
-def LogResponse():
+def LogResponse(streaming_response_body=False):
   """Logs the contents of the http response.
+
+  Args:
+    streaming_response_body: bool, True indicates that the response body will be
+      a streaming body.
 
   Returns:
     A function that can be used in a Handler.response.
@@ -473,7 +484,9 @@ def LogResponse():
       log.status.Print('{0}: {1}'.format(h, v))
     log.status.Print('-- headers end --')
     log.status.Print('-- body start --')
-    if redact_resp_body_reason is None:
+    if streaming_response_body:
+      log.status.Print('<streaming body>')
+    elif redact_resp_body_reason is None:
       log.status.Print(response.body)
     else:
       log.status.Print('Body redacted: {}'.format(redact_resp_body_reason))

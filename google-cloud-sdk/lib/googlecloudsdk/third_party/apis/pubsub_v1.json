@@ -297,7 +297,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Name of the schema against which to validate. Format is `projects\/{project}\/schemas\/{schema}`.",
+          "description": "Name of the schema against which to validate. Format is `projects\/{project}\/schemas\/{schema}`.",
           "type": "string"
         },
         "schema": {

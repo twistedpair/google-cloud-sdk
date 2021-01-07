@@ -27,7 +27,7 @@ def AddAddressFlag(parser):
   return base.Argument(
       '--address',
       help="""\
-        IPv4 or IPv6 address of the endpoint. If unspecified, the default is
+        IPv4 or IPv6 address of the endpoint. The default is
         empty string.""").AddToParser(parser)
 
 
@@ -37,8 +37,27 @@ def AddPortFlag(parser):
       '--port',
       help="""\
         Port that the endpoint is running on, must be in the range of
-        [0, 65535]. If unspecified, the default is 0.""",
+        [0, 65535]. The default is 0.""",
       type=int).AddToParser(parser)
+
+
+def AddAnnotationsFlag(parser, resource_type, dictionary_size_limit):
+  """Adds annotations flags for service-directory commands."""
+  return base.Argument(
+      '--annotations',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help="""\
+           Annotations for the {}.
+
+           Annotations take the form of key/value string pairs. Keys are
+           composed of an optional prefix and a name segment, separated by a
+           slash(/). Prefixes and names must be composed of alphanumeric
+           characters, dashes, and dots. Names may also use underscores. There
+           are no character restrictions on what may go into the value of an
+           annotation. The entire dictionary is limited to {} characters, spread
+           across all key-value pairs.
+           """.format(resource_type, dictionary_size_limit)).AddToParser(parser)
 
 
 def AddMetadataFlag(parser, resource_type, dictionary_size_limit):
@@ -50,8 +69,13 @@ def AddMetadataFlag(parser, resource_type, dictionary_size_limit):
       help="""\
            Metadata for the {}.
 
-           Metadata takes the form of key/value string pairs. The total
-           dictionary is limited to {} characters.
+           Metadata takes the form of key/value string pairs. Keys are
+           composed of an optional prefix and a name segment, separated by a
+           slash(/). Prefixes and names must be composed of alphanumeric
+           characters, dashes, and dots. Names may also use underscores. There
+           are no character restrictions on what may go into the value of a
+           metadata. The entire dictionary is limited to {} characters, spread
+           across all key-value pairs.
            """.format(resource_type, dictionary_size_limit)).AddToParser(parser)
 
 

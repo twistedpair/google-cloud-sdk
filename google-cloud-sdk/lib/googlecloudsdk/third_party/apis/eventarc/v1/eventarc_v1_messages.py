@@ -828,13 +828,15 @@ class Pubsub(_messages.Message):
   r"""Represents a Pub/Sub transport.
 
   Fields:
-    subscription: The name of the Pub/Sub subscription created and managed by
-      Eventarc system as a transport for the event delivery. The value must be
-      in the form of
-      `projects/{PROJECT_ID}/subscriptions/{SUBSCRIPTION_NAME}`.
-    topic: The name of the Pub/Sub topic created and managed by Eventarc
-      system as a transport for the event delivery. The value must be in the
-      form of `projects/{PROJECT_ID}/topics/{TOPIC_NAME}`.
+    subscription: Output only. The name of the Pub/Sub subscription created
+      and managed by Eventarc system as a transport for the event delivery.
+      Format: `projects/{PROJECT_ID}/subscriptions/{SUBSCRIPTION_NAME}`.
+    topic: Optional. The name of the Pub/Sub topic created and managed by
+      Eventarc system as a transport for the event delivery. Format:
+      `projects/{PROJECT_ID}/topics/{TOPIC_NAME}`. You may set an existing
+      topic for triggers of the type
+      `google.cloud.pubsub.topic.v1.messagePublished` only. The topic you
+      provide here will not be deleted by Eventarc at trigger deletion.
   """
 
   subscription = _messages.StringField(1)
@@ -950,8 +952,8 @@ class Transport(_messages.Message):
   to deliver events.
 
   Fields:
-    pubsub: The Pub/Sub topic and subscription that maybe created by Eventarc
-      as delivery intermediary.
+    pubsub: The Pub/Sub topic and subscription used by Eventarc as delivery
+      intermediary.
   """
 
   pubsub = _messages.MessageField('Pubsub', 1)
@@ -985,10 +987,10 @@ class Trigger(_messages.Message):
       account for information on how to invoke authenticated Cloud Run
       services. In order to create Audit Log triggers, the service account
       should also have 'eventarc.events.receiveAuditLogV1Written' permission.
-    transport: Output only. In order to deliver messages, Eventarc may
-      configure other GCP products as transport intermediary. This field
-      returns a reference to that transport intermediary. This information can
-      be used for debugging purposes.
+    transport: Optional. In order to deliver messages, Eventarc may use other
+      GCP products as transport intermediary. This field contains a reference
+      to that transport intermediary. This information can be used for
+      debugging purposes.
     uid: Output only. Server assigned unique identifier for the trigger. The
       value is a UUID4 string and guaranteed to remain unchanged until the
       resource is deleted.

@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import functools
 import sys
 import traceback
 
@@ -169,3 +170,34 @@ def HandleGcloudCrash(err):
     log.err.Print('\nTo check gcloud for common problems, please run the '
                   'following command:')
     log.err.Print('  gcloud info --run-diagnostics')
+
+
+def CrashManager(target_function):
+  """Context manager for handling gcloud crashes.
+
+  Good for wrapping multiprocessing and multithreading target functions.
+
+  Args:
+    target_function (function): Unit test to decorate.
+
+  Returns:
+    Decorator function.
+  """
+
+  @functools.wraps(target_function)
+  def Wrapper(*args, **kwargs):
+    try:
+      target_function(*args, **kwargs)
+      # pylint:disable=broad-except
+    except Exception as e:
+      # pylint:enable=broad-except
+      HandleGcloudCrash(e)
+      if properties.VALUES.core.print_unhandled_tracebacks.GetBool():
+        # We want to see the traceback as normally handled by Python
+        raise
+      else:
+        # This is the case for most non-Cloud SDK developers. They shouldn't see
+        # the full stack trace, but just the nice "gcloud crashed" message.
+        sys.exit(1)
+
+  return Wrapper

@@ -178,14 +178,11 @@ class GoogleCloudMlV1AutoScaling(_messages.Message):
       `min_nodes` is not specified and AutoScaling is used with a [Compute
       Engine (N1) machine type](/ml-engine/docs/machine-types-online-
       prediction), `min_nodes` defaults to 1. `min_nodes` must be at least 1
-      for use with a Compute Engine machine type. Note that you cannot use
-      AutoScaling if your version uses
-      [GPUs](#Version.FIELDS.accelerator_config). Instead, you must use
-      ManualScaling. You can set `min_nodes` when creating the model version,
-      and you can also update `min_nodes` for an existing version:
-      update_body.json: { 'autoScaling': { 'minNodes': 5 } } HTTP request:
-      PATCH https://ml.googleapis.com/v1/{name=projects/*/models/*/versions/*}
-      ?update_mask=autoScaling.minNodes -d @./update_body.json
+      for use with a Compute Engine machine type. You can set `min_nodes` when
+      creating the model version, and you can also update `min_nodes` for an
+      existing version: update_body.json: { 'autoScaling': { 'minNodes': 5 } }
+      HTTP request: PATCH https://ml.googleapis.com/v1/{name=projects/*/models
+      /*/versions/*}?update_mask=autoScaling.minNodes -d @./update_body.json
   """
 
   maxNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -536,15 +533,10 @@ class GoogleCloudMlV1DiskConfig(_messages.Message):
     bootDiskType: Type of the boot disk (default is "pd-standard"). Valid
       values: "pd-ssd" (Persistent Disk Solid State Drive) or "pd-standard"
       (Persistent Disk Hard Disk Drive).
-    localSsdCount: Number of attached local SSDs, from 0 to 8 (default is 0).
-      The ssds are mounted on the node under `/mnt/disks/ssd{0...7}`. For
-      example, if `local_ssd_count=3`, the 3 ssds will be mounted at paths
-      `/mnt/disks/ssd0`, `/mnt/disks/ssd1` and `/mnt/disks/ssd2` respectively.
   """
 
   bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   bootDiskType = _messages.StringField(2)
-  localSsdCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudMlV1EncryptionConfig(_messages.Message):
@@ -2957,10 +2949,7 @@ class GoogleCloudMlV1Version(_messages.Message):
     autoScaling: Automatically scale the number of nodes used to serve the
       model in response to increases and decreases in traffic. Care should be
       taken to ramp up traffic according to the model's ability to scale or
-      you will start seeing increases in latency and 429 response codes. Note
-      that you cannot use AutoScaling if your version uses
-      [GPUs](#Version.FIELDS.accelerator_config). Instead, you must use
-      specify `manual_scaling`.
+      you will start seeing increases in latency and 429 response codes.
     container: Optional. Specifies a custom container to use for serving
       predictions. If you specify this field, then `machineType` is required.
       If you specify this field, then `deploymentUri` is optional. If you
@@ -3011,6 +3000,10 @@ class GoogleCloudMlV1Version(_messages.Message):
       model versions. Each label is a key-value pair, where both the key and
       the value are arbitrary strings that you supply. For more information,
       see the documentation on using labels.
+    lastMigrationModelId: Output only. The uCAIP model id for the last model
+      migration.
+    lastMigrationTime: Output only. The last time this version was
+      successfully migrated to uCAIP.
     lastUseTime: Output only. The time the version was last used for
       prediction.
     machineType: Optional. The type of machine on which to serve the model.
@@ -3191,19 +3184,21 @@ class GoogleCloudMlV1Version(_messages.Message):
   imageUri = _messages.StringField(11)
   isDefault = _messages.BooleanField(12)
   labels = _messages.MessageField('LabelsValue', 13)
-  lastUseTime = _messages.StringField(14)
-  machineType = _messages.StringField(15)
-  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 16)
-  modelClass = _messages.StringField(17)
-  name = _messages.StringField(18)
-  packageUris = _messages.StringField(19, repeated=True)
-  predictionClass = _messages.StringField(20)
-  pythonVersion = _messages.StringField(21)
-  requestLoggingConfig = _messages.MessageField('GoogleCloudMlV1RequestLoggingConfig', 22)
-  routes = _messages.MessageField('GoogleCloudMlV1RouteMap', 23)
-  runtimeVersion = _messages.StringField(24)
-  serviceAccount = _messages.StringField(25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
+  lastMigrationModelId = _messages.StringField(14)
+  lastMigrationTime = _messages.StringField(15)
+  lastUseTime = _messages.StringField(16)
+  machineType = _messages.StringField(17)
+  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 18)
+  modelClass = _messages.StringField(19)
+  name = _messages.StringField(20)
+  packageUris = _messages.StringField(21, repeated=True)
+  predictionClass = _messages.StringField(22)
+  pythonVersion = _messages.StringField(23)
+  requestLoggingConfig = _messages.MessageField('GoogleCloudMlV1RequestLoggingConfig', 24)
+  routes = _messages.MessageField('GoogleCloudMlV1RouteMap', 25)
+  runtimeVersion = _messages.StringField(26)
+  serviceAccount = _messages.StringField(27)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
 
 
 class GoogleCloudMlV1XraiAttribution(_messages.Message):

@@ -30,6 +30,37 @@ class ArtifactregistryProjectsLocationsRepositoriesImportRequest(_messages.Messa
   parent = _messages.StringField(2, required=True)
 
 
+class DockerImage(_messages.Message):
+  r"""DockerImage represents a docker artifact.
+
+  Fields:
+    imageSizeBytes: Calculated size of the image.
+    mediaType: Media type of this image, e.g.
+      "application/vnd.docker.distribution.manifest.v2+json".
+    name: Required. registry_location, project_id, repository_name and image
+      id forms a unique image
+      name:`projects//locations//repository//dockerimages/`. For example,
+      "projects/test-project/locations/us-west4/repositories/test-
+      repo/dockerimages/ nginx@sha256:e9954c1fc875017be1c3e36eca16be2d9e9bccc4
+      bf072163515467d6a823c7cf", where "us-west4" is the registry_location,
+      "test-project" is the project_id, "test-repo" is the repository_name and
+      "nginx@sha256:e9954c1fc875017be1c3e36eca16be2d9e9bccc4bf072163515467d6a8
+      23c7cf" is the image's digest.
+    tags: Tags attached to this image.
+    uploadTime: Time the image was uploaded.
+    uri: Required. URL to access the image. Example: us-
+      west4-docker.pkg.dev/test-project/test-repo/nginx@sha256:e9954c1fc875017
+      be1c3e36eca16be2d9e9bccc4bf072163515467d6a823c7cf
+  """
+
+  imageSizeBytes = _messages.IntegerField(1)
+  mediaType = _messages.StringField(2)
+  name = _messages.StringField(3)
+  tags = _messages.StringField(4, repeated=True)
+  uploadTime = _messages.StringField(5)
+  uri = _messages.StringField(6)
+
+
 class GoogleDevtoolsArtifactregistryV1alpha1ErrorInfo(_messages.Message):
   r"""Error information explaining why a package was not imported.
 

@@ -147,7 +147,7 @@ class InterconnectAttachment(object):
                 interconnectAttachmentResource=interconnect_attachment))
 
   def _MakePatchRequestTupleGa(self, description, admin_enabled, bandwidth,
-                               partner_metadata):
+                               partner_metadata, mtu):
     return (self._client.interconnectAttachments, 'Patch',
             self._messages.ComputeInterconnectAttachmentsPatchRequest(
                 project=self.ref.project,
@@ -159,7 +159,8 @@ class InterconnectAttachment(object):
                     description=description,
                     adminEnabled=admin_enabled,
                     bandwidth=bandwidth,
-                    partnerMetadata=partner_metadata)))
+                    partnerMetadata=partner_metadata,
+                    mtu=mtu)))
 
   def _MakeDescribeRequestTuple(self):
     return (self._client.interconnectAttachments, 'Get',
@@ -283,14 +284,16 @@ class InterconnectAttachment(object):
               partner_name=None,
               partner_interconnect=None,
               partner_portal_url=None,
-              only_generate_request=False):
+              only_generate_request=False,
+              mtu=None):
     """Patch an interconnectAttachment."""
     if bandwidth:
       bandwidth = (
           self._messages.InterconnectAttachment.BandwidthValueValuesEnum(
               self._BANDWIDTH_CONVERSION[bandwidth]))
-    if (partner_interconnect is not None or partner_name is not None or
-        partner_portal_url is not None):
+    if (partner_interconnect is not None
+        or partner_name is not None
+        or partner_portal_url is not None):
       partner_metadata = self._messages.InterconnectAttachmentPartnerMetadata(
           interconnectName=partner_interconnect,
           partnerName=partner_name,
@@ -299,7 +302,7 @@ class InterconnectAttachment(object):
       partner_metadata = None
     requests = [
         self._MakePatchRequestTupleGa(description, admin_enabled, bandwidth,
-                                      partner_metadata)
+                                      partner_metadata, mtu)
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)

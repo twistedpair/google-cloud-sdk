@@ -1365,6 +1365,22 @@ class Queue(_messages.Message):
     stats: Output only. The realtime, informational statistics for a queue. In
       order to receive the statistics the caller should include this field in
       the FieldMask.
+    taskTtl: The maximum amount of time that a task will be retained in this
+      queue. Queues created by Cloud Tasks have a default `task_ttl` of 31
+      days. After a task has lived for `task_ttl`, the task will be deleted
+      regardless of whether it was dispatched or not. The `task_ttl` for
+      queues created via queue.yaml/xml is equal to the maximum duration
+      because there is a [storage
+      quota](https://cloud.google.com/appengine/quotas#Task_Queue) for these
+      queues. To view the maximum valid duration, see the documentation for
+      Duration.
+    tombstoneTtl: The task tombstone time to live (TTL). After a task is
+      deleted or executed, the task's tombstone is retained for the length of
+      time specified by `tombstone_ttl`. The tombstone is used by task de-
+      duplication; another task with the same name can't be created until the
+      tombstone has expired. For more information about task de-duplication,
+      see the documentation for CreateTaskRequest. Queues created by Cloud
+      Tasks have a default `tombstone_ttl` of 1 hour.
     type: Immutable. The type of a queue (push or pull). `Queue.type` is an
       immutable property of the queue that is set at the queue creation time.
       When left unspecified, the default value of `PUSH` is selected.
@@ -1422,7 +1438,9 @@ class Queue(_messages.Message):
   stackdriverLoggingConfig = _messages.MessageField('StackdriverLoggingConfig', 6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
   stats = _messages.MessageField('QueueStats', 8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  taskTtl = _messages.StringField(9)
+  tombstoneTtl = _messages.StringField(10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
 
 
 class QueueStats(_messages.Message):
@@ -1817,7 +1835,7 @@ class Task(_messages.Message):
       purpose, currently is to provide backward compatibility with App Engine
       Task Queue [pull](https://cloud.google.com/appengine/docs/standard/java/
       taskqueue/pull/) queues to provide a way to inspect contents of pull
-      tasks through the CloudTasks.
+      tasks through the CloudTasks.GetTask.
     responseCount: Output only. The number of attempts which have received a
       response.
     scheduleTime: The time when the task is scheduled to be attempted. For App

@@ -22,6 +22,8 @@ from __future__ import unicode_literals
 import json
 
 from googlecloudsdk.core import http
+from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import retry
 
 from oauth2client import client as oauth2client_client
@@ -94,6 +96,11 @@ class UserCredWithReauth(credentials.Credentials):
       # reauth.GetRaptToken is implemented in oauth2client and it is built on
       # httplib2. GetRaptToken does not work with
       # google.auth.transport.Request.
+      if not console_io.IsInteractive():
+        log.info('Reauthentication not performed as we cannot prompt during '
+                 'non-interactive execution.')
+        return
+
       response_encoding = None if six.PY2 else 'utf-8'
       http_request = http.Http(response_encoding=response_encoding).request
       self._rapt_token = reauth.GetRaptToken(http_request, self._client_id,

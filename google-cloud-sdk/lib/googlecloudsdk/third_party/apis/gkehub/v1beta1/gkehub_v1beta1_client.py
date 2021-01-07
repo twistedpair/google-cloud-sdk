@@ -82,7 +82,7 @@ class GkehubV1beta1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Removes a single Membership.
+      r"""Removes a Membership.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsDeleteRequest) input message
@@ -109,7 +109,7 @@ class GkehubV1beta1(base_api.BaseApiClient):
     )
 
     def GenerateConnectManifest(self, request, global_params=None):
-      r"""Generate the manifest for deployment of GKE connect agent.
+      r"""Generates the manifest for deployment of the GKE connect agent.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest) input message
@@ -136,7 +136,7 @@ class GkehubV1beta1(base_api.BaseApiClient):
     )
 
     def GenerateExclusivityManifest(self, request, global_params=None):
-      r"""GenerateExclusivityManifest generates the manifests to update the exclusivity artifacts in the cluster if needed. Exclusivity artifacts include the membership customer resource definition (CRD) and the singleton membership custom resource (CR). Combined with ValidateExclusivity, exclusivity artifacts guarantee that a Kubernetes cluster is only registered to a single GKE Hub. The membership CRD is versioned, and may require conversion when the GKE Hub API server begins serving a newer version of the CRD and corresponding CR. The response will be the converted CRD and CR if there are any differences between the versions.
+      r"""GenerateExclusivityManifest generates the manifests to update the exclusivity artifacts in the cluster if needed. Exclusivity artifacts include the Membership custom resource definition (CRD) and the singleton Membership custom resource (CR). Combined with ValidateExclusivity, exclusivity artifacts guarantee that a Kubernetes cluster is only registered to a single GKE Hub. The Membership CRD is versioned, and may require conversion when the GKE Hub API server begins serving a newer version of the CRD and corresponding CR. The response will be the converted CRD and CR if there are any differences between the versions.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsGenerateExclusivityManifestRequest) input message
@@ -163,7 +163,7 @@ class GkehubV1beta1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Membership.
+      r"""Gets the details of a Membership.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsGetRequest) input message

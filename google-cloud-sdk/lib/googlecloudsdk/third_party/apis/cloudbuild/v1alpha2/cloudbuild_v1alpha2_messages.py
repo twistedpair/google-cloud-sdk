@@ -186,8 +186,7 @@ class Build(_messages.Message):
     serviceAccount: IAM service account whose credentials will be used at
       build runtime. Must be of the format
       `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. ACCOUNT can be email
-      address or uniqueId of the service account. This field is in alpha and
-      is not publicly available.
+      address or uniqueId of the service account. This field is in beta.
     source: The location of the source files to build.
     sourceProvenance: Output only. A permanent fixed identifier for source.
     startTime: Output only. Time at which execution of the build was started.
@@ -419,7 +418,7 @@ class BuildOptions(_messages.Message):
       configuration.
     workerPool: Option to specify a `WorkerPool` for the build. Format:
       projects/{project}/locations/{location}/workerPools/{workerPool} This
-      field is experimental.
+      field is in beta and is available only to restricted users.
   """
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
@@ -450,7 +449,7 @@ class BuildOptions(_messages.Message):
       CLOUD_LOGGING_ONLY: Only Cloud Logging is enabled. Note that logs for
         both the Cloud Console UI and Cloud SDK are based on Cloud Storage
         logs, so neither will provide logs if this option is chosen.
-      NONE: Turn off all logging. No build logs will be captured. Next ID: 6
+      NONE: Turn off all logging. No build logs will be captured.
     """
     LOGGING_UNSPECIFIED = 0
     LEGACY = 1

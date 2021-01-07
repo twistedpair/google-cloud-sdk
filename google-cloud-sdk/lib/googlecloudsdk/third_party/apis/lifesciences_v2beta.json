@@ -345,6 +345,10 @@
         "disableStandardErrorCapture": {
           "description": "A small portion of the container's standard error stream is typically captured and returned inside the `ContainerStoppedEvent`. Setting this flag disables this functionality.",
           "type": "boolean"
+        },
+        "blockExternalNetwork": {
+          "description": "Prevents the container from accessing the external network.",
+          "type": "boolean"
         }
       }
     },
@@ -428,7 +432,7 @@
           }
         },
         "disks": {
-          "description": "The list of disks to create and attach to the VM.",
+          "description": "The list of disks to create and attach to the VM. Specify either the `volumes[]` field or the `disks[]` field, but not both.",
           "type": "array",
           "items": {
             "$ref": "Disk"
@@ -478,7 +482,7 @@
           }
         },
         "volumes": {
-          "description": "The list of disks and other storage to create or attach to the VM.",
+          "description": "The list of disks and other storage to create or attach to the VM. Specify either the `volumes[]` field or the `disks[]` field, but not both.",
           "type": "array",
           "items": {
             "$ref": "Volume"
@@ -488,7 +492,7 @@
     },
     "Disk": {
       "id": "Disk",
-      "description": "Carries information about a disk that can be attached to a VM. See https:\/\/cloud.google.com\/compute\/docs\/disks\/performance for more information about disk type, size, and performance considerations.",
+      "description": "Carries information about a disk that can be attached to a VM. See https:\/\/cloud.google.com\/compute\/docs\/disks\/performance for more information about disk type, size, and performance considerations. Specify either `Volume` or `Disk`, but not both.",
       "type": "object",
       "properties": {
         "name": {
@@ -565,7 +569,7 @@
     },
     "Volume": {
       "id": "Volume",
-      "description": "Carries information about storage that can be attached to a VM.",
+      "description": "Carries information about storage that can be attached to a VM. Specify either `Volume` or `Disk`, but not both.",
       "type": "object",
       "properties": {
         "volume": {

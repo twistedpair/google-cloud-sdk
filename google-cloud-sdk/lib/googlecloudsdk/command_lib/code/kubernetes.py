@@ -206,6 +206,49 @@ def _FindMinikube():
 class MinikubeStartError(exceptions.Error):
   """Error if minikube fails to start."""
 
+  # pylint: disable=useless-super-delegation
+  def __init__(self, message='Unable to start Cloud Run Emulator.'):
+    super(MinikubeStartError, self).__init__(message)
+
+
+# Resource recommendations are from https://minikube.sigs.k8s.io/docs/start/
+class MinikubeOutOfMemoryError(MinikubeStartError):
+
+  def __init__(self):
+    message = 'Not enough memory. Cloud Run Emulator requires 2.25 GB of RAM.'
+    if platforms.OperatingSystem.Current() != platforms.OperatingSystem.LINUX:
+      message += ' Increase Docker VM RAM to 2.25 GB.'
+    super(MinikubeOutOfMemoryError, self).__init__(message=message)
+
+
+class MinikubeNotEnoughCoresError(MinikubeStartError):
+  """Error for minikube needs more CPU."""
+
+  def __init__(self):
+    message = 'Not enough CPUs. Cloud Run Emulator requires 2 CPUs.'
+    if platforms.OperatingSystem.Current() != platforms.OperatingSystem.LINUX:
+      message += ' Increase Docker VM CPUs to 2.'
+    super(MinikubeNotEnoughCoresError, self).__init__(message=message)
+
+
+class MinikubeNotEnoughStorageError(MinikubeStartError):
+  """Error for minikube needs more disk space."""
+
+  def __init__(self):
+    message = ('Not enough storage. Cloud Run Emulator requires 20 GB of '
+               'storage.')
+    if platforms.OperatingSystem.Current() != platforms.OperatingSystem.LINUX:
+      message += ' Increase Docker VM disk space to 20 GB.'
+    super(MinikubeNotEnoughStorageError, self).__init__(message=message)
+
+
+class MinikubeDockerUnreachableError(MinikubeStartError):
+  """Error for minikube unable to reach the docker daemon."""
+
+  def __init__(self):
+    super(MinikubeDockerUnreachableError,
+          self).__init__(message='Cannot reach docker daemon.')
+
 
 _MINIKUBE_STEP = 'io.k8s.sigs.minikube.step'
 
@@ -218,15 +261,14 @@ _MINIKUBE_NOT_ENOUGH_CPU_FRAGMENT = 'The minimum allowed is 2 CPUs.'
 # pylint: disable=line-too-long
 # See https://github.com/kubernetes/minikube/blob/master/pkg/minikube/reason/exitcodes.go
 # pylint: enable=line-too-long
-_MINIKUBE_ERROR_MESSAGES = {
-    '29': 'Not enough CPUs. Cloud Run Emulator requires 2 CPUs.',
-    '69': 'Cannot reach docker daemon.',
+_MINIKUBE_ERROR_FROM_EXIT_CODE = {
+    '23': MinikubeOutOfMemoryError,
+    '26': MinikubeNotEnoughStorageError,
+    '29': MinikubeNotEnoughCoresError,
+    '69': MinikubeDockerUnreachableError,
 }
 
 _MINIKUBE_PASSTHROUGH_ADVICE_IDS = frozenset(['HOST_HOME_PERMISSION'])
-
-if platforms.OperatingSystem.Current() != platforms.OperatingSystem.LINUX:
-  _MINIKUBE_ERROR_MESSAGES['29'] += ' Increase Docker VM CPUs to 2.'
 
 
 def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
@@ -311,9 +353,9 @@ def _HandleMinikubeStatusEvent(progress_bar, json_obj):
       raise MinikubeStartError(data['advice'])
     else:
       exit_code = data['exitcode']
-      msg = _MINIKUBE_ERROR_MESSAGES.get(exit_code,
-                                         'Unable to start Cloud Run Emulator.')
-      raise MinikubeStartError(msg)
+      error_class = _MINIKUBE_ERROR_FROM_EXIT_CODE.get(exit_code,
+                                                       MinikubeStartError)
+      raise error_class()
 
 
 def _GetMinikubeDockerEnvs(cluster_name):

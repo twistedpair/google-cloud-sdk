@@ -275,6 +275,22 @@ class S3BucketResource(resource_reference.BucketResource):
 class S3ObjectResource(resource_reference.ObjectResource):
   """API-specific subclass for handling metadata."""
 
+  def __init__(self,
+               storage_url_object,
+               creation_time=None,
+               etag=None,
+               md5_hash=None,
+               metadata=None,
+               metageneration=None,
+               size=None):
+    """Initializes resource. Args are a subset of attributes."""
+    # The S3 API returns etag wrapped in quotes in some cases.
+    if etag and etag.startswith('"') and etag.endswith('"'):
+      etag = etag[1:-1]
+    super(S3ObjectResource,
+          self).__init__(storage_url_object, creation_time, etag, md5_hash,
+                         metadata, metageneration, size)
+
   def get_full_metadata_string(self):
     return _get_full_object_metadata_string(self)
 

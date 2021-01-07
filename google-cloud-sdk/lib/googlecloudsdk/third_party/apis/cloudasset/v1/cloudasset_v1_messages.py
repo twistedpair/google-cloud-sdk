@@ -610,17 +610,24 @@ class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
       query](https://cloud.google.com/asset-inventory/docs/searching-iam-
       policies#how_to_construct_a_query) for more information. If not
       specified or empty, it will search all the IAM policies within the
-      specified `scope`. Examples: * `policy:amy@gmail.com` to find IAM policy
-      bindings that specify user "amy@gmail.com". *
-      `policy:roles/compute.admin` to find IAM policy bindings that specify
-      the Compute Admin role. *
+      specified `scope`. Note that the query string is compared against each
+      Cloud IAM policy binding, including its members, roles, and Cloud IAM
+      conditions. The returned Cloud IAM policies will only contain the
+      bindings that match your query. To learn more about the IAM policy
+      structure, see [IAM policy
+      doc](https://cloud.google.com/iam/docs/policies#structure). Examples: *
+      `policy:amy@gmail.com` to find IAM policy bindings that specify user
+      "amy@gmail.com". * `policy:roles/compute.admin` to find IAM policy
+      bindings that specify the Compute Admin role. *
       `policy.role.permissions:storage.buckets.update` to find IAM policy
       bindings that specify a role containing "storage.buckets.update"
       permission. Note that if callers don't have `iam.roles.get` access to a
       role's included permissions, policy bindings that specify this role will
       be dropped from the search results. * `resource:organizations/123456` to
       find IAM policy bindings that are set on "organizations/123456". *
-      `Important` to find IAM policy bindings that contain "Important" as a
+      `resource=//cloudresourcemanager.googleapis.com/projects/myproject` to
+      find IAM policy bindings that are set on the project named "myproject".
+      * `Important` to find IAM policy bindings that contain "Important" as a
       word in any of the searchable fields (except for the included
       permissions). * `*por*` to find IAM policy bindings that contain "por"
       as a substring in any of the searchable fields (except for the included
@@ -651,7 +658,14 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
     assetTypes: Optional. A list of asset types that this request searches
       for. If empty, it will search all the [searchable asset
       types](https://cloud.google.com/asset-inventory/docs/supported-asset-
-      types#searchable_asset_types).
+      types#searchable_asset_types). Regular expressions are also supported.
+      For example: * "compute.googleapis.com.*" snapshots resources whose
+      asset type starts with "compute.googleapis.com". * ".*Instance"
+      snapshots resources whose asset type ends with "Instance". *
+      ".*Instance.*" snapshots resources whose asset type contains "Instance".
+      See [RE2](https://github.com/google/re2/wiki/Syntax) for all supported
+      regular expression syntax. If the regular expression does not match any
+      supported asset type, an INVALID_ARGUMENT error will be returned.
     orderBy: Optional. A comma separated list of fields specifying the sorting
       order of the results. The default order is ascending. Add " DESC" after
       the field name to indicate descending order. Redundant space characters
@@ -673,29 +687,24 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       query](http://cloud.google.com/asset-inventory/docs/searching-
       resources#how_to_construct_a_query) for more information. If not
       specified or empty, it will search all the resources within the
-      specified `scope`. Note that the query string is compared against each
-      Cloud IAM policy binding, including its members, roles, and Cloud IAM
-      conditions. The returned Cloud IAM policies will only contain the
-      bindings that match your query. To learn more about the IAM policy
-      structure, see [IAM policy
-      doc](https://cloud.google.com/iam/docs/policies#structure). Examples: *
-      `name:Important` to find Cloud resources whose name contains "Important"
-      as a word. * `displayName:Impor*` to find Cloud resources whose display
-      name contains "Impor" as a prefix. * `description:*por*` to find Cloud
-      resources whose description contains "por" as a substring. *
-      `location:us-west*` to find Cloud resources whose location is prefixed
-      with "us-west". * `labels:prod` to find Cloud resources whose labels
-      contain "prod" as a key or value. * `labels.env:prod` to find Cloud
-      resources that have a label "env" and its value is "prod". *
-      `labels.env:*` to find Cloud resources that have a label "env". *
-      `Important` to find Cloud resources that contain "Important" as a word
-      in any of the searchable fields. * `Impor*` to find Cloud resources that
-      contain "Impor" as a prefix in any of the searchable fields. * `*por*`
-      to find Cloud resources that contain "por" as a substring in any of the
-      searchable fields. * `Important location:(us-west1 OR global)` to find
-      Cloud resources that contain "Important" as a word in any of the
-      searchable fields and are also located in the "us-west1" region or the
-      "global" location.
+      specified `scope`. Examples: * `name:Important` to find Cloud resources
+      whose name contains "Important" as a word. * `name=Important` to find
+      the Cloud resource whose name is exactly "Important". *
+      `displayName:Impor*` to find Cloud resources whose display name contains
+      "Impor" as a prefix. * `description:*por*` to find Cloud resources whose
+      description contains "por" as a substring. * `location:us-west*` to find
+      Cloud resources whose location is prefixed with "us-west". *
+      `labels:prod` to find Cloud resources whose labels contain "prod" as a
+      key or value. * `labels.env:prod` to find Cloud resources that have a
+      label "env" and its value is "prod". * `labels.env:*` to find Cloud
+      resources that have a label "env". * `Important` to find Cloud resources
+      that contain "Important" as a word in any of the searchable fields. *
+      `Impor*` to find Cloud resources that contain "Impor" as a prefix in any
+      of the searchable fields. * `*por*` to find Cloud resources that contain
+      "por" as a substring in any of the searchable fields. * `Important
+      location:(us-west1 OR global)` to find Cloud resources that contain
+      "Important" as a word in any of the searchable fields and are also
+      located in the "us-west1" region or the "global" location.
     scope: Required. A scope can be a project, a folder, or an organization.
       The search is limited to the resources within the `scope`. The caller
       must be granted the
@@ -1428,6 +1437,25 @@ class GoogleIdentityAccesscontextmanagerV1AccessPolicy(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GoogleIdentityAccesscontextmanagerV1ApiOperation(_messages.Message):
+  r"""Identification for an API Operation.
+
+  Fields:
+    methodSelectors: API methods or permissions to allow. Method or permission
+      must belong to the service specified by `service_name` field. A single
+      MethodSelector entry with `*` specified for the `method` field will
+      allow all methods AND permissions for the service specified in
+      `service_name`.
+    serviceName: The name of the API whose methods or permissions the
+      IngressPolicy or EgressPolicy want to allow. A single ApiOperation with
+      `service_name` field set to `*` will allow all methods AND permissions
+      for all services.
+  """
+
+  methodSelectors = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1MethodSelector', 1, repeated=True)
+  serviceName = _messages.StringField(2)
+
+
 class GoogleIdentityAccesscontextmanagerV1BasicLevel(_messages.Message):
   r"""`BasicLevel` is an `AccessLevel` using a set of recommended features.
 
@@ -1594,6 +1622,224 @@ class GoogleIdentityAccesscontextmanagerV1DevicePolicy(_messages.Message):
   requireScreenlock = _messages.BooleanField(6)
 
 
+class GoogleIdentityAccesscontextmanagerV1EgressFrom(_messages.Message):
+  r"""Defines the conditions under which an EgressPolicy matches a request.
+  Conditions based on information about the source of the request. Note that
+  if the destination of the request is protected by a ServicePerimeter, then
+  that ServicePerimeter must have an IngressPolicy which allows access in
+  order for this request to succeed.
+
+  Enums:
+    IdentityTypeValueValuesEnum: Specifies the type of identities that are
+      allowed access to outside the perimeter. If left unspecified, then
+      members of `identities` field will be allowed access.
+
+  Fields:
+    identities: A list of identities that are allowed access through this
+      [EgressPolicy]. Should be in the format of email address. The email
+      address should represent individual user or service account only.
+    identityType: Specifies the type of identities that are allowed access to
+      outside the perimeter. If left unspecified, then members of `identities`
+      field will be allowed access.
+  """
+
+  class IdentityTypeValueValuesEnum(_messages.Enum):
+    r"""Specifies the type of identities that are allowed access to outside
+    the perimeter. If left unspecified, then members of `identities` field
+    will be allowed access.
+
+    Values:
+      IDENTITY_TYPE_UNSPECIFIED: No blanket identity group specified.
+      ANY_IDENTITY: Authorize access from all identities outside the
+        perimeter.
+      ANY_USER_ACCOUNT: Authorize access from all human users outside the
+        perimeter.
+      ANY_SERVICE_ACCOUNT: Authorize access from all service accounts outside
+        the perimeter.
+    """
+    IDENTITY_TYPE_UNSPECIFIED = 0
+    ANY_IDENTITY = 1
+    ANY_USER_ACCOUNT = 2
+    ANY_SERVICE_ACCOUNT = 3
+
+  identities = _messages.StringField(1, repeated=True)
+  identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 2)
+
+
+class GoogleIdentityAccesscontextmanagerV1EgressPolicy(_messages.Message):
+  r"""Policy for egress from perimeter. EgressPolicies match requests based on
+  `egress_from` and `egress_to` stanzas. For an EgressPolicy to match, both
+  `egress_from` and `egress_to` stanzas must be matched. If an EgressPolicy
+  matches a request, the request is allowed to span the ServicePerimeter
+  boundary. For example, an EgressPolicy can be used to allow VMs on networks
+  within the ServicePerimeter to access a defined set of projects outside the
+  perimeter in certain contexts (e.g. to read data from a Cloud Storage bucket
+  or query against a BigQuery dataset). EgressPolicies are concerned with the
+  *resources* that a request relates as well as the API services and API
+  actions being used. They do not related to the direction of data movement.
+  More detailed documentation for this concept can be found in the
+  descriptions of EgressFrom and EgressTo.
+
+  Fields:
+    egressFrom: Defines conditions on the source of a request causing this
+      EgressPolicy to apply.
+    egressTo: Defines the conditions on the ApiOperation and destination
+      resources that cause this EgressPolicy to apply.
+  """
+
+  egressFrom = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1EgressFrom', 1)
+  egressTo = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1EgressTo', 2)
+
+
+class GoogleIdentityAccesscontextmanagerV1EgressTo(_messages.Message):
+  r"""Defines the conditions under which an EgressPolicy matches a request.
+  Conditions are based on information about the ApiOperation intended to be
+  performed on the `resources` specified. Note that if the destination of the
+  request is protected by a ServicePerimeter, then that ServicePerimeter must
+  have an IngressPolicy which allows access in order for this request to
+  succeed.
+
+  Fields:
+    operations: A list of ApiOperations that this egress rule applies to. A
+      request matches if it contains an operation/service in this list.
+    resources: A list of resources, currently only projects in the form
+      `projects/`, that match this to stanza. A request matches if it contains
+      a resource in this list. If `*` is specified for resources, then this
+      EgressTo rule will authorize access to all resources outside the
+      perimeter.
+  """
+
+  operations = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ApiOperation', 1, repeated=True)
+  resources = _messages.StringField(2, repeated=True)
+
+
+class GoogleIdentityAccesscontextmanagerV1IngressFrom(_messages.Message):
+  r"""Defines the conditions under which an IngressPolicy matches a request.
+  Conditions are based on information about the source of the request.
+
+  Enums:
+    IdentityTypeValueValuesEnum: Specifies the type of identities that are
+      allowed access from outside the perimeter. If left unspecified, then
+      members of `identities` field will be allowed access.
+
+  Fields:
+    identities: A list of identities that are allowed access through this
+      ingress policy. Should be in the format of email address. The email
+      address should represent individual user or service account only.
+    identityType: Specifies the type of identities that are allowed access
+      from outside the perimeter. If left unspecified, then members of
+      `identities` field will be allowed access.
+    sources: Sources that this IngressPolicy authorizes access from.
+  """
+
+  class IdentityTypeValueValuesEnum(_messages.Enum):
+    r"""Specifies the type of identities that are allowed access from outside
+    the perimeter. If left unspecified, then members of `identities` field
+    will be allowed access.
+
+    Values:
+      IDENTITY_TYPE_UNSPECIFIED: No blanket identity group specified.
+      ANY_IDENTITY: Authorize access from all identities outside the
+        perimeter.
+      ANY_USER_ACCOUNT: Authorize access from all human users outside the
+        perimeter.
+      ANY_SERVICE_ACCOUNT: Authorize access from all service accounts outside
+        the perimeter.
+    """
+    IDENTITY_TYPE_UNSPECIFIED = 0
+    ANY_IDENTITY = 1
+    ANY_USER_ACCOUNT = 2
+    ANY_SERVICE_ACCOUNT = 3
+
+  identities = _messages.StringField(1, repeated=True)
+  identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 2)
+  sources = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1IngressSource', 3, repeated=True)
+
+
+class GoogleIdentityAccesscontextmanagerV1IngressPolicy(_messages.Message):
+  r"""Policy for ingress into ServicePerimeter. IngressPolicies match requests
+  based on `ingress_from` and `ingress_to` stanzas. For an ingress policy to
+  match, both the `ingress_from` and `ingress_to` stanzas must be matched. If
+  an IngressPolicy matches a request, the request is allowed through the
+  perimeter boundary from outside the perimeter. For example, access from the
+  internet can be allowed either based on an AccessLevel or, for traffic
+  hosted on Google Cloud, the project of the source network. For access from
+  private networks, using the project of the hosting network is required.
+  Individual ingress policies can be limited by restricting which services
+  and/or actions they match using the `ingress_to` field.
+
+  Fields:
+    ingressFrom: Defines the conditions on the source of a request causing
+      this IngressPolicy to apply.
+    ingressTo: Defines the conditions on the ApiOperation and request
+      destination that cause this IngressPolicy to apply.
+  """
+
+  ingressFrom = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1IngressFrom', 1)
+  ingressTo = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1IngressTo', 2)
+
+
+class GoogleIdentityAccesscontextmanagerV1IngressSource(_messages.Message):
+  r"""The source that IngressPolicy authorizes access from.
+
+  Fields:
+    accessLevel: An AccessLevel resource name that allow resources within the
+      ServicePerimeters to be accessed from the internet. AccessLevels listed
+      must be in the same policy as this ServicePerimeter. Referencing a
+      nonexistent AccessLevel will cause an error. If no AccessLevel names are
+      listed, resources within the perimeter can only be accessed via Google
+      Cloud calls with request origins within the perimeter. Example:
+      `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If `*` is specified,
+      then all IngressSources will be allowed.
+    resource: A Google Cloud resource that is allowed to ingress the
+      perimeter. Requests from these resources will be allowed to access
+      perimeter data. Currently only projects are allowed. Format:
+      `projects/{project_number}` The project may be in any Google Cloud
+      organization, not just the organization that the perimeter is defined
+      in. `*` is not allowed, the case of allowing all Google Cloud resources
+      only is not supported.
+  """
+
+  accessLevel = _messages.StringField(1)
+  resource = _messages.StringField(2)
+
+
+class GoogleIdentityAccesscontextmanagerV1IngressTo(_messages.Message):
+  r"""Defines the conditions under which an IngressPolicy matches a request.
+  Conditions are based on information about the ApiOperation intended to be
+  performed on the destination of the request.
+
+  Fields:
+    operations: A list of ApiOperations the sources specified in corresponding
+      IngressFrom are allowed to perform in this ServicePerimeter.
+    resources: A list of resources, currently only projects in the form
+      `projects/`, protected by this ServicePerimeter that are allowed to be
+      accessed by sources defined in the corresponding IngressFrom. A request
+      matches if it contains a resource in this list. If `*` is specified for
+      resources, then this IngressTo rule will authorize access to all
+      resources inside the perimeter, provided that the request also matches
+      the `operations` field.
+  """
+
+  operations = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ApiOperation', 1, repeated=True)
+  resources = _messages.StringField(2, repeated=True)
+
+
+class GoogleIdentityAccesscontextmanagerV1MethodSelector(_messages.Message):
+  r"""An allowed method or permission of a service specified in ApiOperation.
+
+  Fields:
+    method: Value for `method` should be a valid method name for the
+      corresponding `service_name` in ApiOperation. If `*` used as value for
+      `method`, then ALL methods and permissions are allowed.
+    permission: Value for `permission` should be a valid Cloud IAM permission
+      for the corresponding `service_name` in ApiOperation.
+  """
+
+  method = _messages.StringField(1)
+  permission = _messages.StringField(2)
+
+
 class GoogleIdentityAccesscontextmanagerV1OsConstraint(_messages.Message):
   r"""A restriction on the OS type and version of devices making requests.
 
@@ -1726,6 +1972,14 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig(_messages.Messa
       origins within the perimeter. Example:
       `"accessPolicies/MY_POLICY/accessLevels/MY_LEVEL"`. For Service
       Perimeter Bridge, must be empty.
+    egressPolicies: List of EgressPolicies to apply to the perimeter. A
+      perimeter may have multiple EgressPolicies, each of which is evaluated
+      separately. Access is granted if any EgressPolicy grants it. Must be
+      empty for a perimeter bridge.
+    ingressPolicies: List of IngressPolicies to apply to the perimeter. A
+      perimeter may have multiple IngressPolicies, each of which is evaluated
+      separately. Access is granted if any Ingress Policy grants it. Must be
+      empty for a perimeter bridge.
     resources: A list of Google Cloud resources that are inside of the service
       perimeter. Currently only projects are allowed. Format:
       `projects/{project_number}`
@@ -1737,9 +1991,11 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig(_messages.Messa
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
-  resources = _messages.StringField(2, repeated=True)
-  restrictedServices = _messages.StringField(3, repeated=True)
-  vpcAccessibleServices = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1VpcAccessibleServices', 4)
+  egressPolicies = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1EgressPolicy', 2, repeated=True)
+  ingressPolicies = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1IngressPolicy', 3, repeated=True)
+  resources = _messages.StringField(4, repeated=True)
+  restrictedServices = _messages.StringField(5, repeated=True)
+  vpcAccessibleServices = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1VpcAccessibleServices', 6)
 
 
 class GoogleIdentityAccesscontextmanagerV1VpcAccessibleServices(_messages.Message):
@@ -1986,32 +2242,33 @@ class IamPolicySearchResult(_messages.Message):
   r"""A result of IAM Policy search, containing information of an IAM policy.
 
   Fields:
-    explanation: Explanation about the IAM policy search result. It contains
-      additional information to explain why the search result matches the
-      query.
-    policy: The IAM policy directly set on the given resource. Note that the
-      original IAM policy can contain multiple bindings. This only contains
-      the bindings that match the given query. For queries that don't contain
-      a constrain on policies (e.g., an empty query), this contains all the
-      bindings. To search against the `policy` bindings: * use a field query:
-      - query by the policy contained members. Example: `policy:amy@gmail.com`
-      - query by the policy contained roles. Example:
+    explanation: Optional. Explanation about the IAM policy search result. It
+      contains additional information to explain why the search result matches
+      the query.
+    policy: Required. The IAM policy directly set on the given resource. Note
+      that the original IAM policy can contain multiple bindings. This only
+      contains the bindings that match the given query. For queries that don't
+      contain a constrain on policies (e.g., an empty query), this contains
+      all the bindings. To search against the `policy` bindings: * use a field
+      query: - query by the policy contained members. Example:
+      `policy:amy@gmail.com` - query by the policy contained roles. Example:
       `policy:roles/compute.admin` - query by the policy contained roles'
       included permissions. Example:
       `policy.role.permissions:compute.instances.create`
-    project: The project that the associated GCP resource belongs to, in the
-      form of projects/{PROJECT_NUMBER}. If an IAM policy is set on a resource
-      (like VM instance, Cloud Storage bucket), the project field will
-      indicate the project that contains the resource. If an IAM policy is set
-      on a folder or orgnization, the project field will be empty. To search
-      against the `project`: * specify the `scope` field as this project in
-      your search request.
-    resource: The full resource name of the resource associated with this IAM
-      policy. Example: `//compute.googleapis.com/projects/my_project_123/zones
-      /zone1/instances/instance1`. See [Cloud Asset Inventory Resource Name
-      Format](https://cloud.google.com/asset-inventory/docs/resource-name-
-      format) for more information. To search against the `resource`: * use a
-      field query. Example: `resource:organizations/123`
+    project: Optional. The project that the associated GCP resource belongs
+      to, in the form of projects/{PROJECT_NUMBER}. If an IAM policy is set on
+      a resource (like VM instance, Cloud Storage bucket), the project field
+      will indicate the project that contains the resource. If an IAM policy
+      is set on a folder or orgnization, the project field will be empty. To
+      search against the `project`: * specify the `scope` field as this
+      project in your search request.
+    resource: Required. The full resource name of the resource associated with
+      this IAM policy. Example: `//compute.googleapis.com/projects/my_project_
+      123/zones/zone1/instances/instance1`. See [Cloud Asset Inventory
+      Resource Name Format](https://cloud.google.com/asset-
+      inventory/docs/resource-name-format) for more information. To search
+      against the `resource`: * use a field query. Example:
+      `resource:organizations/123`
   """
 
   explanation = _messages.MessageField('Explanation', 1)
@@ -2563,13 +2820,13 @@ class ResourceSearchResult(_messages.Message):
   r"""A result of Resource Search, containing information of a cloud resource.
 
   Messages:
-    AdditionalAttributesValue: The additional searchable attributes of this
-      resource. The attributes may vary from one resource type to another.
-      Examples: `projectId` for Project, `dnsName` for DNS ManagedZone. This
-      field contains a subset of the resource metadata fields that are
-      returned by the List or Get APIs provided by the corresponding GCP
-      service (e.g., Compute Engine). see [API references and supported
-      searchable attributes](https://cloud.google.com/asset-
+    AdditionalAttributesValue: Optional. The additional searchable attributes
+      of this resource. The attributes may vary from one resource type to
+      another. Examples: `projectId` for Project, `dnsName` for DNS
+      ManagedZone. This field contains a subset of the resource metadata
+      fields that are returned by the List or Get APIs provided by the
+      corresponding GCP service (e.g., Compute Engine). see [API references
+      and supported searchable attributes](https://cloud.google.com/asset-
       inventory/docs/supported-asset-types#searchable_asset_types) for more
       information. You can search values of these fields through free text
       search. However, you should not consume the field programically as the
@@ -2578,23 +2835,24 @@ class ResourceSearchResult(_messages.Message):
       * use a free text query to match the attributes values. Example: to
       search `additional_attributes = { dnsName: "foobar" }`, you can issue a
       query `foobar`.
-    LabelsValue: Labels associated with this resource. See [Labelling and
-      grouping GCP
+    LabelsValue: Optional. Labels associated with this resource. See
+      [Labelling and grouping GCP
       resources](https://cloud.google.com/blog/products/gcp/labelling-and-
-      grouping-your-google-cloud-platform-resources) for more information. To
+      grouping-your-google-cloud-platform-resources) for more information.
+      This field is available only when the resource's proto contains it. To
       search against the `labels`: * use a field query: - query on any label's
       key or value. Example: `labels:prod` - query by a given label. Example:
       `labels.env:prod` - query by a given label's existence. Example:
       `labels.env:*` * use a free text query. Example: `prod`
 
   Fields:
-    additionalAttributes: The additional searchable attributes of this
-      resource. The attributes may vary from one resource type to another.
-      Examples: `projectId` for Project, `dnsName` for DNS ManagedZone. This
-      field contains a subset of the resource metadata fields that are
-      returned by the List or Get APIs provided by the corresponding GCP
-      service (e.g., Compute Engine). see [API references and supported
-      searchable attributes](https://cloud.google.com/asset-
+    additionalAttributes: Optional. The additional searchable attributes of
+      this resource. The attributes may vary from one resource type to
+      another. Examples: `projectId` for Project, `dnsName` for DNS
+      ManagedZone. This field contains a subset of the resource metadata
+      fields that are returned by the List or Get APIs provided by the
+      corresponding GCP service (e.g., Compute Engine). see [API references
+      and supported searchable attributes](https://cloud.google.com/asset-
       inventory/docs/supported-asset-types#searchable_asset_types) for more
       information. You can search values of these fields through free text
       search. However, you should not consume the field programically as the
@@ -2603,54 +2861,62 @@ class ResourceSearchResult(_messages.Message):
       * use a free text query to match the attributes values. Example: to
       search `additional_attributes = { dnsName: "foobar" }`, you can issue a
       query `foobar`.
-    assetType: The type of this resource. Example:
+    assetType: Required. The type of this resource. Example:
       `compute.googleapis.com/Disk`. To search against the `asset_type`: *
       specify the `asset_type` field in your search request.
-    description: One or more paragraphs of text description of this resource.
-      Maximum length could be up to 1M bytes. To search against the
-      `description`: * use a field query. Example: `description:"*important
-      instance*"` * use a free text query. Example: `"*important instance*"`
-    displayName: The display name of this resource. To search against the
-      `display_name`: * use a field query. Example: `displayName:"My
+    description: Optional. One or more paragraphs of text description of this
+      resource. Maximum length could be up to 1M bytes. This field is
+      available only when the resource's proto contains it. To search against
+      the `description`: * use a field query. Example:
+      `description:"*important instance*"` * use a free text query. Example:
+      `"*important instance*"`
+    displayName: Optional. The display name of this resource. This field is
+      available only when the resource's proto contains it. To search against
+      the `display_name`: * use a field query. Example: `displayName:"My
       Instance"` * use a free text query. Example: `"My Instance"`
-    labels: Labels associated with this resource. See [Labelling and grouping
-      GCP resources](https://cloud.google.com/blog/products/gcp/labelling-and-
-      grouping-your-google-cloud-platform-resources) for more information. To
+    labels: Optional. Labels associated with this resource. See [Labelling and
+      grouping GCP
+      resources](https://cloud.google.com/blog/products/gcp/labelling-and-
+      grouping-your-google-cloud-platform-resources) for more information.
+      This field is available only when the resource's proto contains it. To
       search against the `labels`: * use a field query: - query on any label's
       key or value. Example: `labels:prod` - query by a given label. Example:
       `labels.env:prod` - query by a given label's existence. Example:
       `labels.env:*` * use a free text query. Example: `prod`
-    location: Location can be `global`, regional like `us-east1`, or zonal
-      like `us-west1-b`. To search against the `location`: * use a field
-      query. Example: `location:us-west*` * use a free text query. Example:
-      `us-west*`
-    name: The full resource name of this resource. Example: `//compute.googlea
-      pis.com/projects/my_project_123/zones/zone1/instances/instance1`. See
-      [Cloud Asset Inventory Resource Name
+    location: Optional. Location can be `global`, regional like `us-east1`, or
+      zonal like `us-west1-b`. This field is available only when the
+      resource's proto contains it. To search against the `location`: * use a
+      field query. Example: `location:us-west*` * use a free text query.
+      Example: `us-west*`
+    name: Required. The full resource name of this resource. Example: `//compu
+      te.googleapis.com/projects/my_project_123/zones/zone1/instances/instance
+      1`. See [Cloud Asset Inventory Resource Name
       Format](https://cloud.google.com/asset-inventory/docs/resource-name-
       format) for more information. To search against the `name`: * use a
       field query. Example: `name:instance1` * use a free text query. Example:
       `instance1`
-    networkTags: Network tags associated with this resource. Like labels,
-      network tags are a type of annotations used to group GCP resources. See
-      [Labelling GCP
+    networkTags: Optional. Network tags associated with this resource. Like
+      labels, network tags are a type of annotations used to group GCP
+      resources. See [Labelling GCP
       resources](https://cloud.google.com/blog/products/gcp/labelling-and-
-      grouping-your-google-cloud-platform-resources) for more information. To
+      grouping-your-google-cloud-platform-resources) for more information.
+      This field is available only when the resource's proto contains it. To
       search against the `network_tags`: * use a field query. Example:
       `networkTags:internal` * use a free text query. Example: `internal`
-    project: The project that this resource belongs to, in the form of
-      projects/{PROJECT_NUMBER}. To search against the `project`: * specify
-      the `scope` field as this project in your search request.
+    project: Optional. The project that this resource belongs to, in the form
+      of projects/{PROJECT_NUMBER}. This field is available when the resource
+      belongs to a project. To search against the `project`: * specify the
+      `scope` field as this project in your search request.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalAttributesValue(_messages.Message):
-    r"""The additional searchable attributes of this resource. The attributes
-    may vary from one resource type to another. Examples: `projectId` for
-    Project, `dnsName` for DNS ManagedZone. This field contains a subset of
-    the resource metadata fields that are returned by the List or Get APIs
-    provided by the corresponding GCP service (e.g., Compute Engine). see [API
-    references and supported searchable
+    r"""Optional. The additional searchable attributes of this resource. The
+    attributes may vary from one resource type to another. Examples:
+    `projectId` for Project, `dnsName` for DNS ManagedZone. This field
+    contains a subset of the resource metadata fields that are returned by the
+    List or Get APIs provided by the corresponding GCP service (e.g., Compute
+    Engine). see [API references and supported searchable
     attributes](https://cloud.google.com/asset-inventory/docs/supported-asset-
     types#searchable_asset_types) for more information. You can search values
     of these fields through free text search. However, you should not consume
@@ -2683,11 +2949,13 @@ class ResourceSearchResult(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels associated with this resource. See [Labelling and grouping GCP
+    r"""Optional. Labels associated with this resource. See [Labelling and
+    grouping GCP
     resources](https://cloud.google.com/blog/products/gcp/labelling-and-
-    grouping-your-google-cloud-platform-resources) for more information. To
-    search against the `labels`: * use a field query: - query on any label's
-    key or value. Example: `labels:prod` - query by a given label. Example:
+    grouping-your-google-cloud-platform-resources) for more information. This
+    field is available only when the resource's proto contains it. To search
+    against the `labels`: * use a field query: - query on any label's key or
+    value. Example: `labels:prod` - query by a given label. Example:
     `labels.env:prod` - query by a given label's existence. Example:
     `labels.env:*` * use a free text query. Example: `prod`
 

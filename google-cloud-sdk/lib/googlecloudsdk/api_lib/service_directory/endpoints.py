@@ -19,23 +19,21 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.util import apis
-
-_API_NAME = 'servicedirectory'
-_API_VERSION = 'v1beta1'
+from googlecloudsdk.api_lib.service_directory import base as sd_base
+from googlecloudsdk.calliope import base
 
 
-class EndpointsClient(object):
+class EndpointsClient(sd_base.ServiceDirectoryApiLibBase):
   """Client for endpoints in the Service Directory API."""
 
-  def __init__(self):
-    self.client = apis.GetClientInstance(_API_NAME, _API_VERSION)
-    self.msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)
+  def __init__(self, release_track=base.ReleaseTrack.GA):
+    super(EndpointsClient, self).__init__(release_track)
     self.service = self.client.projects_locations_namespaces_services_endpoints
 
-  def Create(self, endpoint_ref, address=None, port=None, metadata=None):
+  def Create(self, endpoint_ref, address=None, port=None, annotations=None):
     """Endpoints create request."""
-    endpoint = self.msgs.Endpoint(address=address, port=port, metadata=metadata)
+    endpoint = self.msgs.Endpoint(
+        address=address, port=port, annotations=annotations)
     create_req = self.msgs.ServicedirectoryProjectsLocationsNamespacesServicesEndpointsCreateRequest(
         parent=endpoint_ref.Parent().RelativeName(),
         endpoint=endpoint,
@@ -67,6 +65,40 @@ class EndpointsClient(object):
         batch_size=page_size,
         field='endpoints',
         batch_size_attribute='pageSize')
+
+  def Update(self, endpoint_ref, address=None, port=None, annotations=None):
+    """Endpoints update request."""
+    mask_parts = []
+    if address is not None:
+      mask_parts.append('address')
+    if port is not None:
+      mask_parts.append('port')
+    if annotations is not None:
+      mask_parts.append('annotations')
+
+    endpoint = self.msgs.Endpoint(
+        address=address, port=port, annotations=annotations)
+    update_req = self.msgs.ServicedirectoryProjectsLocationsNamespacesServicesEndpointsPatchRequest(
+        name=endpoint_ref.RelativeName(),
+        endpoint=endpoint,
+        updateMask=','.join(mask_parts))
+    return self.service.Patch(update_req)
+
+
+class EndpointsClientBeta(EndpointsClient):
+  """Client for endpoints in the v1beta1 Service Directory API."""
+
+  def __init__(self):
+    super(EndpointsClientBeta, self).__init__(base.ReleaseTrack.BETA)
+
+  def Create(self, endpoint_ref, address=None, port=None, metadata=None):
+    """Endpoints create request."""
+    endpoint = self.msgs.Endpoint(address=address, port=port, metadata=metadata)
+    create_req = self.msgs.ServicedirectoryProjectsLocationsNamespacesServicesEndpointsCreateRequest(
+        parent=endpoint_ref.Parent().RelativeName(),
+        endpoint=endpoint,
+        endpointId=endpoint_ref.endpointsId)
+    return self.service.Create(create_req)
 
   def Update(self, endpoint_ref, address=None, port=None, metadata=None):
     """Endpoints update request."""

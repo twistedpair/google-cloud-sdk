@@ -28,7 +28,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.events import exceptions
 from googlecloudsdk.command_lib.iam import iam_util as core_iam_util
-from googlecloudsdk.command_lib.run import flags as run_flags
+from googlecloudsdk.command_lib.run import exceptions as run_exceptions
 from googlecloudsdk.core import yaml
 
 _DISALLOWED_SPECIAL_KEYS = [
@@ -132,7 +132,7 @@ def AddCustomEventTypeFlag(parser):
 
 def _AllowedKeyString(key):
   if key in _DISALLOWED_SPECIAL_KEYS:
-    raise run_flags.ArgumentError('Filter {} not allowed'.format(key))
+    raise run_exceptions.ArgumentError('Filter {} not allowed'.format(key))
   return key
 
 
@@ -256,8 +256,9 @@ def _ParseResourcesParameters(args):
   for api_version_kind_string in resources_flag:
     avk_selector = api_version_kind_string.split(':')
     if len(avk_selector) != 3 and len(avk_selector) != 2:
-      raise run_flags.ArgumentError('parameter flag resources expects Kind:'
-                                    'ApiVersion:LabelName=value, notation.')
+      raise run_exceptions.ArgumentError(
+          'parameter flag resources expects Kind:'
+          'ApiVersion:LabelName=value, notation.')
     elif len(avk_selector) == 2:
       result.append({
           'kind': avk_selector[0],

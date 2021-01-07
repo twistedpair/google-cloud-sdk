@@ -171,6 +171,8 @@ class Action(_messages.Message):
         standard error stream is typically captured and returned inside the
         `ContainerStoppedEvent`. Setting this flag disables this
         functionality.
+      BLOCK_EXTERNAL_NETWORK: Prevents the container from accessing the
+        external network.
     """
     FLAG_UNSPECIFIED = 0
     IGNORE_EXIT_STATUS = 1
@@ -180,6 +182,7 @@ class Action(_messages.Message):
     PUBLISH_EXPOSED_PORTS = 5
     DISABLE_IMAGE_PREFETCH = 6
     DISABLE_STANDARD_ERROR_CAPTURE = 7
+    BLOCK_EXTERNAL_NETWORK = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvironmentValue(_messages.Message):
@@ -506,7 +509,8 @@ class DelayedEvent(_messages.Message):
 class Disk(_messages.Message):
   r"""Carries information about a disk that can be attached to a VM. See
   https://cloud.google.com/compute/docs/disks/performance for more information
-  about disk type, size, and performance considerations.
+  about disk type, size, and performance considerations. Specify either
+  `Volume` or `Disk`, but not both.
 
   Fields:
     name: A user-supplied name for the disk. Used when mounting the disk into
@@ -1585,7 +1589,8 @@ class VirtualMachine(_messages.Message):
       For more information about the effect of this parameter, see
       https://cloud.google.com/compute/docs/instances/specify-min-cpu-
       platform.
-    disks: The list of disks to create and attach to the VM.
+    disks: The list of disks to create and attach to the VM. Specify either
+      the `volumes[]` field or the `disks[]` field, but not both.
     dockerCacheImages: The Compute Engine Disk Images to use as a Docker
       cache. The disks will be mounted into the Docker folder in a way that
       the images present in the cache will not need to be pulled. The digests
@@ -1621,7 +1626,8 @@ class VirtualMachine(_messages.Message):
     serviceAccount: The service account to install on the VM. This account
       does not need any permissions other than those required by the pipeline.
     volumes: The list of disks and other storage to create or attach to the
-      VM.
+      VM. Specify either the `volumes[]` field or the `disks[]` field, but not
+      both.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1671,7 +1677,8 @@ class VirtualMachine(_messages.Message):
 
 
 class Volume(_messages.Message):
-  r"""Carries information about storage that can be attached to a VM.
+  r"""Carries information about storage that can be attached to a VM. Specify
+  either `Volume` or `Disk`, but not both.
 
   Fields:
     existingDisk: Configuration for a existing disk.

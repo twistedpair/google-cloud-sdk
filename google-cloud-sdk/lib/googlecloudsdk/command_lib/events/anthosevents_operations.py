@@ -267,6 +267,14 @@ class AnthosEventsOperations(object):
   def messages(self):
     return self._client.MESSAGES_MODULE
 
+  def ListNamespaces(self):
+    """Returns a list of namespaces' names."""
+    request = (
+        self._core_client.MESSAGES_MODULE
+        .AnthoseventsApiV1NamespacesListRequest())
+    response = self._core_client.api_v1_namespaces.List(request)
+    return [item.metadata.name for item in response.items]
+
   def GetTrigger(self, trigger_ref):
     """Returns the referenced trigger."""
     request = self.messages.AnthoseventsNamespacesTriggersGetRequest(

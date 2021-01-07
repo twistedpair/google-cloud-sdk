@@ -175,7 +175,7 @@ def _GetIAMAuthHandlers(authority_selector, authorization_token_file):
     handlers.append(
         transport.Handler(
             transport.SetHeader('x-goog-iam-authorization-token',
-                                authorization_token)))
+                                authorization_token.strip())))
 
   return handlers
 

@@ -19,43 +19,69 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.kuberun import service
 from googlecloudsdk.command_lib.kuberun import traffic_pair
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
 TRAFFIC_PRINTER_FORMAT = 'traffic'
+_INGRESS_UNSPECIFIED = '-'
+
+
+def _GetIngress(record):
+  """Gets the ingress traffic allowed to call the service."""
+  if (record.labels.get(
+      service.ENDPOINT_VISIBILITY) == service.CLUSTER_LOCAL):
+    return service.INGRESS_INTERNAL
+  else:
+    return service.INGRESS_ALL
+
+
+def _GetTagAndStatus(tag):
+  """Returns the tag with padding and an adding/removing indicator if needed."""
+  if tag.inSpec and not tag.inStatus:
+    return '  {} (Adding):'.format(tag.tag)
+  elif not tag.inSpec and tag.inStatus:
+    return '  {} (Deleting):'.format(tag.tag)
+  else:
+    return '  {}:'.format(tag.tag)
 
 
 def _TransformTrafficPair(pair):
   """Transforms a single TrafficTargetPair into a marker class structure."""
   console = console_attr.GetConsoleAttr()
   return (pair.displayPercent, console.Emphasize(pair.displayRevisionId),
-          pair.displayTags, cp.Lines(pair.urls))
+          cp.Table([('', _GetTagAndStatus(t), t.url) for t in pair.tags]))
 
 
-def _TransformTrafficPairs(traffic_pairs, service_url):
+def _TransformTrafficPairs(traffic_pairs, service_url, service_ingress=None):
   """Transforms a List[TrafficTargetPair] into a marker class structure."""
   traffic_section = cp.Section(
       [cp.Table(_TransformTrafficPair(p) for p in traffic_pairs)])
-  return cp.Table([('Traffic:', service_url, traffic_section)])
+  route_section = [cp.Labeled([('URL', service_url)])]
+  if service_ingress is not None:
+    route_section.append(cp.Labeled([('Ingress', service_ingress)]))
+  route_section.append(cp.Labeled([('Traffic', traffic_section)]))
+  return cp.Section(route_section, max_column_width=60)
 
 
-def TransformTraffic(service):
-  """Transforms a service's traffic into a marker class structure to print.
+def TransformRouteFields(service_record):
+  """Transforms a service's route fields into a marker class structure to print.
 
-  Generates the custom printing format for a service's traffic using the marker
-  classes defined in custom_printer_base.
+  Generates the custom printing format for a service's url, ingress, and traffic
+  using the marker classes defined in custom_printer_base.
 
   Args:
-    service: A Service object.
+    service_record: A Service object.
 
   Returns:
-    A custom printer marker object describing the traffic print format.
+    A custom printer marker object describing the route fields print format.
   """
   traffic_pairs = traffic_pair.GetTrafficTargetPairs(
-      service.spec_traffic, service.status_traffic,
-      service.status.latestReadyRevisionName)
-  return _TransformTrafficPairs(traffic_pairs, service.status.url)
+      service_record.spec_traffic, service_record.status_traffic,
+      service_record.status.latestReadyRevisionName)
+  return _TransformTrafficPairs(traffic_pairs, service_record.status.url,
+                                _GetIngress(service_record))
 
 
 class TrafficPrinter(cp.CustomPrinterBase):
@@ -78,5 +104,4 @@ class TrafficPrinter(cp.CustomPrinterBase):
       service_url = record[0].serviceUrl
     else:
       service_url = ''
-    return cp.Section([_TransformTrafficPairs(record, service_url)],
-                      max_column_width=60)
+    return _TransformTrafficPairs(record, service_url)

@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Deployment utilities for `gcloud gsuiteaddons` commands."""
 
 from __future__ import absolute_import
@@ -52,20 +51,45 @@ def SetAuthorizationNamePath(unused_ref, unused_args, request):
   return request
 
 
-def SetInstallStatusNamePath(unused_ref, unused_args, request):
+def SetInstallStatusNamePath(deployment_ref, unused_args, request):
   """Sets the request path in the name attribute for install status request.
 
-  Appends /installStatus at the end of the request path for the install
+  Replaces the '/' within the deployment name by '%2F' and appends
+  /installStatus at the end of the request path for the install
   status request.
 
   Args:
-    unused_ref: reference to the deployment object
+    deployment_ref: reference to the deployment object
     unused_args: command line arguments.
     request: API request to be issued
 
   Returns:
     modified request
   """
-  del unused_ref, unused_args  # Unused.
-  request.name = request.name + '/installStatus'
+  del unused_args  # Unused.
+  request.name = '{}/deployments/{}/installStatus'.format(
+      deployment_ref.Parent().RelativeName(),
+      deployment_ref.deploymentsId.replace('/', '%2F'))
+  return request
+
+
+def HandleEscapingInNamePath(deployment_ref, unused_args, request):
+  """Sets the request path in the name attribute for various add on commands.
+
+  Replaces the '/' within the deployment name by '%2F' in the install,
+  uninstall,
+  delete, replace, describe commands.
+
+  Args:
+    deployment_ref: reference to the deployment object
+    unused_args: command line arguments.
+    request: API request to be issued
+
+  Returns:
+    modified request
+  """
+  del unused_args  # Unused.
+  request.name = '{}/deployments/{}'.format(
+      deployment_ref.Parent().RelativeName(),
+      deployment_ref.deploymentsId.replace('/', '%2F'))
   return request

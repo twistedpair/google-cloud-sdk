@@ -1049,9 +1049,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsPatchRequest(_messages.M
       ployment}`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-deployment`.
     updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see https:
-      //developers.google.com/protocol-buffers //
-      /docs/reference/google.protobuf#fieldmask
+      supplied in this field. For the `FieldMask` definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   gameServerDeployment = _messages.MessageField('GameServerDeployment', 1)
@@ -1074,9 +1074,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsPreviewRolloutRequest(_m
     previewTime: Optional. The target timestamp to compute the preview.
       Defaults to the immediately after the proposed rollout completes.
     updateMask: Optional. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see https:
-      //developers.google.com/protocol-buffers //
-      /docs/reference/google.protobuf#fieldmask
+      supplied in this field. For the `FieldMask` definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   gameServerDeploymentRollout = _messages.MessageField('GameServerDeploymentRollout', 1)
@@ -1130,9 +1130,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsUpdateRolloutRequest(_me
       yments/{deployment}/rollout`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-deployment/rollout`.
     updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see https:
-      //developers.google.com/protocol-buffers //
-      /docs/reference/google.protobuf#fieldmask
+      supplied in this field. For the `FieldMask` definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   gameServerDeploymentRollout = _messages.MessageField('GameServerDeploymentRollout', 1)
@@ -1327,9 +1327,9 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPatchRequest(_message
       project/locations/{location}/realms/zanzibar/gameServerClusters/my-
       onprem-cluster`.
     updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see https:
-      //developers.google.com/protocol-buffers //
-      /docs/reference/google.protobuf#fieldmask
+      supplied in this field. For the `FieldMask` definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   gameServerCluster = _messages.MessageField('GameServerCluster', 1)
@@ -1389,9 +1389,9 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPreviewUpdateRequest(
       onprem-cluster`.
     previewTime: Optional. The target timestamp to compute the preview.
     updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see https:
-      //developers.google.com/protocol-buffers //
-      /docs/reference/google.protobuf#fieldmask
+      supplied in this field. For the `FieldMask` definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   gameServerCluster = _messages.MessageField('GameServerCluster', 1)
@@ -1444,8 +1444,8 @@ class GameservicesProjectsLocationsRealmsPatchRequest(_messages.Message):
       `projects/my-project/locations/{location}/realms/my-realm`.
     realm: A Realm resource to be passed as the request body.
     updateMask: Required. The update mask applies to the resource. For the
-      `FieldMask` definition, see https: //developers.google.com/protocol-
-      buffers // /docs/reference/google.protobuf#fieldmask
+      `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   name = _messages.StringField(1, required=True)
@@ -1463,8 +1463,8 @@ class GameservicesProjectsLocationsRealmsPreviewUpdateRequest(_messages.Message)
     previewTime: Optional. The target timestamp to compute the preview.
     realm: A Realm resource to be passed as the request body.
     updateMask: Required. The update mask applies to the resource. For the
-      `FieldMask` definition, see https: //developers.google.com/protocol-
-      buffers // /docs/reference/google.protobuf#fieldmask
+      `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   name = _messages.StringField(1, required=True)
@@ -1495,8 +1495,8 @@ class GkeHubClusterReference(_messages.Message):
 
   Fields:
     membership: The full or partial name of a GKE Hub membership, using one of
-      the following forms: * `https: //gkehub.googleapis.com/v1beta1/projects
-      // /{project_id}/locations/global/memberships/{membership_id}` *
+      the following forms: * `https://gkehub.googleapis.com/v1beta1/projects/{
+      project_id}/locations/global/memberships/{membership_id}` *
       `projects/{project_id}/locations/global/memberships/{membership_id}` *
       `{membership_id}` If project is not specified, the project of the
       GameServerCluster resource is used to generate the full name of the GKE

@@ -14,7 +14,7 @@ package = 'apigateway'
 
 
 class ApigatewayApi(_messages.Message):
-  r"""A consumable API that can be used by multiple Gateways.
+  r"""An API that can be served by one or more Gateways.
 
   Enums:
     StateValueValuesEnum: Output only. State of the API.
@@ -125,17 +125,22 @@ class ApigatewayApiConfig(_messages.Message):
   Fields:
     createTime: Output only. Created time.
     displayName: Optional. Display name.
-    gatewayConfig: Immutable. Gateway specific configuration. If not
-      specified, backend authentication will be set to use OIDC authentication
-      using the default compute service account.
+    gatewayConfig: Immutable. Gateway specific configuration.
+    gatewayServiceAccount: Immutable. The Google Cloud IAM Service Account
+      that Gateways serving this config should use to authenticate to other
+      services. This may either be the Service Account's email
+      (`{ACCOUNT_ID}@{PROJECT}.iam.gserviceaccount.com`) or its full resource
+      name (`projects/{PROJECT}/accounts/{UNIQUE_ID}`). This is most often
+      used when the service is a GCP resource such as a Cloud Run Service or
+      an IAP-secured service.
     grpcServices: Optional. gRPC service definition files. If specified,
       openapi_documents must not be included.
     labels: Optional. Resource labels to represent user-provided metadata.
       Refer to cloud documentation on labels for more details.
       https://cloud.google.com/compute/docs/labeling-resources
     managedServiceConfigs: Optional. Service Configuration files. At least one
-      must be included when using gRPC service definitions. See https:
-      //cloud.google.com/endpoints/docs/grpc/g // rpc-service-
+      must be included when using gRPC service definitions. See
+      https://cloud.google.com/endpoints/docs/grpc/grpc-service-
       config#service_configuration_overview for the expected file contents. If
       multiple files are specified, the files are merged with the following
       rules: * All singular scalar fields are merged using "last one wins"
@@ -207,16 +212,17 @@ class ApigatewayApiConfig(_messages.Message):
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
   gatewayConfig = _messages.MessageField('ApigatewayGatewayConfig', 3)
-  grpcServices = _messages.MessageField('ApigatewayApiConfigGrpcServiceDefinition', 4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  managedServiceConfigs = _messages.MessageField('ApigatewayApiConfigFile', 6, repeated=True)
-  name = _messages.StringField(7)
-  openapiDocuments = _messages.MessageField('ApigatewayApiConfigOpenApiDocument', 8, repeated=True)
-  serviceConfigId = _messages.StringField(9)
-  serviceRollout = _messages.MessageField('ApigatewayApiConfigManagedServiceRollout', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  uniqueId = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  gatewayServiceAccount = _messages.StringField(4)
+  grpcServices = _messages.MessageField('ApigatewayApiConfigGrpcServiceDefinition', 5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  managedServiceConfigs = _messages.MessageField('ApigatewayApiConfigFile', 7, repeated=True)
+  name = _messages.StringField(8)
+  openapiDocuments = _messages.MessageField('ApigatewayApiConfigOpenApiDocument', 9, repeated=True)
+  serviceConfigId = _messages.StringField(10)
+  serviceRollout = _messages.MessageField('ApigatewayApiConfigManagedServiceRollout', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  uniqueId = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class ApigatewayApiConfigFile(_messages.Message):
@@ -342,8 +348,8 @@ class ApigatewayBackendConfig(_messages.Message):
 
   Fields:
     googleServiceAccount: Google Cloud IAM service account used to sign OIDC
-      tokens for backends that have authentication configured (https:
-      //cloud.google.com/service-infrastructur // e/docs/service-
+      tokens for backends that have authentication configured
+      (https://cloud.google.com/service-infrastructure/docs/service-
       management/reference/rest/v1/services.configs#backend). This may either
       be the Service Account's email (i.e.
       "{ACCOUNT_ID}@{PROJECT}.iam.gserviceaccount.com") or its full resource
@@ -352,8 +358,8 @@ class ApigatewayBackendConfig(_messages.Message):
       Service or an IAP-secured service. Note that this token is always sent
       as an authorization header bearer token. The audience of the OIDC token
       is configured in the associated Service Config in the BackendRule option
-      (https: //github.com/googleapis/googleapis/blob/ //
-      master/google/api/backend.proto#L125).
+      (https://github.com/googleapis/googleapis/blob/master/google/api/backend
+      .proto#L125).
   """
 
   googleServiceAccount = _messages.StringField(1)

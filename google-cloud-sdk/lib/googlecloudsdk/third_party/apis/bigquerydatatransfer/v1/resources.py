@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://bigquerydatatransfer.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/bigquery/'
+DOCS_URL = 'https://cloud.google.com/bigquery-transfer/'
 
 
 class Collections(enum.Enum):

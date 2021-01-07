@@ -75,7 +75,7 @@ class LinterRenderer(text_renderer.TextRenderer):
 
   def check_for_personal_pronouns(self, section):
     """Raise violation if the section contains personal pronouns."""
-    words_in_section = set(re.compile(r"\w+").findall(section.lower()))
+    words_in_section = set(re.compile(r"[-\w]+").findall(section.lower()))
     found_pronouns = words_in_section.intersection(self._PERSONAL_PRONOUNS)
     key_object = "# " + self._heading + "_PRONOUN_CHECK FAILED"
     value_object = ("Please remove the following personal pronouns in the " +

@@ -544,30 +544,30 @@ class Feature(_messages.Message):
     LabelsValue: GCP labels for this feature.
 
   Fields:
-    apigeeFeatureSpec: Feature for Apigee.
-    appdevexperienceFeatureSpec: Feature for App Dev Experience.
+    apigeeFeatureSpec: The specification for Apigee.
+    appdevexperienceFeatureSpec: The specification for App Dev Experience.
     authorizerFeatureSpec: The specification for the Authorizer Feature.
-    cloudauditloggingFeatureSpec: Feature for Anthos Cloud Audit Logging.
-    configmanagementFeatureSpec: Feature for Anthos Config Management.
-    createTime: Output only. Timestamp for when the Feature was created.
-    deleteTime: Output only. Timestamp for when the Feature was deleted.
+    cloudauditloggingFeatureSpec: The specification for Anthos Cloud Audit
+      Logging.
+    configmanagementFeatureSpec: The specification for Anthos Config
+      Management.
+    createTime: Output only. When the Feature was created.
+    deleteTime: Output only. When the Feature was deleted.
     description: Description of the feature, limited to 63 characters.
-    featureState: Output only. State of the resource itself.
-    helloworldFeatureSpec: A hello world feature to act as an example in
-      codelab and to test our feature lifecycle code.
-    identityserviceFeatureSpec: The specification for the Anthos Identity
-      Service Feature.
+    featureState: Output only. State of the Feature resource itself.
+    helloworldFeatureSpec: A Hello World feature for codelab examples and
+      testing.
+    identityserviceFeatureSpec: The specification for Anthos Identity Service.
     labels: GCP labels for this feature.
-    meteringFeatureSpec: The specification for the metering feature.
-    multiclusteringressFeatureSpec: The specification for the Ingress for
-      Anthos feature.
-    multiclusterservicediscoveryFeatureSpec: An EAP feature for GKE multi-
-      cluster service discovery.
-    name: Output only. The unique name of this feature resource in the format:
-      `projects/[project_id]/locations/global/features/[feature_id]`.
-    servicedirectoryFeatureSpec: Feature for Service Directory.
+    meteringFeatureSpec: The specification for the Metering feature.
+    multiclusteringressFeatureSpec: The specification for Ingress for Anthos.
+    multiclusterservicediscoveryFeatureSpec: The specification for GKE Multi-
+      Cluster Service Discovery.
+    name: Output only. The full, unique name of this Feature resource in the
+      format `projects/*/locations/global/features/*`.
+    servicedirectoryFeatureSpec: The specification for Service Directory.
     servicemeshFeatureSpec: A ServiceMeshFeatureSpec attribute.
-    updateTime: Output only. Timestamp for when the Feature was last updated.
+    updateTime: Output only. When the Feature was last updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -616,41 +616,36 @@ class Feature(_messages.Message):
 
 
 class FeatureState(_messages.Message):
-  r"""FeatureState describes the status of any feature.
+  r"""FeatureState describes the state of a Feature resource.
 
   Enums:
-    LifecycleStateValueValuesEnum:
+    LifecycleStateValueValuesEnum: The current state of the Feature resource.
 
   Messages:
-    DetailsByMembershipValue: Messages pertaining to the current status of the
-      feature for a given member, keyed by the fully-qualified member name.
-      Example member name looks like
-      `projects/12345/locations/global/memberships/bar`. This is scoped to
-      feature-level messages (e.g. CSM state on clusters)
+    DetailsByMembershipValue: FeatureState for each Membership. Keys are the
+      fully-qualified Membership name in the format
+      `projects/{NUMBER}/locations/*/memberships/*`.
 
   Fields:
     details: Aggregate status message of the feature.
-    detailsByMembership: Messages pertaining to the current status of the
-      feature for a given member, keyed by the fully-qualified member name.
-      Example member name looks like
-      `projects/12345/locations/global/memberships/bar`. This is scoped to
-      feature-level messages (e.g. CSM state on clusters)
-    hasResources: Indicates this Feature has outstanding resources that need
-      to be cleaned up before it can be disabled.
-    lifecycleState: A LifecycleStateValueValuesEnum attribute.
+    detailsByMembership: FeatureState for each Membership. Keys are the fully-
+      qualified Membership name in the format
+      `projects/{NUMBER}/locations/*/memberships/*`.
+    hasResources: Whether this Feature has outstanding resources that need to
+      be cleaned up before it can be disabled.
+    lifecycleState: The current state of the Feature resource.
   """
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
-    r"""LifecycleStateValueValuesEnum enum type.
+    r"""The current state of the Feature resource.
 
     Values:
-      LIFECYCLE_STATE_UNSPECIFIED: <no description>
-      ENABLING: <no description>
-      ENABLED: <no description>
-      DISABLING: <no description>
-      UPDATING: <no description>
-      SERVICE_UPDATING: SERVICE_UPDATING indicates the Feature is being
-        updated by the Hub Service.
+      LIFECYCLE_STATE_UNSPECIFIED: State is unknown or not set.
+      ENABLING: The Feature is being enabled.
+      ENABLED: The Feature is active.
+      DISABLING: The Feature is being disabled.
+      UPDATING: The Feature is being updated.
+      SERVICE_UPDATING: The Feature is being updated by the Hub Service.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     ENABLING = 1
@@ -661,10 +656,9 @@ class FeatureState(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsByMembershipValue(_messages.Message):
-    r"""Messages pertaining to the current status of the feature for a given
-    member, keyed by the fully-qualified member name. Example member name
-    looks like `projects/12345/locations/global/memberships/bar`. This is
-    scoped to feature-level messages (e.g. CSM state on clusters)
+    r"""FeatureState for each Membership. Keys are the fully-qualified
+    Membership name in the format
+    `projects/{NUMBER}/locations/*/memberships/*`.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -1008,9 +1002,9 @@ class GkehubProjectsLocationsGlobalFeaturesCreateRequest(_messages.Message):
 
   Fields:
     feature: A Feature resource to be passed as the request body.
-    featureId: The ID of one of the supported features.
-    parent: The parent in whose context the feature is created. The parent
-      value is in the format: `projects/[project_id]/locations/global`.
+    featureId: The ID of the feature to create.
+    parent: The parent (project and location) where the Feature will be
+      created. Specified in the format `projects/*/locations/global`.
   """
 
   feature = _messages.MessageField('Feature', 1)
@@ -1022,11 +1016,11 @@ class GkehubProjectsLocationsGlobalFeaturesDeleteRequest(_messages.Message):
   r"""A GkehubProjectsLocationsGlobalFeaturesDeleteRequest object.
 
   Fields:
-    force: If set to true, then the delete will ignore any outstanding
-      resources for this Feature (`FeatureState.has_resources` is set to
-      true). These resources will NOT be cleaned up or modified in any way.
-    name: The feature resource name in the format:
-      `projects/[project_id]/locations/global/features/[feature_id]`
+    force: If set to true, the delete will ignore any outstanding resources
+      for this Feature (that is, `FeatureState.has_resources` is set to true).
+      These resources will NOT be cleaned up or modified in any way.
+    name: The Feature resource name in the format
+      `projects/*/locations/global/features/*`.
   """
 
   force = _messages.BooleanField(1)
@@ -1037,8 +1031,8 @@ class GkehubProjectsLocationsGlobalFeaturesGetRequest(_messages.Message):
   r"""A GkehubProjectsLocationsGlobalFeaturesGetRequest object.
 
   Fields:
-    name: The Feature resource name in the format:
-      `projects/[project_id]/locations/global/features/[feature_id]`
+    name: The Feature resource name in the format
+      `projects/*/locations/global/features/*`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1048,27 +1042,23 @@ class GkehubProjectsLocationsGlobalFeaturesListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsGlobalFeaturesListRequest object.
 
   Fields:
-    filter: Lists the Features that match the filter expression. A filter
-      expression filters the resources listed in the response. The expression
-      must be of the form ` ` where operators: `<`, `>`, `<=`, `>=`, `!=`,
-      `=`, `:` are supported (colon `:` represents a HAS operator which is
-      roughly synonymous with equality). can refer to a proto or JSON field,
-      or a synthetic field. Field names can be camelCase or snake_case.
-      Examples: - Filter by name: name = "projects/foo-
-      proj/locations/global/features/servicemesh - Filter by labels: -
-      Resources that have a key called `foo` labels.foo:* - Resources that
-      have a key called `foo` whose value is `bar` labels.foo = bar - Filter
-      by spec: - ServiceMesh feature with mtls set.
-      servicemesh_feature_spec.mtls = true
-    orderBy: Field to use to sort the list.
+    filter: Lists Features that match the filter expression, following the
+      syntax outlined in https://google.aip.dev/160. Examples: - Feature with
+      the name "servicemesh" in project "foo-proj": name = "projects/foo-
+      proj/locations/global/features/servicemesh" - Service Mesh Feature with
+      `mtls` enabled: servicemesh_feature_spec.mtls = true - Features that
+      have a label called `foo`: labels.foo:* - Features that have a label
+      called `foo` whose value is `bar`: labels.foo = bar
+    orderBy: One or more fields to compare and use to sort the output. See
+      https://google.aip.dev/132#ordering.
     pageSize: When requesting a 'page' of resources, `page_size` specifies
-      number of resources to return. If unspecified or set to 0, it defaults
-      to 500.
+      number of resources to return. If unspecified or set to 0, all resources
+      will be returned.
     pageToken: Token returned by previous call to `ListFeatures` which
       specifies the position in the list from where to continue listing the
       resources.
-    parent: The parent in whose context the features are listed. The parent
-      value is in the format: `projects/[project_id]/locations/global`.
+    parent: The parent (project and location) where the Features will be
+      listed. Specified in the format `projects/*/locations/global`.
   """
 
   filter = _messages.StringField(1)
@@ -1083,10 +1073,9 @@ class GkehubProjectsLocationsGlobalFeaturesPatchRequest(_messages.Message):
 
   Fields:
     feature: A Feature resource to be passed as the request body.
-    name: The feature resource name in the format:
-      `projects/[project_id]/locations/global/features/[feature_id]`
-    updateMask: Mask of fields to update. At least one field path must be
-      specified in this mask.
+    name: The Feature resource name in the format
+      `projects/*/locations/global/features/*`.
+    updateMask: Mask of fields to update.
   """
 
   feature = _messages.MessageField('Feature', 1)
@@ -1337,7 +1326,7 @@ class ListFeaturesResponse(_messages.Message):
     nextPageToken: A token to request the next page of resources from the
       `ListFeatures` method. The value of an empty string means that there are
       no more resources to return.
-    resources: The list of Features contained within the parent.
+    resources: The list of matching Features
   """
 
   nextPageToken = _messages.StringField(1)

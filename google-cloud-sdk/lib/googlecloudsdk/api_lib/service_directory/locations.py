@@ -18,18 +18,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.util import apis
-
-_API_NAME = 'servicedirectory'
-_API_VERSION = 'v1beta1'
+from googlecloudsdk.api_lib.service_directory import base as sd_base
+from googlecloudsdk.calliope import base
 
 
-class LocationsClient(object):
+class LocationsClient(sd_base.ServiceDirectoryApiLibBase):
   """Client for locations in the Service Directory API."""
 
-  def __init__(self):
-    self.client = apis.GetClientInstance(_API_NAME, _API_VERSION)
-    self.msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)
+  def __init__(self, release_track=base.ReleaseTrack.GA):
+    super(LocationsClient, self).__init__(release_track)
     self.service = self.client.projects_locations
 
   def List(self, project_ref):

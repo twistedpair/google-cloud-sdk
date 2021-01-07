@@ -61,14 +61,17 @@ def GetBackup(backup_ref):
   return client.projects_instances_backups.Get(req)
 
 
-# Create Command Utils
-def ModifyCreateRequest(backup_ref, args, req):
-  """Parse arguments and construct create backup request."""
-  req.parent = backup_ref.Parent().RelativeName()
-  req.backupId = args.backup
-  req.backup.database = req.parent + '/databases/'  + args.database
-  req.backup.expireTime = CheckAndGetExpireTime(args)
-  return req
+def CreateBackup(backup_ref, args):
+  """Create a new backup."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+  parent = backup_ref.Parent().RelativeName()
+  backup = msgs.Backup(
+      database=parent + '/databases/' + args.database,
+      expireTime=CheckAndGetExpireTime(args))
+  req = msgs.SpannerProjectsInstancesBackupsCreateRequest(
+      parent=parent, backupId=args.backup, backup=backup)
+  return client.projects_instances_backups.Create(req)
 
 
 def ModifyUpdateMetadataRequest(backup_ref, args, req):

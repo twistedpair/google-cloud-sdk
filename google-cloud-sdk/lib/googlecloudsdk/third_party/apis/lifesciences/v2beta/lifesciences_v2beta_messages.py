@@ -68,6 +68,8 @@ class Action(_messages.Message):
       has already failed. This is useful for actions that copy output files
       off of the VM or for debugging. Note that no actions will be run if
       image prefetching fails.
+    blockExternalNetwork: Prevents the container from accessing the external
+      network.
     commands: If specified, overrides the `CMD` specified in the container. If
       the container also has an `ENTRYPOINT` the values are used as entrypoint
       arguments. Otherwise, they are used as a command and arguments to run
@@ -254,23 +256,24 @@ class Action(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   alwaysRun = _messages.BooleanField(1)
-  commands = _messages.StringField(2, repeated=True)
-  containerName = _messages.StringField(3)
-  credentials = _messages.MessageField('Secret', 4)
-  disableImagePrefetch = _messages.BooleanField(5)
-  disableStandardErrorCapture = _messages.BooleanField(6)
-  enableFuse = _messages.BooleanField(7)
-  entrypoint = _messages.StringField(8)
-  environment = _messages.MessageField('EnvironmentValue', 9)
-  ignoreExitStatus = _messages.BooleanField(10)
-  imageUri = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  mounts = _messages.MessageField('Mount', 13, repeated=True)
-  pidNamespace = _messages.StringField(14)
-  portMappings = _messages.MessageField('PortMappingsValue', 15)
-  publishExposedPorts = _messages.BooleanField(16)
-  runInBackground = _messages.BooleanField(17)
-  timeout = _messages.StringField(18)
+  blockExternalNetwork = _messages.BooleanField(2)
+  commands = _messages.StringField(3, repeated=True)
+  containerName = _messages.StringField(4)
+  credentials = _messages.MessageField('Secret', 5)
+  disableImagePrefetch = _messages.BooleanField(6)
+  disableStandardErrorCapture = _messages.BooleanField(7)
+  enableFuse = _messages.BooleanField(8)
+  entrypoint = _messages.StringField(9)
+  environment = _messages.MessageField('EnvironmentValue', 10)
+  ignoreExitStatus = _messages.BooleanField(11)
+  imageUri = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  mounts = _messages.MessageField('Mount', 14, repeated=True)
+  pidNamespace = _messages.StringField(15)
+  portMappings = _messages.MessageField('PortMappingsValue', 16)
+  publishExposedPorts = _messages.BooleanField(17)
+  runInBackground = _messages.BooleanField(18)
+  timeout = _messages.StringField(19)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -383,7 +386,8 @@ class DelayedEvent(_messages.Message):
 class Disk(_messages.Message):
   r"""Carries information about a disk that can be attached to a VM. See
   https://cloud.google.com/compute/docs/disks/performance for more information
-  about disk type, size, and performance considerations.
+  about disk type, size, and performance considerations. Specify either
+  `Volume` or `Disk`, but not both.
 
   Fields:
     name: A user-supplied name for the disk. Used when mounting the disk into
@@ -1343,7 +1347,8 @@ class VirtualMachine(_messages.Message):
       For more information about the effect of this parameter, see
       https://cloud.google.com/compute/docs/instances/specify-min-cpu-
       platform.
-    disks: The list of disks to create and attach to the VM.
+    disks: The list of disks to create and attach to the VM. Specify either
+      the `volumes[]` field or the `disks[]` field, but not both.
     dockerCacheImages: The Compute Engine Disk Images to use as a Docker
       cache. The disks will be mounted into the Docker folder in a way that
       the images present in the cache will not need to be pulled. The digests
@@ -1379,7 +1384,8 @@ class VirtualMachine(_messages.Message):
     serviceAccount: The service account to install on the VM. This account
       does not need any permissions other than those required by the pipeline.
     volumes: The list of disks and other storage to create or attach to the
-      VM.
+      VM. Specify either the `volumes[]` field or the `disks[]` field, but not
+      both.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1429,7 +1435,8 @@ class VirtualMachine(_messages.Message):
 
 
 class Volume(_messages.Message):
-  r"""Carries information about storage that can be attached to a VM.
+  r"""Carries information about storage that can be attached to a VM. Specify
+  either `Volume` or `Disk`, but not both.
 
   Fields:
     existingDisk: Configuration for a existing disk.

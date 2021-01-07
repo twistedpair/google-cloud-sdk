@@ -36,6 +36,7 @@ LOCATIONS_COLLECTION = API + '.projects.locations'
 SEVERITIES = ['DEBUG', 'INFO', 'ERROR']
 EGRESS_SETTINGS = ['PRIVATE-RANGES-ONLY', 'ALL']
 INGRESS_SETTINGS = ['ALL', 'INTERNAL-ONLY', 'INTERNAL-AND-GCLB']
+SECURITY_LEVEL = ['SECURE-ALWAYS', 'SECURE-OPTIONAL']
 INGRESS_SETTINGS_MAPPING = {
     'ALLOW_ALL': 'all',
     'ALLOW_INTERNAL_ONLY': 'internal-only',
@@ -45,6 +46,11 @@ INGRESS_SETTINGS_MAPPING = {
 EGRESS_SETTINGS_MAPPING = {
     'PRIVATE_RANGES_ONLY': 'private-ranges-only',
     'ALL_TRAFFIC': 'all',
+}
+
+SECURITY_LEVEL_MAPPING = {
+    'SECURE_ALWAYS': 'secure-always',
+    'SECURE_OPTIONAL': 'secure-optional',
 }
 
 
@@ -73,6 +79,17 @@ def AddEgressSettingsFlag(parser):
       'VPC Access Connector resource. '
       'By default `private-ranges-only` will be used.')
   egress_settings_arg.AddToParser(parser)
+
+
+def AddSecurityLevelFlag(parser):
+  security_level_arg = base.ChoiceArgument(
+      '--security-level',
+      choices=[x.lower() for x in SECURITY_LEVEL],
+      help_str='Security level controls whether a function\'s URL supports '
+      'HTTPS only or both HTTP and HTTPS. By default, `secure-optional` will'
+      ' be used, meaning both HTTP and HTTPS are supported.'
+  )
+  security_level_arg.AddToParser(parser)
 
 
 def GetLocationsUri(resource):

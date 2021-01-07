@@ -416,6 +416,86 @@
         }
       }
     },
+    "GoogleLongrunningListOperationsResponse": {
+      "id": "GoogleLongrunningListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleLongrunningOperation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleLongrunningOperation": {
+      "id": "GoogleLongrunningOperation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "GoogleRpcStatus"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "GoogleRpcStatus": {
+      "id": "GoogleRpcStatus",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
     "GoogleCloudApigeeV1DataCollector": {
       "id": "GoogleCloudApigeeV1DataCollector",
       "description": "Data collector configuration.",
@@ -666,33 +746,6 @@
         }
       }
     },
-    "GoogleRpcStatus": {
-      "id": "GoogleRpcStatus",
-      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "The status code, which should be an enum value of google.rpc.Code.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
-          "type": "string"
-        },
-        "details": {
-          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @type with type URL."
-            }
-          }
-        }
-      }
-    },
     "GoogleCloudApigeeV1DeploymentChangeReportRoutingConflict": {
       "id": "GoogleCloudApigeeV1DeploymentChangeReportRoutingConflict",
       "description": "Describes a routing conflict that may cause a deployment not to receive traffic at some basepath.",
@@ -921,59 +974,6 @@
         }
       }
     },
-    "GoogleLongrunningListOperationsResponse": {
-      "id": "GoogleLongrunningListOperationsResponse",
-      "description": "The response message for Operations.ListOperations.",
-      "type": "object",
-      "properties": {
-        "operations": {
-          "description": "A list of operations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleLongrunningOperation"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleLongrunningOperation": {
-      "id": "GoogleLongrunningOperation",
-      "description": "This resource represents a long-running operation that is the result of a network API call.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        },
-        "done": {
-          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
-          "type": "boolean"
-        },
-        "error": {
-          "description": "The error result of the operation in case of failure or cancellation.",
-          "$ref": "GoogleRpcStatus"
-        },
-        "response": {
-          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
     "GoogleCloudApigeeV1EnvironmentGroup": {
       "id": "GoogleCloudApigeeV1EnvironmentGroup",
       "description": "EnvironmentGroup configuration. An environment group is used to group one or more Apigee environments under a single host name.",
@@ -1063,15 +1063,15 @@
     },
     "GoogleCloudApigeeV1Keystore": {
       "id": "GoogleCloudApigeeV1Keystore",
-      "description": "A datastore for Certificates and Aliases",
+      "description": "Datastore for Certificates and Aliases.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The resource ID for this keystore. Values must match the regular expression `[\\w[:space:]-.]{1,255}`.",
+          "description": "Required. Resource ID for this keystore. Values must match the regular expression `[\\w[:space:]-.]{1,255}`.",
           "type": "string"
         },
         "aliases": {
-          "description": "Output only. The aliases in this keystore.",
+          "description": "Output only. Aliases in this keystore.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -1082,24 +1082,24 @@
     },
     "GoogleCloudApigeeV1Alias": {
       "id": "GoogleCloudApigeeV1Alias",
-      "description": "A reference to a certificate or key, certificate pair.",
+      "description": "Reference to a certificate or key\/certificate pair.",
       "type": "object",
       "properties": {
         "alias": {
-          "description": "The resource ID for this alias. Values must match regular expression `[^\/]{1,255}`.",
+          "description": "Resource ID for this alias. Values must match the regular expression `[^\/]{1,255}`.",
           "type": "string"
         },
         "certsInfo": {
-          "description": "The chain of certificates under this alias.",
+          "description": "Chain of certificates under this alias.",
           "$ref": "GoogleCloudApigeeV1Certificate"
         },
         "type": {
-          "description": "The type of alias.",
+          "description": "Type of alias.",
           "type": "string",
           "enumDescriptions": [
-            "",
-            "",
-            ""
+            "Alias type is not specified.",
+            "Certificate.",
+            "Key\/certificate pair."
           ],
           "enum": [
             "ALIAS_TYPE_UNSPECIFIED",
@@ -1114,7 +1114,7 @@
       "type": "object",
       "properties": {
         "certInfo": {
-          "description": "The chain of certificates under this name.",
+          "description": "Chain of certificates under this name.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudApigeeV1CertInfo"
@@ -1124,57 +1124,57 @@
     },
     "GoogleCloudApigeeV1CertInfo": {
       "id": "GoogleCloudApigeeV1CertInfo",
-      "description": "An X.509 certificate as defined in RFC 5280.",
+      "description": "X.509 certificate as defined in RFC 5280.",
       "type": "object",
       "properties": {
         "version": {
-          "description": "The X.509 version.",
+          "description": "X.509 version.",
           "type": "integer",
           "format": "int32"
         },
         "subject": {
-          "description": "The X.509 subject.",
+          "description": "X.509 subject.",
           "type": "string"
         },
         "issuer": {
-          "description": "The X.509 issuer.",
+          "description": "X.509 issuer.",
           "type": "string"
         },
         "expiryDate": {
-          "description": "The X.509 validity \/ notAfter in milliseconds since the epoch.",
+          "description": "X.509 `notAfter` validity period in milliseconds since epoch.",
           "type": "string",
           "format": "int64"
         },
         "validFrom": {
-          "description": "The X.509 validity \/ notBefore in milliseconds since the epoch.",
+          "description": "X.509 `notBefore` validity period in milliseconds since epoch.",
           "type": "string",
           "format": "int64"
         },
         "isValid": {
-          "description": "\"Yes\" if certificate is valid, \"No\" if expired and \"Not yet\" if not yet valid.",
+          "description": "Flag that specifies whether the certificate is valid. Flag is set to `Yes` if the certificate is valid, `No` if expired, or `Not yet` if not yet valid.",
           "type": "string"
         },
         "subjectAlternativeNames": {
-          "description": "The X.509 subject alternative names (SANs) extension.",
+          "description": "X.509 subject alternative names (SANs) extension.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "sigAlgName": {
-          "description": "The X.509 signatureAlgorithm.",
+          "description": "X.509 signatureAlgorithm.",
           "type": "string"
         },
         "publicKey": {
-          "description": "The public key component of the X.509 subject public key info.",
+          "description": "Public key component of the X.509 subject public key info.",
           "type": "string"
         },
         "basicConstraints": {
-          "description": "The X.509 basic constraints extension.",
+          "description": "X.509 basic constraints extension.",
           "type": "string"
         },
         "serialNumber": {
-          "description": "The X.509 serial number.",
+          "description": "X.509 serial number.",
           "type": "string"
         }
       }
@@ -1533,9 +1533,9 @@
         "type": {
           "type": "string",
           "enumDescriptions": [
-            "",
-            "",
-            ""
+            "Alias type is not specified.",
+            "Certificate.",
+            "Key\/certificate pair."
           ],
           "enum": [
             "ALIAS_TYPE_UNSPECIFIED",
@@ -3981,7 +3981,7 @@
       "type": "object",
       "properties": {
         "email": {
-          "description": "Required. Email address of the developer. This value is used to uniquely identify the developer in Apigee hybrid.",
+          "description": "Required. Email address of the developer. This value is used to uniquely identify the developer in Apigee hybrid. Note that the email address has to be in lowercase only.",
           "type": "string"
         },
         "firstName": {
@@ -4441,7 +4441,7 @@
           "format": "int64"
         },
         "diskEncryptionKeyName": {
-          "description": "Optional. Customer Managed Encryption Key (CMEK) used for disk & volume encryption.",
+          "description": "Customer Managed Encryption Key (CMEK) used for disk and volume encryption. Required for Apigee paid subscriptions only. Use the following format: `projects\/([^\/]+)\/locations\/([^\/]+)\/keyRings\/([^\/]+)\/cryptoKeys\/([^\/]+)`",
           "type": "string"
         },
         "state": {
@@ -5245,6 +5245,76 @@
                   "description": "Delete a key value map in an api proxy."
                 }
               }
+            }
+          }
+        },
+        "operations": {
+          "methods": {
+            "list": {
+              "id": "apigee.organizations.operations.list",
+              "path": "v1/{+name}/operations",
+              "flatPath": "v1/organizations/{organizationsId}/operations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation's parent resource.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+$",
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "The standard list filter.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The standard list page size.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The standard list page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleLongrunningListOperationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+            },
+            "get": {
+              "id": "apigee.organizations.operations.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/organizations/{organizationsId}/operations/{operationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation resource.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleLongrunningOperation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
             }
           }
         },
@@ -6589,14 +6659,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The name of the environment in which to create the keystore. Must be of the form `organizations\/{organization}\/environments\/{environment}`.",
+                      "description": "Required. Name of the environment in which to create the keystore. Use the following format in your request: `organizations\/{org}\/environments\/{env}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+$",
                       "type": "string"
                     },
                     "name": {
-                      "description": "Optional. Overrides the value in Keystore.",
+                      "description": "Optional. Name of the keystore. Overrides the value in Keystore.",
                       "location": "query",
                       "type": "string"
                     }
@@ -6613,7 +6683,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a keystore or truststore: * Keystore: Contains certificates and their associated keys. * Truststore: Contains trusted certificates used to validate a server's certificate. These certificates are typically self-signed certificates or certificates that are not signed by a trusted CA."
+                  "description": "Creates a keystore or truststore. - Keystore: Contains certificates and their associated keys. - Truststore: Contains trusted certificates used to validate a server's certificate. These certificates are typically self-signed certificates or certificates that are not signed by a trusted CA."
                 },
                 "delete": {
                   "id": "apigee.organizations.environments.keystores.delete",
@@ -6622,7 +6692,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of keystore to delete. Must be of the form `organizations\/{organization}\/environments\/{environment}\/keystores\/{keystore}`.",
+                      "description": "Required. Name of the keystore. Use the following format in your request: `organizations\/{org}\/environments\/{env}\/keystores\/{keystore}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/keystores\/[^\/]+$",
@@ -6647,7 +6717,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of keystore. Must be of the form `organizations\/{organization}\/environments\/{environment}\/keystores\/{keystore}`.",
+                      "description": "Required. Name of the keystore. Use the following format in your request: `organizations\/{org}\/environments\/{env}\/keystores\/{keystore}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/keystores\/[^\/]+$",
@@ -6677,34 +6747,34 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The name of the keystore. Must be of the form `organizations\/{organization}\/environments\/{environment}\/keystores\/{keystore}`.",
+                          "description": "Required. Name of the keystore. Use the following format in your request: `organizations\/{org}\/environments\/{env}\/keystores\/{keystore}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/keystores\/[^\/]+$",
                           "type": "string"
                         },
                         "alias": {
-                          "description": "The alias for the key, certificate pair. Values must match regular expression `[\\w\\s-.]{1,255}`. This must be provided for all formats except 'selfsignedcert'; self-signed certs may specify the alias in either this parameter or the JSON body.",
+                          "description": "Alias for the key\/certificate pair. Values must match the regular expression `[\\w\\s-.]{1,255}`. This must be provided for all formats except `selfsignedcert`; self-signed certs may specify the alias in either this parameter or the JSON body.",
                           "location": "query",
                           "type": "string"
                         },
                         "format": {
-                          "description": "Required. The format of the data. Must be either `selfsignedcert`, `keycertfile`, or `pkcs12`.",
+                          "description": "Required. Format of the data. Valid values include: `selfsignedcert`, `keycertfile`, or `pkcs12`",
                           "location": "query",
                           "type": "string"
                         },
                         "ignoreExpiryValidation": {
-                          "description": "If `true`, no expiry validation will be performed.",
+                          "description": "Flag that specifies whether to ignore expiry validation. If set to `true`, no expiry validation will be performed.",
                           "location": "query",
                           "type": "boolean"
                         },
                         "_password": {
-                          "description": "DEPRECATED: For improved security, send the password in the body instead of using this query param. To send it in the body, use a multipart\/form-data part with name \"password\". The password for the private key file, if it exists.",
+                          "description": "DEPRECATED: For improved security, specify the password in the request body instead of using the query parameter. To specify the password in the request body, set `Content-type: multipart\/form-data` part with name `password`. Password for the private key file, if required.",
                           "location": "query",
                           "type": "string"
                         },
                         "ignoreNewlineValidation": {
-                          "description": "If `true`, do not throw an error when the file contains a chain with no newline between each certificate. By default, a newline is needed between each certificate in a chain.",
+                          "description": "Flag that specifies whether to ignore newline validation. If set to `true`, no error is thrown when the file contains a certificate chain with no newline between each certificate. Defaults to `false`.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -6721,7 +6791,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates an alias from a key, certificate pair. The structure of the request is controlled by the `format` query parameter: * `keycertfile` - Separate PEM-encoded key and certificate files are uploaded. The request must have `Content-Type: multipart\/form-data` and include fields `keyFile` and `certFile`. If uploading to a truststore, omit `keyFile`. A `password` field should be provided for encrypted keys. * `pkcs12` - A PKCS12 file is uploaded. The request must have `Content-Type: multipart\/form-data` with the file provided in the `file` field and a `password` field if the file is encrypted. * `selfsignedcert` - A new private key and certificate are generated. The request must have `Content-Type: application\/json` and a body of CertificateGenerationSpec."
+                      "description": "Creates an alias from a key\/certificate pair. The structure of the request is controlled by the `format` query parameter: - `keycertfile` - Separate PEM-encoded key and certificate files are uploaded. Set `Content-Type: multipart\/form-data` and include the `keyFile`, `certFile`, and `password` (if keys are encrypted) fields in the request body. If uploading to a truststore, omit `keyFile`. - `pkcs12` - A PKCS12 file is uploaded. Set `Content-Type: multipart\/form-data`, provide the file in the `file` field, and include the `password` field if the file is encrypted in the request body. - `selfsignedcert` - A new private key and certificate are generated. Set `Content-Type: application\/json` and include CertificateGenerationSpec in the request body."
                     },
                     "get": {
                       "id": "apigee.organizations.environments.keystores.aliases.get",
@@ -6730,7 +6800,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the alias. Must be of the form `organizations\/{organization}\/environments\/{environment}\/keystores\/{keystore}\/aliases\/{alias}`.",
+                          "description": "Required. Name of the alias. Use the following format in your request: `organizations\/{org}\/environments\/{env}\/keystores\/{keystore}\/aliases\/{alias}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/keystores\/[^\/]+\/aliases\/[^\/]+$",
@@ -6755,7 +6825,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the alias. Must be of the form `organizations\/{organization}\/environments\/{environment}\/keystores\/{keystore}\/aliases\/{alias}`.",
+                          "description": "Required. Name of the alias. Use the following format in your request: `organizations\/{org}\/environments\/{env}\/keystores\/{keystore}\/aliases\/{alias}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/keystores\/[^\/]+\/aliases\/[^\/]+$",
@@ -6780,19 +6850,19 @@
                       "httpMethod": "PUT",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the alias. Must be of the form `organizations\/{organization}\/environments\/{environment}\/keystores\/{keystore}\/aliases\/{alias}`.",
+                          "description": "Required. Name of the alias. Use the following format in your request: `organizations\/{org}\/environments\/{env}\/keystores\/{keystore}\/aliases\/{alias}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/keystores\/[^\/]+\/aliases\/[^\/]+$",
                           "type": "string"
                         },
                         "ignoreExpiryValidation": {
-                          "description": "Required. If `true`, no expiry validation will be performed.",
+                          "description": "Required. Flag that specifies whether to ignore expiry validation. If set to `true`, no expiry validation will be performed.",
                           "location": "query",
                           "type": "boolean"
                         },
                         "ignoreNewlineValidation": {
-                          "description": "If `true`, do not throw an error when the file contains a chain with no newline between each certificate. By default, a newline is needed between each certificate in a chain.",
+                          "description": "Flag that specifies whether to ignore newline validation. If set to `true`, no error is thrown when the file contains a certificate chain with no newline between each certificate. Defaults to `false`.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -6818,7 +6888,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the alias. Must be of the form `organizations\/{organization}\/environments\/{environment}\/keystores\/{keystore}\/aliases\/{alias}`.",
+                          "description": "Required. Name of the alias. Use the following format in your request: `organizations\/{org}\/environments\/{env}\/keystores\/{keystore}\/aliases\/{alias}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/keystores\/[^\/]+\/aliases\/[^\/]+$",
@@ -6843,7 +6913,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the alias. Must be of the form `organizations\/{organization}\/environments\/{environment}\/keystores\/{keystore}\/aliases\/{alias}`.",
+                          "description": "Required. Name of the alias. Use the following format in your request: `organizations\/{org}\/environments\/{env}\/keystores\/{keystore}\/aliases\/{alias}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/keystores\/[^\/]+\/aliases\/[^\/]+$",
@@ -7674,76 +7744,6 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Lists all deployments of API proxies or shared flows."
-            }
-          }
-        },
-        "operations": {
-          "methods": {
-            "list": {
-              "id": "apigee.organizations.operations.list",
-              "path": "v1/{+name}/operations",
-              "flatPath": "v1/organizations/{organizationsId}/operations",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "The name of the operation's parent resource.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
-                  "type": "string"
-                },
-                "filter": {
-                  "description": "The standard list filter.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "The standard list page size.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "pageToken": {
-                  "description": "The standard list page token.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "GoogleLongrunningListOperationsResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
-            },
-            "get": {
-              "id": "apigee.organizations.operations.get",
-              "path": "v1/{+name}",
-              "flatPath": "v1/organizations/{organizationsId}/operations/{operationsId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "The name of the operation resource.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "GoogleLongrunningOperation"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
             }
           }
         },

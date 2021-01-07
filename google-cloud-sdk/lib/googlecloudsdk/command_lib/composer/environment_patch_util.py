@@ -97,6 +97,13 @@ def ConstructPatch(env_ref=None,
                    update_web_server_access_control=None,
                    cloud_sql_machine_type=None,
                    web_server_machine_type=None,
+                   autoscaling_maximum_cpu=None,
+                   autoscaling_minimum_cpu=None,
+                   autoscaling_maximum_memory=None,
+                   autoscaling_minimum_memory=None,
+                   maintenance_window_start=None,
+                   maintenance_window_end=None,
+                   maintenance_window_recurrence=None,
                    release_track=base.ReleaseTrack.GA):
   """Constructs an environment patch.
 
@@ -133,6 +140,20 @@ def ConstructPatch(env_ref=None,
         Airflow database.
     web_server_machine_type: str or None, machine type used by the Airflow web
         server
+    autoscaling_maximum_cpu: int or None, maximum number of CPU allowed
+        in the Environment. Cannot be specified unless autoscaling is enabled.
+    autoscaling_minimum_cpu: int or None, minimum number of CPU allowed
+        in the Environment. Cannot be specified unless autoscaling is enabled.
+    autoscaling_maximum_memory: int or None, maximum memory (in GB) allowed
+        in the Environment. Cannot be specified unless autoscaling is enabled.
+    autoscaling_minimum_memory: int or None, minimum memory (in GB) allowed
+        in the Environment. Cannot be specified unless autoscaling is enabled.
+    maintenance_window_start: Datetime or None, a starting date of the
+        maintenance window.
+    maintenance_window_end: Datetime or None, an ending date of the maintenance
+        window.
+    maintenance_window_recurrence: str or None, recurrence RRULE for the
+        maintenance window.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
         which Composer client library will be used.
 
@@ -184,6 +205,20 @@ def ConstructPatch(env_ref=None,
   if web_server_machine_type:
     return _ConstructWebServerMachineTypePatch(
         web_server_machine_type, release_track=release_track)
+  if autoscaling_maximum_cpu or autoscaling_minimum_cpu or\
+    autoscaling_maximum_memory or autoscaling_minimum_memory:
+    return _ConstructAutoscalingPatch(
+        autoscaling_maximum_cpu=autoscaling_maximum_cpu,
+        autoscaling_minimum_cpu=autoscaling_minimum_cpu,
+        autoscaling_maximum_memory=autoscaling_maximum_memory,
+        autoscaling_minimum_memory=autoscaling_minimum_memory,
+        release_track=release_track)
+  if maintenance_window_start and maintenance_window_end and maintenance_window_recurrence:
+    return _ConstructMaintenanceWindowPatch(
+        maintenance_window_start,
+        maintenance_window_end,
+        maintenance_window_recurrence,
+        release_track=release_track)
   raise command_util.Error(
       'Cannot update Environment with no update type specified.')
 
@@ -436,3 +471,63 @@ def _ConstructWebServerMachineTypePatch(web_server_machine_type, release_track):
           machineType=web_server_machine_type))
   return 'config.web_server_config.machine_type', messages.Environment(
       config=config)
+
+
+def _ConstructAutoscalingPatch(autoscaling_maximum_cpu, autoscaling_minimum_cpu,
+                               autoscaling_maximum_memory,
+                               autoscaling_minimum_memory, release_track):
+  """Constructs an environment patch for Airflow web server machine type.
+
+  Args:
+    autoscaling_maximum_cpu: int or None, maximum number of CPU allowed in the
+      Environment. Cannot be specified unless autoscaling is enabled.
+    autoscaling_minimum_cpu: int or None, minimum number of CPU allowed in the
+      Environment. Cannot be specified unless autoscaling is enabled.
+    autoscaling_maximum_memory: int or None, maximum memory (in GB) allowed in
+      the Environment. Cannot be specified unless autoscaling is enabled.
+    autoscaling_minimum_memory: int or None, minimum memory (in GB) allowed in
+      the Environment. Cannot be specified unless autoscaling is enabled.
+    release_track: base.ReleaseTrack, the release track of command. It dictates
+      which Composer client library is used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  config = messages.EnvironmentConfig(
+      autoscalingConfig=messages.AutoscalingConfig(
+          maximumCpu=autoscaling_maximum_cpu,
+          maximumMemory=autoscaling_maximum_memory,
+          minimumCpu=autoscaling_minimum_cpu,
+          minimumMemory=autoscaling_minimum_memory))
+  return 'config.autoscaling_config', messages.Environment(config=config)
+
+
+def _ConstructMaintenanceWindowPatch(maintenance_window_start,
+                                     maintenance_window_end,
+                                     maintenance_window_recurrence,
+                                     release_track=base.ReleaseTrack.GA):
+  """Constructs an environment patch for updating maintenance window.
+
+  Args:
+    maintenance_window_start: Datetime or None, a starting date of the
+      maintenance window.
+    maintenance_window_end: Datetime or None, an ending date of the maintenance
+      window.
+    maintenance_window_recurrence: str or None, recurrence RRULE for the
+      maintenance window.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+      which Composer client library will be used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+
+  window_value = messages.MaintenanceWindow(
+      startTime=maintenance_window_start.isoformat(),
+      endTime=maintenance_window_end.isoformat(),
+      recurrence=maintenance_window_recurrence)
+  config = messages.EnvironmentConfig(maintenanceWindow=window_value)
+
+  return 'config.maintenance_window', messages.Environment(config=config)

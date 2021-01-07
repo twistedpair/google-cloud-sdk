@@ -123,6 +123,13 @@ def ArgsForSqlQuery(parser):
       help='Construct but do not run the SQL pipeline, for smoke testing.')
 
   parser.add_argument(
+      '--sql-launcher-template-engine',
+      hidden=True,
+      help='The template engine to use for the SQL launcher template.',
+      choices=['dynamic', 'flex'],
+      default='dynamic')
+
+  parser.add_argument(
       '--sql-launcher-template',
       hidden=True,
       help='The full GCS path to a SQL launcher template spec, e.g. '

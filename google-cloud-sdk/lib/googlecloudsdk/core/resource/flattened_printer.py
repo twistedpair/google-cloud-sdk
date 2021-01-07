@@ -19,13 +19,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_transform
 
 import six
 
 
-def _Flatten(obj):
+def _Flatten(obj, labels):
   """Flattens a JSON-serializable object into a list of tuples.
 
   The first element of each tuple will be a key and the second element
@@ -42,10 +44,27 @@ def _Flatten(obj):
 
   Args:
     obj: A JSON-serializable object.
+    labels: An object mapping keys to projection labels.
 
   Returns:
     A list of tuples.
   """
+  res = []
+
+  def AppendResult(name, result):
+    """Appends key/value pairs from obj into res.
+
+    Adds projection label if defined.
+
+    Args:
+      name: Name of key.
+      result: Value of key in obj.
+    """
+    use_legacy = properties.VALUES.core.use_legacy_flattened_format.GetBool()
+    if not use_legacy and labels and name in labels:
+      res.append((labels[name].lower(), result))
+    else:
+      res.append((name, result))
 
   def Flatten(obj, name, res):
     """Recursively appends keys in path from obj into res.
@@ -60,20 +79,19 @@ def _Flatten(obj):
         for i, item in enumerate(obj):
           Flatten(item, '{name}[{index}]'.format(name=name, index=i), res)
       else:
-        res.append((name, []))
+        AppendResult(name, [])
     elif isinstance(obj, dict):
       if obj:
         for k, v in sorted(six.iteritems(obj)):
           Flatten(v, '{name}{dot}{key}'.format(
               name=name, dot='.' if name else '', key=k), res)
       else:
-        res.append((name, {}))
+        AppendResult(name, {})
     elif isinstance(obj, float):
-      res.append((name, resource_transform.TransformFloat(obj)))
+      AppendResult(name, resource_transform.TransformFloat(obj))
     else:
-      res.append((name, obj))
+      AppendResult(name, obj)
 
-  res = []
   Flatten(obj, '', res)
   return res
 
@@ -135,6 +153,18 @@ class FlattenedPrinter(resource_printer_base.ResourcePrinter):
     super(FlattenedPrinter, self).__init__(*args, retain_none_values=False,
                                            **kwargs)
 
+  def _LabelsByKey(self):
+    """Returns an object that maps keys to projection labels.
+
+    Returns:
+      An object of keys to projection labels, None if all labels are empty.
+    """
+    labels = {}
+    for c in self.column_attributes.Columns():
+      key_name = resource_lex.GetKeyName(c.key)
+      labels[key_name] = c.attribute.label
+    return labels if any(labels) else None
+
   def _AddRecord(self, record, delimit=True):
     """Immediately prints the record as flattened a flattened tree.
 
@@ -144,7 +174,8 @@ class FlattenedPrinter(resource_printer_base.ResourcePrinter):
     """
     if delimit:
       self._out.write('---\n')
-    flattened_record = _Flatten(record)
+    labels = self._LabelsByKey()
+    flattened_record = _Flatten(record, labels)
     if flattened_record:
       pad = 'no-pad' not in self.attributes
       separator = self.attributes.get('separator', ': ')

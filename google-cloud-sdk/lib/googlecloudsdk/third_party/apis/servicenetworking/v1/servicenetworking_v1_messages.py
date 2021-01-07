@@ -556,6 +556,9 @@ class ConsumerConfig(_messages.Message):
       project number e.g. '12345' and {network} is the network name.
     reservedRanges: Output only. The reserved ranges associated with this
       private service access connection.
+    vpcScReferenceArchitectureEnabled: Output only. Indicates whether the VPC
+      Service Controls reference architecture is configured for the producer
+      VPC host network.
   """
 
   consumerExportCustomRoutes = _messages.BooleanField(1)
@@ -568,6 +571,7 @@ class ConsumerConfig(_messages.Message):
   producerImportSubnetRoutesWithPublicIp = _messages.BooleanField(8)
   producerNetwork = _messages.StringField(9)
   reservedRanges = _messages.MessageField('GoogleCloudServicenetworkingV1ConsumerConfigReservedRange', 10, repeated=True)
+  vpcScReferenceArchitectureEnabled = _messages.BooleanField(11)
 
 
 class ConsumerConfigMetadata(_messages.Message):
@@ -849,15 +853,15 @@ class EnableVpcServiceControlsRequest(_messages.Message):
 
 
 class Endpoint(_messages.Message):
-  r"""`Endpoint` describes a network endpoint that serves a set of APIs. A
-  service may expose any number of endpoints, and all endpoints share the same
-  service configuration, such as quota configuration and monitoring
-  configuration. Example service configuration: name: library-
-  example.googleapis.com endpoints: # Below entry makes
-  'google.example.library.v1.Library' # API be served from endpoint address
-  library-example.googleapis.com. # It also allows HTTP OPTIONS calls to be
-  passed to the backend, for # it to decide whether the subsequent cross-
-  origin request is # allowed to proceed. - name: library-
+  r"""`Endpoint` describes a network endpoint of a service that serves a set
+  of APIs. It is commonly known as a service endpoint. A service may expose
+  any number of service endpoints, and all service endpoints share the same
+  service definition, such as quota limits and monitoring metrics. Example
+  service configuration: name: library-example.googleapis.com endpoints: #
+  Below entry makes 'google.example.library.v1.Library' # API be served from
+  endpoint address library-example.googleapis.com. # It also allows HTTP
+  OPTIONS calls to be passed to the backend, for # it to decide whether the
+  subsequent cross-origin request is # allowed to proceed. - name: library-
   example.googleapis.com allow_cors: true
 
   Fields:
@@ -2545,7 +2549,8 @@ class Service(_messages.Message):
     authentication: Auth configuration.
     backend: API backend configuration.
     billing: Billing configuration.
-    configVersion: This field is obsolete. Its value must be set to `3`.
+    configVersion: Deprecated. The service config compiler always sets this
+      field to `3`.
     context: Context configuration.
     control: Configuration for the service control plane.
     customError: Custom error configuration.

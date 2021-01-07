@@ -210,7 +210,7 @@
       "type": "object",
       "properties": {
         "resources": {
-          "description": "The list of Memberships contained within the parent.",
+          "description": "The list of matching Memberships.",
           "type": "array",
           "items": {
             "$ref": "Membership"
@@ -235,7 +235,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The unique name of this domain resource in the format: `projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`. `membership_id` can only be set at creation time using the `membership_id` field in the creation request. `membership_id` must be a valid RFC 1123 compliant DNS label. In particular, it must be: 1. At most 63 characters in length 2. It must consist of lower case alphanumeric characters or `-` 3. It must start and end with an alphanumeric character I.e. `membership_id` must match the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` with at most 63 characters.",
+          "description": "Output only. The full, unique name of this Membership resource in the format `projects\/*\/locations\/*\/memberships\/{membership_id}`, set during creation. `membership_id` must be a valid RFC 1123 compliant DNS label: 1. At most 63 characters in length 2. It must consist of lower case alphanumeric characters or `-` 3. It must start and end with an alphanumeric character Which can be expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.",
           "readOnly": true,
           "type": "string"
         },
@@ -247,7 +247,7 @@
           }
         },
         "description": {
-          "description": "Output only. Description of this membership, limited to 63 characters. It will match the regex: `a-zA-Z0-9*` This field is present for legacy purposes.",
+          "description": "Output only. Description of this membership, limited to 63 characters. Must match the regex: `a-zA-Z0-9*` This field is present for legacy purposes.",
           "readOnly": true,
           "type": "string"
         },
@@ -261,25 +261,25 @@
           "$ref": "MembershipState"
         },
         "createTime": {
-          "description": "Output only. Timestamp for when the Membership was created.",
+          "description": "Output only. When the Membership was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Timestamp for when the Membership was last updated.",
+          "description": "Output only. When the Membership was last updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "deleteTime": {
-          "description": "Output only. Timestamp for when the Membership was deleted.",
+          "description": "Output only. When the Membership was deleted.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "externalId": {
-          "description": "Optional. An externally-generated and managed ID for this Membership. This ID may still be modified after creation but it is not recommended to do so. The ID must match the regex: `a-zA-Z0-9*` If this Membership represents a Kubernetes cluster, this value should be set to the UUID of the kube-system namespace object.",
+          "description": "Optional. An externally-generated and managed ID for this Membership. This ID may be modified after creation, but this is not recommended. The ID must match the regex: `a-zA-Z0-9*` If this Membership represents a Kubernetes cluster, this value should be set to the UID of the `kube-system` namespace object.",
           "type": "string"
         },
         "lastConnectionTime": {
@@ -292,20 +292,38 @@
           "description": "Output only. Google-generated UUID for this resource. This is unique across all Membership resources. If a Membership resource is deleted and another resource with the same name is created, it gets a different unique_id.",
           "readOnly": true,
           "type": "string"
+        },
+        "authority": {
+          "description": "Optional. How to identify workloads from this Membership. See the documentation on Workload Identity for more details: https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/workload-identity",
+          "$ref": "Authority"
+        },
+        "infrastructureType": {
+          "description": "Optional. The infrastructure type this Membership is running on.",
+          "type": "string",
+          "enumDescriptions": [
+            "No type was specified. Some Hub functionality may require a type be specified, and will not support Memberships with this value.",
+            "Private infrastructure that is owned or operated by customer. This includes GKE distributions such as GKE-OnPrem and GKE-OnBareMetal.",
+            "Public cloud infrastructure."
+          ],
+          "enum": [
+            "INFRASTRUCTURE_TYPE_UNSPECIFIED",
+            "ON_PREM",
+            "MULTI_CLOUD"
+          ]
         }
       }
     },
     "MembershipEndpoint": {
       "id": "MembershipEndpoint",
-      "description": "MembershipEndpoint contains the information to reach a member.",
+      "description": "MembershipEndpoint contains information needed to contact a Kubernetes API, endpoint and any additional Kubernetes metadata.",
       "type": "object",
       "properties": {
         "gkeCluster": {
-          "description": "Optional. If this Membership is a Kubernetes API server hosted on GKE, this field will be populated and contain GKE-specific information.",
+          "description": "Optional. GKE-specific information. Only present if this Membership is a GKE cluster.",
           "$ref": "GkeCluster"
         },
         "kubernetesMetadata": {
-          "description": "Output only. For Memberships that point to Kubernetes Endpoints, this field provides useful metadata.",
+          "description": "Output only. Useful Kubernetes-specific metadata.",
           "readOnly": true,
           "$ref": "KubernetesMetadata"
         }
@@ -313,27 +331,27 @@
     },
     "GkeCluster": {
       "id": "GkeCluster",
-      "description": "GkeCluster represents a k8s cluster on GKE.",
+      "description": "GkeCluster contains information specific to GKE clusters.",
       "type": "object",
       "properties": {
         "resourceLink": {
-          "description": "Immutable. Self-link of the GCP resource for the GKE cluster. For example: \/\/container.googleapis.com\/projects\/my-project\/locations\/us-west1-a\/clusters\/my-cluster Using \"zones\" instead of \"locations\" is also valid. It can be at the most 1000 characters in length.",
+          "description": "Immutable. Self-link of the GCP resource for the GKE cluster. For example: \/\/container.googleapis.com\/projects\/my-project\/locations\/us-west1-a\/clusters\/my-cluster Zonal clusters are also supported.",
           "type": "string"
         }
       }
     },
     "KubernetesMetadata": {
       "id": "KubernetesMetadata",
-      "description": "KubernetesMetadata provides informational metadata for Memberships that are created from Kubernetes Endpoints (currently, these are equivalent to Kubernetes clusters).",
+      "description": "KubernetesMetadata provides informational metadata for Memberships representing Kubernetes clusters.",
       "type": "object",
       "properties": {
         "kubernetesApiServerVersion": {
-          "description": "Output only. Kubernetes API server version string as reported by '\/version'.",
+          "description": "Output only. Kubernetes API server version string as reported by `\/version`.",
           "readOnly": true,
           "type": "string"
         },
         "nodeProviderId": {
-          "description": "Output only. Node providerID as reported by the first node in the list of nodes on the Kubernetes endpoint. It should be noted that some Kubernetes platforms (like GKE-on-GCP) support zero-node clusters. For these platforms, the node_count will be zero and the node_provider_id will be empty.",
+          "description": "Output only. Node providerID as reported by the first node in the list of nodes on the Kubernetes endpoint. On Kubernetes platforms that support zero-node clusters (like GKE-on-GCP), the node_count will be zero and the node_provider_id will be empty.",
           "readOnly": true,
           "type": "string"
         },
@@ -365,20 +383,20 @@
     },
     "MembershipState": {
       "id": "MembershipState",
-      "description": "State of the Membership resource.",
+      "description": "MembershipState describes the state of a Membership resource.",
       "type": "object",
       "properties": {
         "code": {
-          "description": "Output only. Code indicating the state of the Membership resource.",
+          "description": "Output only. The current state of the Membership resource.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
-            "Not set.",
-            "CREATING indicates the cluster is being registered.",
-            "READY indicates the cluster is registered.",
-            "DELETING indicates that the cluster is being unregistered.",
-            "UPDATING indicates the Membership is being updated.",
-            "SERVICE_UPDATING indicates the Membership is being updated by the Hub Service."
+            "The code is not set.",
+            "The cluster is being registered.",
+            "The cluster is registered.",
+            "The cluster is being unregistered.",
+            "The Membership is being updated.",
+            "The Membership is being updated by the Hub Service."
           ],
           "enum": [
             "CODE_UNSPECIFIED",
@@ -391,9 +409,30 @@
         }
       }
     },
+    "Authority": {
+      "id": "Authority",
+      "description": "Authority encodes how Google will recognize identities from this Membership. See the workload identity documentation for more details: https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/workload-identity",
+      "type": "object",
+      "properties": {
+        "issuer": {
+          "description": "Optional. A JSON Web Token (JWT) issuer URI. `issuer` must start with `https:\/\/` and be a valid URL with length <2000 characters. If set, then Google will allow valid OIDC tokens from this issuer to authenticate within the workload_identity_pool. OIDC discovery will be performed on this URI to validate tokens from the issuer. Clearing `issuer` disables Workload Identity. `issuer` cannot be directly modified; it must be cleared (and Workload Identity disabled) before using a new issuer (and re-enabling Workload Identity).",
+          "type": "string"
+        },
+        "workloadIdentityPool": {
+          "description": "Output only. The name of the workload identity pool in which `issuer` will be recognized. There is a single Workload Identity Pool per Hub that is shared between all Memberships that belong to that Hub. For a Hub hosted in {PROJECT_ID}, the workload pool format is `{PROJECT_ID}.hub.id.goog`, although this is subject to change in newer versions of this API.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "identityProvider": {
+          "description": "Output only. An identity provider that reflects the `issuer` in the workload identity pool.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
     "GenerateConnectManifestResponse": {
       "id": "GenerateConnectManifestResponse",
-      "description": "Response message for `GkeHubService.GenerateConnectManifest` method.",
+      "description": "GenerateConnectManifestResponse contains manifest information for installing\/upgrading a Connect agent.",
       "type": "object",
       "properties": {
         "manifest": {
@@ -407,7 +446,7 @@
     },
     "ConnectAgentResource": {
       "id": "ConnectAgentResource",
-      "description": "ConnectAgentResource represents a Kubernetes resource manifest for connect agnet deployment.",
+      "description": "ConnectAgentResource represents a Kubernetes resource manifest for Connect Agent deployment.",
       "type": "object",
       "properties": {
         "type": {
@@ -422,7 +461,7 @@
     },
     "TypeMeta": {
       "id": "TypeMeta",
-      "description": "TypeMeta is the type information needed for content unmarshalling of the Kubernetes resources in the manifest.",
+      "description": "TypeMeta is the type information needed for content unmarshalling of Kubernetes resources in the manifest.",
       "type": "object",
       "properties": {
         "kind": {
@@ -906,7 +945,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent in whose context the memberships are listed. The parent value is in the format: `projects\/[project_id]\/locations\/global`.",
+                      "description": "Required. The parent (project and location) where the Memberships will be listed. Specified in the format `projects\/*\/locations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -924,12 +963,12 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Optional. Lists the Memberships that match the filter expression. A filter expression filters the resources listed in the response. The expression must be of the form `{field} {operator} {value}` where operators: `<`, `>`, `<=`,`>=`, `!=`, `=`, `:` are supported (colon `:` represents a HAS operator which is roughly synonymous with equality). `{field}` can refer to a proto or JSON field, or a synthetic field. Field names can be camelCase or snake_case. Examples: - Filter by name: name = \"projects\/foo-proj\/locations\/global\/membership\/bar - Filter by labels: - Resources that have a key called `foo` labels.foo:* - Resources that have a key called `foo` whose value is `bar` labels.foo = bar - Filter by state: - Members in CREATING state. state = CREATING",
+                      "description": "Optional. Lists Memberships that match the filter expression, following the syntax outlined in https:\/\/google.aip.dev\/160. Examples: - Name is `bar` in project `foo-proj` and location `global`: name = \"projects\/foo-proj\/locations\/global\/membership\/bar\" - Memberships that have a label called `foo`: labels.foo:* - Memberships that have a label called `foo` whose value is `bar`: labels.foo = bar - Memberships in the CREATING state: state = CREATING",
                       "location": "query",
                       "type": "string"
                     },
                     "orderBy": {
-                      "description": "Optional. Field to use to sort the list.",
+                      "description": "Optional. One or more fields to compare and use to sort the output. See https:\/\/google.aip.dev\/132#ordering.",
                       "location": "query",
                       "type": "string"
                     }
@@ -952,7 +991,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The Membership resource name in the format: `projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`",
+                      "description": "Required. The Membership resource name in the format `projects\/*\/locations\/*\/memberships\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
@@ -968,7 +1007,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single Membership."
+                  "description": "Gets the details of a Membership."
                 },
                 "create": {
                   "id": "gkehub.projects.locations.memberships.create",
@@ -977,14 +1016,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent in whose context the membership is created. The parent value is in the format: `projects\/[project_id]\/locations\/global`.",
+                      "description": "Required. The parent (project and location) where the Memberships will be created. Specified in the format `projects\/*\/locations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "membershipId": {
-                      "description": "Required. Client chosen ID for the membership. The ID must be a valid RFC 1123 compliant DNS label. In particular, the ID must be: 1. At most 63 characters in length 2. It must consist of lower case alphanumeric characters or `-` 3. It must start and end with an alphanumeric character I.e. ID must match the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` with at most 63 characters.",
+                      "description": "Required. Client chosen ID for the membership. `membership_id` must be a valid RFC 1123 compliant DNS label: 1. At most 63 characters in length 2. It must consist of lower case alphanumeric characters or `-` 3. It must start and end with an alphanumeric character Which can be expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1010,7 +1049,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The membership resource name in the format: `projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`",
+                      "description": "Required. The Membership resource name in the format `projects\/*\/locations\/*\/memberships\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
@@ -1026,7 +1065,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Removes a single Membership."
+                  "description": "Removes a Membership."
                 },
                 "patch": {
                   "id": "gkehub.projects.locations.memberships.patch",
@@ -1035,14 +1074,14 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. The membership resource name in the format: `projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`",
+                      "description": "Required. The Membership resource name in the format `projects\/*\/locations\/*\/memberships\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Mask of fields to update. At least one field path must be specified in this mask.",
+                      "description": "Required. Mask of fields to update.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1069,35 +1108,35 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The membership resource the connect agent is associated with. `projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`.",
+                      "description": "Required. The Membership resource name the Agent will associate with, in the format `projects\/*\/locations\/*\/memberships\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
                       "type": "string"
                     },
                     "namespace": {
-                      "description": "Optional. Namespace for GKE Connect agent resources. If empty, uses 'gke-connect'.",
+                      "description": "Optional. Namespace for GKE Connect agent resources. Defaults to `gke-connect`. The Connect Agent is authorized automatically when run in the default namespace. Otherwise, explicit authorization must be granted with an additional IAM binding.",
                       "location": "query",
                       "type": "string"
                     },
                     "proxy": {
-                      "description": "Optional. URI of a proxy if connectivity from the agent to gkeconnect.googleapis.com requires the use of a proxy. Format must be in the form http(s):\/\/{proxy_address}, depending on the HTTP\/HTTPS protocol supported by the proxy. This will direct the connect agent's outbound traffic through a HTTP(S) proxy.",
+                      "description": "Optional. URI of a proxy if connectivity from the agent to gkeconnect.googleapis.com requires the use of a proxy. Format must be in the form `http(s):\/\/{proxy_address}`, depending on the HTTP\/HTTPS protocol supported by the proxy. This will direct the connect agent's outbound traffic through a HTTP(S) proxy.",
                       "location": "query",
                       "type": "string",
                       "format": "byte"
                     },
                     "version": {
-                      "description": "Optional. The version to use for connect agent. If empty, the current default version will be used.",
+                      "description": "Optional. The Connect agent version to use. Defaults to the most current version.",
                       "location": "query",
                       "type": "string"
                     },
                     "isUpgrade": {
-                      "description": "Optional. If true, generate the resources for upgrade only. Some resources (e.g. secrets) generated for installation will be excluded.",
+                      "description": "Optional. If true, generate the resources for upgrade only. Some resources generated only for installation (e.g. secrets) will be excluded.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "registry": {
-                      "description": "Optional. The registry to fetch connect agent image; default to gcr.io\/gkeconnect.",
+                      "description": "Optional. The registry to fetch the connect agent image from. Defaults to gcr.io\/gkeconnect.",
                       "location": "query",
                       "type": "string"
                     },
@@ -1117,7 +1156,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Generate the manifest for deployment of GKE connect agent."
+                  "description": "Generates the manifest for deployment of the GKE connect agent."
                 },
                 "setIamPolicy": {
                   "id": "gkehub.projects.locations.memberships.setIamPolicy",

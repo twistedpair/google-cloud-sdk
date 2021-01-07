@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://datamigration.googleapis.com/v1alpha2/'
-DOCS_URL = 'https://cloud.google.com/datamigration/'
+DOCS_URL = 'https://cloud.google.com/database-migration/'
 
 
 class Collections(enum.Enum):

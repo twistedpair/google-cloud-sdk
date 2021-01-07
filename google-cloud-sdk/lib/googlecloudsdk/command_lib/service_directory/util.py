@@ -19,10 +19,51 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 import six
 
 _API_NAME = 'servicedirectory'
-_API_VERSION = 'v1beta1'
+_VERSION_MAP = {
+    base.ReleaseTrack.ALPHA: 'v1beta1',
+    base.ReleaseTrack.BETA: 'v1beta1',
+    base.ReleaseTrack.GA: 'v1'
+}
+
+
+def ParseAnnotationsArg(annotations=None, resource_type=None):
+  """Parses and creates the annotations object from the parsed arguments.
+
+  Args:
+    annotations: dict, key-value pairs passed in from the --annotations flag.
+    resource_type: string, the type of the resource to be created or updated.
+
+  Returns:
+    A message object depending on resource_type.
+
+    Service.AnnotationsValue message when resource_type='service' and
+    Endpoint.AnnotationsValue message when resource_type='endpoint'.
+  """
+  if not annotations:
+    return None
+
+  msgs = apis.GetMessagesModule(_API_NAME,
+                                _VERSION_MAP.get(base.ReleaseTrack.GA))
+  additional_properties = []
+
+  # The AnnotationsValue message object can be under Service or Endpoint class.
+  if resource_type == 'endpoint':
+    annotations_value_msg = msgs.Endpoint.AnnotationsValue
+  elif resource_type == 'service':
+    annotations_value_msg = msgs.Service.AnnotationsValue
+  else:
+    return None
+
+  for key, value in six.iteritems(annotations):
+    additional_properties.append(
+        annotations_value_msg.AdditionalProperty(key=key, value=value))
+
+  return annotations_value_msg(
+      additionalProperties=additional_properties)
 
 
 def ParseMetadataArg(metadata=None, resource_type=None):
@@ -30,8 +71,7 @@ def ParseMetadataArg(metadata=None, resource_type=None):
 
   Args:
     metadata: dict, key-value pairs passed in from the --metadata flag.
-    resource_type: string, the type of the resource to be created or
-      updated.
+    resource_type: string, the type of the resource to be created or updated.
 
   Returns:
     A message object depending on resource_type.
@@ -42,7 +82,8 @@ def ParseMetadataArg(metadata=None, resource_type=None):
   if not metadata:
     return None
 
-  msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)
+  msgs = apis.GetMessagesModule(_API_NAME,
+                                _VERSION_MAP.get(base.ReleaseTrack.BETA))
   additional_properties = []
 
   # The MetadataValue message object can be under Service or Endpoint class.
@@ -57,14 +98,15 @@ def ParseMetadataArg(metadata=None, resource_type=None):
     additional_properties.append(
         metadata_value_msg.AdditionalProperty(key=key, value=value))
 
-  return metadata_value_msg(additionalProperties=additional_properties) or None
+  return metadata_value_msg(additionalProperties=additional_properties)
 
 
-def ParseLabelsArg(labels=None):
+def ParseLabelsArg(labels=None, release_track=base.ReleaseTrack.GA):
   """Parses and creates the labels object from the parsed arguments.
 
   Args:
     labels: dict, key-value pairs passed in from the --labels flag.
+    release_track: base.ReleaseTrack value
 
   Returns:
     A message object.
@@ -72,7 +114,7 @@ def ParseLabelsArg(labels=None):
   if not labels:
     return None
 
-  msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)
+  msgs = apis.GetMessagesModule(_API_NAME, _VERSION_MAP.get(release_track))
   additional_properties = []
 
   # The LabelsValue message object is only under the Namespace class.
@@ -82,4 +124,4 @@ def ParseLabelsArg(labels=None):
     additional_properties.append(
         labels_value_msg.AdditionalProperty(key=key, value=value))
 
-  return labels_value_msg(additionalProperties=additional_properties) or None
+  return labels_value_msg(additionalProperties=additional_properties)

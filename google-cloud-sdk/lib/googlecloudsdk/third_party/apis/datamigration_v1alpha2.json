@@ -3,7 +3,7 @@
   "discoveryVersion": "v1",
   "id": "datamigration:v1alpha2",
   "name": "datamigration",
-  "canonicalName": "Cloud Database Migration Service",
+  "canonicalName": "Database Migration Service",
   "version": "v1alpha2",
   "revision": "0",
   "title": "Database Migration API",
@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/datamigration/",
+  "documentationLink": "https://cloud.google.com/database-migration/",
   "protocol": "rest",
   "rootUrl": "https://datamigration.googleapis.com/",
   "mtlsRootUrl": "https://datamigration.mtls.googleapis.com/",
@@ -786,7 +786,7 @@
       "type": "object",
       "properties": {
         "databaseVersion": {
-          "description": "The database engine type and version (such as `MYSQL_5_7` \/ `POSTGRES_9_6`).",
+          "description": "The database engine type and version.",
           "type": "string",
           "enumDescriptions": [
             "Unspecified version.",

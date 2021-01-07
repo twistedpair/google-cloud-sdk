@@ -44,10 +44,14 @@ class AwsS3Data(_messages.Message):
     bucketName: Required. S3 Bucket name (see [Creating a
       bucket](https://docs.aws.amazon.com/AmazonS3/latest/dev/create-bucket-
       get-location-example.html)).
+    path: Root path to transfer objects. Must be an empty string or full path
+      name that ends with a '/'. This field is treated as an object prefix. As
+      such, it should generally not begin with a '/'.
   """
 
   awsAccessKey = _messages.MessageField('AwsAccessKey', 1)
   bucketName = _messages.StringField(2)
+  path = _messages.StringField(3)
 
 
 class AzureBlobStorageData(_messages.Message):
@@ -68,12 +72,16 @@ class AzureBlobStorageData(_messages.Message):
       credentials).
     container: Required. The container to transfer from the Azure Storage
       account.
+    path: Root path to transfer objects. Must be an empty string or full path
+      name that ends with a '/'. This field is treated as an object prefix. As
+      such, it should generally not begin with a '/'.
     storageAccount: Required. The name of the Azure Storage account.
   """
 
   azureCredentials = _messages.MessageField('AzureCredentials', 1)
   container = _messages.StringField(2)
-  storageAccount = _messages.StringField(3)
+  path = _messages.StringField(3)
+  storageAccount = _messages.StringField(4)
 
 
 class AzureCredentials(_messages.Message):
@@ -277,9 +285,14 @@ class GcsData(_messages.Message):
     bucketName: Required. Cloud Storage bucket name (see [Bucket Name
       Requirements](https://cloud.google.com/storage/docs/naming#requirements)
       ).
+    path: Root path to transfer objects. Must be an empty string or full path
+      name that ends with a '/'. This field is treated as an object prefix. As
+      such, it should generally not begin with a '/'. (must meet Object Name R
+      equirements](https://cloud.google.com/storage/docs/naming#objectnames)).
   """
 
   bucketName = _messages.StringField(1)
+  path = _messages.StringField(2)
 
 
 class GoogleServiceAccount(_messages.Message):

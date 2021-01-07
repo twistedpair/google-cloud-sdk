@@ -771,6 +771,148 @@ class GoogleTypeMoney(_messages.Message):
   units = _messages.IntegerField(3)
 
 
+class RecommenderBillingAccountsLocationsInsightTypesInsightsGetRequest(_messages.Message):
+  r"""A RecommenderBillingAccountsLocationsInsightTypesInsightsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the insight.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RecommenderBillingAccountsLocationsInsightTypesInsightsListRequest(_messages.Message):
+  r"""A RecommenderBillingAccountsLocationsInsightTypesInsightsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filter expression to restrict the insights returned.
+      Supported filter fields: state Eg: `state:"DISMISSED" or state:"ACTIVE"
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. If not specified, the server
+      will determine the number of results to return.
+    pageToken: Optional. If present, retrieves the next batch of results from
+      the preceding call to this method. `page_token` must be the value of
+      `next_page_token` from the previous response. The values of other method
+      parameters must be identical to those in the previous call.
+    parent: Required. The container resource on which to execute the request.
+      Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/i
+      nsightTypes/[INSIGHT_TYPE_ID]", LOCATION here refers to GCP Locations:
+      https://cloud.google.com/about/locations/ INSIGHT_TYPE_ID refers to
+      supported insight types:
+      https://cloud.google.com/recommender/docs/insights/insight-types.)
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class RecommenderBillingAccountsLocationsInsightTypesInsightsMarkAcceptedRequest(_messages.Message):
+  r"""A
+  RecommenderBillingAccountsLocationsInsightTypesInsightsMarkAcceptedRequest
+  object.
+
+  Fields:
+    googleCloudRecommenderV1MarkInsightAcceptedRequest: A
+      GoogleCloudRecommenderV1MarkInsightAcceptedRequest resource to be passed
+      as the request body.
+    name: Required. Name of the insight.
+  """
+
+  googleCloudRecommenderV1MarkInsightAcceptedRequest = _messages.MessageField('GoogleCloudRecommenderV1MarkInsightAcceptedRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class RecommenderBillingAccountsLocationsRecommendersRecommendationsGetRequest(_messages.Message):
+  r"""A
+  RecommenderBillingAccountsLocationsRecommendersRecommendationsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the recommendation.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RecommenderBillingAccountsLocationsRecommendersRecommendationsListRequest(_messages.Message):
+  r"""A
+  RecommenderBillingAccountsLocationsRecommendersRecommendationsListRequest
+  object.
+
+  Fields:
+    filter: Filter expression to restrict the recommendations returned.
+      Supported filter fields: state_info.state Eg:
+      `state_info.state:"DISMISSED" or state_info.state:"FAILED"
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. If not specified, the server
+      will determine the number of results to return.
+    pageToken: Optional. If present, retrieves the next batch of results from
+      the preceding call to this method. `page_token` must be the value of
+      `next_page_token` from the previous response. The values of other method
+      parameters must be identical to those in the previous call.
+    parent: Required. The container resource on which to execute the request.
+      Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/r
+      ecommenders/[RECOMMENDER_ID]", LOCATION here refers to GCP Locations:
+      https://cloud.google.com/about/locations/ RECOMMENDER_ID refers to
+      supported recommenders:
+      https://cloud.google.com/recommender/docs/recommenders.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkClaimedRequest(_messages.Message):
+  r"""A RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkClai
+  medRequest object.
+
+  Fields:
+    googleCloudRecommenderV1MarkRecommendationClaimedRequest: A
+      GoogleCloudRecommenderV1MarkRecommendationClaimedRequest resource to be
+      passed as the request body.
+    name: Required. Name of the recommendation.
+  """
+
+  googleCloudRecommenderV1MarkRecommendationClaimedRequest = _messages.MessageField('GoogleCloudRecommenderV1MarkRecommendationClaimedRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkFailedRequest(_messages.Message):
+  r"""A RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkFail
+  edRequest object.
+
+  Fields:
+    googleCloudRecommenderV1MarkRecommendationFailedRequest: A
+      GoogleCloudRecommenderV1MarkRecommendationFailedRequest resource to be
+      passed as the request body.
+    name: Required. Name of the recommendation.
+  """
+
+  googleCloudRecommenderV1MarkRecommendationFailedRequest = _messages.MessageField('GoogleCloudRecommenderV1MarkRecommendationFailedRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkSucceededRequest(_messages.Message):
+  r"""A RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkSucc
+  eededRequest object.
+
+  Fields:
+    googleCloudRecommenderV1MarkRecommendationSucceededRequest: A
+      GoogleCloudRecommenderV1MarkRecommendationSucceededRequest resource to
+      be passed as the request body.
+    name: Required. Name of the recommendation.
+  """
+
+  googleCloudRecommenderV1MarkRecommendationSucceededRequest = _messages.MessageField('GoogleCloudRecommenderV1MarkRecommendationSucceededRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class RecommenderProjectsLocationsInsightTypesInsightsGetRequest(_messages.Message):
   r"""A RecommenderProjectsLocationsInsightTypesInsightsGetRequest object.
 

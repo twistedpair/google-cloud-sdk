@@ -45,7 +45,9 @@ class DlpV2(base_api.BaseApiClient):
     self.organizations_deidentifyTemplates = self.OrganizationsDeidentifyTemplatesService(self)
     self.organizations_inspectTemplates = self.OrganizationsInspectTemplatesService(self)
     self.organizations_locations_deidentifyTemplates = self.OrganizationsLocationsDeidentifyTemplatesService(self)
+    self.organizations_locations_dlpJobs = self.OrganizationsLocationsDlpJobsService(self)
     self.organizations_locations_inspectTemplates = self.OrganizationsLocationsInspectTemplatesService(self)
+    self.organizations_locations_jobTriggers = self.OrganizationsLocationsJobTriggersService(self)
     self.organizations_locations_storedInfoTypes = self.OrganizationsLocationsStoredInfoTypesService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations_storedInfoTypes = self.OrganizationsStoredInfoTypesService(self)
@@ -585,6 +587,43 @@ class DlpV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsLocationsDlpJobsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_dlpJobs resource."""
+
+    _NAME = 'organizations_locations_dlpJobs'
+
+    def __init__(self, client):
+      super(DlpV2.OrganizationsLocationsDlpJobsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists DlpJobs that match the specified filter in the request. See https://cloud.google.com/dlp/docs/inspecting-storage and https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
+
+      Args:
+        request: (DlpOrganizationsLocationsDlpJobsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2ListDlpJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/dlpJobs',
+        http_method='GET',
+        method_id='dlp.organizations.locations.dlpJobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'locationId', 'orderBy', 'pageSize', 'pageToken', 'type'],
+        relative_path='v2/{+parent}/dlpJobs',
+        request_field='',
+        request_type_name='DlpOrganizationsLocationsDlpJobsListRequest',
+        response_type_name='GooglePrivacyDlpV2ListDlpJobsResponse',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsInspectTemplatesService(base_api.BaseApiService):
     """Service class for the organizations_locations_inspectTemplates resource."""
 
@@ -727,6 +766,151 @@ class DlpV2(base_api.BaseApiClient):
         request_field='googlePrivacyDlpV2UpdateInspectTemplateRequest',
         request_type_name='DlpOrganizationsLocationsInspectTemplatesPatchRequest',
         response_type_name='GooglePrivacyDlpV2InspectTemplate',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsJobTriggersService(base_api.BaseApiService):
+    """Service class for the organizations_locations_jobTriggers resource."""
+
+    _NAME = 'organizations_locations_jobTriggers'
+
+    def __init__(self, client):
+      super(DlpV2.OrganizationsLocationsJobTriggersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a job trigger to run DLP actions such as scanning storage for sensitive information on a set schedule. See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+
+      Args:
+        request: (DlpOrganizationsLocationsJobTriggersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2JobTrigger) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/jobTriggers',
+        http_method='POST',
+        method_id='dlp.organizations.locations.jobTriggers.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/jobTriggers',
+        request_field='googlePrivacyDlpV2CreateJobTriggerRequest',
+        request_type_name='DlpOrganizationsLocationsJobTriggersCreateRequest',
+        response_type_name='GooglePrivacyDlpV2JobTrigger',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a job trigger. See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+
+      Args:
+        request: (DlpOrganizationsLocationsJobTriggersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/jobTriggers/{jobTriggersId}',
+        http_method='DELETE',
+        method_id='dlp.organizations.locations.jobTriggers.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DlpOrganizationsLocationsJobTriggersDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a job trigger. See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+
+      Args:
+        request: (DlpOrganizationsLocationsJobTriggersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2JobTrigger) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/jobTriggers/{jobTriggersId}',
+        http_method='GET',
+        method_id='dlp.organizations.locations.jobTriggers.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DlpOrganizationsLocationsJobTriggersGetRequest',
+        response_type_name='GooglePrivacyDlpV2JobTrigger',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists job triggers. See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+
+      Args:
+        request: (DlpOrganizationsLocationsJobTriggersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2ListJobTriggersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/jobTriggers',
+        http_method='GET',
+        method_id='dlp.organizations.locations.jobTriggers.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'locationId', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/jobTriggers',
+        request_field='',
+        request_type_name='DlpOrganizationsLocationsJobTriggersListRequest',
+        response_type_name='GooglePrivacyDlpV2ListJobTriggersResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a job trigger. See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+
+      Args:
+        request: (DlpOrganizationsLocationsJobTriggersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2JobTrigger) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/jobTriggers/{jobTriggersId}',
+        http_method='PATCH',
+        method_id='dlp.organizations.locations.jobTriggers.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='googlePrivacyDlpV2UpdateJobTriggerRequest',
+        request_type_name='DlpOrganizationsLocationsJobTriggersPatchRequest',
+        response_type_name='GooglePrivacyDlpV2JobTrigger',
         supports_download=False,
     )
 
@@ -2103,7 +2287,7 @@ class DlpV2(base_api.BaseApiClient):
     )
 
     def Finish(self, request, global_params=None):
-      r"""Finish a running hybrid DlpJob. Triggers the finalization steps and running of any enabled actions that have not yet run. Early access feature is in a pre-release state and might change or have limited support. For more information, see https://cloud.google.com/products#product-launch-stages.
+      r"""Finish a running hybrid DlpJob. Triggers the finalization steps and running of any enabled actions that have not yet run.
 
       Args:
         request: (DlpProjectsLocationsDlpJobsFinishRequest) input message
@@ -2157,7 +2341,7 @@ class DlpV2(base_api.BaseApiClient):
     )
 
     def HybridInspect(self, request, global_params=None):
-      r"""Inspect hybrid content and store findings to a job. To review the findings inspect the job. Inspection will occur asynchronously. Early access feature is in a pre-release state and might change or have limited support. For more information, see https://cloud.google.com/products#product-launch-stages.
+      r"""Inspect hybrid content and store findings to a job. To review the findings, inspect the job. Inspection will occur asynchronously.
 
       Args:
         request: (DlpProjectsLocationsDlpJobsHybridInspectRequest) input message
@@ -2511,7 +2695,7 @@ class DlpV2(base_api.BaseApiClient):
     )
 
     def HybridInspect(self, request, global_params=None):
-      r"""Inspect hybrid content and store findings to a trigger. The inspection will be processed asynchronously. To review the findings monitor the jobs within the trigger. Early access feature is in a pre-release state and might change or have limited support. For more information, see https://cloud.google.com/products#product-launch-stages.
+      r"""Inspect hybrid content and store findings to a trigger. The inspection will be processed asynchronously. To review the findings monitor the jobs within the trigger.
 
       Args:
         request: (DlpProjectsLocationsJobTriggersHybridInspectRequest) input message

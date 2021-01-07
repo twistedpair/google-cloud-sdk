@@ -124,7 +124,6 @@ def AddLicenceBasedFlags(parser):
   AddPlan(parser)
 
 
-# TODO(b/129054682): fix the format in text render.
 def AddResourcesArgGroup(parser):
   """Add the argument group for ResourceCommitment support in commitment."""
   resources_group = parser.add_group(

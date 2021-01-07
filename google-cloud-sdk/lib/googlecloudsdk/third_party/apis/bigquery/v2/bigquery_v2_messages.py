@@ -1497,25 +1497,26 @@ class JobConfigurationLoad(_messages.Message):
       returned in the job result. The default value is CREATE_IF_NEEDED.
       Creation, truncation and append actions occur as one atomic update upon
       job completion.
-    decimalTargetTypes: [Trusted Tester] Defines the list of possible SQL data
-      types to which the source decimal values are converted. This list and
-      the precision and the scale parameters of the decimal field determine
-      the target type. In the order of NUMERIC, BIGNUMERIC, and STRING, a type
-      is picked if it is in the specified list and if it supports the
-      precision and the scale. STRING supports all precision and scale values.
-      If none of the listed types supports the precision and the scale, the
-      type supporting the widest range in the specified list is picked, and if
-      a value exceeds the supported range when reading the data, an error will
-      be thrown. For example: suppose decimal_target_type = ["NUMERIC",
-      "BIGNUMERIC"]. Then if (precision,scale) is: * (38,9) -> NUMERIC; *
-      (39,9) -> BIGNUMERIC (NUMERIC cannot hold 30 integer digits); * (38,10)
-      -> BIGNUMERIC (NUMERIC cannot hold 10 fractional digits); * (76,38) ->
-      BIGNUMERIC; * (77,38) -> BIGNUMERIC (error if value exeeds supported
-      range). For duplicated types in this field, only one will be considered
-      and the rest will be ignored. The order of the types in this field is
-      ignored. For example, ["BIGNUMERIC", "NUMERIC"] is the same as
-      ["NUMERIC", "BIGNUMERIC"] and NUMERIC always takes precedence over
-      BIGNUMERIC.
+    decimalTargetTypes: Defines the list of possible SQL data types to which
+      the source decimal values are converted. This list and the precision and
+      the scale parameters of the decimal field determine the target type. In
+      the order of NUMERIC, BIGNUMERIC ([Preview](/products/#product-launch-
+      stages)), and STRING, a type is picked if it is in the specified list
+      and if it supports the precision and the scale. STRING supports all
+      precision and scale values. If none of the listed types supports the
+      precision and the scale, the type supporting the widest range in the
+      specified list is picked, and if a value exceeds the supported range
+      when reading the data, an error will be thrown. Example: Suppose the
+      value of this field is ["NUMERIC", "BIGNUMERIC"]. If (precision,scale)
+      is: * (38,9) -> NUMERIC; * (39,9) -> BIGNUMERIC (NUMERIC cannot hold 30
+      integer digits); * (38,10) -> BIGNUMERIC (NUMERIC cannot hold 10
+      fractional digits); * (76,38) -> BIGNUMERIC; * (77,38) -> BIGNUMERIC
+      (error if value exeeds supported range). This field cannot contain
+      duplicate types. The order of the types in this field is ignored. For
+      example, ["BIGNUMERIC", "NUMERIC"] is the same as ["NUMERIC",
+      "BIGNUMERIC"] and NUMERIC always takes precedence over BIGNUMERIC.
+      Defaults to ["NUMERIC", "STRING"] for ORC and ["NUMERIC"] for the other
+      file formats.
     destinationEncryptionConfiguration: Custom encryption configuration (e.g.,
       Cloud KMS keys).
     destinationTable: [Required] The destination table to load the data into.
@@ -3071,9 +3072,9 @@ class TableFieldSchema(_messages.Message):
     policyTags: A PolicyTagsValue attribute.
     type: [Required] The field data type. Possible values include STRING,
       BYTES, INTEGER, INT64 (same as INTEGER), FLOAT, FLOAT64 (same as FLOAT),
-      BOOLEAN, BOOL (same as BOOLEAN), TIMESTAMP, DATE, TIME, DATETIME, RECORD
-      (where RECORD indicates that the field contains a nested schema) or
-      STRUCT (same as RECORD).
+      NUMERIC, BIGNUMERIC, BOOLEAN, BOOL (same as BOOLEAN), TIMESTAMP, DATE,
+      TIME, DATETIME, RECORD (where RECORD indicates that the field contains a
+      nested schema) or STRUCT (same as RECORD).
   """
 
   class CategoriesValue(_messages.Message):

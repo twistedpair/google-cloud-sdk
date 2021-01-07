@@ -386,6 +386,75 @@ class DlpOrganizationsLocationsDeidentifyTemplatesPatchRequest(_messages.Message
   name = _messages.StringField(2, required=True)
 
 
+class DlpOrganizationsLocationsDlpJobsListRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsDlpJobsListRequest object.
+
+  Enums:
+    TypeValueValuesEnum: The type of job. Defaults to `DlpJobType.INSPECT`
+
+  Fields:
+    filter: Allows filtering. Supported syntax: * Filter expressions are made
+      up of one or more restrictions. * Restrictions can be combined by `AND`
+      or `OR` logical operators. A sequence of restrictions implicitly uses
+      `AND`. * A restriction has the form of `{field} {operator} {value}`. *
+      Supported fields/values for inspect jobs: - `state` -
+      PENDING|RUNNING|CANCELED|FINISHED|FAILED - `inspected_storage` -
+      DATASTORE|CLOUD_STORAGE|BIGQUERY - `trigger_name` - The resource name of
+      the trigger that created job. - 'end_time` - Corresponds to time the job
+      finished. - 'start_time` - Corresponds to time the job finished. *
+      Supported fields for risk analysis jobs: - `state` -
+      RUNNING|CANCELED|FINISHED|FAILED - 'end_time` - Corresponds to time the
+      job finished. - 'start_time` - Corresponds to time the job finished. *
+      The operator must be `=` or `!=`. Examples: * inspected_storage =
+      cloud_storage AND state = done * inspected_storage = cloud_storage OR
+      inspected_storage = bigquery * inspected_storage = cloud_storage AND
+      (state = done OR state = canceled) * end_time >
+      \"2017-12-12T00:00:00+00:00\" The length of this field should be no more
+      than 500 characters.
+    locationId: Deprecated. This field has no effect.
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case-insensitive, default sorting order is
+      ascending, redundant space characters are insignificant. Example: `name
+      asc, end_time asc, create_time desc` Supported fields are: -
+      `create_time`: corresponds to time the job was created. - `end_time`:
+      corresponds to time the job ended. - `name`: corresponds to job's name.
+      - `state`: corresponds to `state`
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+    parent: Required. Parent resource name. The format of this value varies
+      depending on whether you have [specified a processing
+      location](https://cloud.google.com/dlp/docs/specifying-location): +
+      Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
+    type: The type of job. Defaults to `DlpJobType.INSPECT`
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of job. Defaults to `DlpJobType.INSPECT`
+
+    Values:
+      DLP_JOB_TYPE_UNSPECIFIED: Unused
+      INSPECT_JOB: The job inspected Google Cloud for sensitive data.
+      RISK_ANALYSIS_JOB: The job executed a Risk Analysis computation.
+    """
+    DLP_JOB_TYPE_UNSPECIFIED = 0
+    INSPECT_JOB = 1
+    RISK_ANALYSIS_JOB = 2
+
+  filter = _messages.StringField(1)
+  locationId = _messages.StringField(2)
+  orderBy = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6, required=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+
+
 class DlpOrganizationsLocationsInspectTemplatesCreateRequest(_messages.Message):
   r"""A DlpOrganizationsLocationsInspectTemplatesCreateRequest object.
 
@@ -493,6 +562,119 @@ class DlpOrganizationsLocationsInspectTemplatesPatchRequest(_messages.Message):
   """
 
   googlePrivacyDlpV2UpdateInspectTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateInspectTemplateRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class DlpOrganizationsLocationsJobTriggersCreateRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsJobTriggersCreateRequest object.
+
+  Fields:
+    googlePrivacyDlpV2CreateJobTriggerRequest: A
+      GooglePrivacyDlpV2CreateJobTriggerRequest resource to be passed as the
+      request body.
+    parent: Required. Parent resource name. The format of this value varies
+      depending on whether you have [specified a processing
+      location](https://cloud.google.com/dlp/docs/specifying-location): +
+      Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
+  """
+
+  googlePrivacyDlpV2CreateJobTriggerRequest = _messages.MessageField('GooglePrivacyDlpV2CreateJobTriggerRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DlpOrganizationsLocationsJobTriggersDeleteRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsJobTriggersDeleteRequest object.
+
+  Fields:
+    name: Required. Resource name of the project and the triggeredJob, for
+      example `projects/dlp-test-project/jobTriggers/53234423`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpOrganizationsLocationsJobTriggersGetRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsJobTriggersGetRequest object.
+
+  Fields:
+    name: Required. Resource name of the project and the triggeredJob, for
+      example `projects/dlp-test-project/jobTriggers/53234423`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpOrganizationsLocationsJobTriggersListRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsJobTriggersListRequest object.
+
+  Fields:
+    filter: Allows filtering. Supported syntax: * Filter expressions are made
+      up of one or more restrictions. * Restrictions can be combined by `AND`
+      or `OR` logical operators. A sequence of restrictions implicitly uses
+      `AND`. * A restriction has the form of `{field} {operator} {value}`. *
+      Supported fields/values for inspect triggers: - `status` -
+      HEALTHY|PAUSED|CANCELLED - `inspected_storage` -
+      DATASTORE|CLOUD_STORAGE|BIGQUERY - 'last_run_time` - RFC 3339 formatted
+      timestamp, surrounded by quotation marks. Nanoseconds are ignored. -
+      'error_count' - Number of errors that have occurred while running. * The
+      operator must be `=` or `!=` for status and inspected_storage. Examples:
+      * inspected_storage = cloud_storage AND status = HEALTHY *
+      inspected_storage = cloud_storage OR inspected_storage = bigquery *
+      inspected_storage = cloud_storage AND (state = PAUSED OR state =
+      HEALTHY) * last_run_time > \"2017-12-12T00:00:00+00:00\" The length of
+      this field should be no more than 500 characters.
+    locationId: Deprecated. This field has no effect.
+    orderBy: Comma separated list of triggeredJob fields to order by, followed
+      by `asc` or `desc` postfix. This list is case-insensitive, default
+      sorting order is ascending, redundant space characters are
+      insignificant. Example: `name asc,update_time, create_time desc`
+      Supported fields are: - `create_time`: corresponds to time the
+      JobTrigger was created. - `update_time`: corresponds to time the
+      JobTrigger was last updated. - `last_run_time`: corresponds to the last
+      time the JobTrigger ran. - `name`: corresponds to JobTrigger's name. -
+      `display_name`: corresponds to JobTrigger's display name. - `status`:
+      corresponds to JobTrigger's status.
+    pageSize: Size of the page, can be limited by a server.
+    pageToken: Page token to continue retrieval. Comes from previous call to
+      ListJobTriggers. `order_by` field must not change for subsequent calls.
+    parent: Required. Parent resource name. The format of this value varies
+      depending on whether you have [specified a processing
+      location](https://cloud.google.com/dlp/docs/specifying-location): +
+      Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
+  """
+
+  filter = _messages.StringField(1)
+  locationId = _messages.StringField(2)
+  orderBy = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6, required=True)
+
+
+class DlpOrganizationsLocationsJobTriggersPatchRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsJobTriggersPatchRequest object.
+
+  Fields:
+    googlePrivacyDlpV2UpdateJobTriggerRequest: A
+      GooglePrivacyDlpV2UpdateJobTriggerRequest resource to be passed as the
+      request body.
+    name: Required. Resource name of the project and the triggeredJob, for
+      example `projects/dlp-test-project/jobTriggers/53234423`.
+  """
+
+  googlePrivacyDlpV2UpdateJobTriggerRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateJobTriggerRequest', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -1216,7 +1398,7 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
       up of one or more restrictions. * Restrictions can be combined by `AND`
       or `OR` logical operators. A sequence of restrictions implicitly uses
       `AND`. * A restriction has the form of `{field} {operator} {value}`. *
-      Supported fields/values for inspect jobs: - `status` -
+      Supported fields/values for inspect triggers: - `status` -
       HEALTHY|PAUSED|CANCELLED - `inspected_storage` -
       DATASTORE|CLOUD_STORAGE|BIGQUERY - 'last_run_time` - RFC 3339 formatted
       timestamp, surrounded by quotation marks. Nanoseconds are ignored. -
@@ -1826,7 +2008,7 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
       up of one or more restrictions. * Restrictions can be combined by `AND`
       or `OR` logical operators. A sequence of restrictions implicitly uses
       `AND`. * A restriction has the form of `{field} {operator} {value}`. *
-      Supported fields/values for inspect jobs: - `status` -
+      Supported fields/values for inspect triggers: - `status` -
       HEALTHY|PAUSED|CANCELLED - `inspected_storage` -
       DATASTORE|CLOUD_STORAGE|BIGQUERY - 'last_run_time` - RFC 3339 formatted
       timestamp, surrounded by quotation marks. Nanoseconds are ignored. -
@@ -2540,12 +2722,13 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
         Binary scanning attempts to convert the content of the file to utf_8
         to scan the file. If you wish to avoid this fall back, specify one or
         more of the other FileType's in your storage scan.
-      TEXT_FILE: Included file extensions: asc, brf, c, cc, cpp, csv, cxx,
-        c++, cs, css, dart, eml, go, h, hh, hpp, hxx, h++, hs, html, htm,
-        shtml, shtm, xhtml, lhs, ini, java, js, json, ocaml, md, mkd,
-        markdown, m, ml, mli, pl, pm, php, phtml, pht, py, pyw, rb, rbw, rs,
-        rc, scala, sh, sql, tex, txt, text, tsv, vcard, vcs, wml, xml, xsl,
-        xsd, yml, yaml.
+      TEXT_FILE: Included file extensions: asc,asp, aspx, brf, c, cc,cfm, cgi,
+        cpp, csv, cxx, c++, cs, css, dart, dat, dot, eml,, epbub, ged, go, h,
+        hh, hpp, hxx, h++, hs, html, htm, mkd, markdown, m, ml, mli, perl, pl,
+        plist, pm, php, phtml, pht, properties, py, pyw, rb, rbw, rs, rss, rc,
+        scala, sh, sql, swift, tex, shtml, shtm, xhtml, lhs, ics, ini, java,
+        js, json, kix, kml, ocaml, md, txt, text, tsv, vb, vcard, vcs, wml,
+        xcodeproj, xml, xsl, xsd, yml, yaml.
       IMAGE: Included file extensions: bmp, gif, jpg, jpeg, jpe, png.
         bytes_limit_per_file has no effect on image files. Image inspection is
         restricted to 'global', 'us', 'asia', and 'europe'.
@@ -2829,13 +3012,14 @@ class GooglePrivacyDlpV2CreateDlpJobRequest(_messages.Message):
   jobs such as calculating risk metrics or inspecting Google Cloud Storage.
 
   Fields:
-    inspectJob: Set to control what and how to inspect.
+    inspectJob: An inspection job scans a storage repository for InfoTypes.
     jobId: The job id can contain uppercase and lowercase letters, numbers,
       and hyphens; that is, it must match the regular expression:
       `[a-zA-Z\d-_]+`. The maximum length is 100 characters. Can be empty to
       allow the system to generate one.
     locationId: Deprecated. This field has no effect.
-    riskJob: Set to choose what metric to calculate.
+    riskJob: A risk analysis job calculates re-identification risk metrics for
+      a BigQuery table.
   """
 
   inspectJob = _messages.MessageField('GooglePrivacyDlpV2InspectJobConfig', 1)
@@ -4350,7 +4534,7 @@ class GooglePrivacyDlpV2InspectDataSourceDetails(_messages.Message):
 
   Fields:
     requestedOptions: The configuration used for this job.
-    result: A summary of the outcome of this inspect job.
+    result: A summary of the outcome of this inspection job.
   """
 
   requestedOptions = _messages.MessageField('GooglePrivacyDlpV2RequestedOptions', 1)
@@ -5534,10 +5718,7 @@ class GooglePrivacyDlpV2Result(_messages.Message):
   processing.
 
   Fields:
-    hybridStats: Statistics related to the processing of hybrid inspect. Early
-      access feature is in a pre-release state and might change or have
-      limited support. For more information, see
-      https://cloud.google.com/products#product-launch-stages.
+    hybridStats: Statistics related to the processing of hybrid inspect.
     infoTypeStats: Statistics of how many instances of each info type were
       found during inspect job.
     processedBytes: Total size in bytes that were processed.
@@ -5630,10 +5811,7 @@ class GooglePrivacyDlpV2StorageConfig(_messages.Message):
     bigQueryOptions: BigQuery options.
     cloudStorageOptions: Google Cloud Storage options.
     datastoreOptions: Google Cloud Datastore options.
-    hybridOptions: Hybrid inspection options. Early access feature is in a
-      pre-release state and might change or have limited support. For more
-      information, see https://cloud.google.com/products#product-launch-
-      stages.
+    hybridOptions: Hybrid inspection options.
     timespanConfig: A GooglePrivacyDlpV2TimespanConfig attribute.
   """
 
@@ -6045,9 +6223,7 @@ class GooglePrivacyDlpV2Trigger(_messages.Message):
 
   Fields:
     manual: For use with hybrid jobs. Jobs must be manually created and
-      finished. Early access feature is in a pre-release state and might
-      change or have limited support. For more information, see
-      https://cloud.google.com/products#product-launch-stages.
+      finished.
     schedule: Create a job on a repeating basis based on the elapse of time.
   """
 

@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.kuberun import service
 from googlecloudsdk.command_lib.kuberun import k8s_object_printer
 from googlecloudsdk.command_lib.kuberun import revision_printer
 from googlecloudsdk.command_lib.kuberun import traffic_printer
@@ -28,7 +27,6 @@ from googlecloudsdk.core.resource import custom_printer_base as cp
 
 
 SERVICE_PRINTER_FORMAT = 'service'
-_INGRESS_UNSPECIFIED = '-'
 
 
 class ServicePrinter(cp.CustomPrinterBase):
@@ -37,14 +35,6 @@ class ServicePrinter(cp.CustomPrinterBase):
   Format specific to Cloud Run services. Only available on Cloud Run commands
   that print services.
   """
-
-  def _GetIngress(self, record):
-    """Gets the ingress traffic allowed to call the service."""
-    if (record.labels.get(
-        service.ENDPOINT_VISIBILITY) == service.CLUSTER_LOCAL):
-      return service.INGRESS_INTERNAL
-    else:
-      return service.INGRESS_ALL
 
   def _GetRevisionHeader(self, record):
     return console_attr.GetConsoleAttr().Emphasize('Revision {}'.format(
@@ -63,11 +53,8 @@ class ServicePrinter(cp.CustomPrinterBase):
     fmt = cp.Lines([
         k8s_object_printer.GetHeader(record),
         k8s_object_printer.GetLabels(record.labels), ' ',
-        cp.Section([
-            traffic_printer.TransformTraffic(record),
-            cp.Labeled([('Ingress', self._GetIngress(record))]),
-            ' ',
-        ], max_column_width=60),
+        traffic_printer.TransformRouteFields(record),
+        ' ',
         cp.Labeled([(k8s_object_printer.GetLastUpdated(record),
                      self._RevisionPrinters(record))]),
         k8s_object_printer.GetReadyMessage(record)
