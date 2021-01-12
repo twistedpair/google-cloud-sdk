@@ -289,6 +289,33 @@ class CloudassetV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def AnalyzeMove(self, request, global_params=None):
+      r"""Analyze moving a resource to a specified destination without kicking off the actual move. The analysis is best effort depending on the user's permissions of viewing different hierarchical policies and configurations. The policies and configuration are subject to change before the actual resource migration takes place.
+
+      Args:
+        request: (CloudassetAnalyzeMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnalyzeMoveResponse) The response message.
+      """
+      config = self.GetMethodConfig('AnalyzeMove')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AnalyzeMove.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}/{v1Id1}:analyzeMove',
+        http_method='GET',
+        method_id='cloudasset.analyzeMove',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['destinationParent', 'view'],
+        relative_path='v1/{+resource}:analyzeMove',
+        request_field='',
+        request_type_name='CloudassetAnalyzeMoveRequest',
+        response_type_name='AnalyzeMoveResponse',
+        supports_download=False,
+    )
+
     def BatchGetAssetsHistory(self, request, global_params=None):
       r"""Batch gets the update history of assets that overlap a time window. For IAM_POLICY content, this API outputs history when the asset and its attached IAM POLICY both exist. This can create gaps in the output history. Otherwise, this API outputs history with asset in both non-delete or deleted status. If a specified asset does not exist, this API returns an INVALID_ARGUMENT error.
 

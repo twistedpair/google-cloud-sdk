@@ -5,6 +5,49 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 323.0.0 (2021-01-12)
+
+### Cloud Asset Inventory
+
+* Promote `gcloud asset list` command to beta.
+
+### Cloud Dataproc
+
+*  Added `--shielded-secure-boot`, `--shielded-vtpm`, and `--shielded-integrity-monitoring` boolean flags to `gcloud dataproc clusters create` to allow users to configure Compute Engine Shielded VMs on Dataproc clusters.
+*  Added `--shielded-secure-boot`, `--shielded-vtpm`, and `--shielded-integrity-monitoring` boolean flags to `gcloud dataproc
+    workflow-templates set-managed-cluster` to allow users to configure Compute Engine Shielded VMs on Dataproc managed clusters.
+
+### Cloud Filestore
+
+*   Added `--description` flag to `gcloud beta filestore backups create`
+    command.
+
+### Cloud Run
+
+* Promoted `--use-http2` flag to beta for Cloud Run (fully managed).
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.34.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Identity Groups Memberships
+
+* Added `gcloud identity groups memberships check-transitive-membership` for ALPHA, beta and GA.
+* Added `gcloud identity groups memberships get-membership-graph` for ALPHA, beta and GA.
+* Added `gcloud identity groups memberships search-transitive-groups` for ALPHA, beta and GA.
+* Added `gcloud identity groups memberships search-transitive-memberships` for ALPHA, beta and GA.
+
+### Managed Active Directory
+
+* Added `--enable-audit-logs` flag to `gcloud beta active-directory domains create`  and `gcloud beta active-directory domains update`.
+* Added `AUDIT_LOGS_ENABLED` parameter to `gcloud beta active-directory domains list`.
+* Added `auditLogsEnabled` parameter to `gcloud beta active-directory domains describe`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 322.0.0 (2021-01-07)
 
 ### Breaking Changes

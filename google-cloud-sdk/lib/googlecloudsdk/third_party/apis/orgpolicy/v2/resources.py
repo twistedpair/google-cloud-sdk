@@ -17,48 +17,19 @@
 import enum
 
 
-BASE_URL = 'https://eventarc.googleapis.com/v1beta1/'
-DOCS_URL = 'https://cloud.google.com/eventarc'
+BASE_URL = 'https://orgpolicy.googleapis.com/v2/'
+DOCS_URL = 'https://cloud.google.com/resource-manager/docs/organization-policy/understanding-constraints'
 
 
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  PROJECTS = (
-      'projects',
-      'projects/{projectsId}',
-      {},
-      ['projectsId'],
-      True
-  )
-  PROJECTS_LOCATIONS = (
-      'projects.locations',
+  POLICIES = (
+      'policies',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_OPERATIONS = (
-      'projects.locations.operations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/operations/'
-              '{operationsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_TRIGGERS = (
-      'projects.locations.triggers',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/triggers/'
-              '{triggersId}',
+              '{v2Id}/{v2Id1}/policies/{policiesId}',
       },
       ['name'],
       True

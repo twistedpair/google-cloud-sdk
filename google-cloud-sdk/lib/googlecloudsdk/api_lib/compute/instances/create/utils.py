@@ -672,6 +672,7 @@ def GetNetworkInterfaces(args, client, holder, project, location, scope,
           public_ptr_domain=args.public_ptr_domain,
           private_network_ip=getattr(args, 'private_network_ip', None),
           network_tier=getattr(args, 'network_tier', None),
+          ipv6_public_ptr_domain=getattr(args, 'ipv6_public_ptr_domain', None),
       )
   ]
 
@@ -704,7 +705,8 @@ def GetNetworkInterfacesAlpha(args, client, holder, project, location, scope,
           no_public_ptr_domain=getattr(args, 'no_public_ptr_domain', None),
           public_ptr_domain=getattr(args, 'public_ptr_domain', None),
           stack_type=getattr(args, 'stack_type', None),
-          ipv6_network_tier=getattr(args, 'ipv6_network_tier', None))
+          ipv6_network_tier=getattr(args, 'ipv6_network_tier', None),
+          ipv6_public_ptr_domain=getattr(args, 'ipv6_public_ptr_domain', None))
   ]
 
 
@@ -728,7 +730,8 @@ def CreateNetworkInterfaceMessage(resources,
                                   no_public_ptr_domain=None,
                                   public_ptr_domain=None,
                                   stack_type=None,
-                                  ipv6_network_tier=None):
+                                  ipv6_network_tier=None,
+                                  ipv6_public_ptr_domain=None):
   """Returns a new NetworkInterface message."""
   # TODO(b/30460572): instance reference should have zone name, not zone URI.
   if scope == compute_scopes.ScopeEnum.ZONE:
@@ -815,14 +818,19 @@ def CreateNetworkInterfaceMessage(resources,
 
     network_interface.accessConfigs = [access_config]
 
-  if ipv6_network_tier is not None:
+  if ipv6_network_tier is not None or ipv6_public_ptr_domain is not None:
     ipv6_access_config = messages.AccessConfig(
         name=constants.DEFAULT_IPV6_ACCESS_CONFIG_NAME,
         type=messages.AccessConfig.TypeValueValuesEnum.DIRECT_IPV6)
+    network_interface.ipv6AccessConfigs = [ipv6_access_config]
+
+  if ipv6_network_tier is not None:
     ipv6_access_config.networkTier = (
         messages.AccessConfig.NetworkTierValueValuesEnum(ipv6_network_tier))
 
-    network_interface.ipv6AccessConfigs = [ipv6_access_config]
+  if ipv6_public_ptr_domain is not None:
+    ipv6_access_config.setPublicPtr = True
+    ipv6_access_config.publicPtrDomainName = ipv6_public_ptr_domain
 
   return network_interface
 
@@ -878,7 +886,8 @@ def GetNetworkInterfacesWithValidation(args,
                                        skip_defaults,
                                        support_public_dns=False,
                                        support_stack_type=False,
-                                       support_ipv6_network_tier=False):
+                                       support_ipv6_network_tier=False,
+                                       support_ipv6_public_ptr_domain=False):
   """Validates and retrieves the network interface message."""
   if args.network_interface:
     return CreateNetworkInterfaceMessages(
@@ -890,7 +899,8 @@ def GetNetworkInterfacesWithValidation(args,
         scope=scope)
   else:
     instances_flags.ValidatePublicPtrFlags(args)
-    if support_public_dns or support_stack_type or support_ipv6_network_tier:
+    if (support_public_dns or support_stack_type or support_ipv6_network_tier or
+        support_ipv6_public_ptr_domain):
       if support_public_dns:
         instances_flags.ValidatePublicDnsFlags(args)
       return GetNetworkInterfacesAlpha(args, compute_client, holder, project,

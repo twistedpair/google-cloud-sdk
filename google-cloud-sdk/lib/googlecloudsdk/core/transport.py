@@ -156,7 +156,7 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
 
   def WrapWithDefaults(self,
                        http_client,
-                       response_encoding,
+                       response_encoding=None,
                        streaming_response_body=False):
     """Wraps request with user-agent, and trace reporting.
 

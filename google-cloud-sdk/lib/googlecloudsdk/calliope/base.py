@@ -423,7 +423,7 @@ URI_FLAG = Argument(
     Print a list of resource URIs instead of the default output, and change the
     command output to a list of URIs. If this flag is used with *--format*,
     the formatting is applied on this URI list. To display URIs alongside other
-		keys instead, use the *uri()* transform.
+    keys instead, use the *uri()* transform.
     """)
 
 # Binary Command Flags
@@ -962,25 +962,25 @@ def UserProjectQuotaWithFallbackEnabled():
   ) == properties.VALUES.billing.CURRENT_PROJECT_WITH_FALLBACK
 
 
-def OptInRequests():
-  """Opts the command group into to using requests to make HTTP requests.
+def OptOutRequests():
+  """Opts the command group out of using requests to make HTTP requests.
 
   Call this function in the Filter method of the command group
-  to enable requests.
+  to disable requests.
   """
-  properties.VALUES.transport.opt_in_requests.Set(True)
+  properties.VALUES.transport.opt_out_requests.Set(True)
 
 
 def UseRequests():
   """Returns True if using requests to make HTTP requests.
 
   transport/disable_requests_override is a global switch to turn off requests in
-  case support is buggy. transport/opt_in_requests is an internal property
-  to opt-in surfaces.
+  case support is buggy. transport/opt_out_requests is an internal property
+  to opt surfaces out of requests.
   """
 
   return (UseGoogleAuth() and
-          properties.VALUES.transport.opt_in_requests.GetBool() and
+          not properties.VALUES.transport.opt_out_requests.GetBool() and
           not properties.VALUES.transport.disable_requests_override.GetBool())
 
 

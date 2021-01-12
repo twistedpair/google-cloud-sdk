@@ -471,43 +471,6 @@
         }
       }
     },
-    "RingDeviceRequest": {
-      "id": "RingDeviceRequest",
-      "description": "Request message for ringing device.",
-      "type": "object",
-      "properties": {
-        "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-          "type": "string"
-        }
-      }
-    },
-    "LockDeviceRequest": {
-      "id": "LockDeviceRequest",
-      "description": "Request message for locking the device.",
-      "type": "object",
-      "properties": {
-        "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-          "type": "string"
-        }
-      }
-    },
-    "ResetPinRequest": {
-      "id": "ResetPinRequest",
-      "description": "Request message for resetting the pin on the device.",
-      "type": "object",
-      "properties": {
-        "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-          "type": "string"
-        },
-        "pin": {
-          "description": "Required. New pin number to set for the device.",
-          "type": "string"
-        }
-      }
-    },
     "WipeDeviceRequest": {
       "id": "WipeDeviceRequest",
       "description": "Request message for wiping all data on the device.",
@@ -664,39 +627,6 @@
         }
       }
     },
-    "CollectBugReportRequest": {
-      "id": "CollectBugReportRequest",
-      "description": "Request message for collecting the bugreport for the user.",
-      "type": "object",
-      "properties": {
-        "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-          "type": "string"
-        }
-      }
-    },
-    "SyncDeviceUserRequest": {
-      "id": "SyncDeviceUserRequest",
-      "description": "Request message for syncing the user's device management policies.",
-      "type": "object",
-      "properties": {
-        "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-          "type": "string"
-        }
-      }
-    },
-    "SignoutDeviceUserRequest": {
-      "id": "SignoutDeviceUserRequest",
-      "description": "Request message for signing out of the device.",
-      "type": "object",
-      "properties": {
-        "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-          "type": "string"
-        }
-      }
-    },
     "ApproveDeviceUserRequest": {
       "id": "ApproveDeviceUserRequest",
       "description": "Request message for approving the device to access user data.",
@@ -711,17 +641,6 @@
     "BlockDeviceUserRequest": {
       "id": "BlockDeviceUserRequest",
       "description": "Request message for blocking account on device.",
-      "type": "object",
-      "properties": {
-        "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-          "type": "string"
-        }
-      }
-    },
-    "UnenrollDeviceUserRequest": {
-      "id": "UnenrollDeviceUserRequest",
-      "description": "Request message to unenroll the user from Advanced Windows Management.",
       "type": "object",
       "properties": {
         "customer": {
@@ -885,98 +804,6 @@
         }
       }
     },
-    "ListClientStatesResponse": {
-      "id": "ListClientStatesResponse",
-      "description": "Response message that is returned in LRO result of ListClientStates Operation.",
-      "type": "object",
-      "properties": {
-        "clientStates": {
-          "description": "Client states meeting the list restrictions.",
-          "type": "array",
-          "items": {
-            "$ref": "ClientState"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results. Empty if there are no more results.",
-          "type": "string"
-        }
-      }
-    },
-    "GetEffectiveSettingsResponse": {
-      "id": "GetEffectiveSettingsResponse",
-      "type": "object",
-      "properties": {
-        "resourceId": {
-          "description": "Resource id of the device.",
-          "type": "string"
-        },
-        "effectiveSetting": {
-          "$ref": "EffectiveSetting"
-        }
-      }
-    },
-    "EffectiveSetting": {
-      "id": "EffectiveSetting",
-      "type": "object",
-      "properties": {
-        "mamDataProtectionSetting": {
-          "$ref": "MamDataProtectionSetting"
-        }
-      }
-    },
-    "MamDataProtectionSetting": {
-      "id": "MamDataProtectionSetting",
-      "description": "Data protection setting for enforcing data leak restrictions on user's device.",
-      "type": "object",
-      "properties": {
-        "copyPasteProtected": {
-          "description": "Whether user's data on the device is protected for cut\/copy\/paste.",
-          "type": "boolean"
-        },
-        "sharingProtected": {
-          "description": "Whether the user's data on the device is protected for native sharing.",
-          "type": "boolean"
-        },
-        "obfuscatedCustomerId": {
-          "description": "Obfuscated customer ID of the user in hex with at most 16 chars.",
-          "type": "string"
-        }
-      }
-    },
-    "GetEffectiveSettingsRequest": {
-      "id": "GetEffectiveSettingsRequest",
-      "type": "object",
-      "properties": {
-        "clientContext": {
-          "description": "Context of the caller client.",
-          "$ref": "ClientContext"
-        }
-      }
-    },
-    "ClientContext": {
-      "id": "ClientContext",
-      "description": "Information related to the caller client.",
-      "type": "object",
-      "properties": {
-        "clientVersion": {
-          "description": "The name and the version of the client. e.g. \"DXP 1.0\"",
-          "type": "string"
-        },
-        "osVersion": {
-          "description": "[Optional] OS version on which the client app is running. e.g., \"iOS 12.1\"",
-          "type": "string"
-        },
-        "appId": {
-          "description": "[Optional] Identifier of the application. e.g., \"com.google.Drive\"",
-          "type": "string"
-        },
-        "iosVendorId": {
-          "description": "Vendor id of the ios device.",
-          "type": "string"
-        }
-      }
-    },
     "Group": {
       "id": "Group",
       "description": "A group within the Cloud Identity Groups API. A `Group` is a collection of entities, where each entity is either a user, another group, or a service account.",
@@ -1078,13 +905,11 @@
           "type": "string",
           "enumDescriptions": [
             "Default value (not valid)",
-            "For queries on User",
-            "For queries on Team Drive"
+            "For queries on User"
           ],
           "enum": [
             "RESOURCE_TYPE_UNSPECIFIED",
-            "USER",
-            "TEAM_DRIVE"
+            "USER"
           ]
         },
         "query": {
@@ -1586,6 +1411,24 @@
         "device": {
           "description": "Resultant Device object for the action. Note that asset tags will not be returned in the device object.",
           "$ref": "Device"
+        }
+      }
+    },
+    "ListClientStatesResponse": {
+      "id": "ListClientStatesResponse",
+      "description": "Response message that is returned in LRO result of ListClientStates Operation.",
+      "type": "object",
+      "properties": {
+        "clientStates": {
+          "description": "Client states meeting the list restrictions.",
+          "type": "array",
+          "items": {
+            "$ref": "ClientState"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. Empty if there are no more results.",
+          "type": "string"
         }
       }
     },
@@ -2242,47 +2085,6 @@
           },
           "description": "Lists\/Searches devices."
         },
-        "patch": {
-          "id": "cloudidentity.devices.patch",
-          "path": "v1beta1/{+name}",
-          "flatPath": "v1beta1/devices/{devicesId}",
-          "httpMethod": "PATCH",
-          "parameters": {
-            "name": {
-              "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}`, where device_id is the unique id assigned to the Device.",
-              "location": "path",
-              "required": true,
-              "pattern": "^devices\/[^\/]+$",
-              "type": "string"
-            },
-            "name1": {
-              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}`, where device_id is the unique ID assigned to the Device.",
-              "location": "query",
-              "type": "string"
-            },
-            "customer": {
-              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-              "location": "query",
-              "type": "string"
-            },
-            "updateMask": {
-              "description": "Required. Fully qualified names of fields to update. Only \"custom_attributes\" is supported.",
-              "location": "query",
-              "type": "string",
-              "format": "google-fieldmask"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "request": {
-            "$ref": "Device"
-          },
-          "response": {
-            "$ref": "Operation"
-          },
-          "description": "Updates the specified device."
-        },
         "delete": {
           "id": "cloudidentity.devices.delete",
           "path": "v1beta1/{+name}",
@@ -2309,81 +2111,6 @@
             "$ref": "Operation"
           },
           "description": "Deletes the specified device."
-        },
-        "ring": {
-          "id": "cloudidentity.devices.ring",
-          "path": "v1beta1/{+name}:ring",
-          "flatPath": "v1beta1/devices:ring",
-          "httpMethod": "POST",
-          "parameters": {
-            "name": {
-              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`, where device_id is the unique ID assigned to the Device, and device_user_id is the unique ID assigned to the User.",
-              "location": "path",
-              "required": true,
-              "pattern": "^devices$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "request": {
-            "$ref": "RingDeviceRequest"
-          },
-          "response": {
-            "$ref": "Operation"
-          },
-          "description": "Rings the specified device"
-        },
-        "lock": {
-          "id": "cloudidentity.devices.lock",
-          "path": "v1beta1/{+name}:lock",
-          "flatPath": "v1beta1/devices:lock",
-          "httpMethod": "POST",
-          "parameters": {
-            "name": {
-              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}`, where device_id is the unique ID assigned to the Device.",
-              "location": "path",
-              "required": true,
-              "pattern": "^devices$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "request": {
-            "$ref": "LockDeviceRequest"
-          },
-          "response": {
-            "$ref": "Operation"
-          },
-          "description": "Locks the specified device, without signing out the user"
-        },
-        "resetPin": {
-          "id": "cloudidentity.devices.resetPin",
-          "path": "v1beta1/{+name}:resetPin",
-          "flatPath": "v1beta1/devices:resetPin",
-          "httpMethod": "POST",
-          "parameters": {
-            "name": {
-              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}`, where device_id is the unique ID assigned to the Device.",
-              "location": "path",
-              "required": true,
-              "pattern": "^devices$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "request": {
-            "$ref": "ResetPinRequest"
-          },
-          "response": {
-            "$ref": "Operation"
-          },
-          "description": "Resets the specified device's pin"
         },
         "wipe": {
           "id": "cloudidentity.devices.wipe",
@@ -2434,73 +2161,6 @@
             "$ref": "Operation"
           },
           "description": "Cancels an unfinished device wipe. This operation can be used to cancel device wipe in the gap between the wipe operation returning success and the device being wiped."
-        },
-        "getSettings": {
-          "id": "cloudidentity.devices.getSettings",
-          "path": "v1beta1/{+resourceId}/settings",
-          "flatPath": "v1beta1/devices/{devicesId}/settings",
-          "httpMethod": "GET",
-          "parameters": {
-            "resourceId": {
-              "description": "Resource id of the entity for which the settings are requested.",
-              "location": "path",
-              "required": true,
-              "pattern": "^devices\/[^\/]+$",
-              "type": "string"
-            },
-            "clientContext.clientVersion": {
-              "description": "The name and the version of the client. e.g. \"DXP 1.0\"",
-              "location": "query",
-              "type": "string"
-            },
-            "clientContext.osVersion": {
-              "description": "[Optional] OS version on which the client app is running. e.g., \"iOS 12.1\"",
-              "location": "query",
-              "type": "string"
-            },
-            "clientContext.appId": {
-              "description": "[Optional] Identifier of the application. e.g., \"com.google.Drive\"",
-              "location": "query",
-              "type": "string"
-            },
-            "clientContext.iosVendorId": {
-              "description": "Vendor id of the ios device.",
-              "location": "query",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "resourceId"
-          ],
-          "response": {
-            "$ref": "GetEffectiveSettingsResponse"
-          },
-          "description": "Returns the effective settings compiled for the requested entity."
-        },
-        "settings": {
-          "id": "cloudidentity.devices.settings",
-          "path": "v1beta1/{+resourceId}/settings",
-          "flatPath": "v1beta1/devices/{devicesId}/settings",
-          "httpMethod": "POST",
-          "parameters": {
-            "resourceId": {
-              "description": "Resource id of the entity for which the settings are requested.",
-              "location": "path",
-              "required": true,
-              "pattern": "^devices\/[^\/]+$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "resourceId"
-          ],
-          "request": {
-            "$ref": "GetEffectiveSettingsRequest"
-          },
-          "response": {
-            "$ref": "GetEffectiveSettingsResponse"
-          },
-          "description": "Returns the effective settings compiled for the requested entity."
         }
       }
       ,
@@ -2582,47 +2242,6 @@
               },
               "description": "Lists\/Searches DeviceUsers."
             },
-            "patch": {
-              "id": "cloudidentity.devices.deviceUsers.patch",
-              "path": "v1beta1/{+name}",
-              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}",
-              "httpMethod": "PATCH",
-              "parameters": {
-                "name": {
-                  "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the DeviceUser in format: `devices\/{device_id}\/deviceUsers\/{user_id}`, where user_id is the ID of the user associated with the user session.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
-                  "type": "string"
-                },
-                "name1": {
-                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`, where device_id is the unique ID assigned to the Device, and device_user_id is the unique ID assigned to the User.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "customer": {
-                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "updateMask": {
-                  "description": "Required. Fully qualified names of fields to update. Only \"custom_attributes\" is supported.",
-                  "location": "query",
-                  "type": "string",
-                  "format": "google-fieldmask"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "DeviceUser"
-              },
-              "response": {
-                "$ref": "Operation"
-              },
-              "description": "Updates the specified DeviceUser."
-            },
             "delete": {
               "id": "cloudidentity.devices.deviceUsers.delete",
               "path": "v1beta1/{+name}",
@@ -2701,81 +2320,6 @@
               ],
               "description": "Looks up resource names of the DeviceUsers associated with the caller's credentials, as well as the properties provided in the request. This method must be called with end-user credentials with the scope: https:\/\/www.googleapis.com\/auth\/cloud-identity.devices.lookup If multiple properties are provided, only DeviceUsers having all of these properties are considered as matches - i.e. the query behaves like an AND. Different platforms require different amounts of information from the caller to ensure that the DeviceUser is uniquely identified. - iOS: No properties need to be passed, the caller's credentials are sufficient to identify the corresponding DeviceUser. - Android: Specifying the 'android_id' field is required. - Desktop: Specifying the 'raw_resource_id' field is required."
             },
-            "collectBugReport": {
-              "id": "cloudidentity.devices.deviceUsers.collectBugReport",
-              "path": "v1beta1/{+name}:collectBugReport",
-              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:collectBugReport",
-              "httpMethod": "POST",
-              "parameters": {
-                "name": {
-                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`, where device_id is the unique ID assigned to the Device, and device_user_id is the unique ID assigned to the User.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "CollectBugReportRequest"
-              },
-              "response": {
-                "$ref": "Operation"
-              },
-              "description": "Collects bug report on the specified device, which can be later downloaded from [Admin Console](https:\/\/admin.google.com)."
-            },
-            "sync": {
-              "id": "cloudidentity.devices.deviceUsers.sync",
-              "path": "v1beta1/{+name}:sync",
-              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:sync",
-              "httpMethod": "POST",
-              "parameters": {
-                "name": {
-                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`, where device_id is the unique ID assigned to the Device, and device_user_id is the unique ID assigned to the User.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "SyncDeviceUserRequest"
-              },
-              "response": {
-                "$ref": "Operation"
-              },
-              "description": "Syncs the device to company's policy"
-            },
-            "signout": {
-              "id": "cloudidentity.devices.deviceUsers.signout",
-              "path": "v1beta1/{+name}:signout",
-              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:signout",
-              "httpMethod": "POST",
-              "parameters": {
-                "name": {
-                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`, where device_id is the unique ID assigned to the Device, and device_user_id is the unique ID assigned to the User.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "SignoutDeviceUserRequest"
-              },
-              "response": {
-                "$ref": "Operation"
-              },
-              "description": "Signs out the user from the specified device"
-            },
             "approve": {
               "id": "cloudidentity.devices.deviceUsers.approve",
               "path": "v1beta1/{+name}:approve",
@@ -2825,31 +2369,6 @@
                 "$ref": "Operation"
               },
               "description": "Blocks device from accessing user data"
-            },
-            "unenroll": {
-              "id": "cloudidentity.devices.deviceUsers.unenroll",
-              "path": "v1beta1/{+name}:unenroll",
-              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}:unenroll",
-              "httpMethod": "POST",
-              "parameters": {
-                "name": {
-                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`, where device_id is the unfique ID assigned to the Device, and device_user_id is the unique ID assigned to the User.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "UnenrollDeviceUserRequest"
-              },
-              "response": {
-                "$ref": "Operation"
-              },
-              "description": "Unenrolls the user from Advanced Windows Management without affecting their user account."
             },
             "wipe": {
               "id": "cloudidentity.devices.deviceUsers.wipe",
@@ -2904,53 +2423,6 @@
           }
           ,
           "resources": {
-            "endpointApps": {
-              "methods": {
-                "list": {
-                  "id": "cloudidentity.devices.deviceUsers.endpointApps.list",
-                  "path": "v1beta1/{+parent}/endpointApps",
-                  "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/endpointApps",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent, which owns this collection of EndpointApps. Supported Format: devices\/{device}\/deviceUsers\/{deviceUser} Note: wildcards in parent path are not supported.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "customer": {
-                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "Optional. The maximum number of Apps to return. If unspecified, at most 20 Apps will be returned. The maximum value is 20; values above 20 will be coerced to 20.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "Optional. page_token to get subsequent pages in the response starting at this token. This should be filled with the value provided by a previous call to ListDevices.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "orderBy": {
-                      "description": "Optional. Order specification for devices in the response.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "description": "Lists all managed apps intalled on the device."
-                }
-              }
-            },
             "clientStates": {
               "methods": {
                 "get": {
@@ -2979,48 +2451,6 @@
                     "$ref": "ClientState"
                   },
                   "description": "Gets the client state for the device user"
-                },
-                "list": {
-                  "id": "cloudidentity.devices.deviceUsers.clientStates.list",
-                  "path": "v1beta1/{+parent}/clientStates",
-                  "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}/clientStates",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. To list all ClientStates, set this to \"devices\/-\/deviceUsers\/-\". To list all ClientStates owned by a DeviceUser, set this to the resource name of the DeviceUser. Format: devices\/{device}\/deviceUsers\/{deviceUser}",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "customer": {
-                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "filter": {
-                      "description": "Optional. Additional restrictions when fetching list of client states.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "pageToken": {
-                      "description": "Optional. A page token, received from a previous `ListClientStates` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListClientStates` must match the call that provided the page token.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "orderBy": {
-                      "description": "Optional. Order specification for client states in the response.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListClientStatesResponse"
-                  },
-                  "description": "Lists the client states for the given search query."
                 },
                 "patch": {
                   "id": "cloudidentity.devices.deviceUsers.clientStates.patch",
@@ -3377,41 +2807,6 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Retrieves a `Membership`."
-            },
-            "patch": {
-              "id": "cloudidentity.groups.memberships.patch",
-              "path": "v1beta1/{+name}",
-              "flatPath": "v1beta1/groups/{groupsId}/memberships/{membershipsId}",
-              "httpMethod": "PATCH",
-              "parameters": {
-                "name": {
-                  "description": "Output only. The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the `Membership`. Shall be of the form `groups\/{group_id}\/memberships\/{membership_id}`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^groups\/[^\/]+\/memberships\/[^\/]+$",
-                  "type": "string"
-                },
-                "updateMask": {
-                  "description": "Required. The fully-qualified names of fields to update.",
-                  "location": "query",
-                  "type": "string",
-                  "format": "google-fieldmask"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "Membership"
-              },
-              "response": {
-                "$ref": "Operation"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity.groups",
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Updates a `Membership`."
             },
             "delete": {
               "id": "cloudidentity.groups.memberships.delete",

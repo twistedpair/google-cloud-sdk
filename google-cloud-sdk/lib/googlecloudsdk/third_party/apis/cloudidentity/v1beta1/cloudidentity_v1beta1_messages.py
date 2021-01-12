@@ -168,23 +168,6 @@ class CheckTransitiveMembershipResponse(_messages.Message):
   hasMembership = _messages.BooleanField(1)
 
 
-class ClientContext(_messages.Message):
-  r"""Information related to the caller client.
-
-  Fields:
-    appId: [Optional] Identifier of the application. e.g., "com.google.Drive"
-    clientVersion: The name and the version of the client. e.g. "DXP 1.0"
-    iosVendorId: Vendor id of the ios device.
-    osVersion: [Optional] OS version on which the client app is running. e.g.,
-      "iOS 12.1"
-  """
-
-  appId = _messages.StringField(1)
-  clientVersion = _messages.StringField(2)
-  iosVendorId = _messages.StringField(3)
-  osVersion = _messages.StringField(4)
-
-
 class ClientState(_messages.Message):
   r"""Represents the state associated with an API client calling the Devices
   API. Resource representing ClientState and supports updates from API users
@@ -441,36 +424,6 @@ class CloudidentityDevicesDeviceUsersClientStatesGetRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
-class CloudidentityDevicesDeviceUsersClientStatesListRequest(_messages.Message):
-  r"""A CloudidentityDevicesDeviceUsersClientStatesListRequest object.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-    filter: Optional. Additional restrictions when fetching list of client
-      states.
-    orderBy: Optional. Order specification for client states in the response.
-    pageToken: Optional. A page token, received from a previous
-      `ListClientStates` call. Provide this to retrieve the subsequent page.
-      When paginating, all other parameters provided to `ListClientStates`
-      must match the call that provided the page token.
-    parent: Required. To list all ClientStates, set this to
-      "devices/-/deviceUsers/-". To list all ClientStates owned by a
-      DeviceUser, set this to the resource name of the DeviceUser. Format:
-      devices/{device}/deviceUsers/{deviceUser}
-  """
-
-  customer = _messages.StringField(1)
-  filter = _messages.StringField(2)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
 class CloudidentityDevicesDeviceUsersClientStatesPatchRequest(_messages.Message):
   r"""A CloudidentityDevicesDeviceUsersClientStatesPatchRequest object.
 
@@ -498,23 +451,6 @@ class CloudidentityDevicesDeviceUsersClientStatesPatchRequest(_messages.Message)
   updateMask = _messages.StringField(4)
 
 
-class CloudidentityDevicesDeviceUsersCollectBugReportRequest(_messages.Message):
-  r"""A CloudidentityDevicesDeviceUsersCollectBugReportRequest object.
-
-  Fields:
-    collectBugReportRequest: A CollectBugReportRequest resource to be passed
-      as the request body.
-    name: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the Device
-      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
-      device_id is the unique ID assigned to the Device, and device_user_id is
-      the unique ID assigned to the User.
-  """
-
-  collectBugReportRequest = _messages.MessageField('CollectBugReportRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class CloudidentityDevicesDeviceUsersDeleteRequest(_messages.Message):
   r"""A CloudidentityDevicesDeviceUsersDeleteRequest object.
 
@@ -534,35 +470,6 @@ class CloudidentityDevicesDeviceUsersDeleteRequest(_messages.Message):
 
   customer = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
-
-
-class CloudidentityDevicesDeviceUsersEndpointAppsListRequest(_messages.Message):
-  r"""A CloudidentityDevicesDeviceUsersEndpointAppsListRequest object.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-    orderBy: Optional. Order specification for devices in the response.
-    pageSize: Optional. The maximum number of Apps to return. If unspecified,
-      at most 20 Apps will be returned. The maximum value is 20; values above
-      20 will be coerced to 20.
-    pageToken: Optional. page_token to get subsequent pages in the response
-      starting at this token. This should be filled with the value provided by
-      a previous call to ListDevices.
-    parent: Required. The parent, which owns this collection of EndpointApps.
-      Supported Format: devices/{device}/deviceUsers/{deviceUser} Note:
-      wildcards in parent path are not supported.
-  """
-
-  customer = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
 
 
 class CloudidentityDevicesDeviceUsersGetRequest(_messages.Message):
@@ -657,88 +564,6 @@ class CloudidentityDevicesDeviceUsersLookupRequest(_messages.Message):
   userId = _messages.StringField(6)
 
 
-class CloudidentityDevicesDeviceUsersPatchRequest(_messages.Message):
-  r"""A CloudidentityDevicesDeviceUsersPatchRequest object.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-    deviceUser: A DeviceUser resource to be passed as the request body.
-    name: Output only. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      DeviceUser in format: `devices/{device_id}/deviceUsers/{user_id}`, where
-      user_id is the ID of the user associated with the user session.
-    name1: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the Device
-      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
-      device_id is the unique ID assigned to the Device, and device_user_id is
-      the unique ID assigned to the User.
-    updateMask: Required. Fully qualified names of fields to update. Only
-      "custom_attributes" is supported.
-  """
-
-  customer = _messages.StringField(1)
-  deviceUser = _messages.MessageField('DeviceUser', 2)
-  name = _messages.StringField(3, required=True)
-  name1 = _messages.StringField(4)
-  updateMask = _messages.StringField(5)
-
-
-class CloudidentityDevicesDeviceUsersSignoutRequest(_messages.Message):
-  r"""A CloudidentityDevicesDeviceUsersSignoutRequest object.
-
-  Fields:
-    name: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the Device
-      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
-      device_id is the unique ID assigned to the Device, and device_user_id is
-      the unique ID assigned to the User.
-    signoutDeviceUserRequest: A SignoutDeviceUserRequest resource to be passed
-      as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  signoutDeviceUserRequest = _messages.MessageField('SignoutDeviceUserRequest', 2)
-
-
-class CloudidentityDevicesDeviceUsersSyncRequest(_messages.Message):
-  r"""A CloudidentityDevicesDeviceUsersSyncRequest object.
-
-  Fields:
-    name: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the Device
-      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
-      device_id is the unique ID assigned to the Device, and device_user_id is
-      the unique ID assigned to the User.
-    syncDeviceUserRequest: A SyncDeviceUserRequest resource to be passed as
-      the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  syncDeviceUserRequest = _messages.MessageField('SyncDeviceUserRequest', 2)
-
-
-class CloudidentityDevicesDeviceUsersUnenrollRequest(_messages.Message):
-  r"""A CloudidentityDevicesDeviceUsersUnenrollRequest object.
-
-  Fields:
-    name: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the Device
-      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
-      device_id is the unfique ID assigned to the Device, and device_user_id
-      is the unique ID assigned to the User.
-    unenrollDeviceUserRequest: A UnenrollDeviceUserRequest resource to be
-      passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  unenrollDeviceUserRequest = _messages.MessageField('UnenrollDeviceUserRequest', 2)
-
-
 class CloudidentityDevicesDeviceUsersWipeRequest(_messages.Message):
   r"""A CloudidentityDevicesDeviceUsersWipeRequest object.
 
@@ -772,28 +597,6 @@ class CloudidentityDevicesGetRequest(_messages.Message):
 
   customer = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
-
-
-class CloudidentityDevicesGetSettingsRequest(_messages.Message):
-  r"""A CloudidentityDevicesGetSettingsRequest object.
-
-  Fields:
-    clientContext_appId: [Optional] Identifier of the application. e.g.,
-      "com.google.Drive"
-    clientContext_clientVersion: The name and the version of the client. e.g.
-      "DXP 1.0"
-    clientContext_iosVendorId: Vendor id of the ios device.
-    clientContext_osVersion: [Optional] OS version on which the client app is
-      running. e.g., "iOS 12.1"
-    resourceId: Resource id of the entity for which the settings are
-      requested.
-  """
-
-  clientContext_appId = _messages.StringField(1)
-  clientContext_clientVersion = _messages.StringField(2)
-  clientContext_iosVendorId = _messages.StringField(3)
-  clientContext_osVersion = _messages.StringField(4)
-  resourceId = _messages.StringField(5, required=True)
 
 
 class CloudidentityDevicesListRequest(_messages.Message):
@@ -848,99 +651,6 @@ class CloudidentityDevicesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
   view = _messages.EnumField('ViewValueValuesEnum', 6)
-
-
-class CloudidentityDevicesLockRequest(_messages.Message):
-  r"""A CloudidentityDevicesLockRequest object.
-
-  Fields:
-    lockDeviceRequest: A LockDeviceRequest resource to be passed as the
-      request body.
-    name: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the Device
-      in format: `devices/{device_id}`, where device_id is the unique ID
-      assigned to the Device.
-  """
-
-  lockDeviceRequest = _messages.MessageField('LockDeviceRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class CloudidentityDevicesPatchRequest(_messages.Message):
-  r"""A CloudidentityDevicesPatchRequest object.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-    device: A Device resource to be passed as the request body.
-    name: Output only. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the Device
-      in format: `devices/{device_id}`, where device_id is the unique id
-      assigned to the Device.
-    name1: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the Device
-      in format: `devices/{device_id}`, where device_id is the unique ID
-      assigned to the Device.
-    updateMask: Required. Fully qualified names of fields to update. Only
-      "custom_attributes" is supported.
-  """
-
-  customer = _messages.StringField(1)
-  device = _messages.MessageField('Device', 2)
-  name = _messages.StringField(3, required=True)
-  name1 = _messages.StringField(4)
-  updateMask = _messages.StringField(5)
-
-
-class CloudidentityDevicesResetPinRequest(_messages.Message):
-  r"""A CloudidentityDevicesResetPinRequest object.
-
-  Fields:
-    name: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the Device
-      in format: `devices/{device_id}`, where device_id is the unique ID
-      assigned to the Device.
-    resetPinRequest: A ResetPinRequest resource to be passed as the request
-      body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  resetPinRequest = _messages.MessageField('ResetPinRequest', 2)
-
-
-class CloudidentityDevicesRingRequest(_messages.Message):
-  r"""A CloudidentityDevicesRingRequest object.
-
-  Fields:
-    name: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the Device
-      in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
-      device_id is the unique ID assigned to the Device, and device_user_id is
-      the unique ID assigned to the User.
-    ringDeviceRequest: A RingDeviceRequest resource to be passed as the
-      request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  ringDeviceRequest = _messages.MessageField('RingDeviceRequest', 2)
-
-
-class CloudidentityDevicesSettingsRequest(_messages.Message):
-  r"""A CloudidentityDevicesSettingsRequest object.
-
-  Fields:
-    getEffectiveSettingsRequest: A GetEffectiveSettingsRequest resource to be
-      passed as the request body.
-    resourceId: Resource id of the entity for which the settings are
-      requested.
-  """
-
-  getEffectiveSettingsRequest = _messages.MessageField('GetEffectiveSettingsRequest', 1)
-  resourceId = _messages.StringField(2, required=True)
 
 
 class CloudidentityDevicesWipeRequest(_messages.Message):
@@ -1240,23 +950,6 @@ class CloudidentityGroupsMembershipsModifyMembershipRolesRequest(_messages.Messa
   name = _messages.StringField(2, required=True)
 
 
-class CloudidentityGroupsMembershipsPatchRequest(_messages.Message):
-  r"""A CloudidentityGroupsMembershipsPatchRequest object.
-
-  Fields:
-    membership: A Membership resource to be passed as the request body.
-    name: Output only. The [resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      `Membership`. Shall be of the form
-      `groups/{group_id}/memberships/{membership_id}`.
-    updateMask: Required. The fully-qualified names of fields to update.
-  """
-
-  membership = _messages.MessageField('Membership', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-
-
 class CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest(_messages.Message):
   r"""A CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest object.
 
@@ -1361,21 +1054,6 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
   pageToken = _messages.StringField(2)
   query = _messages.StringField(3)
   view = _messages.EnumField('ViewValueValuesEnum', 4)
-
-
-class CollectBugReportRequest(_messages.Message):
-  r"""Request message for collecting the bugreport for the user.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-  """
-
-  customer = _messages.StringField(1)
 
 
 class CreateDeviceRequest(_messages.Message):
@@ -1711,11 +1389,9 @@ class DynamicGroupQuery(_messages.Message):
     Values:
       RESOURCE_TYPE_UNSPECIFIED: Default value (not valid)
       USER: For queries on User
-      TEAM_DRIVE: For queries on Team Drive
     """
     RESOURCE_TYPE_UNSPECIFIED = 0
     USER = 1
-    TEAM_DRIVE = 2
 
   query = _messages.StringField(1)
   resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
@@ -1752,16 +1428,6 @@ class DynamicGroupStatus(_messages.Message):
   statusTime = _messages.StringField(2)
 
 
-class EffectiveSetting(_messages.Message):
-  r"""A EffectiveSetting object.
-
-  Fields:
-    mamDataProtectionSetting: A MamDataProtectionSetting attribute.
-  """
-
-  mamDataProtectionSetting = _messages.MessageField('MamDataProtectionSetting', 1)
-
-
 class EntityKey(_messages.Message):
   r"""A unique identifier for an entity in the Cloud Identity Groups API. An
   entity can represent either a group with an optional `namespace` or a user
@@ -1793,28 +1459,6 @@ class ExpiryDetail(_messages.Message):
   """
 
   expireTime = _messages.StringField(1)
-
-
-class GetEffectiveSettingsRequest(_messages.Message):
-  r"""A GetEffectiveSettingsRequest object.
-
-  Fields:
-    clientContext: Context of the caller client.
-  """
-
-  clientContext = _messages.MessageField('ClientContext', 1)
-
-
-class GetEffectiveSettingsResponse(_messages.Message):
-  r"""A GetEffectiveSettingsResponse object.
-
-  Fields:
-    effectiveSetting: A EffectiveSetting attribute.
-    resourceId: Resource id of the device.
-  """
-
-  effectiveSetting = _messages.MessageField('EffectiveSetting', 1)
-  resourceId = _messages.StringField(2)
 
 
 class GetMembershipGraphResponse(_messages.Message):
@@ -2609,21 +2253,6 @@ class ListMembershipsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class LockDeviceRequest(_messages.Message):
-  r"""Request message for locking the device.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-  """
-
-  customer = _messages.StringField(1)
-
-
 class LookupGroupNameResponse(_messages.Message):
   r"""The response message for GroupsService.LookupGroupName.
 
@@ -2669,24 +2298,6 @@ class LookupSelfDeviceUsersResponse(_messages.Message):
   customer = _messages.StringField(1)
   names = _messages.StringField(2, repeated=True)
   nextPageToken = _messages.StringField(3)
-
-
-class MamDataProtectionSetting(_messages.Message):
-  r"""Data protection setting for enforcing data leak restrictions on user's
-  device.
-
-  Fields:
-    copyPasteProtected: Whether user's data on the device is protected for
-      cut/copy/paste.
-    obfuscatedCustomerId: Obfuscated customer ID of the user in hex with at
-      most 16 chars.
-    sharingProtected: Whether the user's data on the device is protected for
-      native sharing.
-  """
-
-  copyPasteProtected = _messages.BooleanField(1)
-  obfuscatedCustomerId = _messages.StringField(2)
-  sharingProtected = _messages.BooleanField(3)
 
 
 class MemberRelation(_messages.Message):
@@ -2955,38 +2566,6 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
-class ResetPinRequest(_messages.Message):
-  r"""Request message for resetting the pin on the device.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-    pin: Required. New pin number to set for the device.
-  """
-
-  customer = _messages.StringField(1)
-  pin = _messages.StringField(2)
-
-
-class RingDeviceRequest(_messages.Message):
-  r"""Request message for ringing device.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-  """
-
-  customer = _messages.StringField(1)
-
-
 class SearchGroupsResponse(_messages.Message):
   r"""The response message for GroupsService.SearchGroups.
 
@@ -3024,21 +2603,6 @@ class SearchTransitiveMembershipsResponse(_messages.Message):
 
   memberships = _messages.MessageField('MemberRelation', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-
-
-class SignoutDeviceUserRequest(_messages.Message):
-  r"""Request message for signing out of the device.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-  """
-
-  customer = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -3155,21 +2719,6 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
-class SyncDeviceUserRequest(_messages.Message):
-  r"""Request message for syncing the user's device management policies.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-  """
-
-  customer = _messages.StringField(1)
-
-
 class TransitiveMembershipRole(_messages.Message):
   r"""Message representing the role of a TransitiveMembership.
 
@@ -3179,21 +2728,6 @@ class TransitiveMembershipRole(_messages.Message):
   """
 
   role = _messages.StringField(1)
-
-
-class UnenrollDeviceUserRequest(_messages.Message):
-  r"""Request message to unenroll the user from Advanced Windows Management.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-  """
-
-  customer = _messages.StringField(1)
 
 
 class UpdateMembershipRolesParams(_messages.Message):

@@ -1364,9 +1364,9 @@ def VerifyManagedFlags(args, release_track, product):
                 platforms.PLATFORM_GKE]))
 
   if FlagIsExplicitlySet(
-      args, 'use_http2') and release_track != base.ReleaseTrack.ALPHA:
+      args, 'use_http2') and release_track == base.ReleaseTrack.GA:
     raise serverless_exceptions.ConfigurationError(
-        'The `--use-http2` flag is only supported in the alpha release '
+        'The `--use-http2` flag is only supported in the beta release '
         'track on the fully managed version of Cloud Run. Use `gcloud alpha` '
         'to set `--use-http2` on Cloud Run (fully managed). Alternatively, '
         'specify `--platform gke` or run '

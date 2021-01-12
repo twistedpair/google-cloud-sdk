@@ -110,6 +110,31 @@ def SetMembershipParent(unused_ref, args, request):
   return request
 
 
+def SetTransitiveMembershipParent(unused_ref, args, request):
+  """Set resource name to request.parent.
+
+  Args:
+    unused_ref: unused.
+    args: The argparse namespace.
+    request: The request to modify.
+
+  Returns:
+    The updated request.
+
+  """
+
+  version = groups_hooks.GetApiVersion(args)
+  if hasattr(args, 'group_email') and args.IsSpecified('group_email'):
+    # Resource name example: groups/03qco8b4452k99t
+    request.parent = groups_hooks.ConvertEmailToResourceName(
+        version, args.group_email, '--group-email')
+  else:
+    # If this hook is used and no group_emails provided then set the parent to
+    # be the groups wildcard.
+    request.parent = 'groups/-'
+  return request
+
+
 def SetMembershipResourceName(unused_ref, args, request):
   """Set membership resource name to request.name.
 
@@ -203,6 +228,30 @@ def SetExpiryDetail(unused_ref, args, request):
     else:
       request.membership.roles = AddExpiryDetailInMembershipRoles(
           version, request, args.expiration)
+
+  return request
+
+
+def SetTransitiveQuery(unused_ref, args, request):
+  """Sets query paremeters to request.query.
+
+  Args:
+    unused_ref: unused.
+    args: The argparse namespace.
+    request: The request to modify.
+
+  Returns:
+    The updated request.
+  """
+  params = []
+
+  if hasattr(args, 'member_email') and args.IsSpecified('member_email'):
+    params.append("member_key_id=='{}'".format(args.member_email))
+
+  if hasattr(args, 'labels') and args.IsSpecified('labels'):
+    params.append("'{}' in labels".format(args.labels))
+
+  request.query = '&&'.join(params)
 
   return request
 

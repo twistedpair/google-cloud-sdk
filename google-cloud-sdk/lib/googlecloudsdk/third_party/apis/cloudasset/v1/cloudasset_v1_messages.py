@@ -62,6 +62,18 @@ class AnalyzeIamPolicyResponse(_messages.Message):
   serviceAccountImpersonationAnalysis = _messages.MessageField('IamPolicyAnalysis', 3, repeated=True)
 
 
+class AnalyzeMoveResponse(_messages.Message):
+  r"""The response message for resource move analysis.
+
+  Fields:
+    moveAnalysis: The list of analysis returned from performing the intended
+      resource move analysis. The analysis is grouped by different cloud
+      services.
+  """
+
+  moveAnalysis = _messages.MessageField('MoveAnalysis', 1, repeated=True)
+
+
 class Asset(_messages.Message):
   r"""An asset in Google Cloud. An asset can be any resource in the Google
   Cloud [resource hierarchy](https://cloud.google.com/resource-
@@ -444,6 +456,49 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
   analysisQuery_resourceSelector_fullResourceName = _messages.StringField(10)
   executionTimeout = _messages.StringField(11)
   scope = _messages.StringField(12, required=True)
+
+
+class CloudassetAnalyzeMoveRequest(_messages.Message):
+  r"""A CloudassetAnalyzeMoveRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Analysis view indicating what information should be
+      included in the analysis response. If unspecified, the default view is
+      FULL.
+
+  Fields:
+    destinationParent: Required. Name of the GCP Folder or Organization to
+      reparent the target resource. The analysis will be performed against
+      hypothetically moving the resource to this specified desitination
+      parent. This can only be a Folder number (such as "folders/123") or an
+      Organization number (such as "organizations/123").
+    resource: Required. Name of the resource to perform the analysis against.
+      Only GCP Project are supported as of today. Hence, this can only be
+      Project ID (such as "projects/my-project-id") or a Project Number (such
+      as "projects/12345").
+    view: Analysis view indicating what information should be included in the
+      analysis response. If unspecified, the default view is FULL.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Analysis view indicating what information should be included in the
+    analysis response. If unspecified, the default view is FULL.
+
+    Values:
+      ANALYSIS_VIEW_UNSPECIFIED: The default/unset value. The API will default
+        to the FULL view.
+      FULL: Full analysis including all level of impacts of the specified
+        resource move.
+      BASIC: Basic analysis only including blockers which will prevent the
+        specified resource move at runtime.
+    """
+    ANALYSIS_VIEW_UNSPECIFIED = 0
+    FULL = 1
+    BASIC = 2
+
+  destinationParent = _messages.StringField(1)
+  resource = _messages.StringField(2, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 3)
 
 
 class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
@@ -2403,6 +2458,47 @@ class ListFeedsResponse(_messages.Message):
   """
 
   feeds = _messages.MessageField('Feed', 1, repeated=True)
+
+
+class MoveAnalysis(_messages.Message):
+  r"""A message to group the analysis information.
+
+  Fields:
+    analysis: Analysis result of moving the target resource.
+    displayName: The user friendly display name of the analysis. E.g. IAM,
+      Organization Policy etc.
+    error: Description of error encountered when performing the analysis.
+  """
+
+  analysis = _messages.MessageField('MoveAnalysisResult', 1)
+  displayName = _messages.StringField(2)
+  error = _messages.MessageField('Status', 3)
+
+
+class MoveAnalysisResult(_messages.Message):
+  r"""An analysis result including blockers and warnings.
+
+  Fields:
+    blockers: Blocking information that would prevent the target resource from
+      moving to resource to the specified destination at runtime.
+    warnings: Warning information indicating that moving the target resource
+      to the specified destination might be unsafe. This can include important
+      policy information and configuration changes, but will not block moves
+      at runtime.
+  """
+
+  blockers = _messages.MessageField('MoveImpact', 1, repeated=True)
+  warnings = _messages.MessageField('MoveImpact', 2, repeated=True)
+
+
+class MoveImpact(_messages.Message):
+  r"""A message to group impacts of moving the target resource.
+
+  Fields:
+    detail: User friendly impact detail in a free form message.
+  """
+
+  detail = _messages.StringField(1)
 
 
 class Operation(_messages.Message):

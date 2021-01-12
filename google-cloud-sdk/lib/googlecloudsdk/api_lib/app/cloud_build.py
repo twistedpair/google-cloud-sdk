@@ -112,12 +112,12 @@ def _GetIncludedPaths(upload_dir, source_files, exclude):
   """
   # Import only when necessary, to decrease startup time.
   # pylint: disable=g-import-not-at-top
-  from docker import docker
+  import docker
   # This code replicates how docker.utils.tar() finds the root
   # and excluded paths.
   root = os.path.abspath(upload_dir)
   # Get set of all paths other than exclusions from dockerignore.
-  paths = docker.utils.exclude_paths(root, exclude)
+  paths = docker.utils.exclude_paths(root, list(exclude))
   # Also filter on the ignore regex from .gcloudignore or skip_files.
   paths.intersection_update(source_files)
   return paths

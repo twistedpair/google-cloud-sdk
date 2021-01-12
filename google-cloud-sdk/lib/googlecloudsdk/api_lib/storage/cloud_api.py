@@ -192,18 +192,11 @@ class CloudApi(object):
     """
     raise NotImplementedError('list_objects must be overridden.')
 
-  def delete_object(self,
-                    bucket_name,
-                    object_name,
-                    generation=None,
-                    request_config=None):
+  def delete_object(self, object_resource, request_config=None):
     """Deletes an object.
 
     Args:
-      bucket_name (str): Name of the containing bucket.
-      object_name (str): Name of the object to delete.
-      generation (int): Generation (or version) of the object to delete.
-          If None, deletes the live object.
+      object_resource (resource_reference.ObjectResource): The object to delete.
       request_config (RequestConfig): Object containing general API function
           arguments. Subclasses for specific cloud providers are available.
 

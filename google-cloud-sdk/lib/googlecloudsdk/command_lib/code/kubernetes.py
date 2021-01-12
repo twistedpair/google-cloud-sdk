@@ -32,11 +32,6 @@ import six
 DEFAULT_CLUSTER_NAME = 'gcloud-local-dev'
 
 
-def GetKindVersion():
-  """Returns the current version of minikube."""
-  return six.ensure_text(subprocess.check_output([_FindKind(), 'version']))
-
-
 class _KubeCluster(object):
   """A kubernetes cluster.
 
@@ -48,7 +43,7 @@ class _KubeCluster(object):
   """
 
   def __init__(self, context_name, shared_docker):
-    """Initializes KindCluster with cluster name.
+    """Initializes KubeCluster with cluster name.
 
     Args:
       context_name: Kubernetes context.
@@ -61,100 +56,6 @@ class _KubeCluster(object):
   @property
   def env_vars(self):
     return {}
-
-
-class KindCluster(_KubeCluster):
-  """A cluster on kind.
-
-  Attributes:
-    context_name: Kubernetes context name.
-    env_vars: Docker env vars.
-    shared_docker: Whether the kubernetes cluster shares a docker instance with
-      the developer's machine.
-  """
-
-  def __init__(self, cluster_name):
-    """Initializes KindCluster with cluster name.
-
-    Args:
-      cluster_name: Name of cluster.
-    """
-    super(KindCluster, self).__init__('kind-' + cluster_name, False)
-
-
-class KindClusterContext(object):
-  """Context Manager for running Kind."""
-
-  def __init__(self, cluster_name, delete_cluster=True):
-    """Initialize KindContextManager.
-
-    Args:
-      cluster_name: Name of the kind cluster.
-      delete_cluster: Delete the cluster when the context is exited.
-    """
-    self._cluster_name = cluster_name
-    self._delete_cluster = delete_cluster
-
-  def __enter__(self):
-    _StartKindCluster(self._cluster_name)
-    return KindCluster(self._cluster_name)
-
-  def __exit__(self, exc_type, exc_value, tb):
-    if self._delete_cluster:
-      _DeleteKindCluster(self._cluster_name)
-
-
-def DeleteKindClusterIfExists(cluster_name):
-  """Delete a kind cluster if it is up."""
-  if _IsKindClusterUp(cluster_name):
-    _DeleteKindCluster(cluster_name)
-
-
-def _StartKindCluster(cluster_name):
-  """Starts a kind kubernetes cluster.
-
-  Starts a cluster if a cluster with that name isn't already running.
-
-  Args:
-    cluster_name: Name of the kind cluster.
-  """
-  if not _IsKindClusterUp(cluster_name):
-    cmd = [_FindKind(), 'create', 'cluster', '--name', cluster_name]
-    print("Creating local development environment '%s' ..." % cluster_name)
-    run_subprocess.Run(cmd, timeout_sec=150, show_output=True)
-    print('Development environment created.')
-
-
-def _IsKindClusterUp(cluster_name):
-  """Checks if a cluster is running.
-
-  Args:
-    cluster_name: Name of the cluster
-
-  Returns:
-    True if a cluster with the given name is running.
-  """
-  cmd = [_FindKind(), 'get', 'clusters']
-  clusters = run_subprocess.GetOutputLines(
-      cmd, timeout_sec=20, show_stderr=False, strip_output=True)
-  return cluster_name in clusters
-
-
-def _DeleteKindCluster(cluster_name):
-  """Deletes a kind kubernetes cluster.
-
-  Args:
-    cluster_name: Name of the cluster.
-  """
-  cmd = [_FindKind(), 'delete', 'cluster', '--name', cluster_name]
-  print("Deleting development environment '%s' ..." % cluster_name)
-  run_subprocess.Run(cmd, timeout_sec=150, show_output=False)
-  print('Development environment deleted.')
-
-
-def _FindKind():
-  """Finds a path to kind."""
-  return run_subprocess.GetGcloudPreferredExecutable('kind')
 
 
 def GetMinikubeVersion():
@@ -200,54 +101,12 @@ class Minikube(object):
 
 
 def _FindMinikube():
-  return run_subprocess.GetGcloudPreferredExecutable('minikube')
+  return (properties.VALUES.code.minikube_path_override.Get() or
+          run_subprocess.GetGcloudPreferredExecutable('minikube'))
 
 
 class MinikubeStartError(exceptions.Error):
   """Error if minikube fails to start."""
-
-  # pylint: disable=useless-super-delegation
-  def __init__(self, message='Unable to start Cloud Run Emulator.'):
-    super(MinikubeStartError, self).__init__(message)
-
-
-# Resource recommendations are from https://minikube.sigs.k8s.io/docs/start/
-class MinikubeOutOfMemoryError(MinikubeStartError):
-
-  def __init__(self):
-    message = 'Not enough memory. Cloud Run Emulator requires 2.25 GB of RAM.'
-    if platforms.OperatingSystem.Current() != platforms.OperatingSystem.LINUX:
-      message += ' Increase Docker VM RAM to 2.25 GB.'
-    super(MinikubeOutOfMemoryError, self).__init__(message=message)
-
-
-class MinikubeNotEnoughCoresError(MinikubeStartError):
-  """Error for minikube needs more CPU."""
-
-  def __init__(self):
-    message = 'Not enough CPUs. Cloud Run Emulator requires 2 CPUs.'
-    if platforms.OperatingSystem.Current() != platforms.OperatingSystem.LINUX:
-      message += ' Increase Docker VM CPUs to 2.'
-    super(MinikubeNotEnoughCoresError, self).__init__(message=message)
-
-
-class MinikubeNotEnoughStorageError(MinikubeStartError):
-  """Error for minikube needs more disk space."""
-
-  def __init__(self):
-    message = ('Not enough storage. Cloud Run Emulator requires 20 GB of '
-               'storage.')
-    if platforms.OperatingSystem.Current() != platforms.OperatingSystem.LINUX:
-      message += ' Increase Docker VM disk space to 20 GB.'
-    super(MinikubeNotEnoughStorageError, self).__init__(message=message)
-
-
-class MinikubeDockerUnreachableError(MinikubeStartError):
-  """Error for minikube unable to reach the docker daemon."""
-
-  def __init__(self):
-    super(MinikubeDockerUnreachableError,
-          self).__init__(message='Cannot reach docker daemon.')
 
 
 _MINIKUBE_STEP = 'io.k8s.sigs.minikube.step'
@@ -261,14 +120,15 @@ _MINIKUBE_NOT_ENOUGH_CPU_FRAGMENT = 'The minimum allowed is 2 CPUs.'
 # pylint: disable=line-too-long
 # See https://github.com/kubernetes/minikube/blob/master/pkg/minikube/reason/exitcodes.go
 # pylint: enable=line-too-long
-_MINIKUBE_ERROR_FROM_EXIT_CODE = {
-    '23': MinikubeOutOfMemoryError,
-    '26': MinikubeNotEnoughStorageError,
-    '29': MinikubeNotEnoughCoresError,
-    '69': MinikubeDockerUnreachableError,
+_MINIKUBE_ERROR_MESSAGES = {
+    '29': 'Not enough CPUs. Cloud Run Emulator requires 2 CPUs.',
+    '69': 'Cannot reach docker daemon.',
 }
 
 _MINIKUBE_PASSTHROUGH_ADVICE_IDS = frozenset(['HOST_HOME_PERMISSION'])
+
+if platforms.OperatingSystem.Current() != platforms.OperatingSystem.LINUX:
+  _MINIKUBE_ERROR_MESSAGES['29'] += ' Increase Docker VM CPUs to 2.'
 
 
 def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
@@ -353,9 +213,9 @@ def _HandleMinikubeStatusEvent(progress_bar, json_obj):
       raise MinikubeStartError(data['advice'])
     else:
       exit_code = data['exitcode']
-      error_class = _MINIKUBE_ERROR_FROM_EXIT_CODE.get(exit_code,
-                                                       MinikubeStartError)
-      raise error_class()
+      msg = _MINIKUBE_ERROR_MESSAGES.get(exit_code,
+                                         'Unable to start Cloud Run Emulator.')
+      raise MinikubeStartError(msg)
 
 
 def _GetMinikubeDockerEnvs(cluster_name):

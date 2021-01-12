@@ -99,6 +99,19 @@ class CancelWipeDeviceUserResponse(_messages.Message):
   deviceUser = _messages.MessageField('DeviceUser', 1)
 
 
+class CheckTransitiveMembershipResponse(_messages.Message):
+  r"""The response message for MembershipsService.CheckTransitiveMembership.
+
+  Fields:
+    hasMembership: Response does not include the possible roles of a member
+      since the behavior of this rpc is not all-or-nothing unlike the other
+      rpcs. So, it may not be possible to list all the roles definitively, due
+      to possible lack of authorization in some of the paths.
+  """
+
+  hasMembership = _messages.BooleanField(1)
+
+
 class ClientState(_messages.Message):
   r"""Resource representing ClientState and supports updates from API users
 
@@ -427,6 +440,25 @@ class CloudidentityGroupsLookupRequest(_messages.Message):
   groupKey_namespace = _messages.StringField(2)
 
 
+class CloudidentityGroupsMembershipsCheckTransitiveMembershipRequest(_messages.Message):
+  r"""A CloudidentityGroupsMembershipsCheckTransitiveMembershipRequest object.
+
+  Fields:
+    parent: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the group
+      to check the transitive membership in. Format: `groups/{group_id}`,
+      where `group_id` is the unique id assigned to the Group to which the
+      Membership belongs to.
+    query: Required. A CEL expression that MUST include member specification.
+      This is a `required` field. Example query: member_key_id ==
+      'member_key_id_value' [ && member_key_namespace ==
+      'member_key_namespace_value' ]
+  """
+
+  parent = _messages.StringField(1, required=True)
+  query = _messages.StringField(2)
+
+
 class CloudidentityGroupsMembershipsCreateRequest(_messages.Message):
   r"""A CloudidentityGroupsMembershipsCreateRequest object.
 
@@ -451,6 +483,28 @@ class CloudidentityGroupsMembershipsDeleteRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class CloudidentityGroupsMembershipsGetMembershipGraphRequest(_messages.Message):
+  r"""A CloudidentityGroupsMembershipsGetMembershipGraphRequest object.
+
+  Fields:
+    parent: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the group
+      to search transitive memberships in. Format: `groups/{group_id}`, where
+      `group_id` is the unique ID assigned to the Group to which the
+      Membership belongs to. group_id can be a wildcard collection id "-".
+      When a group_id is specified, the membership graph will be constrained
+      to paths between the member (defined in the query) and the parent. If a
+      wildcard collection is provided, all membership paths connected to the
+      member will be returned.
+    query: Required. A CEL expression that MUST include member specification
+      AND label(s). Example query: member_key_id == 'member_key_id_value' [ &&
+      member_key_namespace == 'member_key_namespace_value' ] && in labels
+  """
+
+  parent = _messages.StringField(1, required=True)
+  query = _messages.StringField(2)
 
 
 class CloudidentityGroupsMembershipsGetRequest(_messages.Message):
@@ -563,6 +617,50 @@ class CloudidentityGroupsMembershipsPatchRequest(_messages.Message):
   membership = _messages.MessageField('Membership', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest(_messages.Message):
+  r"""A CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest object.
+
+  Fields:
+    pageSize: The default page size is 200 (max 1000).
+    pageToken: The next_page_token value returned from a previous list
+      request, if any.
+    parent: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the group
+      to search transitive memberships in. Format: `groups/{group_id}`, where
+      `group_id` is always '-' as this API will search across all groups for a
+      given member.
+    query: Required. A CEL expression that MUST include member specification
+      AND label(s). This is a `required` field. Users can search on label
+      attributes of groups. CONTAINS match ('in') is supported on labels.
+      Example query: member_key_id == 'member_key_id_value' [ &&
+      member_key_namespace == 'member_key_namespace_value' ] && in labels
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  query = _messages.StringField(4)
+
+
+class CloudidentityGroupsMembershipsSearchTransitiveMembershipsRequest(_messages.Message):
+  r"""A CloudidentityGroupsMembershipsSearchTransitiveMembershipsRequest
+  object.
+
+  Fields:
+    pageSize: The default page size is 200 (max 1000).
+    pageToken: The next_page_token value returned from a previous list
+      request, if any.
+    parent: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the group
+      to search transitive memberships in. Format: `groups/{group_id}`, where
+      `group_id` is the unique ID assigned to the Group.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class CloudidentityGroupsPatchRequest(_messages.Message):
@@ -1634,6 +1732,75 @@ class Group(_messages.Message):
   updateTime = _messages.StringField(10)
 
 
+class GroupRelation(_messages.Message):
+  r"""Message representing a transitive group of a user or a group.
+
+  Enums:
+    RelationTypeValueValuesEnum: The relation between the member and the
+      transitive group.
+
+  Messages:
+    LabelsValue: Labels for Group resource.
+
+  Fields:
+    displayName: Display name for this group.
+    group: Resource name for this group.
+    groupKey: Entity key has an id and a namespace. In case of discussion
+      forums, the id will be an email address without a namespace.
+    labels: Labels for Group resource.
+    relationType: The relation between the member and the transitive group.
+    roles: Membership roles of the member for the group.
+  """
+
+  class RelationTypeValueValuesEnum(_messages.Enum):
+    r"""The relation between the member and the transitive group.
+
+    Values:
+      RELATION_TYPE_UNSPECIFIED: The relation type is undefined or
+        undetermined.
+      DIRECT: The two entities have only a direct membership with each other.
+      INDIRECT: The two entities have only an indirect membership with each
+        other.
+      DIRECT_AND_INDIRECT: The two entities have both a direct and an indirect
+        membership with each other.
+    """
+    RELATION_TYPE_UNSPECIFIED = 0
+    DIRECT = 1
+    INDIRECT = 2
+    DIRECT_AND_INDIRECT = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels for Group resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  displayName = _messages.StringField(1)
+  group = _messages.StringField(2)
+  groupKey = _messages.MessageField('EntityKey', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  relationType = _messages.EnumField('RelationTypeValueValuesEnum', 5)
+  roles = _messages.MessageField('TransitiveMembershipRole', 6, repeated=True)
+
+
 class ListClientStatesResponse(_messages.Message):
   r"""Response message that is returned in LRO result of ListClientStates
   Operation.
@@ -1760,6 +1927,45 @@ class LookupSelfDeviceUsersResponse(_messages.Message):
   customer = _messages.StringField(1)
   names = _messages.StringField(2, repeated=True)
   nextPageToken = _messages.StringField(3)
+
+
+class MemberRelation(_messages.Message):
+  r"""Message representing a transitive membership of a group.
+
+  Enums:
+    RelationTypeValueValuesEnum: The relation between the group and the
+      transitive member.
+
+  Fields:
+    member: Resource name for this member if member is a GROUP, otherwise it
+      is empty.
+    preferredMemberKey: Entity key has an id and a namespace. In case of
+      discussion forums, the id will be an email address without a namespace.
+    relationType: The relation between the group and the transitive member.
+    roles: The membership role details (i.e name of role and expiry time).
+  """
+
+  class RelationTypeValueValuesEnum(_messages.Enum):
+    r"""The relation between the group and the transitive member.
+
+    Values:
+      RELATION_TYPE_UNSPECIFIED: The relation type is undefined or
+        undetermined.
+      DIRECT: The two entities have only a direct membership with each other.
+      INDIRECT: The two entities have only an indirect membership with each
+        other.
+      DIRECT_AND_INDIRECT: The two entities have both a direct and an indirect
+        membership with each other.
+    """
+    RELATION_TYPE_UNSPECIFIED = 0
+    DIRECT = 1
+    INDIRECT = 2
+    DIRECT_AND_INDIRECT = 3
+
+  member = _messages.StringField(1)
+  preferredMemberKey = _messages.MessageField('EntityKey', 2, repeated=True)
+  relationType = _messages.EnumField('RelationTypeValueValuesEnum', 3)
+  roles = _messages.MessageField('TransitiveMembershipRole', 4, repeated=True)
 
 
 class Membership(_messages.Message):
@@ -2069,6 +2275,32 @@ class SearchGroupsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class SearchTransitiveGroupsResponse(_messages.Message):
+  r"""The response message for MembershipsService.SearchTransitiveGroups.
+
+  Fields:
+    memberships: List of transitive groups satisfying the query.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results available for listing.
+  """
+
+  memberships = _messages.MessageField('GroupRelation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class SearchTransitiveMembershipsResponse(_messages.Message):
+  r"""The response message for MembershipsService.SearchTransitiveMemberships.
+
+  Fields:
+    memberships: List of transitive members satisfying the query.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results.
+  """
+
+  memberships = _messages.MessageField('MemberRelation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class SendUserInvitationRequest(_messages.Message):
   r"""A request to send email for inviting target user corresponding to the
   UserInvitation.
@@ -2188,6 +2420,17 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TransitiveMembershipRole(_messages.Message):
+  r"""Message representing the role of a TransitiveMembership.
+
+  Fields:
+    role: TransitiveMembershipRole in string format. Currently supported
+      TransitiveMembershipRoles: `"MEMBER"`, `"OWNER"`, and `"MANAGER"`.
+  """
+
+  role = _messages.StringField(1)
 
 
 class UpdateMembershipRolesParams(_messages.Message):

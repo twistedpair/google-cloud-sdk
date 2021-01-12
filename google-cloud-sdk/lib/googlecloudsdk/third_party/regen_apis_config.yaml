@@ -493,14 +493,8 @@ apis:
     v1:
       discovery_doc: eventarc_v1.json
       default: true
-      resources:
-        projects.topics:
-          path: 'projects/{projectsId}/topics/{topicsId}'
     v1beta1:
       discovery_doc: eventarc_v1beta1.json
-      resources:
-        projects.topics:
-          path: 'projects/{projectsId}/topics/{topicsId}'
   eventflow:
     v1beta2:
       discovery_doc: eventflow_v1beta2.json
@@ -738,6 +732,9 @@ apis:
   orgpolicy:
     v2alpha1:
       discovery_doc: orgpolicy_v2alpha1.json
+    v2:
+      discovery_doc: orgpolicy_v2.json
+      default: true
   policytroubleshooter:
     v1beta:
       resources:

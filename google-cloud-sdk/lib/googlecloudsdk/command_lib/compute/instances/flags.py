@@ -1609,6 +1609,39 @@ def AddPublicPtrArgs(parser, instance=True):
       '--public-ptr-domain', help=public_ptr_domain_help)
 
 
+def AddIpv6PublicPtrDomainArg(parser):
+  """Adds IPv6 public PTR domain for IPv6 access configuration of instance."""
+  parser.add_argument(
+      '--ipv6-public-ptr-domain',
+      default=None,
+      help="""\
+      Assigns a custom PTR domain for the external IPv6 in the IPv6 access
+      configuration of instance. If its value is not specified, the default
+      PTR record will be used. This option can only be specified for the default
+      network interface, ``nic0''.""")
+
+
+def AddIpv6PublicPtrArgs(parser):
+  """Adds IPv6 public PTR arguments for ipv6 access configuration."""
+
+  ipv6_public_ptr_args = parser.add_mutually_exclusive_group()
+  no_ipv6_public_ptr_help = """\
+        If provided, the default DNS PTR record will replace the existing one
+        for external IPv6 in the IPv6 access configuration. Mutually exclusive
+        with ipv6-public-ptr-domain.
+        """
+  ipv6_public_ptr_args.add_argument(
+      '--no-ipv6-public-ptr', action='store_true', help=no_ipv6_public_ptr_help)
+
+  ipv6_public_ptr_domain_help = """\
+        Assigns a custom PTR domain for the external IPv6 in the access
+        configuration. Mutually exclusive with no-ipv6-public-ptr. This option
+        can only be specified for the default network interface, ``nic0''.
+        """
+  ipv6_public_ptr_args.add_argument(
+      '--ipv6-public-ptr-domain', help=ipv6_public_ptr_domain_help)
+
+
 def ValidatePublicDnsFlags(args):
   """Validates the values of public DNS related flags."""
 
@@ -1639,6 +1672,24 @@ def ValidatePublicPtrFlags(args):
   if args.public_ptr_domain is not None and args.no_public_ptr is True:  # pylint:disable=g-bool-id-comparison
     raise exceptions.ConflictingArgumentsException('--public-ptr-domain',
                                                    '--no-public-ptr')
+
+
+def ValidateIpv6PublicPtrFlags(args):
+  """Validates the values of IPv6 public PTR related flags."""
+
+  network_interface = getattr(args, 'network_interface', None)
+
+  if args.ipv6_public_ptr_domain is not None or args.no_ipv6_public_ptr:
+    if (network_interface is not None and
+        network_interface != constants.DEFAULT_NETWORK_INTERFACE):
+      raise exceptions.ToolException(
+          'IPv6 Public PTR can only be enabled for default network interface '
+          '\'{0}\' rather than \'{1}\'.'.format(
+              constants.DEFAULT_NETWORK_INTERFACE, network_interface))
+
+  if args.ipv6_public_ptr_domain is not None and args.no_ipv6_public_ptr:
+    raise exceptions.ConflictingArgumentsException('--ipv6-public-ptr-domain',
+                                                   '--no-ipv6-public-ptr')
 
 
 def ValidateServiceAccountAndScopeArgs(args):

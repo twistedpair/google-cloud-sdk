@@ -92,18 +92,21 @@ class _TriggersClient(object):
 
   def _BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
                            destination_run_service, destination_run_path,
-                           destination_run_region, transport_topic):
+                           destination_run_region, transport_topic_ref):
     """Builds a Trigger message with the given data."""
     filter_messages = [] if event_filters is None else [
         self._messages.EventFilter(attribute=key, value=value)
         for key, value in event_filters.items()
     ]
+    transport_topic_name = transport_topic_ref.RelativeName(
+        ) if transport_topic_ref else None
+
     run_message = self._messages.CloudRun(
         service=destination_run_service,
         path=destination_run_path,
         region=destination_run_region)
     destination_message = self._messages.Destination(cloudRun=run_message)
-    pubsub = self._messages.Pubsub(topic=transport_topic)
+    pubsub = self._messages.Pubsub(topic=transport_topic_name)
     transport = self._messages.Transport(pubsub=pubsub)
     return self._messages.Trigger(
         name=trigger_ref.RelativeName(),
@@ -147,7 +150,7 @@ class _TriggersClient(object):
 
   def Create(self, trigger_ref, event_filters, service_account,
              destination_run_service, destination_run_path,
-             destination_run_region, transport_topic):
+             destination_run_region, transport_topic_ref):
     """Creates a new Trigger.
 
     Args:
@@ -157,7 +160,7 @@ class _TriggersClient(object):
       destination_run_service: str, the Trigger's destination Cloud Run service.
       destination_run_path: str or None, the path on the destination service.
       destination_run_region: str or None, the destination service's region.
-      transport_topic: str or None, the user-provided transport topic.
+      transport_topic_ref: Resource or None, the user-provided transport topic.
 
     Returns:
       A long-running operation for create.
@@ -177,7 +180,7 @@ class _TriggersClient(object):
                                                 destination_run_service,
                                                 destination_run_path,
                                                 destination_run_region,
-                                                transport_topic)
+                                                transport_topic_ref)
     create_req = self._messages.EventarcProjectsLocationsTriggersCreateRequest(
         parent=trigger_ref.Parent().RelativeName(),
         trigger=trigger_message,
@@ -290,7 +293,7 @@ class _TriggersClientBeta(_TriggersClient):
 
   def _BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
                            destination_run_service, destination_run_path,
-                           destination_run_region, transport_topic):
+                           destination_run_region, transport_topic_ref):
     """Builds a Trigger message with the given data."""
     criteria_messages = [] if event_filters is None else [
         self._messages.MatchingCriteria(attribute=key, value=value)
@@ -303,8 +306,9 @@ class _TriggersClientBeta(_TriggersClient):
     destination_message = self._messages.Destination(
         cloudRunService=run_message)
     transport = None
-    if transport_topic:
-      pubsub = self._messages.Pubsub(topic=transport_topic)
+    if transport_topic_ref:
+      transport_topic_name = transport_topic_ref.RelativeName()
+      pubsub = self._messages.Pubsub(topic=transport_topic_name)
       transport = self._messages.Transport(pubsub=pubsub)
     return self._messages.Trigger(
         name=trigger_ref.RelativeName(),

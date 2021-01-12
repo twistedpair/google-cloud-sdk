@@ -2816,10 +2816,12 @@ class SslCertsCreateEphemeralRequest(_messages.Message):
   r"""SslCerts create ephemeral certificate request.
 
   Fields:
+    access_token: Access token to include in the signed certificate.
     public_key: PEM encoded public key to include in the signed certificate.
   """
 
-  public_key = _messages.StringField(1)
+  access_token = _messages.StringField(1)
+  public_key = _messages.StringField(2)
 
 
 class SslCertsInsertRequest(_messages.Message):

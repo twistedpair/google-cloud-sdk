@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2020 Google LLC. All Rights Reserved.
+# Copyright 2021 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,16 +23,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import os
-
+from googlecloudsdk.api_lib.storage import api_factory
+from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.command_lib.storage import file_part
 from googlecloudsdk.command_lib.storage.tasks import task
-from googlecloudsdk.command_lib.storage.tasks.cp import file_part_upload_task
+from googlecloudsdk.core.util import files
 
 
-class FileUploadTask(task.Task):
-  """Represents a command operation triggering a file upload."""
+class FilePartUploadTask(task.Task):
+  """Uploads a range of bytes from a file."""
 
-  def __init__(self, source_resource, destination_resource):
+  def __init__(self, source_resource, destination_resource, offset, length):
     """Initializes task.
 
     Args:
@@ -42,19 +43,29 @@ class FileUploadTask(task.Task):
       destination_resource (resource_reference.ObjectResource|UnknownResource):
           Must contain the full object path. Directories will not be accepted.
           Existing objects at the this location will be overwritten.
+      offset (int): The index of the first byte in the upload range.
+      length (int): The number of bytes in the upload range.
     """
-    super(FileUploadTask, self).__init__()
+    super().__init__()
     self._source_resource = source_resource
     self._destination_resource = destination_resource
+    self._offset = offset
+    self._length = length
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
 
   def execute(self, callback=None):
-    source_filename = self._source_resource.storage_url.object_name
-    size = os.path.getsize(source_filename)
+    destination_url = self._destination_resource.storage_url
+    provider = destination_url.scheme
 
-    # TODO(b/175901291): Split up files for composite uploads.
-    file_part_upload_task.FilePartUploadTask(
-        self._source_resource,
-        self._destination_resource,
-        0, size).execute()
+    source_stream = files.BinaryFileReader(
+        self._source_resource.storage_url.object_name)
+
+    with file_part.FilePart(source_stream, self._offset,
+                            self._length) as upload_stream:
+      api_factory.get_api(provider).upload_object(
+          upload_stream,
+          self._destination_resource,
+          request_config=cloud_api.RequestConfig(
+              md5_hash=self._source_resource.md5_hash,
+              size=self._length))

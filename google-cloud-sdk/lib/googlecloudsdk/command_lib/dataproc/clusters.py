@@ -357,27 +357,27 @@ If you want to enable all scopes use the 'cloud-platform' scope.
         """)
   parser.add_argument(
       '--shielded-secure-boot',
-      hidden=True,
       action='store_true',
       help="""\
         The cluster's VMs will boot with secure boot enabled.
         """)
   parser.add_argument(
       '--shielded-vtpm',
-      hidden=True,
       action='store_true',
       help="""\
         The cluster's VMs will boot with the TPM (Trusted Platform Module) enabled.
         A TPM is a hardware module that can be used for different security
-        operations such as remote attestation, encryption, and sealing of keys.
+        operations, such as remote attestation, encryption, and sealing of keys.
         """)
   parser.add_argument(
       '--shielded-integrity-monitoring',
-      hidden=True,
       action='store_true',
       help="""\
         Enables monitoring and attestation of the boot integrity of the
-        cluster's VMs. vTPM must also be enabled.
+        cluster's VMs. vTPM (virtual Trusted Platform Module) must also be
+        enabled. A TPM is a hardware module that can be used for different
+        security operations, such as remote attestation, encryption, and sealing
+        of keys.
         """)
 
   autoscaling_group = parser.add_argument_group()

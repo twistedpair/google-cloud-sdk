@@ -450,6 +450,12 @@ def EntrypointFlags():
 
 
 def ScalingFlags():
+  """Encapsulates flags related to scaling instances."""
+  init_instances_flag = StringFlag(
+      '--init-instances',
+      type=arg_parsers.BoundedInt(lower_bound=0),
+      help='Initial number of container instances of the Service to run. '
+      'Can be 0 or a positive number.')
   min_instances_flag = StringFlag(
       '--min-instances',
       help='Minimum number of container instances of the Service to run '
@@ -458,7 +464,7 @@ def ScalingFlags():
       '--max-instances',
       help='Maximum number of container instances of the Service to run. '
       "Use 'default' to unset the limit and use the platform default.")
-  return FlagGroup(min_instances_flag, max_instances_flag)
+  return FlagGroup(init_instances_flag, min_instances_flag, max_instances_flag)
 
 
 class ResourceListFlagGroup(BinaryCommandFlag):

@@ -18,13 +18,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import exceptions
+
 
 def MakeReservationMessageFromArgs(messages, args, allocation_ref):
   """Construct allocation message from args passed in."""
   accelerators = MakeGuestAccelerators(messages,
                                        getattr(args, 'accelerator', None))
   local_ssds = MakeLocalSsds(messages, getattr(args, 'local_ssd', None))
-  share_settings = MakeShareSettings(messages,
+  share_settings = MakeShareSettings(messages, args,
                                      getattr(args, 'share_setting', None))
   specific_reservation = MakeSpecificSKUReservationMessage(
       messages, args.vm_count, accelerators, local_ssds, args.machine_type,
@@ -74,13 +76,23 @@ def MakeLocalSsds(messages, ssd_configs):
   return local_ssds
 
 
-def MakeShareSettings(messages, setting_configs):
+def MakeShareSettings(messages, args, setting_configs):
   """Constructs the share settings message object."""
   if setting_configs:
     if setting_configs == 'organization':
       return messages.AllocationShareSettings(
           shareType=messages.AllocationShareSettings.ShareTypeValueValuesEnum
           .ORGANIZATION)
+    if setting_configs == 'projects':
+      if not args.IsSpecified('share_with'):
+        raise exceptions.InvalidArgumentException(
+            '--share_with',
+            'The projects this reservation is to be shared with must be '
+            'specified.')
+      return messages.AllocationShareSettings(
+          shareType=messages.AllocationShareSettings.ShareTypeValueValuesEnum
+          .SPECIFIC_PROJECTS,
+          projects=getattr(args, 'share_with', None))
   else:
     return None
 

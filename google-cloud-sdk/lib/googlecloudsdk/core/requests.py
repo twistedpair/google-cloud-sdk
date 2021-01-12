@@ -39,7 +39,6 @@ from urllib3.util.ssl_ import create_urllib3_context
 
 
 def GetSession(timeout='unset',
-               response_encoding=None,
                ca_certs=None,
                session=None,
                streaming_response_body=False):
@@ -53,9 +52,6 @@ def GetSession(timeout='unset',
         socket level timeout. If timeout is None, timeout is infinite. If
         default argument 'unset' is given, a sensible default is selected using
         transport.GetDefaultTimeout().
-    response_encoding: str, the encoding to decode with when accessing
-        response.text. If none, then the encoding will be inferred from the
-        response.
     ca_certs: str, absolute filename of a ca_certs file that overrides the
         default. The gcloud config property for ca_certs, in turn, overrides
         this argument.
@@ -68,9 +64,8 @@ def GetSession(timeout='unset',
     for gcloud.
   """
   http_client = _CreateRawSession(timeout, ca_certs, session)
-  http_client = RequestWrapper().WrapWithDefaults(http_client,
-                                                  response_encoding,
-                                                  streaming_response_body)
+  http_client = RequestWrapper().WrapWithDefaults(
+      http_client, streaming_response_body=streaming_response_body)
   return http_client
 
 
@@ -258,7 +253,7 @@ def _CreateRawSession(timeout='unset', ca_certs=None, session=None):
 def _GetURIFromRequestArgs(url, params):
   """Gets the complete URI by merging url and params from the request args."""
   url_parts = urllib.parse.urlsplit(url)
-  query_params = urllib.parse.parse_qs(url_parts.query)
+  query_params = urllib.parse.parse_qs(url_parts.query, keep_blank_values=True)
   for param, value in six.iteritems(params or {}):
     query_params[param] = value
   # Need to do this to convert a SplitResult into a list so it can be modified.
@@ -317,7 +312,9 @@ class RequestWrapper(transport.RequestWrapper):
   response_class = Response
 
   def DecodeResponse(self, response, response_encoding):
-    response.encoding = response_encoding
+    """Returns the response without decoding."""
+    del response_encoding  # unused
+    # The response decoding is handled by the _ApitoolsRequests.request method.
     return response
 
 
@@ -437,6 +434,11 @@ class _ApitoolsRequests():
       # response_handler
       content = b''
     elif self._response_encoding is not None:
+      # We update response.encoding before calling response.text because
+      # response.text property will try to make an educated guess about the
+      # encoding based on the response header, which might be different from
+      # the self._response_encoding set by the caller.
+      response.encoding = self._response_encoding
       content = response.text
     else:
       content = response.content

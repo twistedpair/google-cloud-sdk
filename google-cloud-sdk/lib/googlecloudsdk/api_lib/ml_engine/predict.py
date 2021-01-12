@@ -42,7 +42,7 @@ class HttpRequestFailError(core_exceptions.Error):
 def _GetPrediction(response_encoding, url, body, headers):
   """Make http request to get prediction results."""
   if base.UseRequests():
-    response = requests.GetSession(response_encoding=response_encoding).request(
+    response = requests.GetSession().request(
         'POST', url, data=body, headers=headers)
     return getattr(response, 'status_code'), getattr(response, 'text')
 

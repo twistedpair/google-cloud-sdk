@@ -76,7 +76,9 @@ class AnimationFade(_messages.Message):
       Default: 0
     xy: Normalized coordinates based on output video resolution. Valid values:
       `0.0`\u2013`1.0`. `xy` is the upper-left coordinate of the overlay
-      object.
+      object. For example, use the x and y coordinates {0,0} to position the
+      top-left corner of the overlay animation in the top-left corner of the
+      output video.
   """
 
   class FadeTypeValueValuesEnum(_messages.Enum):
@@ -105,7 +107,9 @@ class AnimationStatic(_messages.Message):
       seconds. Default: 0
     xy: Normalized coordinates based on output video resolution. Valid values:
       `0.0`\u2013`1.0`. `xy` is the upper-left coordinate of the overlay
-      object.
+      object. For example, use the x and y coordinates {0,0} to position the
+      top-left corner of the overlay animation in the top-left corner of the
+      output video.
   """
 
   startTimeOffset = _messages.StringField(1)
@@ -357,7 +361,7 @@ class Image(_messages.Message):
   r"""Overlaid jpeg image.
 
   Fields:
-    alpha: Target image opacity. Valid values: `1` (solid, default), `0`
+    alpha: Target image opacity. Valid values: `1.0` (solid, default) to `0.0`
       (transparent).
     resolution: Normalized image resolution, based on output video resolution.
       Valid values: `0.0`\u2013`1.0`. To respect the original image aspect

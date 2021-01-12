@@ -95,6 +95,18 @@ class EventType(object):
     return False
 
 
+class CustomResourceDefinition(k8s_object.KubernetesObject):
+  """Wraps a CustomResourceDefinition message."""
+
+  API_CATEGORY = 'apiextensions.k8s.io'
+  KIND = 'CustomResourceDefinition'
+  READY_CONDITION = None  # The status field is not currently used on CRDs
+
+  def getActiveVersions(self):
+    """Returns list of active api versions for the source."""
+    return [version.name for version in self._m.spec.versions if version.served]
+
+
 class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
   """Wraps an Source CRD message, making fields more convenient.
 

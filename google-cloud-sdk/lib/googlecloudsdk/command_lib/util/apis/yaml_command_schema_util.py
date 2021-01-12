@@ -200,6 +200,8 @@ def ParseType(t):
     builtin_type = BUILTIN_TYPES.get(t)
     if builtin_type:
       return builtin_type
+    if 'arg_list' in t:
+      t = 'googlecloudsdk.calliope.arg_parsers:ArgList:'
     return Hook.FromPath(t)
 
   if 'arg_dict' in t:

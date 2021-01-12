@@ -82,7 +82,6 @@ def GetApitoolsTransport(timeout='unset',
         timeout=timeout,
         enable_resource_quota=enable_resource_quota,
         force_resource_quota=force_resource_quota,
-        response_encoding=response_encoding,
         ca_certs=ca_certs,
         allow_account_impersonation=allow_account_impersonation,
         streaming_response_body=streaming_response_body)

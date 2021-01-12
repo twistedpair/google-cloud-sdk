@@ -32,7 +32,6 @@ class Error(exceptions.Error):
 
 
 def GetSession(timeout='unset',
-               response_encoding=None,
                ca_certs=None,
                enable_resource_quota=True,
                force_resource_quota=False,
@@ -45,7 +44,6 @@ def GetSession(timeout='unset',
     timeout: double, The timeout in seconds to pass to httplib2.  This is the
         socket level timeout.  If timeout is None, timeout is infinite.  If
         default argument 'unset' is given, a sensible default is selected.
-    response_encoding: str, the encoding to use to decode the response.
     ca_certs: str, absolute filename of a ca_certs file that overrides the
         default
     enable_resource_quota: bool, By default, we are going to tell APIs to use
@@ -73,7 +71,6 @@ def GetSession(timeout='unset',
   """
   session = requests.GetSession(
       timeout=timeout,
-      response_encoding=response_encoding,
       ca_certs=ca_certs,
       session=session,
       streaming_response_body=streaming_response_body)

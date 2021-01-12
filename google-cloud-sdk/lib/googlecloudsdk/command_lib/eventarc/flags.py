@@ -45,6 +45,34 @@ def TriggerAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(name='trigger')
 
 
+def TransportTopicAttributeConfig():
+  """Builds an AttributeConfig for the transport topic resource."""
+  return concepts.ResourceParameterAttributeConfig(name='transport-topic')
+
+
+def AddTransportTopicResourceArg(parser, release_track, required=False):
+  """Adds a resource argument for a customer-provided transport topic."""
+  resource_spec = concepts.ResourceSpec(
+      'pubsub.projects.topics',
+      resource_name='transport Pub/Sub topic',
+      topicsId=TransportTopicAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+  concept_parser = concept_parsers.ConceptParser.ForResource(
+      '--transport-topic',
+      resource_spec,
+      "The Cloud Pub/Sub topic to use for the trigger's transport "
+      'intermediary. This feature is currently only available for triggers '
+      "of event type ``google.cloud.pubsub.topic.v1.messagePublished''. "
+      'The topic must be in the same project as the trigger. '
+      'If not specified, a transport topic will be created.',
+      required=required)
+  # hide transport-topic in beta, as it is not yet available in v1beta1 API.
+  # TODO(b/175331610): remove group when unhiding resource arg in beta.
+  group_parser = parser.add_argument_group(
+      hidden=release_track != base.ReleaseTrack.GA)
+  concept_parser.AddToParser(group_parser)
+
+
 def AddLocationResourceArg(parser, group_help_text, required=False):
   """Adds a resource argument for an Eventarc location."""
   resource_spec = concepts.ResourceSpec(
@@ -142,19 +170,6 @@ def AddDestinationRunRegionArg(parser, required=False):
       help='The region in which the destination Cloud Run service can be '
       'found. If not specified, it is assumed that the service is in the same '
       'region as the trigger.')
-
-
-def AddTransportTopicArg(parser, release_track, required=False):
-  """Adds an argument for a customer-provided transport topic."""
-  parser.add_argument(
-      '--transport-topic',
-      required=required,
-      hidden=(release_track != base.ReleaseTrack.GA),
-      help='The Cloud Pub/Sub topic to use for the trigger\'s transport '
-      'intermediary. This feature is currently only available for triggers '
-      'of event type ``google.cloud.pubsub.topic.v1.messagePublished\'\'. '
-      'The topic must be in the same project as the trigger. '
-      'If not specified, a transport topic will be created.')
 
 
 def AddClearServiceAccountArg(parser):

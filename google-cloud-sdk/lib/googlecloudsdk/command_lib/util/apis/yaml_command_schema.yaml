@@ -55,6 +55,8 @@ definitions:
     # The function takes a single parameter which is the parsed string value
     # of the argument and returns the converted parsed value.
     - $ref: "#/definitions/python_hook"
+    # Support for arg_parsers.ArgList
+    - enum: [arg_list]
 
   choices:
     # A list of valid choices for an argument.

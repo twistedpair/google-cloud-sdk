@@ -1469,12 +1469,20 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'orgpolicy': {
+        'v2':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.orgpolicy.v2',
+                client_classpath='orgpolicy_v2_client.OrgpolicyV2',
+                messages_modulepath='orgpolicy_v2_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v2alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.orgpolicy.v2alpha1',
                 client_classpath='orgpolicy_v2alpha1_client.OrgpolicyV2alpha1',
                 messages_modulepath='orgpolicy_v2alpha1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

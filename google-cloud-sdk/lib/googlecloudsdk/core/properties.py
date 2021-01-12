@@ -1657,15 +1657,15 @@ class _SectionTransport(_Section):
         'disable_requests_override',
         default=False,
         hidden=True,
-        help_text='Global switch to turn off using requests as a'
+        help_text='Global switch to turn off using requests as a '
         'transport. Users can use it to switch back to the old '
         'mode if requests breaks users.')
-    self.opt_in_requests = self._AddBool(
-        'opt_in_requests',
+    self.opt_out_requests = self._AddBool(
+        'opt_out_requests',
         default=False,
         hidden=True,
-        help_text='A switch to opt in a surface or a command group '
-        'to requests.')
+        help_text='A switch to disable requests for a surface or a command '
+        'group.')
 
 
 class _SectionMlEngine(_Section):
@@ -2382,6 +2382,18 @@ class _SectionCode(_Section):
         hidden=True,
         help_text='Terminate the cluster start process if this amount of time '
         'has passed since the last minikube event.'
+    )
+
+    self.minikube_path_override = self._Add(
+        'minikube_paht_override',
+        hidden=True,
+        help_text='Location of minikube binary.'
+    )
+
+    self.skaffold_path_override = self._Add(
+        'skaffold_path_override',
+        hidden=True,
+        help_text='Location of skaffold binary.'
     )
 
 

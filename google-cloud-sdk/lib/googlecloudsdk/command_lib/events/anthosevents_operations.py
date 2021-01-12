@@ -70,6 +70,8 @@ _SECRET_COLLECTION = 'anthosevents.api.v1.namespaces.secrets'
 
 _CLOUD_RUN_RELATIVE_NAME = 'namespaces/cloud-run-system/cloudruns/cloud-run'
 
+_TRIGGERS_CRD_NAME = 'triggers.eventing.knative.dev'
+
 
 def Connect(conn_info):
   """Provide a AnthosEventsOperations instance to use.
@@ -232,6 +234,7 @@ class AnthosEventsOperations(object):
       v1alpha1_client: The v1alpha1 API client
       v1beta1_client: The v1beta1 API client
     """
+    self._client_from_crd_cache = {}
 
     self._api_version = api_version
 
@@ -267,6 +270,19 @@ class AnthosEventsOperations(object):
   def messages(self):
     return self._client.MESSAGES_MODULE
 
+  def ClientFromCrd(self, crd_name):
+    """Returns client based on customresource."""
+    if crd_name in self._client_from_crd_cache:
+      return self._client_from_crd_cache[crd_name]
+    crd = self.GetCustomResourceDefinition(crd_name)
+    if 'v1' in crd.getActiveVersions():
+      client = self._core_client
+    else:
+      # Whether 'v1beta1' crd or None when no crd found.
+      client = self._client
+    self._client_from_crd_cache[crd_name] = client
+    return client
+
   def ListNamespaces(self):
     """Returns a list of namespaces' names."""
     request = (
@@ -277,14 +293,17 @@ class AnthosEventsOperations(object):
 
   def GetTrigger(self, trigger_ref):
     """Returns the referenced trigger."""
-    request = self.messages.AnthoseventsNamespacesTriggersGetRequest(
+    client = self.ClientFromCrd(_TRIGGERS_CRD_NAME)
+    messages = client.MESSAGES_MODULE
+
+    request = messages.AnthoseventsNamespacesTriggersGetRequest(
         name=trigger_ref.RelativeName())
     try:
       with metrics.RecordDuration(metric_names.GET_TRIGGER):
-        response = self._client.namespaces_triggers.Get(request)
+        response = client.namespaces_triggers.Get(request)
     except api_exceptions.HttpNotFoundError:
       return None
-    return trigger.Trigger(response, self.messages)
+    return trigger.Trigger(response, messages)
 
   def CreateTrigger(self, trigger_ref, source_obj, event_type, trigger_filters,
                     target_service, broker_name):
@@ -302,7 +321,9 @@ class AnthosEventsOperations(object):
     Returns:
       trigger.Trigger of the created trigger.
     """
-    trigger_obj = trigger.Trigger.New(self._client, trigger_ref.Parent().Name())
+    client = self.ClientFromCrd(_TRIGGERS_CRD_NAME)
+    messages = client.MESSAGES_MODULE
+    trigger_obj = trigger.Trigger.New(client, trigger_ref.Parent().Name())
     trigger_obj.name = trigger_ref.Name()
     if source_obj is not None:
       trigger_obj.dependency = source_obj
@@ -316,17 +337,17 @@ class AnthosEventsOperations(object):
 
     trigger_obj.subscriber = target_service
     trigger_obj.broker = broker_name
-    request = self.messages.AnthoseventsNamespacesTriggersCreateRequest(
+    request = messages.AnthoseventsNamespacesTriggersCreateRequest(
         trigger=trigger_obj.Message(),
         parent=trigger_ref.Parent().RelativeName())
     try:
       with metrics.RecordDuration(metric_names.CREATE_TRIGGER):
-        response = self._client.namespaces_triggers.Create(request)
+        response = client.namespaces_triggers.Create(request)
     except api_exceptions.HttpConflictError:
       raise exceptions.TriggerCreationError(
           'Trigger [{}] already exists.'.format(trigger_obj.name))
 
-    return trigger.Trigger(response, self.messages)
+    return trigger.Trigger(response, messages)
 
   def PollTrigger(self, trigger_ref, tracker):
     """Wait for trigger to be Ready == True."""
@@ -337,24 +358,30 @@ class AnthosEventsOperations(object):
 
   def ListTriggers(self, namespace_ref):
     """Returns a list of existing triggers in the given namespace."""
-    request = self.messages.AnthoseventsNamespacesTriggersListRequest(
+    client = self.ClientFromCrd(_TRIGGERS_CRD_NAME)
+    messages = client.MESSAGES_MODULE
+
+    request = messages.AnthoseventsNamespacesTriggersListRequest(
         parent=namespace_ref.RelativeName())
     with metrics.RecordDuration(metric_names.LIST_TRIGGERS):
-      response = self._client.namespaces_triggers.List(request)
-    return [trigger.Trigger(item, self.messages) for item in response.items]
+      response = client.namespaces_triggers.List(request)
+    return [trigger.Trigger(item, messages) for item in response.items]
 
   def DeleteTrigger(self, trigger_ref):
     """Deletes the referenced trigger."""
-    request = self.messages.AnthoseventsNamespacesTriggersDeleteRequest(
+    client = self.ClientFromCrd(_TRIGGERS_CRD_NAME)
+    messages = client.MESSAGES_MODULE
+
+    request = messages.AnthoseventsNamespacesTriggersDeleteRequest(
         name=trigger_ref.RelativeName())
     try:
       with metrics.RecordDuration(metric_names.DELETE_TRIGGER):
-        self._client.namespaces_triggers.Delete(request)
+        client.namespaces_triggers.Delete(request)
     except api_exceptions.HttpNotFoundError:
       raise exceptions.TriggerNotFound(
           'Trigger [{}] not found.'.format(trigger_ref.Name()))
 
-  def ClientFromCrd(self, source_crd):
+  def ClientFromSourceCrd(self, source_crd):
     """Returns the correct client for the source."""
     if 'v1' in source_crd.getActiveSourceVersions():
       client = self._cloudsources_client
@@ -402,7 +429,7 @@ class AnthosEventsOperations(object):
 
   def GetSource(self, source_ref, source_crd):
     """Returns the referenced source."""
-    client = self.ClientFromCrd(source_crd)
+    client = self.ClientFromSourceCrd(source_crd)
     messages = client.MESSAGES_MODULE
 
     request_method = self.SourceGetMethod(source_crd)
@@ -432,7 +459,7 @@ class AnthosEventsOperations(object):
     Returns:
       source.Source of the created source.
     """
-    client = self.ClientFromCrd(source_crd)
+    client = self.ClientFromSourceCrd(source_crd)
     messages = client.MESSAGES_MODULE
 
     source_obj.ce_overrides[trigger.SOURCE_TRIGGER_LINK_FIELD] = (
@@ -480,7 +507,7 @@ class AnthosEventsOperations(object):
 
   def DeleteSource(self, source_ref, source_crd):
     """Deletes the referenced source."""
-    client = self.ClientFromCrd(source_crd)
+    client = self.ClientFromSourceCrd(source_crd)
 
     request_method = self.SourceDeleteMethod(source_crd)
     request_message_type = request_method.GetRequestType()
@@ -492,6 +519,15 @@ class AnthosEventsOperations(object):
       raise exceptions.SourceNotFound(
           '{} events source [{}] not found.'.format(
               source_crd.source_kind, source_ref.Name()))
+
+  def GetCustomResourceDefinition(self, crd_name):
+    """Returns customresourcedefinition."""
+    messages = self._crd_client.MESSAGES_MODULE
+    request = messages.AnthoseventsCustomresourcedefinitionsGetRequest(
+        name='customresourcedefinitions/{}'.format(crd_name))
+    response = self._crd_client.customresourcedefinitions.Get(request)
+    return custom_resource_definition.CustomResourceDefinition(
+        response, messages)
 
   def ListSourceCustomResourceDefinitions(self):
     """Returns a list of CRDs for event sources."""
