@@ -39,6 +39,8 @@ def ReleaseTrackToApiVersion(release_track):
     return 'v1alpha1'
   elif release_track == base.ReleaseTrack.BETA:
     return 'v1beta'
+  elif release_track == base.ReleaseTrack.GA:
+    return 'v1'
   else:
     raise UnsupportedReleaseTrackError(release_track)
 

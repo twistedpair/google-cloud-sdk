@@ -69,38 +69,38 @@ ROLE_IAM_SERVICE_ACCOUNT_USER = 'roles/iam.serviceAccountUser'
 ROLE_IAM_SERVICE_ACCOUNT_TOKEN_CREATOR = 'roles/iam.serviceAccountTokenCreator'
 ROLE_EDITOR = 'roles/editor'
 
-IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT = frozenset({
+IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT = (
     ROLE_COMPUTE_STORAGE_ADMIN,
     ROLE_STORAGE_OBJECT_VIEWER,
-})
+)
 
-EXPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT = frozenset({
+EXPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT = (
     ROLE_COMPUTE_STORAGE_ADMIN,
     ROLE_STORAGE_OBJECT_ADMIN,
-})
+)
 
-OS_UPGRADE_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT = frozenset({
+OS_UPGRADE_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT = (
     ROLE_COMPUTE_STORAGE_ADMIN,
     ROLE_STORAGE_OBJECT_ADMIN,
-})
+)
 
-IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT = frozenset({
+IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT = (
     ROLE_COMPUTE_ADMIN,
     ROLE_IAM_SERVICE_ACCOUNT_TOKEN_CREATOR,
     ROLE_IAM_SERVICE_ACCOUNT_USER,
-})
+)
 
-EXPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT = frozenset({
+EXPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT = (
     ROLE_COMPUTE_ADMIN,
     ROLE_IAM_SERVICE_ACCOUNT_TOKEN_CREATOR,
     ROLE_IAM_SERVICE_ACCOUNT_USER,
-})
+)
 
-OS_UPGRADE_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT = frozenset({
+OS_UPGRADE_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT = (
     ROLE_COMPUTE_ADMIN,
     ROLE_IAM_SERVICE_ACCOUNT_TOKEN_CREATOR,
     ROLE_IAM_SERVICE_ACCOUNT_USER,
-})
+)
 
 # Used for unit testing as api_tools mocks can only assert on exact matches
 bucket_random_suffix_override = None
@@ -249,7 +249,7 @@ def _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
 
   _VerifyRolesAndPromptIfMissing(project_id, build_account,
                                  _CurrentRolesForAccount(policy, build_account),
-                                 cloudbuild_service_account_roles)
+                                 frozenset(cloudbuild_service_account_roles))
 
   current_compute_account_roles = _CurrentRolesForAccount(
       policy, compute_account)
@@ -709,8 +709,9 @@ def RunImageCloudBuild(args, builder, builder_args, tags, output_filter,
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
-  _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
-                       compute_service_account_roles,
+  _CheckIamPermissions(project_id,
+                       frozenset(cloudbuild_service_account_roles),
+                       frozenset(compute_service_account_roles),
                        args.compute_service_account
                        if 'compute_service_account' in args else '')
 
@@ -856,8 +857,9 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
-  _CheckIamPermissions(project_id, IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
-                       IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
+  _CheckIamPermissions(project_id,
+                       frozenset(IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT),
+                       frozenset(IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT))
 
   ovf_importer_args = []
   AppendArg(ovf_importer_args, 'instance-names', instance_name)
@@ -957,8 +959,9 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
-  _CheckIamPermissions(project_id, IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
-                       IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
+  _CheckIamPermissions(project_id,
+                       frozenset(IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT),
+                       frozenset(IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT))
 
   machine_type = None
   if args.machine_type or args.custom_cpu or args.custom_memory:
@@ -1059,9 +1062,10 @@ def RunOsUpgradeBuild(args, output_filter, instance_uri, release_track):
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
-  _CheckIamPermissions(project_id,
-                       OS_UPGRADE_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
-                       OS_UPGRADE_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
+  _CheckIamPermissions(
+      project_id,
+      frozenset(OS_UPGRADE_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT),
+      frozenset(OS_UPGRADE_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT))
 
   # Make OS Upgrade time-out before gcloud by shaving off 2% from the timeout
   # time, up to a max of 5m (300s).
@@ -1100,7 +1104,8 @@ def _GetOSUpgradeRegion(args):  # pylint:disable=unused-argument
   Returns:
     str: region. Can be empty.
   """
-  # TODO(b/168663050)
+  if args.zone:
+    return utils.ZoneNameToRegionName(args.zone)
   return ''
 
 
@@ -1207,6 +1212,36 @@ def AddNoAddressArg(parser, operation, docs_url=''):
     help_text = help_text + ' For more information, see {}.'.format(docs_url)
 
   parser.add_argument('--no-address', action='store_true', help=help_text)
+
+
+def AddComputeServiceAccountArg(parser, operation, roles):
+  """Adds Compute service account arg."""
+  help_text_pattern = """\
+        A temporary virtual machine instance is created in your project during
+        {operation}.  {operation_capitalized} tooling on this temporary instance
+        must be authenticated.
+
+        A Compute Engine service account is an identity attached to an instance.
+        Its access tokens can be accessed through the instance metadata server
+        and can be used to authenticate {operation} tooling on the instance.
+
+        To set this option,  specify the email address corresponding to the
+        required Compute Engine service account. If not provided, the
+        {operation} on the temporary instance uses the project's default Compute
+        Engine service account.
+
+        At minimum, the specified Compute Engine service account needs to have
+        the following roles assigned:
+        """
+  help_text_pattern += '\n'
+  for role in roles:
+    help_text_pattern += '        * ' + role + '\n'
+
+  parser.add_argument(
+      '--compute-service-account',
+      help=help_text_pattern.format(
+          operation=operation, operation_capitalized=operation.capitalize()),
+  )
 
 
 def _AppendNodeAffinityLabelArgs(

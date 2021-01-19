@@ -73,18 +73,20 @@ def GenerateServiceName(image):
   return re.sub(r'[^a-zA-Z0-9-]', '', base_name).strip('-').lower()
 
 
-class ServicePromptFallthrough(PromptFallthrough):
-  """Fall through to reading the service name from an interactive prompt."""
+class ResourcePromptFallthrough(PromptFallthrough):
+  """Fall through to reading the resource name from an interactive prompt."""
 
-  def __init__(self):
-    super(ServicePromptFallthrough, self).__init__(
-        'specify the service name from an interactive prompt')
+  def __init__(self, resource_type_lower):
+    super(ResourcePromptFallthrough, self).__init__(
+        'specify the {} name from an interactive prompt'.format(
+            resource_type_lower))
+    self.resource_type_lower = resource_type_lower
 
   def _Prompt(self, parsed_args):
     image = None
     if hasattr(parsed_args, 'image'):
       image = parsed_args.image
-    message = 'Service name'
+    message = self.resource_type_lower.capitalize() + ' name'
     if image:
       default_name = GenerateServiceName(image)
       service_name = console_io.PromptWithDefault(
@@ -92,6 +94,18 @@ class ServicePromptFallthrough(PromptFallthrough):
     else:
       service_name = console_io.PromptResponse(message='{}: '.format(message))
     return service_name
+
+
+class ServicePromptFallthrough(ResourcePromptFallthrough):
+
+  def __init__(self):
+    super(ServicePromptFallthrough, self).__init__('service')
+
+
+class JobPromptFallthrough(ResourcePromptFallthrough):
+
+  def __init__(self):
+    super(JobPromptFallthrough, self).__init__('job')
 
 
 class DefaultFallthrough(deps.Fallthrough):
@@ -170,6 +184,17 @@ def DomainAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='domain',
       help_text='Name of the domain to be mapped to.')
+
+
+def JobAttributeConfig(prompt=False):
+  if prompt:
+    fallthroughs = [JobPromptFallthrough()]
+  else:
+    fallthroughs = []
+  return concepts.ResourceParameterAttributeConfig(
+      name='jobs',
+      help_text='Job for the {resource}.',
+      fallthroughs=fallthroughs)
 
 
 class ClusterPromptFallthrough(PromptFallthrough):
@@ -364,6 +389,15 @@ def GetDomainMappingResourceSpec():
       namespacesId=NamespaceAttributeConfig(),
       domainmappingsId=DomainAttributeConfig(),
       resource_name='DomainMapping')
+
+
+def GetJobResourceSpec(prompt=False):
+  return concepts.ResourceSpec(
+      'run.namespaces.jobs',
+      namespacesId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      jobsId=JobAttributeConfig(prompt=prompt),
+      resource_name='Job',
+      api_version='v1alpha1')
 
 
 def GetNamespaceResourceSpec():

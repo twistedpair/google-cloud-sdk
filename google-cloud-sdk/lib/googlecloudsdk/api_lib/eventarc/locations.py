@@ -19,14 +19,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.eventarc import common
 from googlecloudsdk.api_lib.runtime_config import util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-
-
-_API_NAME = 'eventarc'
-_API_VERSION = 'v1beta1'
 
 
 def GetLocationsURI(resource):
@@ -38,8 +35,9 @@ def GetLocationsURI(resource):
 class LocationsClient(object):
   """Client for locations in Eventarc API."""
 
-  def __init__(self):
-    client = apis.GetClientInstance(_API_NAME, _API_VERSION)
+  def __init__(self, release_track):
+    api_version = common.GetApiVersion(release_track)
+    client = apis.GetClientInstance(common.API_NAME, api_version)
     self.messages = client.MESSAGES_MODULE
     self._service = client.projects_locations
 

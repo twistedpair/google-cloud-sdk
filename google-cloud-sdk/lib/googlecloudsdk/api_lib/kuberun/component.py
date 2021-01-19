@@ -24,16 +24,37 @@ class Component(mapobject.MapObject):
   """Class that wraps a KubeRun Component JSON object."""
 
   @property
+  def _spec(self):
+    return self.props.get('spec', {})
+
+  @property
   def name(self):
     return self.props['metadata']['name']
 
   @property
   def type(self):
-    return self.props['spec'].get('type', '')
+    return self._spec.get('type', '')
 
   @property
   def devkit(self):
-    return self.props['spec'].get('devkit', '')
+    return self._spec.get('devkit', '')
+
+  @property
+  def devkit_version(self):
+    return self._spec.get('devkit-version', '')
+
+  def config(self):
+    """Returns the components config as a dictionary.
+
+    Because this isn't broken out into schema'd data, the intended use of
+    this function is for a generic/dynamic display of these attributes.
+
+    Returns:
+      A dictionary which maps keys from the config, such as "service",
+      "triggers", etc. into their respective data dictionaries or lists
+      of data dictionaries.
+    """
+    return self._spec.get('config', {})
 
   @classmethod
   def FromJSON(cls, json_object):

@@ -1455,10 +1455,11 @@ class FhirStore(_messages.Message):
       determines if the client can use an Update operation to create a new
       resource with a client-specified ID. If false, all IDs are server-
       assigned through the Create operation and attempts to update a non-
-      existent resource return errors. Be careful with the audit logs if
-      client-specified resource IDs contain sensitive data such as patient
-      identifiers, those IDs are part of the FHIR resource path recorded in
-      Cloud audit logs and Cloud Pub/Sub notifications.
+      existent resource return errors. It is strongly advised not to include
+      or encode any sensitive data such as patient identifiers in client-
+      specified resource IDs. Those IDs are part of the FHIR resource path
+      recorded in Cloud audit logs and Cloud Pub/Sub notifications. Those IDs
+      can also be contained in reference fields within other resources.
     labels: User-supplied key-value pairs used to organize FHIR stores. Label
       keys must be between 1 and 63 characters long, have a UTF-8 encoding of
       maximum 128 bytes, and must conform to the following PCRE regular
@@ -4054,8 +4055,7 @@ class ImportResourcesRequest(_messages.Message):
         specified, the default value `BUNDLE` is used.
       BUNDLE: The source file contains one or more lines of newline-delimited
         JSON (ndjson). Each line is a bundle that contains one or more
-        resources. Set the bundle type to `history` to import resource
-        versions.
+        resources.
       RESOURCE: The source file contains one or more lines of newline-
         delimited JSON (ndjson). Each line is a single resource.
       BUNDLE_PRETTY: The entire file is one JSON bundle. The JSON can span

@@ -41,14 +41,18 @@ from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import requests
 from googlecloudsdk.core.credentials import transports
 
 
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 # TODO(b/161346648) Retrieve number of retries from Boto config file.
 DEFAULT_NUM_RETRIES = 23
-# 100 MB in bytes.
-DEFAULT_COPY_CHUNK_SIZE = 104857600
+DEFAULT_COPY_CHUNK_SIZE = 100 * 1024 * 1024  # 100 MiB.
+MAX_READ_SIZE = 8 * 1024  # 8 KiB.
+# The API limits the number of objects that can be composed in a single call.
+# https://cloud.google.com/storage/docs/json_api/v1/objects/compose
+MAX_OBJECTS_PER_COMPOSE_CALL = 32
 
 
 def _catch_http_error_raise_gcs_api_error(format_str=None):
@@ -164,6 +168,26 @@ class GcsRequestConfig(cloud_api.RequestConfig):
             other.precondition_metageneration_match)
 
 
+class _StorageStreamResponseHandler(requests.ResponseHandler):
+  """Handler for writing the streaming response to the download stream."""
+
+  def __init__(self, stream):
+    super(_StorageStreamResponseHandler, self).__init__(use_stream=True)
+    self._stream = stream
+
+  def handle(self, source_stream):
+    if self._stream is None:
+      raise ValueError('Stream was not found.')
+
+    # Start reading the raw stream.
+    while True:
+      data = source_stream.read(MAX_READ_SIZE)
+      if data:
+        self._stream.write(data)
+      else:
+        break
+
+
 class GcsApi(cloud_api.CloudApi):
   """Client for Google Cloud Storage API."""
 
@@ -272,7 +296,8 @@ class GcsApi(cloud_api.CloudApi):
     global_params = None
     if fields_scope == cloud_api.FieldsScope.SHORT:
       global_params = self.messages.StandardQueryParameters()
-      global_params.fields = 'prefixes,items/name,items/size,items/generation'
+      global_params.fields = (
+          'prefixes,items/name,items/size,items/generation,nextPageToken')
 
     object_list = None
     while True:
@@ -487,13 +512,13 @@ class GcsApi(cloud_api.CloudApi):
           additional_headers=additional_headers,
           start=start_byte,
           end=end_byte,
-          use_chunks=True)
+          use_chunks=False)
     else:
       apitools_download.StreamMedia(
           additional_headers=additional_headers,
           callback=_no_op_callback,
           finish_callback=_no_op_callback,
-          use_chunks=True)
+          use_chunks=False)
     return apitools_download.encoding
 
   # pylint: disable=unused-argument
@@ -519,11 +544,12 @@ class GcsApi(cloud_api.CloudApi):
       apitools_download = apitools_transfer.Download.FromStream(
           download_stream,
           auto_transfer=False,
-          chunksize=DEFAULT_COPY_CHUNK_SIZE,
           total_size=cloud_resource.size,
           num_retries=DEFAULT_NUM_RETRIES)
-      apitools_download.bytes_http = transports.GetApitoolsTransport(
-          response_encoding=None)
+      download_stream_handler = _StorageStreamResponseHandler(download_stream)
+      apitools_requests_http_client = transports.GetApitoolsTransport(
+          response_encoding=None, response_handler=download_stream_handler)
+      apitools_download.bytes_http = apitools_requests_http_client
     else:
       # TODO(b/161437901): Handle resumed download.
       pass
@@ -628,13 +654,8 @@ class GcsApi(cloud_api.CloudApi):
                     progress_callback=None,
                     request_config=None):
     """See CloudApi class for function doc strings."""
-    # Doing this as a default argument above can lead to unexpected bugs:
-    # https://docs.python-guide.org/writing/gotchas/#mutable-default-arguments
-    if isinstance(request_config, GcsRequestConfig):
-      validated_request_config = request_config
-    else:
-      validated_request_config = cloud_api.convert_to_provider_request_config(
-          request_config, GcsRequestConfig)
+    validated_request_config = cloud_api.get_provider_request_config(
+        request_config, GcsRequestConfig)
 
     if request_config.size is None:
       # Size is required so that apitools_transfer can pick the
@@ -655,3 +676,58 @@ class GcsApi(cloud_api.CloudApi):
         progress_callback=progress_callback,
         request_config=validated_request_config,
         serialization_data=None)
+
+  @_catch_http_error_raise_gcs_api_error()
+  def compose_objects(self,
+                      source_resources,
+                      destination_resource,
+                      request_config=None):
+    """See CloudApi class for function doc strings."""
+
+    if not source_resources:
+      raise cloud_errors.GcsApiError(
+          'Compose requires at least one component object.')
+
+    if len(source_resources) > MAX_OBJECTS_PER_COMPOSE_CALL:
+      raise cloud_errors.GcsApiError(
+          'Compose was called with {} objects. The limit is {}.'.format(
+              len(source_resources), MAX_OBJECTS_PER_COMPOSE_CALL))
+
+    validated_request_config = cloud_api.get_provider_request_config(
+        request_config, GcsRequestConfig)
+
+    source_messages = []
+    for source in source_resources:
+      source_message = self.messages.ComposeRequest.SourceObjectsValueListEntry(
+          name=source.storage_url.object_name)
+      if source.storage_url.generation is not None:
+        generation = int(source.storage_url.generation)
+        source_message.generation = generation
+      source_messages.append(source_message)
+
+    compose_request_payload = self.messages.ComposeRequest(
+        sourceObjects=source_messages,
+        destination=self.messages.Object(
+            bucket=destination_resource.storage_url.bucket_name,
+            name=destination_resource.storage_url.object_name,
+        )
+    )
+
+    compose_request = self.messages.StorageObjectsComposeRequest(
+        composeRequest=compose_request_payload,
+        destinationBucket=destination_resource.storage_url.bucket_name,
+        destinationObject=destination_resource.storage_url.object_name,
+        ifGenerationMatch=(
+            validated_request_config.precondition_generation_match),
+        ifMetagenerationMatch=(
+            validated_request_config.precondition_metageneration_match),
+    )
+
+    if validated_request_config.predefined_acl_string is not None:
+      compose_request.destinationPredefinedAcl = getattr(
+          self.messages.StorageObjectsComposeRequest.
+          DestinationPredefinedAclValueValuesEnum,
+          request_config.predefined_acl_string)
+
+    return _object_resource_from_metadata(
+        self.client.objects.Compose(compose_request))

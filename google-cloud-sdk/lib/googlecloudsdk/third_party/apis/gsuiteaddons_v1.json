@@ -124,7 +124,7 @@
           "type": "string"
         },
         "oauthClientId": {
-          "description": "The OAuth client ID used to obtain OAuth access tokens for a user on the add-on's behalf. This is the client ID you will need to get whitelisted in order to publish an add-on.",
+          "description": "The OAuth client ID used to obtain OAuth access tokens for a user on the add-on's behalf.",
           "type": "string"
         }
       }

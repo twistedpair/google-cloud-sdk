@@ -1601,7 +1601,7 @@ class SpannerV1(base_api.BaseApiClient):
         method_id='spanner.projects.instances.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'instanceDeadline', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/instances',
         request_field='',
         request_type_name='SpannerProjectsInstancesListRequest',

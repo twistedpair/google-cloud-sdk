@@ -46,10 +46,16 @@ class ComponentStatus(object):
     return cls(
         name=name,
         deployment_state=json_object['deploymentState'],
+        deployment_message=json_object['deploymentMessage'],
         commit_id=json_object['commitId'],
         deployment_time=json_object['deploymentTimestamp'],
         url=json_object['url'],
-        log_url=json_object['logUrl'])
+        log_url=json_object['logUrl'],
+        services=[
+            r['name']
+            for r in json_object['resources']
+            if r['type'] == 'Service'
+        ])
 
   def __repr__(self):
     # TODO(b/171419038): Create a common base class for these data wrappers

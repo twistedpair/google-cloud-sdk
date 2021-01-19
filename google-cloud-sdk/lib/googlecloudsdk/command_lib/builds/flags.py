@@ -210,7 +210,7 @@ def AddConfigFlags(parser):
       help='The tag to use with a "docker build" image creation. '
       'Cloud Build will run a remote "docker build -t '
       '$TAG .", where $TAG is the tag provided by this flag. The tag '
-      'must be in the *gcr.io* or *pkd.dev* namespace. Specify a tag '
+      'must be in the *gcr.io* or *pkg.dev* namespace. Specify a tag '
       'if you want Cloud Build to build using a Dockerfile '
       'instead of a build config file. If you specify a tag in this '
       'command, your source must include a Dockerfile. For instructions '

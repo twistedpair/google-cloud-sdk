@@ -49,7 +49,7 @@ def ExecuteTasks(task_iterator, is_parallel=False):
 
   if is_parallel and (process_count > 1 or thread_count > 1):
     task_graph_executor.TaskGraphExecutor(task_iterator,
-                                          process_count=process_count,
+                                          max_process_count=process_count,
                                           thread_count=thread_count).run()
   else:
     _ExecuteTasksSequential(task_iterator)

@@ -14,6 +14,10 @@ from apitools.base.py import extra_types
 package = 'cloudidentity'
 
 
+class AddIdpSigningKeyOperationMetadata(_messages.Message):
+  r"""Details of the Add IdpSigningKey operation."""
+
+
 class AndroidAttributes(_messages.Message):
   r"""Resource representing the Android specific attributes of a Device.
 
@@ -52,6 +56,22 @@ class AndroidAttributes(_messages.Message):
   ownerProfileAccount = _messages.BooleanField(2)
   ownershipPrivilege = _messages.EnumField('OwnershipPrivilegeValueValuesEnum', 3)
   supportsWorkProfile = _messages.BooleanField(4)
+
+
+class ApplyIdpMetadataOperationMetadata(_messages.Message):
+  r"""Details of the ApplyIdpMetadata operation."""
+
+
+class ApplyIdpMetadataResponse(_messages.Message):
+  r"""The apply IDP metadata response.
+
+  Fields:
+    idpSigningKeys: The updated IdpSigningKeys' metadata.
+    inboundSamlSsoProfile: The updated InboundSamlSsoProfile.
+  """
+
+  idpSigningKeys = _messages.MessageField('IdpSigningKey', 1, repeated=True)
+  inboundSamlSsoProfile = _messages.MessageField('InboundSamlSsoProfile', 2)
 
 
 class ApproveDeviceUserResponse(_messages.Message):
@@ -281,23 +301,24 @@ class CloudidentityCustomersUserInvitationsListRequest(_messages.Message):
   r"""A CloudidentityCustomersUserInvitationsListRequest object.
 
   Fields:
-    filter: Optional. A query string for filtering UserInvitation results by
-      its current state. in format: "state:invited".
+    filter: Optional. A query string for filtering `UserInvitation` results by
+      its current state, in the format: `"state:invited"`.
     orderBy: Optional. The sort order of the list results. You can sort the
       results in descending order based on either email or last update
       timestamp but not both, using `order_by="email desc"`. Currently,
-      supported sorting are `update_time asc`, `update_time desc`, `email
-      asc`, `email desc`. If not specified results will be returned based on
-      `email asc` order.
+      sorting is supported for `update_time asc`, `update_time desc`, `email
+      asc`, and `email desc`. If not specified, results will be returned based
+      on `email asc` order.
     pageSize: Optional. The maximum number of UserInvitations to return. If
-      unspecified, at most 100 UserInvitatations will be returned. The maximum
-      value is 200; values above 200 will be coerced to 200.
+      unspecified, at most 100 `UserInvitation`s will be returned. The maximum
+      value is 200; values above 200 will be set to 200.
     pageToken: Optional. A page token, received from a previous
       `ListUserInvitations` call. Provide this to retrieve the subsequent
       page. When paginating, all other parameters provided to `ListBooks` must
       match the call that provided the page token.
-    parent: Required. The unique identifier of the G Suite organization
-      account of the customer the UserInvitations are associated with. .
+    parent: Required. The unique identifier of the Google Workspace
+      organization account of the customer the UserInvitations are associated
+      with.
   """
 
   filter = _messages.StringField(1)
@@ -311,7 +332,7 @@ class CloudidentityCustomersUserInvitationsSendRequest(_messages.Message):
   r"""A CloudidentityCustomersUserInvitationsSendRequest object.
 
   Fields:
-    name: Required. UserInvitation name in the format
+    name: Required. `UserInvitation` name in the format
       `customers/{customer}/userinvitations/{user_email_address}`
     sendUserInvitationRequest: A SendUserInvitationRequest resource to be
       passed as the request body.
@@ -725,6 +746,10 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
+class CreateInboundSamlSsoProfileOperationMetadata(_messages.Message):
+  r"""Details of the create InboundSamlSsoProfile operation."""
+
+
 class CustomAttributeValue(_messages.Message):
   r"""Additional custom attribute values may be one of these types
 
@@ -737,6 +762,14 @@ class CustomAttributeValue(_messages.Message):
   boolValue = _messages.BooleanField(1)
   numberValue = _messages.FloatField(2)
   stringValue = _messages.StringField(3)
+
+
+class DeleteIdpSigningKeyOperationMetadata(_messages.Message):
+  r"""Details of the delete IdpSigningKey operation."""
+
+
+class DeleteInboundSamlSsoProfileOperationMetadata(_messages.Message):
+  r"""Details of the delete InboundSamlSsoProfile operation."""
 
 
 class Device(_messages.Message):
@@ -997,6 +1030,16 @@ class DeviceUser(_messages.Message):
   passwordState = _messages.EnumField('PasswordStateValueValuesEnum', 8)
   userAgent = _messages.StringField(9)
   userEmail = _messages.StringField(10)
+
+
+class DsaPublicKeyInfo(_messages.Message):
+  r"""DSA public key information.
+
+  Fields:
+    keySize: Key size in bits (size of parameter P)
+  """
+
+  keySize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class DynamicGroupMetadata(_messages.Message):
@@ -1801,6 +1844,44 @@ class GroupRelation(_messages.Message):
   roles = _messages.MessageField('TransitiveMembershipRole', 6, repeated=True)
 
 
+class IdpSigningKey(_messages.Message):
+  r"""Signing validation key.
+
+  Fields:
+    dsaKeyInfo: Output only. DSA public key information.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the key.
+    rsaKeyInfo: Output only. RSA public key information.
+    updateTime: Output only. When the key data was last updated.
+  """
+
+  dsaKeyInfo = _messages.MessageField('DsaPublicKeyInfo', 1)
+  name = _messages.StringField(2)
+  rsaKeyInfo = _messages.MessageField('RsaPublicKeyInfo', 3)
+  updateTime = _messages.StringField(4)
+
+
+class InboundSamlSsoProfile(_messages.Message):
+  r"""A SAML 2.0 (https://www.oasis-open.org/standards#samlv2.0) federation
+  between a Google enterprise customer and a SAML IDP.
+
+  Fields:
+    displayName: Human-readable name of the SAML SSO profile.
+    idpConfig: SAML IDP configuration.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the SAML
+      SSO profile.
+    spConfig: SAML SP configuration for this SAML SSO profile. These are the
+      SP details provided by Google that should be configured on the
+      corresponding IDP.
+  """
+
+  displayName = _messages.StringField(1)
+  idpConfig = _messages.MessageField('SamlIdpConfig', 2)
+  name = _messages.StringField(3)
+  spConfig = _messages.MessageField('SamlSpConfig', 4)
+
+
 class ListClientStatesResponse(_messages.Message):
   r"""Response message that is returned in LRO result of ListClientStates
   Operation.
@@ -1872,9 +1953,9 @@ class ListUserInvitationsResponse(_messages.Message):
 
   Fields:
     nextPageToken: The token for the next page. If not empty, indicates that
-      there may be more UserInvitations that match the listing request; this
+      there may be more `UserInvitations` that match the listing request; this
       value can be used in a subsequent ListUserInvitationsRequest to get
-      continued results with current list call.
+      continued results with the current list call.
     userInvitations: The list of UserInvitations.
   """
 
@@ -2262,6 +2343,54 @@ class RestrictionEvaluations(_messages.Message):
   memberRestrictionEvaluation = _messages.MessageField('RestrictionEvaluation', 1)
 
 
+class RsaPublicKeyInfo(_messages.Message):
+  r"""RSA public key information.
+
+  Fields:
+    keySize: Key size in bits (size of the modulus).
+  """
+
+  keySize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class SamlIdpConfig(_messages.Message):
+  r"""SAML IDP configuration.
+
+  Fields:
+    changePasswordUri: Change password URL. Users will be sent to this URL
+      when changing their passwords at myaccount.google.com. This takes
+      precedence over the customer-level change password URL. Must use HTTPS.
+    entityId: Required. The SAML Entity ID of the IDP.
+    logoutRedirectUri: Logout redirect URL/Sign-out page URL. When a user
+      clicks the sign out link on a Google page, they will be redirected to
+      this URL. This is pure redirect with no attached SAML LogoutRequest
+      (SAML Single Logout is currently not supported). Must use HTTPS.
+    singleSignOnServiceUri: Required. SingleSignOnService endpoint
+      location/Sign-in page URL. This is the URL where the AuthnRequest will
+      be sent. Must use HTTPS. Currently assumed to accept the HTTP-Redirect
+      binding.
+  """
+
+  changePasswordUri = _messages.StringField(1)
+  entityId = _messages.StringField(2)
+  logoutRedirectUri = _messages.StringField(3)
+  singleSignOnServiceUri = _messages.StringField(4)
+
+
+class SamlSpConfig(_messages.Message):
+  r"""SAML SP configuration.
+
+  Fields:
+    assertionConsumerServiceUri: Output only. The SAML Assertion Consumer
+      Service (ACS) URL to be used for IDP-initiated login. Currently assumed
+      to accept Response messages via the HTTP-POST binding.
+    entityId: Output only. The SAML Entity ID for this SP.
+  """
+
+  assertionConsumerServiceUri = _messages.StringField(1)
+  entityId = _messages.StringField(2)
+
+
 class SearchGroupsResponse(_messages.Message):
   r"""The response message for GroupsService.SearchGroups.
 
@@ -2433,6 +2562,10 @@ class TransitiveMembershipRole(_messages.Message):
   role = _messages.StringField(1)
 
 
+class UpdateInboundSamlSsoProfileOperationMetadata(_messages.Message):
+  r"""Details of the update InboundSamlSsoProfile operation."""
+
+
 class UpdateMembershipRolesParams(_messages.Message):
   r"""The details of an update to a `MembershipRole`.
 
@@ -2449,31 +2582,31 @@ class UpdateMembershipRolesParams(_messages.Message):
 
 
 class UserInvitation(_messages.Message):
-  r"""UserInvitation to Invite / Join a Gsuite organization.
+  r"""UserInvitation to join a Google Workspace organization.
 
   Enums:
-    StateValueValuesEnum: State of the UserInvitation.
+    StateValueValuesEnum: State of the `UserInvitation`.
 
   Fields:
-    mailsSentCount: number of invitation emails sent to the user.
+    mailsSentCount: Number of invitation emails sent to the user.
     name: Shall be of the form
       `customers/{customer}/userinvitations/{user_email_address}`
-    state: State of the UserInvitation.
-    updateTime: The time when the `UserInvitation` was last updated.
+    state: State of the `UserInvitation`.
+    updateTime: Time when the `UserInvitation` was last updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""State of the UserInvitation.
+    r"""State of the `UserInvitation`.
 
     Values:
       STATE_UNSPECIFIED: The default value. This value is used if the state is
         omitted.
-      NOT_YET_SENT: Describes that UserInvitation is created and ready for
-        sending an email invitation.
-      INVITED: Describes that user has been invited through email.
-      ACCEPTED: Describes that the invitation has been accepted & user is part
-        of Organization.
-      DECLINED: Describes that the invitation is declined.
+      NOT_YET_SENT: The `UserInvitation` has been created and is ready for
+        sending as an email.
+      INVITED: The user has been invited by email.
+      ACCEPTED: The user has accepted the invitation and is part of the
+        organization.
+      DECLINED: The user declined the invitation.
     """
     STATE_UNSPECIFIED = 0
     NOT_YET_SENT = 1

@@ -65,16 +65,11 @@ class ApiConfigClient(base.BaseClient):
     labels = common_flags.ProcessLabelsFlag(
         labels,
         self.messages.ApigatewayApiConfig.LabelsValue)
-
-    backend_config = self.messages.ApigatewayBackendConfig(
-        googleServiceAccount=backend_auth)
-    gateway_config = self.messages.ApigatewayGatewayConfig(
-        backendConfig=backend_config)
     api_config = self.messages.ApigatewayApiConfig(
         name=api_config_ref.RelativeName(),
         displayName=display_name,
         labels=labels,
-        gatewayConfig=gateway_config,
+        gatewayServiceAccount=backend_auth,
         managedServiceConfigs=managed_service_configs,
         grpcServices=grpc_service_defs,
         openapiDocuments=open_api_docs)

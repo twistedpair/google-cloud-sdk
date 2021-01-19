@@ -29,6 +29,7 @@ from googlecloudsdk.command_lib.storage.tasks import task_buffer
 from googlecloudsdk.command_lib.storage.tasks import task_graph as task_graph_module
 from googlecloudsdk.core import log
 
+
 # When threads get this value, they should prepare to exit.
 #
 # Threads should check for this value with `==` and not `is`, since the pickling
@@ -42,23 +43,21 @@ _SHUTDOWN = 'SHUTDOWN'
 
 
 @crash_handling.CrashManager
-def _thread_worker(task_queue, task_output_queue):
+def _thread_worker(task_queue, task_output_queue, idle_thread_count):
   """A consumer thread run in a child process.
 
   Args:
     task_queue (multiprocessing.Queue): Holds task_graph.TaskWrapper instances.
     task_output_queue (multiprocessing.Queue): Sends information about completed
       tasks back to the main process.
+    idle_thread_count (multiprocessing.Semaphore): Keeps track of how many
+      threads are busy. Useful for spawning new workers if all threads are busy.
   """
   while True:
     task_wrapper = task_queue.get()
-
-    # The task queue can be empty before a workload is complete if the last task
-    # in the queue spawns additional tasks. This could lead to early shutdowns
-    # if we rely on multiprocessing.Queue.empty() as an indicator of when
-    # consumer threads are able to halt.
     if task_wrapper == _SHUTDOWN:
       break
+    idle_thread_count.acquire()
 
     try:
       additional_task_iterators = task_wrapper.task.execute()
@@ -71,24 +70,28 @@ def _thread_worker(task_queue, task_output_queue):
     # pylint: enable=broad-except
 
     task_output_queue.put((task_wrapper, additional_task_iterators))
+    idle_thread_count.release()
 
 
 @crash_handling.CrashManager
-def _process_worker(task_queue, task_output_queue, thread_count):
+def _process_worker(task_queue, task_output_queue, thread_count,
+                    idle_thread_count):
   """Starts a consumer thread pool.
 
   Args:
     task_queue (multiprocessing.Queue): Holds task_graph.TaskWrapper instances.
     task_output_queue (multiprocessing.Queue): Sends information about completed
       tasks back to the main process.
-    thread_count (int): The number of threads to use.
+    thread_count (int): Number of threads the process should spawn.
+    idle_thread_count (multiprocessing.Semaphore): Passed on to worker threads.
   """
+  threads = []
   # TODO(b/171299704): Add logic from gcloud_main.py to initialize GCE and
   # DevShell credentials in processes started with spawn.
-  threads = []
   for _ in range(thread_count):
     thread = threading.Thread(
-        target=_thread_worker, args=(task_queue, task_output_queue))
+        target=_thread_worker,
+        args=(task_queue, task_output_queue, idle_thread_count))
     thread.start()
     threads.append(thread)
 
@@ -101,7 +104,7 @@ class TaskGraphExecutor:
 
   def __init__(self,
                task_iterator,
-               process_count=multiprocessing.cpu_count(),
+               max_process_count=multiprocessing.cpu_count(),
                thread_count=4):
     """Initializes a TaskGraphExecutor instance.
 
@@ -110,15 +113,20 @@ class TaskGraphExecutor:
     Args:
       task_iterator (Iterable[command_lib.storage.tasks.task.Task]): Task
         instances to execute.
-      process_count (int): The number of processes to start.
+      max_process_count (int): The number of processes to start.
       thread_count (int): The number of threads to start per process.
     """
-
-    self._task_iterator = task_iterator
-    self._process_count = process_count
+    self._task_iterator = iter(task_iterator)
+    self._max_process_count = max_process_count
     self._thread_count = thread_count
 
-    self._worker_count = self._process_count * self._thread_count
+    self._processes = []
+    self._idle_thread_count = multiprocessing.Semaphore(value=0)
+
+    self._worker_count = self._max_process_count * self._thread_count
+    # If a process forks at the same time as _task_iterator generates a value,
+    # it will cause obscure hanging.
+    self._process_start_lock = multiprocessing.Lock()
 
     # Sends task_graph.TaskWrapper instances to child processes.
     self._task_queue = multiprocessing.Queue(maxsize=self._worker_count)
@@ -134,6 +142,20 @@ class TaskGraphExecutor:
     # Holds tasks without any dependencies.
     self._executable_tasks = task_buffer.TaskBuffer()
 
+  def _add_worker_process(self):
+    """Creates and triggers worker process."""
+    # Increase total thread count by number of threads available per processor.
+    for _ in range(self._thread_count):
+      self._idle_thread_count.release()
+
+    process = multiprocessing.Process(
+        target=_process_worker,
+        args=(self._task_queue, self._task_output_queue, self._thread_count,
+              self._idle_thread_count))
+    self._processes.append(process)
+    with self._process_start_lock:
+      process.start()
+
   @crash_handling.CrashManager
   def _get_tasks_from_iterator(self):
     """Adds tasks from self._task_iterator to the executor.
@@ -141,12 +163,17 @@ class TaskGraphExecutor:
     This involves adding tasks to self._task_graph, marking them as submitted,
     and adding them to self._executable_tasks.
     """
-    for task in self._task_iterator:
+
+    while True:
+      try:
+        with self._process_start_lock:
+          task = next(self._task_iterator)
+      except StopIteration:
+        break
       task_wrapper = self._task_graph.add(task)
       if task_wrapper is None:
         # self._task_graph rejected the task.
         continue
-
       task_wrapper.is_submitted = True
       # Tasks from task_iterator should have a lower priority than tasks that
       # are spawned by other tasks. This helps keep memory usage under control
@@ -161,6 +188,14 @@ class TaskGraphExecutor:
       if task_wrapper == _SHUTDOWN:
         break
       self._task_queue.put(task_wrapper)
+
+      if len(self._processes) < self._max_process_count:
+        if self._idle_thread_count.acquire(block=False):
+          # Idle worker will take the new task. Restore semaphore count.
+          self._idle_thread_count.release()
+        else:
+          # Create workers because current workers are busy.
+          self._add_worker_process()
 
   def _update_graph_state_from_executed_task(self, executed_task_wrapper,
                                              additional_task_iterators):
@@ -231,17 +266,7 @@ class TaskGraphExecutor:
 
   def run(self):
     """Executes tasks from a task iterator in parallel."""
-    processes = []
-    for _ in range(self._process_count):
-      process = multiprocessing.Process(
-          target=_process_worker,
-          # _process_worker is not included in this class because several class
-          # attributes are not synced across processes (notably the task buffer
-          # and task graph). Passing _process_worker `self` would allow it to
-          # unsafely access these attributes.
-          args=(self._task_queue, self._task_output_queue, self._thread_count))
-      process.start()
-      processes.append(process)
+    self._add_worker_process()
 
     get_tasks_from_iterator_thread = threading.Thread(
         target=self._get_tasks_from_iterator)
@@ -258,13 +283,14 @@ class TaskGraphExecutor:
     self._task_graph.is_empty.wait()
 
     self._executable_tasks.put(_SHUTDOWN)
-    for _ in range(self._worker_count):
-      self._task_queue.put(_SHUTDOWN)
+    for _ in self._processes:
+      for _ in range(self._thread_count):
+        self._task_queue.put(_SHUTDOWN)
     self._task_output_queue.put(_SHUTDOWN)
 
     handle_task_output_thread.join()
     add_executable_tasks_to_queue_thread.join()
-    for process in processes:
+    for process in self._processes:
       process.join()
 
     self._task_queue.close()

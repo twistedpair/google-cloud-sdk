@@ -2381,16 +2381,22 @@ class RangeReservation(_messages.Message):
       range names are provided all ranges associated with this connection will
       be considered. If a CIDR range with the specified IP prefix length is
       not available within these ranges the validation fails.
-    secondaryRangeIpPrefixLengths: Optional. DO NOT USE - Under development.
-      The size of the desired secondary ranges for the subnet. Use usual CIDR
-      range notation. For example, '30' to find unused x.x.x.x/30 CIDR range.
-      The goal is to determine that the allocated ranges have enough free
-      space for all the requested secondary ranges.
+    secondaryRangeIpPrefixLengths: Optional. The size of the desired secondary
+      ranges for the subnet. Use usual CIDR range notation. For example, '30'
+      to find unused x.x.x.x/30 CIDR range. The goal is to determine that the
+      allocated ranges have enough free space for all the requested secondary
+      ranges.
+    subnetworkCandidates: Optional. List of subnetwork candidates to validate.
+      The required input fields are `name`, `network`, and `region`.
+      Subnetworks from this list which exist will be returned in the response
+      with the `ip_cidr_range`, `secondary_ip_cider_ranges`, and
+      `outside_allocation` fields set.
   """
 
   ipPrefixLength = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   requestedRanges = _messages.StringField(2, repeated=True)
   secondaryRangeIpPrefixLengths = _messages.IntegerField(3, repeated=True, variant=_messages.Variant.INT32)
+  subnetworkCandidates = _messages.MessageField('Subnetwork', 4, repeated=True)
 
 
 class RemoveDnsRecordSetMetadata(_messages.Message):
@@ -3192,6 +3198,7 @@ class Subnetwork(_messages.Message):
       `projects/1234321/global/networks/host-network`
     outsideAllocation: This is a discovered subnet that is not within the
       current consumer allocated ranges.
+    region: GCP region where the subnetwork is located.
     secondaryIpRanges: List of secondary IP ranges in this subnetwork.
   """
 
@@ -3199,7 +3206,8 @@ class Subnetwork(_messages.Message):
   name = _messages.StringField(2)
   network = _messages.StringField(3)
   outsideAllocation = _messages.BooleanField(4)
-  secondaryIpRanges = _messages.MessageField('SecondaryIpRange', 5, repeated=True)
+  region = _messages.StringField(5)
+  secondaryIpRanges = _messages.MessageField('SecondaryIpRange', 6, repeated=True)
 
 
 class SystemParameter(_messages.Message):
@@ -3351,7 +3359,11 @@ class Usage(_messages.Message):
       documented in https://cloud.google.com/pubsub/docs/overview.
     requirements: Requirements that must be satisfied before a consumer
       project can use the service. Each requirement is of the form /; for
-      example 'serviceusage.googleapis.com/billing-enabled'.
+      example 'serviceusage.googleapis.com/billing-enabled'. For Google APIs,
+      a Terms of Service requirement must be included here. Google Cloud APIs
+      must include "serviceusage.googleapis.com/tos/cloud". Other Google APIs
+      should include "serviceusage.googleapis.com/tos/universal". Additional
+      ToS can be included based on the business needs.
     rules: A list of usage rules that apply to individual API methods.
       **NOTE:** All service configuration rules follow "last one wins" order.
   """
@@ -3422,15 +3434,18 @@ class ValidateConsumerConfigResponse(_messages.Message):
   r"""A ValidateConsumerConfigResponse object.
 
   Enums:
-    ValidationErrorValueValuesEnum:
+    ValidationErrorValueValuesEnum: The first validation which failed.
 
   Fields:
-    isValid: A boolean attribute.
-    validationError: A ValidationErrorValueValuesEnum attribute.
+    existingSubnetworkCandidates: List of subnetwork candidates from the
+      request which exist with the `ip_cidr_range`,
+      `secondary_ip_cider_ranges`, and `outside_allocation` fields set.
+    isValid: Indicates whether all the requested validations passed.
+    validationError: The first validation which failed.
   """
 
   class ValidationErrorValueValuesEnum(_messages.Enum):
-    r"""ValidationErrorValueValuesEnum enum type.
+    r"""The first validation which failed.
 
     Values:
       VALIDATION_ERROR_UNSPECIFIED: <no description>
@@ -3471,8 +3486,9 @@ class ValidateConsumerConfigResponse(_messages.Message):
     RANGES_DELETED_LATER = 12
     COMPUTE_API_NOT_ENABLED = 13
 
-  isValid = _messages.BooleanField(1)
-  validationError = _messages.EnumField('ValidationErrorValueValuesEnum', 2)
+  existingSubnetworkCandidates = _messages.MessageField('Subnetwork', 1, repeated=True)
+  isValid = _messages.BooleanField(2)
+  validationError = _messages.EnumField('ValidationErrorValueValuesEnum', 3)
 
 
 encoding.AddCustomJsonFieldMapping(

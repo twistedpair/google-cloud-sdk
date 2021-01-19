@@ -608,7 +608,8 @@
             "Blank screen is found in the Robo crawl",
             "Overlapping UI elements are found in the Robo crawl",
             "An uncaught Unity exception was detected (these don't crash apps).",
-            "Device running out of memory was detected"
+            "Device running out of memory was detected",
+            "Problems detected while collecting logcat"
           ],
           "enum": [
             "unspecifiedType",
@@ -640,7 +641,8 @@
             "blankScreen",
             "overlappingUiElements",
             "unityException",
-            "deviceOutOfMemory"
+            "deviceOutOfMemory",
+            "logcatCollectionError"
           ]
         },
         "category": {
@@ -2255,6 +2257,13 @@
     "LauncherActivityNotFound": {
       "id": "LauncherActivityNotFound",
       "description": "Failed to find the launcher activity of an app.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "LogcatCollectionError": {
+      "id": "LogcatCollectionError",
+      "description": "A warning that there were issues in logcat collection.",
       "type": "object",
       "properties": {
       }

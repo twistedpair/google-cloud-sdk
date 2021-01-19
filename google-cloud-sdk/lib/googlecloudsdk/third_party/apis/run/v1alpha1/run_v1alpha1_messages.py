@@ -1154,6 +1154,93 @@ class Handler(_messages.Message):
   tcpSocket = _messages.MessageField('TCPSocketAction', 3)
 
 
+class InstanceSpec(_messages.Message):
+  r"""InstanceSpec is a description of an instance.
+
+  Fields:
+    activeDeadlineSeconds: Optional. Optional duration in seconds the instance
+      may be active relative to StartTime before the system will actively try
+      to mark it failed and kill associated containers. If set to zero, the
+      system will never attempt to kill an instance based on time. Otherwise,
+      value must be a positive integer. +optional
+    containers: Optional. List of containers belonging to the instance. We
+      disallow a number of fields on this Container. Only a single container
+      may be provided.
+    restartPolicy: Optional. Restart policy for all containers within the
+      instance. Allowed values are: - OnFailure: Instances will always be
+      restarted on failure if the backoffLimit has not been reached. - Never:
+      Instances are never restarted and all failures are permanent. Cannot be
+      used if backoffLimit is set. +optional
+    serviceAccountName: Optional. Email address of the IAM service account
+      associated with the instance of a Job. The service account represents
+      the identity of the running instance, and determines what permissions
+      the instance has. If not provided, the instance will use the project's
+      default service account. +optional
+    terminationGracePeriodSeconds: Optional. Optional duration in seconds the
+      instance needs to terminate gracefully. Value must be non-negative
+      integer. The value zero indicates delete immediately. The grace period
+      is the duration in seconds after the processes running in the instance
+      are sent a termination signal and the time when the processes are
+      forcibly halted with a kill signal. Set this value longer than the
+      expected cleanup time for your process. +optional
+    volumes: Optional. List of volumes that can be mounted by containers
+      belonging to the instance. More info:
+      https://kubernetes.io/docs/concepts/storage/volumes +optional
+  """
+
+  activeDeadlineSeconds = _messages.IntegerField(1)
+  containers = _messages.MessageField('Container', 2, repeated=True)
+  restartPolicy = _messages.StringField(3)
+  serviceAccountName = _messages.StringField(4)
+  terminationGracePeriodSeconds = _messages.IntegerField(5)
+  volumes = _messages.MessageField('Volume', 6, repeated=True)
+
+
+class InstanceStatus(_messages.Message):
+  r"""Instance represents the status of an instance of a Job.
+
+  Fields:
+    completionTime: Optional. Represents time when the instance was completed.
+      It is not guaranteed to be set in happens-before order across separate
+      operations. It is represented in RFC3339 form and is in UTC. +optional
+    failed: Optional. The number of times this instance exited with code > 0;
+      +optional
+    index: Required. Index of the instance, unique per Job, and beginning at
+      0.
+    lastExitCode: Optional. Last exit code seen for this instance. +optional
+    restarted: Optional. The number of times this instance was restarted.
+      Instances are restarted according the restartPolicy configured in the
+      Job template. +optional
+    startTime: Optional. Represents time when the instance was created by the
+      job controller. It is not guaranteed to be set in happens-before order
+      across separate operations. It is represented in RFC3339 form and is in
+      UTC. +optional
+    succeeded: Optional. The number of times this instance exited with code ==
+      0. +optional
+  """
+
+  completionTime = _messages.StringField(1)
+  failed = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  index = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  lastExitCode = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  restarted = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(6)
+  succeeded = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+
+
+class InstanceTemplateSpec(_messages.Message):
+  r"""InstanceTemplateSpec describes the data an instance should have when
+  created from a template.
+
+  Fields:
+    spec: Optional. Specification of the desired behavior of the instance.
+      More info: https://git.k8s.io/community/contributors/devel/sig-
+      architecture/api-conventions.md#spec-and-status +optional
+  """
+
+  spec = _messages.MessageField('InstanceSpec', 1)
+
+
 class IntOrString(_messages.Message):
   r"""IntOrString is a type that can hold an int32 or a string. When used in
   JSON or YAML marshalling and unmarshalling, it produces or consumes the
@@ -1169,6 +1256,156 @@ class IntOrString(_messages.Message):
   intVal = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   strVal = _messages.StringField(2)
   type = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class Job(_messages.Message):
+  r"""Job represents the configuration of a single job. A job an immutable
+  resource that references a container image which is run to completion.
+
+  Fields:
+    apiVersion: Optional. APIVersion defines the versioned schema of this
+      representation of an object. Servers should convert recognized schemas
+      to the latest internal value, and may reject unrecognized values. More
+      info: https://git.k8s.io/community/contributors/devel/sig-
+      architecture/api-conventions.md#resources +optional
+    kind: Optional. Kind is a string value representing the REST resource this
+      object represents. Servers may infer this from the endpoint the client
+      submits requests to. Cannot be updated. In CamelCase. More info:
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#types-kinds +optional
+    metadata: Optional. Standard object's metadata. More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#metadata +optional
+    spec: Optional. Specification of the desired behavior of a job. More info:
+      https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-
+      and-status +optional
+    status: Optional. Current status of a job. More info:
+      https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-
+      and-status +optional
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('JobSpec', 4)
+  status = _messages.MessageField('JobStatus', 5)
+
+
+class JobCondition(_messages.Message):
+  r"""JobCondition defines a readiness condition for a Revision.
+
+  Fields:
+    lastTransitionTime: Optional. Last time the condition transitioned from
+      one status to another.
+    message: Optional. Human readable message indicating details about the
+      current status.
+    reason: Optional. One-word CamelCase reason for the condition's last
+      transition.
+    severity: Optional. How to interpret failures of this condition, one of
+      Error, Warning, Info
+    status: Required. Status of the condition, one of True, False, Unknown.
+    type: Required. Type is used to communicate the status of the
+      reconciliation process. See also: https://github.com/knative/serving/blo
+      b/master/docs/spec/errors.md#error-conditions-and-reporting Types
+      include: * "Completed": True when the Job has successfully completed. *
+      "Started": True when the Job has successfully started running. *
+      "ResourcesAvailable": True when underlying resources have been
+      provisioned.
+  """
+
+  lastTransitionTime = _messages.StringField(1)
+  message = _messages.StringField(2)
+  reason = _messages.StringField(3)
+  severity = _messages.StringField(4)
+  status = _messages.StringField(5)
+  type = _messages.StringField(6)
+
+
+class JobSpec(_messages.Message):
+  r"""JobSpec describes how the job execution will look like.
+
+  Fields:
+    activeDeadlineSeconds: Optional. Specifies the duration in seconds
+      relative to the startTime that the job may be active before the system
+      tries to terminate it. If set to zero, the system will never attempt to
+      terminate the job based on time. Otherwise, the value must be positive
+      integer. +optional
+    backoffLimit: Optional. Specifies the number of retries per instance,
+      before marking this job failed. If set to zero, instances will never
+      retry on failure. +optional
+    completions: Optional. Specifies the desired number of successfully
+      finished instances the job should be run with. Setting to 1 means that
+      parallelism is limited to 1 and the success of that instance signals the
+      success of the job. More info:
+      https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-
+      completion/ +optional
+    parallelism: Optional. Specifies the maximum desired number of instances
+      the job should run at any given time. Must be <= completions. The actual
+      number of instances running in steady state will be less than this
+      number when ((.spec.completions - .status.successful) <
+      .spec.parallelism), i.e. when the work left to do is less than max
+      parallelism. More info:
+      https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-
+      completion/ +optional
+    template: Optional. Describes the instance that will be created when
+      executing a job.
+    ttlSecondsAfterFinished: Optional. ttlSecondsAfterFinished limits the
+      lifetime of a Job that has finished execution (either Complete or
+      Failed). If this field is set, ttlSecondsAfterFinished after the Job
+      finishes, it is eligible to be automatically deleted. When the Job is
+      being deleted, its lifecycle guarantees (e.g. finalizers) will be
+      honored. If this field is set to zero, the Job won't be automatically
+      deleted. +optional
+  """
+
+  activeDeadlineSeconds = _messages.IntegerField(1)
+  backoffLimit = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  completions = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  parallelism = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  template = _messages.MessageField('InstanceTemplateSpec', 5)
+  ttlSecondsAfterFinished = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
+class JobStatus(_messages.Message):
+  r"""JobStatus represents the current state of a Job.
+
+  Fields:
+    active: Optional. The number of actively running instances. +optional
+    completionTime: Optional. Represents time when the job was completed. It
+      is not guaranteed to be set in happens-before order across separate
+      operations. It is represented in RFC3339 form and is in UTC. +optional
+    conditions: Optional. The latest available observations of a job's current
+      state. More info:
+      https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-
+      completion/ +optional
+    failed: Optional. The number of instances which reached phase Failed.
+      +optional
+    imageDigest: Optional. ImageDigest holds the resolved digest for the image
+      specified within .Spec.Template.Spec.Container.Image. The digest is
+      resolved during the creation of the Job. This field holds the digest
+      value regardless of whether a tag or digest was originally specified in
+      the Container object.
+    instances: Optional. Status of completed, failed, and running instances.
+      +optional
+    observedGeneration: Optional. The 'generation' of the job that was last
+      processed by the controller.
+    startTime: Optional. Represents time when the job was acknowledged by the
+      job controller. It is not guaranteed to be set in happens-before order
+      across separate operations. It is represented in RFC3339 form and is in
+      UTC. +optional
+    succeeded: Optional. The number of instances which reached phase
+      Succeeded. +optional
+  """
+
+  active = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  completionTime = _messages.StringField(2)
+  conditions = _messages.MessageField('JobCondition', 3, repeated=True)
+  failed = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  imageDigest = _messages.StringField(5)
+  instances = _messages.MessageField('InstanceStatus', 6, repeated=True)
+  observedGeneration = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(8)
+  succeeded = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
 class KeyToPath(_messages.Message):
@@ -1344,6 +1581,34 @@ class ListDomainMappingsResponse(_messages.Message):
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
   unreachable = _messages.StringField(5, repeated=True)
+
+
+class ListJobsResponse(_messages.Message):
+  r"""ListJobsResponse is a list of Jobs resources.
+
+  Fields:
+    apiVersion: The API version for this call such as
+      "run.googleapis.com/v1alpha1".
+    items: List of Jobs.
+    kind: The kind of this resource, in this case "JobsList".
+    metadata: Metadata associated with this jobs list.
+    nextPageToken: This field is equivalent to the metadata.continue field and
+      is provided as a convenience for compatibility with
+      https://google.aip.dev/158. The value is opaque and may be used to issue
+      another request to the endpoint that served this list to retrieve the
+      next set of available objects. Continuing a list may not be possible if
+      the server configuration has changed or more than a few minutes have
+      passed. The metadata.resourceVersion field returned when using this
+      field will be identical to the value in the first response.
+    unreachable: Locations that could not be reached.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('Job', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  nextPageToken = _messages.StringField(5)
+  unreachable = _messages.StringField(6, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -2887,6 +3152,80 @@ class RunNamespacesDomainmappingsListRequest(_messages.Message):
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
       as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class RunNamespacesJobsCreateRequest(_messages.Message):
+  r"""A RunNamespacesJobsCreateRequest object.
+
+  Fields:
+    job: A Job resource to be passed as the request body.
+    parent: Required. The namespace in which the job should be created.
+      Replace {namespace_id} with the project ID or number.
+  """
+
+  job = _messages.MessageField('Job', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class RunNamespacesJobsDeleteRequest(_messages.Message):
+  r"""A RunNamespacesJobsDeleteRequest object.
+
+  Fields:
+    apiVersion: Optional. Cloud Run currently ignores this parameter.
+    kind: Optional. Cloud Run currently ignores this parameter.
+    name: Required. The name of the job to delete. For Cloud Run (fully
+      managed), replace {namespace_id} with the project ID or number.
+    propagationPolicy: Optional. Specifies the propagation policy of delete.
+      Cloud Run currently ignores this setting, and deletes in the background.
+      Please see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  propagationPolicy = _messages.StringField(4)
+
+
+class RunNamespacesJobsGetRequest(_messages.Message):
+  r"""A RunNamespacesJobsGetRequest object.
+
+  Fields:
+    name: Required. The name of the job to retrieve. For Cloud Run (fully
+      managed), replace {namespace_id} with the project ID or number.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunNamespacesJobsListRequest(_messages.Message):
+  r"""A RunNamespacesJobsListRequest object.
+
+  Fields:
+    continue_: Optional. Optional encoded string to continue paging.
+    fieldSelector: Optional. Allows to filter resources based on a specific
+      value for a field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Optional. Not currently used by Cloud Run.
+    labelSelector: Optional. Allows to filter resources based on a label.
+      Supported operations are =, !=, exists, in, and notIn.
+    limit: Optional. The maximum number of records that should be returned.
+    parent: Required. The namespace from which the jobs should be listed.
+      Replace {namespace_id} with the project ID or number.
+    resourceVersion: Optional. The baseline resource version from which the
+      list or watch operation should start. Not currently used by Cloud Run.
+    watch: Optional. Flag that indicates that the client expects to watch this
+      resource as well. Not currently used by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)

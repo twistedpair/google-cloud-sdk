@@ -21,8 +21,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import base
-from googlecloudsdk.core import http
-from googlecloudsdk.core import requests
 
 
 def GetApitoolsTransport(timeout='unset',
@@ -42,9 +40,12 @@ def GetApitoolsTransport(timeout='unset',
     1. A httplib2.Http-like object backed by httplib2 or requests.
   """
   if base.UseRequests():
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core import requests
     session = requests.GetSession(timeout=timeout, ca_certs=ca_certs)
     return requests.GetApitoolsRequests(
         session, response_encoding=response_encoding)
-
-  return http.Http(
-      timeout=timeout, response_encoding=response_encoding, ca_certs=ca_certs)
+  else:
+    from googlecloudsdk.core import http  # pylint: disable=g-import-not-at-top
+    return http.Http(
+        timeout=timeout, response_encoding=response_encoding, ca_certs=ca_certs)

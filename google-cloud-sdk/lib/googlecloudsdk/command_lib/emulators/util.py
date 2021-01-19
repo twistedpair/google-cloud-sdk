@@ -280,7 +280,9 @@ def Exec(args, log_file=None):
                                stderr=subprocess.STDOUT,
                                creationflags=creationflags)
   else:
-    os.setpgid(0, 0)
+    # check if pid is session leader
+    if os.getsid(0) != os.getpid():
+      os.setpgid(0, 0)
     # pylint: disable=subprocess-popen-preexec-fn start_new_session flag
     # is only available on py3
     process = subprocess.Popen(args,

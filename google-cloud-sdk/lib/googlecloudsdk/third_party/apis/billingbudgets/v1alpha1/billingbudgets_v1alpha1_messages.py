@@ -112,10 +112,11 @@ class GoogleCloudBillingBudgetsV1alpha1AllUpdatesRule(_messages.Message):
       for a budget, otherwise, the API call will fail with PERMISSION_DENIED.
       See https://cloud.google.com/billing/docs/how-to/budgets-programmatic-
       notifications for more details on Pub/Sub roles and permissions.
-    schemaVersion: Optional. The schema version of the notification sent to
-      `pubsub_topic`. Only "1.0" is accepted. It represents the JSON schema as
-      defined in https://cloud.google.com/billing/docs/how-to/budgets-
-      programmatic-notifications#notification_format
+    schemaVersion: Optional. Required when AllUpdatesRule.pubsub_topic is set.
+      The schema version of the notification sent to
+      AllUpdatesRule.pubsub_topic. Only "1.0" is accepted. It represents the
+      JSON schema as defined in https://cloud.google.com/billing/docs/how-
+      to/budgets-programmatic-notifications#notification_format.
   """
 
   disableDefaultIamRecipients = _messages.BooleanField(1)

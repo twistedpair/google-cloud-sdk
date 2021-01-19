@@ -176,7 +176,7 @@ def AddCapacityLimits(parser,
       are healthy. When one or more endpoints are unhealthy, an effective
       maximum rate per healthy endpoint is calculated by multiplying
       `MAX_RATE_PER_ENDPOINT` by the number of endpoints in the network
-      endpoint group, then dividing by the number of healthy endpoints.
+      endpoint group, and then dividing by the number of healthy endpoints.
       """ + append_help_text)
   capacity_group.add_argument(
       '--max-connections-per-endpoint',
@@ -184,10 +184,10 @@ def AddCapacityLimits(parser,
       help="""\
       Only valid for network endpoint group backends. Defines a maximum
       number of connections per endpoint if all endpoints are healthy. When
-      one or more endpoints are unhealthy, an effective maximum number of
-      connections per healthy endpoint is calculated by multiplying
+      one or more endpoints are unhealthy, an effective maximum average number
+      of connections per healthy endpoint is calculated by multiplying
       `MAX_CONNECTIONS_PER_ENDPOINT` by the number of endpoints in the network
-      endpoint group, then dividing by the number of healthy endpoints.
+      endpoint group, and then dividing by the number of healthy endpoints.
       """ + append_help_text)
 
   capacity_group.add_argument(
@@ -208,7 +208,7 @@ def AddCapacityLimits(parser,
       instance group are healthy. When one or more instances are unhealthy,
       an effective maximum RPS per healthy instance is calculated by
       multiplying `MAX_RATE_PER_INSTANCE` by the number of instances in the
-      instance group, then dividing by the number of healthy instances. This
+      instance group, and then dividing by the number of healthy instances. This
       parameter is compatible with managed instance group backends that use
       autoscaling based on load balancing.
       """)
@@ -227,9 +227,9 @@ def AddCapacityLimits(parser,
       Only valid for instance group backends. Defines a maximum number
       of concurrent connections per instance if all instances in the
       instance group are healthy. When one or more instances are
-      unhealthy, an effective maximum number of connections per healthy
+      unhealthy, an effective average maximum number of connections per healthy
       instance is calculated by multiplying `MAX_CONNECTIONS_PER_INSTANCE`
-      by the number of instances in the instance group, then dividing by
+      by the number of instances in the instance group, and then dividing by
       the number of healthy instances.
       """)
 
@@ -241,41 +241,13 @@ def AddMaxUtilization(parser):
       type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
       help="""\
       Defines the maximum target for average utilization of the backend instance
-      in the backend instance group. Acceptable values are `0.0` (0%) through
-      `1.0`(100%). Available for all backend service protocols, with
-      `--balancing-mode=UTILIZATION`.
+      group. Supported values are `0.0` (0%) through `1.0` (100%). This is an
+      optional parameter for the `UTILIZATION` balancing mode.
 
-      For backend services that use SSL, TCP, or UDP protocols, the following
-      configuration options are supported:
-
-      * no additional parameter
-      * only `--max-utilization`
-      * only `--max-connections` (except for regional managed instance groups)
-      * only `--max-connections-per-instance`
-      * both `--max-utilization` and `--max-connections` (except for regional
-        managed instance groups)
-      * both `--max-utilization` and `--max-connections-per-instance`
-
-      The meanings for `-max-connections` and `--max-connections-per-instance`
-      are the same as for --balancing-mode=CONNECTION. If one is used  with
-      `--max-utilization`, instances are considered at capacity
-      when either maximum utilization or maximum connections is reached.
-
-      For backend services that use HTTP, HTTPS, or HTTP/2 protocols, the
-      following configuration options are supported:
-
-      * no additional parameter
-      * only `--max-utilization`
-      * only `--max-rate` (except for regional managed instance groups)
-      * only `--max-rate-per-instance`
-      * both `--max-utilization` and `--max-rate` (except for regional managed
-        instance groups)
-      * both `--max-utilization` and `--max-rate-per-instance`
-
-      The meanings for `--max-rate` and `--max-rate-per-instance` are the same
-      as for --balancing-mode=RATE. If one is used in conjunction with
-      `--max-utilization`, instances are considered at capacity when *either*
-      maximum utilization or the maximum rate is reached.""")
+      You can use this parameter with other parameters for defining target
+      capacity. For usage guidelines, see
+      <a href="https://cloud.google.com/load-balancing/docs/backend-service#balancing-mode-combos">Balancing
+      mode combinations</a>.""")
 
 
 def AddCapacityScalar(parser,
@@ -283,16 +255,11 @@ def AddCapacityScalar(parser,
                       support_region_neg=False):
   """Adds capacity thresholds argument to the argparse."""
   help_text = """\
-      A setting that applies to all balancing modes. This value is multiplied
-      by the balancing mode value to set the current max usage of the instance
-      group. You can set the capacity scaler to `0.0` or from `0.1` (10%) to
-      `1.0` (100%). You cannot configure a setting that is larger than `0.0` and
-      smaller than `0.1`. A scale factor of zero (`0.0`) prevents all new
-      connections. You cannot configure a setting of
-      `0.0` when there is only one backend attached to the backend service. Note
-      that draining a backend service only prevents new connections to instances
-      in the group. All existing connections are allowed to continue until they
-      close by normal means. This cannot be used for internal load balancing.
+      Scales down the target capacity (max utilization, max rate, or max
+      connections) without changing the target capacity. For usage guidelines
+      and examples, see
+      <a href="https://cloud.google.com/load-balancing/docs/backend-service#capacity_scaler">Capacity
+      scaler</a>.
       """
   incompatible_types = []
   if support_global_neg:

@@ -18,12 +18,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
+
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
+
+import six
 
 
 def _RegionAttributeConfig():
@@ -361,3 +365,68 @@ def _TransformOperationWarnings(metadata):
   if 'warnings' in metadata:
     return len(metadata['warnings'])
   return ''
+
+
+def AddPersonalAuthSessionArgs(parser):
+  """Adds the arguments for enabling personal auth sessions."""
+
+  parser.add_argument(
+      '--access-boundary',
+      help="""
+        The path to a JSON file specifying the credential access boundary for
+        the personal auth session.
+
+        If not specified, then the access boundary defaults to one that includes
+        the following roles on the containing project:
+
+            roles/storage.objectViewer
+            roles/storage.objectCreator
+            roles/storage.objectAdmin
+            roles/storage.legacyBucketReader
+
+        For more information, see:
+        https://cloud.google.com/iam/docs/downscoping-short-lived-credentials.
+        """)
+  parser.add_argument(
+      '--openssl-command',
+      hidden=True,
+      help="""
+        The full path to the command used to invoke the OpenSSL tool on this
+        machine.
+        """)
+  parser.add_argument(
+      '--refresh-credentials',
+      action='store_true',
+      default=True,
+      hidden=True,
+      help="""
+        Keep the command running to periodically refresh credentials.
+        """)
+
+
+def ProjectGcsObjectsAccessBoundary(project):
+  """Get an access boundary limited to to a project's GCS objects.
+
+  Args:
+    project: The project ID for the access boundary.
+
+  Returns:
+    A JSON formatted access boundary suitable for creating a downscoped token.
+  """
+  cab_resource = '//cloudresourcemanager.googleapis.com/projects/{}'.format(
+      project)
+  access_boundary = {
+      'access_boundary': {
+          'accessBoundaryRules': [{
+              'availableResource':
+                  cab_resource,
+              'availablePermissions': [
+                  'inRole:roles/storage.objectViewer',
+                  'inRole:roles/storage.objectCreator',
+                  'inRole:roles/storage.objectAdmin',
+                  'inRole:roles/storage.legacyBucketReader'
+              ]
+          }]
+      }
+  }
+  return six.text_type(json.dumps(access_boundary))

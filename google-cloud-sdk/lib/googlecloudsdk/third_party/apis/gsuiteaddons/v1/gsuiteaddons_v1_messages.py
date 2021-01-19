@@ -532,8 +532,7 @@ class GoogleCloudGsuiteaddonsV1Authorization(_messages.Message):
     name: The canonical full name of this resource. Example:
       `projects/123/authorization`
     oauthClientId: The OAuth client ID used to obtain OAuth access tokens for
-      a user on the add-on's behalf. This is the client ID you will need to
-      get whitelisted in order to publish an add-on.
+      a user on the add-on's behalf.
     serviceAccountEmail: The email address of the service account used to
       authenticate requests to add-on callback endpoints.
   """

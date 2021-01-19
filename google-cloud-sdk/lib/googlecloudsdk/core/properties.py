@@ -2253,35 +2253,118 @@ class _SectionRedis(_Section):
 class _SectionStorage(_Section):
   """Contains the properties for the 'storage' section."""
 
+  _CHECK_HASHES_HELP_TEXT = ("""\
+      'check_hashes' specifies how strictly to require integrity checking for
+      downloaded data. Legal values are:
+
+      'if_fast_else_fail' - (default) Only integrity check if the digest
+      will run efficiently (using compiled code), else fail the download.
+
+      'if_fast_else_skip' - Only integrity check if the server supplies a hash
+      and the local digest computation will run quickly, else skip the check.
+
+      'always' - Always check download integrity regardless of possible
+      performance costs.
+
+      'never' - Don't perform download integrity checks. This setting is
+      not recommended except for special cases such as measuring download
+      performance excluding time for integrity checking.
+
+      This option exists to assist users who wish to download a GCS composite
+      object and are unable to install crcmod with the C-extension. CRC32c is
+      the only available integrity check for composite objects, and without the
+      C-extension, download performance can be significantly degraded by the
+      digest computation. This option is ignored for daisy-chain copies, which
+      don't compute hashes but instead (inexpensively) compare the cloud source
+      and destination hashes.""")
+
   MAXIMUM_DEFAULT_PROCESS_COUNT = 12
   DEFAULT_THREAD_COUNT = 4
 
+  DEFAULT_CHUNK_SIZE = 104857600  # 100 MB, or 1024 * 1024 * 100.
+
   def __init__(self):
     super(_SectionStorage, self).__init__('storage', hidden=True)
+    self.check_hashes = self._Add(
+        'check_hashes',
+        default='if_fast_else_fail',
+        help_text=self._CHECK_HASHES_HELP_TEXT,
+        choices=('if_fast_else_fail', 'if_fast_else_skip', 'always', 'never'))
+
     self.chunk_size = self._Add(
         'chunk_size',
-        default=104857600,  # gsutil's default chunksize (1024 * 1024 * 100)
+        default=self.DEFAULT_CHUNK_SIZE,
         help_text='Chunk size used for uploading and downloading from '
         'Cloud Storage.')
-    # TODO(b/109938541): Remove this after implementation seems stable.
-    self.use_gsutil = self._AddBool(
-        'use_gsutil',
-        default=False,
-        help_text='If True, use the deprecated upload implementation which '
-        'uses gsutil.')
+
     self.process_count = self._Add(
         'process_count',
         default=min(multiprocessing.cpu_count(),
                     self.MAXIMUM_DEFAULT_PROCESS_COUNT),
-        help_text='The number of processes parallel execution should use. '
-        'When process_count and thread_count are both 1, commands use '
+        help_text='The maximum number of processes parallel execution should '
+        'use. When process_count and thread_count are both 1, commands use '
         'sequential execution.')
+
+    self.sliced_object_download_component_size = self._Add(
+        'sliced_object_download_component_size',
+        default='200M',
+        help_text='Target size and upper bound for files to be sliced into.'
+        ' Analogous to parallel_composite_upload_component_size.')
+
+    self.sliced_object_download_max_components = self._Add(
+        'sliced_object_download_max_components',
+        default=4,
+        help_text='Specifies the maximum number of slices to be used when'
+        ' performing a sliced object download.')
+
+    self.sliced_object_download_threshold = self._Add(
+        'sliced_object_download_threshold',
+        default='150M',
+        help_text='Slice files larger than this value. Zero will block sliced'
+        ' downloads. Analogous to parallel_composite_upload_threshold.')
+
     self.thread_count = self._Add(
         'thread_count',
         default=self.DEFAULT_THREAD_COUNT,
         help_text='The number of threads parallel execution should use per '
         'process. When process_count and thread_count are both 1, commands use '
         'sequential execution.')
+
+    # TODO(b/175899956): Add validation for human readable sizes.
+    self.parallel_composite_upload_component_size = self._Add(
+        'parallel_composite_upload_component_size',
+        default='50M',
+        help_text='Specifies the ideal size of a component in bytes, which '
+        'will act as an upper bound to the size of the components if '
+        'ceil(file_size / parallel_composite_upload_component_size) is less '
+        'than the maximum number of objects the API allows composing at once. '
+        'Values can be provided either in bytes or as human-readable values '
+        '(e.g., "150M" to represent 150 mebibytes).')
+
+    self.parallel_composite_upload_threshold = self._Add(
+        'parallel_composite_upload_threshold',
+        default='0',
+        help_text='Specifies the maximum size of a file to upload in a single '
+        'stream. Files larger than this threshold will be partitioned into '
+        'component parts, uploaded in parallel, then composed into a single '
+        'object. The number of components will be the smaller of '
+        'ceil(file_size / parallel_composite_upload_component_size) and '
+        'the maximum number of objects the API allows composing at once. For '
+        'GCS this limit is 32. If this property is set to 0, then automatic '
+        'parallel uploads will never occur.')
+
+    self.tracker_files_directory = self._Add(
+        'tracker_files_directory',
+        default=os.path.join('~', '.config', 'gcloud', 'surface_data',
+                             'storage', 'tracker_files'),
+        help_text='Directory path to tracker files for resumable operations.')
+
+    # TODO(b/109938541): Remove this after implementation seems stable.
+    self.use_gsutil = self._AddBool(
+        'use_gsutil',
+        default=False,
+        help_text='If True, use the deprecated upload implementation which '
+        'uses gsutil.')
 
 
 class _SectionSurvey(_Section):

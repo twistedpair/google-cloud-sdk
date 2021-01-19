@@ -427,6 +427,10 @@
         "workloadMonitoringEnabledEap": {
           "description": "Whether to send workload metrics from the cluster to Google Cloud Monitoring. Temporary flag for EAP.",
           "type": "boolean"
+        },
+        "autopilot": {
+          "description": "Autopilot configuration for the cluster. It has the same semantics as AutoGKE and overrides the setting in autogke.",
+          "$ref": "Autopilot"
         }
       }
     },
@@ -588,6 +592,10 @@
         },
         "acceleratorType": {
           "description": "The accelerator type resource name. List of supported accelerators [here](https:\/\/cloud.google.com\/compute\/docs\/gpus)",
+          "type": "string"
+        },
+        "gpuPartitionSize": {
+          "description": "Size of partitions to create on the GPU. Valid values are described in the NVIDIA [mig user guide](https:\/\/docs.nvidia.com\/datacenter\/tesla\/mig-user-guide\/#partitioning).",
           "type": "string"
         }
       }
@@ -2204,6 +2212,17 @@
         }
       }
     },
+    "Autopilot": {
+      "id": "Autopilot",
+      "description": "Autopilot is the configuration for Autopilot settings on the cluster. It is the official product name of what is previously known as AutoGKE",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable Autopilot",
+          "type": "boolean"
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -2613,6 +2632,10 @@
         "desiredAutoGke": {
           "description": "AutoGKE is the configuration for AutoGKE settings on the cluster.",
           "$ref": "AutoGKE"
+        },
+        "desiredAutopilot": {
+          "description": "The desired Autopilot configuration for the cluster.",
+          "$ref": "Autopilot"
         },
         "desiredImage": {
           "description": "The desired name of the image to use for this node. This is used to create clusters using a custom image.",

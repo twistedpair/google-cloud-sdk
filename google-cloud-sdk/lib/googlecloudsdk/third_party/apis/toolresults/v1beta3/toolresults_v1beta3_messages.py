@@ -1006,6 +1006,10 @@ class ListTestCasesResponse(_messages.Message):
   testCases = _messages.MessageField('TestCase', 2, repeated=True)
 
 
+class LogcatCollectionError(_messages.Message):
+  r"""A warning that there were issues in logcat collection."""
+
+
 class MatrixDimensionDefinition(_messages.Message):
   r"""One dimension of the matrix of different runs of a step."""
 
@@ -2216,6 +2220,7 @@ class TestIssue(_messages.Message):
       unityException: An uncaught Unity exception was detected (these don't
         crash apps).
       deviceOutOfMemory: Device running out of memory was detected
+      logcatCollectionError: Problems detected while collecting logcat
     """
     unspecifiedType = 0
     fatalException = 1
@@ -2247,6 +2252,7 @@ class TestIssue(_messages.Message):
     overlappingUiElements = 27
     unityException = 28
     deviceOutOfMemory = 29
+    logcatCollectionError = 30
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   errorMessage = _messages.StringField(2)

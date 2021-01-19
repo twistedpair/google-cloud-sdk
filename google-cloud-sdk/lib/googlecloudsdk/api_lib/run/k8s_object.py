@@ -46,11 +46,13 @@ INTERNAL_GROUPS = (
     CLIENT_GROUP, SERVING_GROUP, AUTOSCALING_GROUP, EVENTING_GROUP,
     GOOGLE_GROUP)
 
-
+AUTHOR_ANNOTATION = SERVING_GROUP + '/creator'
 REGION_LABEL = GOOGLE_GROUP + '/location'
 
 CLIENT_NAME_ANNOTATION = RUN_GROUP + '/client-name'
 CLIENT_VERSION_ANNOTATION = RUN_GROUP + '/client-version'
+
+LAUNCH_STAGE_ANNOTATION = 'run.googleapis.com/launch-stage'
 
 
 def Meta(m):
@@ -249,6 +251,10 @@ class KubernetesObject(object):
     self._m.metadata.name = value
 
   @property
+  def author(self):
+    return self.annotations.get(AUTHOR_ANNOTATION)
+
+  @property
   def creation_timestamp(self):
     return self.metadata.creationTimestamp
 
@@ -307,6 +313,9 @@ class KubernetesObject(object):
 
   @property
   def conditions(self):
+    return self.GetConditions()
+
+  def GetConditions(self, terminal_condition=None):
     self.AssertFullObject()
     if self._m.status:
       c = self._m.status.conditions
@@ -314,7 +323,7 @@ class KubernetesObject(object):
       c = []
     return condition.Conditions(
         c,
-        self.READY_CONDITION,
+        terminal_condition if terminal_condition else self.READY_CONDITION,
         getattr(self._m.status, 'observedGeneration', None),
         self.generation,
     )

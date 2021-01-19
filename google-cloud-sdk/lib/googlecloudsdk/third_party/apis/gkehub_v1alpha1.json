@@ -561,6 +561,10 @@
         "referentialRulesEnabled": {
           "description": "Enables the ability to use Constraint Templates that reference to objects other than the object currently being evaluated.",
           "type": "boolean"
+        },
+        "logDeniesEnabled": {
+          "description": "Logs all denies and dry run failures.",
+          "type": "boolean"
         }
       }
     },

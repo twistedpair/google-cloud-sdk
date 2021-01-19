@@ -309,6 +309,16 @@
         "machineType": {
           "description": "Machine type of VM Instance underlying connector. Default is e2-micro.",
           "type": "string"
+        },
+        "minInstances": {
+          "description": "Minimum value of instances in autoscaling group underlying the connector.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxInstances": {
+          "description": "Maximum value of instances in autoscaling group underlying the connector.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

@@ -1105,10 +1105,14 @@ class ListInstancesResponse(_messages.Message):
     instances: The list of requested instances.
     nextPageToken: `next_page_token` can be sent in a subsequent ListInstances
       call to fetch more of the matching instances.
+    unreachable: The list of unreachable instances. It includes the names of
+      instances whose metadata could not be retrieved within
+      instance_deadline.
   """
 
   instances = _messages.MessageField('Instance', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -3129,6 +3133,9 @@ class SpannerProjectsInstancesListRequest(_messages.Message):
       the label contains the string "dev". * `name:howl labels.env:dev` -->
       The instance's name contains "howl" and it has the label "env" with its
       value containing "dev".
+    instanceDeadline: Deadline used while retrieving metadata for instances.
+      Instances whose metadata cannot be retrieved within this deadline will
+      be added to unreachable in ListInstancesResponse.
     pageSize: Number of instances to be returned in the response. If 0 or
       less, defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token
@@ -3138,9 +3145,10 @@ class SpannerProjectsInstancesListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  instanceDeadline = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class SpannerProjectsInstancesOperationsCancelRequest(_messages.Message):

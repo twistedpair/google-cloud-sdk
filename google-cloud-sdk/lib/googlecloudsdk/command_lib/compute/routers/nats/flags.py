@@ -18,8 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import textwrap
 import enum
+import textwrap
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -76,16 +77,36 @@ def AddNatNameArg(parser, operation_type='operate on', plural=False):
   parser.add_argument('name', **params)
 
 
-def AddCommonNatArgs(parser, for_create=False):
+def AddCommonNatArgs(parser,
+                     for_create=False,
+                     with_rules=False,
+                     with_tcp_time_wait_timeout=False):
   """Adds common arguments for creating and updating NATs."""
   _AddIpAllocationArgs(parser, for_create)
   _AddSubnetworkArgs(parser, for_create)
-  _AddTimeoutsArgs(parser, for_create)
+  _AddTimeoutsArgs(parser, for_create, with_tcp_time_wait_timeout)
   _AddMinPortsPerVmArg(parser, for_create)
   _AddLoggingArgs(parser)
   _AddEndpointIndependentMappingArg(parser)
   if not for_create:
     _AddDrainNatIpsArgument(parser)
+
+  if with_rules:
+    _AddRulesArg(parser)
+
+
+def _AddRulesArg(parser):
+  parser.add_argument(
+      '--rules',
+      # TODO(b/149426020): Link to REST reference docs when promoting this
+      # to beta/GA.
+      help=textwrap.dedent("""\
+          Path to YAML file containing NAT Rules applied to the NAT.
+          The YAML file format must follow the REST API schema for NAT Rules.
+          See [API Discovery docs]
+          (https://www.googleapis.com/discovery/v1/apis/compute/alpha/rest) for
+          reference."""),
+      required=False)
 
 
 def _AddIpAllocationArgs(parser, for_create=False):
@@ -140,7 +161,9 @@ def _AddSubnetworkArgs(parser, for_create=False):
       type=arg_parsers.ArgList(min_length=1))
 
 
-def _AddTimeoutsArgs(parser, for_create=False):
+def _AddTimeoutsArgs(parser,
+                     for_create=False,
+                     with_tcp_time_wait_timeout=False):
   """Adds arguments to specify connection timeouts."""
   _AddClearableArgument(
       parser, for_create, 'udp-idle-timeout', arg_parsers.Duration(),
@@ -167,6 +190,13 @@ def _AddTimeoutsArgs(parser, for_create=False):
          Timeout for TCP transitory connections. See $ gcloud topic datetimes
          for information on duration formats."""),
       'Clear timeout for TCP transitory connections')
+  if with_tcp_time_wait_timeout:
+    _AddClearableArgument(
+        parser, for_create, 'tcp-time-wait-timeout', arg_parsers.Duration(),
+        textwrap.dedent("""\
+          Timeout for TCP connections in the TIME_WAIT state. See $ gcloud topic
+          datetimes for information on duration formats."""),
+        'Clear timeout for TCP connections in the TIME_WAIT state')
 
 
 def _AddMinPortsPerVmArg(parser, for_create=False):

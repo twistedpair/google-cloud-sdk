@@ -323,8 +323,8 @@ If you want to enable all scopes use the 'cloud-platform' scope.
       """)
 
   boot_disk_type_detailed_help = """\
-      The type of the boot disk. The value must be ``pd-standard'' or
-      ``pd-ssd''.
+      The type of the boot disk. The value must be ``pd-balanced'',
+      ``pd-ssd'', or ``pd-standard''.
       """
   parser.add_argument(
       '--master-boot-disk-type', help=boot_disk_type_detailed_help)
@@ -1090,6 +1090,21 @@ def DeleteGeneratedProperties(cluster, dataproc):
   else:
     cluster.config.softwareConfig.properties = encoding.DictToAdditionalPropertyMessage(
         props, dataproc.messages.SoftwareConfig.PropertiesValue)
+
+
+def ClusterKey(cluster):
+  """Return a cluster-generated public encryption key if there is one.
+
+  Args:
+    cluster: Cluster to check for an encryption key.
+
+  Returns:
+    The public key for the cluster if there is one, otherwise None
+  """
+  master_instance_refs = cluster.config.masterConfig.instanceReferences
+  if not master_instance_refs:
+    return None
+  return master_instance_refs[0].publicKey
 
 
 def AddReservationAffinityGroup(parser, group_text, affinity_text):

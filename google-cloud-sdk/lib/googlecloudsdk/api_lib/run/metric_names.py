@@ -77,3 +77,15 @@ UPDATE_CONFIGURATION = _SERVERLESS_PREFIX + 'update_configuration'
 
 # Time to update a service
 UPDATE_SERVICE = _SERVERLESS_PREFIX + 'update_service'
+
+# Time to create a job
+CREATE_JOB = _SERVERLESS_PREFIX + 'create_job'
+
+# Time to get a job
+GET_JOB = _SERVERLESS_PREFIX + 'get_job'
+
+# Time to list jobs
+LIST_JOBS = _SERVERLESS_PREFIX + 'list_jobs'
+
+# Time to delete a job
+DELETE_JOB = _SERVERLESS_PREFIX + 'delete_job'

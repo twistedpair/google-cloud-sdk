@@ -358,7 +358,9 @@ class Instance(object):
     if use_dl_image:
       return 'tf-{}-{}-gpu'.format(parsed.major, parsed.minor)
 
-    if parsed.patch:
+    # From TF 2.4, image family format uses patch format by default,
+    # e.g.: `tf-2-4-0` for TF version 2.4
+    if parsed.patch or (parsed.major >= 2 and parsed.minor >= 4):
       return 'tf-{}-{}-{}'.format(parsed.major, parsed.minor, parsed.patch)
 
     return 'tf-{}-{}'.format(parsed.major, parsed.minor)

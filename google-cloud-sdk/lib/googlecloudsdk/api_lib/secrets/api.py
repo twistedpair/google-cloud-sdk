@@ -54,8 +54,8 @@ def _MakeReplicationMessage(messages, policy, locations, keys):
         replicas.append(
             messages.Replica(
                 location=location,
-                customerManagedEncryption=messages
-                .CustomerManagedEncryption(kmsKeyName=keys[i])))
+                customerManagedEncryption=messages.CustomerManagedEncryption(
+                    kmsKeyName=keys[i])))
       else:
         replicas.append(messages.Replica(location=locations[i]))
 
@@ -105,7 +105,14 @@ class Secrets(Client):
     super(Secrets, self).__init__(client, messages)
     self.service = self.client.projects_secrets
 
-  def Create(self, secret_ref, policy, locations, labels, keys=None):
+  def Create(self,
+             secret_ref,
+             policy,
+             locations,
+             labels,
+             expire_time=None,
+             ttl=None,
+             keys=None):
     """Create a secret."""
     keys = keys or []
     replication = _MakeReplicationMessage(self.messages, policy, locations,
@@ -114,8 +121,11 @@ class Secrets(Client):
         self.messages.SecretmanagerProjectsSecretsCreateRequest(
             parent=secret_ref.Parent().RelativeName(),
             secretId=secret_ref.Name(),
-            secret=self.messages.Secret(labels=labels,
-                                        replication=replication)))
+            secret=self.messages.Secret(
+                labels=labels,
+                replication=replication,
+                expireTime=expire_time,
+                ttl=ttl)))
 
   def Delete(self, secret_ref):
     """Delete a secret."""
@@ -156,12 +166,13 @@ class Secrets(Client):
             payload=self.messages.SecretPayload(data=data)))
     return self.service.AddVersion(request)
 
-  def Update(self, secret_ref, labels, update_mask):
+  def Update(self, secret_ref, labels, update_mask, expire_time=None, ttl=None):
     """Update a secret."""
     return self.service.Patch(
         self.messages.SecretmanagerProjectsSecretsPatchRequest(
             name=secret_ref.RelativeName(),
-            secret=self.messages.Secret(labels=labels),
+            secret=self.messages.Secret(
+                labels=labels, expireTime=expire_time, ttl=ttl),
             updateMask=_FormatUpdateMask(update_mask)))
 
   def SetReplication(self, secret_ref, policy, locations, keys):

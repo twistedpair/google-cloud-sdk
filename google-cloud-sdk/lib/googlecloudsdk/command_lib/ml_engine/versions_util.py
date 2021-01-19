@@ -191,7 +191,10 @@ def List(versions_client, model=None):
 
 
 _ALLOWED_UPDATE_YAML_FIELDS = frozenset([
-    'autoScaling', 'description', 'manualScaling',
+    'autoScaling',
+    'description',
+    'manualScaling',
+    'requestLoggingConfig',
 ])
 
 
@@ -219,12 +222,32 @@ def Update(versions_client, operations_client, version_ref, args):
   if version and hasattr(version.autoScaling, 'minNodes'):
     auto_scaling_min_nodes = version.autoScaling.minNodes
 
+  auto_scaling_max_nodes = None
+  if version and hasattr(version.autoScaling, 'maxNodes'):
+    auto_scaling_max_nodes = version.autoScaling.maxNodes
+
+  bigquery_table_name = getattr(args, 'bigquery_table_name', None)
+  if bigquery_table_name is None and version and hasattr(
+      version.requestLoggingConfig, 'bigqueryTableName'):
+    bigquery_table_name = version.requestLoggingConfig.bigqueryTableName
+
+  sampling_percentage = getattr(args, 'sampling_percentage', None)
+  if sampling_percentage is None and version and hasattr(
+      version.requestLoggingConfig, 'samplingPercentage'):
+    sampling_percentage = version.requestLoggingConfig.samplingPercentage
+
   all_args = ['update_labels', 'clear_labels', 'remove_labels', 'description']
 
   try:
-    op = versions_client.Patch(version_ref, labels_update, description,
-                               manual_scaling_nodes=manual_scaling_nodes,
-                               auto_scaling_min_nodes=auto_scaling_min_nodes)
+    op = versions_client.Patch(
+        version_ref,
+        labels_update,
+        description,
+        manual_scaling_nodes=manual_scaling_nodes,
+        auto_scaling_min_nodes=auto_scaling_min_nodes,
+        auto_scaling_max_nodes=auto_scaling_max_nodes,
+        bigquery_table_name=bigquery_table_name,
+        sampling_percentage=sampling_percentage)
   except versions_api.NoFieldsSpecifiedError:
     if not any(args.IsSpecified(arg) for arg in all_args):
       raise

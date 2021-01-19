@@ -152,7 +152,7 @@ class Settings(DataObject):
         default credential.
       context: Path to directory to use as the current working directory for the
         docker build.
-      builder: Buildpack builder.
+      builder: The builder specification or None.
       local_port: Local port to which to forward the service connection.
       env_vars: Container environment variables.
       cloudsql_instances: Cloud SQL instances.
@@ -201,7 +201,9 @@ class Settings(DataObject):
 
     context = os.path.abspath(args.source or files.GetCWD())
 
-    builder = _CreateBuilder(args, context)
+    builder = None
+    if 'no_skaffold_file' not in args or not args.no_skaffold_file:
+      builder = _CreateBuilder(args, context)
 
     return cls(
         service_name=service_name,

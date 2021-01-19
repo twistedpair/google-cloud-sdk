@@ -761,40 +761,37 @@
   },
   "resources": {
     "projects": {
-      "methods": {
-        "removeIamPolicy": {
-          "id": "datafusion.projects.removeIamPolicy",
-          "path": "v1beta1/{+resource}:removeIamPolicy",
-          "flatPath": "v1beta1/projects/{projectsId}:removeIamPolicy",
-          "httpMethod": "POST",
-          "parameters": {
-            "resource": {
-              "description": "The resource on which IAM policy to be removed is attached to.",
-              "location": "path",
-              "required": true,
-              "pattern": "^projects\/.*$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "resource"
-          ],
-          "request": {
-            "$ref": "RemoveIamPolicyRequest"
-          },
-          "response": {
-            "$ref": "RemoveIamPolicyResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Remove IAM policy that is currently set on the given resource."
-        }
-      }
-      ,
       "resources": {
         "locations": {
           "methods": {
+            "removeIamPolicy": {
+              "id": "datafusion.projects.locations.removeIamPolicy",
+              "path": "v1beta1/{+resource}:removeIamPolicy",
+              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/{locationsId1}:removeIamPolicy",
+              "httpMethod": "POST",
+              "parameters": {
+                "resource": {
+                  "description": "The resource on which IAM policy to be removed is attached to.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/.*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "request": {
+                "$ref": "RemoveIamPolicyRequest"
+              },
+              "response": {
+                "$ref": "RemoveIamPolicyResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Remove IAM policy that is currently set on the given resource."
+            },
             "list": {
               "id": "datafusion.projects.locations.list",
               "path": "v1beta1/{+name}/locations",

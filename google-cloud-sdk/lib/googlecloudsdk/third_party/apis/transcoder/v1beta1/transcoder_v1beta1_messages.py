@@ -383,9 +383,10 @@ class Input(_messages.Message):
     key: A unique key for this input. Must be specified when using advanced
       mapping and edit lists.
     preprocessingConfig: Preprocessing configurations.
-    uri: URI of the media. It must be stored in Cloud Storage. Example
-      `gs://bucket/inputs/file.mp4`. If empty the value will be populated from
-      `Job.input_uri`.
+    uri: URI of the media. Input files must be at least 5 seconds in duration
+      and stored in Cloud Storage (for example,
+      `gs://bucket/inputs/file.mp4`). If empty, the value will be populated
+      from `Job.input_uri`.
   """
 
   key = _messages.StringField(1)
@@ -410,9 +411,9 @@ class Job(_messages.Message):
       This property is always present when `state` is `FAILED`.
     inputUri: Input only. Specify the `input_uri` to populate empty `uri`
       fields in each element of `Job.config.inputs` or
-      `JobTemplate.config.inputs` when using template. URI of the media. It
-      must be stored in Cloud Storage. For example,
-      `gs://bucket/inputs/file.mp4`.
+      `JobTemplate.config.inputs` when using template. URI of the media. Input
+      files must be at least 5 seconds in duration and stored in Cloud Storage
+      (for example, `gs://bucket/inputs/file.mp4`).
     name: The resource name of the job. Format:
       `projects/{project}/locations/{location}/jobs/{job}`
     originUri: Output only. The origin URI. *Note*: This feature is not yet
@@ -730,7 +731,9 @@ class SegmentSettings(_messages.Message):
     individualSegments: Required. Create an individual segment file. The
       default is `false`.
     segmentDuration: Duration of the segments in seconds. The default is
-      `"6.0s"`.
+      `"6.0s"`. Note that `segmentDuration` must be greater than or equal to
+      [`gopDuration`](#videostream), and `segmentDuration` must be divisible
+      by [`gopDuration`](#videostream).
   """
 
   individualSegments = _messages.BooleanField(1)
@@ -1035,7 +1038,10 @@ class VideoStream(_messages.Message):
       20 | 30 | | 15 | 15 | 15 | 20 | 30 | | 12 | 12 | 12 | 20 | 30 | | 10 |
       10 | 10 | 20 | 30 | ```
     gopDuration: Select the GOP size based on the specified duration. The
-      default is `"3s"`.
+      default is `"3s"`. Note that `gopDuration` must be less than or equal to
+      [`segmentDuration`](#SegmentSettings), and
+      [`segmentDuration`](#SegmentSettings) must be divisible by
+      `gopDuration`.
     gopFrameCount: Select the GOP size based on the specified frame count.
       Must be greater than zero.
     heightPixels: The height of the video in pixels. Must be an even integer.

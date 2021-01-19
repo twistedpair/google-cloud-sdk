@@ -673,7 +673,7 @@
       "type": "object",
       "properties": {
         "bootDiskType": {
-          "description": "Optional. Type of the boot disk (default is \"pd-standard\"). Valid values: \"pd-ssd\" (Persistent Disk Solid State Drive) or \"pd-standard\" (Persistent Disk Hard Disk Drive).",
+          "description": "Optional. Type of the boot disk (default is \"pd-standard\"). Valid values: \"pd-balanced\" (Persistent Disk Balanced Solid State Drive), \"pd-ssd\" (Persistent Disk Solid State Drive), or \"pd-standard\" (Persistent Disk Hard Disk Drive). See Disk types (https:\/\/cloud.google.com\/compute\/docs\/disks#disk-types).",
           "type": "string"
         },
         "bootDiskSizeGb": {
@@ -1250,6 +1250,10 @@
           "description": "Output only. Indicates whether the job is completed. If the value is false, the job is still in progress. If true, the job is completed, and status.state field will indicate if it was successful, failed, or cancelled.",
           "readOnly": true,
           "type": "boolean"
+        },
+        "driverRunner": {
+          "description": "Optional. Configurations for the driver runner",
+          "$ref": "DriverRunner"
         }
       }
     },
@@ -1840,6 +1844,45 @@
         },
         "maxFailuresTotal": {
           "description": "Optional. Maximum number of times in total a driver may be restarted as a result of driver exiting with non-zero code before job is reported failed. Maximum value is 240.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "DriverRunner": {
+      "id": "DriverRunner",
+      "description": "Configurations for the driver runner",
+      "type": "object",
+      "properties": {
+        "masterDriverRunner": {
+          "description": "Optional. (default) Run driver on master node",
+          "$ref": "MasterDriverRunner"
+        },
+        "yarnDriverRunner": {
+          "description": "Optional. Configuration for running the driver on workers using YARN",
+          "$ref": "YarnDriverRunner"
+        }
+      }
+    },
+    "MasterDriverRunner": {
+      "id": "MasterDriverRunner",
+      "description": "The default mode of executing drivers: on master nodes Currently no internal fields.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "YarnDriverRunner": {
+      "id": "YarnDriverRunner",
+      "description": "Schedule the driver on workers using YARN",
+      "type": "object",
+      "properties": {
+        "memoryMb": {
+          "description": "Optional. The amount of memory in MB this driver is requesting from YARN",
+          "type": "integer",
+          "format": "int32"
+        },
+        "vcores": {
+          "description": "Optional. The number of vCPUs this driver is requesting from YARN",
           "type": "integer",
           "format": "int32"
         }
@@ -3407,6 +3450,44 @@
                   ],
                   "description": "Gets the resource representation for a cluster in a project."
                 },
+                "getClusterAsTemplate": {
+                  "id": "dataproc.projects.regions.clusters.getClusterAsTemplate",
+                  "path": "v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}:getClusterAsTemplate",
+                  "flatPath": "v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}:getClusterAsTemplate",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "projectId": {
+                      "description": "Required. The ID of the Google Cloud Platform project that the cluster belongs to.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "region": {
+                      "description": "Required. The Dataproc region in which to handle the request.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clusterName": {
+                      "description": "Required. The cluster name.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "region",
+                    "clusterName"
+                  ],
+                  "response": {
+                    "$ref": "Cluster"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Exports a template for a cluster in a project that can be used in future CreateCluster requests."
+                },
                 "list": {
                   "id": "dataproc.projects.regions.clusters.list",
                   "path": "v1beta2/projects/{projectId}/regions/{region}/clusters",
@@ -3763,6 +3844,44 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Gets the resource representation for a job in a project."
+                },
+                "getJobAsTemplate": {
+                  "id": "dataproc.projects.regions.jobs.getJobAsTemplate",
+                  "path": "v1beta2/projects/{projectId}/regions/{region}/jobs/{jobId}:getJobAsTemplate",
+                  "flatPath": "v1beta2/projects/{projectId}/regions/{region}/jobs/{jobId}:getJobAsTemplate",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "projectId": {
+                      "description": "Required. The ID of the Google Cloud Platform project that the job belongs to.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "region": {
+                      "description": "Required. The Dataproc region in which to handle the request.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "jobId": {
+                      "description": "Required. The job ID.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "region",
+                    "jobId"
+                  ],
+                  "response": {
+                    "$ref": "Job"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Exports the resource representation for a job in a project as a template that can be used as a SubmitJobRequest."
                 },
                 "list": {
                   "id": "dataproc.projects.regions.jobs.list",

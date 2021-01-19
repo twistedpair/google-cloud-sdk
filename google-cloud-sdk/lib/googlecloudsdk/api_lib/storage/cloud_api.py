@@ -65,8 +65,8 @@ class RequestConfig(object):
 
 
 # TODO(b/172849424) Refactor RequestConfigs as a whole to avoid this.
-def convert_to_provider_request_config(generic_request_config,
-                                       provider_request_config_type):
+def get_provider_request_config(generic_request_config,
+                                provider_request_config_type):
   """Converts RequestConfig to provider-specific version (ex: GcsRequestConfig).
 
   Args:
@@ -80,6 +80,10 @@ def convert_to_provider_request_config(generic_request_config,
   """
   if not generic_request_config:
     return provider_request_config_type()
+
+  if isinstance(generic_request_config, provider_request_config_type):
+    return generic_request_config
+
   return provider_request_config_type(
       md5_hash=generic_request_config.md5_hash,
       predefined_acl_string=generic_request_config.predefined_acl_string,
@@ -358,7 +362,7 @@ class CloudApi(object):
 
     Args:
       source_stream (stream): Seekable stream of object data.
-      destination_resource  (resource_reference.ObjectResource|UnknownResource):
+      destination_resource (resource_reference.ObjectResource|UnknownResource):
           Contains the correct metadata to upload.
       progress_callback (function): Callback function for progress
           notifications. Receives calls with arguments (bytes_transferred,
@@ -375,3 +379,27 @@ class CloudApi(object):
           this interface.
     """
     raise NotImplementedError('upload_object must be overridden.')
+
+  def compose_objects(self,
+                      source_resources,
+                      destination_resource,
+                      request_config=None):
+    """Concatenates a list of objects into a new object.
+
+    Args:
+      source_resources (list[ObjectResource|UnknownResource]): The objects
+          to compose.
+      destination_resource (resource_reference.UnknownResource): Metadata for
+          the resulting composite object.
+      request_config (RequestConfig): Object containing general API function
+          arguments. Subclasses for specific cloud providers are available.
+
+    Returns:
+      resource_reference.ObjectResource with composite object's metadata.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+          this interface.
+    """
+    raise NotImplementedError('compose_object must be overridden.')

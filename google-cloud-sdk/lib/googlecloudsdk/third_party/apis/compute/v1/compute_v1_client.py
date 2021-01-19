@@ -47,6 +47,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.diskTypes = self.DiskTypesService(self)
     self.disks = self.DisksService(self)
     self.externalVpnGateways = self.ExternalVpnGatewaysService(self)
+    self.firewallPolicies = self.FirewallPoliciesService(self)
     self.firewalls = self.FirewallsService(self)
     self.forwardingRules = self.ForwardingRulesService(self)
     self.globalAddresses = self.GlobalAddressesService(self)
@@ -1651,6 +1652,484 @@ Example request body:
         relative_path='projects/{project}/global/externalVpnGateways/{resource}/testIamPermissions',
         request_field='testPermissionsRequest',
         request_type_name='ComputeExternalVpnGatewaysTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class FirewallPoliciesService(base_api.BaseApiService):
+    """Service class for the firewallPolicies resource."""
+
+    _NAME = 'firewallPolicies'
+
+    def __init__(self, client):
+      super(ComputeV1.FirewallPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AddAssociation(self, request, global_params=None):
+      r"""Inserts an association for the specified firewall policy.
+
+      Args:
+        request: (ComputeFirewallPoliciesAddAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.firewallPolicies.addAssociation',
+        ordered_params=['firewallPolicy'],
+        path_params=['firewallPolicy'],
+        query_params=['replaceExistingAssociation', 'requestId'],
+        relative_path='locations/global/firewallPolicies/{firewallPolicy}/addAssociation',
+        request_field='firewallPolicyAssociation',
+        request_type_name='ComputeFirewallPoliciesAddAssociationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def AddRule(self, request, global_params=None):
+      r"""Inserts a rule into a firewall policy.
+
+      Args:
+        request: (ComputeFirewallPoliciesAddRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.firewallPolicies.addRule',
+        ordered_params=['firewallPolicy'],
+        path_params=['firewallPolicy'],
+        query_params=['requestId'],
+        relative_path='locations/global/firewallPolicies/{firewallPolicy}/addRule',
+        request_field='firewallPolicyRule',
+        request_type_name='ComputeFirewallPoliciesAddRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def CloneRules(self, request, global_params=None):
+      r"""Copies rules to the specified firewall policy.
+
+      Args:
+        request: (ComputeFirewallPoliciesCloneRulesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CloneRules')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CloneRules.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.firewallPolicies.cloneRules',
+        ordered_params=['firewallPolicy'],
+        path_params=['firewallPolicy'],
+        query_params=['requestId', 'sourceFirewallPolicy'],
+        relative_path='locations/global/firewallPolicies/{firewallPolicy}/cloneRules',
+        request_field='',
+        request_type_name='ComputeFirewallPoliciesCloneRulesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified policy.
+
+      Args:
+        request: (ComputeFirewallPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.firewallPolicies.delete',
+        ordered_params=['firewallPolicy'],
+        path_params=['firewallPolicy'],
+        query_params=['requestId'],
+        relative_path='locations/global/firewallPolicies/{firewallPolicy}',
+        request_field='',
+        request_type_name='ComputeFirewallPoliciesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified firewall policy.
+
+      Args:
+        request: (ComputeFirewallPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FirewallPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.firewallPolicies.get',
+        ordered_params=['firewallPolicy'],
+        path_params=['firewallPolicy'],
+        query_params=[],
+        relative_path='locations/global/firewallPolicies/{firewallPolicy}',
+        request_field='',
+        request_type_name='ComputeFirewallPoliciesGetRequest',
+        response_type_name='FirewallPolicy',
+        supports_download=False,
+    )
+
+    def GetAssociation(self, request, global_params=None):
+      r"""Gets an association with the specified name.
+
+      Args:
+        request: (ComputeFirewallPoliciesGetAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FirewallPolicyAssociation) The response message.
+      """
+      config = self.GetMethodConfig('GetAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.firewallPolicies.getAssociation',
+        ordered_params=['firewallPolicy'],
+        path_params=['firewallPolicy'],
+        query_params=['name'],
+        relative_path='locations/global/firewallPolicies/{firewallPolicy}/getAssociation',
+        request_field='',
+        request_type_name='ComputeFirewallPoliciesGetAssociationRequest',
+        response_type_name='FirewallPolicyAssociation',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeFirewallPoliciesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.firewallPolicies.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='locations/global/firewallPolicies/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name='ComputeFirewallPoliciesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def GetRule(self, request, global_params=None):
+      r"""Gets a rule of the specified priority.
+
+      Args:
+        request: (ComputeFirewallPoliciesGetRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FirewallPolicyRule) The response message.
+      """
+      config = self.GetMethodConfig('GetRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.firewallPolicies.getRule',
+        ordered_params=['firewallPolicy'],
+        path_params=['firewallPolicy'],
+        query_params=['priority'],
+        relative_path='locations/global/firewallPolicies/{firewallPolicy}/getRule',
+        request_field='',
+        request_type_name='ComputeFirewallPoliciesGetRuleRequest',
+        response_type_name='FirewallPolicyRule',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new policy in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeFirewallPoliciesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.firewallPolicies.insert',
+        ordered_params=[],
+        path_params=[],
+        query_params=['parentId', 'requestId'],
+        relative_path='locations/global/firewallPolicies',
+        request_field='firewallPolicy',
+        request_type_name='ComputeFirewallPoliciesInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the policies that have been configured for the specified project.
+
+      Args:
+        request: (ComputeFirewallPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FirewallPolicyList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.firewallPolicies.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'parentId', 'returnPartialSuccess'],
+        relative_path='locations/global/firewallPolicies',
+        request_field='',
+        request_type_name='ComputeFirewallPoliciesListRequest',
+        response_type_name='FirewallPolicyList',
+        supports_download=False,
+    )
+
+    def ListAssociations(self, request, global_params=None):
+      r"""Lists associations of a specified target, i.e., organization or folder.
+
+      Args:
+        request: (ComputeFirewallPoliciesListAssociationsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FirewallPoliciesListAssociationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListAssociations')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListAssociations.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.firewallPolicies.listAssociations',
+        ordered_params=[],
+        path_params=[],
+        query_params=['targetResource'],
+        relative_path='locations/global/firewallPolicies/listAssociations',
+        request_field='',
+        request_type_name='ComputeFirewallPoliciesListAssociationsRequest',
+        response_type_name='FirewallPoliciesListAssociationsResponse',
+        supports_download=False,
+    )
+
+    def Move(self, request, global_params=None):
+      r"""Moves the specified firewall policy.
+
+      Args:
+        request: (ComputeFirewallPoliciesMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Move')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Move.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.firewallPolicies.move',
+        ordered_params=['firewallPolicy'],
+        path_params=['firewallPolicy'],
+        query_params=['parentId', 'requestId'],
+        relative_path='locations/global/firewallPolicies/{firewallPolicy}/move',
+        request_field='',
+        request_type_name='ComputeFirewallPoliciesMoveRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified policy with the data included in the request.
+
+      Args:
+        request: (ComputeFirewallPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.firewallPolicies.patch',
+        ordered_params=['firewallPolicy'],
+        path_params=['firewallPolicy'],
+        query_params=['requestId'],
+        relative_path='locations/global/firewallPolicies/{firewallPolicy}',
+        request_field='firewallPolicyResource',
+        request_type_name='ComputeFirewallPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def PatchRule(self, request, global_params=None):
+      r"""Patches a rule of the specified priority.
+
+      Args:
+        request: (ComputeFirewallPoliciesPatchRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.firewallPolicies.patchRule',
+        ordered_params=['firewallPolicy'],
+        path_params=['firewallPolicy'],
+        query_params=['priority', 'requestId'],
+        relative_path='locations/global/firewallPolicies/{firewallPolicy}/patchRule',
+        request_field='firewallPolicyRule',
+        request_type_name='ComputeFirewallPoliciesPatchRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveAssociation(self, request, global_params=None):
+      r"""Removes an association for the specified firewall policy.
+
+      Args:
+        request: (ComputeFirewallPoliciesRemoveAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.firewallPolicies.removeAssociation',
+        ordered_params=['firewallPolicy'],
+        path_params=['firewallPolicy'],
+        query_params=['name', 'requestId'],
+        relative_path='locations/global/firewallPolicies/{firewallPolicy}/removeAssociation',
+        request_field='',
+        request_type_name='ComputeFirewallPoliciesRemoveAssociationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveRule(self, request, global_params=None):
+      r"""Deletes a rule of the specified priority.
+
+      Args:
+        request: (ComputeFirewallPoliciesRemoveRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.firewallPolicies.removeRule',
+        ordered_params=['firewallPolicy'],
+        path_params=['firewallPolicy'],
+        query_params=['priority', 'requestId'],
+        relative_path='locations/global/firewallPolicies/{firewallPolicy}/removeRule',
+        request_field='',
+        request_type_name='ComputeFirewallPoliciesRemoveRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeFirewallPoliciesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.firewallPolicies.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='locations/global/firewallPolicies/{resource}/setIamPolicy',
+        request_field='globalOrganizationSetPolicyRequest',
+        request_type_name='ComputeFirewallPoliciesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeFirewallPoliciesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.firewallPolicies.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='locations/global/firewallPolicies/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeFirewallPoliciesTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
@@ -4803,6 +5282,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetEffectiveFirewalls(self, request, global_params=None):
+      r"""Returns effective firewalls applied to an interface of the instance.
+
+      Args:
+        request: (ComputeInstancesGetEffectiveFirewallsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstancesGetEffectiveFirewallsResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetEffectiveFirewalls')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetEffectiveFirewalls.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instances.getEffectiveFirewalls',
+        ordered_params=['project', 'zone', 'instance', 'networkInterface'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['networkInterface'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/getEffectiveFirewalls',
+        request_field='',
+        request_type_name='ComputeInstancesGetEffectiveFirewallsRequest',
+        response_type_name='InstancesGetEffectiveFirewallsResponse',
+        supports_download=False,
+    )
+
     def GetGuestAttributes(self, request, global_params=None):
       r"""Returns the specified guest attributes entry.
 
@@ -6700,6 +7205,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name='ComputeNetworksGetRequest',
         response_type_name='Network',
+        supports_download=False,
+    )
+
+    def GetEffectiveFirewalls(self, request, global_params=None):
+      r"""Returns the effective firewalls on a given network.
+
+      Args:
+        request: (ComputeNetworksGetEffectiveFirewallsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworksGetEffectiveFirewallsResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetEffectiveFirewalls')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetEffectiveFirewalls.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.networks.getEffectiveFirewalls',
+        ordered_params=['project', 'network'],
+        path_params=['network', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/networks/{network}/getEffectiveFirewalls',
+        request_field='',
+        request_type_name='ComputeNetworksGetEffectiveFirewallsRequest',
+        response_type_name='NetworksGetEffectiveFirewallsResponse',
         supports_download=False,
     )
 
@@ -13304,6 +13835,32 @@ For more information, see Deleting snapshots.
         request_field='',
         request_type_name='ComputeTargetHttpsProxiesListRequest',
         response_type_name='TargetHttpsProxyList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+
+      Args:
+        request: (ComputeTargetHttpsProxiesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.targetHttpsProxies.patch',
+        ordered_params=['project', 'targetHttpsProxy'],
+        path_params=['project', 'targetHttpsProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}',
+        request_field='targetHttpsProxyResource',
+        request_type_name='ComputeTargetHttpsProxiesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

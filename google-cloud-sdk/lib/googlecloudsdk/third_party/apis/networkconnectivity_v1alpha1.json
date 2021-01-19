@@ -283,7 +283,7 @@
     },
     "Hub": {
       "id": "Hub",
-      "description": "The Connectivity Hub is a hub-and-spoke abstraction for network connectivity management in Google Cloud. It aims to reduce operational complexity through a simple, centralized connectivity management model. Here is the resource message of a Hub.",
+      "description": "The Network Connectivity Center is a hub-and-spoke abstraction for network connectivity management in Google Cloud. It aims to reduce operational complexity through a simple, centralized connectivity management model. Following is the resource message of a hub.",
       "type": "object",
       "properties": {
         "name": {

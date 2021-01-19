@@ -714,8 +714,8 @@ class DataflowProjectsJobsAggregatedRequest(_messages.Message):
 
   Enums:
     FilterValueValuesEnum: The kind of filter to use.
-    ViewValueValuesEnum: Level of information requested in response. Default
-      is `JOB_VIEW_SUMMARY`.
+    ViewValueValuesEnum: Deprecated. ListJobs always returns summaries now.
+      Use GetJob for other JobViews.
 
   Fields:
     filter: The kind of filter to use.
@@ -728,8 +728,8 @@ class DataflowProjectsJobsAggregatedRequest(_messages.Message):
     pageToken: Set this to the 'next_page_token' field of a previous response
       to request additional results in a long list.
     projectId: The project which owns the jobs.
-    view: Level of information requested in response. Default is
-      `JOB_VIEW_SUMMARY`.
+    view: Deprecated. ListJobs always returns summaries now. Use GetJob for
+      other JobViews.
   """
 
   class FilterValueValuesEnum(_messages.Enum):
@@ -752,8 +752,8 @@ class DataflowProjectsJobsAggregatedRequest(_messages.Message):
     ACTIVE = 3
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Level of information requested in response. Default is
-    `JOB_VIEW_SUMMARY`.
+    r"""Deprecated. ListJobs always returns summaries now. Use GetJob for
+    other JobViews.
 
     Values:
       JOB_VIEW_UNKNOWN: The job view to return isn't specified, or is unknown.
@@ -915,8 +915,8 @@ class DataflowProjectsJobsListRequest(_messages.Message):
 
   Enums:
     FilterValueValuesEnum: The kind of filter to use.
-    ViewValueValuesEnum: Level of information requested in response. Default
-      is `JOB_VIEW_SUMMARY`.
+    ViewValueValuesEnum: Deprecated. ListJobs always returns summaries now.
+      Use GetJob for other JobViews.
 
   Fields:
     filter: The kind of filter to use.
@@ -929,8 +929,8 @@ class DataflowProjectsJobsListRequest(_messages.Message):
     pageToken: Set this to the 'next_page_token' field of a previous response
       to request additional results in a long list.
     projectId: The project which owns the jobs.
-    view: Level of information requested in response. Default is
-      `JOB_VIEW_SUMMARY`.
+    view: Deprecated. ListJobs always returns summaries now. Use GetJob for
+      other JobViews.
   """
 
   class FilterValueValuesEnum(_messages.Enum):
@@ -953,8 +953,8 @@ class DataflowProjectsJobsListRequest(_messages.Message):
     ACTIVE = 3
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Level of information requested in response. Default is
-    `JOB_VIEW_SUMMARY`.
+    r"""Deprecated. ListJobs always returns summaries now. Use GetJob for
+    other JobViews.
 
     Values:
       JOB_VIEW_UNKNOWN: The job view to return isn't specified, or is unknown.
@@ -1302,8 +1302,8 @@ class DataflowProjectsLocationsJobsListRequest(_messages.Message):
 
   Enums:
     FilterValueValuesEnum: The kind of filter to use.
-    ViewValueValuesEnum: Level of information requested in response. Default
-      is `JOB_VIEW_SUMMARY`.
+    ViewValueValuesEnum: Deprecated. ListJobs always returns summaries now.
+      Use GetJob for other JobViews.
 
   Fields:
     filter: The kind of filter to use.
@@ -1316,8 +1316,8 @@ class DataflowProjectsLocationsJobsListRequest(_messages.Message):
     pageToken: Set this to the 'next_page_token' field of a previous response
       to request additional results in a long list.
     projectId: The project which owns the jobs.
-    view: Level of information requested in response. Default is
-      `JOB_VIEW_SUMMARY`.
+    view: Deprecated. ListJobs always returns summaries now. Use GetJob for
+      other JobViews.
   """
 
   class FilterValueValuesEnum(_messages.Enum):
@@ -1340,8 +1340,8 @@ class DataflowProjectsLocationsJobsListRequest(_messages.Message):
     ACTIVE = 3
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Level of information requested in response. Default is
-    `JOB_VIEW_SUMMARY`.
+    r"""Deprecated. ListJobs always returns summaries now. Use GetJob for
+    other JobViews.
 
     Values:
       JOB_VIEW_UNKNOWN: The job view to return isn't specified, or is unknown.
@@ -2756,7 +2756,7 @@ class IntegerMean(_messages.Message):
 
 
 class Job(_messages.Message):
-  r"""Defines a job to be run by the Cloud Dataflow service.
+  r"""Defines a job to be run by the Cloud Dataflow service. nextID: 26
 
   Enums:
     CurrentStateValueValuesEnum: The current state of the job. Jobs are
@@ -2841,6 +2841,8 @@ class Job(_messages.Message):
       a job's requested state to `JOB_STATE_CANCELLED` or `JOB_STATE_DONE`,
       irrevocably terminating the job if it has not already reached a terminal
       state.
+    satisfiesPzs: Reserved for future use. This field is set only in responses
+      from the server; it is ignored if it is set in any requests.
     stageStates: This field may be mutated by the Cloud Dataflow service;
       callers cannot mutate it.
     startTime: The timestamp when the job was started (transitioned to
@@ -3096,13 +3098,14 @@ class Job(_messages.Message):
   replaceJobId = _messages.StringField(15)
   replacedByJobId = _messages.StringField(16)
   requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 17)
-  stageStates = _messages.MessageField('ExecutionStageState', 18, repeated=True)
-  startTime = _messages.StringField(19)
-  steps = _messages.MessageField('Step', 20, repeated=True)
-  stepsLocation = _messages.StringField(21)
-  tempFiles = _messages.StringField(22, repeated=True)
-  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 23)
-  type = _messages.EnumField('TypeValueValuesEnum', 24)
+  satisfiesPzs = _messages.BooleanField(18)
+  stageStates = _messages.MessageField('ExecutionStageState', 19, repeated=True)
+  startTime = _messages.StringField(20)
+  steps = _messages.MessageField('Step', 21, repeated=True)
+  stepsLocation = _messages.StringField(22)
+  tempFiles = _messages.StringField(23, repeated=True)
+  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 24)
+  type = _messages.EnumField('TypeValueValuesEnum', 25)
 
 
 class JobExecutionDetails(_messages.Message):

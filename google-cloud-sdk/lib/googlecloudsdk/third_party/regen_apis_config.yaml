@@ -89,6 +89,8 @@ apis:
       discovery_doc: apigateway_v1alpha1.json
     v1beta:
       discovery_doc: apigateway_v1beta.json
+    v1:
+      discovery_doc: apigateway_v1.json
       default: true
   apigee:
     v1:
@@ -235,6 +237,8 @@ apis:
           path: providers/{triggerProvider}/eventTypes/{triggerEvent}
         projects.buckets:
           path: projects/_/buckets/{bucketId}
+    v2alpha:
+      discovery_doc: cloudfunctions_v2alpha.json
   cloudidentity:
     v1alpha1:
       discovery_doc: cloudidentity_v1alpha1.json
@@ -427,6 +431,9 @@ apis:
   datamigration:
     v1alpha2:
       discovery_doc: datamigration_v1alpha2.json
+      default: true
+    v1:
+      discovery_doc: datamigration_v1.json
   dataproc:
     v1:
       discovery_doc: dataproc_v1.json
@@ -567,6 +574,10 @@ apis:
     v1:
       discovery_doc: healthcare_v1.json
       default: true
+  kubernetesedge:
+    v1alpha1:
+      discovery_doc: kubernetesedge_v1alpha1.json
+      default: true
   oslogin:
     v1alpha:
       discovery_doc: oslogin_v1alpha.json
@@ -684,6 +695,8 @@ apis:
     v1beta2:
       discovery_doc: memcache_v1beta2.json
       default: true
+    v1:
+      discovery_doc: memcache_v1.json
   metastore:
     v1alpha:
       discovery_doc: metastore_v1alpha.json
@@ -726,6 +739,8 @@ apis:
     v1alpha1:
       discovery_doc: networksecurity_v1alpha1.json
   notebooks:
+    v1:
+      discovery_doc: notebooks_v1.json
     v1beta1:
       discovery_doc: notebooks_v1beta1.json
       default: true
@@ -752,6 +767,13 @@ apis:
         iam:
           path: iam
       discovery_doc: policytroubleshooter_v2alpha1.json
+  policysimulator:
+    v1beta1:
+      default: true
+      resources:
+        simulator:
+          path: simulator
+      discovery_doc: policysimulator_v1beta1.json
   privateca:
     v1beta1:
       default: true
@@ -1006,20 +1028,19 @@ apis:
   workflowexecutions:
     v1alpha1:
       discovery_doc: workflowexecutions_v1alpha1.json
-      default: true
     v1beta:
       discovery_doc: workflowexecutions_v1beta.json
     v1:
       discovery_doc: workflowexecutions_v1.json
+      default: true
   workflows:
     v1alpha1:
       discovery_doc: workflows_v1alpha1.json
-      # TODO(b/171499924): Change the default version to V1 at/after GA.
-      default: true
     v1beta:
       discovery_doc: workflows_v1beta.json
     v1:
       discovery_doc: workflows_v1.json
+      default: true
   sddc:
     v1alpha1:
       discovery_doc: sddc_v1alpha1.json

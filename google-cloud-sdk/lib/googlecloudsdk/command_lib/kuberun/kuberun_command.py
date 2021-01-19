@@ -96,22 +96,30 @@ class KubeRunCommand(base.BinaryBackedCommand):
     if config.Paths().sdk_root is not None:
       devkit_dir = os.path.join(config.Paths().sdk_root, 'lib', 'kuberun',
                                 'kuberun_devkits')
+    env_vars = {
+        'CLOUDSDK_AUTH_TOKEN':
+            auth.GetAuthToken(account=properties.VALUES.core.account.Get()),
+        'CLOUDSDK_PROJECT':
+            project,
+        'CLOUDSDK_USER_AGENT':  # Cloud SDK prefix + user agent string
+            '{} {}'.format(config.CLOUDSDK_USER_AGENT,
+                           transport.MakeUserAgentString()),
+        'KUBERUN_DEVKIT_DIRECTORY':
+            devkit_dir,
+    }
+
+    region = properties.VALUES.compute.region.Get(
+        required=False, validate=False)
+    if region is not None:
+      env_vars['CLOUDSDK_COMPUTE_REGION'] = region
+
+    zone = properties.VALUES.compute.zone.Get(required=False, validate=False)
+    if zone is not None:
+      env_vars['CLOUDSDK_COMPUTE_ZONE'] = zone
 
     response = self.command_executor(
         command=command,
-        env=kuberuncli.GetEnvArgsForCommand(
-            extra_vars={
-                'CLOUDSDK_AUTH_TOKEN':
-                    auth.GetAuthToken(
-                        account=properties.VALUES.core.account.Get()),
-                'CLOUDSDK_PROJECT':
-                    project,
-                'CLOUDSDK_USER_AGENT':  # Cloud SDK prefix + user agent string
-                    '{} {}'.format(config.CLOUDSDK_USER_AGENT,
-                                   transport.MakeUserAgentString()),
-                'KUBERUN_DEVKIT_DIRECTORY':
-                    devkit_dir,
-            }),
+        env=kuberuncli.GetEnvArgsForCommand(extra_vars=env_vars),
         show_exec_error=args.show_exec_error)
     log.debug('Response: %s' % response.stdout)
     log.debug('ErrResponse: %s' % response.stderr)

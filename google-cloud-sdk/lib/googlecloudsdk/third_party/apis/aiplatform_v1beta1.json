@@ -1349,11 +1349,11 @@
           "$ref": "GoogleCloudAiplatformV1beta1PythonPackageSpec"
         },
         "machineSpec": {
-          "description": "Required. Immutable. The specification of a single machine.",
+          "description": "Optional. Immutable. The specification of a single machine.",
           "$ref": "GoogleCloudAiplatformV1beta1MachineSpec"
         },
         "replicaCount": {
-          "description": "Required. The number of worker replicas to use for this worker pool.",
+          "description": "Optional. The number of worker replicas to use for this worker pool.",
           "type": "string",
           "format": "int64"
         },
@@ -2542,6 +2542,10 @@
         "pageToken": {
           "description": "The standard page token.",
           "type": "string"
+        },
+        "filter": {
+          "description": "Supported filters are: * Resource type: For a specific type of MigratableResource. * `ml_engine_model_version:*` * `automl_model:*`, * `automl_dataset:*` * `data_labeling_dataset:*`. * Migrated or not: Filter migrated resource or not by last_migrate_time. * `last_migrate_time:*` will filter migrated resources. * `NOT last_migrate_time:*` will filter not yet migrated resource.",
+          "type": "string"
         }
       }
     },
@@ -3174,6 +3178,14 @@
           "description": "Output only. Aggregated explanation metrics for the Model's prediction output over the data this ModelEvaluation uses. This field is populated only if the Model is evaluated with explanations, and only for AutoML tabular Models. ",
           "readOnly": true,
           "$ref": "GoogleCloudAiplatformV1beta1ModelExplanation"
+        },
+        "explanationSpecs": {
+          "description": "Output only. Describes the values of ExplanationSpec that are used for explaining the predicted values on the evaluated data.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1ModelEvaluationModelEvaluationExplanationSpec"
+          }
         }
       }
     },
@@ -3238,6 +3250,20 @@
           "description": "Output only. Name of the explain output. Specified as the key in ExplanationMetadata.outputs.",
           "readOnly": true,
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelEvaluationModelEvaluationExplanationSpec": {
+      "id": "GoogleCloudAiplatformV1beta1ModelEvaluationModelEvaluationExplanationSpec",
+      "type": "object",
+      "properties": {
+        "explanationType": {
+          "description": "Explanation type. For AutoML Image Classification models, possible values are: * `image-integrated-gradients` * `image-xrai`",
+          "type": "string"
+        },
+        "explanationSpec": {
+          "description": "Explanation spec details.",
+          "$ref": "GoogleCloudAiplatformV1beta1ExplanationSpec"
         }
       }
     },

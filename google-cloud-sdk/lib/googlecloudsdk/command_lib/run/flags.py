@@ -25,6 +25,7 @@ import re
 from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.container import kubeconfig
+from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import service
@@ -67,6 +68,11 @@ _INGRESS_MODES = {
         'Only supported for Cloud Run (fully managed). Only inbound requests'
         ' from VPC networks in the same project or from Google Cloud Load '
         'Balancing are allowed.'
+}
+
+_SANDBOX_CHOICES = {
+    'gvisor': 'Run the application in a gVisor sandbox.',
+    'minivm': 'Run the application in a mini VM sandbox.',
 }
 
 _DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
@@ -219,9 +225,20 @@ def AddAllowUnauthenticatedFlag(parser):
       'This may take a few moments to take effect.')
 
 
-def AddAsyncFlag(parser):
+def AddAsyncFlag(parser, default_async_for_cluster=False):
   """Add an async flag."""
-  base.ASYNC_FLAG.AddToParser(parser)
+  if default_async_for_cluster:
+    modified_async_flag = base.Argument(
+        '--async',
+        action=arg_parsers.StoreTrueFalseAction,
+        dest='async_',
+        help="""\
+    Return immediately, without waiting for the operation in progress to
+    complete. Defaults to --no-async for Cloud Run (fully managed) and --async
+    for Cloud Run for Anthos.""")
+    modified_async_flag.AddToParser(parser)
+  else:
+    base.ASYNC_FLAG.AddToParser(parser)
 
 
 def AddEndpointVisibilityEnum(parser, deprecated=False):
@@ -483,6 +500,18 @@ def AddMapFlagsNoFile(parser,
       value_metavar=value_metavar)
 
 
+def AddSetEnvVarsFlag(parser):
+  """Add only the --set-env-vars flag."""
+  parser.add_argument(
+      '--set-env-vars',
+      metavar='KEY=VALUE',
+      action=arg_parsers.UpdateAction,
+      type=arg_parsers.ArgDict(
+          key_type=env_vars_util.EnvVarKeyType,
+          value_type=env_vars_util.EnvVarValueType),
+      help='List of key-value pairs to set as environment variables.')
+
+
 def AddMutexEnvVarsFlags(parser):
   """Add flags for creating updating and deleting env vars."""
   # TODO(b/119837621): Use env_vars_util.AddUpdateEnvVarsFlags when
@@ -499,15 +528,15 @@ def AddMemoryFlag(parser):
   parser.add_argument('--memory', help='Set a memory limit. Ex: 1Gi, 512Mi.')
 
 
-def AddCpuFlag(parser):
-  parser.add_argument(
-      '--cpu',
-      help='Set a CPU limit in Kubernetes cpu units.\n\n'
-      'Cloud Run (fully managed) supports values 1, 2 and 4.'
-      '  For Cloud Run (fully managed), 4 cpus also requires a minimum 2Gi'
-      '  `--memory` value.  Examples 2, 2.0, 2000m\n\n'
-      'Cloud Run for Anthos and Knative-compatible Kubernetes clusters support'
-      '  fractional values.  Examples .5, 500m, 2')
+def AddCpuFlag(parser, managed_only=False):
+  help_msg = ('Set a CPU limit in Kubernetes cpu units.\n\n'
+              'Cloud Run (fully managed) supports values 1, 2 and 4.'
+              '  For Cloud Run (fully managed), 4 cpus also requires a minimum '
+              '2Gi `--memory` value.  Examples 2, 2.0, 2000m')
+  if not managed_only:
+    help_msg += ('\n\nCloud Run for Anthos and Knative-compatible Kubernetes '
+                 'clusters support fractional values.  Examples .5, 500m, 2')
+  parser.add_argument('--cpu', help=help_msg)
 
 
 def _ConcurrencyValue(value):
@@ -593,6 +622,13 @@ def AddRevisionSuffixArg(parser):
       'would lead to a revision named \'helloworld-v1\'.')
 
 
+def AddSandboxArg(parser):
+  parser.add_argument(
+      '--sandbox',
+      choices=_SANDBOX_CHOICES,
+      help='Selects the sandbox where the application will run.')
+
+
 def AddVpcConnectorArg(parser):
   parser.add_argument(
       '--vpc-connector', help='Set a VPC connector for this Service.')
@@ -610,10 +646,10 @@ def AddEgressSettingsFlag(parser):
       ' for this Service. This Service must have a VPC connector to set'
       ' VPC egress.',
       choices={
-          revision.EGRESS_SETTINGS_PRIVATE_RANGES_ONLY:
+          container_resource.EGRESS_SETTINGS_PRIVATE_RANGES_ONLY:
               'Default option. Sends outbound traffic to private IP addresses '
               'defined by RFC1918 through the VPC connector.',
-          revision.EGRESS_SETTINGS_ALL:
+          container_resource.EGRESS_SETTINGS_ALL:
               'Sends all outbound traffic through the VPC connector.'
       })
 
@@ -660,6 +696,14 @@ def AddConfigMapsFlags(parser):
       flag_name='config-maps')
 
 
+def AddLabelsFlag(parser, extra_message=''):
+  """Add only the --labels flag."""
+  labels_util.GetCreateLabelsFlag(
+      extra_message=extra_message,
+      validate_keys=False,
+      validate_values=False).AddToParser(parser)
+
+
 def AddLabelsFlags(parser):
   """Adds update command labels flags to an argparse parser.
 
@@ -668,10 +712,7 @@ def AddLabelsFlags(parser):
   """
   group = parser.add_group()
   add_group = group.add_mutually_exclusive_group()
-  labels_util.GetCreateLabelsFlag(
-      'An alias to --update-labels.',
-      validate_keys=False,
-      validate_values=False).AddToParser(add_group)
+  AddLabelsFlag(add_group, 'An alias to --update-labels.')
   labels_util.GetUpdateLabelsFlag(
       '', validate_keys=False, validate_values=False).AddToParser(add_group)
   remove_group = group.add_mutually_exclusive_group()
@@ -781,6 +822,49 @@ def AddHttp2Flag(parser):
       '--use-http2',
       action=arg_parsers.StoreTrueFalseAction,
       help='Whether to use HTTP/2 for connections to the service.')
+
+
+def AddParallelismFlag(parser):
+  """Add job parallelism/concurrency flag."""
+  parser.add_argument(
+      '--parallelism',
+      type=arg_parsers.BoundedInt(lower_bound=1),
+      default=1,
+      help='Number of instances that may run concurrently. '
+      'Must be less than or equal to the number of completions.')
+
+
+def AddCompletionsFlag(parser):
+  """Add job number of completions flag."""
+  parser.add_argument(
+      '--completions',
+      type=arg_parsers.BoundedInt(lower_bound=1),
+      default=1,
+      help='Number of instances that must run to completion for the job to be '
+      'considered done. Use this flag to trigger multiple runs of the job.')
+
+
+def AddMaxAttemptsFlag(parser):
+  """Add job max attempts flag to specify number of instance restarts."""
+  parser.add_argument(
+      '--max-attempts',
+      type=arg_parsers.BoundedInt(lower_bound=1),
+      default=6,
+      help='Number of times an instance will be allowed to run in case of '
+      'failure before being failed permanently. This applies per-instance, not '
+      'per-job. If set to 1, instances will only run once and never be '
+      'restarted on failure. If set to any other positive integer N, instances '
+      'will be allowed to restart N-1 times.')
+
+
+def AddWaitForCompletionFlag(parser):
+  """Add job flag to poll until completion on create."""
+  parser.add_argument(
+      '--wait-for-completion',
+      default=False,
+      action='store_true',
+      help='Wait until the job has completed running before finishing polling. '
+      'If not set, polling completes when the job has started.')
 
 
 def _HasChanges(args, flags):
@@ -1122,12 +1206,14 @@ def GetConfigurationChanges(args):
       changes.append(config_changes.LabelChanges(diff))
   if 'revision_suffix' in args and args.revision_suffix:
     changes.append(config_changes.RevisionNameChanges(args.revision_suffix))
+  if 'sandbox' in args and args.sandbox:
+    changes.append(config_changes.SandboxChange(args.sandbox))
   if 'vpc_connector' in args and args.vpc_connector:
     changes.append(config_changes.VpcConnectorChange(args.vpc_connector))
   if FlagIsExplicitlySet(args, 'vpc_egress'):
     changes.append(
         config_changes.SetTemplateAnnotationChange(
-            revision.EGRESS_SETTINGS_ANNOTATION, args.vpc_egress))
+            container_resource.EGRESS_SETTINGS_ANNOTATION, args.vpc_egress))
   if 'clear_vpc_connector' in args and args.clear_vpc_connector:
     # MUST be after 'vpc_egress' change.
     changes.append(config_changes.ClearVpcConnectorChange())
@@ -1151,22 +1237,28 @@ def GetConfigurationChanges(args):
   if FlagIsExplicitlySet(args, 'tag'):
     # MUST be after 'revision_suffix' change
     changes.append(config_changes.TagOnDeployChange(args.tag))
+  if FlagIsExplicitlySet(args, 'parallelism'):
+    changes.append(config_changes.SpecChange('parallelism', args.parallelism))
+  if FlagIsExplicitlySet(args, 'completions'):
+    changes.append(config_changes.SpecChange('completions', args.completions))
+  if FlagIsExplicitlySet(args, 'max_attempts'):
+    changes.append(
+        config_changes.JobMaxAttemptsChange(args.max_attempts))
   return changes
 
 
-def GetService(args):
-  """Get and validate the service resource from the args."""
-  service_ref = args.CONCEPTS.service.Parse()
-  # Valid service names comprise only alphanumeric characters and dashes. Must
+def ValidateResource(resource_ref):
+  """Validate resource name."""
+  # Valid resource names comprise only alphanumeric characters and dashes. Must
   # not begin or end with a dash, and must not contain more than 63 characters.
   # Must be lowercase.
-  service_re = re.compile(r'(?=^[a-z0-9-]{1,63}$)(?!^\-.*)(?!.*\-$)')
-  if service_re.match(service_ref.servicesId):
-    return service_ref
-  raise serverless_exceptions.ArgumentError(
-      'Invalid service name [{}]. Service name must use only lowercase '
-      'alphanumeric characters and dashes. Cannot begin or end with a dash, '
-      'and cannot be longer than 63 characters.'.format(service_ref.servicesId))
+  k8s_resource_name_regex = re.compile(
+      r'(?=^[a-z0-9-]{1,63}$)(?!^\-.*)(?!.*\-$)')
+  if not k8s_resource_name_regex.match(resource_ref.Name()):
+    raise serverless_exceptions.ArgumentError(
+        'Invalid resource name [{}]. The name must use only lowercase '
+        'alphanumeric characters and dashes, cannot begin or end with a dash, '
+        'and cannot be longer than 63 characters.'.format(resource_ref.Name()))
 
 
 def PromptForRegion():
@@ -1270,8 +1362,7 @@ def GetKubeconfig(file_path=None):
     KubeconfigError: if $KUBECONFIG is set but contains no valid paths
   """
   if file_path:
-    return kubeconfig.Kubeconfig.LoadFromFile(
-        files.ExpandHomeDir(file_path))
+    return kubeconfig.Kubeconfig.LoadFromFile(files.ExpandHomeDir(file_path))
   if encoding.GetEncodedValue(os.environ, 'KUBECONFIG'):
     config_paths = encoding.GetEncodedValue(os.environ,
                                             'KUBECONFIG').split(os.pathsep)
@@ -1363,8 +1454,8 @@ def VerifyManagedFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_GKE]))
 
-  if FlagIsExplicitlySet(
-      args, 'use_http2') and release_track == base.ReleaseTrack.GA:
+  if FlagIsExplicitlySet(args,
+                         'use_http2') and release_track == base.ReleaseTrack.GA:
     raise serverless_exceptions.ConfigurationError(
         'The `--use-http2` flag is only supported in the beta release '
         'track on the fully managed version of Cloud Run. Use `gcloud alpha` '
@@ -1458,6 +1549,14 @@ def VerifyGKEFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
 
+  if FlagIsExplicitlySet(args, 'sandbox'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--sandbox',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
   if FlagIsExplicitlySet(args, 'vpc_connector'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -1524,6 +1623,14 @@ def VerifyKubernetesFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--region',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'sandbox'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--sandbox',
             platform=platforms.PLATFORM_MANAGED,
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))

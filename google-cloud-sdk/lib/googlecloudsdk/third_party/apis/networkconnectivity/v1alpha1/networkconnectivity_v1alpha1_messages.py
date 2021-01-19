@@ -633,10 +633,10 @@ class HttpRequest(_messages.Message):
 
 
 class Hub(_messages.Message):
-  r"""The Connectivity Hub is a hub-and-spoke abstraction for network
-  connectivity management in Google Cloud. It aims to reduce operational
-  complexity through a simple, centralized connectivity management model. Here
-  is the resource message of a Hub.
+  r"""The Network Connectivity Center is a hub-and-spoke abstraction for
+  network connectivity management in Google Cloud. It aims to reduce
+  operational complexity through a simple, centralized connectivity management
+  model. Following is the resource message of a hub.
 
   Messages:
     LabelsValue: User-defined labels.

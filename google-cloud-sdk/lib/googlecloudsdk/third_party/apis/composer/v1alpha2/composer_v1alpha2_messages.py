@@ -322,11 +322,16 @@ class DatabaseConfig(_messages.Message):
   machineType = _messages.StringField(1)
 
 
-class DatabaseRetentionConfig(_messages.Message):
+class DatabaseDataRetentionConfig(_messages.Message):
   r"""The configuration setting for Airflow database data retention mechanism.
 
   Fields:
-    enabled: Optional. Whether database retention mechanism should be enabled.
+    enabled: Optional. Whether database data retention mechanism should be
+      enabled.
+    executionTime: Optional. The execution time of the data retention job. The
+      job is executed daily at this time in UTC timezone. Values for seconds
+      and nanos are disregarded. If not provided, the job will be executed at
+      0:00.
     retentionDays: Optional. The number of days describing for how long to
       store data in the database. Infinite retention period is represented by
       0. If not specified the data will be retained forever.
@@ -336,8 +341,9 @@ class DatabaseRetentionConfig(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
-  retentionDays = _messages.IntegerField(2)
-  storeArchives = _messages.BooleanField(3)
+  executionTime = _messages.MessageField('TimeOfDay', 2)
+  retentionDays = _messages.IntegerField(3)
+  storeArchives = _messages.BooleanField(4)
 
 
 class Date(_messages.Message):
@@ -498,8 +504,8 @@ class EnvironmentConfig(_messages.Message):
       directory with the given prefix.
     databaseConfig: Optional. The configuration settings for Cloud SQL
       instance used internally by Apache Airflow software.
-    databaseRetentionConfig: Optional. The configuration setting for Airflow
-      database data retention mechanism.
+    databaseDataRetentionConfig: Optional. The configuration setting for
+      Airflow database data retention mechanism.
     encryptionConfig: Optional. The encryption options for the Composer
       environment and its dependencies. Cannot be updated.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
@@ -531,7 +537,7 @@ class EnvironmentConfig(_messages.Message):
   autoscalingConfig = _messages.MessageField('AutoscalingConfig', 2)
   dagGcsPrefix = _messages.StringField(3)
   databaseConfig = _messages.MessageField('DatabaseConfig', 4)
-  databaseRetentionConfig = _messages.MessageField('DatabaseRetentionConfig', 5)
+  databaseDataRetentionConfig = _messages.MessageField('DatabaseDataRetentionConfig', 5)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 6)
   gkeCluster = _messages.StringField(7)
   maintenanceWindow = _messages.MessageField('MaintenanceWindow', 8)
@@ -1314,6 +1320,27 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TimeOfDay(_messages.Message):
+  r"""Represents a time of day. The date and time zone are either not
+  significant or are specified elsewhere. An API may choose to allow leap
+  seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
+
+  Fields:
+    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
+      choose to allow the value "24:00:00" for scenarios like business closing
+      time.
+    minutes: Minutes of hour of day. Must be from 0 to 59.
+    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
+    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
+      API may allow the value 60 if it allows leap-seconds.
+  """
+
+  hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class WebServerConfig(_messages.Message):

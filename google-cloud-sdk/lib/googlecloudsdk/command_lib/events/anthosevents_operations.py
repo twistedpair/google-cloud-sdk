@@ -70,6 +70,7 @@ _SECRET_COLLECTION = 'anthosevents.api.v1.namespaces.secrets'
 
 _CLOUD_RUN_RELATIVE_NAME = 'namespaces/cloud-run-system/cloudruns/cloud-run'
 
+_BROKERS_CRD_NAME = 'brokers.eventing.knative.dev'
 _TRIGGERS_CRD_NAME = 'triggers.eventing.knative.dev'
 
 
@@ -559,10 +560,10 @@ class AnthosEventsOperations(object):
 
   def CreateBroker(self, namespace_name, broker_name):
     """Creates a broker."""
+    client = self.ClientFromCrd(_BROKERS_CRD_NAME)
+    messages = client.MESSAGES_MODULE
 
-    messages = self._client.MESSAGES_MODULE
-
-    broker_obj = broker.Broker.New(self._client, namespace_name)
+    broker_obj = broker.Broker.New(client, namespace_name)
     broker_obj.name = broker_name
 
     # Validation webhook requires a spec to be provided
@@ -573,11 +574,11 @@ class AnthosEventsOperations(object):
     request = messages.AnthoseventsNamespacesBrokersCreateRequest(
         broker=broker_obj.Message(), parent=namespace_full_name)
     try:
-      response = self._client.namespaces_brokers.Create(request)
+      response = client.namespaces_brokers.Create(request)
     except api_exceptions.HttpConflictError:
       raise exceptions.BrokerAlreadyExists(
           'Broker [{}] already exists.'.format(broker_name))
-    return response
+    return broker.Broker(response, messages)
 
   def PollBroker(self, broker_full_name, tracker):
     """Wait for broker to be Ready == True."""
@@ -593,35 +594,38 @@ class AnthosEventsOperations(object):
       broker_full_name: name of broker to fetch in the form of
         'namespaces/<namespace>/brokers/<broker>'
     """
-    messages = self._client.MESSAGES_MODULE
+    client = self.ClientFromCrd(_BROKERS_CRD_NAME)
+    messages = client.MESSAGES_MODULE
     request = messages.AnthoseventsNamespacesBrokersGetRequest(
         name=broker_full_name)
     try:
-      response = self._client.namespaces_brokers.Get(request)
+      response = client.namespaces_brokers.Get(request)
     except api_exceptions.HttpNotFoundError:
       return None
     return broker.Broker(response, messages)
 
   def ListBrokers(self, namespace_full_name):
     """Returns a list of existing brokers in the given namespace."""
-    messages = self._client.MESSAGES_MODULE
+    client = self.ClientFromCrd(_BROKERS_CRD_NAME)
+    messages = client.MESSAGES_MODULE
     request = messages.AnthoseventsNamespacesBrokersListRequest(
         parent=namespace_full_name)
-    response = self._client.namespaces_brokers.List(request)
+    response = client.namespaces_brokers.List(request)
     return [broker.Broker(item, messages) for item in response.items]
 
   def DeleteBroker(self, namespace_name, broker_name):
     """Deletes the referenced broker."""
+    client = self.ClientFromCrd(_BROKERS_CRD_NAME)
+    messages = client.MESSAGES_MODULE
 
     # represents namespaces/<namespace_name>/brokers/<broker_name>
     broker_full_name = 'namespaces/{}/brokers/{}'.format(
         namespace_name, broker_name)
 
-    messages = self._client.MESSAGES_MODULE
-    request = self.messages.AnthoseventsNamespacesBrokersDeleteRequest(
+    request = messages.AnthoseventsNamespacesBrokersDeleteRequest(
         name=broker_full_name)
     try:
-      self._client.namespaces_brokers.Delete(request)
+      client.namespaces_brokers.Delete(request)
     except api_exceptions.HttpNotFoundError:
       raise exceptions.BrokerNotFound(
           'Broker [{}] not found.'.format(broker_name))

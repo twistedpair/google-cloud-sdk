@@ -406,6 +406,19 @@ class DatafusionProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class DatafusionProjectsLocationsRemoveIamPolicyRequest(_messages.Message):
+  r"""A DatafusionProjectsLocationsRemoveIamPolicyRequest object.
+
+  Fields:
+    removeIamPolicyRequest: A RemoveIamPolicyRequest resource to be passed as
+      the request body.
+    resource: The resource on which IAM policy to be removed is attached to.
+  """
+
+  removeIamPolicyRequest = _messages.MessageField('RemoveIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class DatafusionProjectsLocationsVersionsListRequest(_messages.Message):
   r"""A DatafusionProjectsLocationsVersionsListRequest object.
 
@@ -425,19 +438,6 @@ class DatafusionProjectsLocationsVersionsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
-
-
-class DatafusionProjectsRemoveIamPolicyRequest(_messages.Message):
-  r"""A DatafusionProjectsRemoveIamPolicyRequest object.
-
-  Fields:
-    removeIamPolicyRequest: A RemoveIamPolicyRequest resource to be passed as
-      the request body.
-    resource: The resource on which IAM policy to be removed is attached to.
-  """
-
-  removeIamPolicyRequest = _messages.MessageField('RemoveIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
 
 
 class Empty(_messages.Message):

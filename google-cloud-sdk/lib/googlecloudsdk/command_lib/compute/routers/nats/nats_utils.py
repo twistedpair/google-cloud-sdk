@@ -24,6 +24,8 @@ from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.networks.subnets import flags as subnet_flags
 from googlecloudsdk.command_lib.compute.routers.nats import flags as nat_flags
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import files
 import six
 
 
@@ -44,7 +46,10 @@ def FindNatOrRaise(router, nat_name):
   raise NatNotFoundError(nat_name)
 
 
-def CreateNatMessage(args, compute_holder):
+def CreateNatMessage(args,
+                     compute_holder,
+                     with_rules=False,
+                     with_tcp_time_wait_timeout=False):
   """Creates a NAT message from the specified arguments."""
   params = {'name': args.name}
 
@@ -59,6 +64,8 @@ def CreateNatMessage(args, compute_holder):
   params['icmpIdleTimeoutSec'] = args.icmp_idle_timeout
   params['tcpEstablishedIdleTimeoutSec'] = args.tcp_established_idle_timeout
   params['tcpTransitoryIdleTimeoutSec'] = args.tcp_transitory_idle_timeout
+  if with_tcp_time_wait_timeout:
+    params['tcpTimeWaitTimeoutSec'] = args.tcp_time_wait_timeout
   params['minPortsPerVm'] = args.min_ports_per_vm
   if args.enable_logging is not None or args.log_filter is not None:
     log_config = compute_holder.client.messages.RouterNatLogConfig()
@@ -73,12 +80,17 @@ def CreateNatMessage(args, compute_holder):
     params['enableEndpointIndependentMapping'] = (
         args.enable_endpoint_independent_mapping)
 
+  if with_rules and args.rules:
+    params['rules'] = _ParseRulesFromYamlFile(args.rules, compute_holder)
+
   return compute_holder.client.messages.RouterNat(**params)
 
 
 def UpdateNatMessage(nat,
                      args,
-                     compute_holder):
+                     compute_holder,
+                     with_rules=False,
+                     with_tcp_time_wait_timeout=False):
   """Updates a NAT message with the specified arguments."""
   if (args.subnet_option in [
       nat_flags.SubnetOption.ALL_RANGES, nat_flags.SubnetOption.PRIMARY_RANGES
@@ -126,6 +138,12 @@ def UpdateNatMessage(nat,
   elif args.clear_tcp_transitory_idle_timeout:
     nat.tcpTransitoryIdleTimeoutSec = None
 
+  if with_tcp_time_wait_timeout:
+    if args.tcp_time_wait_timeout is not None:
+      nat.tcpTimeWaitTimeoutSec = args.tcp_time_wait_timeout
+    elif args.clear_tcp_time_wait_timeout:
+      nat.tcpTimeWaitTimeoutSec = None
+
   if args.min_ports_per_vm is not None:
     nat.minPortsPerVm = args.min_ports_per_vm
   elif args.clear_min_ports_per_vm:
@@ -142,6 +160,9 @@ def UpdateNatMessage(nat,
   if args.enable_endpoint_independent_mapping is not None:
     nat.enableEndpointIndependentMapping = (
         args.enable_endpoint_independent_mapping)
+
+  if with_rules and args.rules:
+    nat.rules = _ParseRulesFromYamlFile(args.rules, compute_holder)
 
   return nat
 
@@ -260,3 +281,33 @@ def _ContainIp(ip_list, target_ip):
     if ip.RelativeName() in target_ip:
       return True
   return False
+
+
+def _ParseRulesFromYamlFile(file_path, compute_holder):
+  """Parses NAT Rules from the given YAML file."""
+  with files.FileReader(file_path) as import_file:
+    rules_yaml = yaml.load(import_file)
+    if 'rules' not in rules_yaml:
+      raise calliope_exceptions.InvalidArgumentException(
+          '--rules', 'The YAML file must contain the \'rules\' attribute')
+    return [
+        _CreateRule(rule_yaml, compute_holder)
+        for rule_yaml in rules_yaml['rules']
+    ]
+
+
+def _CreateRule(rule_yaml, compute_holder):
+  """Creates a Rule object from the given parsed YAML."""
+  rule = compute_holder.client.messages.RouterNatRule()
+  if 'ruleNumber' in rule_yaml:
+    rule.ruleNumber = rule_yaml['ruleNumber']
+  if 'match' in rule_yaml:
+    rule.match = rule_yaml['match']
+  if 'action' in rule_yaml:
+    action_yaml = rule_yaml['action']
+    rule.action = compute_holder.client.messages.RouterNatRuleAction()
+    if 'sourceNatActiveIps' in action_yaml:
+      rule.action.sourceNatActiveIps = action_yaml['sourceNatActiveIps']
+    if 'sourceNatDrainIps' in action_yaml:
+      rule.action.sourceNatDrainIps = action_yaml['sourceNatDrainIps']
+  return rule

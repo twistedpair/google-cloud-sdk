@@ -12,6 +12,89 @@ from apitools.base.py import encoding
 package = 'anthosevents'
 
 
+class AnthoseventsKuberunsCreateRequest(_messages.Message):
+  r"""A AnthoseventsKuberunsCreateRequest object.
+
+  Fields:
+    kubeRun: A KubeRun resource to be passed as the request body.
+    parent: The namespace in which this KubeRun resource should be created.
+  """
+
+  kubeRun = _messages.MessageField('KubeRun', 1)
+  parent = _messages.StringField(2)
+
+
+class AnthoseventsKuberunsDeleteRequest(_messages.Message):
+  r"""A AnthoseventsKuberunsDeleteRequest object.
+
+  Fields:
+    name: The name of the KubeRun resource being deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AnthoseventsKuberunsGetRequest(_messages.Message):
+  r"""A AnthoseventsKuberunsGetRequest object.
+
+  Fields:
+    name: The name of the KubeRun resource being retrieved.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AnthoseventsKuberunsListRequest(_messages.Message):
+  r"""A AnthoseventsKuberunsListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: The namespace from which the KubeRun resources should be listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  labelSelector = _messages.StringField(3)
+  limit = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(5)
+  resourceVersion = _messages.StringField(6)
+  watch = _messages.BooleanField(7)
+
+
+class AnthoseventsKuberunsPatchRequest(_messages.Message):
+  r"""A AnthoseventsKuberunsPatchRequest object.
+
+  Fields:
+    kubeRun: A KubeRun resource to be passed as the request body.
+    name: The name of the KubeRun resource being updated.
+  """
+
+  kubeRun = _messages.MessageField('KubeRun', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AnthoseventsKuberunsReplaceKubeRunRequest(_messages.Message):
+  r"""A AnthoseventsKuberunsReplaceKubeRunRequest object.
+
+  Fields:
+    kubeRun: A KubeRun resource to be passed as the request body.
+    name: The name of the KubeRun resource being replaced.
+  """
+
+  kubeRun = _messages.MessageField('KubeRun', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AnthoseventsNamespacesCloudrunsCreateRequest(_messages.Message):
   r"""A AnthoseventsNamespacesCloudrunsCreateRequest object.
 
@@ -236,6 +319,84 @@ class EventingSpec(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class KubeRun(_messages.Message):
+  r"""KubeRun is the Schema for the KubeRuns API
+
+  Fields:
+    apiVersion: The API version for this call such as
+      "events.cloud.google.com/v1beta1".
+    kind: The kind of resource, in this case "KubeRun".
+    metadata: Metadata associated with this KubeRun resource
+    spec: The KubeRunSpec reflects the state of KubeRun
+    status: The KubeRunStatus defines the observed status
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('CloudRunSpec', 4)
+  status = _messages.MessageField('KubeRunStatus', 5)
+
+
+class KubeRunStatus(_messages.Message):
+  r"""KubeRunStatus defines the observed state of KubeRun
+
+  Messages:
+    AnnotationsValue: Annotations is additional Status fields for the Resource
+      to save some additional State as well as convey more information to the
+      user. This is roughly akin to Annotations on any k8s resource, just the
+      reconciler conveying richer information outwards.
+
+  Fields:
+    annotations: Annotations is additional Status fields for the Resource to
+      save some additional State as well as convey more information to the
+      user. This is roughly akin to Annotations on any k8s resource, just the
+      reconciler conveying richer information outwards.
+    conditions: Conditions are the latest available observations of a
+      resource's current state.
+    eventingversion: The version of the installed release.
+    istioversion: The version of the installed release.
+    observedGeneration: ObservedGeneration is the 'Generation' of the Service
+      that was last processed by the controller.
+    servingversion: The version of the installed release.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Annotations is additional Status fields for the Resource to save some
+    additional State as well as convey more information to the user. This is
+    roughly akin to Annotations on any k8s resource, just the reconciler
+    conveying richer information outwards.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  eventingversion = _messages.StringField(3)
+  istioversion = _messages.StringField(4)
+  observedGeneration = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  servingversion = _messages.StringField(6)
+
+
 class ListCloudRunsResponse(_messages.Message):
   r"""ListCloudRunsResponse is a list of CloudRun resources. The next page
   token is specified as the "continue" field in ListMeta.
@@ -249,6 +410,23 @@ class ListCloudRunsResponse(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('CloudRun', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+
+
+class ListKubeRunsResponse(_messages.Message):
+  r"""ListKubeRunsResponse is a list of KubeRun resources. The next page token
+  is specified as the "continue" field in ListMeta.
+
+  Fields:
+    apiVersion: The API version for this call such as "core/v1".
+    items: A KubeRun attribute.
+    kind: The kind of this resource, in this case "KubeRunList".
+    metadata: Metadata associated with this KubeRun list.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('KubeRun', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
 

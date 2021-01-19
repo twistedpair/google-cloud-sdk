@@ -286,7 +286,7 @@
     },
     "Job": {
       "id": "Job",
-      "description": "Defines a job to be run by the Cloud Dataflow service.",
+      "description": "Defines a job to be run by the Cloud Dataflow service. nextID: 26",
       "type": "object",
       "properties": {
         "id": {
@@ -472,6 +472,10 @@
         "createdFromSnapshotId": {
           "description": "If this is specified, the job's initial state is populated from the given snapshot.",
           "type": "string"
+        },
+        "satisfiesPzs": {
+          "description": "Reserved for future use. This field is set only in responses from the server; it is ignored if it is set in any requests.",
+          "type": "boolean"
         }
       }
     },
@@ -5433,7 +5437,7 @@
                   ]
                 },
                 "view": {
-                  "description": "Level of information requested in response. Default is `JOB_VIEW_SUMMARY`.",
+                  "description": "Deprecated. ListJobs always returns summaries now. Use GetJob for other JobViews.",
                   "location": "query",
                   "type": "string",
                   "enumDescriptions": [
@@ -5510,7 +5514,7 @@
                   ]
                 },
                 "view": {
-                  "description": "Level of information requested in response. Default is `JOB_VIEW_SUMMARY`.",
+                  "description": "Deprecated. ListJobs always returns summaries now. Use GetJob for other JobViews.",
                   "location": "query",
                   "type": "string",
                   "enumDescriptions": [
@@ -6610,7 +6614,7 @@
                       ]
                     },
                     "view": {
-                      "description": "Level of information requested in response. Default is `JOB_VIEW_SUMMARY`.",
+                      "description": "Deprecated. ListJobs always returns summaries now. Use GetJob for other JobViews.",
                       "location": "query",
                       "type": "string",
                       "enumDescriptions": [

@@ -240,3 +240,66 @@ def AddNegativeCache(parser, resource_name, update_command=False):
         '--no-negative-caching-policies',
         action='store_true',
         help='Remove all negative caching policies for the %s.' % resource_name)
+
+
+def AddFlexibleCacheStepTwo(parser, resource_name, update_command=False):
+  """Adds serve-while-stale and bypass-cache-on-request-headers args to the argparse."""
+  serve_while_stale_help = """\
+  Serve existing content from the cache (if available) when revalidating
+  content with the origin; this allows content to be served more quickly, and
+  also allows content to continue to be served if the backend is down or
+  reporting errors.
+
+  This setting defines the default serve-stale duration for any cached responses
+  that do not specify a stale-while-revalidate directive. Stale responses that
+  exceed the TTL configured here will not be served without first being
+  revalidated with the origin. The default limit is 86400s (1 day), which will
+  allow stale content to be served up to this limit beyond the max-age
+  (or s-max-age) of a cached response.
+
+  The maximum allowed value is 604800 (1 week).
+
+  Set this to zero (0) to disable serve-while-stale.
+  """
+  serve_while_stale_group = parser.add_mutually_exclusive_group()
+  serve_while_stale_group.add_argument(
+      '--serve-while-stale',
+      type=arg_parsers.Duration(upper_bound=604800),
+      default=None,
+      help=serve_while_stale_help,
+  )
+  if update_command:
+    serve_while_stale_group.add_argument(
+        '--no-serve-while-stale',
+        action='store_true',
+        help='Clears serve while stale value.')
+  bypass_cache_on_request_headers_help = """\
+  Bypass the cache when the specified request headers are matched - e.g.
+  Pragma or Authorization headers. Up to 5 headers can be specified.
+
+  The cache is bypassed for all cdnPolicy.cacheMode settings.
+
+  Note that requests that include these headers will always fill from origin,
+  and may result in a large number of cache misses if the specified headers are
+  common to many requests.
+
+  Values are case-insensitive.
+
+  The header name must be a valid HTTP header field token (per RFC 7230).
+
+  For the list of restricted headers, see the list of required header name
+  properties in [How custom headers work](https://cloud.google.com/load-balancing/docs/custom-headers#how_custom_headers_work).
+
+  A header name must not appear more than once in the list of added headers.
+  """
+  bypass_cache_on_request_headers_group = parser.add_mutually_exclusive_group()
+  bypass_cache_on_request_headers_group.add_argument(
+      '--bypass-cache-on-request-headers',
+      action='append',
+      help=bypass_cache_on_request_headers_help)
+  if update_command:
+    bypass_cache_on_request_headers_group.add_argument(
+        '--no-bypass-cache-on-request-headers',
+        action='store_true',
+        help='Remove all bypass cache on request headers for the %s.' %
+        resource_name)

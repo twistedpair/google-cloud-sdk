@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.eventarc import common
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
@@ -30,10 +31,6 @@ from googlecloudsdk.core.util import times
 
 MAX_ACTIVE_DELAY_MINUTES = 10
 
-_API_NAME = 'eventarc'
-_API_VERSION = 'v1'
-_API_VERSION_BETA = 'v1beta1'
-
 
 class NoFieldsSpecifiedError(exceptions.Error):
   """Error when no fields were specified for a Patch operation."""
@@ -44,10 +41,11 @@ class NoRegionSpecifiedError(exceptions.Error):
 
 
 def CreateTriggersClient(release_track):
+  api_version = common.GetApiVersion(release_track)
   if release_track == base.ReleaseTrack.GA:
-    return _TriggersClient()
+    return _TriggersClient(api_version)
   else:
-    return _TriggersClientBeta()
+    return _TriggersClientBeta(api_version)
 
 
 def GetTriggerURI(resource):
@@ -80,15 +78,11 @@ def TriggerActiveTime(event_type, update_time):
 class _TriggersClient(object):
   """Client for Triggers service in the Eventarc API."""
 
-  def __init__(self):
-    client = apis.GetClientInstance(_API_NAME, self._api_version)
+  def __init__(self, api_version):
+    client = apis.GetClientInstance(common.API_NAME, api_version)
     self._messages = client.MESSAGES_MODULE
     self._service = client.projects_locations_triggers
     self._operation_service = client.projects_locations_operations
-
-  @property
-  def _api_version(self):
-    return _API_VERSION
 
   def _BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
                            destination_run_service, destination_run_path,
@@ -267,11 +261,14 @@ class _TriggersClient(object):
         updateMask=update_mask)
     return self._service.Patch(patch_req)
 
-  def WaitFor(self, operation):
+  def WaitFor(self, operation, operation_type, trigger_ref):
     """Waits until the given long-running operation is complete.
 
     Args:
       operation: the long-running operation to wait for.
+      operation_type: str, the type of operation
+        (Creating, Updating or Deleting).
+      trigger_ref: Resource, the Trigger to reference.
 
     Returns:
       The long-running operation's response.
@@ -279,17 +276,17 @@ class _TriggersClient(object):
     poller = waiter.CloudOperationPollerNoResources(self._operation_service)
     operation_ref = resources.REGISTRY.Parse(
         operation.name, collection='eventarc.projects.locations.operations')
-    message = 'Waiting for operation [{}] to complete'.format(
-        operation_ref.Name())
+    trigger_name = trigger_ref.Name()
+    project_name = trigger_ref.Parent().Parent().Name()
+    location_name = trigger_ref.Parent().Name()
+    message = ('{} trigger [{}] in project [{}], '
+               'location [{}]').format(operation_type, trigger_name,
+                                       project_name, location_name)
     return waiter.WaitFor(poller, operation_ref, message)
 
 
 class _TriggersClientBeta(_TriggersClient):
   """Client for Triggers service in the Eventarc beta API."""
-
-  @property
-  def _api_version(self):
-    return _API_VERSION_BETA
 
   def _BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
                            destination_run_service, destination_run_path,

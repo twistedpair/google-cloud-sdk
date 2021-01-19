@@ -545,7 +545,7 @@
           "$ref": "OperationError"
         },
         "type": {
-          "description": "The type of this run; can be either \"AUTOMATED\" or \"ON_DEMAND\".",
+          "description": "The type of this run; can be either \"AUTOMATED\" or \"ON_DEMAND\". This field defaults to \"ON_DEMAND\" and is ignored, when specified for insert requests.",
           "type": "string",
           "enumDescriptions": [
             "This is an unknown BackupRun type.",

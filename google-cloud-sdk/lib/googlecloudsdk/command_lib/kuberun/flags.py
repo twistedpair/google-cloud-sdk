@@ -380,10 +380,15 @@ def CreateIfMissingFlag():
   )
 
 
+def ServiceFlag():
+  return StringFlag(
+      '--service', help='List the revisions for only the specified service.')
+
+
 def CommonServiceFlags(is_create=False):
   return FlagGroup(NamespaceFlag(), ImageFlag(required=is_create), CPUFlag(),
-                   MemoryFlag(), PortFlag(), Http2Flag(), ConcurrencyFlag(),
-                   EntrypointFlags(), ScalingFlags(),
+                   GPUFlag(), MemoryFlag(), PortFlag(), Http2Flag(),
+                   ConcurrencyFlag(), EntrypointFlags(), ScalingFlags(),
                    LabelsFlags(set_flag_only=is_create),
                    ConfigMapFlags(set_flag_only=is_create),
                    SecretsFlags(set_flag_only=is_create),
@@ -401,13 +406,22 @@ def ImageFlag(required=False):
 def CPUFlag():
   return StringFlag(
       '--cpu',
-      help='CPU limit, in Kubernetes cpu units, for the resource. Ex: .5, 500m, 2.'
+      help='CPU limit, in Kubernetes cpu units, for the resource. Ex: .5, 500m, 2. To unset this field, pass the special value "default".'
+  )
+
+
+def GPUFlag():
+  return StringFlag(
+      '--gpu',
+      help='GPU limit, in Kubernetes gpu units, for the resource. Ex: 1, 2. To unset this field, pass the special value "default".'
   )
 
 
 def MemoryFlag():
   return StringFlag(
-      '--memory', help='Memory limit for the resource. Ex: 1Gi, 512Mi.')
+      '--memory',
+      help='Memory limit for the resource. Ex: 1Gi, 512Mi. To unset this field, pass the special value "default".'
+  )
 
 
 def PortFlag():

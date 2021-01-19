@@ -169,6 +169,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'apigateway': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.apigateway.v1',
+                client_classpath='apigateway_v1_client.ApigatewayV1',
+                messages_modulepath='apigateway_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.apigateway.v1alpha1',
@@ -182,7 +190,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.apigateway.v1beta',
                 client_classpath='apigateway_v1beta_client.ApigatewayV1beta',
                 messages_modulepath='apigateway_v1beta_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -491,6 +499,14 @@ MAP = {
                 client_classpath='cloudfunctions_v1_client.CloudfunctionsV1',
                 messages_modulepath='cloudfunctions_v1_messages',
                 default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v2alpha':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.cloudfunctions.v2alpha',
+                client_classpath='cloudfunctions_v2alpha_client.CloudfunctionsV2alpha',
+                messages_modulepath='cloudfunctions_v2alpha_messages',
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -831,6 +847,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'datamigration': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.datamigration.v1',
+                client_classpath='datamigration_v1_client.DatamigrationV1',
+                messages_modulepath='datamigration_v1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha2':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.datamigration.v1alpha2',
@@ -1270,6 +1294,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'kubernetesedge': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.kubernetesedge.v1alpha1',
+                client_classpath='kubernetesedge_v1alpha1_client.KubernetesedgeV1alpha1',
+                messages_modulepath='kubernetesedge_v1alpha1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'labelmanager': {
         'v1alpha1':
             APIDef(
@@ -1345,6 +1379,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'memcache': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.memcache.v1',
+                client_classpath='memcache_v1_client.MemcacheV1',
+                messages_modulepath='memcache_v1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1beta2':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.memcache.v1beta2',
@@ -1449,6 +1491,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'notebooks': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.notebooks.v1',
+                client_classpath='notebooks_v1_client.NotebooksV1',
+                messages_modulepath='notebooks_v1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.notebooks.v1beta1',
@@ -1543,6 +1593,16 @@ MAP = {
                 client_classpath='oslogin_v1beta_client.OsloginV1beta',
                 messages_modulepath='oslogin_v1beta_messages',
                 default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'policysimulator': {
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.policysimulator.v1beta1',
+                client_classpath='policysimulator_v1beta1_client.PolicysimulatorV1beta1',
+                messages_modulepath='policysimulator_v1beta1_messages',
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -2062,7 +2122,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.workflowexecutions.v1',
                 client_classpath='workflowexecutions_v1_client.WorkflowexecutionsV1',
                 messages_modulepath='workflowexecutions_v1_messages',
-                default_version=False,
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
         'v1alpha1':
@@ -2070,7 +2130,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.workflowexecutions.v1alpha1',
                 client_classpath='workflowexecutions_v1alpha1_client.WorkflowexecutionsV1alpha1',
                 messages_modulepath='workflowexecutions_v1alpha1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
         'v1beta':
@@ -2088,7 +2148,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.workflows.v1',
                 client_classpath='workflows_v1_client.WorkflowsV1',
                 messages_modulepath='workflows_v1_messages',
-                default_version=False,
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
         'v1alpha1':
@@ -2096,7 +2156,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.workflows.v1alpha1',
                 client_classpath='workflows_v1alpha1_client.WorkflowsV1alpha1',
                 messages_modulepath='workflows_v1alpha1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
         'v1beta':

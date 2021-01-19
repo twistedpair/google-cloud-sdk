@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.run import configuration
+from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import traffic
@@ -182,7 +183,15 @@ class Service(k8s_object.KubernetesObject):
   def vpc_connector(self):
     return self.annotations.get(u'run.googleapis.com/vpc-access-connector')
 
+  @property
+  def image(self):
+    return self.template.image
+
+  @image.setter
+  def image(self, value):
+    self.template.image = value
+
   def UserImage(self):
     """Human-readable "what's deployed"."""
-    user_image = self.annotations.get(revision.USER_IMAGE_ANNOTATION)
+    user_image = self.annotations.get(container_resource.USER_IMAGE_ANNOTATION)
     return self.template.UserImage(user_image)

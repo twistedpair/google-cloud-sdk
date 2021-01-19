@@ -21,11 +21,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 
-API_VERSION_FOR_TRACK = {
-    base.ReleaseTrack.ALPHA: 'v1beta2',
-    base.ReleaseTrack.BETA: 'v1beta2'
-}
-
 
 def Client(api_version):
   return apis.GetClientInstance('memcache', api_version)

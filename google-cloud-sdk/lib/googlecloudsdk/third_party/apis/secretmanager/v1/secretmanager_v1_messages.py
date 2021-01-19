@@ -580,6 +580,8 @@ class Secret(_messages.Message):
       after the Secret has been created.
     rotation: Optional. Rotation policy attached to the Secret. May be
       excluded if there is no rotation policy.
+    topics: A list of up to 10 Pub/Sub topics to which messages are published
+      when control plane operations are called on the secret or its versions.
     ttl: Input only. The TTL for the Secret.
   """
 
@@ -619,7 +621,8 @@ class Secret(_messages.Message):
   name = _messages.StringField(4)
   replication = _messages.MessageField('Replication', 5)
   rotation = _messages.MessageField('Rotation', 6)
-  ttl = _messages.StringField(7)
+  topics = _messages.MessageField('Topic', 7, repeated=True)
+  ttl = _messages.StringField(8)
 
 
 class SecretPayload(_messages.Message):
@@ -1023,6 +1026,20 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class Topic(_messages.Message):
+  r"""A Pub/Sub topic which SM will publish to when control plane events occur
+  on this secret.
+
+  Fields:
+    name: Required. The resource name of the Pub/Sub topic that will be
+      published to, in the following format: `projects/*/topics/*`. For
+      publication to succeed, the Secret Manager P4SA must have
+      `pubsub.publisher` permissions on the topic.
+  """
+
+  name = _messages.StringField(1)
 
 
 class UserManaged(_messages.Message):

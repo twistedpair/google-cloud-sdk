@@ -39,7 +39,6 @@ from googlecloudsdk.core.util import files
 import six
 
 
-# TODO: (b/149522784) fix some help text wording.
 # generation from proto.
 kms_message = core_apis.GetMessagesModule('cloudkms', 'v1')
 encoding.AddCustomJsonFieldMapping(
@@ -155,31 +154,38 @@ def _ConditionArgDict():
 
 def _ConditionHelpText(intro):
   """Get the help text for --condition."""
-  help_text = """
+
+  help_text = (
+      """\
 {intro}
 
-*expression*::: (Required) Expression of the condition which
-evaluates to True or False. This uses a subset of Common Expression
-Language syntax.
+When using the `--condition` flag, include the following key-value pairs:
+
+*expression*::: (Required) Condition expression that evaluates to True or False.
+This uses a subset of Common Expression Language syntax.
+
+If the condition expression includes a comma, use a different delimiter to
+separate the key-value pairs. Specify the delimiter before listing the
+key-value pairs. For example, to specify a colon (`:`) as the delimiter, do the
+following: `--condition=^:^title=TITLE:expression=EXPRESSION`. For more
+information, see https://cloud.google.com/sdk/gcloud/reference/topic/escaping.
 
 *title*::: (Required) A short string describing the purpose of the expression.
 
 *description*::: (Optional) Additional description for the expression.
-
-NOTE: An unsatisfied condition will not allow access via this
-binding.""".format(intro=intro)
+      """).format(intro=intro)
   return help_text
 
 
-# TODO(b/113606810):  Add more help information on specifying a condition
 def _AddConditionFlagsForAddBindingToIamPolicy(parser):
   """Create flags for condition and add to parser."""
-  condition_intro = """
-The condition of the binding to be added. When the condition is explicitly
+  condition_intro = """\
+A condition to include in the binding. When the condition is explicitly
 specified as `None` (`--condition=None`), a binding without a condition is
-added. When the condition is specified and is not `None`, `--role`
-cannot be a primitive role. Primitive roles are `roles/editor`, `roles/owner`,
-and `roles/viewer`."""
+added. When the condition is specified and is not `None`, `--role` cannot be a
+basic role. Basic roles are `roles/editor`, `roles/owner`, and `roles/viewer`.
+For more on conditions, refer to the conditions overview guide:
+https://cloud.google.com/iam/docs/conditions-overview"""
   help_str_condition = _ConditionHelpText(condition_intro)
   help_str_condition_from_file = """
 Path to a local JSON or YAML file that defines the condition.
@@ -200,11 +206,13 @@ To see available fields, see the help for `--condition`."""
 def _AddConditionFlagsForRemoveBindingFromIamPolicy(parser,
                                                     condition_completer=None):
   """Create flags for condition and add to parser."""
-  condition_intro = """
-The condition of the binding to be removed. When the condition is explicitly
-specified as `None` (`--condition=None`), it matches a binding without a
-condition. Otherwise, only the binding with a condition which exactly matches
-the specified condition (including the optional description) will be removed."""
+  condition_intro = """\
+The condition of the binding that you want to remove. When the condition is
+explicitly specified as `None` (`--condition=None`), a binding without a
+condition is removed. Otherwise, only a binding with a condition that exactly
+matches the specified condition (including the optional description) is removed.
+For more on conditions, refer to the conditions overview guide:
+https://cloud.google.com/iam/docs/conditions-overview"""
   help_str_condition = _ConditionHelpText(condition_intro)
   help_str_condition_from_file = """
 Path to a local JSON or YAML file that defines the condition.
@@ -244,8 +252,8 @@ def ValidateMutexConditionAndPrimitiveRoles(condition, role):
   if (_ConditionIsSpecified(condition) and not _IsNoneCondition(condition) and
       role in primitive_roles):
     raise IamPolicyBindingInvalidError(
-        'Binding with a condition and a primitive role is not allowed. '
-        'Primitive roles are `roles/editor`, `roles/owner`, '
+        'Binding with a condition and a basic role is not allowed. '
+        'Basic roles are `roles/editor`, `roles/owner`, '
         'and `roles/viewer`.')
 
 
@@ -968,7 +976,7 @@ authenticated users on {a} {collection} with identifier
   }
   if condition:
     detailed_help['EXAMPLES'] = detailed_help['EXAMPLES'] + """\n
-To add an IAM policy binding which expires at the end of the year 2018 for the
+To add an IAM policy binding that expires at the end of the year 2018 for the
 role of '{role}' and the user 'test-user@gmail.com' on {a} {collection} with
 identifier '{example_id}', run:
 

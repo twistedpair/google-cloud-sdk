@@ -22,8 +22,10 @@ from googlecloudsdk.api_lib.kuberun import kubernetesobject
 from googlecloudsdk.api_lib.kuberun import mapobject
 
 AUTHOR_ANNOTATION = 'serving.knative.dev/creator'
+INITIAL_SCALE_ANNOTATION = 'autoscaling.knative.dev/initialScale'
 MIN_SCALE_ANNOTATION = 'autoscaling.knative.dev/minScale'
 MAX_SCALE_ANNOTATION = 'autoscaling.knative.dev/maxScale'
+NVIDIA_GPU_RESOURCE = 'nvidia.com/gpu'
 SERVICE_LABEL = 'serving.knative.dev/service'
 USER_IMAGE_ANNOTATION = kubernetesobject.CLIENT_GROUP + '/user-image'
 

@@ -319,9 +319,9 @@
           "description": "Optional. The Autoscaling settings for GKE cluster within Composer environment. GKE cluster handles Airflow scheduler and workers workload.",
           "$ref": "AutoscalingConfig"
         },
-        "databaseRetentionConfig": {
+        "databaseDataRetentionConfig": {
           "description": "Optional. The configuration setting for Airflow database data retention mechanism.",
-          "$ref": "DatabaseRetentionConfig"
+          "$ref": "DatabaseDataRetentionConfig"
         },
         "airflowUri": {
           "description": "Output only. The URI of the Apache Airflow Web UI hosted within this environment (see [Airflow web interface](\/composer\/docs\/how-to\/accessing\/airflow-web-interface)).",
@@ -644,13 +644,13 @@
         }
       }
     },
-    "DatabaseRetentionConfig": {
-      "id": "DatabaseRetentionConfig",
+    "DatabaseDataRetentionConfig": {
+      "id": "DatabaseDataRetentionConfig",
       "description": "The configuration setting for Airflow database data retention mechanism.",
       "type": "object",
       "properties": {
         "enabled": {
-          "description": "Optional. Whether database retention mechanism should be enabled.",
+          "description": "Optional. Whether database data retention mechanism should be enabled.",
           "type": "boolean"
         },
         "storeArchives": {
@@ -661,6 +661,37 @@
           "description": "Optional. The number of days describing for how long to store data in the database. Infinite retention period is represented by 0. If not specified the data will be retained forever.",
           "type": "string",
           "format": "int64"
+        },
+        "executionTime": {
+          "description": "Optional. The execution time of the data retention job. The job is executed daily at this time in UTC timezone. Values for seconds and nanos are disregarded. If not provided, the job will be executed at 0:00.",
+          "$ref": "TimeOfDay"
+        }
+      }
+    },
+    "TimeOfDay": {
+      "id": "TimeOfDay",
+      "description": "Represents a time of day. The date and time zone are either not significant or are specified elsewhere. An API may choose to allow leap seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.",
+      "type": "object",
+      "properties": {
+        "hours": {
+          "description": "Hours of day in 24 hour format. Should be from 0 to 23. An API may choose to allow the value \"24:00:00\" for scenarios like business closing time.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "minutes": {
+          "description": "Minutes of hour of day. Must be from 0 to 59.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "seconds": {
+          "description": "Seconds of minutes of the time. Must normally be from 0 to 59. An API may allow the value 60 if it allows leap-seconds.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "nanos": {
+          "description": "Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

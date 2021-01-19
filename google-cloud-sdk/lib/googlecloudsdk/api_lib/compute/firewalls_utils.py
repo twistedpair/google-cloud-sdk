@@ -453,6 +453,21 @@ def SortOrgFirewallRules(client, rules):
   return ingress_org_firewall_rule + egress_org_firewall_rule
 
 
+def SortFirewallPolicyRules(client, rules):
+  """Sort the organization firewall rules by direction and priority."""
+  ingress_org_firewall_rule = [
+      item for item in rules if item.direction ==
+      client.messages.FirewallPolicyRule.DirectionValueValuesEnum.INGRESS
+  ]
+  ingress_org_firewall_rule.sort(key=lambda x: x.priority, reverse=False)
+  egress_org_firewall_rule = [
+      item for item in rules if item.direction ==
+      client.messages.FirewallPolicyRule.DirectionValueValuesEnum.EGRESS
+  ]
+  egress_org_firewall_rule.sort(key=lambda x: x.priority, reverse=False)
+  return ingress_org_firewall_rule + egress_org_firewall_rule
+
+
 def ConvertOrgSecurityPolicyRulesToEffectiveFwRules(security_policy):
   """Convert organization security policy rules to effective firewall rules."""
   result = []

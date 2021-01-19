@@ -30,6 +30,21 @@ class ApplyParametersRequest(_messages.Message):
   nodeIds = _messages.StringField(2, repeated=True)
 
 
+class ApplySoftwareUpdateRequest(_messages.Message):
+  r"""Request for ApplySoftwareUpdate.
+
+  Fields:
+    applyAll: Whether to apply the update to all nodes. If set to true, will
+      explicitly restrict users from specifying any nodes, and apply software
+      update to all nodes (where applicable) within the instance.
+    nodeIds: Nodes to which we should apply the update to. Note all the
+      selected nodes are updated in parallel.
+  """
+
+  applyAll = _messages.BooleanField(1)
+  nodeIds = _messages.StringField(2, repeated=True)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -680,6 +695,8 @@ class Instance(_messages.Message):
     parameters: Optional: User defined parameters to apply to the memcached
       process on each node.
     state: Output only. The state of this Memcached instance.
+    updateAvailable: Output only. Returns true if there is an update waiting
+      to be applied
     updateTime: Output only. The time the instance was updated.
     zones: Zones where Memcached nodes should be provisioned in. Memcached
       nodes will be equally distributed across these zones. If not provided,
@@ -757,8 +774,9 @@ class Instance(_messages.Message):
   nodeCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
   parameters = _messages.MessageField('MemcacheParameters', 13)
   state = _messages.EnumField('StateValueValuesEnum', 14)
-  updateTime = _messages.StringField(15)
-  zones = _messages.StringField(16, repeated=True)
+  updateAvailable = _messages.BooleanField(15)
+  updateTime = _messages.StringField(16)
+  zones = _messages.StringField(17, repeated=True)
 
 
 class InstanceMessage(_messages.Message):
@@ -1068,6 +1086,20 @@ class MemcacheProjectsLocationsInstancesApplyParametersRequest(_messages.Message
   name = _messages.StringField(2, required=True)
 
 
+class MemcacheProjectsLocationsInstancesApplySoftwareUpdateRequest(_messages.Message):
+  r"""A MemcacheProjectsLocationsInstancesApplySoftwareUpdateRequest object.
+
+  Fields:
+    applySoftwareUpdateRequest: A ApplySoftwareUpdateRequest resource to be
+      passed as the request body.
+    instance: Required. Resource name of the Memcached instance for which
+      software update should be applied.
+  """
+
+  applySoftwareUpdateRequest = _messages.MessageField('ApplySoftwareUpdateRequest', 1)
+  instance = _messages.StringField(2, required=True)
+
+
 class MemcacheProjectsLocationsInstancesCreateRequest(_messages.Message):
   r"""A MemcacheProjectsLocationsInstancesCreateRequest object.
 
@@ -1253,6 +1285,8 @@ class Node(_messages.Message):
     parameters: User defined parameters currently applied to the node.
     port: Output only. The port number of the Memcached server on this node.
     state: Output only. Current state of the Memcached node.
+    updateAvailable: Output only. Returns true if there is an update waiting
+      to be applied
     zone: Output only. Location (GCP Zone) for the Memcached node.
   """
 
@@ -1277,7 +1311,8 @@ class Node(_messages.Message):
   parameters = _messages.MessageField('MemcacheParameters', 3)
   port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   state = _messages.EnumField('StateValueValuesEnum', 5)
-  zone = _messages.StringField(6)
+  updateAvailable = _messages.BooleanField(6)
+  zone = _messages.StringField(7)
 
 
 class NodeConfig(_messages.Message):
@@ -1398,6 +1433,32 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class OperationMetadata(_messages.Message):
+  r"""Represents the metadata of a long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    cancelRequested: Output only. Identifies whether the user has requested
+      cancellation of the operation. Operations that have successfully been
+      cancelled have Operation.error value with a google.rpc.Status.code of 1,
+      corresponding to `Code.CANCELLED`.
+    createTime: Output only. Time when the operation was created.
+    endTime: Output only. Time when the operation finished running.
+    statusDetail: Output only. Human-readable status of the operation, if any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  cancelRequested = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  statusDetail = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
 
 
 class Schedule(_messages.Message):

@@ -391,6 +391,11 @@
           "description": "Output only. Endpoint for Discovery API",
           "readOnly": true,
           "type": "string"
+        },
+        "updateAvailable": {
+          "description": "Output only. Returns true if there is an update waiting to be applied",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },
@@ -476,6 +481,11 @@
         "parameters": {
           "description": "User defined parameters currently applied to the node.",
           "$ref": "MemcacheParameters"
+        },
+        "updateAvailable": {
+          "description": "Output only. Returns true if there is an update waiting to be applied",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },
@@ -535,6 +545,24 @@
         }
       }
     },
+    "ApplySoftwareUpdateRequest": {
+      "id": "ApplySoftwareUpdateRequest",
+      "description": "Request for ApplySoftwareUpdate.",
+      "type": "object",
+      "properties": {
+        "nodeIds": {
+          "description": "Nodes to which we should apply the update to. Note all the selected nodes are updated in parallel.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "applyAll": {
+          "description": "Whether to apply the update to all nodes. If set to true, will explicitly restrict users from specifying any nodes, and apply software update to all nodes (where applicable) within the instance.",
+          "type": "boolean"
+        }
+      }
+    },
     "GoogleCloudMemcacheV1beta2LocationMetadata": {
       "id": "GoogleCloudMemcacheV1beta2LocationMetadata",
       "description": "Metadata for the given google.cloud.location.Location.",
@@ -558,6 +586,50 @@
     },
     "GoogleCloudMemcacheV1beta2OperationMetadata": {
       "id": "GoogleCloudMemcacheV1beta2OperationMetadata",
+      "description": "Represents the metadata of a long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. Time when the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. Time when the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusDetail": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "cancelRequested": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
       "description": "Represents the metadata of a long-running operation.",
       "type": "object",
       "properties": {
@@ -1518,6 +1590,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "ApplyParameters will restart the set of specified nodes in order to update them to the current set of parameters for the Memcached Instance."
+                },
+                "applySoftwareUpdate": {
+                  "id": "memcache.projects.locations.instances.applySoftwareUpdate",
+                  "path": "v1beta2/{+instance}:applySoftwareUpdate",
+                  "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:applySoftwareUpdate",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "instance": {
+                      "description": "Required. Resource name of the Memcached instance for which software update should be applied.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "instance"
+                  ],
+                  "request": {
+                    "$ref": "ApplySoftwareUpdateRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates software on the selected nodes of the Instance."
                 }
               }
             }

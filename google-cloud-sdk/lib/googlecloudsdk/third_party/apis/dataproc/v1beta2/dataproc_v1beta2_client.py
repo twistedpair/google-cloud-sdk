@@ -906,6 +906,32 @@ class DataprocV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetClusterAsTemplate(self, request, global_params=None):
+      r"""Exports a template for a cluster in a project that can be used in future CreateCluster requests.
+
+      Args:
+        request: (DataprocProjectsRegionsClustersGetClusterAsTemplateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Cluster) The response message.
+      """
+      config = self.GetMethodConfig('GetClusterAsTemplate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetClusterAsTemplate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='dataproc.projects.regions.clusters.getClusterAsTemplate',
+        ordered_params=['projectId', 'region', 'clusterName'],
+        path_params=['clusterName', 'projectId', 'region'],
+        query_params=[],
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}:getClusterAsTemplate',
+        request_field='',
+        request_type_name='DataprocProjectsRegionsClustersGetClusterAsTemplateRequest',
+        response_type_name='Cluster',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -1230,6 +1256,32 @@ class DataprocV1beta2(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataprocProjectsRegionsJobsGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def GetJobAsTemplate(self, request, global_params=None):
+      r"""Exports the resource representation for a job in a project as a template that can be used as a SubmitJobRequest.
+
+      Args:
+        request: (DataprocProjectsRegionsJobsGetJobAsTemplateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Job) The response message.
+      """
+      config = self.GetMethodConfig('GetJobAsTemplate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetJobAsTemplate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='dataproc.projects.regions.jobs.getJobAsTemplate',
+        ordered_params=['projectId', 'region', 'jobId'],
+        path_params=['jobId', 'projectId', 'region'],
+        query_params=[],
+        relative_path='v1beta2/projects/{projectId}/regions/{region}/jobs/{jobId}:getJobAsTemplate',
+        request_field='',
+        request_type_name='DataprocProjectsRegionsJobsGetJobAsTemplateRequest',
+        response_type_name='Job',
         supports_download=False,
     )
 

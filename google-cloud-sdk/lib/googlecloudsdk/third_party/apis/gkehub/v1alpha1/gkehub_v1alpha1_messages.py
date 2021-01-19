@@ -1828,6 +1828,7 @@ class PolicyController(_messages.Message):
     exemptableNamespaces: The set of namespaces that are excluded from Policy
       Controller checks. Namespaces do not need to currently exist on the
       cluster.
+    logDeniesEnabled: Logs all denies and dry run failures.
     referentialRulesEnabled: Enables the ability to use Constraint Templates
       that reference to objects other than the object currently being
       evaluated.
@@ -1838,8 +1839,9 @@ class PolicyController(_messages.Message):
   auditIntervalSeconds = _messages.IntegerField(1)
   enabled = _messages.BooleanField(2)
   exemptableNamespaces = _messages.StringField(3, repeated=True)
-  referentialRulesEnabled = _messages.BooleanField(4)
-  templateLibraryInstalled = _messages.BooleanField(5)
+  logDeniesEnabled = _messages.BooleanField(4)
+  referentialRulesEnabled = _messages.BooleanField(5)
+  templateLibraryInstalled = _messages.BooleanField(6)
 
 
 class PolicyControllerState(_messages.Message):

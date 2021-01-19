@@ -1598,7 +1598,9 @@ class VirtualMachine(_messages.Message):
       version will still be pulled. The root directory of the ext4 image must
       contain `image` and `overlay2` directories copied from the Docker
       directory of a VM where the desired Docker images have already been
-      pulled. Only a single image is supported.
+      pulled. Any images pulled that are not cached will be stored on the
+      first cache disk instead of the boot disk. Only a single image is
+      supported.
     enableStackdriverMonitoring: Whether Stackdriver monitoring should be
       enabled on the VM.
     labels: Optional set of labels to apply to the VM and any attached disk

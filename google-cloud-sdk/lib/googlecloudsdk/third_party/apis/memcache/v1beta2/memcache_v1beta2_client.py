@@ -81,6 +81,33 @@ class MemcacheV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ApplySoftwareUpdate(self, request, global_params=None):
+      r"""Updates software on the selected nodes of the Instance.
+
+      Args:
+        request: (MemcacheProjectsLocationsInstancesApplySoftwareUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ApplySoftwareUpdate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ApplySoftwareUpdate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:applySoftwareUpdate',
+        http_method='POST',
+        method_id='memcache.projects.locations.instances.applySoftwareUpdate',
+        ordered_params=['instance'],
+        path_params=['instance'],
+        query_params=[],
+        relative_path='v1beta2/{+instance}:applySoftwareUpdate',
+        request_field='applySoftwareUpdateRequest',
+        request_type_name='MemcacheProjectsLocationsInstancesApplySoftwareUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a new Instance in a given location.
 

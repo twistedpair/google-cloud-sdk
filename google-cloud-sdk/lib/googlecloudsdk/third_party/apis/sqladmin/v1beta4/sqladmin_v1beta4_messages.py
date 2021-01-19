@@ -138,7 +138,8 @@ class BackupRun(_messages.Message):
       DEFAULT_SNAPSHOT.
     StatusValueValuesEnum: The status of this run.
     TypeValueValuesEnum: The type of this run; can be either "AUTOMATED" or
-      "ON_DEMAND".
+      "ON_DEMAND". This field defaults to "ON_DEMAND" and is ignored, when
+      specified for insert requests.
 
   Fields:
     backupKind: Specifies the kind of backup, PHYSICAL or DEFAULT_SNAPSHOT.
@@ -163,7 +164,9 @@ class BackupRun(_messages.Message):
     startTime: The time the backup operation actually started in UTC timezone
       in RFC 3339 format, for example *2012-11-15T16:19:00.094Z*.
     status: The status of this run.
-    type: The type of this run; can be either "AUTOMATED" or "ON_DEMAND".
+    type: The type of this run; can be either "AUTOMATED" or "ON_DEMAND". This
+      field defaults to "ON_DEMAND" and is ignored, when specified for insert
+      requests.
     windowStartTime: The start time of the backup window during which this the
       backup was attempted in RFC 3339 format, for example
       *2012-11-15T16:19:00.094Z*.
@@ -211,7 +214,9 @@ class BackupRun(_messages.Message):
     DELETED = 9
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of this run; can be either "AUTOMATED" or "ON_DEMAND".
+    r"""The type of this run; can be either "AUTOMATED" or "ON_DEMAND". This
+    field defaults to "ON_DEMAND" and is ignored, when specified for insert
+    requests.
 
     Values:
       SQL_BACKUP_RUN_TYPE_UNSPECIFIED: This is an unknown BackupRun type.

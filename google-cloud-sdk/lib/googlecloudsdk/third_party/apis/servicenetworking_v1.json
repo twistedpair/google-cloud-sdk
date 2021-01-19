@@ -408,7 +408,7 @@
           "format": "int32"
         },
         "secondaryRangeIpPrefixLengths": {
-          "description": "Optional. DO NOT USE - Under development. The size of the desired secondary ranges for the subnet. Use usual CIDR range notation. For example, '30' to find unused x.x.x.x\/30 CIDR range. The goal is to determine that the allocated ranges have enough free space for all the requested secondary ranges.",
+          "description": "Optional. The size of the desired secondary ranges for the subnet. Use usual CIDR range notation. For example, '30' to find unused x.x.x.x\/30 CIDR range. The goal is to determine that the allocated ranges have enough free space for all the requested secondary ranges.",
           "type": "array",
           "items": {
             "type": "integer",
@@ -421,6 +421,61 @@
           "items": {
             "type": "string"
           }
+        },
+        "subnetworkCandidates": {
+          "description": "Optional. List of subnetwork candidates to validate. The required input fields are `name`, `network`, and `region`. Subnetworks from this list which exist will be returned in the response with the `ip_cidr_range`, `secondary_ip_cider_ranges`, and `outside_allocation` fields set.",
+          "type": "array",
+          "items": {
+            "$ref": "Subnetwork"
+          }
+        }
+      }
+    },
+    "Subnetwork": {
+      "id": "Subnetwork",
+      "description": "Represents a subnet that was created or discovered by a private access management service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Subnetwork name. See https:\/\/cloud.google.com\/compute\/docs\/vpc\/",
+          "type": "string"
+        },
+        "ipCidrRange": {
+          "description": "Subnetwork CIDR range in `10.x.x.x\/y` format.",
+          "type": "string"
+        },
+        "network": {
+          "description": "In the Shared VPC host project, the VPC network that's peered with the consumer network. For example: `projects\/1234321\/global\/networks\/host-network`",
+          "type": "string"
+        },
+        "outsideAllocation": {
+          "description": "This is a discovered subnet that is not within the current consumer allocated ranges.",
+          "type": "boolean"
+        },
+        "secondaryIpRanges": {
+          "description": "List of secondary IP ranges in this subnetwork.",
+          "type": "array",
+          "items": {
+            "$ref": "SecondaryIpRange"
+          }
+        },
+        "region": {
+          "description": "GCP region where the subnetwork is located.",
+          "type": "string"
+        }
+      }
+    },
+    "SecondaryIpRange": {
+      "id": "SecondaryIpRange",
+      "type": "object",
+      "properties": {
+        "rangeName": {
+          "description": "Name of the secondary IP range.",
+          "type": "string"
+        },
+        "ipCidrRange": {
+          "description": "Secondary IP CIDR range in `x.x.x.x\/y` format.",
+          "type": "string"
         }
       }
     },
@@ -429,9 +484,11 @@
       "type": "object",
       "properties": {
         "isValid": {
+          "description": "Indicates whether all the requested validations passed.",
           "type": "boolean"
         },
         "validationError": {
+          "description": "The first validation which failed.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -465,6 +522,13 @@
             "RANGES_DELETED_LATER",
             "COMPUTE_API_NOT_ENABLED"
           ]
+        },
+        "existingSubnetworkCandidates": {
+          "description": "List of subnetwork candidates from the request which exist with the `ip_cidr_range`, `secondary_ip_cider_ranges`, and `outside_allocation` fields set.",
+          "type": "array",
+          "items": {
+            "$ref": "Subnetwork"
+          }
         }
       }
     },
@@ -1750,7 +1814,7 @@
       "type": "object",
       "properties": {
         "requirements": {
-          "description": "Requirements that must be satisfied before a consumer project can use the service. Each requirement is of the form \/; for example 'serviceusage.googleapis.com\/billing-enabled'.",
+          "description": "Requirements that must be satisfied before a consumer project can use the service. Each requirement is of the form \/; for example 'serviceusage.googleapis.com\/billing-enabled'. For Google APIs, a Terms of Service requirement must be included here. Google Cloud APIs must include \"serviceusage.googleapis.com\/tos\/cloud\". Other Google APIs should include \"serviceusage.googleapis.com\/tos\/universal\". Additional ToS can be included based on the business needs.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2317,50 +2381,6 @@
         "outsideAllocation": {
           "description": "This is a discovered subnet that is not within the current consumer allocated ranges.",
           "type": "boolean"
-        }
-      }
-    },
-    "Subnetwork": {
-      "id": "Subnetwork",
-      "description": "Represents a subnet that was created or discovered by a private access management service.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Subnetwork name. See https:\/\/cloud.google.com\/compute\/docs\/vpc\/",
-          "type": "string"
-        },
-        "ipCidrRange": {
-          "description": "Subnetwork CIDR range in `10.x.x.x\/y` format.",
-          "type": "string"
-        },
-        "network": {
-          "description": "In the Shared VPC host project, the VPC network that's peered with the consumer network. For example: `projects\/1234321\/global\/networks\/host-network`",
-          "type": "string"
-        },
-        "outsideAllocation": {
-          "description": "This is a discovered subnet that is not within the current consumer allocated ranges.",
-          "type": "boolean"
-        },
-        "secondaryIpRanges": {
-          "description": "List of secondary IP ranges in this subnetwork.",
-          "type": "array",
-          "items": {
-            "$ref": "SecondaryIpRange"
-          }
-        }
-      }
-    },
-    "SecondaryIpRange": {
-      "id": "SecondaryIpRange",
-      "type": "object",
-      "properties": {
-        "rangeName": {
-          "description": "Name of the secondary IP range.",
-          "type": "string"
-        },
-        "ipCidrRange": {
-          "description": "Secondary IP CIDR range in `x.x.x.x\/y` format.",
-          "type": "string"
         }
       }
     },

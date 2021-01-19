@@ -27,72 +27,67 @@ from googlecloudsdk.core import exceptions
 
 class BucketAccessError(exceptions.Error):
   """Indicates a failed attempt to access a GCS bucket."""
+
+
+class DeletionFailedError(exceptions.Error):
+  """Indicates failure to delete."""
   pass
 
 
 class ConfigurationError(exceptions.Error):
   """Indicates an error in configuration."""
-  pass
 
 
 class ServiceNotFoundError(exceptions.Error):
   """Indicates that a provided service name was not found."""
-  pass
 
 
 class RevisionNotFoundError(exceptions.Error):
   """Indicates that a provided revision name was not found."""
-  pass
+
+
+class JobNotFoundError(exceptions.Error):
+  """Indicates that a provided job name was not found."""
 
 
 class DockerVersionError(exceptions.Error):
   """Indicates an error in determining the docker version."""
-  pass
 
 
 class AmbiguousContainerError(exceptions.Error):
   """More than one container fits our criteria, we do not know which to run."""
-  pass
 
 
 class CloudSQLError(exceptions.Error):
   """Malformed instances string for CloudSQL."""
-  pass
 
 
 class ContainerIdError(exceptions.Error):
   """Container Id cannot be found by docker."""
-  pass
 
 
 class NoActiveRevisionsError(exceptions.Error):
   """Active revisions were expected but not found."""
-  pass
 
 
 class SourceNotSupportedError(exceptions.Error):
   """Your Cloud Run install does not support source deployment."""
-  pass
 
 
 class NoConfigurationChangeError(exceptions.Error):
   """No configuration changes were requested."""
-  pass
 
 
 class UnknownDeployableError(exceptions.Error):
   """Could not identify the deployable app, function, or container."""
-  pass
 
 
 class AppNotReadyError(exceptions.InternalError):
   """The application must be uploaded before it can be deployed."""
-  pass
 
 
 class DeploymentFailedError(exceptions.Error):
   """An error was encountered during deployment."""
-  pass
 
 
 class DomainMappingCreationError(exceptions.Error):
@@ -162,6 +157,7 @@ def MaybeRaiseCustomFieldMismatch(error):
 
   Args:
     error: original error complaining of a type mismatch.
+
   Raises:
     FieldMismatchError: If the error is due to our own custom handling or the
       original error if not.
@@ -182,7 +178,6 @@ class KubernetesError(exceptions.Error):
 
 class UnsupportedOperationError(exceptions.Error):
   """The requested operation is not supported."""
-  pass
 
 
 class KubernetesExceptionParser(object):
@@ -251,9 +246,7 @@ class KubernetesExceptionParser(object):
   def causes(self):
     """Returns list of causes uniqued by the message."""
     try:
-      messages = {
-          c['message']: c for c in self._content['details'][
-              'causes']}
+      messages = {c['message']: c for c in self._content['details']['causes']}
       return [messages[k] for k in sorted(messages)]
     except KeyError:
       return []

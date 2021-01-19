@@ -217,7 +217,7 @@ def AddDiskSizeFlag(parser):
       default='250GB',
       type=arg_parsers.BinarySize(
           lower_bound='20GB',
-          upper_bound='500GB',
+          upper_bound='2000GB',
           suggested_binary_size_scales=['GB']),
       help="""\
       Configures the root volume size of your Compute Engine VM (in GB). The

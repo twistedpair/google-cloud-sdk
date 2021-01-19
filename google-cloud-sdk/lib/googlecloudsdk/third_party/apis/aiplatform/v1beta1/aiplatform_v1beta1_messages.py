@@ -9666,6 +9666,8 @@ class GoogleCloudAiplatformV1beta1ModelEvaluation(_messages.Message):
 
   Fields:
     createTime: Output only. Timestamp when this ModelEvaluation was created.
+    explanationSpecs: Output only. Describes the values of ExplanationSpec
+      that are used for explaining the predicted values on the evaluated data.
     metrics: Output only. Evaluation metrics of the Model. The schema of the
       metrics is stored in metrics_schema_uri
     metricsSchemaUri: Output only. Points to a YAML file stored on Google
@@ -9684,11 +9686,27 @@ class GoogleCloudAiplatformV1beta1ModelEvaluation(_messages.Message):
   """
 
   createTime = _messages.StringField(1)
-  metrics = _messages.MessageField('extra_types.JsonValue', 2)
-  metricsSchemaUri = _messages.StringField(3)
-  modelExplanation = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelExplanation', 4)
-  name = _messages.StringField(5)
-  sliceDimensions = _messages.StringField(6, repeated=True)
+  explanationSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelEvaluationModelEvaluationExplanationSpec', 2, repeated=True)
+  metrics = _messages.MessageField('extra_types.JsonValue', 3)
+  metricsSchemaUri = _messages.StringField(4)
+  modelExplanation = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelExplanation', 5)
+  name = _messages.StringField(6)
+  sliceDimensions = _messages.StringField(7, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1ModelEvaluationModelEvaluationExplanationSpec(_messages.Message):
+  r"""A
+  GoogleCloudAiplatformV1beta1ModelEvaluationModelEvaluationExplanationSpec
+  object.
+
+  Fields:
+    explanationSpec: Explanation spec details.
+    explanationType: Explanation type. For AutoML Image Classification models,
+      possible values are: * `image-integrated-gradients` * `image-xrai`
+  """
+
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 1)
+  explanationType = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1ModelEvaluationSlice(_messages.Message):
@@ -12374,12 +12392,19 @@ class GoogleCloudAiplatformV1beta1SearchMigratableResourcesRequest(_messages.Mes
   r"""Request message for MigrationService.SearchMigratableResources.
 
   Fields:
+    filter: Supported filters are: * Resource type: For a specific type of
+      MigratableResource. * `ml_engine_model_version:*` * `automl_model:*`, *
+      `automl_dataset:*` * `data_labeling_dataset:*`. * Migrated or not:
+      Filter migrated resource or not by last_migrate_time. *
+      `last_migrate_time:*` will filter migrated resources. * `NOT
+      last_migrate_time:*` will filter not yet migrated resource.
     pageSize: The standard page size. The default and maximum value is 100.
     pageToken: The standard page token.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1SearchMigratableResourcesResponse(_messages.Message):
@@ -13095,9 +13120,9 @@ class GoogleCloudAiplatformV1beta1WorkerPoolSpec(_messages.Message):
   Fields:
     containerSpec: The custom container task.
     diskSpec: Disk spec.
-    machineSpec: Required. Immutable. The specification of a single machine.
+    machineSpec: Optional. Immutable. The specification of a single machine.
     pythonPackageSpec: The Python packaged task.
-    replicaCount: Required. The number of worker replicas to use for this
+    replicaCount: Optional. The number of worker replicas to use for this
       worker pool.
   """
 

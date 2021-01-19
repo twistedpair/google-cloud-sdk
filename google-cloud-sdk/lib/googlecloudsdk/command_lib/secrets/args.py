@@ -142,8 +142,7 @@ def AddVersion(parser, purpose, positional=False, **kwargs):
 
 def AddUpdateReplicationGroup(parser):
   """Add flags for specifying replication policy updates."""
-  group = parser.add_group(
-      mutex=True, help='Replication update.')
+  group = parser.add_group(mutex=True, help='Replication update.')
   group.add_argument(
       _ArgOrFlag('remove-cmek', False),
       action='store_true',
@@ -196,6 +195,43 @@ def AddCreateReplicationPolicyGroup(parser):
       type=arg_parsers.ArgList(),
       help=('Comma-separated list of locations in which the secret should be '
             'replicated.'))
+
+
+def AddCreateExpirationGroup(parser):
+  """Add flags for specifying expiration on secret creates."""
+
+  group = parser.add_group(mutex=True, help='Expiration.')
+  group.add_argument(
+      _ArgOrFlag('expire-time', False),
+      metavar='EXPIRE-TIME',
+      help=('Timestamp at which to automatically delete the secret.'))
+  group.add_argument(
+      _ArgOrFlag('ttl', False),
+      metavar='TTL',
+      help=(
+          'Duration of time (in seconds) from the running of the command until '
+          'the secret is automatically deleted.'))
+
+
+def AddUpdateExpirationGroup(parser):
+  """Add flags for specifying expiration on secret updates.."""
+
+  group = parser.add_group(mutex=True, help='Expiration.')
+  group.add_argument(
+      _ArgOrFlag('expire-time', False),
+      metavar='EXPIRE-TIME',
+      help=('Timestamp at which to automatically delete the secret.'))
+  group.add_argument(
+      _ArgOrFlag('ttl', False),
+      metavar='TTL',
+      help=(
+          'Duration of time (in seconds) from the running of the command until '
+          'the secret is automatically deleted.'))
+  group.add_argument(
+      _ArgOrFlag('remove-expiration', False),
+      action='store_true',
+      help=(
+          'If set, removes scheduled expiration from secret (if it had one).'))
 
 
 def _ArgOrFlag(name, positional):

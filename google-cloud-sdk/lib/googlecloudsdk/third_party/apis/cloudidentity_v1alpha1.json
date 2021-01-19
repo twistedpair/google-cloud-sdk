@@ -757,7 +757,7 @@
     },
     "UserInvitation": {
       "id": "UserInvitation",
-      "description": "UserInvitation to Invite \/ Join a Gsuite organization.",
+      "description": "UserInvitation to join a Google Workspace organization.",
       "type": "object",
       "properties": {
         "name": {
@@ -765,14 +765,14 @@
           "type": "string"
         },
         "state": {
-          "description": "State of the UserInvitation.",
+          "description": "State of the `UserInvitation`.",
           "type": "string",
           "enumDescriptions": [
             "The default value. This value is used if the state is omitted.",
-            "Describes that UserInvitation is created and ready for sending an email invitation.",
-            "Describes that user has been invited through email.",
-            "Describes that the invitation has been accepted & user is part of Organization.",
-            "Describes that the invitation is declined."
+            "The `UserInvitation` has been created and is ready for sending as an email.",
+            "The user has been invited by email.",
+            "The user has accepted the invitation and is part of the organization.",
+            "The user declined the invitation."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -783,12 +783,12 @@
           ]
         },
         "mailsSentCount": {
-          "description": "number of invitation emails sent to the user.",
+          "description": "Number of invitation emails sent to the user.",
           "type": "string",
           "format": "int64"
         },
         "updateTime": {
-          "description": "The time when the `UserInvitation` was last updated.",
+          "description": "Time when the `UserInvitation` was last updated.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -807,7 +807,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The token for the next page. If not empty, indicates that there may be more UserInvitations that match the listing request; this value can be used in a subsequent ListUserInvitationsRequest to get continued results with current list call.",
+          "description": "The token for the next page. If not empty, indicates that there may be more `UserInvitations` that match the listing request; this value can be used in a subsequent ListUserInvitationsRequest to get continued results with the current list call.",
           "type": "string"
         }
       }
@@ -2040,6 +2040,182 @@
           "$ref": "GoogleAppsCloudidentityDevicesV1Device"
         }
       }
+    },
+    "InboundSamlSsoProfile": {
+      "id": "InboundSamlSsoProfile",
+      "description": "A SAML 2.0 (https:\/\/www.oasis-open.org\/standards#samlv2.0) federation between a Google enterprise customer and a SAML IDP.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the SAML SSO profile.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Human-readable name of the SAML SSO profile.",
+          "type": "string"
+        },
+        "idpConfig": {
+          "description": "SAML IDP configuration.",
+          "$ref": "SamlIdpConfig"
+        },
+        "spConfig": {
+          "description": "SAML SP configuration for this SAML SSO profile. These are the SP details provided by Google that should be configured on the corresponding IDP.",
+          "$ref": "SamlSpConfig"
+        }
+      }
+    },
+    "SamlIdpConfig": {
+      "id": "SamlIdpConfig",
+      "description": "SAML IDP configuration.",
+      "type": "object",
+      "properties": {
+        "entityId": {
+          "description": "Required. The SAML Entity ID of the IDP.",
+          "type": "string"
+        },
+        "singleSignOnServiceUri": {
+          "description": "Required. SingleSignOnService endpoint location\/Sign-in page URL. This is the URL where the AuthnRequest will be sent. Must use HTTPS. Currently assumed to accept the HTTP-Redirect binding.",
+          "type": "string"
+        },
+        "logoutRedirectUri": {
+          "description": "Logout redirect URL\/Sign-out page URL. When a user clicks the sign out link on a Google page, they will be redirected to this URL. This is pure redirect with no attached SAML LogoutRequest (SAML Single Logout is currently not supported). Must use HTTPS.",
+          "type": "string"
+        },
+        "changePasswordUri": {
+          "description": "Change password URL. Users will be sent to this URL when changing their passwords at myaccount.google.com. This takes precedence over the customer-level change password URL. Must use HTTPS.",
+          "type": "string"
+        }
+      }
+    },
+    "SamlSpConfig": {
+      "id": "SamlSpConfig",
+      "description": "SAML SP configuration.",
+      "type": "object",
+      "properties": {
+        "entityId": {
+          "description": "Output only. The SAML Entity ID for this SP.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "assertionConsumerServiceUri": {
+          "description": "Output only. The SAML Assertion Consumer Service (ACS) URL to be used for IDP-initiated login. Currently assumed to accept Response messages via the HTTP-POST binding.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "ApplyIdpMetadataResponse": {
+      "id": "ApplyIdpMetadataResponse",
+      "description": "The apply IDP metadata response.",
+      "type": "object",
+      "properties": {
+        "inboundSamlSsoProfile": {
+          "description": "The updated InboundSamlSsoProfile.",
+          "$ref": "InboundSamlSsoProfile"
+        },
+        "idpSigningKeys": {
+          "description": "The updated IdpSigningKeys' metadata.",
+          "type": "array",
+          "items": {
+            "$ref": "IdpSigningKey"
+          }
+        }
+      }
+    },
+    "IdpSigningKey": {
+      "id": "IdpSigningKey",
+      "description": "Signing validation key.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the key.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. When the key data was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "rsaKeyInfo": {
+          "description": "Output only. RSA public key information.",
+          "readOnly": true,
+          "$ref": "RsaPublicKeyInfo"
+        },
+        "dsaKeyInfo": {
+          "description": "Output only. DSA public key information.",
+          "readOnly": true,
+          "$ref": "DsaPublicKeyInfo"
+        }
+      }
+    },
+    "RsaPublicKeyInfo": {
+      "id": "RsaPublicKeyInfo",
+      "description": "RSA public key information.",
+      "type": "object",
+      "properties": {
+        "keySize": {
+          "description": "Key size in bits (size of the modulus).",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "DsaPublicKeyInfo": {
+      "id": "DsaPublicKeyInfo",
+      "description": "DSA public key information.",
+      "type": "object",
+      "properties": {
+        "keySize": {
+          "description": "Key size in bits (size of parameter P)",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "CreateInboundSamlSsoProfileOperationMetadata": {
+      "id": "CreateInboundSamlSsoProfileOperationMetadata",
+      "description": "Details of the create InboundSamlSsoProfile operation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UpdateInboundSamlSsoProfileOperationMetadata": {
+      "id": "UpdateInboundSamlSsoProfileOperationMetadata",
+      "description": "Details of the update InboundSamlSsoProfile operation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "DeleteInboundSamlSsoProfileOperationMetadata": {
+      "id": "DeleteInboundSamlSsoProfileOperationMetadata",
+      "description": "Details of the delete InboundSamlSsoProfile operation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ApplyIdpMetadataOperationMetadata": {
+      "id": "ApplyIdpMetadataOperationMetadata",
+      "description": "Details of the ApplyIdpMetadata operation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "DeleteIdpSigningKeyOperationMetadata": {
+      "id": "DeleteIdpSigningKeyOperationMetadata",
+      "description": "Details of the delete IdpSigningKey operation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "AddIdpSigningKeyOperationMetadata": {
+      "id": "AddIdpSigningKeyOperationMetadata",
+      "description": "Details of the Add IdpSigningKey operation.",
+      "type": "object",
+      "properties": {
+      }
     }
   },
   "resources": {
@@ -2712,7 +2888,7 @@
               "response": {
                 "$ref": "UserInvitation"
               },
-              "description": "Retrieve a `UserInvitation` resource."
+              "description": "Retrieves a UserInvitation resource."
             },
             "list": {
               "id": "cloudidentity.customers.userInvitations.list",
@@ -2721,14 +2897,14 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The unique identifier of the G Suite organization account of the customer the UserInvitations are associated with. .",
+                  "description": "Required. The unique identifier of the Google Workspace organization account of the customer the UserInvitations are associated with.",
                   "location": "path",
                   "required": true,
                   "pattern": "^customers\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "Optional. The maximum number of UserInvitations to return. If unspecified, at most 100 UserInvitatations will be returned. The maximum value is 200; values above 200 will be coerced to 200.",
+                  "description": "Optional. The maximum number of UserInvitations to return. If unspecified, at most 100 `UserInvitation`s will be returned. The maximum value is 200; values above 200 will be set to 200.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -2739,12 +2915,12 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "Optional. A query string for filtering UserInvitation results by its current state. in format: \"state:invited\".",
+                  "description": "Optional. A query string for filtering `UserInvitation` results by its current state, in the format: `\"state:invited\"`.",
                   "location": "query",
                   "type": "string"
                 },
                 "orderBy": {
-                  "description": "Optional. The sort order of the list results. You can sort the results in descending order based on either email or last update timestamp but not both, using `order_by=\"email desc\"`. Currently, supported sorting are `update_time asc`, `update_time desc`, `email asc`, `email desc`. If not specified results will be returned based on `email asc` order.",
+                  "description": "Optional. The sort order of the list results. You can sort the results in descending order based on either email or last update timestamp but not both, using `order_by=\"email desc\"`. Currently, sorting is supported for `update_time asc`, `update_time desc`, `email asc`, and `email desc`. If not specified, results will be returned based on `email asc` order.",
                   "location": "query",
                   "type": "string"
                 }
@@ -2764,7 +2940,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "name": {
-                  "description": "Required. UserInvitation name in the format `customers\/{customer}\/userinvitations\/{user_email_address}`",
+                  "description": "Required. `UserInvitation` name in the format `customers\/{customer}\/userinvitations\/{user_email_address}`",
                   "location": "path",
                   "required": true,
                   "pattern": "^customers\/[^\/]+\/userInvitations\/[^\/]+$",
@@ -2780,7 +2956,7 @@
               "response": {
                 "$ref": "Operation"
               },
-              "description": "Send UserInvitation to email. if the UserInvitation does not exist for this request, and it is a valid request, a UserInvitation will be created in this request."
+              "description": "Sends a UserInvitation to email. If the `UserInvitation` does not exist for this request and it is a valid request, the request creates a `UserInvitation`."
             },
             "cancel": {
               "id": "cloudidentity.customers.userInvitations.cancel",
@@ -2805,7 +2981,7 @@
               "response": {
                 "$ref": "Operation"
               },
-              "description": "Cancels a UserInvitation sent."
+              "description": "Cancels a UserInvitation that was already sent."
             }
           }
         }

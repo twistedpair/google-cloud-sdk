@@ -136,7 +136,7 @@ class ComponentStatusPrinter(cp.CustomPrinterBase):
       lines formatted for output
     """
     con = console_attr.GetConsoleAttr()
-    component = record['component']
+    component = record['status']
     status = con.Colorize(*_ReadySymbolAndColor(component))
     component_url = urlparse(component.url)
 
@@ -164,7 +164,7 @@ class ComponentStatusPrinter(cp.CustomPrinterBase):
               '  curl {}'.format(component.url), 'OR',
               '  curl -H "Host: {}" {}://{}'.format(component_url.netloc,
                                                     component_url.scheme,
-                                                    record['ingress_ip'])
+                                                    record['ingressIp'])
           ]))
     elif component.deployment_state == 'Failed':
       msg = '\n! Deployment failed with message: {}'.format(

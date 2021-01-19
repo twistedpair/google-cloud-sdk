@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+
 
 def parse_feature_spec_memberships(response):
   """Parses feature spec to create structured memberConfig data map.
@@ -38,29 +40,82 @@ def parse_feature_spec_memberships(response):
   }
 
 
+def parse_feature_state_memberships(response):
+  """Parses response to create structured feature state memberbership data map.
+
+  Args:
+    response: API response containing featureState to parse.
+
+  Returns:
+    Mapping from cluster names to featureStates.
+  """
+  if response.featureState is None or response.featureState.detailsByMembership is None:
+    feature_state_membership_details = []
+  else:
+    feature_state_membership_details = response.featureState.detailsByMembership.additionalProperties
+  return {
+      os.path.basename(membership_detail.key): membership_detail
+      for membership_detail in feature_state_membership_details
+  }
+
+
 class IdentityServiceMembershipState(object):
   """class stores Identity Service status for memberships to be printed."""
 
-  def __init__(self, cluster_name, cluster_in=None):
+  def __init__(self, cluster_name, cluster_in_spec=None, cluster_in_state=None):
     """Constructor for class to structure membership cluster output.
 
     Args:
       cluster_name: name of membership cluster that will be printed.
-      cluster_in: memberConfig contents of IdentityServiceFeatureSpec.
+      cluster_in_spec: memberConfig contents of IdentityServiceFeatureSpec.
+      cluster_in_state: membership contents of IdentityServiceFeatureState.
+
 
     Returns:
       Structured output for membership to be printed in describe command.
     """
-    self.cluster_name = cluster_name
+    self.membership_name = cluster_name
     self.auth_methods = {}
 
-    if cluster_in is not None:
-      for auth_method in cluster_in.authMethods:
+    # Populate IdentityServiceFeatureSpec values to be printed.
+    if cluster_in_spec is not None:
+      for auth_method in cluster_in_spec.authMethods:
         if auth_method.oidcConfig is not None:
           name = auth_method.name
           oidc_config = auth_method.oidcConfig
           self.auth_methods[name] = {
+              'proxy': auth_method.proxy,
               'protocol': 'OIDC',
               'issuerUri': oidc_config.issuerUri,
               'clientId': oidc_config.clientId,
+              'certificateAuthorityData': oidc_config.certificateAuthorityData,
+              'extraParams': oidc_config.extraParams,
+              'deployCloudConsoleProxy': oidc_config.deployCloudConsoleProxy,
+              'groupPrefix': oidc_config.groupPrefix,
+              'groupsClaim': oidc_config.groupsClaim,
+              'kubectlRedirectUri': oidc_config.kubectlRedirectUri,
+              'scopes': oidc_config.scopes,
+              'userClaim': oidc_config.userClaim,
+              'userPrefix': oidc_config.userPrefix,
           }
+
+    self.feature_state = {}
+    identityservice_feature_state = {}
+    # Populate FeatureState values to be printed.
+    if cluster_in_state is not None:
+      self.feature_state['code'] = cluster_in_state.code
+      self.feature_state['description'] = cluster_in_state.description
+      self.feature_state['updateTime'] = cluster_in_state.updateTime
+      # Populate identityserviceFeatureState values to be printed.
+      is_feature_state = cluster_in_state.identityserviceFeatureState
+      identityservice_feature_state[
+          'failureReason'] = is_feature_state.failureReason
+      identityservice_feature_state[
+          'installedVersion'] = is_feature_state.installedVersion
+      identityservice_feature_state[
+          'state'] = is_feature_state.state
+
+    self.feature_state[
+        'identityserviceFeatureState'] = identityservice_feature_state
+
+

@@ -25,7 +25,7 @@ _SEVERITY_ERROR = 'Error'
 _SEVERITY_WARNING = 'Warning'
 
 
-def GetNonTerminalMessages(conditions):
+def GetNonTerminalMessages(conditions, ignore_retry=False):
   """Get messages for non-terminal subconditions.
 
   Only show a message for some non-terminal subconditions:
@@ -36,12 +36,15 @@ def GetNonTerminalMessages(conditions):
 
   Args:
     conditions: Conditions
+    ignore_retry: bool, if True, ignores the "Retry" condition
 
   Returns:
     list(str) messages of non-terminal subconditions
   """
   messages = []
   for c in conditions.NonTerminalSubconditions():
+    if ignore_retry and c == 'Retry':
+      continue
     if conditions[c]['severity'] == _SEVERITY_WARNING:
       messages.append('{}: {}'.format(
           c, conditions[c]['message'] or 'Unknown Warning.'))
@@ -133,6 +136,9 @@ class Conditions(collections.Mapping):
       if (k != self._ready_condition and self[k]['severity'] and
           self[k]['severity'] != _SEVERITY_ERROR):
         yield k
+
+  def TerminalCondition(self):
+    return self._ready_condition
 
   def DescriptiveMessage(self):
     """Descriptive message about what's happened to the last user operation."""

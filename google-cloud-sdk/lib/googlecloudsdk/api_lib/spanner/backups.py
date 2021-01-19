@@ -20,7 +20,17 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions as c_exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.util import times
+import six
+from six.moves import http_client as httplib
+from six.moves import urllib
+
+
+class HttpRequestFailedError(core_exceptions.Error):
+  """Indicates that the http request failed in some way."""
+  pass
 
 
 # General Utils
@@ -61,17 +71,34 @@ def GetBackup(backup_ref):
   return client.projects_instances_backups.Get(req)
 
 
-def CreateBackup(backup_ref, args):
+def CreateBackup(backup_ref, args, encryption_type=None):
   """Create a new backup."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
+
+  query_params = {'alt': 'json', 'backupId': args.backup}
+  if encryption_type:
+    query_params['encryptionConfig.encryptionType'] = encryption_type
   parent = backup_ref.Parent().RelativeName()
+  url = '{}v1/{}/backups?{}'.format(client.url, parent,
+                                    urllib.parse.urlencode(query_params))
   backup = msgs.Backup(
       database=parent + '/databases/' + args.database,
       expireTime=CheckAndGetExpireTime(args))
-  req = msgs.SpannerProjectsInstancesBackupsCreateRequest(
-      parent=parent, backupId=args.backup, backup=backup)
-  return client.projects_instances_backups.Create(req)
+
+  # Workaround since gcloud cannot handle HttpBody properly (b/31403673).
+  response_encoding = None if six.PY2 else 'utf-8'
+  # Make an http request directly instead of using the apitools client which
+  # does not support '.' characters in query parameters (b/31244944).
+  response, response_body = http.Http(
+      response_encoding=response_encoding).request(
+          uri=url, method='POST', body=client.SerializeMessage(backup))
+
+  if int(response.get('status')) != httplib.OK:
+    raise HttpRequestFailedError('HTTP request failed. Response: ' +
+                                 response_body)
+  message_type = getattr(msgs, 'Operation')
+  return client.DeserializeMessage(message_type, response_body)
 
 
 def ModifyUpdateMetadataRequest(backup_ref, args, req):

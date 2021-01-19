@@ -5,6 +5,95 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 324.0.0 (2021-01-19)
+
+### Breaking Changes
+
+*   **(Cloud Run)** Updated `gcloud run` to require that `--platform` and `--region` be passed
+  after all positional arguments. For example: `gcloud run services describe
+  SERVICE --platform=managed --region=us-central1`. This change first appeared
+  in version 322.0.0.
+
+
+### AI Platform
+
+* Added support for maxNodes to `gcloud ai-platform versions update --config`.
+* Added `--bigquery-table-name` and `sampling-percentage` to `gcloud ai-platform
+  versions update` to update request logging config.
+
+### Cloud API Gateway
+
+* Promoted `gcloud api-gateway` to GA.
+
+### Cloud DNS
+
+* Promoted `gcloud dns managed-zones` to GA.
+* Added `--service-directory-namespace` to `gcloud beta dns managed-zones create` to support providing a Service Directory namespace that should be associated with the zone.
+
+### Cloud Machine Learning Engine
+
+* Added support for maxNodes to `gcloud ml-engine versions update --config`.
+* Added `--bigquery-table-name` and `sampling-percentage` to `gcloud ml-engine
+  versions update` to update request logging config.
+
+### Cloud Run
+
+* For Cloud Run (fully managed), changed `gcloud run services delete` to wait
+  until the service is no longer returned and account for the possibility of a
+  deletion failing before reporting success. To use the previous behavior and
+  exit without waiting for deletion to complete, use `--async`.
+
+### Cloud Speech API
+
+* Promoted `--separate-channel-recognition` and `--audio-channel-count` flags of
+  `gcloud ml speech recognize` and `gcloud ml speech recognize-long-running`
+  to GA.
+
+### Cloud Workflows
+
+* Added `gcloud workflows` and `gcloud workflowexecutions` commands to GA.
+
+### Compute Engine
+
+* Added `--compute-service-account` to `gcloud beta compute images import`.
+* Added the following flags to `gcloud beta compute backend-services create`,  `gcloud beta compute backend-services update`,
+  `gcloud beta compute backend-buckets create` and `gcloud beta compute backend-buckets update`:
+  * `--[no-]serve-while-stale`
+  * `--[no-]bypass-cache-on-request-headers`
+* Added the following fields to `gcloud beta compute backend-services import` and `gcloud beta compute backend-services export`:
+  * cdnPolicy:
+    * bypassCacheOnRequestHeaders
+    * serveWhileStale
+* Promoted `--compute-service-account` flag to GA for `gcloud compute images export`.
+* Added `org-firewall-policies` command group.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.35.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Kpt
+
+* Updated kpt from v0.36.1 to v0.37.1.
+* Updated import of cli-utils from v0.21.0 to v0.21.1.
+* Updated import of kyaml from v0.9.3 to v0.9.5.
+* Updated import of cmd/config from v0.8.4 to v0.8.5.
+
+### Secret Manager
+
+* Added `--expire-time` flag to `gcloud beta secrets create` and
+  `gcloud beta secrets update` commands to specify timestamp for the secret to
+  expire.
+* Added `--ttl` flag to `gcloud beta secrets create` and
+  `gcloud beta secrets update` commands to specify a duration until the secret
+  should expire.
+* Added `--remove-expiration` flag to `gcloud beta secrets update` command to
+  remove scheduled expiration from a secret if it has one.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 323.0.0 (2021-01-12)
 
 ### Cloud Asset Inventory

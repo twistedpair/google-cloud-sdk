@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 
 import collections
 
+from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.command_lib.run import k8s_object_printer
 from googlecloudsdk.core.resource import custom_printer_base as cp
@@ -108,7 +109,8 @@ class RevisionPrinter(k8s_object_printer.K8sObjectPrinter):
 
   @staticmethod
   def GetCloudSqlInstances(record):
-    instances = record.annotations.get(revision.CLOUDSQL_ANNOTATION, '')
+    instances = record.annotations.get(container_resource.CLOUDSQL_ANNOTATION,
+                                       '')
     return instances.replace(',', ', ')
 
   @staticmethod
@@ -120,9 +122,11 @@ class RevisionPrinter(k8s_object_printer.K8sObjectPrinter):
   @staticmethod
   def GetVpcConnector(record):
     return cp.Labeled([
-        ('Name', record.annotations.get(revision.VPC_ACCESS_ANNOTATION, '')),
+        ('Name',
+         record.annotations.get(container_resource.VPC_ACCESS_ANNOTATION, '')),
         ('Egress',
-         record.annotations.get(revision.EGRESS_SETTINGS_ANNOTATION, ''))
+         record.annotations.get(container_resource.EGRESS_SETTINGS_ANNOTATION,
+                                ''))
     ])
 
   @staticmethod

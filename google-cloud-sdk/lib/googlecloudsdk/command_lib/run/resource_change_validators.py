@@ -19,7 +19,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.run import revision
+from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.core.console import console_io
@@ -47,13 +47,14 @@ def ValidateClearVpcConnector(service, args):
 
   if flags.FlagIsExplicitlySet(args, 'vpc_egress'):
     egress = args.vpc_egress
-  elif revision.EGRESS_SETTINGS_ANNOTATION in service.template_annotations:
-    egress = service.template_annotations[revision.EGRESS_SETTINGS_ANNOTATION]
+  elif container_resource.EGRESS_SETTINGS_ANNOTATION in service.template_annotations:
+    egress = service.template_annotations[
+        container_resource.EGRESS_SETTINGS_ANNOTATION]
   else:
     # --vpc-egress flag not specified and egress settings not set on service.
     return
 
-  if egress != revision.EGRESS_SETTINGS_ALL:
+  if egress != container_resource.EGRESS_SETTINGS_ALL:
     return
 
   if console_io.CanPrompt():

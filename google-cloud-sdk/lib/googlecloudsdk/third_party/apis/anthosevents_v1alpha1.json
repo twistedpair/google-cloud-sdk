@@ -413,6 +413,96 @@
       "type": "object",
       "properties": {
       }
+    },
+    "KubeRun": {
+      "id": "KubeRun",
+      "description": "KubeRun is the Schema for the KubeRuns API",
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "description": "The API version for this call such as \"events.cloud.google.com\/v1beta1\".",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The kind of resource, in this case \"KubeRun\".",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Metadata associated with this KubeRun resource",
+          "$ref": "ObjectMeta"
+        },
+        "spec": {
+          "description": "The KubeRunSpec reflects the state of KubeRun",
+          "$ref": "CloudRunSpec"
+        },
+        "status": {
+          "description": "The KubeRunStatus defines the observed status",
+          "$ref": "KubeRunStatus"
+        }
+      }
+    },
+    "KubeRunStatus": {
+      "id": "KubeRunStatus",
+      "description": "KubeRunStatus defines the observed state of KubeRun",
+      "type": "object",
+      "properties": {
+        "observedGeneration": {
+          "description": "ObservedGeneration is the 'Generation' of the Service that was last processed by the controller.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "conditions": {
+          "description": "Conditions are the latest available observations of a resource's current state.",
+          "type": "array",
+          "items": {
+            "$ref": "Condition"
+          }
+        },
+        "annotations": {
+          "description": "Annotations is additional Status fields for the Resource to save some additional State as well as convey more information to the user. This is roughly akin to Annotations on any k8s resource, just the reconciler conveying richer information outwards.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "eventingversion": {
+          "description": "The version of the installed release.",
+          "type": "string"
+        },
+        "servingversion": {
+          "description": "The version of the installed release.",
+          "type": "string"
+        },
+        "istioversion": {
+          "description": "The version of the installed release.",
+          "type": "string"
+        }
+      }
+    },
+    "ListKubeRunsResponse": {
+      "id": "ListKubeRunsResponse",
+      "description": "ListKubeRunsResponse is a list of KubeRun resources. The next page token is specified as the \"continue\" field in ListMeta.",
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "description": "The API version for this call such as \"core\/v1\".",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The kind of this resource, in this case \"KubeRunList\".",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Metadata associated with this KubeRun list.",
+          "$ref": "ListMeta"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "KubeRun"
+          }
+        }
+      }
     }
   },
   "resources": {
@@ -593,6 +683,176 @@
               "description": "Rpc to delete a CloudRun."
             }
           }
+        }
+      }
+    },
+    "kuberuns": {
+      "methods": {
+        "create": {
+          "id": "anthosevents.kuberuns.create",
+          "path": "apis/operator.run.cloud.google.com/v1alpha1/kuberuns",
+          "flatPath": "apis/operator.run.cloud.google.com/v1alpha1/kuberuns",
+          "httpMethod": "POST",
+          "parameters": {
+            "parent": {
+              "description": "The namespace in which this KubeRun resource should be created.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "KubeRun"
+          },
+          "response": {
+            "$ref": "KubeRun"
+          },
+          "description": "Creates a new KubeRun resource."
+        },
+        "list": {
+          "id": "anthosevents.kuberuns.list",
+          "path": "apis/operator.run.cloud.google.com/v1alpha1/kuberuns",
+          "flatPath": "apis/operator.run.cloud.google.com/v1alpha1/kuberuns",
+          "httpMethod": "GET",
+          "parameters": {
+            "parent": {
+              "description": "The namespace from which the KubeRun resources should be listed.",
+              "location": "query",
+              "type": "string"
+            },
+            "limit": {
+              "description": "The maximum number of records that should be returned.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "fieldSelector": {
+              "description": "Allows to filter resources based on a specific value for a field name. Send this in a query string format. i.e. 'metadata.name%3Dlorem'.",
+              "location": "query",
+              "type": "string"
+            },
+            "labelSelector": {
+              "description": "Allows to filter resources based on a label. Supported operations are =, !=, exists, in, and notIn.",
+              "location": "query",
+              "type": "string"
+            },
+            "resourceVersion": {
+              "description": "The baseline resource version from which the list or watch operation should start.",
+              "location": "query",
+              "type": "string"
+            },
+            "watch": {
+              "description": "Flag that indicates that the client expects to watch this resource as well.",
+              "location": "query",
+              "type": "boolean"
+            },
+            "continue": {
+              "description": "Optional encoded string to continue paging.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ListKubeRunsResponse"
+          },
+          "description": "Rpc to list KubeRun resources."
+        },
+        "get": {
+          "id": "anthosevents.kuberuns.get",
+          "path": "apis/operator.run.cloud.google.com/v1alpha1/{+name}",
+          "flatPath": "apis/operator.run.cloud.google.com/v1alpha1/kuberuns/{kuberunsId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "The name of the KubeRun resource being retrieved.",
+              "location": "path",
+              "required": true,
+              "pattern": "^kuberuns\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "KubeRun"
+          },
+          "description": "Rpc to get information about a KubeRun resource."
+        },
+        "patch": {
+          "id": "anthosevents.kuberuns.patch",
+          "path": "apis/operator.run.cloud.google.com/v1alpha1/{+name}",
+          "flatPath": "apis/operator.run.cloud.google.com/v1alpha1/kuberuns/{kuberunsId}",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The name of the KubeRun resource being updated.",
+              "location": "path",
+              "required": true,
+              "pattern": "^kuberuns\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "KubeRun"
+          },
+          "response": {
+            "$ref": "KubeRun"
+          },
+          "description": "Rpc to update a KubeRun resource."
+        },
+        "replaceKubeRun": {
+          "id": "anthosevents.kuberuns.replaceKubeRun",
+          "path": "apis/operator.run.cloud.google.com/v1alpha1/{+name}",
+          "flatPath": "apis/operator.run.cloud.google.com/v1alpha1/kuberuns/{kuberunsId}",
+          "httpMethod": "PUT",
+          "parameters": {
+            "name": {
+              "description": "The name of the KubeRun resource being replaced.",
+              "location": "path",
+              "required": true,
+              "pattern": "^kuberuns\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "KubeRun"
+          },
+          "response": {
+            "$ref": "KubeRun"
+          },
+          "description": "Rpc to replace a KubeRun resource. Only the spec and metadata labels and annotations are modifiable. After the Update request, KubeRun will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control."
+        },
+        "delete": {
+          "id": "anthosevents.kuberuns.delete",
+          "path": "apis/operator.run.cloud.google.com/v1alpha1/{+name}",
+          "flatPath": "apis/operator.run.cloud.google.com/v1alpha1/kuberuns/{kuberunsId}",
+          "httpMethod": "DELETE",
+          "parameters": {
+            "name": {
+              "description": "The name of the KubeRun resource being deleted.",
+              "location": "path",
+              "required": true,
+              "pattern": "^kuberuns\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Empty"
+          },
+          "description": "Rpc to delete a KubeRun."
         }
       }
     }

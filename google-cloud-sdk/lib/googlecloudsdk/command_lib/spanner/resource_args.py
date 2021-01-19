@@ -18,15 +18,46 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 
 _PROJECT = properties.VALUES.core.project
 _INSTANCE = properties.VALUES.spanner.instance
+
+_CREATE_BACKUP_ENCRYPTION_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--encryption-type',
+    apis.GetMessagesModule('spanner',
+                           'v1').SpannerProjectsInstancesBackupsCreateRequest
+    .EncryptionConfigEncryptionTypeValueValuesEnum,
+    help_str='The encryption type of the backup.',
+    required=False,
+    hidden=True,
+    custom_mappings={
+        'USE_DATABASE_ENCRYPTION':
+            ('use-database-encryption',
+             'Use the same encryption configuration as the database.')
+    })
+
+_RESTORE_DB_ENCRYPTION_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--encryption-type',
+    apis.GetMessagesModule(
+        'spanner',
+        'v1').RestoreDatabaseEncryptionConfig.EncryptionTypeValueValuesEnum,
+    help_str='The encryption type of the restored database.',
+    required=False,
+    hidden=True,
+    custom_mappings={
+        'USE_CONFIG_DEFAULT_OR_BACKUP_ENCRYPTION':
+            ('use-config-default-or-backup-encryption',
+             'Use the default encryption configuration if one exists, '
+             'otherwise use the same encryption configuration as the backup.')
+    })
 
 
 def InstanceAttributeConfig():
@@ -56,6 +87,7 @@ def SessionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='session', help_text='The Cloud Spanner session for the {resource}.')
 
+
 def KmsKeyAttributeConfig():
   # For anchor attribute, help text is generated automatically.
   return concepts.ResourceParameterAttributeConfig(name='kms-key')
@@ -75,6 +107,7 @@ def KmsProjectAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='kms-project', help_text='Cloud Project id for the {resource}.')
 
+
 def GetInstanceResourceSpec():
   return concepts.ResourceSpec(
       'spanner.projects.instances',
@@ -91,6 +124,7 @@ def GetDatabaseResourceSpec():
       instancesId=InstanceAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
+
 def GetKmsKeyResourceSpec():
   return concepts.ResourceSpec(
       'cloudkms.projects.locations.keyRings.cryptoKeys',
@@ -99,6 +133,7 @@ def GetKmsKeyResourceSpec():
       keyRingsId=KmsKeyringAttributeConfig(),
       locationsId=KmsLocationAttributeConfig(),
       projectsId=KmsProjectAttributeConfig())
+
 
 def GetBackupResourceSpec():
   return concepts.ResourceSpec(
@@ -155,6 +190,7 @@ def AddDatabaseResourceArg(parser, verb, positional=True):
       GetDatabaseResourceSpec(),
       'The Cloud Spanner database {}.'.format(verb),
       required=True).AddToParser(parser)
+
 
 def AddKmsKeyResourceArg(parser, verb, positional=False):
   """Add a resource argument for a KMS Key used to create a CMEK database.
@@ -218,6 +254,17 @@ def AddBackupResourceArg(parser, verb, positional=True):
       required=True).AddToParser(parser)
 
 
+def AddCreateBackupEncryptionTypeArg(parser):
+  group_parser = parser.add_argument_group(hidden=True)
+  return _CREATE_BACKUP_ENCRYPTION_TYPE_MAPPER.choice_arg.AddToParser(
+      group_parser)
+
+
+def GetCreateBackupEncryptionType(args):
+  return _CREATE_BACKUP_ENCRYPTION_TYPE_MAPPER.GetEnumForChoice(
+      args.encryption_type)
+
+
 def AddRestoreResourceArgs(parser):
   """Add backup resource args (source, destination) for restore command."""
   arg_specs = [
@@ -242,6 +289,16 @@ def AddRestoreResourceArgs(parser):
   ]
 
   concept_parsers.ConceptParser(arg_specs).AddToParser(parser)
+
+
+def AddRestoreDbEncryptionTypeArg(parser):
+  group_parser = parser.add_argument_group(hidden=True)
+  return _RESTORE_DB_ENCRYPTION_TYPE_MAPPER.choice_arg.AddToParser(group_parser)
+
+
+def GetRestoreDbEncryptionType(args):
+  return _RESTORE_DB_ENCRYPTION_TYPE_MAPPER.GetEnumForChoice(
+      args.encryption_type)
 
 
 def GetAndValidateKmsKeyName(args):

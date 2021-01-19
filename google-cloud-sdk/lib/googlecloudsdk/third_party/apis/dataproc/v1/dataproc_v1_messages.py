@@ -1109,6 +1109,21 @@ class DataprocProjectsRegionsClustersDiagnoseRequest(_messages.Message):
   region = _messages.StringField(4, required=True)
 
 
+class DataprocProjectsRegionsClustersGetClusterAsTemplateRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersGetClusterAsTemplateRequest object.
+
+  Fields:
+    clusterName: Required. The cluster name.
+    projectId: Required. The ID of the Google Cloud Platform project that the
+      cluster belongs to.
+    region: Required. The Dataproc region in which to handle the request.
+  """
+
+  clusterName = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
 class DataprocProjectsRegionsClustersGetIamPolicyRequest(_messages.Message):
   r"""A DataprocProjectsRegionsClustersGetIamPolicyRequest object.
 
@@ -1315,6 +1330,21 @@ class DataprocProjectsRegionsJobsGetIamPolicyRequest(_messages.Message):
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class DataprocProjectsRegionsJobsGetJobAsTemplateRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsJobsGetJobAsTemplateRequest object.
+
+  Fields:
+    jobId: Required. The job ID.
+    projectId: Required. The ID of the Google Cloud Platform project that the
+      job belongs to.
+    region: Required. The Dataproc region in which to handle the request.
+  """
+
+  jobId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
 
 
 class DataprocProjectsRegionsJobsGetRequest(_messages.Message):
@@ -1762,8 +1792,10 @@ class DiskConfig(_messages.Message):
   Fields:
     bootDiskSizeGb: Optional. Size in GB of the boot disk (default is 500GB).
     bootDiskType: Optional. Type of the boot disk (default is "pd-standard").
-      Valid values: "pd-ssd" (Persistent Disk Solid State Drive) or "pd-
-      standard" (Persistent Disk Hard Disk Drive).
+      Valid values: "pd-balanced" (Persistent Disk Balanced Solid State
+      Drive), "pd-ssd" (Persistent Disk Solid State Drive), or "pd-standard"
+      (Persistent Disk Hard Disk Drive). See Disk types
+      (https://cloud.google.com/compute/docs/disks#disk-types).
     numLocalSsds: Optional. Number of attached SSDs, from 0 to 4 (default is
       0). If SSDs are not attached, the boot disk is used to store runtime
       logs and HDFS
@@ -1776,6 +1808,19 @@ class DiskConfig(_messages.Message):
   bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   bootDiskType = _messages.StringField(2)
   numLocalSsds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class DriverRunner(_messages.Message):
+  r"""Configurations for the driver runner
+
+  Fields:
+    masterDriverRunner: Optional. (default) Run driver on master node
+    yarnDriverRunner: Optional. Configuration for running the driver on
+      workers using YARN
+  """
+
+  masterDriverRunner = _messages.MessageField('MasterDriverRunner', 1)
+  yarnDriverRunner = _messages.MessageField('YarnDriverRunner', 2)
 
 
 class Empty(_messages.Message):
@@ -2443,6 +2488,7 @@ class Job(_messages.Message):
       location as driver_output_uri.
     driverOutputResourceUri: Output only. A URI pointing to the location of
       the stdout of the job's driver program.
+    driverRunner: Optional. Configurations for the driver runner
     hadoopJob: Optional. Job is a Hadoop job.
     hiveJob: Optional. Job is a Hive job.
     jobUuid: Output only. A UUID that uniquely identifies a job within the
@@ -2508,22 +2554,23 @@ class Job(_messages.Message):
   done = _messages.BooleanField(1)
   driverControlFilesUri = _messages.StringField(2)
   driverOutputResourceUri = _messages.StringField(3)
-  hadoopJob = _messages.MessageField('HadoopJob', 4)
-  hiveJob = _messages.MessageField('HiveJob', 5)
-  jobUuid = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  pigJob = _messages.MessageField('PigJob', 8)
-  placement = _messages.MessageField('JobPlacement', 9)
-  prestoJob = _messages.MessageField('PrestoJob', 10)
-  pysparkJob = _messages.MessageField('PySparkJob', 11)
-  reference = _messages.MessageField('JobReference', 12)
-  scheduling = _messages.MessageField('JobScheduling', 13)
-  sparkJob = _messages.MessageField('SparkJob', 14)
-  sparkRJob = _messages.MessageField('SparkRJob', 15)
-  sparkSqlJob = _messages.MessageField('SparkSqlJob', 16)
-  status = _messages.MessageField('JobStatus', 17)
-  statusHistory = _messages.MessageField('JobStatus', 18, repeated=True)
-  yarnApplications = _messages.MessageField('YarnApplication', 19, repeated=True)
+  driverRunner = _messages.MessageField('DriverRunner', 4)
+  hadoopJob = _messages.MessageField('HadoopJob', 5)
+  hiveJob = _messages.MessageField('HiveJob', 6)
+  jobUuid = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  pigJob = _messages.MessageField('PigJob', 9)
+  placement = _messages.MessageField('JobPlacement', 10)
+  prestoJob = _messages.MessageField('PrestoJob', 11)
+  pysparkJob = _messages.MessageField('PySparkJob', 12)
+  reference = _messages.MessageField('JobReference', 13)
+  scheduling = _messages.MessageField('JobScheduling', 14)
+  sparkJob = _messages.MessageField('SparkJob', 15)
+  sparkRJob = _messages.MessageField('SparkRJob', 16)
+  sparkSqlJob = _messages.MessageField('SparkSqlJob', 17)
+  status = _messages.MessageField('JobStatus', 18)
+  statusHistory = _messages.MessageField('JobStatus', 19, repeated=True)
+  yarnApplications = _messages.MessageField('YarnApplication', 20, repeated=True)
 
 
 class JobMetadata(_messages.Message):
@@ -3000,6 +3047,13 @@ class ManagedGroupConfig(_messages.Message):
 
   instanceGroupManagerName = _messages.StringField(1)
   instanceTemplateName = _messages.StringField(2)
+
+
+class MasterDriverRunner(_messages.Message):
+  r"""The default mode of executing drivers: on master nodes Currently no
+  internal fields.
+  """
+
 
 
 class NodeGroupAffinity(_messages.Message):
@@ -4475,6 +4529,19 @@ class YarnApplication(_messages.Message):
   progress = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   state = _messages.EnumField('StateValueValuesEnum', 3)
   trackingUrl = _messages.StringField(4)
+
+
+class YarnDriverRunner(_messages.Message):
+  r"""Schedule the driver on workers using YARN
+
+  Fields:
+    memoryMb: Optional. The amount of memory in MB this driver is requesting
+      from YARN
+    vcores: Optional. The number of vCPUs this driver is requesting from YARN
+  """
+
+  memoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  vcores = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 encoding.AddCustomJsonFieldMapping(

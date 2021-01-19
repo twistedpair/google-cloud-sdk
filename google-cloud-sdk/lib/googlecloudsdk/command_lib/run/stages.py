@@ -28,6 +28,10 @@ SERVICE_CONFIGURATIONS_READY = 'ConfigurationsReady'
 BUILD_READY = 'BuildReady'
 UPLOAD_SOURCE = 'UploadSource'
 
+_RESOURCES_AVAILABLE = 'ResourcesAvailable'
+_STARTED = 'Started'
+_COMPLETED = 'Completed'
+
 
 def _UploadSourceStage():
   return progress_tracker.Stage(
@@ -74,3 +78,23 @@ def ServiceDependencies():
   return {
       SERVICE_ROUTES_READY: {SERVICE_CONFIGURATIONS_READY}
   }
+
+
+def JobStages(include_completion=False):
+  """Returns the list of progress tracker Stages for Jobs."""
+  stages = [
+      progress_tracker.Stage(
+          'Provisioning resources...', key=_RESOURCES_AVAILABLE)
+  ]
+  if include_completion:
+    stages.append(progress_tracker.Stage('Starting job...', key=_STARTED))
+    # Normally the last terminal condition (e.g. Ready or in this case
+    # Completed) wouldn't be included as a stage since it gates the entire
+    # progress tracker. But in this case we want to include it so we can show
+    # updates on this stage while the job is running.
+    stages.append(progress_tracker.Stage('Running job...', key=_COMPLETED))
+  return stages
+
+
+def JobDependencies():
+  return {_STARTED: {_RESOURCES_AVAILABLE}, _COMPLETED: {_STARTED}}

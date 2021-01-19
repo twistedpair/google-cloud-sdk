@@ -55,7 +55,7 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Cancels a UserInvitation sent.
+      r"""Cancels a UserInvitation that was already sent.
 
       Args:
         request: (CloudidentityCustomersUserInvitationsCancelRequest) input message
@@ -82,7 +82,7 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieve a `UserInvitation` resource.
+      r"""Retrieves a UserInvitation resource.
 
       Args:
         request: (CloudidentityCustomersUserInvitationsGetRequest) input message
@@ -136,7 +136,7 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
     )
 
     def Send(self, request, global_params=None):
-      r"""Send UserInvitation to email. if the UserInvitation does not exist for this request, and it is a valid request, a UserInvitation will be created in this request.
+      r"""Sends a UserInvitation to email. If the `UserInvitation` does not exist for this request and it is a valid request, the request creates a `UserInvitation`.
 
       Args:
         request: (CloudidentityCustomersUserInvitationsSendRequest) input message

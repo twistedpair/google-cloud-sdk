@@ -376,6 +376,27 @@ def GetNegativeCachingPolicy(client, args, backend_service):
   return negative_caching_policy
 
 
+def GetBypassCacheOnRequestHeaders(client, args):
+  """Returns bypass cache on request headers.
+
+  Args:
+    client: The client used by gcloud.
+    args: The arguments passed to the gcloud command.
+
+  Returns:
+    The bypass cache on request headers.
+  """
+  bypass_cache_on_request_headers = None
+  if args.bypass_cache_on_request_headers:
+    bypass_cache_on_request_headers = []
+    for header in args.bypass_cache_on_request_headers:
+      bypass_cache_on_request_headers.append(
+          client.messages.BackendServiceCdnPolicyBypassCacheOnRequestHeader(
+              headerName=header))
+
+  return bypass_cache_on_request_headers
+
+
 def ApplyCdnPolicyArgs(client,
                        args,
                        backend_service,
@@ -383,6 +404,7 @@ def ApplyCdnPolicyArgs(client,
                        apply_signed_url_cache_max_age=False,
                        cleared_fields=None,
                        support_flexible_cache_step_one=False,
+                       support_flexible_cache_step_two=True,
                        support_negative_cache=False):
   """Applies the CdnPolicy arguments to the specified backend service.
 
@@ -402,6 +424,9 @@ def ApplyCdnPolicyArgs(client,
       only for update command.
     support_flexible_cache_step_one: If True then maps Flexible Cache Control
     properties from milestone 1: cache mode, max ttl, default ttl, client ttl
+    support_flexible_cache_step_two: If True then maps Flexible Cache Control
+      properties from milestone 2: serve while stale and bypass cache on request
+        headers
     support_negative_cache: If True then maps negative caching and negative
       caching policy arguments
   """
@@ -464,6 +489,21 @@ def ApplyCdnPolicyArgs(client,
           (args.negative_caching is not None and not args.negative_caching):
         cleared_fields.append('cdnPolicy.negativeCachingPolicy')
         cdn_policy.negativeCachingPolicy = []
+
+  if support_flexible_cache_step_two:
+    if args.serve_while_stale:
+      cdn_policy.serveWhileStale = args.serve_while_stale
+
+    bypass_cache_on_request_headers = GetBypassCacheOnRequestHeaders(
+        client, args)
+    if bypass_cache_on_request_headers is not None:
+      cdn_policy.bypassCacheOnRequestHeaders = bypass_cache_on_request_headers
+
+    if is_update:
+      if args.no_serve_while_stale:
+        cdn_policy.serveWhileStale = None
+      if args.no_bypass_cache_on_request_headers:
+        cdn_policy.bypassCacheOnRequestHeaders = []
 
   if cdn_policy != client.messages.BackendServiceCdnPolicy():
     backend_service.cdnPolicy = cdn_policy

@@ -120,7 +120,7 @@
           "type": "string"
         },
         "inputUri": {
-          "description": "Input only. Specify the `input_uri` to populate empty `uri` fields in each element of `Job.config.inputs` or `JobTemplate.config.inputs` when using template. URI of the media. It must be stored in Cloud Storage. For example, `gs:\/\/bucket\/inputs\/file.mp4`.",
+          "description": "Input only. Specify the `input_uri` to populate empty `uri` fields in each element of `Job.config.inputs` or `JobTemplate.config.inputs` when using template. URI of the media. Input files must be at least 5 seconds in duration and stored in Cloud Storage (for example, `gs:\/\/bucket\/inputs\/file.mp4`).",
           "type": "string"
         },
         "outputUri": {
@@ -288,7 +288,7 @@
           "type": "string"
         },
         "uri": {
-          "description": "URI of the media. It must be stored in Cloud Storage. Example `gs:\/\/bucket\/inputs\/file.mp4`. If empty the value will be populated from `Job.input_uri`.",
+          "description": "URI of the media. Input files must be at least 5 seconds in duration and stored in Cloud Storage (for example, `gs:\/\/bucket\/inputs\/file.mp4`). If empty, the value will be populated from `Job.input_uri`.",
           "type": "string"
         },
         "preprocessingConfig": {
@@ -549,7 +549,7 @@
           "format": "int32"
         },
         "gopDuration": {
-          "description": "Select the GOP size based on the specified duration. The default is `\"3s\"`.",
+          "description": "Select the GOP size based on the specified duration. The default is `\"3s\"`. Note that `gopDuration` must be less than or equal to [`segmentDuration`](#SegmentSettings), and [`segmentDuration`](#SegmentSettings) must be divisible by `gopDuration`.",
           "type": "string",
           "format": "google-duration"
         },
@@ -772,7 +772,7 @@
       "type": "object",
       "properties": {
         "segmentDuration": {
-          "description": "Duration of the segments in seconds. The default is `\"6.0s\"`.",
+          "description": "Duration of the segments in seconds. The default is `\"6.0s\"`. Note that `segmentDuration` must be greater than or equal to [`gopDuration`](#videostream), and `segmentDuration` must be divisible by [`gopDuration`](#videostream).",
           "type": "string",
           "format": "google-duration"
         },

@@ -28,8 +28,12 @@ class Connector(_messages.Message):
       notation. Example: `10.132.0.0/28`.
     machineType: Machine type of VM Instance underlying connector. Default is
       e2-micro.
+    maxInstances: Maximum value of instances in autoscaling group underlying
+      the connector.
     maxThroughput: Maximum throughput of the connector in Mbps. Default is
       200, max is 1000.
+    minInstances: Minimum value of instances in autoscaling group underlying
+      the connector.
     minThroughput: Minimum throughput of the connector in Mbps. Default and
       min is 200.
     name: The resource name in the format
@@ -61,12 +65,14 @@ class Connector(_messages.Message):
   id = _messages.StringField(2)
   ipCidrRange = _messages.StringField(3)
   machineType = _messages.StringField(4)
-  maxThroughput = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  minThroughput = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  subnet = _messages.MessageField('Subnet', 10)
+  maxInstances = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxThroughput = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  minInstances = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  minThroughput = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  status = _messages.EnumField('StatusValueValuesEnum', 11)
+  subnet = _messages.MessageField('Subnet', 12)
 
 
 class ListConnectorsResponse(_messages.Message):

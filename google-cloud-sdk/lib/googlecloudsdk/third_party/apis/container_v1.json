@@ -378,6 +378,10 @@
           "items": {
             "$ref": "StatusCondition"
           }
+        },
+        "autopilot": {
+          "description": "Autopilot configuration for the cluster. It has the same semantics as AutoGKE and overrides the setting in autogke.",
+          "$ref": "Autopilot"
         }
       }
     },
@@ -1663,6 +1667,17 @@
         }
       }
     },
+    "Autopilot": {
+      "id": "Autopilot",
+      "description": "Autopilot is the configuration for Autopilot settings on the cluster. It is the official product name of what is previously known as AutoGKE",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable Autopilot",
+          "type": "boolean"
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -2023,6 +2038,10 @@
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to. Users may specify either explicit versions offered by Kubernetes Engine or version aliases, which have the following behavior: - \"latest\": picks the highest valid Kubernetes version - \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version - \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version - \"1.X.Y-gke.N\": picks an explicit Kubernetes version - \"-\": picks the default Kubernetes version",
           "type": "string"
+        },
+        "desiredAutopilot": {
+          "description": "The desired Autopilot configuration for the cluster.",
+          "$ref": "Autopilot"
         }
       }
     },

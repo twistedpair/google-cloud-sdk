@@ -1040,3 +1040,24 @@ List of key-value pairs to set as metrics' target for autoscaling.
 Autoscaling could be based on CPU usage or GPU duty cycle, valid key could be
 cpu-usage or gpu-duty-cycle.
 """)
+
+
+def AddRequestLoggingConfigFlags(parser):
+  """Adds flags related to request response logging."""
+  group = parser.add_argument_group(
+      help='Configure request response logging.')
+  group.add_argument(
+      '--bigquery-table-name',
+      type=str,
+      help="""\
+Fully qualified name (project_id.dataset_name.table_name) of the BigQuery
+table where requests and responses are logged.
+""")
+  group.add_argument(
+      '--sampling-percentage',
+      type=float,
+      help="""\
+Percentage of requests to be logged, expressed as a number between 0 and 1.
+For example, set this value to 1 in order to log all requests or to 0.1 to log
+10% of requests.
+""")

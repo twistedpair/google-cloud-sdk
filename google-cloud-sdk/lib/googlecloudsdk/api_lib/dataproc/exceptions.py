@@ -55,3 +55,7 @@ class FileUploadError(Error):
 
 class ValidationError(Error):
   """Error while validating YAML against schema."""
+
+
+class PersonalAuthError(Exception):
+  """Error while establishing a personal auth session."""

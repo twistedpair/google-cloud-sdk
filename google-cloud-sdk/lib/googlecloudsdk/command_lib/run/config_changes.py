@@ -22,6 +22,8 @@ from __future__ import unicode_literals
 import abc
 import copy
 
+from googlecloudsdk.api_lib.run import container_resource
+from googlecloudsdk.api_lib.run import job
 from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import service
@@ -208,7 +210,7 @@ class SetLaunchStageAnnotationChange(ConfigChanger):
     else:
       annotations = k8s_object.AnnotationsFromMetadata(
           resource.MessagesModule(), resource.metadata)
-      annotations[revision.LAUNCH_STAGE_ANNOTATION] = (self._launch_stage.id)
+      annotations[k8s_object.LAUNCH_STAGE_ANNOTATION] = (self._launch_stage.id)
       return resource
 
 
@@ -234,6 +236,20 @@ class SetClientNameAndVersionAnnotationChange(ConfigChanger):
     return resource
 
 
+class SandboxChange(ConfigChanger):
+  """Sets a sandbox annotation on the service."""
+
+  def __init__(self, sandbox):
+    super(SandboxChange, self).__init__()
+    self._sandbox = sandbox
+
+  def Adjust(self, resource):
+    annotations = k8s_object.AnnotationsFromMetadata(resource.MessagesModule(),
+                                                     resource.template.metadata)
+    annotations[container_resource.SANDBOX_ANNOTATION] = self._sandbox
+    return resource
+
+
 class VpcConnectorChange(ConfigChanger):
   """Sets a VPC connector annotation on the service."""
 
@@ -244,7 +260,7 @@ class VpcConnectorChange(ConfigChanger):
   def Adjust(self, resource):
     annotations = k8s_object.AnnotationsFromMetadata(resource.MessagesModule(),
                                                      resource.template.metadata)
-    annotations[revision.VPC_ACCESS_ANNOTATION] = (
+    annotations[container_resource.VPC_ACCESS_ANNOTATION] = (
         self._connector_name)
     return resource
 
@@ -255,10 +271,10 @@ class ClearVpcConnectorChange(ConfigChanger):
   def Adjust(self, resource):
     annotations = k8s_object.AnnotationsFromMetadata(resource.MessagesModule(),
                                                      resource.template.metadata)
-    if revision.VPC_ACCESS_ANNOTATION in annotations:
-      del annotations[revision.VPC_ACCESS_ANNOTATION]
-    if revision.EGRESS_SETTINGS_ANNOTATION in annotations:
-      del annotations[revision.EGRESS_SETTINGS_ANNOTATION]
+    if container_resource.VPC_ACCESS_ANNOTATION in annotations:
+      del annotations[container_resource.VPC_ACCESS_ANNOTATION]
+    if container_resource.EGRESS_SETTINGS_ANNOTATION in annotations:
+      del annotations[container_resource.EGRESS_SETTINGS_ANNOTATION]
     return resource
 
 
@@ -272,11 +288,13 @@ class ImageChange(ConfigChanger):
     self.image = image
 
   def Adjust(self, resource):
-    resource.annotations[revision.USER_IMAGE_ANNOTATION] = (
+    resource.annotations[container_resource.USER_IMAGE_ANNOTATION] = (
         self.image)
-    resource.template.annotations[revision.USER_IMAGE_ANNOTATION] = (
-        self.image)
-    resource.template.image = self.image
+    if hasattr(resource.template, 'annotations'):
+      resource.template.annotations[
+          container_resource.USER_IMAGE_ANNOTATION] = (
+              self.image)
+    resource.image = self.image
     return resource
 
 
@@ -500,7 +518,7 @@ class CloudSQLChanges(ConfigChanger):
   def Adjust(self, resource):
     def GetCurrentInstances():
       annotation_val = resource.template.annotations.get(
-          revision.CLOUDSQL_ANNOTATION)
+          container_resource.CLOUDSQL_ANNOTATION)
       if annotation_val:
         return annotation_val.split(',')
       return []
@@ -509,7 +527,7 @@ class CloudSQLChanges(ConfigChanger):
         self, 'cloudsql-instances', GetCurrentInstances)
     if instances is not None:
       resource.template.annotations[
-          revision.CLOUDSQL_ANNOTATION] = ','.join(instances)
+          container_resource.CLOUDSQL_ANNOTATION] = ','.join(instances)
     return resource
 
   def _Augment(self, instance_str):
@@ -667,11 +685,8 @@ class _VolumeChanges(ConfigChanger):
 
     if self._to_update:
       for path, (source_name, source_key) in self._to_update.items():
-        # Generate unique volume name so that volume source configurations
-        # can be unique (e.g. different items) even if the source name matches
-        volume_name = None
-        while volume_name is None or volume_name in resource.template.volumes:
-          volume_name = _GenerateVolumeName(source_name)
+        volume_name = self._LocalVolumeName(source_name,
+                                            resource.template.volumes)
 
         # volume_mounts is a special mapping that filters for the current kind
         # of mount and KeyErrors on existing keys with other types.
@@ -690,6 +705,24 @@ class _VolumeChanges(ConfigChanger):
         del volumes[volume]
 
     return resource
+
+  def _LocalVolumeName(self, source_name, existing_volumes):
+    """Generate unique volume name.
+
+    The names that connect volumes and mounts must be unique even if their
+    source volume names match.
+
+    Args:
+      source_name: (Potentially clashing) name.
+      existing_volumes: Names in use.
+
+    Returns:
+      Unique name.
+    """
+    volume_name = None
+    while volume_name is None or volume_name in existing_volumes:
+      volume_name = _GenerateVolumeName(source_name)
+    return volume_name
 
 
 class SecretVolumeChanges(_VolumeChanges):
@@ -866,4 +899,34 @@ class ContainerPortChange(ConfigChanger):
       resource.template.container.ports = [port_msg]
     else:
       resource.template.container.reset('ports')
+    return resource
+
+
+class SpecChange(ConfigChanger):
+  """Represents the user intent to update field in the resource's spec."""
+
+  def __init__(self, field, value):
+    super(SpecChange, self).__init__()
+    self._field = field
+    self._value = value
+
+  def Adjust(self, resource):
+    setattr(resource.spec, self._field, self._value)
+    return resource
+
+
+class JobMaxAttemptsChange(ConfigChanger):
+  """Represents the user intent to update a job's restart policy."""
+
+  def __init__(self, max_attempts):
+    super(JobMaxAttemptsChange, self).__init__()
+    self._max_attempts = max_attempts
+
+  def Adjust(self, resource):
+    if self._max_attempts == 1:
+      resource.restart_policy = job.RestartPolicy.NEVER
+      resource.backoff_limit = 0
+    else:
+      resource.restart_policy = job.RestartPolicy.ON_FAILRE
+      resource.backoff_limit = self._max_attempts - 1
     return resource

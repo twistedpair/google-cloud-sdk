@@ -46,7 +46,7 @@ class InvalidKeyFileException(Error):
     super(InvalidKeyFileException, self).__init__(
         '{0}\nFor information on proper key file format see: '
         'https://cloud.google.com/compute/docs/disks/'
-        'customer-supplied-encryption#csek_key_file'.format(base_message))
+        'customer-supplied-encryption#key_file'.format(base_message))
 
 
 class BadPatternException(InvalidKeyFileException):

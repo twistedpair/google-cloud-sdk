@@ -31,6 +31,16 @@ class Collections(enum.Enum):
       ['namespacesId'],
       True
   )
+  KUBERUNS = (
+      'kuberuns',
+      '{+name}',
+      {
+          '':
+              'kuberuns/{kuberunsId}',
+      },
+      ['name'],
+      True
+  )
   NAMESPACES_CLOUDRUNS = (
       'namespaces.cloudruns',
       '{+name}',

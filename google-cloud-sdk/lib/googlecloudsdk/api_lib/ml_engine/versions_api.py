@@ -94,7 +94,9 @@ class VersionsClient(object):
 
   def Patch(self, version_ref, labels_update, description=None,
             prediction_class_update=None, package_uris=None,
-            manual_scaling_nodes=None, auto_scaling_min_nodes=None):
+            manual_scaling_nodes=None, auto_scaling_min_nodes=None,
+            auto_scaling_max_nodes=None, sampling_percentage=None,
+            bigquery_table_name=None):
     """Update a version."""
     version = self.messages.GoogleCloudMlV1Version()
     update_mask = []
@@ -123,6 +125,27 @@ class VersionsClient(object):
       update_mask.append('autoScaling.minNodes')
       version.autoScaling = self.messages.GoogleCloudMlV1AutoScaling(
           minNodes=auto_scaling_min_nodes)
+
+    if auto_scaling_max_nodes is not None:
+      update_mask.append('autoScaling.maxNodes')
+      if version.autoScaling is not None:
+        version.autoScaling.maxNodes = auto_scaling_max_nodes
+      else:
+        version.autoScaling = self.messages.GoogleCloudMlV1AutoScaling(
+            maxNodes=auto_scaling_max_nodes)
+
+    if bigquery_table_name is not None:
+      update_mask.append('requestLoggingConfig')
+      version.requestLoggingConfig = self.messages.GoogleCloudMlV1RequestLoggingConfig(
+          bigqueryTableName=bigquery_table_name)
+
+    if sampling_percentage is not None:
+      if 'requestLoggingConfig' not in update_mask:
+        update_mask.append('requestLoggingConfig')
+        version.requestLoggingConfig = self.messages.GoogleCloudMlV1RequestLoggingConfig(
+            samplingPercentage=sampling_percentage)
+      else:
+        version.requestLoggingConfig.samplingPercentage = sampling_percentage
 
     if not update_mask:
       raise NoFieldsSpecifiedError('No updates requested.')

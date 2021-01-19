@@ -80,6 +80,13 @@ class Collections(enum.Enum):
       ['project', 'externalVpnGateway'],
       True
   )
+  FIREWALLPOLICIES = (
+      'firewallPolicies',
+      'locations/global/firewallPolicies/{firewallPolicy}',
+      {},
+      ['firewallPolicy'],
+      True
+  )
   FIREWALLS = (
       'firewalls',
       'projects/{project}/global/firewalls/{firewall}',

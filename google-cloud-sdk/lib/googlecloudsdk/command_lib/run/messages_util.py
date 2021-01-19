@@ -48,25 +48,28 @@ def GetSuccessMessageForSynchronousDeploy(service):
 
 
 def GetStartDeployMessage(conn_context,
-                          service_ref,
-                          operation='Deploying container'):
+                          resource_ref,
+                          operation='Deploying container',
+                          resource_kind_lower='service'):
   """Returns a user mesage for starting a deploy.
 
   Args:
-    conn_context: connection_context.ConnectionInfo, Metadata for the
-      run API client.
-    service_ref: protorpc.messages.Message, A resource reference object
-      for the service See googlecloudsdk.core.resources.Registry.ParseResourceId
-      for details.
+    conn_context: connection_context.ConnectionInfo, Metadata for the run API
+      client.
+    resource_ref: protorpc.messages.Message, A resource reference object for the
+      resource. See googlecloudsdk.core.resources.Registry.ParseResourceId for
+      details.
     operation: str, what deploy action is being done.
+    resource_kind_lower: str, resource kind being deployed, e.g. "service"
   """
-  msg = ('{operation} to {operator} service '
-         '[{{bold}}{service}{{reset}}] in {ns_label} [{{bold}}{ns}{{reset}}]')
+  msg = ('{operation} to {operator} {resource_kind} '
+         '[{{bold}}{resource}{{reset}}] in {ns_label} [{{bold}}{ns}{{reset}}]')
   msg += conn_context.location_label
 
   return msg.format(
       operation=operation,
       operator=conn_context.operator,
+      resource_kind=resource_kind_lower,
       ns_label=conn_context.ns_label,
-      service=service_ref.servicesId,
-      ns=service_ref.namespacesId)
+      resource=resource_ref.Name(),
+      ns=resource_ref.Parent().Name())

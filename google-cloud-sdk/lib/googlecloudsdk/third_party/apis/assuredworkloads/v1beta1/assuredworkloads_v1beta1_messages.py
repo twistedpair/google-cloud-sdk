@@ -150,12 +150,15 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
       CJIS: Criminal Justice Information Services (CJIS) Security policies.
       FEDRAMP_HIGH: FedRAMP High data protection controls
       FEDRAMP_MODERATE: FedRAMP Moderate data protection controls
+      US_REGIONAL_ACCESS: Assured Workloads For US Regions data protection
+        controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
     CJIS = 2
     FEDRAMP_HIGH = 3
     FEDRAMP_MODERATE = 4
+    US_REGIONAL_ACCESS = 5
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -218,12 +221,15 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       CJIS: Criminal Justice Information Services (CJIS) Security policies.
       FEDRAMP_HIGH: FedRAMP High data protection controls
       FEDRAMP_MODERATE: FedRAMP Moderate data protection controls
+      US_REGIONAL_ACCESS: Assured Workloads For US Regions data protection
+        controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
     CJIS = 2
     FEDRAMP_HIGH = 3
     FEDRAMP_MODERATE = 4
+    US_REGIONAL_ACCESS = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -330,12 +336,15 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
       CJIS: Criminal Justice Information Services (CJIS) Security policies.
       FEDRAMP_HIGH: FedRAMP High data protection controls
       FEDRAMP_MODERATE: FedRAMP Moderate data protection controls
+      US_REGIONAL_ACCESS: Assured Workloads For US Regions data protection
+        controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
     CJIS = 2
     FEDRAMP_HIGH = 3
     FEDRAMP_MODERATE = 4
+    US_REGIONAL_ACCESS = 5
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -418,12 +427,15 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       CJIS: Criminal Justice Information Services (CJIS) Security policies.
       FEDRAMP_HIGH: FedRAMP High data protection controls
       FEDRAMP_MODERATE: FedRAMP Moderate data protection controls
+      US_REGIONAL_ACCESS: Assured Workloads For US Regions data protection
+        controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
     CJIS = 2
     FEDRAMP_HIGH = 3
     FEDRAMP_MODERATE = 4
+    US_REGIONAL_ACCESS = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

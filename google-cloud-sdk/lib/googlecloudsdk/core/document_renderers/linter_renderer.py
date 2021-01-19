@@ -22,6 +22,7 @@ import collections
 import io
 import re
 
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.document_renderers import text_renderer
 import six
 
@@ -39,6 +40,11 @@ class LinterRenderer(text_renderer.TextRenderer):
 
   def __init__(self, *args, **kwargs):
     super(LinterRenderer, self).__init__(*args, **kwargs)
+    # disable use of ANSI escape sequences while linting
+    self._attr = console_attr.ConsoleAttr(encoding="ascii")
+    self._bullet = self._attr.GetBullets()
+    self._csi_char = None
+
     self._file_out = self._out  # the output file inherited from TextRenderer
     self._null_out = io.StringIO()
     self._buffer = io.StringIO()
@@ -73,13 +79,13 @@ class LinterRenderer(text_renderer.TextRenderer):
   def _Analyze(self, heading, section):
     self._analyze[heading](section)
 
-  def check_for_personal_pronouns(self, section):
+  def check_for_personal_pronouns(self, heading, section):
     """Raise violation if the section contains personal pronouns."""
     words_in_section = set(re.compile(r"[-\w]+").findall(section.lower()))
     found_pronouns = words_in_section.intersection(self._PERSONAL_PRONOUNS)
-    key_object = "# " + self._heading + "_PRONOUN_CHECK FAILED"
+    key_object = "# " + heading + "_PRONOUN_CHECK FAILED"
     value_object = ("Please remove the following personal pronouns in the " +
-                    self._heading + " section:\n")
+                    heading + " section:\n")
     if found_pronouns:
       found_pronouns_list = list(found_pronouns)
       found_pronouns_list.sort()
@@ -169,7 +175,7 @@ class LinterRenderer(text_renderer.TextRenderer):
         self.equals_violation_flags.append(flag)
 
   def _analyze_name(self, section):
-    warnings = self.check_for_personal_pronouns(section)
+    warnings = self.check_for_personal_pronouns("NAME", section)
     if not warnings:
       self.json_object["# NAME_PRONOUN_CHECK SUCCESS"] = ""
     self.command_name = section.strip().split(" -")[0]
@@ -196,7 +202,7 @@ class LinterRenderer(text_renderer.TextRenderer):
 
   def _analyze_examples(self, section):
     if not self.command_metadata.is_group:
-      warnings = self.check_for_personal_pronouns(section)
+      warnings = self.check_for_personal_pronouns("EXAMPLES", section)
       if not warnings:
         self.json_object["# EXAMPLES_PRONOUN_CHECK SUCCESS"] = ""
       if self.equals_violation_flags:
@@ -229,7 +235,7 @@ class LinterRenderer(text_renderer.TextRenderer):
         self.json_object["There are no errors for the EXAMPLES section."] = ""
 
   def _analyze_description(self, section):
-    warnings = self.check_for_personal_pronouns(section)
+    warnings = self.check_for_personal_pronouns("DESCRIPTION", section)
     if not warnings:
       self.json_object["# DESCRIPTION_PRONOUN_CHECK SUCCESS"] = ""
     if not warnings:

@@ -25,6 +25,14 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  bypassCacheOnRequestHeaders:
+    description: |-
+      Bypass the cache when the specified request headers are matched - e.g.
+      Pragma or Authorization headers. Up to 5 headers can be specified. The
+      cache is bypassed for all cdnPolicy.cacheMode settings.
+    type: array
+    items:
+      $ref: BackendServiceCdnPolicyBypassCacheOnRequestHeader.yaml
   cacheKeyPolicy:
     description: The CacheKeyPolicy for this CdnPolicy.
     $ref: CacheKeyPolicy.yaml

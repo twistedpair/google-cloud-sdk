@@ -106,6 +106,11 @@ class RevisionPrinter(cp.CustomPrinterBase):
       return '{}s'.format(record.timeout)
     return None
 
+  def GetInitInstances(self, record):
+    if record.annotations:
+      return record.annotations.get(revision.INITIAL_SCALE_ANNOTATION, '')
+    return None
+
   def GetMinInstances(self, record):
     if record.annotations:
       return record.annotations.get(revision.MIN_SCALE_ANNOTATION, '')
@@ -127,11 +132,13 @@ class RevisionPrinter(cp.CustomPrinterBase):
             for p in record.container.ports)),
         ('Memory', limits['memory']),
         ('CPU', limits['cpu']),
+        ('GPU', limits[revision.NVIDIA_GPU_RESOURCE]),
         ('Service account', record.spec.serviceAccountName),
         ('Env vars', self.GetUserEnvironmentVariables(record)),
         ('Secrets', self.GetSecrets(record)),
         ('Config Maps', self.GetConfigMaps(record)),
         ('Concurrency', record.concurrency),
+        ('Initial Instances', self.GetInitInstances(record)),
         ('Min Instances', self.GetMinInstances(record)),
         ('Max Instances', self.GetMaxInstances(record)),
         ('Timeout', self.GetTimeout(record)),
