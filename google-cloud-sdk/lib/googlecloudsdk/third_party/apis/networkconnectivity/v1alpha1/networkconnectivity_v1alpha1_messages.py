@@ -633,10 +633,14 @@ class HttpRequest(_messages.Message):
 
 
 class Hub(_messages.Message):
-  r"""The Network Connectivity Center is a hub-and-spoke abstraction for
-  network connectivity management in Google Cloud. It aims to reduce
-  operational complexity through a simple, centralized connectivity management
-  model. Following is the resource message of a hub.
+  r"""Network Connectivity Center is a hub-and-spoke abstraction for network
+  connectivity management in Google Cloud. It reduces operational complexity
+  through a simple, centralized connectivity management model. Following is
+  the resource message of a hub.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current lifecycle state of this
+      Hub.
 
   Messages:
     LabelsValue: User-defined labels.
@@ -647,11 +651,26 @@ class Hub(_messages.Message):
     labels: User-defined labels.
     name: Immutable. The name of a Hub resource.
     spokes: Output only. A list of the URIs of all attached spokes
+    state: Output only. The current lifecycle state of this Hub.
     uniqueId: Output only. Google-generated UUID for this resource. This is
       unique across all Hub resources. If a Hub resource is deleted and
       another with the same name is created, it gets a different unique_id.
     updateTime: Time when the Hub was updated.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current lifecycle state of this Hub.
+
+    Values:
+      STATE_UNSPECIFIED: No state information available
+      CREATING: The resource's create operation is in progress
+      ACTIVE: The resource is active
+      DELETING: The resource's Delete operation is in progress
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -682,8 +701,9 @@ class Hub(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   spokes = _messages.StringField(5, repeated=True)
-  uniqueId = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  uniqueId = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class LinearBuckets(_messages.Message):
@@ -2474,6 +2494,10 @@ class Spoke(_messages.Message):
   Hub. A Spoke can be underlying a VPN tunnel, a VLAN (interconnect)
   attachment, a Router appliance, etc.
 
+  Enums:
+    StateValueValuesEnum: Output only. The current lifecycle state of this
+      Hub.
+
   Messages:
     LabelsValue: User-defined labels.
 
@@ -2488,11 +2512,26 @@ class Spoke(_messages.Message):
       resources
     linkedVpnTunnels: The URIs of linked VPN tunnel resources
     name: Immutable. The name of a Spoke resource.
+    state: Output only. The current lifecycle state of this Hub.
     uniqueId: Output only. Google-generated UUID for this resource. This is
       unique across all Spoke resources. If a Spoke resource is deleted and
       another with the same name is created, it gets a different unique_id.
     updateTime: The time when the Spoke was updated.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current lifecycle state of this Hub.
+
+    Values:
+      STATE_UNSPECIFIED: No state information available
+      CREATING: The resource's create operation is in progress
+      ACTIVE: The resource is active
+      DELETING: The resource's Delete operation is in progress
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2526,8 +2565,9 @@ class Spoke(_messages.Message):
   linkedRouterApplianceInstances = _messages.MessageField('RouterApplianceInstance', 6, repeated=True)
   linkedVpnTunnels = _messages.StringField(7, repeated=True)
   name = _messages.StringField(8)
-  uniqueId = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  uniqueId = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class StandardQueryParameters(_messages.Message):

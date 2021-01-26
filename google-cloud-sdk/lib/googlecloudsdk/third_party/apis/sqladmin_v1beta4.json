@@ -1284,7 +1284,7 @@
     },
     "Settings": {
       "id": "Settings",
-      "description": "Database instance settings.",
+      "description": "Database instance settings. Next field: 27",
       "type": "object",
       "properties": {
         "settingsVersion": {

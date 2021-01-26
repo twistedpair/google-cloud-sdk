@@ -962,6 +962,7 @@ class Detail(_messages.Message):
       node.js packages etc)
     severityName: The severity (eg: distro assigned severity) for this
       vulnerability.
+    source: The source from which the information in this Detail was obtained.
   """
 
   cpeUri = _messages.StringField(1)
@@ -973,6 +974,7 @@ class Detail(_messages.Message):
   package = _messages.StringField(7)
   packageType = _messages.StringField(8)
   severityName = _messages.StringField(9)
+  source = _messages.StringField(10)
 
 
 class Discovered(_messages.Message):
@@ -2414,6 +2416,9 @@ class Version(_messages.Message):
 
   Fields:
     epoch: Used to correct mistakes in the version numbering scheme.
+    inclusive: Whether this version is vulnerable, when defining the version
+      bounds. For example, if the minimum version is 2.0, inclusive=true would
+      say 2.0 is vulnerable, while inclusive=false would say it's not
     kind: Distinguish between sentinel MIN/MAX versions and normal versions.
       If kind is not NORMAL, then the other fields are ignored.
     name: The main part of the version name.
@@ -2436,9 +2441,10 @@ class Version(_messages.Message):
     MAXIMUM = 2
 
   epoch = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  kind = _messages.EnumField('KindValueValuesEnum', 2)
-  name = _messages.StringField(3)
-  revision = _messages.StringField(4)
+  inclusive = _messages.BooleanField(2)
+  kind = _messages.EnumField('KindValueValuesEnum', 3)
+  name = _messages.StringField(4)
+  revision = _messages.StringField(5)
 
 
 class VulnerabilityDetails(_messages.Message):

@@ -163,7 +163,8 @@ def GetProxyInfo():
     raise ValueError('Unsupported proxy type: {}'.format(proxy_type))
 
   if proxy_user or proxy_pass:
-    proxy_auth = ':'.join(x or '' for x in (proxy_user, proxy_pass))
+    proxy_auth = ':'.join(
+        urllib.parse.quote(x) or '' for x in (proxy_user, proxy_pass))
     proxy_auth += '@'
   else:
     proxy_auth = ''

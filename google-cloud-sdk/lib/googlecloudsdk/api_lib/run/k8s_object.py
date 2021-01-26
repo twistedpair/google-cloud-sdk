@@ -209,6 +209,7 @@ class KubernetesObject(object):
     """Return the messages module."""
     return self._messages
 
+  # TODO(b/177659646): Avoid raising python build-in exceptions.
   def AssertFullObject(self):
     if not self._m.metadata:
       raise ValueError('This instance is spec-only.')

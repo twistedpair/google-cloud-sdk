@@ -652,6 +652,17 @@ class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
   r"""A CloudassetSearchAllIamPoliciesRequest object.
 
   Fields:
+    assetTypes: Optional. A list of asset types that this request searches
+      for. If empty, it will search all the [searchable asset
+      types](https://cloud.google.com/asset-inventory/docs/supported-asset-
+      types#searchable_asset_types). Regular expressions are also supported.
+      For example: * "compute.googleapis.com.*" snapshots resources whose
+      asset type starts with "compute.googleapis.com". * ".*Instance"
+      snapshots resources whose asset type ends with "Instance". *
+      ".*Instance.*" snapshots resources whose asset type contains "Instance".
+      See [RE2](https://github.com/google/re2/wiki/Syntax) for all supported
+      regular expression syntax. If the regular expression does not match any
+      supported asset type, an INVALID_ARGUMENT error will be returned.
     pageSize: Optional. The page size for search result pagination. Page size
       is capped at 500 even if a larger value is given. If set to zero, server
       will pick an appropriate default. Returned results may be fewer than
@@ -673,19 +684,23 @@ class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
       doc](https://cloud.google.com/iam/docs/policies#structure). Examples: *
       `policy:amy@gmail.com` to find IAM policy bindings that specify user
       "amy@gmail.com". * `policy:roles/compute.admin` to find IAM policy
-      bindings that specify the Compute Admin role. *
-      `policy.role.permissions:storage.buckets.update` to find IAM policy
-      bindings that specify a role containing "storage.buckets.update"
+      bindings that specify the Compute Admin role. * `policy:comp*` to find
+      IAM policy bindings that contain "comp" as a prefix of any word in the
+      binding. * `policy.role.permissions:storage.buckets.update` to find IAM
+      policy bindings that specify a role containing "storage.buckets.update"
       permission. Note that if callers don't have `iam.roles.get` access to a
       role's included permissions, policy bindings that specify this role will
-      be dropped from the search results. * `resource:organizations/123456` to
-      find IAM policy bindings that are set on "organizations/123456". *
+      be dropped from the search results. * `policy.role.permissions:upd*` to
+      find IAM policy bindings that specify a role containing "upd" as a
+      prefix of any word in the role permission. Note that if callers don't
+      have `iam.roles.get` access to a role's included permissions, policy
+      bindings that specify this role will be dropped from the search results.
+      * `resource:organizations/123456` to find IAM policy bindings that are
+      set on "organizations/123456". *
       `resource=//cloudresourcemanager.googleapis.com/projects/myproject` to
       find IAM policy bindings that are set on the project named "myproject".
       * `Important` to find IAM policy bindings that contain "Important" as a
       word in any of the searchable fields (except for the included
-      permissions). * `*por*` to find IAM policy bindings that contain "por"
-      as a substring in any of the searchable fields (except for the included
       permissions). * `resource:(instance1 OR instance2) policy:amy` to find
       IAM policy bindings that are set on resources "instance1" or "instance2"
       and also specify user "amy".
@@ -700,10 +715,11 @@ class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
       organizations/{ORGANIZATION_NUMBER} (e.g., "organizations/123456")
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  query = _messages.StringField(3)
-  scope = _messages.StringField(4, required=True)
+  assetTypes = _messages.StringField(1, repeated=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  query = _messages.StringField(4)
+  scope = _messages.StringField(5, required=True)
 
 
 class CloudassetSearchAllResourcesRequest(_messages.Message):
@@ -746,20 +762,18 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       whose name contains "Important" as a word. * `name=Important` to find
       the Cloud resource whose name is exactly "Important". *
       `displayName:Impor*` to find Cloud resources whose display name contains
-      "Impor" as a prefix. * `description:*por*` to find Cloud resources whose
-      description contains "por" as a substring. * `location:us-west*` to find
-      Cloud resources whose location is prefixed with "us-west". *
-      `labels:prod` to find Cloud resources whose labels contain "prod" as a
-      key or value. * `labels.env:prod` to find Cloud resources that have a
-      label "env" and its value is "prod". * `labels.env:*` to find Cloud
-      resources that have a label "env". * `Important` to find Cloud resources
-      that contain "Important" as a word in any of the searchable fields. *
-      `Impor*` to find Cloud resources that contain "Impor" as a prefix in any
-      of the searchable fields. * `*por*` to find Cloud resources that contain
-      "por" as a substring in any of the searchable fields. * `Important
-      location:(us-west1 OR global)` to find Cloud resources that contain
-      "Important" as a word in any of the searchable fields and are also
-      located in the "us-west1" region or the "global" location.
+      "Impor" as a prefix of any word in the field. * `location:us-west*` to
+      find Cloud resources whose location contains both "us" and "west" as
+      prefixes. * `labels:prod` to find Cloud resources whose labels contain
+      "prod" as a key or value. * `labels.env:prod` to find Cloud resources
+      that have a label "env" and its value is "prod". * `labels.env:*` to
+      find Cloud resources that have a label "env". * `Important` to find
+      Cloud resources that contain "Important" as a word in any of the
+      searchable fields. * `Impor*` to find Cloud resources that contain
+      "Impor" as a prefix of any word in any of the searchable fields. *
+      `Important location:(us-west1 OR global)` to find Cloud resources that
+      contain "Important" as a word in any of the searchable fields and are
+      also located in the "us-west1" region or the "global" location.
     scope: Required. A scope can be a project, a folder, or an organization.
       The search is limited to the resources within the `scope`. The caller
       must be granted the
@@ -2963,13 +2977,17 @@ class ResourceSearchResult(_messages.Message):
     description: Optional. One or more paragraphs of text description of this
       resource. Maximum length could be up to 1M bytes. This field is
       available only when the resource's proto contains it. To search against
-      the `description`: * use a field query. Example:
-      `description:"*important instance*"` * use a free text query. Example:
-      `"*important instance*"`
+      the `description`: * use a field query. Example: `description:"important
+      instance"` * use a free text query. Example: `"important instance"`
     displayName: Optional. The display name of this resource. This field is
       available only when the resource's proto contains it. To search against
       the `display_name`: * use a field query. Example: `displayName:"My
       Instance"` * use a free text query. Example: `"My Instance"`
+    folders: Optional. The folder(s) that this resource belongs to, in the
+      form of folders/{FOLDER_NUMBER}. This field is available when the
+      resource belongs to one or more folders. To search against `folders`: *
+      use a field query. Example: `folders:(123 OR 456)` * specify the `scope`
+      field as this folder in your search request.
     labels: Optional. Labels associated with this resource. See [Labelling and
       grouping GCP
       resources](https://cloud.google.com/blog/products/gcp/labelling-and-
@@ -2999,10 +3017,16 @@ class ResourceSearchResult(_messages.Message):
       This field is available only when the resource's proto contains it. To
       search against the `network_tags`: * use a field query. Example:
       `networkTags:internal` * use a free text query. Example: `internal`
+    organization: Optional. The organization that this resource belongs to, in
+      the form of organizations/{ORGANIZATION_NUMBER}. This field is available
+      when the resource belongs to a organization. To search against
+      `organization`: * use a field query. Example: `organization:123` *
+      specify the `scope` field as this organization in your search request.
     project: Optional. The project that this resource belongs to, in the form
       of projects/{PROJECT_NUMBER}. This field is available when the resource
-      belongs to a project. To search against the `project`: * specify the
-      `scope` field as this project in your search request.
+      belongs to a project. To search against `project`: * use a field query.
+      Example: `project:12345` * specify the `scope` field as this project in
+      your search request.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -3079,11 +3103,13 @@ class ResourceSearchResult(_messages.Message):
   assetType = _messages.StringField(2)
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  location = _messages.StringField(6)
-  name = _messages.StringField(7)
-  networkTags = _messages.StringField(8, repeated=True)
-  project = _messages.StringField(9)
+  folders = _messages.StringField(5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  location = _messages.StringField(7)
+  name = _messages.StringField(8)
+  networkTags = _messages.StringField(9, repeated=True)
+  organization = _messages.StringField(10)
+  project = _messages.StringField(11)
 
 
 class ResourceSelector(_messages.Message):

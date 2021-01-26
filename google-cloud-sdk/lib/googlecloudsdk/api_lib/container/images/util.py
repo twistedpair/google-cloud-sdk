@@ -32,7 +32,8 @@ from containerregistry.client.v2_2 import docker_http as v2_2_docker_http
 from containerregistry.client.v2_2 import docker_image as v2_2_image
 from containerregistry.client.v2_2 import docker_image_list
 from googlecloudsdk.api_lib.container.images import container_analysis_data_util
-from googlecloudsdk.api_lib.containeranalysis import util as containeranalysis_util
+from googlecloudsdk.api_lib.containeranalysis import filter_util
+from googlecloudsdk.api_lib.containeranalysis import requests
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
@@ -168,48 +169,27 @@ def _MakeSummaryRequest(project_id, url_filter):
   return client.projects_occurrences.GetVulnerabilitySummary(req)
 
 
-def FetchOccurrencesForResource(digest, occurrence_filter=None):
-  """Fetches the occurrences attached to this image."""
-  project_id = RecoverProjectId(digest)
-  resource_filter = 'resource_url="{resource_url}"'.format(
-      resource_url=_FullyqualifiedDigest(digest))
-  return containeranalysis_util.MakeOccurrenceRequest(
-      project_id, resource_filter, occurrence_filter)
-
-
-def FetchDeploymentsForImage(image, occurrence_filter=None):
-  """Fetches the deployment occurrences attached to this image."""
-  project_id = RecoverProjectId(image)
-  depl_filter = 'kind="DEPLOYABLE"'  # and details.deployment.resource_uri=image
-  occ_filter = '({arg_filter} AND {depl_filter})'.format(
-      arg_filter=occurrence_filter,
-      depl_filter=depl_filter,
-  )
-  occurrences = list(
-      containeranalysis_util.MakeOccurrenceRequest(project_id, occ_filter))
-  deployments = []
-  image_string = six.text_type(image)
-  for occ in occurrences:
-    if not occ.deployment:
-      continue
-    if image_string in occ.deployment.resourceUri:
-      deployments.append(occ)
-  return deployments
-
-
-def TransformContainerAnalysisData(image_name,
-                                   occurrence_filter=None,
-                                   deployments=False):
+def TransformContainerAnalysisData(
+    image_name, occurrence_filter=filter_util.ContainerAnalysisFilter()):
   """Transforms the occurrence data from Container Analysis API."""
   analysis_obj = container_analysis_data_util.ContainerAndAnalysisData(
       image_name)
-  occs = FetchOccurrencesForResource(image_name, occurrence_filter)
+  project_id = RecoverProjectId(image_name)
+  occs = requests.ListOccurrences(project_id, occurrence_filter.GetFilter())
   for occ in occs:
     analysis_obj.add_record(occ)
-  if deployments:
-    depl_occs = FetchDeploymentsForImage(image_name, occurrence_filter)
-    for depl_occ in depl_occs:
-      analysis_obj.add_record(depl_occ)
+
+  if 'DEPLOYMENT' in occurrence_filter.kinds:
+    dep_filter = occurrence_filter.WithKinds(['DEPLOYMENT']).WithResources(
+        [])
+    dep_occs = requests.ListOccurrences(project_id, dep_filter.GetFilter())
+    image_string = six.text_type(image_name)
+    for occ in dep_occs:
+      if not occ.deployment:
+        continue
+      if image_string in occ.deployment.resourceUri:
+        analysis_obj.add_record(occ)
+
   analysis_obj.resolveSummaries()
   return analysis_obj
 
@@ -227,32 +207,26 @@ def FetchSummary(repository, resource_url):
   project_id = RecoverProjectId(repository)
   url_filter = 'resource_url = "{resource_url}"'.format(
       resource_url=resource_url)
-  return _MakeSummaryRequest(project_id, url_filter)
+  return requests.GetVulnerabilitySummary(project_id, url_filter)
 
 
-def FetchOccurrences(repository, occurrence_filter=None, resource_urls=None):
+def FetchOccurrences(repository, occurrence_filter):
   """Fetches the occurrences attached to the list of manifests."""
   project_id = RecoverProjectId(repository)
-
-  # Retrieve all resource urls prefixed with the image path
-  resource_filter = 'has_prefix(resource_url, "{repo}")'.format(
-      repo=_UnqualifiedResourceUrl(repository))
-
-  occurrences = containeranalysis_util.MakeOccurrenceRequest(
-      project_id, resource_filter, occurrence_filter, resource_urls)
   occurrences_by_resources = {}
+  occurrences = requests.ListOccurrencesWithFilters(
+      project_id, occurrence_filter.GetChunkifiedFilters())
   for occ in occurrences:
-    if occ.resourceUrl not in occurrences_by_resources:
-      occurrences_by_resources[occ.resourceUrl] = []
-    occurrences_by_resources[occ.resourceUrl].append(occ)
+    if occ.resourceUri not in occurrences_by_resources:
+      occurrences_by_resources[occ.resourceUri] = []
+    occurrences_by_resources[occ.resourceUri].append(occ)
   return occurrences_by_resources
 
 
 def TransformManifests(manifests,
                        repository,
                        show_occurrences=False,
-                       occurrence_filter=None,
-                       resource_urls=None):
+                       occurrence_filter=filter_util.ContainerAnalysisFilter()):
   """Transforms the manifests returned from the server."""
   if not manifests:
     return []
@@ -261,9 +235,7 @@ def TransformManifests(manifests,
   occurrences = {}
   if show_occurrences:
     occurrences = FetchOccurrences(
-        repository,
-        occurrence_filter=occurrence_filter,
-        resource_urls=resource_urls)
+        repository, occurrence_filter=occurrence_filter)
 
   # Attach each occurrence to the resource to which it applies.
   results = []
@@ -281,19 +253,19 @@ def TransformManifests(manifests,
         result[occ.kind] = []
       result[occ.kind].append(occ)
 
-    if show_occurrences and resource_urls:
+    if show_occurrences and occurrence_filter.resources:
       result['vuln_counts'] = {}
       # If this manifest is in the list of resource urls for which to show
       # summaries, query the API for the summary.
       resource_url = _ResourceUrl(repository, k)
-      if resource_url not in resource_urls:
+      if resource_url not in occurrence_filter.resources:
         continue
 
       summary = FetchSummary(repository, resource_url)
       for severity_count in summary.counts:
         if severity_count.severity:
           result['vuln_counts'][str(severity_count.severity)] = (
-              severity_count.count)
+              severity_count.totalCount)
 
     results.append(result)
   return results

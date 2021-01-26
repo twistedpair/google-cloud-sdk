@@ -1,0 +1,54 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1alpha1 Timeout export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  connectTimeout:
+    description: |-
+      The maximum duration to wait for the origin connection to be established,
+      including DNS lookup, TLS handshake and TCP/QUIC connection establishment.
+      Defaults to 5 seconds. The timeout must be a value between 1s and 15s.
+    type: string
+  maxAttemptsTimeout:
+    description: |-
+      The maximum time across all connection attempts to the origin, including
+      failover origins, before returning an error to the client. A HTTP 503 will
+      be returned if the timeout is reached before a response is returned.
+      Defaults to 5 seconds. The timeout must be a value between 1s and 15s. If
+      a failoverOrigin is specified, the maxAttemptsTimeout of the first
+      configured origin takes precedence and determines the timeout for all
+      requests.
+    type: string
+  responseTimeout:
+    description: |-
+      The maximum duration to wait for data to arrive when reading from the HTTP
+      connection/stream. Defaults to 5 seconds. The timeout must be a value
+      between 1s and 30s. This also applies to HTTP Chunked Transfer Encoding
+      responses, and/or when an open-ended Range request is made to the origin.
+      Origins that take longer to write additional bytes to the response than
+      the configured responseTimeout will result in an error being returned to
+      the client. If the response headers have already been written to the
+      connection, the response will be truncated and logged.
+    type: string

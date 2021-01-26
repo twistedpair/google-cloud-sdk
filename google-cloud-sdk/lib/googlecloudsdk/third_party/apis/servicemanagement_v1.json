@@ -3112,7 +3112,7 @@
               "type": "string"
             },
             "expand": {
-              "description": "Fields to expand in any results. By default, the following fields are not present in the result: - `project_settings` - `project_settings.operations` - `quota_usage` (It requires `project_settings`) - `historical_quota_usage` (It requires `project_settings`)",
+              "description": "Fields to expand in any results. By default, the following fields are not present in the result: - `project_settings`",
               "location": "query",
               "type": "string",
               "format": "google-fieldmask"

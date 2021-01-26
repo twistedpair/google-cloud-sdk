@@ -72,9 +72,9 @@ def AddBulkExportArgs(parser):
   AddPathFlag(parser)
   AddFormatFlag(parser)
   group = parser.add_group(mutex=True)
-  group.add_argument('--organization', type=int, help='Organization ID')
+  group.add_argument('--organization', type=str, help='Organization ID')
   group.add_argument('--project', help='Project ID')
-  group.add_argument('--folder', type=int, help='Folder ID')
+  group.add_argument('--folder', type=str, help='Folder ID')
 
 
 def ValidateAllPathArgs(args):

@@ -1727,7 +1727,7 @@ class RotateServerCaContext(_messages.Message):
 
 
 class Settings(_messages.Message):
-  r"""Database instance settings.
+  r"""Database instance settings. Next field: 27
 
   Enums:
     ActivationPolicyValueValuesEnum: The activation policy specifies when the

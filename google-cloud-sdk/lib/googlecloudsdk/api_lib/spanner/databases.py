@@ -121,7 +121,7 @@ def UpdateDdl(database_ref, ddl):
   return client.projects_instances_databases.UpdateDdl(req)
 
 
-def Restore(database_ref, backup_ref, encryption_type=None):
+def Restore(database_ref, backup_ref, encryption_type=None, kms_key=None):
   """Restore a database from a backup."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
@@ -130,7 +130,7 @@ def Restore(database_ref, backup_ref, encryption_type=None):
       backup=backup_ref.RelativeName(), databaseId=database_ref.Name())
   if encryption_type:
     restore_db_request.encryptionConfig = msgs.RestoreDatabaseEncryptionConfig(
-        encryptionType=encryption_type)
+        encryptionType=encryption_type, kmsKeyName=kms_key)
 
   req = msgs.SpannerProjectsInstancesDatabasesRestoreRequest(
       parent=database_ref.Parent().RelativeName(),

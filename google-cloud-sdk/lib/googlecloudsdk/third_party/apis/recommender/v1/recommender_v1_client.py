@@ -45,6 +45,18 @@ class RecommenderV1(base_api.BaseApiClient):
     self.billingAccounts_locations_recommenders = self.BillingAccountsLocationsRecommendersService(self)
     self.billingAccounts_locations = self.BillingAccountsLocationsService(self)
     self.billingAccounts = self.BillingAccountsService(self)
+    self.folders_locations_insightTypes_insights = self.FoldersLocationsInsightTypesInsightsService(self)
+    self.folders_locations_insightTypes = self.FoldersLocationsInsightTypesService(self)
+    self.folders_locations_recommenders_recommendations = self.FoldersLocationsRecommendersRecommendationsService(self)
+    self.folders_locations_recommenders = self.FoldersLocationsRecommendersService(self)
+    self.folders_locations = self.FoldersLocationsService(self)
+    self.folders = self.FoldersService(self)
+    self.organizations_locations_insightTypes_insights = self.OrganizationsLocationsInsightTypesInsightsService(self)
+    self.organizations_locations_insightTypes = self.OrganizationsLocationsInsightTypesService(self)
+    self.organizations_locations_recommenders_recommendations = self.OrganizationsLocationsRecommendersRecommendationsService(self)
+    self.organizations_locations_recommenders = self.OrganizationsLocationsRecommendersService(self)
+    self.organizations_locations = self.OrganizationsLocationsService(self)
+    self.organizations = self.OrganizationsService(self)
     self.projects_locations_insightTypes_insights = self.ProjectsLocationsInsightTypesInsightsService(self)
     self.projects_locations_insightTypes = self.ProjectsLocationsInsightTypesService(self)
     self.projects_locations_recommenders_recommendations = self.ProjectsLocationsRecommendersRecommendationsService(self)
@@ -325,6 +337,558 @@ class RecommenderV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(RecommenderV1.BillingAccountsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class FoldersLocationsInsightTypesInsightsService(base_api.BaseApiService):
+    """Service class for the folders_locations_insightTypes_insights resource."""
+
+    _NAME = 'folders_locations_insightTypes_insights'
+
+    def __init__(self, client):
+      super(RecommenderV1.FoldersLocationsInsightTypesInsightsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the requested insight. Requires the recommender.*.get IAM permission for the specified insight type.
+
+      Args:
+        request: (RecommenderFoldersLocationsInsightTypesInsightsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1Insight) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights/{insightsId}',
+        http_method='GET',
+        method_id='recommender.folders.locations.insightTypes.insights.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='RecommenderFoldersLocationsInsightTypesInsightsGetRequest',
+        response_type_name='GoogleCloudRecommenderV1Insight',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists insights for a Cloud project. Requires the recommender.*.list IAM permission for the specified insight type.
+
+      Args:
+        request: (RecommenderFoldersLocationsInsightTypesInsightsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1ListInsightsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights',
+        http_method='GET',
+        method_id='recommender.folders.locations.insightTypes.insights.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/insights',
+        request_field='',
+        request_type_name='RecommenderFoldersLocationsInsightTypesInsightsListRequest',
+        response_type_name='GoogleCloudRecommenderV1ListInsightsResponse',
+        supports_download=False,
+    )
+
+    def MarkAccepted(self, request, global_params=None):
+      r"""Marks the Insight State as Accepted. Users can use this method to indicate to the Recommender API that they have applied some action based on the insight. This stops the insight content from being updated. MarkInsightAccepted can be applied to insights in ACTIVE state. Requires the recommender.*.update IAM permission for the specified insight.
+
+      Args:
+        request: (RecommenderFoldersLocationsInsightTypesInsightsMarkAcceptedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1Insight) The response message.
+      """
+      config = self.GetMethodConfig('MarkAccepted')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkAccepted.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights/{insightsId}:markAccepted',
+        http_method='POST',
+        method_id='recommender.folders.locations.insightTypes.insights.markAccepted',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:markAccepted',
+        request_field='googleCloudRecommenderV1MarkInsightAcceptedRequest',
+        request_type_name='RecommenderFoldersLocationsInsightTypesInsightsMarkAcceptedRequest',
+        response_type_name='GoogleCloudRecommenderV1Insight',
+        supports_download=False,
+    )
+
+  class FoldersLocationsInsightTypesService(base_api.BaseApiService):
+    """Service class for the folders_locations_insightTypes resource."""
+
+    _NAME = 'folders_locations_insightTypes'
+
+    def __init__(self, client):
+      super(RecommenderV1.FoldersLocationsInsightTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class FoldersLocationsRecommendersRecommendationsService(base_api.BaseApiService):
+    """Service class for the folders_locations_recommenders_recommendations resource."""
+
+    _NAME = 'folders_locations_recommenders_recommendations'
+
+    def __init__(self, client):
+      super(RecommenderV1.FoldersLocationsRecommendersRecommendationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the requested recommendation. Requires the recommender.*.get IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderFoldersLocationsRecommendersRecommendationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}',
+        http_method='GET',
+        method_id='recommender.folders.locations.recommenders.recommendations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='RecommenderFoldersLocationsRecommendersRecommendationsGetRequest',
+        response_type_name='GoogleCloudRecommenderV1Recommendation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists recommendations for a Cloud project. Requires the recommender.*.list IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderFoldersLocationsRecommendersRecommendationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1ListRecommendationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations',
+        http_method='GET',
+        method_id='recommender.folders.locations.recommenders.recommendations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/recommendations',
+        request_field='',
+        request_type_name='RecommenderFoldersLocationsRecommendersRecommendationsListRequest',
+        response_type_name='GoogleCloudRecommenderV1ListRecommendationsResponse',
+        supports_download=False,
+    )
+
+    def MarkClaimed(self, request, global_params=None):
+      r"""Marks the Recommendation State as Claimed. Users can use this method to indicate to the Recommender API that they are starting to apply the recommendation themselves. This stops the recommendation content from being updated. Associated insights are frozen and placed in the ACCEPTED state. MarkRecommendationClaimed can be applied to recommendations in CLAIMED, SUCCEEDED, FAILED, or ACTIVE state. Requires the recommender.*.update IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderFoldersLocationsRecommendersRecommendationsMarkClaimedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('MarkClaimed')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkClaimed.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markClaimed',
+        http_method='POST',
+        method_id='recommender.folders.locations.recommenders.recommendations.markClaimed',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:markClaimed',
+        request_field='googleCloudRecommenderV1MarkRecommendationClaimedRequest',
+        request_type_name='RecommenderFoldersLocationsRecommendersRecommendationsMarkClaimedRequest',
+        response_type_name='GoogleCloudRecommenderV1Recommendation',
+        supports_download=False,
+    )
+
+    def MarkFailed(self, request, global_params=None):
+      r"""Marks the Recommendation State as Failed. Users can use this method to indicate to the Recommender API that they have applied the recommendation themselves, and the operation failed. This stops the recommendation content from being updated. Associated insights are frozen and placed in the ACCEPTED state. MarkRecommendationFailed can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED, or FAILED state. Requires the recommender.*.update IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderFoldersLocationsRecommendersRecommendationsMarkFailedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('MarkFailed')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkFailed.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markFailed',
+        http_method='POST',
+        method_id='recommender.folders.locations.recommenders.recommendations.markFailed',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:markFailed',
+        request_field='googleCloudRecommenderV1MarkRecommendationFailedRequest',
+        request_type_name='RecommenderFoldersLocationsRecommendersRecommendationsMarkFailedRequest',
+        response_type_name='GoogleCloudRecommenderV1Recommendation',
+        supports_download=False,
+    )
+
+    def MarkSucceeded(self, request, global_params=None):
+      r"""Marks the Recommendation State as Succeeded. Users can use this method to indicate to the Recommender API that they have applied the recommendation themselves, and the operation was successful. This stops the recommendation content from being updated. Associated insights are frozen and placed in the ACCEPTED state. MarkRecommendationSucceeded can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED, or FAILED state. Requires the recommender.*.update IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderFoldersLocationsRecommendersRecommendationsMarkSucceededRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('MarkSucceeded')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkSucceeded.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markSucceeded',
+        http_method='POST',
+        method_id='recommender.folders.locations.recommenders.recommendations.markSucceeded',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:markSucceeded',
+        request_field='googleCloudRecommenderV1MarkRecommendationSucceededRequest',
+        request_type_name='RecommenderFoldersLocationsRecommendersRecommendationsMarkSucceededRequest',
+        response_type_name='GoogleCloudRecommenderV1Recommendation',
+        supports_download=False,
+    )
+
+  class FoldersLocationsRecommendersService(base_api.BaseApiService):
+    """Service class for the folders_locations_recommenders resource."""
+
+    _NAME = 'folders_locations_recommenders'
+
+    def __init__(self, client):
+      super(RecommenderV1.FoldersLocationsRecommendersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class FoldersLocationsService(base_api.BaseApiService):
+    """Service class for the folders_locations resource."""
+
+    _NAME = 'folders_locations'
+
+    def __init__(self, client):
+      super(RecommenderV1.FoldersLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class FoldersService(base_api.BaseApiService):
+    """Service class for the folders resource."""
+
+    _NAME = 'folders'
+
+    def __init__(self, client):
+      super(RecommenderV1.FoldersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsLocationsInsightTypesInsightsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_insightTypes_insights resource."""
+
+    _NAME = 'organizations_locations_insightTypes_insights'
+
+    def __init__(self, client):
+      super(RecommenderV1.OrganizationsLocationsInsightTypesInsightsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the requested insight. Requires the recommender.*.get IAM permission for the specified insight type.
+
+      Args:
+        request: (RecommenderOrganizationsLocationsInsightTypesInsightsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1Insight) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights/{insightsId}',
+        http_method='GET',
+        method_id='recommender.organizations.locations.insightTypes.insights.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='RecommenderOrganizationsLocationsInsightTypesInsightsGetRequest',
+        response_type_name='GoogleCloudRecommenderV1Insight',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists insights for a Cloud project. Requires the recommender.*.list IAM permission for the specified insight type.
+
+      Args:
+        request: (RecommenderOrganizationsLocationsInsightTypesInsightsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1ListInsightsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights',
+        http_method='GET',
+        method_id='recommender.organizations.locations.insightTypes.insights.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/insights',
+        request_field='',
+        request_type_name='RecommenderOrganizationsLocationsInsightTypesInsightsListRequest',
+        response_type_name='GoogleCloudRecommenderV1ListInsightsResponse',
+        supports_download=False,
+    )
+
+    def MarkAccepted(self, request, global_params=None):
+      r"""Marks the Insight State as Accepted. Users can use this method to indicate to the Recommender API that they have applied some action based on the insight. This stops the insight content from being updated. MarkInsightAccepted can be applied to insights in ACTIVE state. Requires the recommender.*.update IAM permission for the specified insight.
+
+      Args:
+        request: (RecommenderOrganizationsLocationsInsightTypesInsightsMarkAcceptedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1Insight) The response message.
+      """
+      config = self.GetMethodConfig('MarkAccepted')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkAccepted.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights/{insightsId}:markAccepted',
+        http_method='POST',
+        method_id='recommender.organizations.locations.insightTypes.insights.markAccepted',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:markAccepted',
+        request_field='googleCloudRecommenderV1MarkInsightAcceptedRequest',
+        request_type_name='RecommenderOrganizationsLocationsInsightTypesInsightsMarkAcceptedRequest',
+        response_type_name='GoogleCloudRecommenderV1Insight',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsInsightTypesService(base_api.BaseApiService):
+    """Service class for the organizations_locations_insightTypes resource."""
+
+    _NAME = 'organizations_locations_insightTypes'
+
+    def __init__(self, client):
+      super(RecommenderV1.OrganizationsLocationsInsightTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsLocationsRecommendersRecommendationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_recommenders_recommendations resource."""
+
+    _NAME = 'organizations_locations_recommenders_recommendations'
+
+    def __init__(self, client):
+      super(RecommenderV1.OrganizationsLocationsRecommendersRecommendationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the requested recommendation. Requires the recommender.*.get IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderOrganizationsLocationsRecommendersRecommendationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}',
+        http_method='GET',
+        method_id='recommender.organizations.locations.recommenders.recommendations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='RecommenderOrganizationsLocationsRecommendersRecommendationsGetRequest',
+        response_type_name='GoogleCloudRecommenderV1Recommendation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists recommendations for a Cloud project. Requires the recommender.*.list IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderOrganizationsLocationsRecommendersRecommendationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1ListRecommendationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations',
+        http_method='GET',
+        method_id='recommender.organizations.locations.recommenders.recommendations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/recommendations',
+        request_field='',
+        request_type_name='RecommenderOrganizationsLocationsRecommendersRecommendationsListRequest',
+        response_type_name='GoogleCloudRecommenderV1ListRecommendationsResponse',
+        supports_download=False,
+    )
+
+    def MarkClaimed(self, request, global_params=None):
+      r"""Marks the Recommendation State as Claimed. Users can use this method to indicate to the Recommender API that they are starting to apply the recommendation themselves. This stops the recommendation content from being updated. Associated insights are frozen and placed in the ACCEPTED state. MarkRecommendationClaimed can be applied to recommendations in CLAIMED, SUCCEEDED, FAILED, or ACTIVE state. Requires the recommender.*.update IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderOrganizationsLocationsRecommendersRecommendationsMarkClaimedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('MarkClaimed')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkClaimed.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markClaimed',
+        http_method='POST',
+        method_id='recommender.organizations.locations.recommenders.recommendations.markClaimed',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:markClaimed',
+        request_field='googleCloudRecommenderV1MarkRecommendationClaimedRequest',
+        request_type_name='RecommenderOrganizationsLocationsRecommendersRecommendationsMarkClaimedRequest',
+        response_type_name='GoogleCloudRecommenderV1Recommendation',
+        supports_download=False,
+    )
+
+    def MarkFailed(self, request, global_params=None):
+      r"""Marks the Recommendation State as Failed. Users can use this method to indicate to the Recommender API that they have applied the recommendation themselves, and the operation failed. This stops the recommendation content from being updated. Associated insights are frozen and placed in the ACCEPTED state. MarkRecommendationFailed can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED, or FAILED state. Requires the recommender.*.update IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderOrganizationsLocationsRecommendersRecommendationsMarkFailedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('MarkFailed')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkFailed.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markFailed',
+        http_method='POST',
+        method_id='recommender.organizations.locations.recommenders.recommendations.markFailed',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:markFailed',
+        request_field='googleCloudRecommenderV1MarkRecommendationFailedRequest',
+        request_type_name='RecommenderOrganizationsLocationsRecommendersRecommendationsMarkFailedRequest',
+        response_type_name='GoogleCloudRecommenderV1Recommendation',
+        supports_download=False,
+    )
+
+    def MarkSucceeded(self, request, global_params=None):
+      r"""Marks the Recommendation State as Succeeded. Users can use this method to indicate to the Recommender API that they have applied the recommendation themselves, and the operation was successful. This stops the recommendation content from being updated. Associated insights are frozen and placed in the ACCEPTED state. MarkRecommendationSucceeded can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED, or FAILED state. Requires the recommender.*.update IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderOrganizationsLocationsRecommendersRecommendationsMarkSucceededRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('MarkSucceeded')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkSucceeded.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markSucceeded',
+        http_method='POST',
+        method_id='recommender.organizations.locations.recommenders.recommendations.markSucceeded',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:markSucceeded',
+        request_field='googleCloudRecommenderV1MarkRecommendationSucceededRequest',
+        request_type_name='RecommenderOrganizationsLocationsRecommendersRecommendationsMarkSucceededRequest',
+        response_type_name='GoogleCloudRecommenderV1Recommendation',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsRecommendersService(base_api.BaseApiService):
+    """Service class for the organizations_locations_recommenders resource."""
+
+    _NAME = 'organizations_locations_recommenders'
+
+    def __init__(self, client):
+      super(RecommenderV1.OrganizationsLocationsRecommendersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsLocationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations resource."""
+
+    _NAME = 'organizations_locations'
+
+    def __init__(self, client):
+      super(RecommenderV1.OrganizationsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsService(base_api.BaseApiService):
+    """Service class for the organizations resource."""
+
+    _NAME = 'organizations'
+
+    def __init__(self, client):
+      super(RecommenderV1.OrganizationsService, self).__init__(client)
       self._upload_configs = {
           }
 

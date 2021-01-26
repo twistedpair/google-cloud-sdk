@@ -401,18 +401,18 @@
     },
     "ReachabilityDetails": {
       "id": "ReachabilityDetails",
-      "description": "The details of reachability state from the latest run.",
+      "description": "Results of the configuration analysis from the last run of the test.",
       "type": "object",
       "properties": {
         "result": {
-          "description": "The overall reachability result of the test.",
+          "description": "The overall result of the test's configuration analysis.",
           "type": "string",
           "enumDescriptions": [
-            "Result is not specified.",
-            "Packet originating from source is expected to reach destination.",
-            "Packet originating from source is expected to be dropped before reaching destination.",
-            "If the source and destination endpoint does not uniquely identify the test location in the network, and the reachability result contains multiple traces with mixed reachable and unreachable states, then this result is returned.",
-            "The reachability could not be determined. Possible reasons are: * Analysis is aborted due to permission error. User does not have read permission to the projects listed in the test. * Analysis is aborted due to internal errors. * Analysis is partially complete based on configurations where the user has permission. The Final state indicates that the packet is forwarded to another network where the user has no permission to access the configurations."
+            "No result was specified.",
+            "Possible scenarios are: * The configuration analysis determined that a packet originating from the source is expected to reach the destination. * The analysis didn't complete because the user lacks permission for some of the resources in the trace. However, at the time the user's permission became insufficient, the trace had been successful so far.",
+            "A packet originating from the source is expected to be dropped before reaching the destination.",
+            "The source and destination endpoints do not uniquely identify the test location in the network, and the reachability result contains multiple traces. For some traces, a packet could be delivered, and for others, it would not be.",
+            "The configuration analysis did not complete. Possible reasons are: * A permissions error occurred--for example, the user might not have read permission for all of the resources named in the test. * An internal error occurred. * The analyzer received an invalid or unsupported argument or was unable to identify a known endpoint."
           ],
           "enum": [
             "RESULT_UNSPECIFIED",
@@ -423,7 +423,7 @@
           ]
         },
         "verifyTime": {
-          "description": "The time the reachability state was verified.",
+          "description": "The time of the configuration analysis.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -579,7 +579,7 @@
           "$ref": "RouteInfo"
         },
         "endpoint": {
-          "description": "Display info of the source and destination under analysis. The endpiont info in an intermediate state may differ with the initial input, as it might be modified by state like NAT, or Connection Proxy.",
+          "description": "Display info of the source and destination under analysis. The endpoint info in an intermediate state may differ with the initial input, as it might be modified by state like NAT, or Connection Proxy.",
           "$ref": "EndpointInfo"
         },
         "forwardingRule": {
@@ -1266,18 +1266,18 @@
     },
     "ProbingDetails": {
       "id": "ProbingDetails",
-      "description": "The details of probing from the latest run.",
+      "description": "Results of active probing from the last run of the test.",
       "type": "object",
       "properties": {
         "result": {
-          "description": "The overall reachability result of the test.",
+          "description": "The overall result of active probing.",
           "type": "string",
           "enumDescriptions": [
-            "Result is not specified.",
-            "95% or more packets originating from source reached destination.",
-            "No packet originating from source reached destination.",
-            "Less than 95% packets originating from source reached destination.",
-            "The reachability could not be determined. Possible reasons are: * Analysis is aborted due to permission error. User does not have read permission to the projects listed in the test. * Analysis is aborted due to internal errors."
+            "No result was specified.",
+            "At least 95% of packets reached the destination.",
+            "No packets reached the destination.",
+            "Less than 95% of packets reached the destination.",
+            "Reachability could not be determined. Possible reasons are: * The user lacks permission to access some of the network resources required to run the test. * No valid source endpoint could be derived from the request. * An internal error occurred."
           ],
           "enum": [
             "PROBING_RESULT_UNSPECIFIED",
@@ -1288,21 +1288,21 @@
           ]
         },
         "verifyTime": {
-          "description": "The time the reachability state was verified.",
+          "description": "The time that reachability was assessed through active probing.",
           "type": "string",
           "format": "google-datetime"
         },
         "error": {
-          "description": "The details of an internal failure or a cancellation of reachability analysis.",
+          "description": "Details about an internal failure or the cancellation of active probing.",
           "$ref": "Status"
         },
         "abortCause": {
-          "description": "Causes that the probing was aborted.",
+          "description": "The reason probing was aborted.",
           "type": "string",
           "enumDescriptions": [
-            "Abort reason unspecified.",
-            "Aborted because the user lacks the permission to access all or part of the network configurations required to run the test.",
-            "Aborted because no valid source endpoint is derived from the input test request."
+            "No reason was specified.",
+            "The user lacks permission to access some of the network resources required to run the test.",
+            "No valid source endpoint could be derived from the request."
           ],
           "enum": [
             "PROBING_ABORT_CAUSE_UNSPECIFIED",
@@ -1316,16 +1316,16 @@
           "format": "int32"
         },
         "successfulProbeCount": {
-          "description": "Number of probes that reached destination.",
+          "description": "Number of probes that reached the destination.",
           "type": "integer",
           "format": "int32"
         },
         "endpointInfo": {
-          "description": "Derived from the test input. The actual source and destination endpoint where the probing was run.",
+          "description": "The source and destination endpoints derived from the test input and used for active probing.",
           "$ref": "EndpointInfo"
         },
         "probingLatency": {
-          "description": "One way probing latency distribution. The latency is measured as duration of packet traversal of Google Cloud network, from source to destination endpoint.",
+          "description": "Latency as measured by active probing in one direction: from the source to the destination endpoint.",
           "$ref": "LatencyDistribution"
         }
       }

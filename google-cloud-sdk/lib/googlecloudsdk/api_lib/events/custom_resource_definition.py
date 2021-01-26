@@ -102,6 +102,10 @@ class CustomResourceDefinition(k8s_object.KubernetesObject):
   KIND = 'CustomResourceDefinition'
   READY_CONDITION = None  # The status field is not currently used on CRDs
 
+  @property
+  def api_group(self):
+    return self._m.spec.group
+
   def getActiveVersions(self):
     """Returns list of active api versions for the source."""
     return [version.name for version in self._m.spec.versions if version.served]

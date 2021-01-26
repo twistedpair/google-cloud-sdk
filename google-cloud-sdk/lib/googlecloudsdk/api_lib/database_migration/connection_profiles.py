@@ -201,6 +201,7 @@ class ConnectionProfilesClient(object):
     if update_result.needs_update:
       connection_profile.labels = update_result.labels
 
+  # TODO(b/177659340): Avoid raising python build-in exceptions.
   def _GetUpdatedConnectionProfile(self, connection_profile, args):
     """Returns updated connection profile and list of updated fields."""
     update_fields = []

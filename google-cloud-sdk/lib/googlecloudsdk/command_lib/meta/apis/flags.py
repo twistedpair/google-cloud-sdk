@@ -93,8 +93,6 @@ class MethodDynamicPositionalAction(parser_extensions.DynamicPositionalAction):
           'The collection name must be specified before the API method.')
 
     # Look up the method and get all the args for it.
-    # TODO(b/38000796): It's possible that api_version hasn't been parsed yet
-    # so we are generating the wrong args.
     method = registry.GetMethod(full_collection_name, method_name,
                                 api_version=api_version)
 

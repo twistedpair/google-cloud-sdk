@@ -34,6 +34,18 @@ DEFAULT_LIST_FORMAT = """\
       ipCidrRange:label=RANGE
     )"""
 
+DEFAULT_LIST_FORMAT_WITH_IPV6_FIELD = """\
+    table(
+      name,
+      region.basename(),
+      network.basename(),
+      ipCidrRange:label=RANGE,
+      stackType,
+      ipv6AccessType,
+      ipv6CidrRange,
+      externalIpv6Prefix
+    )"""
+
 
 class SubnetworksCompleter(compute_completers.ListCommandCompleter):
 

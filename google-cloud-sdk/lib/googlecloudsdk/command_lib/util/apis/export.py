@@ -80,12 +80,14 @@ def _NormalizeTypeName(name):
   """Returns the JSON schema normalized type name for name."""
   s = six.text_type(name).lower()
   if re.match(r'.?int64', s):
-    return 'string'
+    return 'integer'
   if re.match(r'.?int32', s):
     return 'integer'
   if re.match(r'^int\d*$', s):
     return 'integer'
   if s == 'float':
+    return 'number'
+  if s == 'double':
     return 'number'
   if s == 'bool':
     return 'boolean'

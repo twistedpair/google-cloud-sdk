@@ -25,6 +25,16 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  externalIpv6:
+    description: |-
+      [Output Only] The first IPv6 address of the external IPv6 range associated
+      with this instance, prefix length is stored in externalIpv6PrefixLength in
+      ipv6AccessConfig. The field is output only, an IPv6 address from a
+      subnetwork associated with the instance will be allocated dynamically.
+    type: string
+  externalIpv6PrefixLength:
+    description: '[Output Only] The prefix length of the external IPv6 range.'
+    type: integer
   kind:
     description: |-
       [Output Only] Type of the resource. Always compute#accessConfig for access
@@ -54,9 +64,11 @@ properties:
       networkTier associated with the Address resource owning that IP.
     type: string
     enum:
+    - FIXED_STANDARD
     - PREMIUM
     - SELECT
     - STANDARD
+    - STANDARD_OVERRIDES_FIXED_STANDARD
   publicDnsName:
     description: '[Output Only] The public DNS domain name for the instance.'
     type: string
@@ -67,7 +79,7 @@ properties:
     type: string
   setPublicDns:
     description: |-
-      Specifies whether a public DNS ?A? record should be created for the
+      Specifies whether a public DNS 'A' record should be created for the
       external IP address of this access configuration.
     type: boolean
   setPublicPtr:
@@ -80,4 +92,5 @@ properties:
       The type of configuration. The default and only option is ONE_TO_ONE_NAT.
     type: string
     enum:
+    - DIRECT_IPV6
     - ONE_TO_ONE_NAT

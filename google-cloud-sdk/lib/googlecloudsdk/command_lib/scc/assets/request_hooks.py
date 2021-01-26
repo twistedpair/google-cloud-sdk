@@ -111,6 +111,7 @@ def _GetNameOrResourceFilter(args):
   return request_filter
 
 
+# TODO(b/177658164): Avoid using assert.
 def _ValidateMutexOnAssetAndOrganization(args):
   """Validates that only a full resource name or split arguments are provided."""
   if "/" in args.asset:

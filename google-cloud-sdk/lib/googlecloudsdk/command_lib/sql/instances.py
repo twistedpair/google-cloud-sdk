@@ -397,11 +397,12 @@ class _BaseInstances(object):
     if args.clear_gae_apps:
       settings.authorizedGaeApplications = []
 
-    if any([args.follow_gae_app, _GetZone(args)]):
+    if any([args.follow_gae_app, _GetZone(args), _GetSecondaryZone(args)]):
       settings.locationPreference = sql_messages.LocationPreference(
           kind='sql#locationPreference',
           followGaeApplication=args.follow_gae_app,
-          zone=_GetZone(args))
+          zone=_GetZone(args),
+          secondaryZone=_GetSecondaryZone(args))
 
     if args.clear_authorized_networks:
       if not settings.ipConfiguration:

@@ -328,7 +328,7 @@
           }
         },
         "contactNotices": {
-          "description": "The list of contact notices that the caller acknowledges. The notices required here depend on the values specified in `registration.contact_settings`.",
+          "description": "The list of contact notices that the caller acknowledges. The notices needed here depend on the values specified in `registration.contact_settings`.",
           "type": "array",
           "items": {
             "type": "string",
@@ -857,7 +857,7 @@
           "format": "google-fieldmask"
         },
         "contactNotices": {
-          "description": "The list of contact notices that the caller acknowledges. The notices required here depend on the values specified in `contact_settings`.",
+          "description": "The list of contact notices that the caller acknowledges. The notices needed here depend on the values specified in `contact_settings`.",
           "type": "array",
           "items": {
             "type": "string",

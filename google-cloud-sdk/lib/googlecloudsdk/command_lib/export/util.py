@@ -19,11 +19,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import copy
+import json
 import os
 import re
 import textwrap
 
+from apitools.base.protorpclite import message_types
+from apitools.base.protorpclite import messages
 from apitools.base.py import encoding as api_encoding
+from apitools.base.py import encoding_helper
 from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import yaml
@@ -229,6 +234,123 @@ def Import(message_type, stream, schema_path=None):
   return message
 
 
+# pylint: disable=protected-access
+# TODO(b/177577343)
+# This is a terrible hack to fix an apitools issue that makes all registered
+# codecs global, which breaks our presubmits. This will be removed once
+# declarative workflows deprecate our current import/export tooling.
+class _ProtoJsonApiTools(encoding_helper._ProtoJsonApiTools):
+  """JSON encoder used by apitools clients."""
+  _INSTANCE = None
+
+  @classmethod
+  def Get(cls):
+    if cls._INSTANCE is None:
+      cls._INSTANCE = cls()
+    return cls._INSTANCE
+
+  def encode_message(self, message):
+    if isinstance(message, messages.FieldList):
+      return '[%s]' % (', '.join(self.encode_message(x) for x in message))
+
+    # pylint: disable=unidiomatic-typecheck
+    if type(message) in encoding_helper._CUSTOM_MESSAGE_CODECS:
+      return encoding_helper._CUSTOM_MESSAGE_CODECS[type(message)].encoder(
+          message)
+
+    message = _EncodeUnknownFields(message)
+    result = super(encoding_helper._ProtoJsonApiTools,
+                   self).encode_message(message)
+    result = _EncodeCustomFieldNames(message, result)
+    return json.dumps(json.loads(result), sort_keys=True)
+
+  def encode_field(self, field, value):
+    for encoder in _GetFieldCodecs(field, 'encoder'):
+      result = encoder(field, value)
+      value = result.value
+      if result.complete:
+        return value
+    if isinstance(field, messages.EnumField):
+      if field.repeated:
+        remapped_value = [
+            encoding_helper.GetCustomJsonEnumMapping(
+                field.type, python_name=e.name) or e.name for e in value
+        ]
+      else:
+        remapped_value = encoding_helper.GetCustomJsonEnumMapping(
+            field.type, python_name=value.name)
+      if remapped_value:
+        return remapped_value
+    if (isinstance(field, messages.MessageField) and
+        not isinstance(field, message_types.DateTimeField)):
+      value = json.loads(self.encode_message(value))
+    return super(encoding_helper._ProtoJsonApiTools,
+                 self).encode_field(field, value)
+
+
+def RegisterCustomFieldTypeCodecs(field_type_codecs):
+  """Registers custom field codec for int64s."""
+  def _EncodeInt64Field(unused_field, value):
+    int_value = api_encoding.CodecResult(value=value, complete=True)
+    return int_value
+
+  def _DecodeInt64Field(unused_field, value):
+    # Don't need to do anything special, they're decoded just fine
+    return api_encoding.CodecResult(value=value, complete=True)
+
+  field_type_codecs[messages.IntegerField] = encoding_helper._Codec(
+      encoder=_EncodeInt64Field, decoder=_DecodeInt64Field)
+  return field_type_codecs
+
+
+def _GetFieldCodecs(field, attr):
+  custom_field_codecs = copy.deepcopy(encoding_helper._CUSTOM_FIELD_CODECS)
+  field_type_codecs = RegisterCustomFieldTypeCodecs(
+      copy.deepcopy(encoding_helper._FIELD_TYPE_CODECS))
+
+  result = [
+      getattr(custom_field_codecs.get(field), attr, None),
+      getattr(field_type_codecs.get(type(field)), attr, None),
+  ]
+  return [x for x in result if x is not None]
+
+
+def _EncodeUnknownFields(message):
+  """Remap unknown fields in message out of message.source."""
+  source = encoding_helper._UNRECOGNIZED_FIELD_MAPPINGS.get(type(message))
+  if source is None:
+    return message
+  # CopyProtoMessage uses _ProtoJsonApiTools, which uses this message. Use
+  # the vanilla protojson-based copy function to avoid infinite recursion.
+  result = encoding_helper._CopyProtoMessageVanillaProtoJson(message)
+  pairs_field = message.field_by_name(source)
+  if not isinstance(pairs_field, messages.MessageField):
+    raise exceptions.InvalidUserInputError('Invalid pairs field %s' %
+                                           pairs_field)
+  pairs_type = pairs_field.message_type
+  value_field = pairs_type.field_by_name('value')
+  value_variant = value_field.variant
+  pairs = getattr(message, source)
+  codec = _ProtoJsonApiTools.Get()
+  for pair in pairs:
+    encoded_value = codec.encode_field(value_field, pair.value)
+    result.set_unrecognized_field(pair.key, encoded_value, value_variant)
+  setattr(result, source, [])
+  return result
+
+
+def _EncodeCustomFieldNames(message, encoded_value):
+  field_remappings = list(
+      encoding_helper._JSON_FIELD_MAPPINGS.get(type(message), {}).items())
+  if field_remappings:
+    decoded_value = json.loads(encoded_value)
+    for python_name, json_name in field_remappings:
+      if python_name in encoded_value:
+        decoded_value[json_name] = decoded_value.pop(python_name)
+    encoded_value = json.dumps(decoded_value)
+  return encoded_value
+
+
 def Export(message, stream=None, schema_path=None):
   """Writes a message as YAML to a stream.
 
@@ -242,7 +364,10 @@ def Export(message, stream=None, schema_path=None):
     Returns the return value of yaml.dump(). If stream is None then the return
     value is the YAML data as a string.
   """
-  message_dict = api_encoding.MessageToPyValue(message)
+
+  result = _ProtoJsonApiTools.Get().encode_message(message)
+  message_dict = json.loads(
+      encoding_helper._IncludeFields(result, message, None))
   if schema_path:
     _FilterYAML(message_dict, schema_path)
   return yaml.dump(message_dict, stream=stream)

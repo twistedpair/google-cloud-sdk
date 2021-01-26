@@ -1984,7 +1984,8 @@ class GceClusterConfig(_messages.Message):
       https://www.googleapis.com/auth/bigtable.data
       https://www.googleapis.com/auth/devstorage.full_control
     shieldedInstanceConfig: Optional. Shielded Instance Config for clusters
-      using shielded VMs.
+      using Compute Engine Shielded VMs
+      (https://cloud.google.com/security/shielded-cloud/shielded-vm).
     subnetworkUri: Optional. The Compute Engine subnetwork to be used for
       machine communications. Cannot be specified with network_uri.A full URL,
       partial URI, or short name are valid. Examples:
@@ -2821,7 +2822,7 @@ class LifecycleConfig(_messages.Message):
       idling (when no jobs are running). Passing this threshold will cause the
       cluster to be deleted. Minimum value is 5 minutes; maximum value is 14
       days (see JSON representation of Duration
-      (https://developers.google.com/protocol-buffers/docs/proto3#json).
+      (https://developers.google.com/protocol-buffers/docs/proto3#json)).
     idleStartTime: Output only. The time when cluster became idle (most recent
       job finished) and became eligible for deletion due to idleness (see JSON
       representation of Timestamp (https://developers.google.com/protocol-
@@ -3667,7 +3668,8 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class ShieldedInstanceConfig(_messages.Message):
-  r"""Shielded Instance Config for clusters using shielded VMs.
+  r"""Shielded Instance Config for clusters using Compute Engine Shielded VMs
+  (https://cloud.google.com/security/shielded-cloud/shielded-vm).
 
   Fields:
     enableIntegrityMonitoring: Optional. Defines whether instances have

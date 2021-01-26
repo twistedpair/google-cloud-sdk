@@ -597,7 +597,7 @@ class Occurrence(_messages.Message):
     are specified. This field can be used as a filter in list requests.
 
     Values:
-      NOTE_KIND_UNSPECIFIED: Unknown.
+      NOTE_KIND_UNSPECIFIED: Default value. This value is unused.
       VULNERABILITY: The note and occurrence represent a package
         vulnerability.
       BUILD: The note and occurrence assert build provenance.
@@ -710,21 +710,6 @@ class OndemandscanningProjectsLocationsScansAnalyzePackagesRequest(_messages.Mes
 
   analyzePackagesRequest = _messages.MessageField('AnalyzePackagesRequest', 1)
   parent = _messages.StringField(2, required=True)
-
-
-class OndemandscanningProjectsLocationsScansScanContainerImageRequest(_messages.Message):
-  r"""A OndemandscanningProjectsLocationsScansScanContainerImageRequest
-  object.
-
-  Fields:
-    parent: Required. The parent of the resource for which scanning is
-      requested. Format: projects/[project_name]/locations/[location]
-    scanContainerImageRequest: A ScanContainerImageRequest resource to be
-      passed as the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  scanContainerImageRequest = _messages.MessageField('ScanContainerImageRequest', 2)
 
 
 class OndemandscanningProjectsLocationsScansVulnerabilitiesListRequest(_messages.Message):
@@ -954,42 +939,6 @@ class RepoId(_messages.Message):
 
   projectRepoId = _messages.MessageField('ProjectRepoId', 1)
   uid = _messages.StringField(2)
-
-
-class ScanContainerImageMetadata(_messages.Message):
-  r"""ScanContainerImageMetadata contains metadata for an active scan of a
-  container image.
-
-  Fields:
-    createTime: When the scan was created.
-    resourceUri: The resource URI of the container image being scanned.
-  """
-
-  createTime = _messages.StringField(1)
-  resourceUri = _messages.StringField(2)
-
-
-class ScanContainerImageRequest(_messages.Message):
-  r"""ScanContainerImageRequest is the request to initiate a scan of a
-  container image.
-
-  Fields:
-    resourceUri: Required. The resource URI of the container image being
-      scanned.
-  """
-
-  resourceUri = _messages.StringField(1)
-
-
-class ScanContainerImageResponse(_messages.Message):
-  r"""ScanContainerImageResponse contains the information necessary to find
-  results for the given scan.
-
-  Fields:
-    scan: The name of the scan resource created by this successful scan.
-  """
-
-  scan = _messages.StringField(1)
 
 
 class Signature(_messages.Message):
@@ -1318,6 +1267,12 @@ class Version(_messages.Message):
     epoch: Used to correct mistakes in the version numbering scheme.
     fullName: Human readable version string. This string is of the form :- and
       is only set when kind is NORMAL.
+    inclusive: Whether this version is specifying part of an inclusive range.
+      Grafeas does not have the capability to specify version ranges; instead
+      we have fields that specify start version and end versions. At times
+      this is insufficient - we also need to specify whether the version is
+      included in the range or is excluded from the range. This boolean is
+      expected to be set to true when the version is included in a range.
     kind: Required. Distinguishes between sentinel MIN/MAX versions and normal
       versions.
     name: Required only when version kind is NORMAL. The main part of the
@@ -1342,9 +1297,10 @@ class Version(_messages.Message):
 
   epoch = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   fullName = _messages.StringField(2)
-  kind = _messages.EnumField('KindValueValuesEnum', 3)
-  name = _messages.StringField(4)
-  revision = _messages.StringField(5)
+  inclusive = _messages.BooleanField(3)
+  kind = _messages.EnumField('KindValueValuesEnum', 4)
+  name = _messages.StringField(5)
+  revision = _messages.StringField(6)
 
 
 class VulnerabilityOccurrence(_messages.Message):

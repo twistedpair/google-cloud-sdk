@@ -19,8 +19,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+
 from googlecloudsdk.api_lib.container.images import container_data_util
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.containeranalysis import requests
+import six
+
 
 _INDENT = '  '
 _NULL_SEVERITY = 'UNKNOWN'
@@ -41,11 +44,11 @@ class PackageVulnerabilitiesSummary(SummaryResolver):
   """PackageVulnerabilitiesSummary has information about vulnerabilities."""
 
   def __init__(self):
-    self.__messages = apis.GetMessagesModule('containeranalysis', 'v1alpha1')
+    self.__messages = requests.GetMessages()
     self.vulnerabilities = collections.defaultdict(list)
 
   def add_record(self, occ):
-    sev = str(occ.vulnerabilityDetails.severity)
+    sev = six.text_type(occ.vulnerability.severity)
     self.vulnerabilities[sev].append(occ)
 
   def resolve(self):
@@ -54,9 +57,9 @@ class PackageVulnerabilitiesSummary(SummaryResolver):
 
     for occs in self.vulnerabilities.values():
       for occ in occs:
-        for package_issue in occ.vulnerabilityDetails.packageIssue:
+        for package_issue in occ.vulnerability.packageIssue:
           self.total_vulnerability_found += 1
-          if (package_issue.fixedLocation.version.kind ==
+          if (package_issue.fixedVersion.kind ==
               self.__messages.Version.KindValueValuesEnum.MAXIMUM):
             self.not_fixed_vulnerability_count += 1
     # The gcloud encoder gets confused unless we turn this back into a dict.
@@ -121,17 +124,16 @@ class ContainerAndAnalysisData(container_data_util.ContainerData):
     self.discovery_summary = DiscoverySummary()
 
   def add_record(self, occurrence):
-    messages = apis.GetMessagesModule('containeranalysis', 'v1alpha1')
-    if (occurrence.kind ==
-        messages.Occurrence.KindValueValuesEnum.PACKAGE_VULNERABILITY):
+    messages = requests.GetMessages()
+    if (occurrence.kind == messages.Occurrence.KindValueValuesEnum.VULNERABILITY
+       ):
       self.package_vulnerability_summary.add_record(occurrence)
-    elif occurrence.kind == messages.Occurrence.KindValueValuesEnum.IMAGE_BASIS:
+    elif occurrence.kind == messages.Occurrence.KindValueValuesEnum.IMAGE:
       self.image_basis_summary.add_record(occurrence)
-    elif (occurrence.kind ==
-          messages.Occurrence.KindValueValuesEnum.BUILD_DETAILS):
+    elif occurrence.kind == messages.Occurrence.KindValueValuesEnum.BUILD:
       self.build_details_summary.add_record(occurrence)
-    elif (occurrence.kind ==
-          messages.Occurrence.KindValueValuesEnum.DEPLOYABLE):
+    elif (
+        occurrence.kind == messages.Occurrence.KindValueValuesEnum.DEPLOYMENT):
       self.deployment_summary.add_record(occurrence)
     elif (occurrence.kind ==
           messages.Occurrence.KindValueValuesEnum.DISCOVERY):

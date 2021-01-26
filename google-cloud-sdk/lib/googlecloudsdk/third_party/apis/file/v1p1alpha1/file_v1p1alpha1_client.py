@@ -337,7 +337,7 @@ class FileV1p1alpha1(base_api.BaseApiClient):
     )
 
     def Restore(self, request, global_params=None):
-      r"""Restores an existing instance's file share from a snapshot or backup. The instance's file share capacity will be set to the snapshot's or backup's capacity or the minimum capacity of the tier, whichever is larger.
+      r"""Restores an existing instance's file share from a snapshot or backup. The capacity of the instance needs to be equal to or larger than the capacity of the snapshot or backup (and also equal to or larger than the minimum capacity of the tier).
 
       Args:
         request: (FileProjectsLocationsInstancesRestoreRequest) input message

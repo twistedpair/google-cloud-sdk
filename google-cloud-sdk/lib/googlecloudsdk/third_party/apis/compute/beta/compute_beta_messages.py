@@ -655,9 +655,10 @@ class Address(_messages.Message):
       from a private IP range that are reserved for a VLAN attachment in an
       IPsec encrypted Interconnect configuration. These addresses are regional
       resources.
-    region: [Output Only] The URL of the region where the regional address
-      resides. This field is not applicable to global addresses. You must
-      specify this field as part of the HTTP request URL.
+    region: [Output Only] The URL of the region where a regional address
+      resides. For regional addresses, you must specify the region as a path
+      parameter in the HTTP request URL. This field is not applicable to
+      global addresses.
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] The status of the address, which can be one of
       RESERVING, RESERVED, or IN_USE. An address that is RESERVING is
@@ -1281,6 +1282,9 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
     guestAccelerators: Specifies accelerator type and count.
     localSsds: Specifies amount of local ssd to reserve with each instance.
       The type of disk is local-ssd.
+    locationHint: An opaque location hint used to place the allocation close
+      to other resources. This field is for use by internal tools that use the
+      public API.
     machineType: Specifies type of machine (name only) which has fixed number
       of vCPUs and fixed amount of memory. This also includes specifying
       custom machine type following custom-NUMBER_OF_CPUS-AMOUNT_OF_MEMORY
@@ -1290,8 +1294,9 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
 
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   localSsds = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk', 2, repeated=True)
-  machineType = _messages.StringField(3)
-  minCpuPlatform = _messages.StringField(4)
+  locationHint = _messages.StringField(3)
+  machineType = _messages.StringField(4)
+  minCpuPlatform = _messages.StringField(5)
 
 
 class AllocationSpecificSKUReservation(_messages.Message):
@@ -3216,8 +3221,8 @@ class BackendService(_messages.Message):
       bound to target gRPC proxy that has validateForProxyless field set to
       true.
     backends: The list of backends that serve this BackendService.
-    cdnPolicy: Cloud CDN configuration for this BackendService. Not available
-      for Internal TCP/UDP Load Balancing and Network Load Balancing.
+    cdnPolicy: Cloud CDN configuration for this BackendService. Only available
+      for  external HTTP(S) Load Balancing.
     circuitBreakers: Settings controlling the volume of connections to a
       backend service. If not set, this feature is considered disabled.  This
       field is applicable to either:   - A regional backend service with the
@@ -3335,8 +3340,8 @@ class BackendService(_messages.Message):
       referenced by a URL map that is bound to target gRPC proxy that has
       validateForProxyless field set to true.
     port: Deprecated in favor of portName. The TCP port to connect on the
-      backend. The default value is 80.  This cannot be used if the
-      loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).
+      backend. The default value is 80.  Backend services for Internal TCP/UDP
+      Load Balancing and Network Load Balancing require you omit port.
     portName: A named port on a backend instance group representing the port
       for communication to the backend VMs in that group. Required when the
       loadBalancingScheme is EXTERNAL (except Network Load Balancing),
@@ -26712,8 +26717,7 @@ class FirewallPolicyRule(_messages.Message):
     action: The Action to perform when the client connection triggers the
       rule. Can currently be either "allow" or "deny()" where valid values for
       status are 403, 404, and 502.
-    description: An optional description of this resource. Provide this
-      property when you create the resource.
+    description: An optional description for this resource.
     direction: The direction in which this rule applies.
     disabled: Denotes whether the firewall policy rule is disabled. When set
       to true, the firewall policy rule is not enforced and traffic behaves as
@@ -27028,6 +27032,8 @@ class ForwardingRule(_messages.Message):
       Balancing, if you specify allPorts, you should not specify ports.  For
       more information, see [Port specifications](/load-
       balancing/docs/forwarding-rule-concepts#port_specifications).
+    pscConnectionId: [Output Only] The PSC connection id of the PSC Forwarding
+      Rule.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules. You
       must specify this field as part of the HTTP request URL. It is not
@@ -27191,13 +27197,14 @@ class ForwardingRule(_messages.Message):
   networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 19)
   portRange = _messages.StringField(20)
   ports = _messages.StringField(21, repeated=True)
-  region = _messages.StringField(22)
-  selfLink = _messages.StringField(23)
-  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 24, repeated=True)
-  serviceLabel = _messages.StringField(25)
-  serviceName = _messages.StringField(26)
-  subnetwork = _messages.StringField(27)
-  target = _messages.StringField(28)
+  pscConnectionId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
+  region = _messages.StringField(23)
+  selfLink = _messages.StringField(24)
+  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 25, repeated=True)
+  serviceLabel = _messages.StringField(26)
+  serviceName = _messages.StringField(27)
+  subnetwork = _messages.StringField(28)
+  target = _messages.StringField(29)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -28961,7 +28968,9 @@ class HealthStatus(_messages.Message):
     annotations: Metadata defined as annotations for network endpoint.
     healthState: Health state of the instance.
     instance: URL of the instance resource.
-    ipAddress: A forwarding rule IP address assigned to this instance.
+    ipAddress: For target pool based Network Load Balancing, it indicates the
+      forwarding rule's IP address assigned to this instance. For other types
+      of load balancing, the field indicates VM internal ip.
     port: The named port of the instance group, not necessarily the port that
       is health-checked.
     weight: A string attribute.
@@ -30031,6 +30040,7 @@ class Image(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     rawDisk: The parameters of the raw disk image.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined URL for the resource.
     shieldedInstanceInitialState: Set the secure boot keys of shielded
       instance.
@@ -30180,20 +30190,21 @@ class Image(_messages.Message):
   licenses = _messages.StringField(14, repeated=True)
   name = _messages.StringField(15)
   rawDisk = _messages.MessageField('RawDiskValue', 16)
-  selfLink = _messages.StringField(17)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 18)
-  sourceDisk = _messages.StringField(19)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
-  sourceDiskId = _messages.StringField(21)
-  sourceImage = _messages.StringField(22)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
-  sourceImageId = _messages.StringField(24)
-  sourceSnapshot = _messages.StringField(25)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 26)
-  sourceSnapshotId = _messages.StringField(27)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 28, default='RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 29)
-  storageLocations = _messages.StringField(30, repeated=True)
+  satisfiesPzs = _messages.BooleanField(17)
+  selfLink = _messages.StringField(18)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 19)
+  sourceDisk = _messages.StringField(20)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  sourceDiskId = _messages.StringField(22)
+  sourceImage = _messages.StringField(23)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
+  sourceImageId = _messages.StringField(25)
+  sourceSnapshot = _messages.StringField(26)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 27)
+  sourceSnapshotId = _messages.StringField(28)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 29, default='RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 30)
+  storageLocations = _messages.StringField(31, repeated=True)
 
 
 class ImageList(_messages.Message):
@@ -30440,6 +30451,7 @@ class Instance(_messages.Message):
       These specify how interfaces are configured to interact with other
       network services, such as connecting to the internet. Multiple
       interfaces are supported per instance.
+    networkPerformanceConfig: A NetworkPerformanceConfig attribute.
     privateIpv6GoogleAccess: The private IPv6 google access type for the VM.
       If not specified, use  INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Specifies the reservations that this instance can
@@ -30572,24 +30584,25 @@ class Instance(_messages.Message):
   minCpuPlatform = _messages.StringField(23)
   name = _messages.StringField(24)
   networkInterfaces = _messages.MessageField('NetworkInterface', 25, repeated=True)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 26)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 27)
-  resourcePolicies = _messages.StringField(28, repeated=True)
-  satisfiesPzs = _messages.BooleanField(29)
-  scheduling = _messages.MessageField('Scheduling', 30)
-  selfLink = _messages.StringField(31)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 32, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 33)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 34)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 35)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 36)
-  sourceMachineImage = _messages.StringField(37)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 38)
-  startRestricted = _messages.BooleanField(39)
-  status = _messages.EnumField('StatusValueValuesEnum', 40)
-  statusMessage = _messages.StringField(41)
-  tags = _messages.MessageField('Tags', 42)
-  zone = _messages.StringField(43)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 26)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 27)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 28)
+  resourcePolicies = _messages.StringField(29, repeated=True)
+  satisfiesPzs = _messages.BooleanField(30)
+  scheduling = _messages.MessageField('Scheduling', 31)
+  selfLink = _messages.StringField(32)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 33, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 34)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 35)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 36)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 37)
+  sourceMachineImage = _messages.StringField(38)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 39)
+  startRestricted = _messages.BooleanField(40)
+  status = _messages.EnumField('StatusValueValuesEnum', 41)
+  statusMessage = _messages.StringField(42)
+  tags = _messages.MessageField('Tags', 43)
+  zone = _messages.StringField(44)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -33049,6 +33062,7 @@ class InstanceProperties(_messages.Message):
       information, read Specifying a Minimum CPU Platform.
     networkInterfaces: An array of network access configurations for this
       interface.
+    networkPerformanceConfig: A NetworkPerformanceConfig attribute.
     postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
     privateIpv6GoogleAccess: The private IPv6 google access type for VMs. If
       not specified, use  INHERIT_FROM_SUBNETWORK as default.
@@ -33132,15 +33146,16 @@ class InstanceProperties(_messages.Message):
   metadata = _messages.MessageField('Metadata', 10)
   minCpuPlatform = _messages.StringField(11)
   networkInterfaces = _messages.MessageField('NetworkInterface', 12, repeated=True)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 13)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 14)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 15)
-  resourcePolicies = _messages.StringField(16, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 17)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 18, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 19)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 20)
-  tags = _messages.MessageField('Tags', 21)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 13)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 14)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 15)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 16)
+  resourcePolicies = _messages.StringField(17, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 18)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 19, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 20)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 21)
+  tags = _messages.MessageField('Tags', 22)
 
 
 class InstanceReference(_messages.Message):
@@ -35881,6 +35896,7 @@ class MachineImage(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] The URL for this machine image. The server defines
       this URL.
     sourceDiskEncryptionKeys: [Input Only] The customer-supplied encryption
@@ -35924,13 +35940,14 @@ class MachineImage(_messages.Message):
   kind = _messages.StringField(5, default='compute#machineImage')
   machineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 6)
   name = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  sourceDiskEncryptionKeys = _messages.MessageField('SourceDiskEncryptionKey', 9, repeated=True)
-  sourceInstance = _messages.StringField(10)
-  sourceInstanceProperties = _messages.MessageField('SourceInstanceProperties', 11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  storageLocations = _messages.StringField(13, repeated=True)
-  totalStorageBytes = _messages.IntegerField(14)
+  satisfiesPzs = _messages.BooleanField(8)
+  selfLink = _messages.StringField(9)
+  sourceDiskEncryptionKeys = _messages.MessageField('SourceDiskEncryptionKey', 10, repeated=True)
+  sourceInstance = _messages.StringField(11)
+  sourceInstanceProperties = _messages.MessageField('SourceInstanceProperties', 12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  storageLocations = _messages.StringField(14, repeated=True)
+  totalStorageBytes = _messages.IntegerField(15)
 
 
 class MachineImageList(_messages.Message):
@@ -38131,6 +38148,30 @@ class NetworkPeering(_messages.Message):
   stateDetails = _messages.StringField(11)
 
 
+class NetworkPerformanceConfig(_messages.Message):
+  r"""A NetworkPerformanceConfig object.
+
+  Enums:
+    TotalEgressBandwidthTierValueValuesEnum:
+
+  Fields:
+    totalEgressBandwidthTier: A TotalEgressBandwidthTierValueValuesEnum
+      attribute.
+  """
+
+  class TotalEgressBandwidthTierValueValuesEnum(_messages.Enum):
+    r"""TotalEgressBandwidthTierValueValuesEnum enum type.
+
+    Values:
+      DEFAULT: <no description>
+      TIER_1: <no description>
+    """
+    DEFAULT = 0
+    TIER_1 = 1
+
+  totalEgressBandwidthTier = _messages.EnumField('TotalEgressBandwidthTierValueValuesEnum', 1)
+
+
 class NetworkRoutingConfig(_messages.Message):
   r"""A routing configuration attached to a network resource. The message
   includes the list of routers associated with the network, and a flag
@@ -38300,6 +38341,10 @@ class NodeGroup(_messages.Message):
       is defined by the server.
     kind: [Output Only] The type of the resource. Always compute#nodeGroup for
       node group.
+    locationHint: An opaque location hint used to place the Node close to
+      other resources. This field is for use by internal tools that use the
+      public API. The location hint here on the NodeGroup overrides any
+      location_hint present in the NodeTemplate.
     maintenancePolicy: Specifies how to handle instances when a node in the
       group undergoes maintenance. Set to one of: DEFAULT, RESTART_IN_PLACE,
       or MIGRATE_WITHIN_NODE_GROUP. The default value is DEFAULT. For more
@@ -38357,14 +38402,15 @@ class NodeGroup(_messages.Message):
   fingerprint = _messages.BytesField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(6, default='compute#nodeGroup')
-  maintenancePolicy = _messages.EnumField('MaintenancePolicyValueValuesEnum', 7)
-  maintenanceWindow = _messages.MessageField('NodeGroupMaintenanceWindow', 8)
-  name = _messages.StringField(9)
-  nodeTemplate = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  size = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  zone = _messages.StringField(14)
+  locationHint = _messages.StringField(7)
+  maintenancePolicy = _messages.EnumField('MaintenancePolicyValueValuesEnum', 8)
+  maintenanceWindow = _messages.MessageField('NodeGroupMaintenanceWindow', 9)
+  name = _messages.StringField(10)
+  nodeTemplate = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  size = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  zone = _messages.StringField(15)
 
 
 class NodeGroupAggregatedList(_messages.Message):
@@ -38719,6 +38765,7 @@ class NodeGroupNode(_messages.Message):
     instances: Instances scheduled on this node.
     name: The name of the node.
     nodeType: The type of this node.
+    satisfiesPzs: [Output Only] Reserved for future use.
     serverBinding: Binding properties for the physical server.
     serverId: Server ID associated with this node.
     status: A StatusValueValuesEnum attribute.
@@ -38758,9 +38805,10 @@ class NodeGroupNode(_messages.Message):
   instances = _messages.StringField(4, repeated=True)
   name = _messages.StringField(5)
   nodeType = _messages.StringField(6)
-  serverBinding = _messages.MessageField('ServerBinding', 7)
-  serverId = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  satisfiesPzs = _messages.BooleanField(7)
+  serverBinding = _messages.MessageField('ServerBinding', 8)
+  serverId = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
 
 
 class NodeGroupsAddNodesRequest(_messages.Message):
@@ -44562,6 +44610,7 @@ class Reservation(_messages.Message):
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
     specificReservation: Reservation for instances with specific machine
@@ -44597,11 +44646,12 @@ class Reservation(_messages.Message):
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default='compute#reservation')
   name = _messages.StringField(6)
-  selfLink = _messages.StringField(7)
-  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 8)
-  specificReservationRequired = _messages.BooleanField(9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
-  zone = _messages.StringField(11)
+  satisfiesPzs = _messages.BooleanField(7)
+  selfLink = _messages.StringField(8)
+  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 9)
+  specificReservationRequired = _messages.BooleanField(10)
+  status = _messages.EnumField('StatusValueValuesEnum', 11)
+  zone = _messages.StringField(12)
 
 
 class ReservationAffinity(_messages.Message):
@@ -48202,7 +48252,8 @@ class ServiceAttachment(_messages.Message):
   r"""Represents a ServiceAttachment resource.  A service attachment
   represents a service that a producer has exposed. It encapsulates the load
   balancer which fronts the service runs and a list of NAT IP ranges that the
-  producers uses to represent the consumers connecting to the service.
+  producers uses to represent the consumers connecting to the service. next
+  tag = 15
 
   Enums:
     ConnectionPreferenceValueValuesEnum: The connection preference of service
@@ -48290,14 +48341,14 @@ class ServiceAttachmentConsumerForwardingRule(_messages.Message):
     r"""The status of the forwarding rule.
 
     Values:
-      ACTIVE: <no description>
-      INACTIVE: <no description>
+      ACCEPTED: <no description>
       PENDING: <no description>
+      REJECTED: <no description>
       STATUS_UNSPECIFIED: <no description>
     """
-    ACTIVE = 0
-    INACTIVE = 1
-    PENDING = 2
+    ACCEPTED = 0
+    PENDING = 1
+    REJECTED = 2
     STATUS_UNSPECIFIED = 3
 
   forwardingRule = _messages.StringField(1)

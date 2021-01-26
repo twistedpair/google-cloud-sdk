@@ -69,3 +69,10 @@ class FilePartUploadTask(task.Task):
           request_config=cloud_api.RequestConfig(
               md5_hash=self._source_resource.md5_hash,
               size=self._length))
+
+  def __eq__(self, other):
+    if not isinstance(other, FilePartUploadTask):
+      return NotImplemented
+    return (self._destination_resource == other._destination_resource and
+            self._source_resource == other._source_resource and
+            self._offset == other._offset and self._length == other._length)

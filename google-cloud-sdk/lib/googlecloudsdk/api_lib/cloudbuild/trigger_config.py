@@ -91,8 +91,8 @@ def ParseTriggerArgs(args, messages):
   return trigger, False
 
 
-def AddBuildConfigArgs(flag_config):
-  """Adds additional argparse flags to a group for build configuration options.
+def AddRepoEventArgs(flag_config):
+  """Adds additional argparse flags related to repo events.
 
   Args:
     flag_config: argparse argument group. Additional flags will be added to this
@@ -112,7 +112,15 @@ def AddBuildConfigArgs(flag_config):
       metavar='GLOB',
   )
 
-  # Build configuration
+
+def AddBuildConfigArgs(flag_config):
+  """Adds additional argparse flags to a group for build configuration options.
+
+  Args:
+    flag_config: argparse argument group. Additional flags will be added to this
+      group to cover common build configuration settings.
+  """
+
   build_config = AddBuildFileConfigArgs(flag_config)
 
   docker = build_config.add_argument_group(
@@ -196,6 +204,19 @@ https://cloud.google.com/cloud-build/docs/api/build-requests#substitutions
   return build_config
 
 
+def ParseRepoEventArgs(trigger, args):
+  """Parses repo event related flags.
+
+  Args:
+    trigger: The trigger to populate.
+    args: An argparse arguments object.
+  """
+  if args.included_files:
+    trigger.includedFiles = args.included_files
+  if args.ignored_files:
+    trigger.ignoredFiles = args.ignored_files
+
+
 def ParseBuildConfigArgs(trigger, args, messages, default_image):
   """Parses build-config flags.
 
@@ -218,11 +239,6 @@ def ParseBuildConfigArgs(trigger, args, messages, default_image):
             args=['build', '-t', image, '-f', args.dockerfile, '.'],
         )
     ])
-
-  if args.included_files:
-    trigger.includedFiles = args.included_files
-  if args.ignored_files:
-    trigger.ignoredFiles = args.ignored_files
 
 
 def AddBranchPattern(parser):
@@ -255,3 +271,39 @@ Events on a tag that does not match will be ignored.
 The syntax of the regular expressions accepted is the syntax accepted by
 RE2 and described at https://github.com/google/re2/wiki/Syntax.
 """)
+
+
+def AddGitRepoSource(flag_config):
+  """Adds additional argparse flags to a group for git repo source options.
+
+  Args:
+    flag_config: argparse argument group. Git repo source flags will be added to
+      this group.
+  """
+  flag_config.add_argument(
+      '--repo',
+      required=True,
+      help='URI of the repository. Currently only HTTP URIs for GitHub and Cloud Source Repositories are supported.'
+  )
+
+  ref_config = flag_config.add_mutually_exclusive_group(required=True)
+  ref_config.add_argument('--branch', help='Branch to build.')
+  ref_config.add_argument('--tag', help='Tag to build.')
+
+
+def ParseGitRepoSource(trigger, args, messages):
+  """Parses git repo source flags.
+
+  Args:
+    trigger: The trigger to populate.
+    args: An argparse arguments object.
+    messages: A Cloud Build messages module.
+  """
+  repo_source = messages.GitRepoSource()
+  repo_source.uri = args.repo
+  if args.branch:
+    repo_source.ref = 'refs/heads/' + args.branch
+  else:
+    repo_source.ref = 'refs/tags/' + args.tag
+
+  trigger.sourceToBuild = repo_source

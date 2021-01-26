@@ -29,6 +29,7 @@ from googlecloudsdk.api_lib.events import cloud_run
 from googlecloudsdk.api_lib.events import configmap
 from googlecloudsdk.api_lib.events import custom_resource_definition
 from googlecloudsdk.api_lib.events import iam_util
+from googlecloudsdk.api_lib.events import kube_run
 from googlecloudsdk.api_lib.events import metric_names
 from googlecloudsdk.api_lib.events import source
 from googlecloudsdk.api_lib.events import trigger
@@ -69,6 +70,7 @@ _CONFIGMAP_COLLECTION = 'anthosevents.api.v1.namespaces.configmaps'
 _SECRET_COLLECTION = 'anthosevents.api.v1.namespaces.secrets'
 
 _CLOUD_RUN_RELATIVE_NAME = 'namespaces/cloud-run-system/cloudruns/cloud-run'
+_KUBE_RUN_RELATIVE_NAME = 'kuberuns/kube-run'
 
 _BROKERS_CRD_NAME = 'brokers.eventing.knative.dev'
 _TRIGGERS_CRD_NAME = 'triggers.eventing.knative.dev'
@@ -217,6 +219,10 @@ class SourceConditionPoller(TimeLockedUnfailingConditionPoller):
 
 
 class CloudRunConditionPoller(TimeLockedUnfailingConditionPoller):
+  """A ConditionPoller for cloud run resources."""
+
+
+class KubeRunConditionPoller(TimeLockedUnfailingConditionPoller):
   """A ConditionPoller for cloud run resources."""
 
 
@@ -530,6 +536,16 @@ class AnthosEventsOperations(object):
     return custom_resource_definition.CustomResourceDefinition(
         response, messages)
 
+  def ListCustomResourceDefinition(self):
+    """Lists customresourcedefinition."""
+    messages = self._crd_client.MESSAGES_MODULE
+    request = messages.AnthoseventsCustomresourcedefinitionsListRequest()
+    response = self._crd_client.customresourcedefinitions.List(request)
+    return [
+        custom_resource_definition.CustomResourceDefinition(item, messages)
+        for item in response.items
+    ]
+
   def ListSourceCustomResourceDefinitions(self):
     """Returns a list of CRDs for event sources."""
     # Passing the parent field is only needed for hosted, but shouldn't hurt
@@ -799,6 +815,17 @@ class AnthosEventsOperations(object):
       return None
     return cloud_run.CloudRun(response, messages)
 
+  def GetKubeRun(self):
+    """Returns operators' kuberun resource."""
+    messages = self._operator_client.MESSAGES_MODULE
+    request = messages.AnthoseventsKuberunsGetRequest(
+        name=_KUBE_RUN_RELATIVE_NAME)
+    try:
+      response = self._operator_client.kuberuns.Get(request)
+    except api_exceptions.HttpNotFoundError:
+      return None
+    return kube_run.KubeRun(response, messages)
+
   def UpdateCloudRunWithEventingEnabled(self):
     """Updates operator's cloud run resource spec.eventing.enabled to true."""
     messages = self._operator_client.MESSAGES_MODULE
@@ -825,11 +852,47 @@ class AnthosEventsOperations(object):
       self._operator_client.additional_http_headers = old_additional_headers
     return response
 
+  def UpdateKubeRunWithEventingEnabled(self):
+    """Updates operator's cloud run resource spec.eventing.enabled to true."""
+    messages = self._operator_client.MESSAGES_MODULE
+    kube_run_message = messages.KubeRun()
+    arg_utils.SetFieldInMessage(kube_run_message, 'spec.eventing.enabled', True)
+
+    # We need to specify a special content-type for k8s to accept our PATCH.
+    # However, this appears to only be settable at the client level, not at
+    # the request level. So we'll update the client for our request, and
+    # set it back to the old value afterwards.
+
+    old_additional_headers = self._operator_client.additional_http_headers
+    additional_headers = old_additional_headers.copy()
+    additional_headers['content-type'] = 'application/merge-patch+json'
+    try:
+      self._operator_client.additional_http_headers = additional_headers
+
+      request = messages.AnthoseventsKuberunsPatchRequest(
+          name=_KUBE_RUN_RELATIVE_NAME, kubeRun=kube_run_message)
+      response = self._operator_client.kuberuns.Patch(request)
+    finally:
+      self._operator_client.additional_http_headers = old_additional_headers
+    return response
+
   def PollCloudRunResource(self, tracker):
     """Wait for Cloud Run resource to be Ready."""
     cloud_run_getter = functools.partial(self.GetCloudRun)
 
     poller = CloudRunConditionPoller(
+        cloud_run_getter, tracker, grace_period=datetime.timedelta(seconds=180))
+    util.WaitForCondition(
+        poller,
+        exceptions.EventingInstallError(
+            'Eventing failed to install within 180 seconds, please try rerunning the command'
+        ))
+
+  def PollKubeRunResource(self, tracker):
+    """Wait for Cloud Run resource to be Ready."""
+    cloud_run_getter = functools.partial(self.GetKubeRun)
+
+    poller = KubeRunConditionPoller(
         cloud_run_getter, tracker, grace_period=datetime.timedelta(seconds=180))
     util.WaitForCondition(
         poller,

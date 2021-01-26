@@ -694,7 +694,7 @@
           "type": "string"
         },
         "enableContainerLogging": {
-          "description": "If true, the container of the DeployedModel instances will send `stderr` and `stdout` streams to Stackdriver Logging. Only supported for custom-trained Models and AutoML Tables Models.",
+          "description": "If true, the container of the DeployedModel instances will send `stderr` and `stdout` streams to Stackdriver Logging. Only supported for custom-trained Models and AutoML Tabular Models.",
           "type": "boolean"
         },
         "enableAccessLogging": {
@@ -1423,7 +1423,7 @@
       "type": "object",
       "properties": {
         "bootDiskType": {
-          "description": "Type of the boot disk (default is \"pd-standard\"). Valid values: \"pd-ssd\" (Persistent Disk Solid State Drive) or \"pd-standard\" (Persistent Disk Hard Disk Drive).",
+          "description": "Type of the boot disk (default is \"pd-ssd\"). Valid values: \"pd-ssd\" (Persistent Disk Solid State Drive) or \"pd-standard\" (Persistent Disk Hard Disk Drive).",
           "type": "string"
         },
         "bootDiskSizeGb": {
@@ -3195,7 +3195,7 @@
       "type": "object",
       "properties": {
         "meanAttributions": {
-          "description": "Output only. Aggregated attributions explaning the Model's prediction outputs over the set of instances. The attributions are grouped by outputs. For Models that predict only one output, such as regression Models that predict only one score, there is only one attibution that explains the predicted output. For Models that predict multiple outputs, such as multiclass Models that predict multiple classes, each element explains one specific item. Attribution.output_index can be used to identify which output this attribution is explaining. The baselineOutputValue, instanceOutputValue and featureAttributions fields are averaged over the test data. NOTE: Currently AutoML tabular classification Models produce only one attribution, which averages attributions over all the classes it predicts. Attribution.approximation_error is not populated.",
+          "description": "Output only. Aggregated attributions explaining the Model's prediction outputs over the set of instances. The attributions are grouped by outputs. For Models that predict only one output, such as regression Models that predict only one score, there is only one attibution that explains the predicted output. For Models that predict multiple outputs, such as multiclass Models that predict multiple classes, each element explains one specific item. Attribution.output_index can be used to identify which output this attribution is explaining. The baselineOutputValue, instanceOutputValue and featureAttributions fields are averaged over the test data. NOTE: Currently AutoML tabular classification Models produce only one attribution, which averages attributions over all the classes it predicts. Attribution.approximation_error is not populated.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -3790,6 +3790,36 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "cancellable": {
+          "description": "Output only. True if operation can be cancelled. If false, calling CancelOperation will return UNIMPLEMENTED error.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "state": {
+          "description": "Output only. Used only when Operation.done field is false. This field can indicate the pending state of operation and will be set to DONE when operation is done.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state.",
+            "Operation is still running.",
+            "Operation is being cancelled.",
+            "Operation is done."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "RUNNING",
+            "CANCELLING",
+            "DONE"
+          ]
+        },
+        "worksOn": {
+          "description": "Output only. List of resource names that the operation is working on.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -4134,6 +4164,13 @@
         "genericMetadata": {
           "description": "The common part of the operation metadata.",
           "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        },
+        "partialResults": {
+          "description": "Partial results that reflects the latest migration operation progress.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiBatchMigrateResourcesOperationMetadataPartialResult"
+          }
         }
       }
     },
@@ -4191,6 +4228,142 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiBatchMigrateResourcesOperationMetadataPartialResult": {
+      "id": "GoogleCloudAiplatformUiBatchMigrateResourcesOperationMetadataPartialResult",
+      "description": "Represents a partial result in batch migration opreation for one MigrateResourceRequest.",
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "The error result of the migration request in case of failure.",
+          "$ref": "GoogleRpcStatus"
+        },
+        "model": {
+          "description": "Migrated model resource name.",
+          "type": "string"
+        },
+        "dataset": {
+          "description": "Migrated dataset resource name.",
+          "type": "string"
+        },
+        "request": {
+          "description": "It's the same as the value in MigrateResourceRequest.migrate_resource_requests.",
+          "$ref": "GoogleCloudAiplatformUiMigrateResourceRequest"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiMigrateResourceRequest": {
+      "id": "GoogleCloudAiplatformUiMigrateResourceRequest",
+      "description": "Config of migrating one resource from automl.googleapis.com, datalabeling.googleapis.com and ml.googleapis.com to AI Platform.",
+      "type": "object",
+      "properties": {
+        "migrateMlEngineModelVersionConfig": {
+          "description": "Config for migrating Version in ml.googleapis.com to AI Platform's Model.",
+          "$ref": "GoogleCloudAiplatformUiMigrateResourceRequestMigrateMlEngineModelVersionConfig"
+        },
+        "migrateAutomlModelConfig": {
+          "description": "Config for migrating Model in automl.googleapis.com to AI Platform's Model.",
+          "$ref": "GoogleCloudAiplatformUiMigrateResourceRequestMigrateAutomlModelConfig"
+        },
+        "migrateAutomlDatasetConfig": {
+          "description": "Config for migrating Dataset in automl.googleapis.com to AI Platform's Dataset.",
+          "$ref": "GoogleCloudAiplatformUiMigrateResourceRequestMigrateAutomlDatasetConfig"
+        },
+        "migrateDataLabelingDatasetConfig": {
+          "description": "Config for migrating Dataset in datalabeling.googleapis.com to AI Platform's Dataset.",
+          "$ref": "GoogleCloudAiplatformUiMigrateResourceRequestMigrateDataLabelingDatasetConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiMigrateResourceRequestMigrateMlEngineModelVersionConfig": {
+      "id": "GoogleCloudAiplatformUiMigrateResourceRequestMigrateMlEngineModelVersionConfig",
+      "description": "Config for migrating version in ml.googleapis.com to AI Platform's Model.",
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "description": "Required. The ml.googleapis.com endpoint that this model version should be migrated from. Example values: * ml.googleapis.com * us-centrall-ml.googleapis.com * europe-west4-ml.googleapis.com * asia-east1-ml.googleapis.com",
+          "type": "string"
+        },
+        "modelVersion": {
+          "description": "Required. Full resource name of ml engine model version. Format: `projects\/{project}\/models\/{model}\/versions\/{version}`.",
+          "type": "string"
+        },
+        "modelDisplayName": {
+          "description": "Required. Display name of the model in AI Platform. System will pick a display name if unspecified.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiMigrateResourceRequestMigrateAutomlModelConfig": {
+      "id": "GoogleCloudAiplatformUiMigrateResourceRequestMigrateAutomlModelConfig",
+      "description": "Config for migrating Model in automl.googleapis.com to AI Platform's Model.",
+      "type": "object",
+      "properties": {
+        "model": {
+          "description": "Required. Full resource name of automl Model. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`.",
+          "type": "string"
+        },
+        "modelDisplayName": {
+          "description": "Optional. Display name of the model in AI Platform. System will pick a display name if unspecified.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiMigrateResourceRequestMigrateAutomlDatasetConfig": {
+      "id": "GoogleCloudAiplatformUiMigrateResourceRequestMigrateAutomlDatasetConfig",
+      "description": "Config for migrating Dataset in automl.googleapis.com to AI Platform's Dataset.",
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "description": "Required. Full resource name of automl Dataset. Format: `projects\/{project}\/locations\/{location}\/datasets\/{dataset}`.",
+          "type": "string"
+        },
+        "datasetDisplayName": {
+          "description": "Required. Display name of the Dataset in AI Platform. System will pick a display name if unspecified.",
+          "type": "string"
+        },
+        "savedQueryDisplayName": {
+          "description": "Optional. Display name of the SavedQuery in AI Platform. System will pick a display name if unspecified.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiMigrateResourceRequestMigrateDataLabelingDatasetConfig": {
+      "id": "GoogleCloudAiplatformUiMigrateResourceRequestMigrateDataLabelingDatasetConfig",
+      "description": "Config for migrating Dataset in datalabeling.googleapis.com to AI Platform's Dataset.",
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "description": "Required. Full resource name of data labeling Dataset. Format: `projects\/{project}\/datasets\/{dataset}`.",
+          "type": "string"
+        },
+        "datasetDisplayName": {
+          "description": "Optional. Display name of the Dataset in AI Platform. System will pick a display name if unspecified.",
+          "type": "string"
+        },
+        "migrateDataLabelingAnnotatedDatasetConfigs": {
+          "description": "Optional. Configs for migrating AnnotatedDataset in datalabeling.googleapis.com to AI Platform's SavedQuery. The specified AnnotatedDatasets have to belong to the datalabeling Dataset.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiMigrateResourceRequestMigrateDataLabelingDatasetConfigMigrateDataLabelingAnnotatedDatasetConfig"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiMigrateResourceRequestMigrateDataLabelingDatasetConfigMigrateDataLabelingAnnotatedDatasetConfig": {
+      "id": "GoogleCloudAiplatformUiMigrateResourceRequestMigrateDataLabelingDatasetConfigMigrateDataLabelingAnnotatedDatasetConfig",
+      "description": "Config for migrating AnnotatedDataset in datalabeling.googleapis.com to AI Platform's SavedQuery.",
+      "type": "object",
+      "properties": {
+        "annotatedDataset": {
+          "description": "Required. Full resource name of data labeling AnnotatedDataset. Format: `projects\/{project}\/datasets\/{dataset}\/annotatedDatasets\/{annotated_dataset}`.",
+          "type": "string"
+        },
+        "savedQueryDisplayName": {
+          "description": "Optional. Display name of the SavedQuery in AI Platform. System will pick a display name if unspecified.",
+          "type": "string"
         }
       }
     },
@@ -4263,6 +4436,11 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "nonMigratableReason": {
+          "description": "Output only. If this field is present, it means this resource is not migratable. Only UI version will return resources that are not migratable.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -4654,7 +4832,11 @@
           "type": "string"
         },
         "enableContainerLogging": {
-          "description": "If true, the container of the DeployedModel instances will send `stderr` and `stdout` streams to Stackdriver Logging. Only supported for custom-trained Models and AutoML Tables Models.",
+          "description": "If true, the container of the DeployedModel instances will send `stderr` and `stdout` streams to Stackdriver Logging. Only supported for custom-trained Models and AutoML Tabular Models.",
+          "type": "boolean"
+        },
+        "disableContainerLogging": {
+          "description": "For custom-trained Models and AutoML Tabular Models, the container of the DeployedModel instances will send `stderr` and `stdout` streams to Stackdriver Logging by default. Please note that the logs incur cost, which are subject to [Cloud Logging pricing](https:\/\/cloud.google.com\/stackdriver\/pricing). User can disable container logging by setting this flag to true.",
           "type": "boolean"
         },
         "enableAccessLogging": {
@@ -4681,6 +4863,13 @@
           "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
           "type": "integer",
           "format": "int32"
+        },
+        "autoscalingMetricSpecs": {
+          "description": "Immutable. The metric specifications that overrides a resource utilization metric (CPU utilization, accelerator's duty cycle, and so on) target value (default to 60 if not set). At most one entry is allowed per metric. If machine_spec.accelerator_count is above 0, the autoscaling will be based on both CPU utilization and accelerator's duty cycle metrics and scale up when either metrics exceeds its target value while scale down if both metrics are under their target value. The default target value is 60 for both metrics. If machine_spec.accelerator_count is 0, the autoscaling will be based on CPU utilization metric only with default target value 60 if not explicitly set. For example, in the case of Online Prediction, if you want to override target CPU utilization to 80, you should set autoscaling_metric_specs.metric_name to `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization` and autoscaling_metric_specs.target to `80`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiAutoscalingMetricSpec"
+          }
         }
       }
     },
@@ -4719,6 +4908,22 @@
         },
         "acceleratorCount": {
           "description": "The number of accelerators to attach to the machine.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiAutoscalingMetricSpec": {
+      "id": "GoogleCloudAiplatformUiAutoscalingMetricSpec",
+      "description": "The metric specification that defines the target resource utilization (CPU utilization, accelerator's duty cycle, and so on) for calculating the desired replica count.",
+      "type": "object",
+      "properties": {
+        "metricName": {
+          "description": "Required. The resource metric name. Supported metrics: * For Online Prediction: * `aiplatform.googleapis.com\/prediction\/online\/accelerator\/duty_cycle` * `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization`",
+          "type": "string"
+        },
+        "target": {
+          "description": "The target resource utilization in percentage (1% - 100%) for the given metric; once the real usage deviates from the target by a certain percentage, the machine replicas change. The default value is 60 (representing 60%) if not provided.",
           "type": "integer",
           "format": "int32"
         }
@@ -5738,7 +5943,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "The URI of a BigQuery table.",
+          "description": "The URI of a BigQuery table. e.g. bq:\/\/projectId.bqDatasetId.bqTableId",
           "type": "string"
         }
       }
@@ -6120,6 +6325,13 @@
         "genericMetadata": {
           "description": "The common part of the operation metadata.",
           "$ref": "GoogleCloudAiplatformV1alpha1GenericOperationMetadata"
+        },
+        "partialResults": {
+          "description": "Partial results that reflects the latest migration operation progress.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1BatchMigrateResourcesOperationMetadataPartialResult"
+          }
         }
       }
     },
@@ -6147,6 +6359,134 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1BatchMigrateResourcesOperationMetadataPartialResult": {
+      "id": "GoogleCloudAiplatformV1alpha1BatchMigrateResourcesOperationMetadataPartialResult",
+      "description": "Represents a partial result in batch migration opreation for one MigrateResourceRequest.",
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "The error result of the migration request in case of failure.",
+          "$ref": "GoogleRpcStatus"
+        },
+        "model": {
+          "description": "Migrated model resource name.",
+          "type": "string"
+        },
+        "dataset": {
+          "description": "Migrated dataset resource name.",
+          "type": "string"
+        },
+        "request": {
+          "description": "It's the same as the value in MigrateResourceRequest.migrate_resource_requests.",
+          "$ref": "GoogleCloudAiplatformV1alpha1MigrateResourceRequest"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1MigrateResourceRequest": {
+      "id": "GoogleCloudAiplatformV1alpha1MigrateResourceRequest",
+      "description": "Config of migrating one resource from automl.googleapis.com, datalabeling.googleapis.com and ml.googleapis.com to AI Platform.",
+      "type": "object",
+      "properties": {
+        "migrateMlEngineModelVersionConfig": {
+          "description": "Config for migrating Version in ml.googleapis.com to AI Platform's Model.",
+          "$ref": "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateMlEngineModelVersionConfig"
+        },
+        "migrateAutomlModelConfig": {
+          "description": "Config for migrating Model in automl.googleapis.com to AI Platform's Model.",
+          "$ref": "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateAutomlModelConfig"
+        },
+        "migrateAutomlDatasetConfig": {
+          "description": "Config for migrating Dataset in automl.googleapis.com to AI Platform's Dataset.",
+          "$ref": "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateAutomlDatasetConfig"
+        },
+        "migrateDataLabelingDatasetConfig": {
+          "description": "Config for migrating Dataset in datalabeling.googleapis.com to AI Platform's Dataset.",
+          "$ref": "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateDataLabelingDatasetConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateMlEngineModelVersionConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateMlEngineModelVersionConfig",
+      "description": "Config for migrating version in ml.googleapis.com to AI Platform's Model.",
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "description": "Required. The ml.googleapis.com endpoint that this model version should be migrated from. Example values: * ml.googleapis.com * us-centrall-ml.googleapis.com * europe-west4-ml.googleapis.com * asia-east1-ml.googleapis.com",
+          "type": "string"
+        },
+        "modelVersion": {
+          "description": "Required. Full resource name of ml engine model version. Format: `projects\/{project}\/models\/{model}\/versions\/{version}`.",
+          "type": "string"
+        },
+        "modelDisplayName": {
+          "description": "Required. Display name of the model in AI Platform. System will pick a display name if unspecified.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateAutomlModelConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateAutomlModelConfig",
+      "description": "Config for migrating Model in automl.googleapis.com to AI Platform's Model.",
+      "type": "object",
+      "properties": {
+        "model": {
+          "description": "Required. Full resource name of automl Model. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`.",
+          "type": "string"
+        },
+        "modelDisplayName": {
+          "description": "Optional. Display name of the model in AI Platform. System will pick a display name if unspecified.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateAutomlDatasetConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateAutomlDatasetConfig",
+      "description": "Config for migrating Dataset in automl.googleapis.com to AI Platform's Dataset.",
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "description": "Required. Full resource name of automl Dataset. Format: `projects\/{project}\/locations\/{location}\/datasets\/{dataset}`.",
+          "type": "string"
+        },
+        "datasetDisplayName": {
+          "description": "Required. Display name of the Dataset in AI Platform. System will pick a display name if unspecified.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateDataLabelingDatasetConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateDataLabelingDatasetConfig",
+      "description": "Config for migrating Dataset in datalabeling.googleapis.com to AI Platform's Dataset.",
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "description": "Required. Full resource name of data labeling Dataset. Format: `projects\/{project}\/datasets\/{dataset}`.",
+          "type": "string"
+        },
+        "datasetDisplayName": {
+          "description": "Optional. Display name of the Dataset in AI Platform. System will pick a display name if unspecified.",
+          "type": "string"
+        },
+        "migrateDataLabelingAnnotatedDatasetConfigs": {
+          "description": "Optional. Configs for migrating AnnotatedDataset in datalabeling.googleapis.com to AI Platform's SavedQuery. The specified AnnotatedDatasets have to belong to the datalabeling Dataset.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateDataLabelingDatasetConfigMigrateDataLabelingAnnotatedDatasetConfig"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateDataLabelingDatasetConfigMigrateDataLabelingAnnotatedDatasetConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateDataLabelingDatasetConfigMigrateDataLabelingAnnotatedDatasetConfig",
+      "description": "Config for migrating AnnotatedDataset in datalabeling.googleapis.com to AI Platform's SavedQuery.",
+      "type": "object",
+      "properties": {
+        "annotatedDataset": {
+          "description": "Required. Full resource name of data labeling AnnotatedDataset. Format: `projects\/{project}\/datasets\/{dataset}\/annotatedDatasets\/{annotated_dataset}`.",
+          "type": "string"
         }
       }
     },
@@ -7021,7 +7361,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "The URI of a BigQuery table.",
+          "description": "The URI of a BigQuery table. e.g. bq:\/\/projectId.bqDatasetId.bqTableId",
           "type": "string"
         }
       }
@@ -7361,6 +7701,13 @@
         "genericMetadata": {
           "description": "The common part of the operation metadata.",
           "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        },
+        "partialResults": {
+          "description": "Partial results that reflects the latest migration operation progress.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadataPartialResult"
+          }
         }
       }
     },
@@ -7388,6 +7735,29 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadataPartialResult": {
+      "id": "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadataPartialResult",
+      "description": "Represents a partial result in batch migration opreation for one MigrateResourceRequest.",
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "The error result of the migration request in case of failure.",
+          "$ref": "GoogleRpcStatus"
+        },
+        "model": {
+          "description": "Migrated model resource name.",
+          "type": "string"
+        },
+        "dataset": {
+          "description": "Migrated dataset resource name.",
+          "type": "string"
+        },
+        "request": {
+          "description": "It's the same as the value in MigrateResourceRequest.migrate_resource_requests.",
+          "$ref": "GoogleCloudAiplatformV1beta1MigrateResourceRequest"
         }
       }
     },
@@ -8719,12 +9089,14 @@
           "enumDescriptions": [
             "Should not be set.",
             "A model to be used via prediction calls to uCAIP API. Expected to have a higher latency, but should also have a higher prediction quality than other models.",
-            "A model to be used via prediction calls to uCAIP API. Expected to have a lower latency but relatively lower prediction quality."
+            "A model to be used via prediction calls to uCAIP API. Expected to have a lower latency but relatively lower prediction quality.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as TensorFlow model and used on a mobile or edge device afterwards. Expected to have low latency, but may have lower prediction quality than other mobile models."
           ],
           "enum": [
             "MODEL_TYPE_UNSPECIFIED",
             "CLOUD_HIGH_ACCURACY_1",
-            "CLOUD_LOW_ACCURACY_1"
+            "CLOUD_LOW_ACCURACY_1",
+            "MOBILE_TF_LOW_LATENCY_1"
           ]
         },
         "budgetMilliNodeHours": {
@@ -9077,12 +9449,14 @@
           "enumDescriptions": [
             "Should not be set.",
             "A model best tailored to be used within Google Cloud, and which cannot be exported. Default.",
-            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as a TensorFlow or TensorFlow Lite model and used on a mobile or edge device afterwards."
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as a TensorFlow or TensorFlow Lite model and used on a mobile or edge device afterwards.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) to a Jetson device afterwards."
           ],
           "enum": [
             "MODEL_TYPE_UNSPECIFIED",
             "CLOUD",
-            "MOBILE_VERSATILE_1"
+            "MOBILE_VERSATILE_1",
+            "MOBILE_JETSON_VERSATILE_1"
           ]
         }
       }
@@ -9443,7 +9817,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "The URI of a BigQuery table.",
+          "description": "The URI of a BigQuery table. e.g. bq:\/\/projectId.bqDatasetId.bqTableId",
           "type": "string"
         }
       }
@@ -9771,6 +10145,2848 @@
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1beta1SchemaAnnotationSpecColor"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1BatchMigrateResourcesOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1BatchMigrateResourcesOperationMetadata",
+      "description": "Runtime operation information for MigrationService.BatchMigrateResources.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        },
+        "partialResults": {
+          "description": "Partial results that reflects the latest migration operation progress.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1BatchMigrateResourcesOperationMetadataPartialResult"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1GenericOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1GenericOperationMetadata",
+      "description": "Generic Metadata shared by all operations.",
+      "type": "object",
+      "properties": {
+        "partialFailures": {
+          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard GCP error details.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleRpcStatus"
+          }
+        },
+        "createTime": {
+          "description": "Output only. Time when the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time when the operation was updated for the last time. If the operation has finished (successfully or not), this is the finish time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1BatchMigrateResourcesOperationMetadataPartialResult": {
+      "id": "GoogleCloudAiplatformV1BatchMigrateResourcesOperationMetadataPartialResult",
+      "description": "Represents a partial result in batch migration opreation for one MigrateResourceRequest.",
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "The error result of the migration request in case of failure.",
+          "$ref": "GoogleRpcStatus"
+        },
+        "model": {
+          "description": "Migrated model resource name.",
+          "type": "string"
+        },
+        "dataset": {
+          "description": "Migrated dataset resource name.",
+          "type": "string"
+        },
+        "request": {
+          "description": "It's the same as the value in MigrateResourceRequest.migrate_resource_requests.",
+          "$ref": "GoogleCloudAiplatformV1MigrateResourceRequest"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MigrateResourceRequest": {
+      "id": "GoogleCloudAiplatformV1MigrateResourceRequest",
+      "description": "Config of migrating one resource from automl.googleapis.com, datalabeling.googleapis.com and ml.googleapis.com to AI Platform.",
+      "type": "object",
+      "properties": {
+        "migrateMlEngineModelVersionConfig": {
+          "description": "Config for migrating Version in ml.googleapis.com to AI Platform's Model.",
+          "$ref": "GoogleCloudAiplatformV1MigrateResourceRequestMigrateMlEngineModelVersionConfig"
+        },
+        "migrateAutomlModelConfig": {
+          "description": "Config for migrating Model in automl.googleapis.com to AI Platform's Model.",
+          "$ref": "GoogleCloudAiplatformV1MigrateResourceRequestMigrateAutomlModelConfig"
+        },
+        "migrateAutomlDatasetConfig": {
+          "description": "Config for migrating Dataset in automl.googleapis.com to AI Platform's Dataset.",
+          "$ref": "GoogleCloudAiplatformV1MigrateResourceRequestMigrateAutomlDatasetConfig"
+        },
+        "migrateDataLabelingDatasetConfig": {
+          "description": "Config for migrating Dataset in datalabeling.googleapis.com to AI Platform's Dataset.",
+          "$ref": "GoogleCloudAiplatformV1MigrateResourceRequestMigrateDataLabelingDatasetConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MigrateResourceRequestMigrateMlEngineModelVersionConfig": {
+      "id": "GoogleCloudAiplatformV1MigrateResourceRequestMigrateMlEngineModelVersionConfig",
+      "description": "Config for migrating version in ml.googleapis.com to AI Platform's Model.",
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "description": "Required. The ml.googleapis.com endpoint that this model version should be migrated from. Example values: * ml.googleapis.com * us-centrall-ml.googleapis.com * europe-west4-ml.googleapis.com * asia-east1-ml.googleapis.com",
+          "type": "string"
+        },
+        "modelVersion": {
+          "description": "Required. Full resource name of ml engine model version. Format: `projects\/{project}\/models\/{model}\/versions\/{version}`.",
+          "type": "string"
+        },
+        "modelDisplayName": {
+          "description": "Required. Display name of the model in AI Platform. System will pick a display name if unspecified.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MigrateResourceRequestMigrateAutomlModelConfig": {
+      "id": "GoogleCloudAiplatformV1MigrateResourceRequestMigrateAutomlModelConfig",
+      "description": "Config for migrating Model in automl.googleapis.com to AI Platform's Model.",
+      "type": "object",
+      "properties": {
+        "model": {
+          "description": "Required. Full resource name of automl Model. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`.",
+          "type": "string"
+        },
+        "modelDisplayName": {
+          "description": "Optional. Display name of the model in AI Platform. System will pick a display name if unspecified.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MigrateResourceRequestMigrateAutomlDatasetConfig": {
+      "id": "GoogleCloudAiplatformV1MigrateResourceRequestMigrateAutomlDatasetConfig",
+      "description": "Config for migrating Dataset in automl.googleapis.com to AI Platform's Dataset.",
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "description": "Required. Full resource name of automl Dataset. Format: `projects\/{project}\/locations\/{location}\/datasets\/{dataset}`.",
+          "type": "string"
+        },
+        "datasetDisplayName": {
+          "description": "Required. Display name of the Dataset in AI Platform. System will pick a display name if unspecified.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MigrateResourceRequestMigrateDataLabelingDatasetConfig": {
+      "id": "GoogleCloudAiplatformV1MigrateResourceRequestMigrateDataLabelingDatasetConfig",
+      "description": "Config for migrating Dataset in datalabeling.googleapis.com to AI Platform's Dataset.",
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "description": "Required. Full resource name of data labeling Dataset. Format: `projects\/{project}\/datasets\/{dataset}`.",
+          "type": "string"
+        },
+        "datasetDisplayName": {
+          "description": "Optional. Display name of the Dataset in AI Platform. System will pick a display name if unspecified.",
+          "type": "string"
+        },
+        "migrateDataLabelingAnnotatedDatasetConfigs": {
+          "description": "Optional. Configs for migrating AnnotatedDataset in datalabeling.googleapis.com to AI Platform's SavedQuery. The specified AnnotatedDatasets have to belong to the datalabeling Dataset.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1MigrateResourceRequestMigrateDataLabelingDatasetConfigMigrateDataLabelingAnnotatedDatasetConfig"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MigrateResourceRequestMigrateDataLabelingDatasetConfigMigrateDataLabelingAnnotatedDatasetConfig": {
+      "id": "GoogleCloudAiplatformV1MigrateResourceRequestMigrateDataLabelingDatasetConfigMigrateDataLabelingAnnotatedDatasetConfig",
+      "description": "Config for migrating AnnotatedDataset in datalabeling.googleapis.com to AI Platform's SavedQuery.",
+      "type": "object",
+      "properties": {
+        "annotatedDataset": {
+          "description": "Required. Full resource name of data labeling AnnotatedDataset. Format: `projects\/{project}\/datasets\/{dataset}\/annotatedDatasets\/{annotated_dataset}`.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1BatchMigrateResourcesResponse": {
+      "id": "GoogleCloudAiplatformV1BatchMigrateResourcesResponse",
+      "description": "Response message for MigrationService.BatchMigrateResources.",
+      "type": "object",
+      "properties": {
+        "migrateResourceResponses": {
+          "description": "Successfully migrated resources.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1MigrateResourceResponse"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MigrateResourceResponse": {
+      "id": "GoogleCloudAiplatformV1MigrateResourceResponse",
+      "description": "Describes a successfully migrated resource.",
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "description": "Migrated Dataset's resource name.",
+          "type": "string"
+        },
+        "model": {
+          "description": "Migrated Model's resource name.",
+          "type": "string"
+        },
+        "migratableResource": {
+          "description": "Before migration, the identifier in ml.googleapis.com, automl.googleapis.com or datalabeling.googleapis.com.",
+          "$ref": "GoogleCloudAiplatformV1MigratableResource"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MigratableResource": {
+      "id": "GoogleCloudAiplatformV1MigratableResource",
+      "description": "Represents one resource that exists in automl.googleapis.com, datalabeling.googleapis.com or ml.googleapis.com.",
+      "type": "object",
+      "properties": {
+        "mlEngineModelVersion": {
+          "description": "Output only. Represents one Version in ml.googleapis.com.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1MigratableResourceMlEngineModelVersion"
+        },
+        "automlModel": {
+          "description": "Output only. Represents one Model in automl.googleapis.com.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1MigratableResourceAutomlModel"
+        },
+        "automlDataset": {
+          "description": "Output only. Represents one Dataset in automl.googleapis.com.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1MigratableResourceAutomlDataset"
+        },
+        "dataLabelingDataset": {
+          "description": "Output only. Represents one Dataset in datalabeling.googleapis.com.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1MigratableResourceDataLabelingDataset"
+        },
+        "lastMigrateTime": {
+          "description": "Output only. Timestamp when last migrate attempt on this MigratableResource started. Will not be set if there's no migrate attempt on this MigratableResource.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastUpdateTime": {
+          "description": "Output only. Timestamp when this MigratableResource was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MigratableResourceMlEngineModelVersion": {
+      "id": "GoogleCloudAiplatformV1MigratableResourceMlEngineModelVersion",
+      "description": "Represents one model Version in ml.googleapis.com.",
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "description": "The ml.googleapis.com endpoint that this model Version currently lives in. Example values: * ml.googleapis.com * us-centrall-ml.googleapis.com * europe-west4-ml.googleapis.com * asia-east1-ml.googleapis.com",
+          "type": "string"
+        },
+        "version": {
+          "description": "Full resource name of ml engine model Version. Format: `projects\/{project}\/models\/{model}\/versions\/{version}`.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MigratableResourceAutomlModel": {
+      "id": "GoogleCloudAiplatformV1MigratableResourceAutomlModel",
+      "description": "Represents one Model in automl.googleapis.com.",
+      "type": "object",
+      "properties": {
+        "model": {
+          "description": "Full resource name of automl Model. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`.",
+          "type": "string"
+        },
+        "modelDisplayName": {
+          "description": "The Model's display name in automl.googleapis.com.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MigratableResourceAutomlDataset": {
+      "id": "GoogleCloudAiplatformV1MigratableResourceAutomlDataset",
+      "description": "Represents one Dataset in automl.googleapis.com.",
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "description": "Full resource name of automl Dataset. Format: `projects\/{project}\/locations\/{location}\/datasets\/{dataset}`.",
+          "type": "string"
+        },
+        "datasetDisplayName": {
+          "description": "The Dataset's display name in automl.googleapis.com.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MigratableResourceDataLabelingDataset": {
+      "id": "GoogleCloudAiplatformV1MigratableResourceDataLabelingDataset",
+      "description": "Represents one Dataset in datalabeling.googleapis.com.",
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "description": "Full resource name of data labeling Dataset. Format: `projects\/{project}\/datasets\/{dataset}`.",
+          "type": "string"
+        },
+        "datasetDisplayName": {
+          "description": "The Dataset's display name in datalabeling.googleapis.com.",
+          "type": "string"
+        },
+        "dataLabelingAnnotatedDatasets": {
+          "description": "The migratable AnnotatedDataset in datalabeling.googleapis.com belongs to the data labeling Dataset.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1MigratableResourceDataLabelingDatasetDataLabelingAnnotatedDataset"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MigratableResourceDataLabelingDatasetDataLabelingAnnotatedDataset": {
+      "id": "GoogleCloudAiplatformV1MigratableResourceDataLabelingDatasetDataLabelingAnnotatedDataset",
+      "description": "Represents one AnnotatedDataset in datalabeling.googleapis.com.",
+      "type": "object",
+      "properties": {
+        "annotatedDataset": {
+          "description": "Full resource name of data labeling AnnotatedDataset. Format: `projects\/{project}\/datasets\/{dataset}\/annotatedDatasets\/{annotated_dataset}`.",
+          "type": "string"
+        },
+        "annotatedDatasetDisplayName": {
+          "description": "The AnnotatedDataset's display name in datalabeling.googleapis.com.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1CreateDatasetOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1CreateDatasetOperationMetadata",
+      "description": "Runtime operation information for DatasetService.CreateDataset.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1CreateEndpointOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1CreateEndpointOperationMetadata",
+      "description": "Runtime operation information for EndpointService.CreateEndpoint.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1CreateSpecialistPoolOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1CreateSpecialistPoolOperationMetadata",
+      "description": "Runtime operation information for SpecialistPoolService.CreateSpecialistPool.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1DeleteOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1DeleteOperationMetadata",
+      "description": "Details of operations that perform deletes of any entities.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1DeployModelOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1DeployModelOperationMetadata",
+      "description": "Runtime operation information for EndpointService.DeployModel.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1DeployModelResponse": {
+      "id": "GoogleCloudAiplatformV1DeployModelResponse",
+      "description": "Response message for EndpointService.DeployModel.",
+      "type": "object",
+      "properties": {
+        "deployedModel": {
+          "description": "The DeployedModel that had been deployed in the Endpoint.",
+          "$ref": "GoogleCloudAiplatformV1DeployedModel"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1DeployedModel": {
+      "id": "GoogleCloudAiplatformV1DeployedModel",
+      "description": "A deployment of a Model. Endpoints contain one or more DeployedModels.",
+      "type": "object",
+      "properties": {
+        "dedicatedResources": {
+          "description": "A description of resources that are dedicated to the DeployedModel, and that need a higher degree of manual configuration.",
+          "$ref": "GoogleCloudAiplatformV1DedicatedResources"
+        },
+        "automaticResources": {
+          "description": "A description of resources that to large degree are decided by AI Platform, and require only a modest additional configuration.",
+          "$ref": "GoogleCloudAiplatformV1AutomaticResources"
+        },
+        "id": {
+          "description": "Output only. The ID of the DeployedModel.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "model": {
+          "description": "Required. The name of the Model this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the DeployedModel. If not provided upon creation, the Model's display_name is used.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when the DeployedModel was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "serviceAccount": {
+          "description": "The service account that the DeployedModel's container runs as. Specify the email address of the service account. If this service account is not specified, the container runs as a service account that doesn't have access to the resource project. Users deploying the Model must have the `iam.serviceAccounts.actAs` permission on this service account.",
+          "type": "string"
+        },
+        "disableContainerLogging": {
+          "description": "For custom-trained Models and AutoML Tabular Models, the container of the DeployedModel instances will send `stderr` and `stdout` streams to Stackdriver Logging by default. Please note that the logs incur cost, which are subject to [Cloud Logging pricing](https:\/\/cloud.google.com\/stackdriver\/pricing). User can disable container logging by setting this flag to true.",
+          "type": "boolean"
+        },
+        "enableAccessLogging": {
+          "description": "These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1DedicatedResources": {
+      "id": "GoogleCloudAiplatformV1DedicatedResources",
+      "description": "A description of resources that are dedicated to a DeployedModel, and that need a higher degree of manual configuration.",
+      "type": "object",
+      "properties": {
+        "machineSpec": {
+          "description": "Required. Immutable. The specification of a single machine used by the prediction.",
+          "$ref": "GoogleCloudAiplatformV1MachineSpec"
+        },
+        "minReplicaCount": {
+          "description": "Required. Immutable. The minimum number of machine replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas, and as traffic decreases, some of these extra replicas may be freed. Note: if machine_spec.accelerator_count is above 0, currently the model will be always deployed precisely on min_replica_count.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxReplicaCount": {
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MachineSpec": {
+      "id": "GoogleCloudAiplatformV1MachineSpec",
+      "description": "Specification of a single machine.",
+      "type": "object",
+      "properties": {
+        "machineType": {
+          "description": "Immutable. The type of the machine. For the machine types supported for prediction, see https:\/\/tinyurl.com\/aip-docs\/predictions\/machine-types. For machine types supported for creating a custom training job, see https:\/\/tinyurl.com\/aip-docs\/training\/configure-compute. For DeployedModel this field is optional, and the default value is `n1-standard-2`. For BatchPredictionJob or as part of WorkerPoolSpec this field is required.",
+          "type": "string"
+        },
+        "acceleratorType": {
+          "description": "Immutable. The type of accelerator(s) that may be attached to the machine as per accelerator_count.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified accelerator type, which means no accelerator.",
+            "Nvidia Tesla K80 GPU.",
+            "Nvidia Tesla P100 GPU.",
+            "Nvidia Tesla V100 GPU.",
+            "Nvidia Tesla P4 GPU.",
+            "Nvidia Tesla T4 GPU.",
+            "TPU v2.",
+            "TPU v3."
+          ],
+          "enum": [
+            "ACCELERATOR_TYPE_UNSPECIFIED",
+            "NVIDIA_TESLA_K80",
+            "NVIDIA_TESLA_P100",
+            "NVIDIA_TESLA_V100",
+            "NVIDIA_TESLA_P4",
+            "NVIDIA_TESLA_T4",
+            "TPU_V2",
+            "TPU_V3"
+          ]
+        },
+        "acceleratorCount": {
+          "description": "The number of accelerators to attach to the machine.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1AutomaticResources": {
+      "id": "GoogleCloudAiplatformV1AutomaticResources",
+      "description": "A description of resources that to large degree are decided by AI Platform, and require only a modest additional configuration. Each Model supporting these resources documents its specific guidelines.",
+      "type": "object",
+      "properties": {
+        "minReplicaCount": {
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If requested value is too large, the deployment will error.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxReplicaCount": {
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though AI Platform may be unable to scale beyond certain replica number.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ExportDataOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1ExportDataOperationMetadata",
+      "description": "Runtime operation information for DatasetService.ExportData.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        },
+        "gcsOutputDirectory": {
+          "description": "A Google Cloud Storage directory which path ends with '\/'. The exported data is stored in the directory.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ExportDataResponse": {
+      "id": "GoogleCloudAiplatformV1ExportDataResponse",
+      "description": "Response message for DatasetService.ExportData.",
+      "type": "object",
+      "properties": {
+        "exportedFiles": {
+          "description": "All of the files that are exported in this export operation.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ExportModelOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1ExportModelOperationMetadata",
+      "description": "Details of ModelService.ExportModel operation.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        },
+        "outputInfo": {
+          "description": "Output only. Information further describing the output of this Model export.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1ExportModelOperationMetadataOutputInfo"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ExportModelOperationMetadataOutputInfo": {
+      "id": "GoogleCloudAiplatformV1ExportModelOperationMetadataOutputInfo",
+      "description": "Further describes the output of the ExportModel. Supplements ExportModelRequest.OutputConfig.",
+      "type": "object",
+      "properties": {
+        "artifactOutputUri": {
+          "description": "Output only. If the Model artifact is being exported to Google Cloud Storage this is the full path of the directory created, into which the Model files are being written to.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "imageOutputUri": {
+          "description": "Output only. If the Model image is being exported to Google Container Registry or Artifact Registry this is the full path of the image created.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ExportModelResponse": {
+      "id": "GoogleCloudAiplatformV1ExportModelResponse",
+      "description": "Response message of ModelService.ExportModel operation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1ImportDataOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1ImportDataOperationMetadata",
+      "description": "Runtime operation information for DatasetService.ImportData.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ImportDataResponse": {
+      "id": "GoogleCloudAiplatformV1ImportDataResponse",
+      "description": "Response message for DatasetService.ImportData.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1SpecialistPool": {
+      "id": "GoogleCloudAiplatformV1SpecialistPool",
+      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers who are responsible for managing the labelers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and labelers work with the jobs using CrowdCompute console.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource name of the SpecialistPool.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "type": "string"
+        },
+        "specialistManagersCount": {
+          "description": "Output only. The number of Specialists in this SpecialistPool.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "specialistManagerEmails": {
+          "description": "The email addresses of the specialists in the SpecialistPool.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pendingDataLabelingJobs": {
+          "description": "Output only. The resource name of the pending data labeling jobs.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1UndeployModelOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1UndeployModelOperationMetadata",
+      "description": "Runtime operation information for EndpointService.UndeployModel.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1UndeployModelResponse": {
+      "id": "GoogleCloudAiplatformV1UndeployModelResponse",
+      "description": "Response message for EndpointService.UndeployModel.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1UpdateSpecialistPoolOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1UpdateSpecialistPoolOperationMetadata",
+      "description": "Runtime operation metadata for SpecialistPoolService.UpdateSpecialistPool.",
+      "type": "object",
+      "properties": {
+        "specialistPool": {
+          "description": "Output only. The name of the SpecialistPool to which the specialists are being added. Format: `projects\/{project_id}\/locations\/{location_id}\/specialistPools\/{specialist_pool}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1UploadModelOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1UploadModelOperationMetadata",
+      "description": "Details of ModelService.UploadModel operation.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1UploadModelResponse": {
+      "id": "GoogleCloudAiplatformV1UploadModelResponse",
+      "description": "Response message of ModelService.UploadModel operation.",
+      "type": "object",
+      "properties": {
+        "model": {
+          "description": "The name of the uploaded Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictInstanceImageClassificationPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictInstanceImageClassificationPredictionInstance",
+      "description": "Prediction input format for Image Classification.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The image bytes or GCS URI to make the prediction on.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the content of the image. Only the images in below listed MIME types are supported. - image\/jpeg - image\/gif - image\/png - image\/webp - image\/bmp - image\/tiff - image\/vnd.microsoft.icon",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictInstanceImageObjectDetectionPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictInstanceImageObjectDetectionPredictionInstance",
+      "description": "Prediction input format for Image Object Detection.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The image bytes or GCS URI to make the prediction on.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the content of the image. Only the images in below listed MIME types are supported. - image\/jpeg - image\/gif - image\/png - image\/webp - image\/bmp - image\/tiff - image\/vnd.microsoft.icon",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictInstanceImageSegmentationPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictInstanceImageSegmentationPredictionInstance",
+      "description": "Prediction input format for Image Segmentation.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The image bytes to make the predictions on.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the content of the image. Only the images in below listed MIME types are supported. - image\/jpeg - image\/png",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictInstanceTextClassificationPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictInstanceTextClassificationPredictionInstance",
+      "description": "Prediction input format for Text Classification.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The text snippet to make the predictions on.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the text snippet. The supported MIME types are listed below. - text\/plain",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictInstanceTextExtractionPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictInstanceTextExtractionPredictionInstance",
+      "description": "Prediction input format for Text Extraction.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The text snippet to make the predictions on.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the text snippet. The supported MIME types are listed below. - text\/plain",
+          "type": "string"
+        },
+        "key": {
+          "description": "This field is only used for batch prediction. If a key is provided, the batch prediction result will by mapped to this key. If omitted, then the batch prediction result will contain the entire input instance. AI Platform will not check if keys in the request are duplicates, so it is up to the caller to ensure the keys are unique.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictInstanceTextSentimentPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictInstanceTextSentimentPredictionInstance",
+      "description": "Prediction input format for Text Sentiment.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The text snippet to make the predictions on.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the text snippet. The supported MIME types are listed below. - text\/plain",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictInstanceVideoActionRecognitionPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictInstanceVideoActionRecognitionPredictionInstance",
+      "description": "Prediction input format for Video Action Recognition.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The Google Cloud Storage location of the video on which to perform the prediction.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the content of the video. Only the following are supported: video\/mp4 video\/avi video\/quicktime",
+          "type": "string"
+        },
+        "timeSegmentStart": {
+          "description": "The beginning, inclusive, of the video's time segment on which to perform the prediction. Expressed as a number of seconds as measured from the start of the video, with \"s\" appended at the end. Fractions are allowed, up to a microsecond precision.",
+          "type": "string"
+        },
+        "timeSegmentEnd": {
+          "description": "The end, exclusive, of the video's time segment on which to perform the prediction. Expressed as a number of seconds as measured from the start of the video, with \"s\" appended at the end. Fractions are allowed, up to a microsecond precision, and \"inf\" or \"Infinity\" is allowed, which means the end of the video.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictInstanceVideoClassificationPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictInstanceVideoClassificationPredictionInstance",
+      "description": "Prediction input format for Video Classification.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The Google Cloud Storage location of the video on which to perform the prediction.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the content of the video. Only the following are supported: video\/mp4 video\/avi video\/quicktime",
+          "type": "string"
+        },
+        "timeSegmentStart": {
+          "description": "The beginning, inclusive, of the video's time segment on which to perform the prediction. Expressed as a number of seconds as measured from the start of the video, with \"s\" appended at the end. Fractions are allowed, up to a microsecond precision.",
+          "type": "string"
+        },
+        "timeSegmentEnd": {
+          "description": "The end, exclusive, of the video's time segment on which to perform the prediction. Expressed as a number of seconds as measured from the start of the video, with \"s\" appended at the end. Fractions are allowed, up to a microsecond precision, and \"inf\" or \"Infinity\" is allowed, which means the end of the video.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictInstanceVideoObjectTrackingPredictionInstance": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictInstanceVideoObjectTrackingPredictionInstance",
+      "description": "Prediction input format for Video Object Tracking.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The Google Cloud Storage location of the video on which to perform the prediction.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The MIME type of the content of the video. Only the following are supported: video\/mp4 video\/avi video\/quicktime",
+          "type": "string"
+        },
+        "timeSegmentStart": {
+          "description": "The beginning, inclusive, of the video's time segment on which to perform the prediction. Expressed as a number of seconds as measured from the start of the video, with \"s\" appended at the end. Fractions are allowed, up to a microsecond precision.",
+          "type": "string"
+        },
+        "timeSegmentEnd": {
+          "description": "The end, exclusive, of the video's time segment on which to perform the prediction. Expressed as a number of seconds as measured from the start of the video, with \"s\" appended at the end. Fractions are allowed, up to a microsecond precision, and \"inf\" or \"Infinity\" is allowed, which means the end of the video.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictParamsImageClassificationPredictionParams": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictParamsImageClassificationPredictionParams",
+      "description": "Prediction model parameters for Image Classification.",
+      "type": "object",
+      "properties": {
+        "confidenceThreshold": {
+          "description": "The Model only returns predictions with at least this confidence score. Default value is 0.0",
+          "type": "number",
+          "format": "float"
+        },
+        "maxPredictions": {
+          "description": "The Model only returns up to that many top, by confidence score, predictions per instance. If this number is very high, the Model may return fewer predictions. Default value is 10.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictParamsImageObjectDetectionPredictionParams": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictParamsImageObjectDetectionPredictionParams",
+      "description": "Prediction model parameters for Image Object Detection.",
+      "type": "object",
+      "properties": {
+        "confidenceThreshold": {
+          "description": "The Model only returns predictions with at least this confidence score. Default value is 0.0",
+          "type": "number",
+          "format": "float"
+        },
+        "maxPredictions": {
+          "description": "The Model only returns up to that many top, by confidence score, predictions per instance. Note that number of returned predictions is also limited by metadata's predictionsLimit. Default value is 10.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictParamsImageSegmentationPredictionParams": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictParamsImageSegmentationPredictionParams",
+      "description": "Prediction model parameters for Image Segmentation.",
+      "type": "object",
+      "properties": {
+        "confidenceThreshold": {
+          "description": "When the model predicts category of pixels of the image, it will only provide predictions for pixels that it is at least this much confident about. All other pixels will be classified as background. Default value is 0.5.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictParamsVideoActionRecognitionPredictionParams": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictParamsVideoActionRecognitionPredictionParams",
+      "description": "Prediction model parameters for Video Action Recognition.",
+      "type": "object",
+      "properties": {
+        "confidenceThreshold": {
+          "description": "The Model only returns predictions with at least this confidence score. Default value is 0.0",
+          "type": "number",
+          "format": "float"
+        },
+        "maxPredictions": {
+          "description": "The model only returns up to that many top, by confidence score, predictions per frame of the video. If this number is very high, the Model may return fewer predictions per frame. Default value is 50.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictParamsVideoClassificationPredictionParams": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictParamsVideoClassificationPredictionParams",
+      "description": "Prediction model parameters for Video Classification.",
+      "type": "object",
+      "properties": {
+        "confidenceThreshold": {
+          "description": "The Model only returns predictions with at least this confidence score. Default value is 0.0",
+          "type": "number",
+          "format": "float"
+        },
+        "maxPredictions": {
+          "description": "The Model only returns up to that many top, by confidence score, predictions per instance. If this number is very high, the Model may return fewer predictions. Default value is 10,000.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "segmentClassification": {
+          "description": "Set to true to request segment-level classification. AI Platform returns labels and their confidence scores for the entire time segment of the video that user specified in the input instance. Default value is true",
+          "type": "boolean"
+        },
+        "shotClassification": {
+          "description": "Set to true to request shot-level classification. AI Platform determines the boundaries for each camera shot in the entire time segment of the video that user specified in the input instance. AI Platform then returns labels and their confidence scores for each detected shot, along with the start and end time of the shot. WARNING: Model evaluation is not done for this classification type, the quality of it depends on the training data, but there are no metrics provided to describe that quality. Default value is false",
+          "type": "boolean"
+        },
+        "oneSecIntervalClassification": {
+          "description": "Set to true to request classification for a video at one-second intervals. AI Platform returns labels and their confidence scores for each second of the entire time segment of the video that user specified in the input WARNING: Model evaluation is not done for this classification type, the quality of it depends on the training data, but there are no metrics provided to describe that quality. Default value is false",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictParamsVideoObjectTrackingPredictionParams": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictParamsVideoObjectTrackingPredictionParams",
+      "description": "Prediction model parameters for Video Object Tracking.",
+      "type": "object",
+      "properties": {
+        "confidenceThreshold": {
+          "description": "The Model only returns predictions with at least this confidence score. Default value is 0.0",
+          "type": "number",
+          "format": "float"
+        },
+        "maxPredictions": {
+          "description": "The model only returns up to that many top, by confidence score, predictions per frame of the video. If this number is very high, the Model may return fewer predictions per frame. Default value is 50.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "minBoundingBoxSize": {
+          "description": "Only bounding boxes with shortest edge at least that long as a relative value of video frame size are returned. Default value is 0.0.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictPredictionClassificationPredictionResult": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionClassificationPredictionResult",
+      "description": "Prediction output format for Image and Text Classification.",
+      "type": "object",
+      "properties": {
+        "ids": {
+          "description": "The resource IDs of the AnnotationSpecs that had been identified, ordered by the confidence score descendingly.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "displayNames": {
+          "description": "The display names of the AnnotationSpecs that had been identified, order matches the IDs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confidences": {
+          "description": "The Model's confidences in correctness of the predicted IDs, higher value means higher confidence. Order matches the Ids.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictPredictionImageObjectDetectionPredictionResult": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionImageObjectDetectionPredictionResult",
+      "description": "Prediction output format for Image Object Detection.",
+      "type": "object",
+      "properties": {
+        "ids": {
+          "description": "The resource IDs of the AnnotationSpecs that had been identified, ordered by the confidence score descendingly.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "displayNames": {
+          "description": "The display names of the AnnotationSpecs that had been identified, order matches the IDs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confidences": {
+          "description": "The Model's confidences in correctness of the predicted IDs, higher value means higher confidence. Order matches the Ids.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "bboxes": {
+          "description": "Bounding boxes, i.e. the rectangles over the image, that pinpoint the found AnnotationSpecs. Given in order that matches the IDs. Each bounding box is an array of 4 numbers `xMin`, `xMax`, `yMin`, and `yMax`, which represent the extremal coordinates of the box. They are relative to the image size, and the point 0,0 is in the top left of the image.",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "any"
+            }
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictPredictionImageSegmentationPredictionResult": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionImageSegmentationPredictionResult",
+      "description": "Prediction output format for Image Segmentation.",
+      "type": "object",
+      "properties": {
+        "categoryMask": {
+          "description": "A PNG image where each pixel in the mask represents the category in which the pixel in the original image was predicted to belong to. The size of this image will be the same as the original image. The mapping between the AnntoationSpec and the color can be found in model's metadata. The model will choose the most likely category and if none of the categories reach the confidence threshold, the pixel will be marked as background.",
+          "type": "string"
+        },
+        "confidenceMask": {
+          "description": "A one channel image which is encoded as an 8bit lossless PNG. The size of the image will be the same as the original image. For a specific pixel, darker color means less confidence in correctness of the cateogry in the categoryMask for the corresponding pixel. Black means no confidence and white means complete confidence.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictPredictionTabularClassificationPredictionResult": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionTabularClassificationPredictionResult",
+      "description": "Prediction output format for Tabular Classification.",
+      "type": "object",
+      "properties": {
+        "classes": {
+          "description": "The name of the classes being classified, contains all possible values of the target column.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "scores": {
+          "description": "The model's confidence in each class being correct, higher value means higher confidence. The N-th score corresponds to the N-th class in classes.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictPredictionTabularRegressionPredictionResult": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionTabularRegressionPredictionResult",
+      "description": "Prediction output format for Tabular Regression.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "The regression value.",
+          "type": "number",
+          "format": "float"
+        },
+        "lowerBound": {
+          "description": "The lower bound of the prediction interval.",
+          "type": "number",
+          "format": "float"
+        },
+        "upperBound": {
+          "description": "The upper bound of the prediction interval.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictPredictionTextExtractionPredictionResult": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionTextExtractionPredictionResult",
+      "description": "Prediction output format for Text Extraction.",
+      "type": "object",
+      "properties": {
+        "ids": {
+          "description": "The resource IDs of the AnnotationSpecs that had been identified, ordered by the confidence score descendingly.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "displayNames": {
+          "description": "The display names of the AnnotationSpecs that had been identified, order matches the IDs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "textSegmentStartOffsets": {
+          "description": "The start offsets, inclusive, of the text segment in which the AnnotationSpec has been identified. Expressed as a zero-based number of characters as measured from the start of the text snippet.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "textSegmentEndOffsets": {
+          "description": "The end offsets, inclusive, of the text segment in which the AnnotationSpec has been identified. Expressed as a zero-based number of characters as measured from the start of the text snippet.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "confidences": {
+          "description": "The Model's confidences in correctness of the predicted IDs, higher value means higher confidence. Order matches the Ids.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResult": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResult",
+      "description": "Represents a line of JSONL in the text sentiment batch prediction output file. This is a hack to allow printing of integer values.",
+      "type": "object",
+      "properties": {
+        "instance": {
+          "description": "User's input instance.",
+          "$ref": "GoogleCloudAiplatformV1SchemaPredictInstanceTextSentimentPredictionInstance"
+        },
+        "prediction": {
+          "description": "The prediction result.",
+          "$ref": "GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResultPrediction"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResultPrediction": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResultPrediction",
+      "description": "Prediction output format for Text Sentiment.",
+      "type": "object",
+      "properties": {
+        "sentiment": {
+          "description": "The integer sentiment labels between 0 (inclusive) and sentimentMax label (inclusive), while 0 maps to the least positive sentiment and sentimentMax maps to the most positive one. The higher the score is, the more positive the sentiment in the text snippet is. Note: sentimentMax is an integer value between 1 (inclusive) and 10 (inclusive).",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictPredictionTimeSeriesForecastingPredictionResult": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionTimeSeriesForecastingPredictionResult",
+      "description": "Prediction output format for Time Series Forecasting.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "The regression value.",
+          "type": "number",
+          "format": "float"
+        },
+        "lowerBound": {
+          "description": "The lower bound of the prediction interval.",
+          "type": "number",
+          "format": "float"
+        },
+        "upperBound": {
+          "description": "The upper bound of the prediction interval.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictPredictionVideoActionRecognitionPredictionResult": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionVideoActionRecognitionPredictionResult",
+      "description": "Prediction output format for Video Action Recognition.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The resource ID of the AnnotationSpec that had been identified.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that had been identified.",
+          "type": "string"
+        },
+        "timeSegmentStart": {
+          "description": "The beginning, inclusive, of the video's time segment in which the AnnotationSpec has been identified. Expressed as a number of seconds as measured from the start of the video, with fractions up to a microsecond precision, and with \"s\" appended at the end.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "timeSegmentEnd": {
+          "description": "The end, exclusive, of the video's time segment in which the AnnotationSpec has been identified. Expressed as a number of seconds as measured from the start of the video, with fractions up to a microsecond precision, and with \"s\" appended at the end.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "confidence": {
+          "description": "The Model's confidence in correction of this prediction, higher value means higher confidence.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictPredictionVideoClassificationPredictionResult": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionVideoClassificationPredictionResult",
+      "description": "Prediction output format for Video Classification.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The resource ID of the AnnotationSpec that had been identified.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that had been identified.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of the prediction. The requested types can be configured via parameters. This will be one of - segment-classification - shot-classification - one-sec-interval-classification",
+          "type": "string"
+        },
+        "timeSegmentStart": {
+          "description": "The beginning, inclusive, of the video's time segment in which the AnnotationSpec has been identified. Expressed as a number of seconds as measured from the start of the video, with fractions up to a microsecond precision, and with \"s\" appended at the end. Note that for 'segment-classification' prediction type, this equals the original 'timeSegmentStart' from the input instance, for other types it is the start of a shot or a 1 second interval respectively.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "timeSegmentEnd": {
+          "description": "The end, exclusive, of the video's time segment in which the AnnotationSpec has been identified. Expressed as a number of seconds as measured from the start of the video, with fractions up to a microsecond precision, and with \"s\" appended at the end. Note that for 'segment-classification' prediction type, this equals the original 'timeSegmentEnd' from the input instance, for other types it is the end of a shot or a 1 second interval respectively.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "confidence": {
+          "description": "The Model's confidence in correction of this prediction, higher value means higher confidence.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictPredictionVideoObjectTrackingPredictionResult": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionVideoObjectTrackingPredictionResult",
+      "description": "Prediction output format for Video Object Tracking.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The resource ID of the AnnotationSpec that had been identified.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that had been identified.",
+          "type": "string"
+        },
+        "timeSegmentStart": {
+          "description": "The beginning, inclusive, of the video's time segment in which the object instance has been detected. Expressed as a number of seconds as measured from the start of the video, with fractions up to a microsecond precision, and with \"s\" appended at the end.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "timeSegmentEnd": {
+          "description": "The end, inclusive, of the video's time segment in which the object instance has been detected. Expressed as a number of seconds as measured from the start of the video, with fractions up to a microsecond precision, and with \"s\" appended at the end.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "confidence": {
+          "description": "The Model's confidence in correction of this prediction, higher value means higher confidence.",
+          "type": "number",
+          "format": "float"
+        },
+        "frames": {
+          "description": "All of the frames of the video in which a single object instance has been detected. The bounding boxes in the frames identify the same object.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1SchemaPredictPredictionVideoObjectTrackingPredictionResultFrame"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictPredictionVideoObjectTrackingPredictionResultFrame": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionVideoObjectTrackingPredictionResultFrame",
+      "description": "The fields `xMin`, `xMax`, `yMin`, and `yMax` refer to a bounding box, i.e. the rectangle over the video frame pinpointing the found AnnotationSpec. The coordinates are relative to the frame size, and the point 0,0 is in the top left of the frame.",
+      "type": "object",
+      "properties": {
+        "timeOffset": {
+          "description": "A time (frame) of a video in which the object has been detected. Expressed as a number of seconds as measured from the start of the video, with fractions up to a microsecond precision, and with \"s\" appended at the end.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "xMin": {
+          "description": "The leftmost coordinate of the bounding box.",
+          "type": "number",
+          "format": "float"
+        },
+        "xMax": {
+          "description": "The rightmost coordinate of the bounding box.",
+          "type": "number",
+          "format": "float"
+        },
+        "yMin": {
+          "description": "The topmost coordinate of the bounding box.",
+          "type": "number",
+          "format": "float"
+        },
+        "yMax": {
+          "description": "The bottommost coordinate of the bounding box.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecasting": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecasting",
+      "description": "A TrainingJob that trains and uploads an AutoML Forecasting Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs",
+      "type": "object",
+      "properties": {
+        "targetColumn": {
+          "description": "The name of the column that the model is to predict.",
+          "type": "string"
+        },
+        "timeSeriesIdentifierColumn": {
+          "description": "The name of the column that identifies the time series.",
+          "type": "string"
+        },
+        "timeColumn": {
+          "description": "The name of the column that identifies time order in the time series.",
+          "type": "string"
+        },
+        "transformations": {
+          "description": "Each transformation will apply transform function to given input column. And the result will be used for training. When creating transformation for BigQuery Struct column, the column should be flattened using \".\" as the delimiter.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation"
+          }
+        },
+        "optimizationObjective": {
+          "description": "Objective function the model is optimizing towards. The training process creates a model that optimizes the value of the objective function over the validation set. The supported optimization objectives: \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). \"minimize-mae\" - Minimize mean-absolute error (MAE). \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE). \"minimize-rmspe\" - Minimize root-mean-squared percentage error (RMSPE). \"minimize-wape-mae\" - Minimize the combination of weighted absolute percentage error (WAPE) and mean-absolute-error (MAE). \"minimize-quantile-loss\" - Minimize the quantile loss at the quantiles defined in `quantiles`.",
+          "type": "string"
+        },
+        "trainBudgetMilliNodeHours": {
+          "description": "Required. The train budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The training cost of the model will not exceed this budget. The final cost will be attempted to be close to the budget, though may end up being (even) noticeably smaller - at the backend's discretion. This especially may happen when further model training ceases to provide any improvements. If the budget is set to a value known to be insufficient to train a model for the given dataset, the training won't be attempted and will error. The train budget must be between 1,000 and 72,000 milli node hours, inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "weightColumn": {
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1.",
+          "type": "string"
+        },
+        "staticColumns": {
+          "description": "Column names that should be used as static columns. The value of these columns are static per time series.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "timeVariantPastOnlyColumns": {
+          "description": "Column names that should be used as time variant past only columns. This column contains information for the given entity (identified by the time_series_identifier_column) that is known for the past but not the future (e.g. population of a city in a given year, or weather on a given day).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "timeVariantPastAndFutureColumns": {
+          "description": "Column names that should be used as time variant past and future columns. This column contains information for the given entity (identified by the key column) that is known for the past and the future",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "period": {
+          "description": "Expected difference in time granularity between rows in the data. If it is not set, the period is inferred from data.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod"
+        },
+        "forecastWindowStart": {
+          "description": "The number of periods offset into the future as the start of the forecast window (the window of future values to predict, relative to the present.), where each period is one unit of granularity as defined by the `period` field above. Default to 0. Inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "forecastWindowEnd": {
+          "description": "The number of periods offset into the future as the end of the forecast window (the window of future values to predict, relative to the present.), where each period is one unit of granularity as defined by the `period` field above. Inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "pastHorizon": {
+          "description": "The number of periods offset into the past to restrict past sequence, where each period is one unit of granularity as defined by the `period`. Default value 0 means that it lets algorithm to define the value. Inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "exportEvaluatedDataItemsConfig": {
+          "description": "Configuration for exporting test set predictions to a BigQuery table. If this configuration is absent, then the export is not performed.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig"
+        },
+        "quantiles": {
+          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation",
+      "type": "object",
+      "properties": {
+        "auto": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationAutoTransformation"
+        },
+        "numeric": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericTransformation"
+        },
+        "categorical": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalTransformation"
+        },
+        "timestamp": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTimestampTransformation"
+        },
+        "text": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextTransformation"
+        },
+        "repeatedNumeric": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericArrayTransformation"
+        },
+        "repeatedCategorical": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalArrayTransformation"
+        },
+        "repeatedText": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextArrayTransformation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationAutoTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationAutoTransformation",
+      "description": "Training pipeline will infer the proper transformation based on the statistic of dataset.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The value converted to float32. * The z_score of the value. * log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * z_score of log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * A boolean value that indicates whether the value is valid.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "invalidValuesAllowed": {
+          "description": "If invalid values is allowed, the training pipeline will create a boolean feature that indicated whether the value is valid. Otherwise, the training pipeline will discard the input row from trainining data.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The categorical string as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index. * Categories that appear less than 5 times in the training dataset are treated as the \"unknown\" category. The \"unknown\" category gets its own special lookup index and resulting embedding.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTimestampTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTimestampTransformation",
+      "description": "Training pipeline will perform following transformation functions. * Apply the transformation functions for Numerical columns. * Determine the year, month, day,and weekday. Treat each value from the * timestamp as a Categorical column. * Invalid numerical values (for example, values that fall outside of a typical timestamp range, or are extreme values) receive no special treatment and are not removed.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "timeFormat": {
+          "description": "The format in which that time field is expressed. The time_format must either be one of: * `unix-seconds` * `unix-milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for respectively number of seconds, milliseconds, microseconds and nanoseconds since start of the Unix epoch); or be written in `strftime` syntax. If time_format is not set, then the default format is RFC 3339 `date-time` format, where `time-offset` = `\"Z\"` (e.g. 1985-04-12T23:20:50.52Z)",
+          "type": "string"
+        },
+        "invalidValuesAllowed": {
+          "description": "If invalid values is allowed, the training pipeline will create a boolean feature that indicated whether the value is valid. Otherwise, the training pipeline will discard the input row from trainining data.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The text as is--no change to case, punctuation, spelling, tense, and so on. * Tokenize text to words. Convert each words to a dictionary lookup index and generate an embedding for each index. Combine the embedding of all elements into a single embedding using the mean. * Tokenization is based on unicode script boundaries. * Missing values get their own lookup index and resulting embedding. * Stop-words receive no special treatment and are not removed.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericArrayTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericArrayTransformation",
+      "description": "Treats the column as numerical array and performs following transformation functions. * All transformations for Numerical types applied to the average of the all elements. * The average of empty arrays is treated as zero.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "invalidValuesAllowed": {
+          "description": "If invalid values is allowed, the training pipeline will create a boolean feature that indicated whether the value is valid. Otherwise, the training pipeline will discard the input row from trainining data.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalArrayTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalArrayTransformation",
+      "description": "Treats the column as categorical array and performs following transformation functions. * For each element in the array, convert the category name to a dictionary lookup index and generate an embedding for each index. Combine the embedding of all elements into a single embedding using the mean. * Empty arrays treated as an embedding of zeroes.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextArrayTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextArrayTransformation",
+      "description": "Treats the column as text array and performs following transformation functions. * Concatenate all text values in the array into a single text value using a space (\" \") as a delimiter, and then treat the result as a single text value. Apply the transformations for Text columns. * Empty arrays treated as an empty text.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod",
+      "description": "A duration of time expressed in time granularity units.",
+      "type": "object",
+      "properties": {
+        "unit": {
+          "description": "The time granularity unit of this time period. The supported unit are: \"minute\" \"hour\" \"day\" \"week\" \"month\" \"year\"",
+          "type": "string"
+        },
+        "quantity": {
+          "description": "The number of units per period, e.g. 3 weeks or 2 months.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig",
+      "description": "Configuration for exporting test set predictions to a BigQuery table.",
+      "type": "object",
+      "properties": {
+        "destinationBigqueryUri": {
+          "description": "URI of desired destination BigQuery table. Expected format: bq:\/\/:: If not specified, then results are exported to the following auto-created BigQuery table: :export_evaluated_examples__.evaluated_examples",
+          "type": "string"
+        },
+        "overrideExistingTable": {
+          "description": "If true and an export destination is specified, then the contents of the destination are overwritten. Otherwise, if the export destination already exists, then the export operation fails.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingMetadata",
+      "description": "Model metadata specific to AutoML Forecasting.",
+      "type": "object",
+      "properties": {
+        "trainCostMilliNodeHours": {
+          "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassification": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassification",
+      "description": "A TrainingJob that trains and uploads an AutoML Image Classification Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificationInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificationInputs": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificationInputs",
+      "type": "object",
+      "properties": {
+        "modelType": {
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "A Model best tailored to be used within Google Cloud, and which cannot be exported. Default.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as TensorFlow or Core ML model and used on a mobile or edge device afterwards. Expected to have low latency, but may have lower prediction quality than other mobile models.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as TensorFlow or Core ML model and used on a mobile or edge device with afterwards.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as TensorFlow or Core ML model and used on a mobile or edge device afterwards. Expected to have a higher latency, but should also have a higher prediction quality than other mobile models."
+          ],
+          "enum": [
+            "MODEL_TYPE_UNSPECIFIED",
+            "CLOUD",
+            "MOBILE_TF_LOW_LATENCY_1",
+            "MOBILE_TF_VERSATILE_1",
+            "MOBILE_TF_HIGH_ACCURACY_1"
+          ]
+        },
+        "baseModelId": {
+          "description": "The ID of the `base` model. If it is specified, the new model will be trained based on the `base` model. Otherwise, the new model will be trained from scratch. The `base` model must be in the same Project and Location as the new Model to train, and have the same modelType.",
+          "type": "string"
+        },
+        "budgetMilliNodeHours": {
+          "description": "The training budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The actual metadata.costMilliNodeHours will be equal or less than this value. If further model training ceases to provide any improvements, it will stop without using the full budget and the metadata.successfulStopReason will be `model-converged`. Note, node_hour = actual_hour * number_of_nodes_involved. For modelType `cloud`(default), the budget must be between 8,000 and 800,000 milli node hours, inclusive. The default value is 192,000 which represents one day in wall time, considering 8 nodes are used. For model types `mobile-tf-low-latency-1`, `mobile-tf-versatile-1`, `mobile-tf-high-accuracy-1`, the training budget must be between 1,000 and 100,000 milli node hours, inclusive. The default value is 24,000 which represents one day in wall time on a single node that is used.",
+          "type": "string",
+          "format": "int64"
+        },
+        "disableEarlyStopping": {
+          "description": "Use the entire training budget. This disables the early stopping feature. When false the early stopping feature is enabled, which means that AutoML Image Classification might stop training before the entire training budget has been used.",
+          "type": "boolean"
+        },
+        "multiLabel": {
+          "description": "If false, a single-label (multi-class) Model will be trained (i.e. assuming that for each image just up to one annotation may be applicable). If true, a multi-label Model will be trained (i.e. assuming that for each image multiple annotations may be applicable).",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificationMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificationMetadata",
+      "type": "object",
+      "properties": {
+        "costMilliNodeHours": {
+          "description": "The actual training cost of creating this model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed inputs.budgetMilliNodeHours.",
+          "type": "string",
+          "format": "int64"
+        },
+        "successfulStopReason": {
+          "description": "For successful job completions, this is the reason why the job has finished.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "The inputs.budgetMilliNodeHours had been reached.",
+            "Further training of the Model ceased to increase its quality, since it already has converged."
+          ],
+          "enum": [
+            "SUCCESSFUL_STOP_REASON_UNSPECIFIED",
+            "BUDGET_REACHED",
+            "MODEL_CONVERGED"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetection": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetection",
+      "description": "A TrainingJob that trains and uploads an AutoML Image Object Detection Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionInputs"
+        },
+        "metadata": {
+          "description": "The metadata information",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionInputs": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionInputs",
+      "type": "object",
+      "properties": {
+        "modelType": {
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to have a higher latency, but should also have a higher prediction quality than other cloud models.",
+            "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to have a low latency, but may have lower prediction quality than other cloud models.",
+            "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have low latency, but may have lower prediction quality than other mobile models.",
+            "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have a higher latency, but should also have a higher prediction quality than other mobile models."
+          ],
+          "enum": [
+            "MODEL_TYPE_UNSPECIFIED",
+            "CLOUD_HIGH_ACCURACY_1",
+            "CLOUD_LOW_LATENCY_1",
+            "MOBILE_TF_LOW_LATENCY_1",
+            "MOBILE_TF_VERSATILE_1",
+            "MOBILE_TF_HIGH_ACCURACY_1"
+          ]
+        },
+        "budgetMilliNodeHours": {
+          "description": "The training budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The actual metadata.costMilliNodeHours will be equal or less than this value. If further model training ceases to provide any improvements, it will stop without using the full budget and the metadata.successfulStopReason will be `model-converged`. Note, node_hour = actual_hour * number_of_nodes_involved. For modelType `cloud`(default), the budget must be between 20,000 and 900,000 milli node hours, inclusive. The default value is 216,000 which represents one day in wall time, considering 9 nodes are used. For model types `mobile-tf-low-latency-1`, `mobile-tf-versatile-1`, `mobile-tf-high-accuracy-1` the training budget must be between 1,000 and 100,000 milli node hours, inclusive. The default value is 24,000 which represents one day in wall time on a single node that is used.",
+          "type": "string",
+          "format": "int64"
+        },
+        "disableEarlyStopping": {
+          "description": "Use the entire training budget. This disables the early stopping feature. When false the early stopping feature is enabled, which means that AutoML Image Object Detection might stop training before the entire training budget has been used.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionMetadata",
+      "type": "object",
+      "properties": {
+        "costMilliNodeHours": {
+          "description": "The actual training cost of creating this model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed inputs.budgetMilliNodeHours.",
+          "type": "string",
+          "format": "int64"
+        },
+        "successfulStopReason": {
+          "description": "For successful job completions, this is the reason why the job has finished.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "The inputs.budgetMilliNodeHours had been reached.",
+            "Further training of the Model ceased to increase its quality, since it already has converged."
+          ],
+          "enum": [
+            "SUCCESSFUL_STOP_REASON_UNSPECIFIED",
+            "BUDGET_REACHED",
+            "MODEL_CONVERGED"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageSegmentation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageSegmentation",
+      "description": "A TrainingJob that trains and uploads an AutoML Image Segmentation Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageSegmentationInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageSegmentationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageSegmentationInputs": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageSegmentationInputs",
+      "type": "object",
+      "properties": {
+        "modelType": {
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "A model to be used via prediction calls to uCAIP API. Expected to have a higher latency, but should also have a higher prediction quality than other models.",
+            "A model to be used via prediction calls to uCAIP API. Expected to have a lower latency but relatively lower prediction quality.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as TensorFlow model and used on a mobile or edge device afterwards. Expected to have low latency, but may have lower prediction quality than other mobile models."
+          ],
+          "enum": [
+            "MODEL_TYPE_UNSPECIFIED",
+            "CLOUD_HIGH_ACCURACY_1",
+            "CLOUD_LOW_ACCURACY_1",
+            "MOBILE_TF_LOW_LATENCY_1"
+          ]
+        },
+        "budgetMilliNodeHours": {
+          "description": "The training budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The actual metadata.costMilliNodeHours will be equal or less than this value. If further model training ceases to provide any improvements, it will stop without using the full budget and the metadata.successfulStopReason will be `model-converged`. Note, node_hour = actual_hour * number_of_nodes_involved. Or actaul_wall_clock_hours = train_budget_milli_node_hours \/ (number_of_nodes_involved * 1000) For modelType `cloud-high-accuracy-1`(default), the budget must be between 20,000 and 2,000,000 milli node hours, inclusive. The default value is 192,000 which represents one day in wall time (1000 milli * 24 hours * 8 nodes).",
+          "type": "string",
+          "format": "int64"
+        },
+        "baseModelId": {
+          "description": "The ID of the `base` model. If it is specified, the new model will be trained based on the `base` model. Otherwise, the new model will be trained from scratch. The `base` model must be in the same Project and Location as the new Model to train, and have the same modelType.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageSegmentationMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageSegmentationMetadata",
+      "type": "object",
+      "properties": {
+        "costMilliNodeHours": {
+          "description": "The actual training cost of creating this model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed inputs.budgetMilliNodeHours.",
+          "type": "string",
+          "format": "int64"
+        },
+        "successfulStopReason": {
+          "description": "For successful job completions, this is the reason why the job has finished.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "The inputs.budgetMilliNodeHours had been reached.",
+            "Further training of the Model ceased to increase its quality, since it already has converged."
+          ],
+          "enum": [
+            "SUCCESSFUL_STOP_REASON_UNSPECIFIED",
+            "BUDGET_REACHED",
+            "MODEL_CONVERGED"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTables": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTables",
+      "description": "A TrainingJob that trains and uploads an AutoML Tables Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputs": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputs",
+      "type": "object",
+      "properties": {
+        "optimizationObjectiveRecallValue": {
+          "description": "Required when optimization_objective is \"maximize-precision-at-recall\". Must be between 0 and 1, inclusive.",
+          "type": "number",
+          "format": "float"
+        },
+        "optimizationObjectivePrecisionValue": {
+          "description": "Required when optimization_objective is \"maximize-recall-at-precision\". Must be between 0 and 1, inclusive.",
+          "type": "number",
+          "format": "float"
+        },
+        "predictionType": {
+          "description": "The type of prediction the Model is to produce. \"classification\" - Predict one out of multiple target values is picked for each row. \"regression\" - Predict a value based on its relation to other values. This type is available only to columns that contain semantically numeric values, i.e. integers or floating point number, even if stored as e.g. strings.",
+          "type": "string"
+        },
+        "targetColumn": {
+          "description": "The column name of the target column that the model is to predict.",
+          "type": "string"
+        },
+        "transformations": {
+          "description": "Each transformation will apply transform function to given input column. And the result will be used for training. When creating transformation for BigQuery Struct column, the column should be flattened using \".\" as the delimiter.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation"
+          }
+        },
+        "optimizationObjective": {
+          "description": "Objective function the model is optimizing towards. The training process creates a model that maximizes\/minimizes the value of the objective function over the validation set. The supported optimization objectives depend on the prediction type. If the field is not set, a default objective function is used. classification (binary): \"maximize-au-roc\" (default) - Maximize the area under the receiver operating characteristic (ROC) curve. \"minimize-log-loss\" - Minimize log loss. \"maximize-au-prc\" - Maximize the area under the precision-recall curve. \"maximize-precision-at-recall\" - Maximize precision for a specified recall value. \"maximize-recall-at-precision\" - Maximize recall for a specified precision value. classification (multi-class): \"minimize-log-loss\" (default) - Minimize log loss. regression: \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). \"minimize-mae\" - Minimize mean-absolute error (MAE). \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE).",
+          "type": "string"
+        },
+        "trainBudgetMilliNodeHours": {
+          "description": "Required. The train budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The training cost of the model will not exceed this budget. The final cost will be attempted to be close to the budget, though may end up being (even) noticeably smaller - at the backend's discretion. This especially may happen when further model training ceases to provide any improvements. If the budget is set to a value known to be insufficient to train a model for the given dataset, the training won't be attempted and will error. The train budget must be between 1,000 and 72,000 milli node hours, inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "disableEarlyStopping": {
+          "description": "Use the entire training budget. This disables the early stopping feature. By default, the early stopping feature is enabled, which means that AutoML Tables might stop training before the entire training budget has been used.",
+          "type": "boolean"
+        },
+        "weightColumnName": {
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1.",
+          "type": "string"
+        },
+        "exportEvaluatedDataItemsConfig": {
+          "description": "Configuration for exporting test set predictions to a BigQuery table. If this configuration is absent, then the export is not performed.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation",
+      "type": "object",
+      "properties": {
+        "auto": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationAutoTransformation"
+        },
+        "numeric": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericTransformation"
+        },
+        "categorical": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalTransformation"
+        },
+        "timestamp": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTimestampTransformation"
+        },
+        "text": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextTransformation"
+        },
+        "repeatedNumeric": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericArrayTransformation"
+        },
+        "repeatedCategorical": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalArrayTransformation"
+        },
+        "repeatedText": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextArrayTransformation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationAutoTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationAutoTransformation",
+      "description": "Training pipeline will infer the proper transformation based on the statistic of dataset.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The value converted to float32. * The z_score of the value. * log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * z_score of log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * A boolean value that indicates whether the value is valid.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "invalidValuesAllowed": {
+          "description": "If invalid values is allowed, the training pipeline will create a boolean feature that indicated whether the value is valid. Otherwise, the training pipeline will discard the input row from trainining data.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The categorical string as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index. * Categories that appear less than 5 times in the training dataset are treated as the \"unknown\" category. The \"unknown\" category gets its own special lookup index and resulting embedding.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTimestampTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTimestampTransformation",
+      "description": "Training pipeline will perform following transformation functions. * Apply the transformation functions for Numerical columns. * Determine the year, month, day,and weekday. Treat each value from the * timestamp as a Categorical column. * Invalid numerical values (for example, values that fall outside of a typical timestamp range, or are extreme values) receive no special treatment and are not removed.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "timeFormat": {
+          "description": "The format in which that time field is expressed. The time_format must either be one of: * `unix-seconds` * `unix-milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for respectively number of seconds, milliseconds, microseconds and nanoseconds since start of the Unix epoch); or be written in `strftime` syntax. If time_format is not set, then the default format is RFC 3339 `date-time` format, where `time-offset` = `\"Z\"` (e.g. 1985-04-12T23:20:50.52Z)",
+          "type": "string"
+        },
+        "invalidValuesAllowed": {
+          "description": "If invalid values is allowed, the training pipeline will create a boolean feature that indicated whether the value is valid. Otherwise, the training pipeline will discard the input row from trainining data.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The text as is--no change to case, punctuation, spelling, tense, and so on. * Tokenize text to words. Convert each words to a dictionary lookup index and generate an embedding for each index. Combine the embedding of all elements into a single embedding using the mean. * Tokenization is based on unicode script boundaries. * Missing values get their own lookup index and resulting embedding. * Stop-words receive no special treatment and are not removed.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericArrayTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericArrayTransformation",
+      "description": "Treats the column as numerical array and performs following transformation functions. * All transformations for Numerical types applied to the average of the all elements. * The average of empty arrays is treated as zero.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "invalidValuesAllowed": {
+          "description": "If invalid values is allowed, the training pipeline will create a boolean feature that indicated whether the value is valid. Otherwise, the training pipeline will discard the input row from trainining data.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalArrayTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalArrayTransformation",
+      "description": "Treats the column as categorical array and performs following transformation functions. * For each element in the array, convert the category name to a dictionary lookup index and generate an embedding for each index. Combine the embedding of all elements into a single embedding using the mean. * Empty arrays treated as an embedding of zeroes.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextArrayTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextArrayTransformation",
+      "description": "Treats the column as text array and performs following transformation functions. * Concatenate all text values in the array into a single text value using a space (\" \") as a delimiter, and then treat the result as a single text value. Apply the transformations for Text columns. * Empty arrays treated as an empty text.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesMetadata",
+      "description": "Model metadata specific to AutoML Tables.",
+      "type": "object",
+      "properties": {
+        "trainCostMilliNodeHours": {
+          "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextClassification": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextClassification",
+      "description": "A TrainingJob that trains and uploads an AutoML Text Classification Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextClassificationInputs"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextClassificationInputs": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextClassificationInputs",
+      "type": "object",
+      "properties": {
+        "multiLabel": {
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextExtraction": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextExtraction",
+      "description": "A TrainingJob that trains and uploads an AutoML Text Extraction Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextExtractionInputs"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextExtractionInputs": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextExtractionInputs",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextSentiment": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextSentiment",
+      "description": "A TrainingJob that trains and uploads an AutoML Text Sentiment Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextSentimentInputs"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextSentimentInputs": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextSentimentInputs",
+      "type": "object",
+      "properties": {
+        "sentimentMax": {
+          "description": "A sentiment is expressed as an integer ordinal, where higher value means a more positive sentiment. The range of sentiments that will be used is between 0 and sentimentMax (inclusive on both ends), and all the values in the range must be represented in the dataset before a model can be created. Only the Annotations with this sentimentMax will be used for training. sentimentMax value must be between 1 and 10 (inclusive).",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoActionRecognition": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoActionRecognition",
+      "description": "A TrainingJob that trains and uploads an AutoML Video Action Recognition Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoActionRecognitionInputs"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoActionRecognitionInputs": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoActionRecognitionInputs",
+      "type": "object",
+      "properties": {
+        "modelType": {
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "A model best tailored to be used within Google Cloud, and which c annot be exported. Default.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as a TensorFlow or TensorFlow Lite model and used on a mobile or edge device afterwards."
+          ],
+          "enum": [
+            "MODEL_TYPE_UNSPECIFIED",
+            "CLOUD",
+            "MOBILE_VERSATILE_1"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoClassification": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoClassification",
+      "description": "A TrainingJob that trains and uploads an AutoML Video Classification Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoClassificationInputs"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoClassificationInputs": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoClassificationInputs",
+      "type": "object",
+      "properties": {
+        "modelType": {
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "A model best tailored to be used within Google Cloud, and which cannot be exported. Default.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as a TensorFlow or TensorFlow Lite model and used on a mobile or edge device afterwards.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) to a Jetson device afterwards."
+          ],
+          "enum": [
+            "MODEL_TYPE_UNSPECIFIED",
+            "CLOUD",
+            "MOBILE_VERSATILE_1",
+            "MOBILE_JETSON_VERSATILE_1"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoObjectTracking": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoObjectTracking",
+      "description": "A TrainingJob that trains and uploads an AutoML Video ObjectTracking Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoObjectTrackingInputs"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoObjectTrackingInputs": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoObjectTrackingInputs",
+      "type": "object",
+      "properties": {
+        "modelType": {
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "A model best tailored to be used within Google Cloud, and which c annot be exported. Default.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as a TensorFlow or TensorFlow Lite model and used on a mobile or edge device afterwards.",
+            "A versatile model that is meant to be exported (see ModelService.ExportModel) and used on a Google Coral device.",
+            "A model that trades off quality for low latency, to be exported (see ModelService.ExportModel) and used on a Google Coral device.",
+            "A versatile model that is meant to be exported (see ModelService.ExportModel) and used on an NVIDIA Jetson device.",
+            "A model that trades off quality for low latency, to be exported (see ModelService.ExportModel) and used on an NVIDIA Jetson device."
+          ],
+          "enum": [
+            "MODEL_TYPE_UNSPECIFIED",
+            "CLOUD",
+            "MOBILE_VERSATILE_1",
+            "MOBILE_CORAL_VERSATILE_1",
+            "MOBILE_CORAL_LOW_LATENCY_1",
+            "MOBILE_JETSON_VERSATILE_1",
+            "MOBILE_JETSON_LOW_LATENCY_1"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictionResult": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictionResult",
+      "description": "Represents a line of JSONL in the batch prediction output file.",
+      "type": "object",
+      "properties": {
+        "instance": {
+          "description": "User's input instance. Struct is used here instead of Any so that JsonFormat does not append an extra \"@type\" field when we convert the proto to JSON.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        },
+        "key": {
+          "description": "Optional user-provided key from the input instance.",
+          "type": "string"
+        },
+        "prediction": {
+          "description": "The prediction result. Value is used here instead of Any so that JsonFormat does not append an extra \"@type\" field when we convert the proto to JSON and so we can represent array of objects. Do not set error if this is set.",
+          "type": "any"
+        },
+        "error": {
+          "description": "The error result. Do not set prediction if this is set.",
+          "$ref": "GoogleCloudAiplatformV1SchemaPredictionResultError"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictionResultError": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictionResultError",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "Error status. This will be serialized into the enum name e.g. \"NOT_FOUND\".",
+          "type": "string",
+          "enumDescriptions": [
+            "Not an error; returned on success HTTP Mapping: 200 OK",
+            "The operation was cancelled, typically by the caller. HTTP Mapping: 499 Client Closed Request",
+            "Unknown error. For example, this error may be returned when a `Status` value received from another address space belongs to an error space that is not known in this address space. Also errors raised by APIs that do not return enough error information may be converted to this error. HTTP Mapping: 500 Internal Server Error",
+            "The client specified an invalid argument. Note that this differs from `FAILED_PRECONDITION`. `INVALID_ARGUMENT` indicates arguments that are problematic regardless of the state of the system (e.g., a malformed file name). HTTP Mapping: 400 Bad Request",
+            "The deadline expired before the operation could complete. For operations that change the state of the system, this error may be returned even if the operation has completed successfully. For example, a successful response from a server could have been delayed long enough for the deadline to expire. HTTP Mapping: 504 Gateway Timeout",
+            "Some requested entity (e.g., file or directory) was not found. Note to server developers: if a request is denied for an entire class of users, such as gradual feature rollout or undocumented allowlist, `NOT_FOUND` may be used. If a request is denied for some users within a class of users, such as user-based access control, `PERMISSION_DENIED` must be used. HTTP Mapping: 404 Not Found",
+            "The entity that a client attempted to create (e.g., file or directory) already exists. HTTP Mapping: 409 Conflict",
+            "The caller does not have permission to execute the specified operation. `PERMISSION_DENIED` must not be used for rejections caused by exhausting some resource (use `RESOURCE_EXHAUSTED` instead for those errors). `PERMISSION_DENIED` must not be used if the caller can not be identified (use `UNAUTHENTICATED` instead for those errors). This error code does not imply the request is valid or the requested entity exists or satisfies other pre-conditions. HTTP Mapping: 403 Forbidden",
+            "The request does not have valid authentication credentials for the operation. HTTP Mapping: 401 Unauthorized",
+            "Some resource has been exhausted, perhaps a per-user quota, or perhaps the entire file system is out of space. HTTP Mapping: 429 Too Many Requests",
+            "The operation was rejected because the system is not in a state required for the operation's execution. For example, the directory to be deleted is non-empty, an rmdir operation is applied to a non-directory, etc. Service implementors can use the following guidelines to decide between `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can retry just the failing call. (b) Use `ABORTED` if the client should retry at a higher level (e.g., when a client-specified test-and-set fails, indicating the client should restart a read-modify-write sequence). (c) Use `FAILED_PRECONDITION` if the client should not retry until the system state has been explicitly fixed. E.g., if an \"rmdir\" fails because the directory is non-empty, `FAILED_PRECONDITION` should be returned since the client should not retry unless the files are deleted from the directory. HTTP Mapping: 400 Bad Request",
+            "The operation was aborted, typically due to a concurrency issue such as a sequencer check failure or transaction abort. See the guidelines above for deciding between `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 409 Conflict",
+            "The operation was attempted past the valid range. E.g., seeking or reading past end-of-file. Unlike `INVALID_ARGUMENT`, this error indicates a problem that may be fixed if the system state changes. For example, a 32-bit file system will generate `INVALID_ARGUMENT` if asked to read at an offset that is not in the range [0,2^32-1], but it will generate `OUT_OF_RANGE` if asked to read from an offset past the current file size. There is a fair bit of overlap between `FAILED_PRECONDITION` and `OUT_OF_RANGE`. We recommend using `OUT_OF_RANGE` (the more specific error) when it applies so that callers who are iterating through a space can easily look for an `OUT_OF_RANGE` error to detect when they are done. HTTP Mapping: 400 Bad Request",
+            "The operation is not implemented or is not supported\/enabled in this service. HTTP Mapping: 501 Not Implemented",
+            "Internal errors. This means that some invariants expected by the underlying system have been broken. This error code is reserved for serious errors. HTTP Mapping: 500 Internal Server Error",
+            "The service is currently unavailable. This is most likely a transient condition, which can be corrected by retrying with a backoff. Note that it is not always safe to retry non-idempotent operations. See the guidelines above for deciding between `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 503 Service Unavailable",
+            "Unrecoverable data loss or corruption. HTTP Mapping: 500 Internal Server Error"
+          ],
+          "enum": [
+            "OK",
+            "CANCELLED",
+            "UNKNOWN",
+            "INVALID_ARGUMENT",
+            "DEADLINE_EXCEEDED",
+            "NOT_FOUND",
+            "ALREADY_EXISTS",
+            "PERMISSION_DENIED",
+            "UNAUTHENTICATED",
+            "RESOURCE_EXHAUSTED",
+            "FAILED_PRECONDITION",
+            "ABORTED",
+            "OUT_OF_RANGE",
+            "UNIMPLEMENTED",
+            "INTERNAL",
+            "UNAVAILABLE",
+            "DATA_LOSS"
+          ]
+        },
+        "message": {
+          "description": "Error message with additional details.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaImageBoundingBoxAnnotation": {
+      "id": "GoogleCloudAiplatformV1SchemaImageBoundingBoxAnnotation",
+      "description": "Annotation details specific to image object detection.",
+      "type": "object",
+      "properties": {
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "xMin": {
+          "description": "The leftmost coordinate of the bounding box.",
+          "type": "number",
+          "format": "double"
+        },
+        "xMax": {
+          "description": "The rightmost coordinate of the bounding box.",
+          "type": "number",
+          "format": "double"
+        },
+        "yMin": {
+          "description": "The topmost coordinate of the bounding box.",
+          "type": "number",
+          "format": "double"
+        },
+        "yMax": {
+          "description": "The bottommost coordinate of the bounding box.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaImageClassificationAnnotation": {
+      "id": "GoogleCloudAiplatformV1SchemaImageClassificationAnnotation",
+      "description": "Annotation details specific to image classification.",
+      "type": "object",
+      "properties": {
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaImageDataItem": {
+      "id": "GoogleCloudAiplatformV1SchemaImageDataItem",
+      "description": "Payload of Image DataItem.",
+      "type": "object",
+      "properties": {
+        "gcsUri": {
+          "description": "Required. Google Cloud Storage URI points to the original image in user's bucket. The image is up to 30MB in size.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "Output only. The mime type of the content of the image. Only the images in below listed mime types are supported. - image\/jpeg - image\/gif - image\/png - image\/webp - image\/bmp - image\/tiff - image\/vnd.microsoft.icon",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaImageDatasetMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaImageDatasetMetadata",
+      "description": "The metadata of Datasets that contain Image DataItems.",
+      "type": "object",
+      "properties": {
+        "dataItemSchemaUri": {
+          "description": "Points to a YAML file stored on Google Cloud Storage describing payload of the Image DataItems that belong to this Dataset.",
+          "type": "string"
+        },
+        "gcsBucket": {
+          "description": "Google Cloud Storage Bucket name that contains the blob data of this Dataset.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaImageSegmentationAnnotation": {
+      "id": "GoogleCloudAiplatformV1SchemaImageSegmentationAnnotation",
+      "description": "Annotation details specific to image segmentation.",
+      "type": "object",
+      "properties": {
+        "maskAnnotation": {
+          "description": "Mask based segmentation annotation. Only one mask annotation can exist for one image.",
+          "$ref": "GoogleCloudAiplatformV1SchemaImageSegmentationAnnotationMaskAnnotation"
+        },
+        "polygonAnnotation": {
+          "description": "Polygon annotation.",
+          "$ref": "GoogleCloudAiplatformV1SchemaImageSegmentationAnnotationPolygonAnnotation"
+        },
+        "polylineAnnotation": {
+          "description": "Polyline annotation.",
+          "$ref": "GoogleCloudAiplatformV1SchemaImageSegmentationAnnotationPolylineAnnotation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaImageSegmentationAnnotationMaskAnnotation": {
+      "id": "GoogleCloudAiplatformV1SchemaImageSegmentationAnnotationMaskAnnotation",
+      "description": "The mask based segmentation annotation.",
+      "type": "object",
+      "properties": {
+        "maskGcsUri": {
+          "description": "Google Cloud Storage URI that points to the mask image. The image must be in PNG format. It must have the same size as the DataItem's image. Each pixel in the image mask represents the AnnotationSpec which the pixel in the image DataItem belong to. Each color is mapped to one AnnotationSpec based on annotation_spec_colors.",
+          "type": "string"
+        },
+        "annotationSpecColors": {
+          "description": "The mapping between color and AnnotationSpec for this Annotation.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1SchemaAnnotationSpecColor"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaAnnotationSpecColor": {
+      "id": "GoogleCloudAiplatformV1SchemaAnnotationSpecColor",
+      "description": "An entry of mapping between color and AnnotationSpec. The mapping is used in segmentation mask.",
+      "type": "object",
+      "properties": {
+        "color": {
+          "description": "The color of the AnnotationSpec in a segmentation mask.",
+          "$ref": "GoogleTypeColor"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec represented by the color in the segmentation mask.",
+          "type": "string"
+        },
+        "id": {
+          "description": "The ID of the AnnotationSpec represented by the color in the segmentation mask.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaImageSegmentationAnnotationPolygonAnnotation": {
+      "id": "GoogleCloudAiplatformV1SchemaImageSegmentationAnnotationPolygonAnnotation",
+      "description": "Represents a polygon in image.",
+      "type": "object",
+      "properties": {
+        "vertexes": {
+          "description": "The vertexes are connected one by one and the last vertex is connected to the first one to represent a polygon.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1SchemaVertex"
+          }
+        },
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaVertex": {
+      "id": "GoogleCloudAiplatformV1SchemaVertex",
+      "description": "A vertex represents a 2D point in the image. NOTE: the normalized vertex coordinates are relative to the original image and range from 0 to 1.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "description": "X coordinate.",
+          "type": "number",
+          "format": "double"
+        },
+        "y": {
+          "description": "Y coordinate.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaImageSegmentationAnnotationPolylineAnnotation": {
+      "id": "GoogleCloudAiplatformV1SchemaImageSegmentationAnnotationPolylineAnnotation",
+      "description": "Represents a polyline in image.",
+      "type": "object",
+      "properties": {
+        "vertexes": {
+          "description": "The vertexes are connected one by one and the last vertex in not connected to the first one.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1SchemaVertex"
+          }
+        },
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTablesDatasetMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaTablesDatasetMetadata",
+      "description": "The metadata of Datasets that contain tables data.",
+      "type": "object",
+      "properties": {
+        "inputConfig": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTablesDatasetMetadataInputConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTablesDatasetMetadataInputConfig": {
+      "id": "GoogleCloudAiplatformV1SchemaTablesDatasetMetadataInputConfig",
+      "description": "The tables Dataset's data source. The Dataset doesn't store the data directly, but only pointer(s) to its data.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTablesDatasetMetadataGcsSource"
+        },
+        "bigquerySource": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTablesDatasetMetadataBigQuerySource"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTablesDatasetMetadataGcsSource": {
+      "id": "GoogleCloudAiplatformV1SchemaTablesDatasetMetadataGcsSource",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Cloud Storage URI of one or more files. Only CSV files are supported. The first line of the CSV file is used as the header. If there are multiple files, the header is the first line of the lexicographically first file, the other files must either contain the exact same header or omit the header.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTablesDatasetMetadataBigQuerySource": {
+      "id": "GoogleCloudAiplatformV1SchemaTablesDatasetMetadataBigQuerySource",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "The URI of a BigQuery table. e.g. bq:\/\/projectId.bqDatasetId.bqTableId",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTextClassificationAnnotation": {
+      "id": "GoogleCloudAiplatformV1SchemaTextClassificationAnnotation",
+      "description": "Annotation details specific to text classification.",
+      "type": "object",
+      "properties": {
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTextDataItem": {
+      "id": "GoogleCloudAiplatformV1SchemaTextDataItem",
+      "description": "Payload of Text DataItem.",
+      "type": "object",
+      "properties": {
+        "gcsUri": {
+          "description": "Output only. Google Cloud Storage URI points to the original text in user's bucket. The text file is up to 10MB in size.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTextDatasetMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaTextDatasetMetadata",
+      "description": "The metadata of Datasets that contain Text DataItems.",
+      "type": "object",
+      "properties": {
+        "dataItemSchemaUri": {
+          "description": "Points to a YAML file stored on Google Cloud Storage describing payload of the Text DataItems that belong to this Dataset.",
+          "type": "string"
+        },
+        "gcsBucket": {
+          "description": "Google Cloud Storage Bucket name that contains the blob data of this Dataset.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTextExtractionAnnotation": {
+      "id": "GoogleCloudAiplatformV1SchemaTextExtractionAnnotation",
+      "description": "Annotation details specific to text extraction.",
+      "type": "object",
+      "properties": {
+        "textSegment": {
+          "description": "The segment of the text content.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTextSegment"
+        },
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTextSegment": {
+      "id": "GoogleCloudAiplatformV1SchemaTextSegment",
+      "description": "The text segment inside of DataItem.",
+      "type": "object",
+      "properties": {
+        "startOffset": {
+          "description": "Zero-based character index of the first character of the text segment (counting characters from the beginning of the text).",
+          "type": "string",
+          "format": "uint64"
+        },
+        "endOffset": {
+          "description": "Zero-based character index of the first character past the end of the text segment (counting character from the beginning of the text). The character at the end_offset is NOT included in the text segment.",
+          "type": "string",
+          "format": "uint64"
+        },
+        "content": {
+          "description": "The text content in the segment for output only.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTextSentimentAnnotation": {
+      "id": "GoogleCloudAiplatformV1SchemaTextSentimentAnnotation",
+      "description": "Annotation details specific to text sentiment.",
+      "type": "object",
+      "properties": {
+        "sentiment": {
+          "description": "The sentiment score for text.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "sentimentMax": {
+          "description": "The sentiment max score for text.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTextSentimentSavedQueryMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaTextSentimentSavedQueryMetadata",
+      "description": "The metadata of SavedQuery contains TextSentiment Annotations.",
+      "type": "object",
+      "properties": {
+        "sentimentMax": {
+          "description": "The maximum sentiment of sentiment Anntoation in this SavedQuery.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTimeSeriesDatasetMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaTimeSeriesDatasetMetadata",
+      "description": "The metadata of Datasets that contain time series data.",
+      "type": "object",
+      "properties": {
+        "inputConfig": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTimeSeriesDatasetMetadataInputConfig"
+        },
+        "timeSeriesIdentifierColumn": {
+          "description": "The column name of the time series identifier column that identifies the time series.",
+          "type": "string"
+        },
+        "timeColumn": {
+          "description": "The column name of the time column that identifies time order in the time series.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTimeSeriesDatasetMetadataInputConfig": {
+      "id": "GoogleCloudAiplatformV1SchemaTimeSeriesDatasetMetadataInputConfig",
+      "description": "The time series Dataset's data source. The Dataset doesn't store the data directly, but only pointer(s) to its data.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTimeSeriesDatasetMetadataGcsSource"
+        },
+        "bigquerySource": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTimeSeriesDatasetMetadataBigQuerySource"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTimeSeriesDatasetMetadataGcsSource": {
+      "id": "GoogleCloudAiplatformV1SchemaTimeSeriesDatasetMetadataGcsSource",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Cloud Storage URI of one or more files. Only CSV files are supported. The first line of the CSV file is used as the header. If there are multiple files, the header is the first line of the lexicographically first file, the other files must either contain the exact same header or omit the header.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTimeSeriesDatasetMetadataBigQuerySource": {
+      "id": "GoogleCloudAiplatformV1SchemaTimeSeriesDatasetMetadataBigQuerySource",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "The URI of a BigQuery table.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaVideoActionRecognitionAnnotation": {
+      "id": "GoogleCloudAiplatformV1SchemaVideoActionRecognitionAnnotation",
+      "description": "Annotation details specific to video action recognition.",
+      "type": "object",
+      "properties": {
+        "timeSegment": {
+          "description": "This Annotation applies to the time period represented by the TimeSegment. If it's not set, the Annotation applies to the whole video.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTimeSegment"
+        },
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTimeSegment": {
+      "id": "GoogleCloudAiplatformV1SchemaTimeSegment",
+      "description": "A time period inside of a DataItem that has a time dimension (e.g. video).",
+      "type": "object",
+      "properties": {
+        "startTimeOffset": {
+          "description": "Start of the time segment (inclusive), represented as the duration since the start of the DataItem.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "endTimeOffset": {
+          "description": "End of the time segment (exclusive), represented as the duration since the start of the DataItem.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaVideoClassificationAnnotation": {
+      "id": "GoogleCloudAiplatformV1SchemaVideoClassificationAnnotation",
+      "description": "Annotation details specific to video classification.",
+      "type": "object",
+      "properties": {
+        "timeSegment": {
+          "description": "This Annotation applies to the time period represented by the TimeSegment. If it's not set, the Annotation applies to the whole video.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTimeSegment"
+        },
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaVideoDataItem": {
+      "id": "GoogleCloudAiplatformV1SchemaVideoDataItem",
+      "description": "Payload of Video DataItem.",
+      "type": "object",
+      "properties": {
+        "gcsUri": {
+          "description": "Required. Google Cloud Storage URI points to the original video in user's bucket. The video is up to 50 GB in size and up to 3 hour in duration.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "Output only. The mime type of the content of the video. Only the videos in below listed mime types are supported. Supported mime_type: - video\/mp4 - video\/avi - video\/quicktime",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaVideoDatasetMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaVideoDatasetMetadata",
+      "description": "The metadata of Datasets that contain Video DataItems.",
+      "type": "object",
+      "properties": {
+        "dataItemSchemaUri": {
+          "description": "Points to a YAML file stored on Google Cloud Storage describing payload of the Video DataItems that belong to this Dataset.",
+          "type": "string"
+        },
+        "gcsBucket": {
+          "description": "Google Cloud Storage Bucket name that contains the blob data of this Dataset.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaVideoObjectTrackingAnnotation": {
+      "id": "GoogleCloudAiplatformV1SchemaVideoObjectTrackingAnnotation",
+      "description": "Annotation details specific to video object tracking.",
+      "type": "object",
+      "properties": {
+        "timeOffset": {
+          "description": "A time (frame) of a video to which this annotation pertains. Represented as the duration since the video's start.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "xMin": {
+          "description": "The leftmost coordinate of the bounding box.",
+          "type": "number",
+          "format": "double"
+        },
+        "xMax": {
+          "description": "The rightmost coordinate of the bounding box.",
+          "type": "number",
+          "format": "double"
+        },
+        "yMin": {
+          "description": "The topmost coordinate of the bounding box.",
+          "type": "number",
+          "format": "double"
+        },
+        "yMax": {
+          "description": "The bottommost coordinate of the bounding box.",
+          "type": "number",
+          "format": "double"
+        },
+        "instanceId": {
+          "description": "The instance of the object, expressed as a positive integer. Used to track the same object across different frames.",
+          "type": "string",
+          "format": "int64"
+        },
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaVisualInspectionClassificationLabelSavedQueryMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaVisualInspectionClassificationLabelSavedQueryMetadata",
+      "type": "object",
+      "properties": {
+        "multiLabel": {
+          "description": "Whether or not the classification label is multi_label.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaVisualInspectionMaskSavedQueryMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaVisualInspectionMaskSavedQueryMetadata",
+      "type": "object",
+      "properties": {
+        "colorMap": {
+          "description": "The mapping between color and AnnotationSpec for this SavedQuery.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1SchemaAnnotationSpecColor"
           }
         }
       }

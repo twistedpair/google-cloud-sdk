@@ -476,6 +476,10 @@
           "description": "Binauthz conifguration for the cluster.",
           "$ref": "BinauthzConfig"
         },
+        "hierarchyController": {
+          "description": "Hierarchy Controller configuration for the cluster.",
+          "$ref": "HierarchyControllerConfig"
+        },
         "version": {
           "description": "Version of ACM installed.",
           "type": "string"
@@ -575,6 +579,21 @@
       "properties": {
         "enabled": {
           "description": "Whether binauthz is enabled in this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "HierarchyControllerConfig": {
+      "id": "HierarchyControllerConfig",
+      "description": "Configuration for Hierarchy Controller",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether Hierarchy Controller is enabled in this cluster.",
+          "type": "boolean"
+        },
+        "enablePodTreeLabels": {
+          "description": "Whether pod tree labels are enabled in this cluster.",
           "type": "boolean"
         }
       }
@@ -980,13 +999,8 @@
           "type": "string",
           "format": "google-datetime"
         },
-        "lastMeasuredClusterVcpuCapacity": {
-          "description": "The number of vCPUs in the cluster according to the most recent measurement.",
-          "type": "string",
-          "format": "int64"
-        },
         "preciseLastMeasuredClusterVcpuCapacity": {
-          "description": "The precise vCPUs capacity in the cluster according to the most recent measurement (including partial nodes).",
+          "description": "The vCPUs capacity in the cluster according to the most recent measurement (1\/1000 precision).",
           "type": "number",
           "format": "float"
         }
@@ -1027,6 +1041,10 @@
         "binauthzState": {
           "description": "Binauthz status",
           "$ref": "BinauthzState"
+        },
+        "hierarchyControllerState": {
+          "description": "Hierarchy Controller status",
+          "$ref": "HierarchyControllerState"
         }
       }
     },
@@ -1411,6 +1429,75 @@
         "webhookVersion": {
           "description": "The version of the binauthz webhook.",
           "type": "string"
+        }
+      }
+    },
+    "HierarchyControllerState": {
+      "id": "HierarchyControllerState",
+      "description": "State for Hierarchy Controller",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The version for Hierarchy Controller",
+          "$ref": "HierarchyControllerVersion"
+        },
+        "state": {
+          "description": "The deployment state for Hierarchy Controller",
+          "$ref": "HierarchyControllerDeploymentState"
+        }
+      }
+    },
+    "HierarchyControllerVersion": {
+      "id": "HierarchyControllerVersion",
+      "description": "Version for Hierarchy Controller",
+      "type": "object",
+      "properties": {
+        "hnc": {
+          "description": "Version for open source HNC",
+          "type": "string"
+        },
+        "extension": {
+          "description": "Version for Hierarchy Controller extension",
+          "type": "string"
+        }
+      }
+    },
+    "HierarchyControllerDeploymentState": {
+      "id": "HierarchyControllerDeploymentState",
+      "description": "Deployment state for Hierarchy Controller",
+      "type": "object",
+      "properties": {
+        "hnc": {
+          "description": "The deployment state for open source HNC (e.g. v0.7.0-hc.0)",
+          "type": "string",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLED",
+            "ERROR"
+          ]
+        },
+        "extension": {
+          "description": "The deployment state for Hierarchy Controller extension (e.g. v0.7.0-hc.1)",
+          "type": "string",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLED",
+            "ERROR"
+          ]
         }
       }
     },

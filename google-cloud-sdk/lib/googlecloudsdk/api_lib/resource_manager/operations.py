@@ -32,6 +32,10 @@ from googlecloudsdk.core.util import retry
 OPERATIONS_API_VERSION = 'v1'
 
 
+class OperationError(exceptions.Error):
+  pass
+
+
 def OperationsClient():
   return apis.GetClientInstance('cloudresourcemanager', OPERATIONS_API_VERSION)
 

@@ -94,10 +94,6 @@ class BlockDeviceUserResponse(_messages.Message):
   deviceUser = _messages.MessageField('DeviceUser', 1)
 
 
-class CancelUserInvitationRequest(_messages.Message):
-  r"""Request to cancel sent invitation for target email in UserInvitation."""
-
-
 class CancelWipeDeviceResponse(_messages.Message):
   r"""Response message for cancelling an unfinished device wipe.
 
@@ -270,76 +266,6 @@ class ClientState(_messages.Message):
   name = _messages.StringField(10)
   ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 11)
   scoreReason = _messages.StringField(12)
-
-
-class CloudidentityCustomersUserInvitationsCancelRequest(_messages.Message):
-  r"""A CloudidentityCustomersUserInvitationsCancelRequest object.
-
-  Fields:
-    cancelUserInvitationRequest: A CancelUserInvitationRequest resource to be
-      passed as the request body.
-    name: Required. UserInvitation name in the format
-      `customers/{customer}/userinvitations/{user_email_address}`
-  """
-
-  cancelUserInvitationRequest = _messages.MessageField('CancelUserInvitationRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class CloudidentityCustomersUserInvitationsGetRequest(_messages.Message):
-  r"""A CloudidentityCustomersUserInvitationsGetRequest object.
-
-  Fields:
-    name: Required. resource name in format
-      `customers/{customer}/userinvitations/{user_email_address}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class CloudidentityCustomersUserInvitationsListRequest(_messages.Message):
-  r"""A CloudidentityCustomersUserInvitationsListRequest object.
-
-  Fields:
-    filter: Optional. A query string for filtering `UserInvitation` results by
-      its current state, in the format: `"state:invited"`.
-    orderBy: Optional. The sort order of the list results. You can sort the
-      results in descending order based on either email or last update
-      timestamp but not both, using `order_by="email desc"`. Currently,
-      sorting is supported for `update_time asc`, `update_time desc`, `email
-      asc`, and `email desc`. If not specified, results will be returned based
-      on `email asc` order.
-    pageSize: Optional. The maximum number of UserInvitations to return. If
-      unspecified, at most 100 `UserInvitation`s will be returned. The maximum
-      value is 200; values above 200 will be set to 200.
-    pageToken: Optional. A page token, received from a previous
-      `ListUserInvitations` call. Provide this to retrieve the subsequent
-      page. When paginating, all other parameters provided to `ListBooks` must
-      match the call that provided the page token.
-    parent: Required. The unique identifier of the Google Workspace
-      organization account of the customer the UserInvitations are associated
-      with.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class CloudidentityCustomersUserInvitationsSendRequest(_messages.Message):
-  r"""A CloudidentityCustomersUserInvitationsSendRequest object.
-
-  Fields:
-    name: Required. `UserInvitation` name in the format
-      `customers/{customer}/userinvitations/{user_email_address}`
-    sendUserInvitationRequest: A SendUserInvitationRequest resource to be
-      passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  sendUserInvitationRequest = _messages.MessageField('SendUserInvitationRequest', 2)
 
 
 class CloudidentityGroupsCreateRequest(_messages.Message):
@@ -1948,21 +1874,6 @@ class ListMembershipsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class ListUserInvitationsResponse(_messages.Message):
-  r"""Response message for UserInvitations listing request.
-
-  Fields:
-    nextPageToken: The token for the next page. If not empty, indicates that
-      there may be more `UserInvitations` that match the listing request; this
-      value can be used in a subsequent ListUserInvitationsRequest to get
-      continued results with the current list call.
-    userInvitations: The list of UserInvitations.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  userInvitations = _messages.MessageField('UserInvitation', 2, repeated=True)
-
-
 class LookupGroupNameResponse(_messages.Message):
   r"""The response message for GroupsService.LookupGroupName.
 
@@ -2430,13 +2341,6 @@ class SearchTransitiveMembershipsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class SendUserInvitationRequest(_messages.Message):
-  r"""A request to send email for inviting target user corresponding to the
-  UserInvitation.
-  """
-
-
-
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -2579,45 +2483,6 @@ class UpdateMembershipRolesParams(_messages.Message):
 
   fieldMask = _messages.StringField(1)
   membershipRole = _messages.MessageField('MembershipRole', 2)
-
-
-class UserInvitation(_messages.Message):
-  r"""UserInvitation to join a Google Workspace organization.
-
-  Enums:
-    StateValueValuesEnum: State of the `UserInvitation`.
-
-  Fields:
-    mailsSentCount: Number of invitation emails sent to the user.
-    name: Shall be of the form
-      `customers/{customer}/userinvitations/{user_email_address}`
-    state: State of the `UserInvitation`.
-    updateTime: Time when the `UserInvitation` was last updated.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""State of the `UserInvitation`.
-
-    Values:
-      STATE_UNSPECIFIED: The default value. This value is used if the state is
-        omitted.
-      NOT_YET_SENT: The `UserInvitation` has been created and is ready for
-        sending as an email.
-      INVITED: The user has been invited by email.
-      ACCEPTED: The user has accepted the invitation and is part of the
-        organization.
-      DECLINED: The user declined the invitation.
-    """
-    STATE_UNSPECIFIED = 0
-    NOT_YET_SENT = 1
-    INVITED = 2
-    ACCEPTED = 3
-    DECLINED = 4
-
-  mailsSentCount = _messages.IntegerField(1)
-  name = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
-  updateTime = _messages.StringField(4)
 
 
 class WipeDeviceResponse(_messages.Message):

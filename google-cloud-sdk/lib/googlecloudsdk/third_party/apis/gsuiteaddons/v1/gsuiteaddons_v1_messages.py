@@ -416,38 +416,18 @@ class GoogleAppsScriptTypeMenuItemExtensionPoint(_messages.Message):
   runFunction = _messages.StringField(3)
 
 
-class GoogleAppsScriptTypeSheetsSheetsActionDefinition(_messages.Message):
-  r"""Defines a script action within Sheets.
-
-  Fields:
-    defaultShortcut: Optional. The default shortcut in Sheets to execute the
-      macro (e.g., "Ctrl+Alt+Shift+0")
-    functionName: Required. The endpoint to execute which performs the macro.
-    menuName: Required. The name of the macro, used for display purposes.
-  """
-
-  defaultShortcut = _messages.StringField(1)
-  functionName = _messages.StringField(2)
-  menuName = _messages.StringField(3)
-
-
 class GoogleAppsScriptTypeSheetsSheetsAddOnManifest(_messages.Message):
   r"""Sheets add-on manifest.
 
   Fields:
     homepageTrigger: If present, this overrides the configuration from
       `addOns.common.homepageTrigger`.
-    macros: Defines Sheets actions (macros) contained within the project.
     onFileScopeGrantedTrigger: Endpoint to execute when file scope
       authorization is granted for this document/user pair.
-    onSelectionTrigger: Endpoint to execute when a selection in the Sheets
-      client occurs.
   """
 
   homepageTrigger = _messages.MessageField('GoogleAppsScriptTypeHomepageExtensionPoint', 1)
-  macros = _messages.MessageField('GoogleAppsScriptTypeSheetsSheetsActionDefinition', 2, repeated=True)
-  onFileScopeGrantedTrigger = _messages.MessageField('GoogleAppsScriptTypeSheetsSheetsExtensionPoint', 3)
-  onSelectionTrigger = _messages.MessageField('GoogleAppsScriptTypeSheetsSheetsExtensionPoint', 4)
+  onFileScopeGrantedTrigger = _messages.MessageField('GoogleAppsScriptTypeSheetsSheetsExtensionPoint', 2)
 
 
 class GoogleAppsScriptTypeSheetsSheetsExtensionPoint(_messages.Message):
@@ -543,14 +523,14 @@ class GoogleCloudGsuiteaddonsV1Authorization(_messages.Message):
 
 
 class GoogleCloudGsuiteaddonsV1Deployment(_messages.Message):
-  r"""A Google Workspace Add-on Deployment
+  r"""A Google Workspace Add-on deployment
 
   Fields:
     addOns: The Google Workspace Add-on configuration.
     etag: This value is computed by the server based on the version of the
-      `Deployment` in storage, and may be sent on update and delete requests
-      to ensure the client has an up-to-date value before proceeding.
-    name: The deployment resource name. This field is read-only. Example:
+      deployment in storage, and may be sent on update and delete requests to
+      ensure the client has an up-to-date value before proceeding.
+    name: The deployment resource name. Example:
       projects/123/deployments/my_deployment.
     oauthScopes: The list of Google OAuth scopes for which to request consent
       from the end user before executing an add-on endpoint.
@@ -678,8 +658,8 @@ class GsuiteaddonsProjectsDeploymentsListRequest(_messages.Message):
   r"""A GsuiteaddonsProjectsDeploymentsListRequest object.
 
   Fields:
-    pageSize: The maximum number of Deployments to return. The service may
-      return fewer than this value. If unspecified, at most 1000 Deployments
+    pageSize: The maximum number of deployments to return. The service may
+      return fewer than this value. If unspecified, at most 1000 deployments
       will be returned. The maximum value is 1000; values above 1000 will be
       coerced to 1000.
     pageToken: A page token, received from a previous `ListDeployments` call.
@@ -701,7 +681,7 @@ class GsuiteaddonsProjectsDeploymentsReplaceDeploymentRequest(_messages.Message)
   Fields:
     googleCloudGsuiteaddonsV1Deployment: A GoogleCloudGsuiteaddonsV1Deployment
       resource to be passed as the request body.
-    name: The deployment resource name. This field is read-only. Example:
+    name: The deployment resource name. Example:
       projects/123/deployments/my_deployment.
   """
 

@@ -185,6 +185,68 @@ class Exponential(_messages.Message):
   scale = _messages.FloatField(3)
 
 
+class GetQueryResultsResponse(_messages.Message):
+  r"""Response object of GetQueryResults.
+
+  Messages:
+    RowsValueListEntry: A RowsValueListEntry object.
+
+  Fields:
+    jobComplete: Whether the query has completed or not. If rows or totalRows
+      are present, this will always be true. If this is false, totalRows will
+      not be available.
+    jobName: Reference to the Job that was created to run the query. Example:
+      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/jobs/JOB_ID
+    pageToken: A token used for paging results. When this token is non-empty,
+      it indicates additional results are available.
+    rows: An object with as many results as can be contained within the
+      maximum permitted reply size. To get any additional rows, you can call
+      GetQueryResults and specify the jobReference returned above. Present
+      only when the query completes successfully.The REST-based representation
+      of this data leverages a series of JSON f,v objects for indicating
+      fields and values.
+    schema: The schema of the results. Present only when the query completes
+      successfully.
+    totalBytesProcessed: The total number of bytes processed for this query.
+    totalRows: The total number of rows in the complete query result set,
+      which can be more than the number of rows in this single page of
+      results. Present only when the query completes successfully.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RowsValueListEntry(_messages.Message):
+    r"""A RowsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a RowsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RowsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  jobComplete = _messages.BooleanField(1)
+  jobName = _messages.StringField(2)
+  pageToken = _messages.StringField(3)
+  rows = _messages.MessageField('RowsValueListEntry', 4, repeated=True)
+  schema = _messages.MessageField('TableSchema', 5)
+  totalBytesProcessed = _messages.IntegerField(6)
+  totalRows = _messages.IntegerField(7)
+
+
 class HttpRequest(_messages.Message):
   r"""A common proto for logging HTTP requests. Only contains semantics
   defined by the HTTP specification. Product-specific logging information MUST
@@ -467,6 +529,21 @@ class ListSinksResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   sinks = _messages.MessageField('LogSink', 2, repeated=True)
+
+
+class ListTablesResponse(_messages.Message):
+  r"""The response from ListTables.
+
+  Fields:
+    nextPageToken: If there are more results than those appearing in this
+      response, then nextPageToken is included. To get the next set of
+      results, call the same method again using the value of nextPageToken as
+      pageToken.
+    tables: A list of tables.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tables = _messages.MessageField('Table', 2, repeated=True)
 
 
 class ListViewsResponse(_messages.Message):
@@ -1492,6 +1569,26 @@ class LoggingBillingAccountsLocationsBucketsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class LoggingBillingAccountsLocationsBucketsTablesListRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsTablesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The bucket whose tables are to be listed: Example:
+      "projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class LoggingBillingAccountsLocationsBucketsUndeleteRequest(_messages.Message):
   r"""A LoggingBillingAccountsLocationsBucketsUndeleteRequest object.
 
@@ -2099,6 +2196,26 @@ class LoggingFoldersLocationsBucketsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class LoggingFoldersLocationsBucketsTablesListRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsTablesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The bucket whose tables are to be listed: Example:
+      "projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class LoggingFoldersLocationsBucketsUndeleteRequest(_messages.Message):
   r"""A LoggingFoldersLocationsBucketsUndeleteRequest object.
 
@@ -2503,6 +2620,24 @@ class LoggingLocationsBucketsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class LoggingLocationsBucketsJobsGetRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsJobsGetRequest object.
+
+  Fields:
+    jobName: Required. Fully qualified Job ID of the query job. Example:
+      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/jobs/JOB_ID
+    pageSize: Maximum number of results to read.
+    pageToken: Page token, returned by a previous call, to request the next
+      page of results.
+    startIndex: Zero-based index of the starting row.
+  """
+
+  jobName = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  startIndex = _messages.IntegerField(4)
+
+
 class LoggingLocationsBucketsListRequest(_messages.Message):
   r"""A LoggingLocationsBucketsListRequest object.
 
@@ -2554,6 +2689,37 @@ class LoggingLocationsBucketsPatchRequest(_messages.Message):
   logBucket = _messages.MessageField('LogBucket', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class LoggingLocationsBucketsTablesGetRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsTablesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the table. Example: "projects/PROJECT
+      _ID/locations/LOCATION_ID/buckets/BUCKET_ID/tables/TABLE_ID"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingLocationsBucketsTablesListRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsTablesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The bucket whose tables are to be listed: Example:
+      "projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class LoggingLocationsBucketsUndeleteRequest(_messages.Message):
@@ -2962,6 +3128,26 @@ class LoggingOrganizationsLocationsBucketsPatchRequest(_messages.Message):
   logBucket = _messages.MessageField('LogBucket', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class LoggingOrganizationsLocationsBucketsTablesListRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsTablesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The bucket whose tables are to be listed: Example:
+      "projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class LoggingOrganizationsLocationsBucketsUndeleteRequest(_messages.Message):
@@ -3516,6 +3702,26 @@ class LoggingProjectsLocationsBucketsPatchRequest(_messages.Message):
   logBucket = _messages.MessageField('LogBucket', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class LoggingProjectsLocationsBucketsTablesListRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsTablesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The bucket whose tables are to be listed: Example:
+      "projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class LoggingProjectsLocationsBucketsUndeleteRequest(_messages.Message):
@@ -4559,6 +4765,105 @@ class MonitoredResourceMetadata(_messages.Message):
   userLabels = _messages.MessageField('UserLabelsValue', 2)
 
 
+class QueryRequest(_messages.Message):
+  r"""The parameters to Query.
+
+  Fields:
+    dryRun: Optional. If set to true, the query job is not executed. Instead,
+      if the query is valid, statistics is returned about the job such as how
+      many bytes would be processed. If the query is invalid, an error
+      returns. The default value is false.
+    pageSize: Optional. The maximum number of rows of data to return per page
+      of results. Setting this flag to a small value such as 1000 and then
+      paging through results might improve reliability when the query result
+      set is large. In addition to this limit, responses are also limited to
+      10 MB. By default, there is no maximum row count, and only the byte
+      limit applies.
+    query: Required. A query string, following the BigQuery SQL query syntax.
+      Table names should be kept unqualified, and they must be accessible
+      using the view specified in the resource_names.Example: SELECT count(*)
+      FROM audit_log;
+    resourceNames: Required. Names of one or more log views to run a SQL
+      query. Currently, only a single view may be selected. Multiple view
+      selection will be supported in the future.Examples: projects/PROJECT_ID/
+      locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID organization/ORGAN
+      IZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID billing
+      Accounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/view
+      s/VIEW_ID folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/view
+      s/VIEW_IDRequires 'logging.views.access' on view resource.
+  """
+
+  dryRun = _messages.BooleanField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  query = _messages.StringField(3)
+  resourceNames = _messages.StringField(4, repeated=True)
+
+
+class QueryResponse(_messages.Message):
+  r"""A QueryResponse object.
+
+  Messages:
+    RowsValueListEntry: A RowsValueListEntry object.
+
+  Fields:
+    jobComplete: Whether the query has completed or not. If rows or totalRows
+      are present, this will always be true. If this is false, totalRows will
+      not be available.
+    jobName: Reference to the Job that was created to run the query. This
+      field will be present even if the original request timed out, in which
+      case GetQueryResults can be used to read the results once the query has
+      completed. Since this API only returns the first page of results,
+      subsequent pages can be fetched via the same mechanism
+      (GetQueryResults). Example:
+      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/jobs/JOB_ID
+    pageToken: A token used for paging results.
+    rows: An object with as many results as can be contained within the
+      maximum permitted reply size. To get any additional rows, you can call
+      GetQueryResults and specify the jobReference returned above.
+    schema: The schema of the results. It shows the columns present in the
+      output table. Present only when the query completes successfully.
+    totalBytesProcessed: The total number of bytes processed for this query.
+      If this query was a dry run, this is the number of bytes that would be
+      processed if the query were run.
+    totalRows: The total number of rows in the complete query result set,
+      which can be more than the number of rows in this single page of
+      results.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RowsValueListEntry(_messages.Message):
+    r"""A RowsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a RowsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RowsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  jobComplete = _messages.BooleanField(1)
+  jobName = _messages.StringField(2)
+  pageToken = _messages.StringField(3)
+  rows = _messages.MessageField('RowsValueListEntry', 4, repeated=True)
+  schema = _messages.MessageField('TableSchema', 5)
+  totalBytesProcessed = _messages.IntegerField(6)
+  totalRows = _messages.IntegerField(7)
+
+
 class RequestLog(_messages.Message):
   r"""Complete log information about a single HTTP request to an App Engine
   application.
@@ -4784,6 +5089,120 @@ class SuppressionInfo(_messages.Message):
 
   reason = _messages.EnumField('ReasonValueValuesEnum', 1)
   suppressedCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class Table(_messages.Message):
+  r"""A table storing logs in an analytics log bucket.
+
+  Fields:
+    createTime: Output only. The time when this table was created.
+    description: Describes this table.
+    name: The resource name of the table. Example: projects/[PROJECT_ID]/locat
+      ions/[LOCATION_ID]/buckets/[BUCKET_ID]/tables/[TABLE_NAME]
+    rowCount: Output only. The number of rows of data in this table, excluding
+      any data in the streaming buffer.
+    schema: Describes the schema of this table.
+    tableSizeBytes: Output only. The size of this table in bytes, excluding
+      any data in the streaming buffer.
+    updateTime: Output only. The time when this table was last modified.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  rowCount = _messages.IntegerField(4)
+  schema = _messages.MessageField('TableSchema', 5)
+  tableSizeBytes = _messages.IntegerField(6)
+  updateTime = _messages.StringField(7)
+
+
+class TableFieldSchema(_messages.Message):
+  r"""A field in TableSchema.
+
+  Enums:
+    ModeValueValuesEnum: Optional. The field mode. Possible values include
+      NULLABLE, REQUIRED and REPEATED. The default value is NULLABLE.
+    TypeValueValuesEnum: Required. The field data type.
+
+  Fields:
+    description: Optional. The field description. The maximum length is 1,024
+      characters.
+    fields: Optional. Describes the nested schema fields if the type property
+      is set to RECORD.
+    mode: Optional. The field mode. Possible values include NULLABLE, REQUIRED
+      and REPEATED. The default value is NULLABLE.
+    name: Required. The field name. The name must contain only letters (a-z,
+      A-Z), numbers (0-9), or underscores (_), and must start with a letter or
+      underscore. The maximum length is 128 characters.
+    type: Required. The field data type.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The field mode. Possible values include NULLABLE, REQUIRED
+    and REPEATED. The default value is NULLABLE.
+
+    Values:
+      UNKNOWN_MODE: Illegal value
+      NULLABLE: <no description>
+      REQUIRED: <no description>
+      REPEATED: <no description>
+    """
+    UNKNOWN_MODE = 0
+    NULLABLE = 1
+    REQUIRED = 2
+    REPEATED = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The field data type.
+
+    Values:
+      UNKNOWN_TYPE: Illegal value
+      STRING: UTF8 characters
+      INTEGER: 64-bit signed
+      FLOAT: 64-bit IEEE floating point
+      RECORD: Aggregate type
+      BYTES: Binary data
+      BOOLEAN: 2-valued
+      TIMESTAMP: 64-bit signed usec since UTC epoch
+      DATE: Civil date - Year, Month, Day
+      TIME: Civil time - Hour, Minute, Second, Microseconds
+      DATETIME: Combination of civil date and civil time
+      GEOGRAPHY: Geography object
+      NUMERIC: Numeric value
+      BIGNUMERIC: BigNumeric value
+      JSON: JSON value
+    """
+    UNKNOWN_TYPE = 0
+    STRING = 1
+    INTEGER = 2
+    FLOAT = 3
+    RECORD = 4
+    BYTES = 5
+    BOOLEAN = 6
+    TIMESTAMP = 7
+    DATE = 8
+    TIME = 9
+    DATETIME = 10
+    GEOGRAPHY = 11
+    NUMERIC = 12
+    BIGNUMERIC = 13
+    JSON = 14
+
+  description = _messages.StringField(1)
+  fields = _messages.MessageField('TableFieldSchema', 2, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 3)
+  name = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
+class TableSchema(_messages.Message):
+  r"""Schema of a Table.
+
+  Fields:
+    fields: Describes the fields in a table.
+  """
+
+  fields = _messages.MessageField('TableFieldSchema', 1, repeated=True)
 
 
 class TailLogEntriesRequest(_messages.Message):

@@ -25,6 +25,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
+
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from apitools.base.py import transfer as apitools_transfer
@@ -46,9 +48,6 @@ from googlecloudsdk.core.credentials import transports
 
 
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
-# TODO(b/161346648) Retrieve number of retries from Boto config file.
-DEFAULT_NUM_RETRIES = 23
-DEFAULT_COPY_CHUNK_SIZE = 100 * 1024 * 1024  # 100 MiB.
 MAX_READ_SIZE = 8 * 1024  # 8 KiB.
 # The API limits the number of objects that can be composed in a single call.
 # https://cloud.google.com/storage/docs/json_api/v1/objects/compose
@@ -120,6 +119,25 @@ def _object_resource_from_metadata(metadata):
 def _no_op_callback(unused_response, unused_object):
   """Disables Apitools' default print callbacks."""
   pass
+
+
+def get_download_serialization_data(object_resource, progress):
+  """Generates download serialization data for Apitools.
+
+  Args:
+    object_resource (resource_reference.ObjectResource): Used to get metadata.
+    progress (int): Represents how much of download is complete.
+
+  Returns:
+    JSON string for use with Apitools.
+  """
+  serialization_dict = {
+      'auto_transfer': 'False',  # Apitools JSON API feature not used.
+      'progress': progress,
+      'total_size': object_resource.size,
+      'url': object_resource.metadata.mediaLink,  # HTTP download link.
+  }
+  return json.dumps(serialization_dict)
 
 
 class GcsRequestConfig(cloud_api.RequestConfig):
@@ -545,7 +563,7 @@ class GcsApi(cloud_api.CloudApi):
           download_stream,
           auto_transfer=False,
           total_size=cloud_resource.size,
-          num_retries=DEFAULT_NUM_RETRIES)
+          num_retries=properties.VALUES.storage.number_retries.GetInt())
       download_stream_handler = _StorageStreamResponseHandler(download_stream)
       apitools_requests_http_client = transports.GetApitoolsTransport(
           response_encoding=None, response_handler=download_stream_handler)
@@ -634,9 +652,9 @@ class GcsApi(cloud_api.CloudApi):
           source_stream,
           content_type,
           auto_transfer=True,
-          chunksize=DEFAULT_COPY_CHUNK_SIZE,
+          chunksize=properties.VALUES.storage.chunk_size.GetInt(),
           gzip_encoded=request_config.gzip_encoded,
-          num_retries=DEFAULT_NUM_RETRIES,
+          num_retries=properties.VALUES.storage.number_retries.GetInt(),
           total_size=request_config.size)
 
       result_object_metadata = self.client.objects.Insert(

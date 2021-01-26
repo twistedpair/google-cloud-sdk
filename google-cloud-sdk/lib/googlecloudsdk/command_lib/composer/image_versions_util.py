@@ -131,6 +131,21 @@ def CompareVersions(v1, v2):
   return v1[2] - v2[2]
 
 
+def IsVersionInRange(version, range_from, range_to):
+  """Checks if given `version` is in range of (`range_from`, `range_to`).
+
+  Args:
+    version: version to check
+    range_from: left boundary of range (inclusive), if None - no boundary
+    range_to: right boundary of range (exclusive), if None - no boundary
+
+  Returns:
+    True if given version is in range, otherwise False.
+  """
+  return ((range_from is None or CompareVersions(range_from, version) <= 0) and
+          (range_to is None or CompareVersions(version, range_to) < 0))
+
+
 def _BuildUpgradeCandidateList(location_ref,
                                image_version_id,
                                python_version,

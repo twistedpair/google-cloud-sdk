@@ -248,6 +248,27 @@
             "$ref": "AdmissionRule"
           }
         },
+        "kubernetesNamespaceAdmissionRules": {
+          "description": "Optional. Per-kubernetes-namespace admission rules. K8s namespace spec format: [a-z.-]+, e.g. 'some-namespace'",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "AdmissionRule"
+          }
+        },
+        "kubernetesServiceAccountAdmissionRules": {
+          "description": "Optional. Per-kubernetes-service-account admission rules. Service account spec format: `namespace:serviceaccount`. e.g. 'test-ns:default'",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "AdmissionRule"
+          }
+        },
+        "istioServiceIdentityAdmissionRules": {
+          "description": "Optional. Per-istio-service-identity admission rules. Istio service identity spec format: spiffe:\/\/\/ns\/\/sa\/ or \/ns\/\/sa\/ e.g. spiffe:\/\/example.com\/ns\/test-ns\/sa\/default",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "AdmissionRule"
+          }
+        },
         "defaultAdmissionRule": {
           "description": "Required. Default admission rule for a cluster without a per-cluster, per- kubernetes-service-account, or per-istio-service-identity admission rule.",
           "$ref": "AdmissionRule"

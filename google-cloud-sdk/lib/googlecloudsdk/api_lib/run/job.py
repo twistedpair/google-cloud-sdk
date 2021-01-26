@@ -30,10 +30,10 @@ COMPLETED_CONDITION = 'Completed'
 
 class RestartPolicy(enum.Enum):
   NEVER = 'Never'
-  ON_FAILRE = 'OnFailure'
+  ON_FAILURE = 'OnFailure'
 
 
-class Job(container_resource.ContainerResource):
+class Job(k8s_object.KubernetesObject):
   """Wraps a Cloud Run job message, making fields more convenient."""
 
   API_CATEGORY = 'run.googleapis.com'
@@ -53,20 +53,83 @@ class Job(container_resource.ContainerResource):
       A new Job object to be deployed.
     """
     ret = super(Job, cls).New(client, namespace)
-    ret.instance_spec.containers = [client.MESSAGES_MODULE.Container()]
+    ret.spec.template.spec.containers = [client.MESSAGES_MODULE.Container()]
     return ret
+
+  class InstanceTemplateSpec(container_resource.ContainerResource):
+    """Wrapper class for Job subfield InstanceTemplateSpec."""
+
+    KIND = 'InstanceTemplateSpec'
+
+    @classmethod
+    def SpecAndAnnotationsOnly(cls, job):
+      """Special wrapper for spec only that also covers metadata annotations.
+
+      For a message type without its own metadata, like InstanceTemplateSpec,
+      metadata fields should either raise AttributeErrors or refer to the
+      metadata of a different message depending on use case. This method handles
+      the annotations of metadata by referencing the parent job's annotations.
+      All other metadata fields will fall through to k8s_object which will
+      lead to AttributeErrors.
+
+      Args:
+        job: The parent job for this InstanceTemplateSpec
+
+      Returns:
+        A new k8s_object to wrap the InstanceTemplateSpec with only the spec
+        fields and the metadata annotations.
+      """
+      spec_wrapper = super(Job.InstanceTemplateSpec,
+                           cls).SpecOnly(job.spec.template.spec,
+                                         job.MessagesModule())
+      # pylint: disable=protected-access
+      spec_wrapper._annotations = job.annotations
+      return spec_wrapper
+
+    @property
+    def annotations(self):
+      """Override to return the parent job's annotations."""
+      try:
+        return self._annotations
+      except AttributeError:
+        raise ValueError(
+            'Job templates do not have their own annotations. Initialize the '
+            'wrapper with SpecAndAnnotationsOnly to be able to use annotations.'
+        )
+
+    @property
+    def restart_policy(self):
+      """Returns the enum version of the restart policy."""
+      return RestartPolicy(self.spec.restartPolicy)
+
+    @restart_policy.setter
+    def restart_policy(self, enum_value):
+      self.spec.restartPolicy = enum_value.value
+
+    @property
+    def service_account(self):
+      """The service account to use as the container identity."""
+      return self.spec.serviceAccountName
+
+    @service_account.setter
+    def service_account(self, value):
+      self.spec.serviceAccountName = value
 
   @property
   def template(self):
-    return self.spec.template
+    return Job.InstanceTemplateSpec.SpecAndAnnotationsOnly(self)
 
   @property
   def author(self):
     return self.annotations.get(AUTHOR_ANNOTATION)
 
   @property
-  def instance_spec(self):
-    return self.spec.template.spec
+  def image(self):
+    return self.template.image
+
+  @image.setter
+  def image(self, value):
+    self.template.image = value
 
   @property
   def parallelism(self):
@@ -91,12 +154,3 @@ class Job(container_resource.ContainerResource):
   @backoff_limit.setter
   def backoff_limit(self, value):
     self.spec.backoffLimit = value
-
-  @property
-  def restart_policy(self):
-    """Returns the enum version of the restart policy."""
-    return RestartPolicy(self.instance_spec.restartPolicy)
-
-  @restart_policy.setter
-  def restart_policy(self, enum_value):
-    self.instance_spec.restartPolicy = enum_value.value

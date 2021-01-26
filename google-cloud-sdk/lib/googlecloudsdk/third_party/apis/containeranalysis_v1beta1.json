@@ -131,7 +131,7 @@
           "description": "Output only. This explicitly denotes which of the occurrence details are specified. This field can be used as a filter in list requests.",
           "type": "string",
           "enumDescriptions": [
-            "Unknown.",
+            "Default value. This value is unused.",
             "The note and occurrence represent a package vulnerability.",
             "The note and occurrence assert build provenance.",
             "This represents an image basis relationship.",
@@ -377,6 +377,10 @@
         "revision": {
           "description": "The iteration of the package build from the above version.",
           "type": "string"
+        },
+        "inclusive": {
+          "description": "Whether this version is specifying part of an inclusive range. Grafeas does not have the capability to specify version ranges; instead we have fields that specify start version and end versions. At times this is insufficient - we also need to specify whether the version is included in the range or is excluded from the range. This boolean is expected to be set to true when the version is included in a range.",
+          "type": "boolean"
         },
         "kind": {
           "description": "Required. Distinguishes between sentinel MIN\/MAX versions and normal versions.",
@@ -1342,7 +1346,7 @@
           "description": "Output only. The type of analysis. This field can be used as a filter in list requests.",
           "type": "string",
           "enumDescriptions": [
-            "Unknown.",
+            "Default value. This value is unused.",
             "The note and occurrence represent a package vulnerability.",
             "The note and occurrence assert build provenance.",
             "This represents an image basis relationship.",
@@ -1527,6 +1531,10 @@
           "description": "The time this information was last changed at the source. This is an upstream timestamp from the underlying information source - e.g. Ubuntu security tracker.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "source": {
+          "description": "The source from which the information in this Detail was obtained.",
+          "type": "string"
         }
       }
     },
@@ -1852,7 +1860,7 @@
           "description": "Required. Immutable. The kind of analysis that is handled by this discovery.",
           "type": "string",
           "enumDescriptions": [
-            "Unknown.",
+            "Default value. This value is unused.",
             "The note and occurrence represent a package vulnerability.",
             "The note and occurrence assert build provenance.",
             "This represents an image basis relationship.",

@@ -1106,6 +1106,271 @@
         }
       }
     },
+    "ListTablesResponse": {
+      "id": "ListTablesResponse",
+      "description": "The response from ListTables.",
+      "type": "object",
+      "properties": {
+        "tables": {
+          "description": "A list of tables.",
+          "type": "array",
+          "items": {
+            "$ref": "Table"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there are more results than those appearing in this response, then nextPageToken is included. To get the next set of results, call the same method again using the value of nextPageToken as pageToken.",
+          "type": "string"
+        }
+      }
+    },
+    "Table": {
+      "id": "Table",
+      "description": "A table storing logs in an analytics log bucket.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the table. Example: projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/tables\/[TABLE_NAME]",
+          "type": "string"
+        },
+        "description": {
+          "description": "Describes this table.",
+          "type": "string"
+        },
+        "schema": {
+          "description": "Describes the schema of this table.",
+          "$ref": "TableSchema"
+        },
+        "tableSizeBytes": {
+          "description": "Output only. The size of this table in bytes, excluding any data in the streaming buffer.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "rowCount": {
+          "description": "Output only. The number of rows of data in this table, excluding any data in the streaming buffer.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "createTime": {
+          "description": "Output only. The time when this table was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when this table was last modified.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "TableSchema": {
+      "id": "TableSchema",
+      "description": "Schema of a Table.",
+      "type": "object",
+      "properties": {
+        "fields": {
+          "description": "Describes the fields in a table.",
+          "type": "array",
+          "items": {
+            "$ref": "TableFieldSchema"
+          }
+        }
+      }
+    },
+    "TableFieldSchema": {
+      "id": "TableFieldSchema",
+      "description": "A field in TableSchema.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The field name. The name must contain only letters (a-z, A-Z), numbers (0-9), or underscores (_), and must start with a letter or underscore. The maximum length is 128 characters.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Required. The field data type.",
+          "type": "string",
+          "enumDescriptions": [
+            "Illegal value",
+            "UTF8 characters",
+            "64-bit signed",
+            "64-bit IEEE floating point",
+            "Aggregate type",
+            "Binary data",
+            "2-valued",
+            "64-bit signed usec since UTC epoch",
+            "Civil date - Year, Month, Day",
+            "Civil time - Hour, Minute, Second, Microseconds",
+            "Combination of civil date and civil time",
+            "Geography object",
+            "Numeric value",
+            "BigNumeric value",
+            "JSON value"
+          ],
+          "enum": [
+            "UNKNOWN_TYPE",
+            "STRING",
+            "INTEGER",
+            "FLOAT",
+            "RECORD",
+            "BYTES",
+            "BOOLEAN",
+            "TIMESTAMP",
+            "DATE",
+            "TIME",
+            "DATETIME",
+            "GEOGRAPHY",
+            "NUMERIC",
+            "BIGNUMERIC",
+            "JSON"
+          ]
+        },
+        "mode": {
+          "description": "Optional. The field mode. Possible values include NULLABLE, REQUIRED and REPEATED. The default value is NULLABLE.",
+          "type": "string",
+          "enumDescriptions": [
+            "Illegal value",
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "UNKNOWN_MODE",
+            "NULLABLE",
+            "REQUIRED",
+            "REPEATED"
+          ]
+        },
+        "fields": {
+          "description": "Optional. Describes the nested schema fields if the type property is set to RECORD.",
+          "type": "array",
+          "items": {
+            "$ref": "TableFieldSchema"
+          }
+        },
+        "description": {
+          "description": "Optional. The field description. The maximum length is 1,024 characters.",
+          "type": "string"
+        }
+      }
+    },
+    "QueryRequest": {
+      "id": "QueryRequest",
+      "description": "The parameters to Query.",
+      "type": "object",
+      "properties": {
+        "resourceNames": {
+          "description": "Required. Names of one or more log views to run a SQL query. Currently, only a single view may be selected. Multiple view selection will be supported in the future.Examples: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDRequires 'logging.views.access' on view resource.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "query": {
+          "description": "Required. A query string, following the BigQuery SQL query syntax. Table names should be kept unqualified, and they must be accessible using the view specified in the resource_names.Example: SELECT count(*) FROM audit_log;",
+          "type": "string"
+        },
+        "pageSize": {
+          "description": "Optional. The maximum number of rows of data to return per page of results. Setting this flag to a small value such as 1000 and then paging through results might improve reliability when the query result set is large. In addition to this limit, responses are also limited to 10 MB. By default, there is no maximum row count, and only the byte limit applies.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "dryRun": {
+          "description": "Optional. If set to true, the query job is not executed. Instead, if the query is valid, statistics is returned about the job such as how many bytes would be processed. If the query is invalid, an error returns. The default value is false.",
+          "type": "boolean"
+        }
+      }
+    },
+    "QueryResponse": {
+      "id": "QueryResponse",
+      "type": "object",
+      "properties": {
+        "jobName": {
+          "description": "Reference to the Job that was created to run the query. This field will be present even if the original request timed out, in which case GetQueryResults can be used to read the results once the query has completed. Since this API only returns the first page of results, subsequent pages can be fetched via the same mechanism (GetQueryResults). Example: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/jobs\/JOB_ID",
+          "type": "string"
+        },
+        "jobComplete": {
+          "description": "Whether the query has completed or not. If rows or totalRows are present, this will always be true. If this is false, totalRows will not be available.",
+          "type": "boolean"
+        },
+        "schema": {
+          "description": "The schema of the results. It shows the columns present in the output table. Present only when the query completes successfully.",
+          "$ref": "TableSchema"
+        },
+        "rows": {
+          "description": "An object with as many results as can be contained within the maximum permitted reply size. To get any additional rows, you can call GetQueryResults and specify the jobReference returned above.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object."
+            }
+          }
+        },
+        "totalRows": {
+          "description": "The total number of rows in the complete query result set, which can be more than the number of rows in this single page of results.",
+          "type": "string",
+          "format": "int64"
+        },
+        "pageToken": {
+          "description": "A token used for paging results.",
+          "type": "string"
+        },
+        "totalBytesProcessed": {
+          "description": "The total number of bytes processed for this query. If this query was a dry run, this is the number of bytes that would be processed if the query were run.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GetQueryResultsResponse": {
+      "id": "GetQueryResultsResponse",
+      "description": "Response object of GetQueryResults.",
+      "type": "object",
+      "properties": {
+        "jobName": {
+          "description": "Reference to the Job that was created to run the query. Example: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/jobs\/JOB_ID",
+          "type": "string"
+        },
+        "jobComplete": {
+          "description": "Whether the query has completed or not. If rows or totalRows are present, this will always be true. If this is false, totalRows will not be available.",
+          "type": "boolean"
+        },
+        "schema": {
+          "description": "The schema of the results. Present only when the query completes successfully.",
+          "$ref": "TableSchema"
+        },
+        "totalRows": {
+          "description": "The total number of rows in the complete query result set, which can be more than the number of rows in this single page of results. Present only when the query completes successfully.",
+          "type": "string",
+          "format": "int64"
+        },
+        "pageToken": {
+          "description": "A token used for paging results. When this token is non-empty, it indicates additional results are available.",
+          "type": "string"
+        },
+        "rows": {
+          "description": "An object with as many results as can be contained within the maximum permitted reply size. To get any additional rows, you can call GetQueryResults and specify the jobReference returned above. Present only when the query completes successfully.The REST-based representation of this data leverages a series of JSON f,v objects for indicating fields and values.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object."
+            }
+          }
+        },
+        "totalBytesProcessed": {
+          "description": "The total number of bytes processed for this query.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "ListLogMetricsResponse": {
       "id": "ListLogMetricsResponse",
       "description": "Result returned from ListLogMetrics.",
@@ -2087,6 +2352,108 @@
                   "description": "Deletes a view from a bucket."
                 }
               }
+            },
+            "tables": {
+              "methods": {
+                "list": {
+                  "id": "logging.locations.buckets.tables.list",
+                  "path": "v2/{+parent}/tables",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/tables",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The bucket whose tables are to be listed: Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\"",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageToken": {
+                      "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListTablesResponse"
+                  },
+                  "description": "Lists all tables in the specified log bucket."
+                },
+                "get": {
+                  "id": "logging.locations.buckets.tables.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/tables/{tablesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the table. Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/tables\/TABLE_ID\"",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/tables\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Table"
+                  },
+                  "description": "Gets the specified table resource by table ID. This method does not return the data in the table, it only returns the table resource, which describes the structure of this table."
+                }
+              }
+            },
+            "jobs": {
+              "methods": {
+                "get": {
+                  "id": "logging.locations.buckets.jobs.get",
+                  "path": "v2/{+jobName}",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/jobs/{jobsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "jobName": {
+                      "description": "Required. Fully qualified Job ID of the query job. Example: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/jobs\/JOB_ID",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/jobs\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "startIndex": {
+                      "description": "Zero-based index of the starting row.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "int64"
+                    },
+                    "pageToken": {
+                      "description": "Page token, returned by a previous call, to request the next page of results.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of results to read.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "jobName"
+                  ],
+                  "response": {
+                    "$ref": "GetQueryResultsResponse"
+                  },
+                  "description": "Get the results of a query job."
+                }
+              }
             }
           }
         }
@@ -2530,6 +2897,43 @@
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
                       "description": "Deletes a view from a bucket."
+                    }
+                  }
+                },
+                "tables": {
+                  "methods": {
+                    "list": {
+                      "id": "logging.projects.locations.buckets.tables.list",
+                      "path": "v2/{+parent}/tables",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/tables",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The bucket whose tables are to be listed: Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\"",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageToken": {
+                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListTablesResponse"
+                      },
+                      "description": "Lists all tables in the specified log bucket."
                     }
                   }
                 }
@@ -3584,6 +3988,43 @@
                       "description": "Deletes a view from a bucket."
                     }
                   }
+                },
+                "tables": {
+                  "methods": {
+                    "list": {
+                      "id": "logging.folders.locations.buckets.tables.list",
+                      "path": "v2/{+parent}/tables",
+                      "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/tables",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The bucket whose tables are to be listed: Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\"",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageToken": {
+                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListTablesResponse"
+                      },
+                      "description": "Lists all tables in the specified log bucket."
+                    }
+                  }
                 }
               }
             }
@@ -4420,6 +4861,43 @@
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
                       "description": "Deletes a view from a bucket."
+                    }
+                  }
+                },
+                "tables": {
+                  "methods": {
+                    "list": {
+                      "id": "logging.billingAccounts.locations.buckets.tables.list",
+                      "path": "v2/{+parent}/tables",
+                      "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/tables",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The bucket whose tables are to be listed: Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\"",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageToken": {
+                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListTablesResponse"
+                      },
+                      "description": "Lists all tables in the specified log bucket."
                     }
                   }
                 }
@@ -5339,6 +5817,23 @@
             "https://www.googleapis.com/auth/logging.admin"
           ],
           "description": "Updates the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles\/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Logs Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information."
+        },
+        "queries": {
+          "id": "logging.queries",
+          "path": "v2/queries",
+          "flatPath": "v2/queries",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "QueryRequest"
+          },
+          "response": {
+            "$ref": "QueryResponse"
+          },
+          "description": "Runs a SQL query synchronously and returns query results if the query completes within a specified timeout. The results of the query job can also be fetched with GetQueryResults."
         }
       }
     },
@@ -5846,6 +6341,43 @@
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
                       "description": "Deletes a view from a bucket."
+                    }
+                  }
+                },
+                "tables": {
+                  "methods": {
+                    "list": {
+                      "id": "logging.organizations.locations.buckets.tables.list",
+                      "path": "v2/{+parent}/tables",
+                      "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/tables",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The bucket whose tables are to be listed: Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\"",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageToken": {
+                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListTablesResponse"
+                      },
+                      "description": "Lists all tables in the specified log bucket."
                     }
                   }
                 }

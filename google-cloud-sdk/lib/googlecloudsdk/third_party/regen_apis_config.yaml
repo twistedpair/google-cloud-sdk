@@ -496,6 +496,12 @@ apis:
       default: true
     v1alpha2:
       discovery_doc: domains_v1alpha2.json
+  essentialcontacts:
+    v1alpha1:
+      discovery_doc: essentialcontacts_v1alpha1.json
+    v1beta1:
+      discovery_doc: essentialcontacts_v1beta1.json
+      default: true
   eventarc:
     v1:
       discovery_doc: eventarc_v1.json
@@ -689,14 +695,15 @@ apis:
       default: true
   logging:
     v2:
+      enable_mtls: true
       discovery_doc: logging_v2.json
       default: true
   memcache:
     v1beta2:
       discovery_doc: memcache_v1beta2.json
-      default: true
     v1:
       discovery_doc: memcache_v1.json
+      default: true
   metastore:
     v1alpha:
       discovery_doc: metastore_v1alpha.json

@@ -1400,56 +1400,54 @@ class Policy(_messages.Message):
 
 
 class ProbingDetails(_messages.Message):
-  r"""The details of probing from the latest run.
+  r"""Results of active probing from the last run of the test.
 
   Enums:
-    AbortCauseValueValuesEnum: Causes that the probing was aborted.
-    ResultValueValuesEnum: The overall reachability result of the test.
+    AbortCauseValueValuesEnum: The reason probing was aborted.
+    ResultValueValuesEnum: The overall result of active probing.
 
   Fields:
-    abortCause: Causes that the probing was aborted.
-    endpointInfo: Derived from the test input. The actual source and
-      destination endpoint where the probing was run.
-    error: The details of an internal failure or a cancellation of
-      reachability analysis.
-    probingLatency: One way probing latency distribution. The latency is
-      measured as duration of packet traversal of Google Cloud network, from
-      source to destination endpoint.
-    result: The overall reachability result of the test.
+    abortCause: The reason probing was aborted.
+    endpointInfo: The source and destination endpoints derived from the test
+      input and used for active probing.
+    error: Details about an internal failure or the cancellation of active
+      probing.
+    probingLatency: Latency as measured by active probing in one direction:
+      from the source to the destination endpoint.
+    result: The overall result of active probing.
     sentProbeCount: Number of probes sent.
-    successfulProbeCount: Number of probes that reached destination.
-    verifyTime: The time the reachability state was verified.
+    successfulProbeCount: Number of probes that reached the destination.
+    verifyTime: The time that reachability was assessed through active
+      probing.
   """
 
   class AbortCauseValueValuesEnum(_messages.Enum):
-    r"""Causes that the probing was aborted.
+    r"""The reason probing was aborted.
 
     Values:
-      PROBING_ABORT_CAUSE_UNSPECIFIED: Abort reason unspecified.
-      PERMISSION_DENIED: Aborted because the user lacks the permission to
-        access all or part of the network configurations required to run the
-        test.
-      NO_SOURCE_LOCATION: Aborted because no valid source endpoint is derived
-        from the input test request.
+      PROBING_ABORT_CAUSE_UNSPECIFIED: No reason was specified.
+      PERMISSION_DENIED: The user lacks permission to access some of the
+        network resources required to run the test.
+      NO_SOURCE_LOCATION: No valid source endpoint could be derived from the
+        request.
     """
     PROBING_ABORT_CAUSE_UNSPECIFIED = 0
     PERMISSION_DENIED = 1
     NO_SOURCE_LOCATION = 2
 
   class ResultValueValuesEnum(_messages.Enum):
-    r"""The overall reachability result of the test.
+    r"""The overall result of active probing.
 
     Values:
-      PROBING_RESULT_UNSPECIFIED: Result is not specified.
-      REACHABLE: 95% or more packets originating from source reached
+      PROBING_RESULT_UNSPECIFIED: No result was specified.
+      REACHABLE: At least 95% of packets reached the destination.
+      UNREACHABLE: No packets reached the destination.
+      REACHABILITY_INCONSISTENT: Less than 95% of packets reached the
         destination.
-      UNREACHABLE: No packet originating from source reached destination.
-      REACHABILITY_INCONSISTENT: Less than 95% packets originating from source
-        reached destination.
-      UNDETERMINED: The reachability could not be determined. Possible reasons
-        are: * Analysis is aborted due to permission error. User does not have
-        read permission to the projects listed in the test. * Analysis is
-        aborted due to internal errors.
+      UNDETERMINED: Reachability could not be determined. Possible reasons
+        are: * The user lacks permission to access some of the network
+        resources required to run the test. * No valid source endpoint could
+        be derived from the request. * An internal error occurred.
     """
     PROBING_RESULT_UNSPECIFIED = 0
     REACHABLE = 1
@@ -1468,41 +1466,44 @@ class ProbingDetails(_messages.Message):
 
 
 class ReachabilityDetails(_messages.Message):
-  r"""The details of reachability state from the latest run.
+  r"""Results of the configuration analysis from the last run of the test.
 
   Enums:
-    ResultValueValuesEnum: The overall reachability result of the test.
+    ResultValueValuesEnum: The overall result of the test's configuration
+      analysis.
 
   Fields:
     error: The details of a failure or a cancellation of reachability
       analysis.
-    result: The overall reachability result of the test.
+    result: The overall result of the test's configuration analysis.
     traces: Result may contain a list of traces if a test has multiple
       possible paths in the network, such as when destination endpoint is a
       load balancer with multiple backends.
-    verifyTime: The time the reachability state was verified.
+    verifyTime: The time of the configuration analysis.
   """
 
   class ResultValueValuesEnum(_messages.Enum):
-    r"""The overall reachability result of the test.
+    r"""The overall result of the test's configuration analysis.
 
     Values:
-      RESULT_UNSPECIFIED: Result is not specified.
-      REACHABLE: Packet originating from source is expected to reach
-        destination.
-      UNREACHABLE: Packet originating from source is expected to be dropped
-        before reaching destination.
-      AMBIGUOUS: If the source and destination endpoint does not uniquely
-        identify the test location in the network, and the reachability result
-        contains multiple traces with mixed reachable and unreachable states,
-        then this result is returned.
-      UNDETERMINED: The reachability could not be determined. Possible reasons
-        are: * Analysis is aborted due to permission error. User does not have
-        read permission to the projects listed in the test. * Analysis is
-        aborted due to internal errors. * Analysis is partially complete based
-        on configurations where the user has permission. The Final state
-        indicates that the packet is forwarded to another network where the
-        user has no permission to access the configurations.
+      RESULT_UNSPECIFIED: No result was specified.
+      REACHABLE: Possible scenarios are: * The configuration analysis
+        determined that a packet originating from the source is expected to
+        reach the destination. * The analysis didn't complete because the user
+        lacks permission for some of the resources in the trace. However, at
+        the time the user's permission became insufficient, the trace had been
+        successful so far.
+      UNREACHABLE: A packet originating from the source is expected to be
+        dropped before reaching the destination.
+      AMBIGUOUS: The source and destination endpoints do not uniquely identify
+        the test location in the network, and the reachability result contains
+        multiple traces. For some traces, a packet could be delivered, and for
+        others, it would not be.
+      UNDETERMINED: The configuration analysis did not complete. Possible
+        reasons are: * A permissions error occurred--for example, the user
+        might not have read permission for all of the resources named in the
+        test. * An internal error occurred. * The analyzer received an invalid
+        or unsupported argument or was unable to identify a known endpoint.
     """
     RESULT_UNSPECIFIED = 0
     REACHABLE = 1
@@ -1754,7 +1755,7 @@ class Step(_messages.Message):
       state.
     drop: Display info of the final state "drop" and reason.
     endpoint: Display info of the source and destination under analysis. The
-      endpiont info in an intermediate state may differ with the initial
+      endpoint info in an intermediate state may differ with the initial
       input, as it might be modified by state like NAT, or Connection Proxy.
     firewall: Display info of a Compute Engine firewall rule.
     forward: Display info of the final state "forward" and reason.

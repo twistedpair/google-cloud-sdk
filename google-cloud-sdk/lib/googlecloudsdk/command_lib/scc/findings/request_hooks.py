@@ -166,6 +166,7 @@ def _ValidateMutexOnSourceAndOrganization(args):
         "(organizations/123/sources/456) or an --organization flag, not both.")
 
 
+# TODO(b/177658164): Avoid using assert.
 def _ValidateMutexOnFindingAndSourceAndOrganization(args):
   """Validates that only a full resource name or split arguments are provided."""
   if "/" in args.finding:

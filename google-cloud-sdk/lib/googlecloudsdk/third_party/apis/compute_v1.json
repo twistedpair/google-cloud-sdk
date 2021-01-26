@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20210113",
+ "revision": "20210119",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1263,6 +1263,11 @@
       ""
      ]
     },
+    "provisionedIops": {
+     "type": "string",
+     "description": "Indicates how many IOPS must be provisioned for the disk.",
+     "format": "int64"
+    },
     "resourcePolicies": {
      "type": "array",
      "description": "Resource policies applied to this disk for automatic snapshot creations. Specified using the full or partial URL. For instance template, specify only the resource policy name.",
@@ -2291,7 +2296,7 @@
     },
     "cdnPolicy": {
      "$ref": "BackendServiceCdnPolicy",
-     "description": "Cloud CDN configuration for this BackendService. Not available for Internal TCP/UDP Load Balancing and Network Load Balancing."
+     "description": "Cloud CDN configuration for this BackendService. Only available for  external HTTP(S) Load Balancing."
     },
     "circuitBreakers": {
      "$ref": "CircuitBreakers",
@@ -2419,7 +2424,7 @@
     },
     "port": {
      "type": "integer",
-     "description": "Deprecated in favor of portName. The TCP port to connect on the backend. The default value is 80.\n\nThis cannot be used if the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).",
+     "description": "Deprecated in favor of portName. The TCP port to connect on the backend. The default value is 80.\n\nBackend services for Internal TCP/UDP Load Balancing and Network Load Balancing require you omit port.",
      "format": "int32"
     },
     "portName": {
@@ -3893,6 +3898,11 @@
     "physicalBlockSizeBytes": {
      "type": "string",
      "description": "Physical block size of the persistent disk, in bytes. If not present in a request, a default value is used. The currently supported size is 4096, other sizes may be added in the future. If an unsupported value is requested, the error message will list the supported values for the caller's project.",
+     "format": "int64"
+    },
+    "provisionedIops": {
+     "type": "string",
+     "description": "Indicates how many IOPS must be provisioned for the disk.",
      "format": "int64"
     },
     "region": {
@@ -5803,7 +5813,7 @@
     },
     "description": {
      "type": "string",
-     "description": "An optional description of this resource. Provide this property when you create the resource."
+     "description": "An optional description for this resource."
     },
     "direction": {
      "type": "string",
@@ -8453,6 +8463,10 @@
        }
       }
      }
+    },
+    "satisfiesPzs": {
+     "type": "boolean",
+     "description": "[Output Only] Reserved for future use."
     },
     "selfLink": {
      "type": "string",

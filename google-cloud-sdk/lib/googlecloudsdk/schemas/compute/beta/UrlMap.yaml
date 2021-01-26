@@ -36,7 +36,11 @@ properties:
       backend. If defaultRouteAction specifies any weightedBackendServices,
       defaultService must not be set. Conversely if defaultService is set,
       defaultRouteAction cannot contain any weightedBackendServices. Only one of
-      defaultRouteAction or defaultUrlRedirect must be set.
+      defaultRouteAction or defaultUrlRedirect must be set. UrlMaps for external
+      HTTP(S) load balancers support only the urlRewrite action within
+      defaultRouteAction. defaultRouteAction has no effect when the URL map is
+      bound to target gRPC proxy that has validateForProxyless field set to
+      true.
     $ref: HttpRouteAction.yaml
   defaultService:
     description: |-
@@ -48,30 +52,51 @@ properties:
       weightedBackendServices. Conversely, if routeAction specifies any
       weightedBackendServices, service must not be specified. Only one of
       defaultService, defaultUrlRedirect  or
-      defaultRouteAction.weightedBackendService must be set.
+      defaultRouteAction.weightedBackendService must be set. defaultService has
+      no effect when the URL map is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     type: string
   defaultUrlRedirect:
     description: |-
       When none of the specified hostRules match, the request is redirected to a
       URL specified by defaultUrlRedirect. If defaultUrlRedirect is specified,
-      defaultService or defaultRouteAction must not be set.
+      defaultService or defaultRouteAction must not be set. Not supported when
+      the URL map is bound to target gRPC proxy.
     $ref: HttpRedirectAction.yaml
   description:
     description: |-
       An optional description of this resource. Provide this property when you
       create the resource.
     type: string
+  fingerprint:
+    description: |-
+      Fingerprint of this resource. A hash of the contents stored in this
+      object. This field is used in optimistic locking. This field will be
+      ignored when inserting a UrlMap. An up-to-date fingerprint must be
+      provided in order to update the UrlMap, otherwise the request will fail
+      with error 412 conditionNotMet.  To see the latest fingerprint, make a
+      get() request to retrieve a UrlMap.
+    type: string
   headerAction:
     description: |-
       Specifies changes to request and response headers that need to take effect
       for the selected backendService. The headerAction specified here take
-      effect after headerAction specified under pathMatcher.
+      effect after headerAction specified under pathMatcher. Note that
+      headerAction is not supported for Loadbalancers that have their
+      loadBalancingScheme set to EXTERNAL. Not supported when the URL map is
+      bound to target gRPC proxy that has validateForProxyless field set to
+      true.
     $ref: HttpHeaderAction.yaml
   hostRules:
     description: The list of HostRules to use against the URL.
     type: array
     items:
       $ref: HostRule.yaml
+  id:
+    description: |-
+      [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    type: integer
   kind:
     description: |-
       [Output Only] Type of the resource. Always compute#urlMaps for url
@@ -106,7 +131,9 @@ properties:
     description: |-
       The list of expected URL mapping tests. Request to update this
       UrlMap will succeed only if all of the test cases pass. You can
-      specify a maximum of 100 tests per UrlMap.
+      specify a maximum of 100 tests per UrlMap. Not supported when the
+      URL map is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     type: array
     items:
       $ref: UrlMapTest.yaml

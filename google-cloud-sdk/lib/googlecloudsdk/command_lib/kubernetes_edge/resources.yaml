@@ -1,0 +1,80 @@
+# Proto defined at //cloud/hosted/kubernetesedge/api/v1alpha1/v1alpha1.proto.
+cluster:
+  name: cluster
+  collection: kubernetesedge.projects.locations.clusters
+  request_id_field: name
+  attributes:
+  - *location
+  - &cluster
+    parameter_name: clustersId
+    attribute_name: cluster
+    help: Kubernetes cluster.
+  disable_auto_completers: false
+
+node_pool:
+  name: nodePool
+  collection: kubernetesedge.projects.locations.clusters.nodePools
+  request_id_field: name
+  attributes:
+  - *cluster
+  - &nodePool
+    parameter_name: nodePoolsId
+    attribute_name: nodePool
+    help: Pool of Kubernetes nodes with similar properties.
+  disable_auto_completers: false
+
+site:
+  name: site
+  collection: kubernetesedge.projects.locations.sites
+  request_id_field: name
+  attributes:
+  - *location
+  - &site
+    parameter_name: sitesId
+    attribute_name: site
+    help: Sites are the logical providers of physical or virtual machines which can assume the role of Kubernetes nodes in GMEC clusters.
+  disable_auto_completers: false
+
+machine:
+  name: machine
+  collection: kubernetesedge.projects.locations.sites.machines
+  request_id_field: name
+  attributes:
+  - *site
+  - &machine
+    parameter_name: machinesId
+    attribute_name: machine
+    help: Machines represent compute entities which can assume the role of a node in a cluster. Machines may be physical or virtual, and they may be created statically or dynamically.
+  disable_auto_completers: false
+
+operation:
+  name: operation
+  collection: kubernetesedge.projects.locations.operations
+  attributes:
+  - *project
+  - *location
+  - parameter_name: operationsId
+    attribute_name: operation
+    help: Edge-container long running operation.
+  disable_auto_completers: false
+
+project:
+  name: project
+  collection: kubernetesedge.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: The project name.
+    property: core/project
+
+location:
+  name: location
+  collection: kubernetesedge.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: The global location name.
+  disable_auto_completers: false

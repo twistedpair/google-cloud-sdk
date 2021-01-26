@@ -31,7 +31,8 @@ class ComponentStatus(object):
                url,
                log_url,
                services=None,
-               deployment_message=''):
+               deployment_message='',
+               deployment_reason=''):
     self.name = name
     self.deployment_state = deployment_state
     self.commit_id = commit_id
@@ -40,6 +41,7 @@ class ComponentStatus(object):
     self.log_url = log_url
     self.services = [] if services is None else services
     self.deployment_message = deployment_message
+    self.deployment_reason = deployment_reason
 
   @classmethod
   def FromJSON(cls, name, json_object):
@@ -55,7 +57,9 @@ class ComponentStatus(object):
             r['name']
             for r in json_object['resources']
             if r['type'] == 'Service'
-        ])
+        ],
+        deployment_reason=json_object['deploymentReason']
+        if 'deploymentReason' in json_object else '')
 
   def __repr__(self):
     # TODO(b/171419038): Create a common base class for these data wrappers

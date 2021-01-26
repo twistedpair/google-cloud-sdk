@@ -83,6 +83,15 @@ properties:
       network interface. If not specified by the user, an unused
       internal IP is assigned by the system.
     type: string
+  nicType:
+    description: |-
+      The type of vNIC to be used on this interface. This may be gVNIC
+      or VirtioNet.
+    type: string
+    enum:
+    - GVNIC
+    - UNSPECIFIED_NIC_TYPE
+    - VIRTIO_NET
   subnetwork:
     description: |-
       The URL of the Subnetwork resource for this instance. If the

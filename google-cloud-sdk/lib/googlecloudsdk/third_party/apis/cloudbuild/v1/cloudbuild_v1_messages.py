@@ -192,7 +192,11 @@ class Build(_messages.Message):
       enqueued longer than this value, the build will expire and the build
       status will be `EXPIRED`. The TTL starts ticking from create_time.
     results: Output only. Results of the build.
-    secrets: Secrets to decrypt using Cloud Key Management Service.
+    secrets: Secrets to decrypt using Cloud Key Management Service. Note:
+      Secret Manager is the recommended technique for managing sensitive data
+      with Cloud Build. Use `available_secrets` to configure builds to access
+      secrets from Secret Manager. For instructions, see:
+      https://cloud.google.com/cloud-build/docs/securing-builds/use-secrets
     serviceAccount: IAM service account whose credentials will be used at
       build runtime. Must be of the format
       `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. ACCOUNT can be email
@@ -2499,7 +2503,10 @@ class SMTPDelivery(_messages.Message):
 
 class Secret(_messages.Message):
   r"""Pairs a set of secret environment variables containing encrypted values
-  with the Cloud KMS key to use to decrypt the value.
+  with the Cloud KMS key to use to decrypt the value. Note: Use `kmsKeyName`
+  with `available_secrets` instead of using `kmsKeyName` with `secret`. For
+  instructions see: https://cloud.google.com/cloud-build/docs/securing-
+  builds/use-encrypted-credentials.
 
   Messages:
     SecretEnvValue: Map of environment variable name to its encrypted value.

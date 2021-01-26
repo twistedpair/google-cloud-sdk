@@ -5,6 +5,61 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 325.0.0 (2021-01-26)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Modified `enable-autoupgrade` field belonging to flag `--agent-rules` in `gcloud beta compute instances ops-agents policies create` and  `gcloud beta compute instances ops-agents policies update` from optional to required.
+*   **(Container Registry)** Updated `gcloud container images list-tags` and `gcloud container images describe` to use ContainerAnalysis V1 API in beta.
+    * Changed occurrence kind `PACKAGE_VULNERABILITY` to `VULNERABILITY`,
+      `DEPLOYABLE` to `DEPLOYMENT`, `BUILD_DETAILS` to `BUILD` and `IMAGE_BASIS`
+      to `IMAGE`. To construct filters on kinds, new names should be used. For
+      example, `kind="VULNERABILITY`.
+    * Occurrence kind names are changed in output accordingly.
+
+
+### App Engine
+
+* Updated backend when using `gcloud app deploy <queue|cron>.yaml`. The only
+  noticeable change is that when removing queues from the queues YAML file,
+  previously the queues were marked as "DISABLED" but now they are marked
+  "PAUSED". In terms of functionality, there is no difference between the two.
+
+### Certificate Authority Service
+
+* Added `--ignore-active-certificates` flag to `gcloud beta privateca roots
+  delete` and `gcloud beta privateca subordinates delete` to allow a Certificate
+  Authority to be scheduled for deletion even if the Certificate Authority has
+  un-revoked or un-expired certificates.
+
+### Cloud Composer
+
+* Added `gcloud beta composer environments run my-environment upgrade_check` to run upgrade check to Airflow 2.0 for Composer environments with Airflow 1.10.14+.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.58.
+
+### Compute Engine
+
+* Promoted `gcloud compute networks get-effective-firewalls` command to GA.
+* Promoted `gcloud compute instances network-interfaces get-effective-firewalls` command to GA.
+* Promoted `gcloud compute instance ops-agents` to beta.
+* Promoted `--compute-service-account` flag to GA for `gcloud compute images import`.
+
+### Eventarc
+
+* Added `--transport-topic` flag to `gcloud beta eventarc triggers create`, to allow the use of an existing Pub/Sub topic for a trigger's transport intermediary.
+
+### Miscellaneous
+
+* Fixed <https://issuetracker.google.com/161399034> where `--sort-by` flag
+  caused the output to duplicate the last value in the list.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 324.0.0 (2021-01-19)
 
 ### Breaking Changes
@@ -51,7 +106,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Workflows
 
-* Added `gcloud workflows` and `gcloud workflowexecutions` commands to GA.
+* Added `gcloud workflows` and `gcloud workflows executions` commands to GA.
 
 ### Compute Engine
 
@@ -146,7 +201,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   the child key will be printed in lower snake case. This is different
   than done previously when the entire dotted key path was printed. Note that
   this change does not apply to keys whose values are objects or lists.
-*   **(Miscellaneous)** 
+*   **(Miscellaneous)**
   If you would like to use the legacy version of `--format=flattened` or
   `--format=text`, set the following configuration:
   ```

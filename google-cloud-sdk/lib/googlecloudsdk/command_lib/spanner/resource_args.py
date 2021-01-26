@@ -41,7 +41,14 @@ _CREATE_BACKUP_ENCRYPTION_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
     custom_mappings={
         'USE_DATABASE_ENCRYPTION':
             ('use-database-encryption',
-             'Use the same encryption configuration as the database.')
+             'Use the same encryption configuration as the database.'),
+        'GOOGLE_DEFAULT_ENCRYPTION':
+            ('google-default-encryption', 'Use default Google encryption.'),
+        'CUSTOMER_MANAGED_ENCRYPTION': (
+            'customer-managed-encryption',
+            'Use the provided Cloud KMS Key for encryption. If this option is '
+            'selected, kms-key must be set.'
+        )
     })
 
 _RESTORE_DB_ENCRYPTION_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
@@ -56,7 +63,14 @@ _RESTORE_DB_ENCRYPTION_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
         'USE_CONFIG_DEFAULT_OR_BACKUP_ENCRYPTION':
             ('use-config-default-or-backup-encryption',
              'Use the default encryption configuration if one exists, '
-             'otherwise use the same encryption configuration as the backup.')
+             'otherwise use the same encryption configuration as the backup.'),
+        'GOOGLE_DEFAULT_ENCRYPTION':
+            ('google-default-encryption', 'Use default Google encryption.'),
+        'CUSTOMER_MANAGED_ENCRYPTION': (
+            'customer-managed-encryption',
+            'Use the provided Cloud KMS Key for encryption. If this option is '
+            'selected, kms-key must be set.'
+        )
     })
 
 
@@ -210,8 +224,7 @@ def AddKmsKeyResourceArg(parser, verb, positional=False):
   concept_parsers.ConceptParser.ForResource(
       name,
       GetKmsKeyResourceSpec(),
-      'Cloud KMS Key to be used {} the Cloud Spanner database.'.format(
-          verb),
+      'Cloud KMS Key to be used {}.'.format(verb),
       required=False).AddToParser(group_parser)
 
 

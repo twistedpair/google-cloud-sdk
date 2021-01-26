@@ -640,6 +640,16 @@ class Policy(_messages.Message):
       central1-a) or a region (e.g. us-central1). For `clusterId` syntax
       restrictions see https://cloud.google.com/container-
       engine/reference/rest/v1/projects.zones.clusters.
+    IstioServiceIdentityAdmissionRulesValue: Optional. Per-istio-service-
+      identity admission rules. Istio service identity spec format:
+      spiffe:///ns//sa/ or /ns//sa/ e.g. spiffe://example.com/ns/test-
+      ns/sa/default
+    KubernetesNamespaceAdmissionRulesValue: Optional. Per-kubernetes-namespace
+      admission rules. K8s namespace spec format: [a-z.-]+, e.g. 'some-
+      namespace'
+    KubernetesServiceAccountAdmissionRulesValue: Optional. Per-kubernetes-
+      service-account admission rules. Service account spec format:
+      `namespace:serviceaccount`. e.g. 'test-ns:default'
 
   Fields:
     admissionWhitelistPatterns: Optional. Admission policy allowlisting. A
@@ -661,6 +671,15 @@ class Policy(_messages.Message):
       Images not covered by the global policy will be subject to the project
       admission policy. This setting has no effect when specified inside a
       global admission policy.
+    istioServiceIdentityAdmissionRules: Optional. Per-istio-service-identity
+      admission rules. Istio service identity spec format: spiffe:///ns//sa/
+      or /ns//sa/ e.g. spiffe://example.com/ns/test-ns/sa/default
+    kubernetesNamespaceAdmissionRules: Optional. Per-kubernetes-namespace
+      admission rules. K8s namespace spec format: [a-z.-]+, e.g. 'some-
+      namespace'
+    kubernetesServiceAccountAdmissionRules: Optional. Per-kubernetes-service-
+      account admission rules. Service account spec format:
+      `namespace:serviceaccount`. e.g. 'test-ns:default'
     name: Output only. The resource name, in the format `projects/*/policy`.
       There is at most one policy per project.
     updateTime: Output only. Time when the policy was last updated.
@@ -713,13 +732,101 @@ class Policy(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class IstioServiceIdentityAdmissionRulesValue(_messages.Message):
+    r"""Optional. Per-istio-service-identity admission rules. Istio service
+    identity spec format: spiffe:///ns//sa/ or /ns//sa/ e.g.
+    spiffe://example.com/ns/test-ns/sa/default
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        IstioServiceIdentityAdmissionRulesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        IstioServiceIdentityAdmissionRulesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a IstioServiceIdentityAdmissionRulesValue
+      object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A AdmissionRule attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('AdmissionRule', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class KubernetesNamespaceAdmissionRulesValue(_messages.Message):
+    r"""Optional. Per-kubernetes-namespace admission rules. K8s namespace spec
+    format: [a-z.-]+, e.g. 'some-namespace'
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        KubernetesNamespaceAdmissionRulesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        KubernetesNamespaceAdmissionRulesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a KubernetesNamespaceAdmissionRulesValue
+      object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A AdmissionRule attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('AdmissionRule', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class KubernetesServiceAccountAdmissionRulesValue(_messages.Message):
+    r"""Optional. Per-kubernetes-service-account admission rules. Service
+    account spec format: `namespace:serviceaccount`. e.g. 'test-ns:default'
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        KubernetesServiceAccountAdmissionRulesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        KubernetesServiceAccountAdmissionRulesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a
+      KubernetesServiceAccountAdmissionRulesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A AdmissionRule attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('AdmissionRule', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   admissionWhitelistPatterns = _messages.MessageField('AdmissionWhitelistPattern', 1, repeated=True)
   clusterAdmissionRules = _messages.MessageField('ClusterAdmissionRulesValue', 2)
   defaultAdmissionRule = _messages.MessageField('AdmissionRule', 3)
   description = _messages.StringField(4)
   globalPolicyEvaluationMode = _messages.EnumField('GlobalPolicyEvaluationModeValueValuesEnum', 5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  istioServiceIdentityAdmissionRules = _messages.MessageField('IstioServiceIdentityAdmissionRulesValue', 6)
+  kubernetesNamespaceAdmissionRules = _messages.MessageField('KubernetesNamespaceAdmissionRulesValue', 7)
+  kubernetesServiceAccountAdmissionRules = _messages.MessageField('KubernetesServiceAccountAdmissionRulesValue', 8)
+  name = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class SetIamPolicyRequest(_messages.Message):

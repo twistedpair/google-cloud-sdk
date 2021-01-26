@@ -77,6 +77,111 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS = (
+      'folders',
+      'folders/{foldersId}',
+      {},
+      ['foldersId'],
+      True
+  )
+  FOLDERS_LOCATIONS = (
+      'folders.locations',
+      'folders/{foldersId}/locations/{locationsId}',
+      {},
+      ['foldersId', 'locationsId'],
+      True
+  )
+  FOLDERS_LOCATIONS_INSIGHTTYPES = (
+      'folders.locations.insightTypes',
+      'folders/{foldersId}/locations/{locationsId}/insightTypes/'
+      '{insightTypesId}',
+      {},
+      ['foldersId', 'locationsId', 'insightTypesId'],
+      True
+  )
+  FOLDERS_LOCATIONS_INSIGHTTYPES_INSIGHTS = (
+      'folders.locations.insightTypes.insights',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/insightTypes/'
+              '{insightTypesId}/insights/{insightsId}',
+      },
+      ['name'],
+      True
+  )
+  FOLDERS_LOCATIONS_RECOMMENDERS = (
+      'folders.locations.recommenders',
+      'folders/{foldersId}/locations/{locationsId}/recommenders/'
+      '{recommendersId}',
+      {},
+      ['foldersId', 'locationsId', 'recommendersId'],
+      True
+  )
+  FOLDERS_LOCATIONS_RECOMMENDERS_RECOMMENDATIONS = (
+      'folders.locations.recommenders.recommendations',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/recommenders/'
+              '{recommendersId}/recommendations/{recommendationsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS = (
+      'organizations',
+      'organizations/{organizationsId}',
+      {},
+      ['organizationsId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS = (
+      'organizations.locations',
+      'organizations/{organizationsId}/locations/{locationsId}',
+      {},
+      ['organizationsId', 'locationsId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_INSIGHTTYPES = (
+      'organizations.locations.insightTypes',
+      'organizations/{organizationsId}/locations/{locationsId}/insightTypes/'
+      '{insightTypesId}',
+      {},
+      ['organizationsId', 'locationsId', 'insightTypesId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_INSIGHTTYPES_INSIGHTS = (
+      'organizations.locations.insightTypes.insights',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'insightTypes/{insightTypesId}/insights/{insightsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_RECOMMENDERS = (
+      'organizations.locations.recommenders',
+      'organizations/{organizationsId}/locations/{locationsId}/recommenders/'
+      '{recommendersId}',
+      {},
+      ['organizationsId', 'locationsId', 'recommendersId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_RECOMMENDERS_RECOMMENDATIONS = (
+      'organizations.locations.recommenders.recommendations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'recommenders/{recommendersId}/recommendations/'
+              '{recommendationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',

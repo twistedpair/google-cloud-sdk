@@ -91,8 +91,8 @@ def _CreateAgentRules(agent_rules):
     try:
       ops_agent_rules.append(
           agent_policy.OpsAgentPolicy.AgentRule(
-              agent_rule['type'], agent_rule['version'],
-              agent_rule['packageState'], agent_rule['enableAutoupgrade']))
+              agent_rule['type'], agent_rule['enableAutoupgrade'],
+              agent_rule['version'], agent_rule['packageState']))
     except KeyError as e:
       raise exceptions.BadArgumentException(
           'description.agentRules',

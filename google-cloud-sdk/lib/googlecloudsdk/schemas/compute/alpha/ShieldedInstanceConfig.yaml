@@ -26,11 +26,15 @@ properties:
     items:
       type: string
   enableIntegrityMonitoring:
-    description: Defines whether the instance has integrity monitoring enabled.
+    description: |-
+      Defines whether the instance has integrity monitoring enabled. Enabled by
+      default.
     type: boolean
   enableSecureBoot:
-    description: Defines whether the instance has Secure Boot enabled.
+    description: |-
+      Defines whether the instance has Secure Boot enabled. Disabled by default.
     type: boolean
   enableVtpm:
-    description: Defines whether the instance has the vTPM enabled.
+    description: |-
+      Defines whether the instance has the vTPM enabled. Enabled by default.
     type: boolean

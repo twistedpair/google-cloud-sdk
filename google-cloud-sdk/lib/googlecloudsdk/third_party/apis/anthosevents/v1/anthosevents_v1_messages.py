@@ -302,6 +302,20 @@ class AnthoseventsApiV1NamespacesServiceaccountsListRequest(_messages.Message):
   parent = _messages.StringField(1, required=True)
 
 
+class AnthoseventsApiV1NamespacesServiceaccountsPatchRequest(_messages.Message):
+  r"""A AnthoseventsApiV1NamespacesServiceaccountsPatchRequest object.
+
+  Fields:
+    name: Required. The name of the serviceAccount being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+    serviceAccount: A ServiceAccount resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  serviceAccount = _messages.MessageField('ServiceAccount', 2)
+
+
 class AnthoseventsApiV1NamespacesServiceaccountsReplaceServiceAccountRequest(_messages.Message):
   r"""A AnthoseventsApiV1NamespacesServiceaccountsReplaceServiceAccountRequest
   object.
@@ -1032,6 +1046,21 @@ class AnthoseventsProjectsLocationsNamespacesReplaceNamespaceRequest(_messages.M
 
   name = _messages.StringField(1, required=True)
   namespace = _messages.MessageField('Namespace', 2)
+
+
+class AnthoseventsProjectsLocationsNamespacesServiceaccountsPatchRequest(_messages.Message):
+  r"""A AnthoseventsProjectsLocationsNamespacesServiceaccountsPatchRequest
+  object.
+
+  Fields:
+    name: Required. The name of the serviceAccount being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+    serviceAccount: A ServiceAccount resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  serviceAccount = _messages.MessageField('ServiceAccount', 2)
 
 
 class AnthoseventsProjectsLocationsNamespacesServiceaccountsReplaceServiceAccountRequest(_messages.Message):

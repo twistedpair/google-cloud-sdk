@@ -209,6 +209,8 @@ class CommitRequest(_messages.Message):
   Fields:
     mutations: The mutations to be executed when this transaction commits. All
       mutations are applied atomically, in the order they appear in this list.
+    returnCommitStats: If `true`, then statistics related to the transaction
+      will be included in the CommitResponse. Default value is `false`.
     singleUseTransaction: Execute mutations in a temporary transaction. Note
       that unlike commit of a previously-started transaction, commit with a
       temporary transaction is non-idempotent. That is, if the `CommitRequest`
@@ -220,19 +222,41 @@ class CommitRequest(_messages.Message):
   """
 
   mutations = _messages.MessageField('Mutation', 1, repeated=True)
-  singleUseTransaction = _messages.MessageField('TransactionOptions', 2)
-  transactionId = _messages.BytesField(3)
+  returnCommitStats = _messages.BooleanField(2)
+  singleUseTransaction = _messages.MessageField('TransactionOptions', 3)
+  transactionId = _messages.BytesField(4)
 
 
 class CommitResponse(_messages.Message):
   r"""The response for Commit.
 
   Fields:
+    commitStats: The statistics about this Commit. Not returned by default.
+      For more information, see CommitRequest.return_commit_stats.
     commitTimestamp: The Cloud Spanner timestamp at which the transaction
       committed.
   """
 
-  commitTimestamp = _messages.StringField(1)
+  commitStats = _messages.MessageField('CommitStats', 1)
+  commitTimestamp = _messages.StringField(2)
+
+
+class CommitStats(_messages.Message):
+  r"""Additional statistics about a commit.
+
+  Fields:
+    mutationCount: The total number of mutations for the transaction. Knowing
+      the `mutation_count` value can help you maximize the number of mutations
+      in a transaction and minimize the number of API round trips. You can
+      also monitor this value to prevent transactions from exceeding the
+      system [limit](http://cloud.google.com/spanner/quotas#limits_for_creatin
+      g_reading_updating_and_deleting_data). If the number of mutations
+      exceeds the limit, the server returns [INVALID_ARGUMENT](http://cloud.go
+      ogle.com/spanner/docs/reference/rest/v1/Code#ENUM_VALUES.INVALID_ARGUMEN
+      T).
+  """
+
+  mutationCount = _messages.IntegerField(1)
 
 
 class CreateBackupMetadata(_messages.Message):

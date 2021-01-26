@@ -691,6 +691,9 @@ class UpdateClusterOptions(object):
                disable_addons=None,
                istio_config=None,
                cloud_run_config=None,
+               cluster_dns=None,
+               cluster_dns_scope=None,
+               cluster_dns_domain=None,
                enable_autoscaling=None,
                min_nodes=None,
                max_nodes=None,
@@ -765,6 +768,9 @@ class UpdateClusterOptions(object):
     self.disable_addons = disable_addons
     self.istio_config = istio_config
     self.cloud_run_config = cloud_run_config
+    self.cluster_dns = cluster_dns
+    self.cluster_dns_scope = cluster_dns_scope
+    self.cluster_dns_domain = cluster_dns_domain
     self.enable_autoscaling = enable_autoscaling
     self.min_nodes = min_nodes
     self.max_nodes = max_nodes
@@ -1272,7 +1278,14 @@ class APIAdapter(object):
       else:
         cluster.networkConfig.enableL4ilbSubsetting = options.enable_l4_ilb_subsetting
 
-    self.ParseClusterDNSOptions(options, cluster)
+    dns_config = self.ParseClusterDNSOptions(options)
+    if dns_config is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig(
+            dnsConfig=dns_config)
+      else:
+        cluster.networkConfig.dnsConfig = dns_config
+
     if options.enable_legacy_authorization is not None:
       cluster.legacyAbac = self.messages.LegacyAbac(
           enabled=bool(options.enable_legacy_authorization))
@@ -1685,7 +1698,7 @@ class APIAdapter(object):
               self.messages.CidrBlock(cidrBlock=network))
       cluster.masterAuthorizedNetworksConfig = authorized_networks
 
-  def ParseClusterDNSOptions(self, options, cluster):
+  def ParseClusterDNSOptions(self, options):
     """Parses the options for ClusterDNS."""
     if options.cluster_dns is None:
       if options.cluster_dns_scope:
@@ -1714,12 +1727,7 @@ class APIAdapter(object):
 
     if options.cluster_dns_domain is not None:
       dns_config.clusterDnsDomain = options.cluster_dns_domain
-
-    if cluster.networkConfig is None:
-      cluster.networkConfig = self.messages.NetworkConfig(
-          dnsConfig=dns_config)
-    else:
-      cluster.networkConfig.dnsConfig = dns_config
+    return dns_config
 
   def CreateCluster(self, cluster_ref, options):
     """Handles CreateCluster options that are specific to a release track.
@@ -2177,6 +2185,11 @@ class APIAdapter(object):
           .GetPrivateIpv6GoogleAccessTypeMapperForUpdate(
               self.messages, hidden=False).GetEnumForChoice(
                   options.private_ipv6_google_access_type))
+
+    dns_config = self.ParseClusterDNSOptions(options)
+    if dns_config is not None:
+      update = self.messages.ClusterUpdate(
+          desiredDnsConfig=dns_config)
 
     return update
 

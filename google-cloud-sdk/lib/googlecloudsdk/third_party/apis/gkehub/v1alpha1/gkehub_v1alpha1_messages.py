@@ -338,6 +338,7 @@ class ConfigManagementFeatureState(_messages.Message):
       cluster manually prior to enabling the ACM hub feature. Unique within a
       Anthos Config Management installation.
     configSyncState: Current sync status
+    hierarchyControllerState: Hierarchy Controller status
     membershipConfig: Membership configuration in the cluster. This represents
       the actual state in the cluster, while the MembershipConfig in the
       FeatureSpec represents the intended state
@@ -348,9 +349,10 @@ class ConfigManagementFeatureState(_messages.Message):
   binauthzState = _messages.MessageField('BinauthzState', 1)
   clusterName = _messages.StringField(2)
   configSyncState = _messages.MessageField('ConfigSyncState', 3)
-  membershipConfig = _messages.MessageField('MembershipConfig', 4)
-  operatorState = _messages.MessageField('OperatorState', 5)
-  policyControllerState = _messages.MessageField('PolicyControllerState', 6)
+  hierarchyControllerState = _messages.MessageField('HierarchyControllerState', 4)
+  membershipConfig = _messages.MessageField('MembershipConfig', 5)
+  operatorState = _messages.MessageField('OperatorState', 6)
+  policyControllerState = _messages.MessageField('PolicyControllerState', 7)
 
 
 class ConfigSync(_messages.Message):
@@ -1234,6 +1236,90 @@ class HelloWorldFeatureState(_messages.Message):
 
 
 
+class HierarchyControllerConfig(_messages.Message):
+  r"""Configuration for Hierarchy Controller
+
+  Fields:
+    enablePodTreeLabels: Whether pod tree labels are enabled in this cluster.
+    enabled: Whether Hierarchy Controller is enabled in this cluster.
+  """
+
+  enablePodTreeLabels = _messages.BooleanField(1)
+  enabled = _messages.BooleanField(2)
+
+
+class HierarchyControllerDeploymentState(_messages.Message):
+  r"""Deployment state for Hierarchy Controller
+
+  Enums:
+    ExtensionValueValuesEnum: The deployment state for Hierarchy Controller
+      extension (e.g. v0.7.0-hc.1)
+    HncValueValuesEnum: The deployment state for open source HNC (e.g.
+      v0.7.0-hc.0)
+
+  Fields:
+    extension: The deployment state for Hierarchy Controller extension (e.g.
+      v0.7.0-hc.1)
+    hnc: The deployment state for open source HNC (e.g. v0.7.0-hc.0)
+  """
+
+  class ExtensionValueValuesEnum(_messages.Enum):
+    r"""The deployment state for Hierarchy Controller extension (e.g.
+    v0.7.0-hc.1)
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  class HncValueValuesEnum(_messages.Enum):
+    r"""The deployment state for open source HNC (e.g. v0.7.0-hc.0)
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  extension = _messages.EnumField('ExtensionValueValuesEnum', 1)
+  hnc = _messages.EnumField('HncValueValuesEnum', 2)
+
+
+class HierarchyControllerState(_messages.Message):
+  r"""State for Hierarchy Controller
+
+  Fields:
+    state: The deployment state for Hierarchy Controller
+    version: The version for Hierarchy Controller
+  """
+
+  state = _messages.MessageField('HierarchyControllerDeploymentState', 1)
+  version = _messages.MessageField('HierarchyControllerVersion', 2)
+
+
+class HierarchyControllerVersion(_messages.Message):
+  r"""Version for Hierarchy Controller
+
+  Fields:
+    extension: Version for Hierarchy Controller extension
+    hnc: Version for open source HNC
+  """
+
+  extension = _messages.StringField(1)
+  hnc = _messages.StringField(2)
+
+
 class IdentityServiceFeatureSpec(_messages.Message):
   r"""Spec for Annthos Identity Service.
 
@@ -1456,14 +1542,16 @@ class MembershipConfig(_messages.Message):
   Fields:
     binauthz: Binauthz conifguration for the cluster.
     configSync: Config Sync configuration for the cluster.
+    hierarchyController: Hierarchy Controller configuration for the cluster.
     policyController: Policy Controller configuration for the cluster.
     version: Version of ACM installed.
   """
 
   binauthz = _messages.MessageField('BinauthzConfig', 1)
   configSync = _messages.MessageField('ConfigSync', 2)
-  policyController = _messages.MessageField('PolicyController', 3)
-  version = _messages.StringField(4)
+  hierarchyController = _messages.MessageField('HierarchyControllerConfig', 3)
+  policyController = _messages.MessageField('PolicyController', 4)
+  version = _messages.StringField(5)
 
 
 class MembershipSpec(_messages.Message):
@@ -1494,18 +1582,14 @@ class MeteringFeatureState(_messages.Message):
   r"""Metering Feature State.
 
   Fields:
-    lastMeasuredClusterVcpuCapacity: The number of vCPUs in the cluster
-      according to the most recent measurement.
     lastMeasurementTime: The time stamp of the most recent measurement of the
       number of vCPUs in the cluster.
-    preciseLastMeasuredClusterVcpuCapacity: The precise vCPUs capacity in the
-      cluster according to the most recent measurement (including partial
-      nodes).
+    preciseLastMeasuredClusterVcpuCapacity: The vCPUs capacity in the cluster
+      according to the most recent measurement (1/1000 precision).
   """
 
-  lastMeasuredClusterVcpuCapacity = _messages.IntegerField(1)
-  lastMeasurementTime = _messages.StringField(2)
-  preciseLastMeasuredClusterVcpuCapacity = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  lastMeasurementTime = _messages.StringField(1)
+  preciseLastMeasuredClusterVcpuCapacity = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class MultiClusterIngressFeatureSpec(_messages.Message):

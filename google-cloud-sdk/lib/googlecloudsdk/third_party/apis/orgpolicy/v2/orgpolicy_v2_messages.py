@@ -21,7 +21,7 @@ class GoogleCloudOrgpolicyV2AlternatePolicySpec(_messages.Message):
   Fields:
     launch: Reference to the launch that will be used while audit logging and
       to control the launch. Should be set only in the alternate policy.
-    spec: A GoogleCloudOrgpolicyV2PolicySpec attribute.
+    spec: Specify `Constraint` for configurations of Cloud Platform resources.
   """
 
   launch = _messages.StringField(1)
@@ -29,41 +29,41 @@ class GoogleCloudOrgpolicyV2AlternatePolicySpec(_messages.Message):
 
 
 class GoogleCloudOrgpolicyV2Constraint(_messages.Message):
-  r"""A `Constraint` describes a way in which a resource's configuration can
-  be restricted. For example, it controls which cloud services can be
-  activated across an organization, or whether a Compute Engine instance can
-  have serial port connections established. `Constraints` can be configured by
-  the organization's policy adminstrator to fit the needs of the organzation
-  by setting Policies for `Constraints` at different locations in the
-  organization's resource hierarchy. Policies are inherited down the resource
-  hierarchy from higher levels, but can also be overridden. For details about
-  the inheritance rules please read about Policies. `Constraints` have a
-  default behavior determined by the `constraint_default` field, which is the
-  enforcement behavior that is used in the absence of a `Policy` being defined
-  or inherited for the resource in question.
+  r"""A `constraint` describes a way to restrict resource's configuration. For
+  example, you could enforce a constraint that controls which cloud services
+  can be activated across an organization, or whether a Compute Engine
+  instance can have serial port connections established. `Constraints` can be
+  configured by the organization's policy adminstrator to fit the needs of the
+  organzation by setting a `policy` that includes `constraints` at different
+  locations in the organization's resource hierarchy. Policies are inherited
+  down the resource hierarchy from higher levels, but can also be overridden.
+  For details about the inheritance rules please read about `policies`.
+  `Constraints` have a default behavior determined by the `constraint_default`
+  field, which is the enforcement behavior that is used in the absence of a
+  `policy` being defined or inherited for the resource in question.
 
   Enums:
     ConstraintDefaultValueValuesEnum: The evaluation behavior of this
-      constraint in the absense of 'Policy'.
+      constraint in the absence of 'Policy'.
 
   Fields:
     booleanConstraint: Defines this constraint as being a BooleanConstraint.
     constraintDefault: The evaluation behavior of this constraint in the
-      absense of 'Policy'.
+      absence of 'Policy'.
     description: Detailed description of what this `Constraint` controls as
       well as how and where it is enforced. Mutable.
     displayName: The human readable name. Mutable.
     listConstraint: Defines this constraint as being a ListConstraint.
-    name: The resource name of the Constraint. Must be in one of the following
-      forms: * `projects/{project_number}/constraints/{constraint_name}` *
+    name: Immutable. The resource name of the Constraint. Must be in one of
+      the following forms: *
+      `projects/{project_number}/constraints/{constraint_name}` *
       `folders/{folder_id}/constraints/{constraint_name}` *
       `organizations/{organization_id}/constraints/{constraint_name}` For
       example, "/projects/123/constraints/compute.disableSerialPortAccess".
-      Immutable.
   """
 
   class ConstraintDefaultValueValuesEnum(_messages.Enum):
-    r"""The evaluation behavior of this constraint in the absense of 'Policy'.
+    r"""The evaluation behavior of this constraint in the absence of 'Policy'.
 
     Values:
       CONSTRAINT_DEFAULT_UNSPECIFIED: This is only used for distinguishing
@@ -179,12 +179,7 @@ class GoogleCloudOrgpolicyV2PolicySpec(_messages.Message):
       `GetPolicy` or a `ListPolicies` request, this `etag` indicates the
       version of the current `Policy` to use when executing a read-modify-
       write loop. When the `Policy` is returned from a `GetEffectivePolicy`
-      request, the `etag` will be unset. When the `Policy` is used in a
-      `UpdatePolicy` method, use the `etag` value that was returned from a
-      `GetPolicy` request as part of a read-modify-write loop for concurrency
-      control. If `UpdatePolicyRequest`'s `force_unconditional_write` field is
-      set to true, this field must not be set. Otherwise, the `etag` is
-      required for `UpdatePolicy`.
+      request, the `etag` will be unset.
     inheritFromParent: Determines the inheritance behavior for this `Policy`.
       If `inherit_from_parent` is true, PolicyRules set higher up in the
       hierarchy (up to the closest root) are inherited and present in the
@@ -220,10 +215,10 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
   Fields:
     allowAll: Setting this to true means that all values are allowed. This
       field can be set only in Policies for list constraints.
-    condition: Optional. A condition which determines whether this rule is
-      used in the evaluation of the policy. When set, the `expression` field
-      in the `Expr' must include from 1 to 10 subexpressions, joined by the
-      "||" or "&&" operators. Each subexpression must be of the form
+    condition: A condition which determines whether this rule is used in the
+      evaluation of the policy. When set, the `expression` field in the `Expr'
+      must include from 1 to 10 subexpressions, joined by the "||" or "&&"
+      operators. Each subexpression must be of the form
       "resource.matchLabels(key_name, value_name)", where key_name and
       value_name are the resource names for Label Keys and Values. These names
       are available from the Label Manager Service. An example expression is:
@@ -323,8 +318,8 @@ class OrgpolicyConstraintsListRequest(_messages.Message):
     pageToken: Page token used to retrieve the next page. This is currently
       unsupported and will be ignored. The server may at any point start using
       this field.
-    parent: The Cloud resource that parents the constraint. Must be in one of
-      the following forms: * `projects/{project_number}` *
+    parent: Required. The Cloud resource that parents the constraint. Must be
+      in one of the following forms: * `projects/{project_number}` *
       `projects/{project_id}` * `folders/{folder_id}` *
       `organizations/{organization_id}`
   """
@@ -338,26 +333,24 @@ class OrgpolicyPoliciesCreateRequest(_messages.Message):
   r"""A OrgpolicyPoliciesCreateRequest object.
 
   Fields:
-    constraint: The name of the `Constraint` the `Policy` is configuring, for
-      example, `constraints/compute.disableSerialPortAccess`.
     googleCloudOrgpolicyV2Policy: A GoogleCloudOrgpolicyV2Policy resource to
       be passed as the request body.
-    parent: The Cloud resource that will parent the new Policy. Must be in one
-      of the following forms: * `projects/{project_number}` *
+    parent: Required. The Cloud resource that will parent the new Policy. Must
+      be in one of the following forms: * `projects/{project_number}` *
       `projects/{project_id}` * `folders/{folder_id}` *
       `organizations/{organization_id}`
   """
 
-  constraint = _messages.StringField(1)
-  googleCloudOrgpolicyV2Policy = _messages.MessageField('GoogleCloudOrgpolicyV2Policy', 2)
-  parent = _messages.StringField(3, required=True)
+  googleCloudOrgpolicyV2Policy = _messages.MessageField('GoogleCloudOrgpolicyV2Policy', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class OrgpolicyPoliciesDeleteRequest(_messages.Message):
   r"""A OrgpolicyPoliciesDeleteRequest object.
 
   Fields:
-    name: Name of the policy to delete. See `Policy` for naming rules.
+    name: Required. Name of the policy to delete. See `Policy` for naming
+      rules.
   """
 
   name = _messages.StringField(1, required=True)
@@ -367,7 +360,8 @@ class OrgpolicyPoliciesGetEffectivePolicyRequest(_messages.Message):
   r"""A OrgpolicyPoliciesGetEffectivePolicyRequest object.
 
   Fields:
-    name: The effective policy to compute. See `Policy` for naming rules.
+    name: Required. The effective policy to compute. See `Policy` for naming
+      rules.
   """
 
   name = _messages.StringField(1, required=True)
@@ -377,7 +371,8 @@ class OrgpolicyPoliciesGetRequest(_messages.Message):
   r"""A OrgpolicyPoliciesGetRequest object.
 
   Fields:
-    name: Resource name of the policy. See `Policy` for naming requirements.
+    name: Required. Resource name of the policy. See `Policy` for naming
+      requirements.
   """
 
   name = _messages.StringField(1, required=True)
@@ -393,42 +388,16 @@ class OrgpolicyPoliciesListRequest(_messages.Message):
     pageToken: Page token used to retrieve the next page. This is currently
       unsupported and will be ignored. The server may at any point start using
       this field.
-    parent: The target Cloud resource that parents the set of constraints and
-      policies that will be returned from this call. Must be in one of the
-      following forms: * `projects/{project_number}` * `projects/{project_id}`
-      * `folders/{folder_id}` * `organizations/{organization_id}`
+    parent: Required. The target Cloud resource that parents the set of
+      constraints and policies that will be returned from this call. Must be
+      in one of the following forms: * `projects/{project_number}` *
+      `projects/{project_id}` * `folders/{folder_id}` *
+      `organizations/{organization_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-
-
-class OrgpolicyPoliciesPatchRequest(_messages.Message):
-  r"""A OrgpolicyPoliciesPatchRequest object.
-
-  Fields:
-    forceUnconditionalWrite: Indicates that this request should overwrite the
-      current policy and ignore the `etag` used for optimistic currency
-      control. When set to true, `etag` in `Policy` must be unset. Otherwise,
-      `etag` is required.
-    googleCloudOrgpolicyV2Policy: A GoogleCloudOrgpolicyV2Policy resource to
-      be passed as the request body.
-    name: Immutable. The resource name of the Policy. Must be one of the
-      following forms, where constraint_name is the name of the constraint
-      which this Policy configures: *
-      `projects/{project_number}/policies/{constraint_name}` *
-      `folders/{folder_id}/policies/{constraint_name}` *
-      `organizations/{organization_id}/policies/{constraint_name}` For
-      example, "projects/123/policies/compute.disableSerialPortAccess". Note:
-      `projects/{project_id}/policies/{constraint_name}` is also an acceptable
-      name for API requests, but responses will return the name using the
-      equivalent project number.
-  """
-
-  forceUnconditionalWrite = _messages.BooleanField(1)
-  googleCloudOrgpolicyV2Policy = _messages.MessageField('GoogleCloudOrgpolicyV2Policy', 2)
-  name = _messages.StringField(3, required=True)
 
 
 class StandardQueryParameters(_messages.Message):

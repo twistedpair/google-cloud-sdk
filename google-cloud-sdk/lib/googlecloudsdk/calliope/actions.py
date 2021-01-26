@@ -210,7 +210,7 @@ def StoreBooleanProperty(prop):
 def StoreConstProperty(prop, const):
   """Get an argparse action that stores a constant in a property.
 
-  Also stores the constannt in the namespace object, like the store_true action.
+  Also stores the constant in the namespace object, like the store_true action.
   The const is stored in the invocation stack, rather than persisted
   permanently.
 

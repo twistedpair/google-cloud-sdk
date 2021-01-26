@@ -20,8 +20,8 @@ from __future__ import unicode_literals
 
 import collections
 
+from googlecloudsdk.api_lib.containeranalysis import filter_util
 from googlecloudsdk.api_lib.containeranalysis import requests as ca_requests
-from googlecloudsdk.command_lib.artifacts import containeranalysis_filter_util as filter_util
 import six
 
 

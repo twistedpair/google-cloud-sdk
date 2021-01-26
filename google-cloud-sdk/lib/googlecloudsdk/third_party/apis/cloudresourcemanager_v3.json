@@ -830,19 +830,19 @@
     },
     "TagBinding": {
       "id": "TagBinding",
-      "description": "A TagBinding represents a connection between a TagValue and a cloud resource (currently Project, Folder, or Organization). Once a TagBinding is created, the TagValue is applied to all the descendants of the cloud resource.",
+      "description": "A TagBinding represents a connection between a TagValue and a cloud resource (currently project, folder, or organization). Once a TagBinding is created, the TagValue is applied to all the descendants of the cloud resource.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the TagBinding. This is a String of the form: 'tagBindings\/{full-resource-name}\/{tag-value-name}' (e.g. 'tagBindings\/%2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2F123\/tagValues\/456').",
+          "description": "The name of the TagBinding. This is a String of the form: `tagBindings\/{full-resource-name}\/{tag-value-name}` (e.g. `tagBindings\/%2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2F123\/tagValues\/456`).",
           "type": "string"
         },
         "parent": {
-          "description": "The full resource name of the resource the TagValue is bound to. E.g. \/\/cloudresourcemanager.googleapis.com\/projects\/123",
+          "description": "The full resource name of the resource the TagValue is bound to. E.g. `\/\/cloudresourcemanager.googleapis.com\/projects\/123`",
           "type": "string"
         },
         "tagValue": {
-          "description": "The TagValue of the TagBinding. Must be of the form \"tagValues\/456.",
+          "description": "The TagValue of the TagBinding. Must be of the form `tagValues\/456`.",
           "type": "string"
         }
       }
@@ -871,7 +871,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. Resource name for TagKey. Must be in the format tagKeys\/{tag_key_id} where tag_key_id is the generated numeric id for the tag key.",
+          "description": "Immutable. The resource name for a TagKey. Must be in the format `tagKeys\/{tag_key_id}`, where `tag_key_id` is the generated numeric id for the TagKey.",
           "type": "string"
         },
         "parent": {
@@ -879,7 +879,7 @@
           "type": "string"
         },
         "shortName": {
-          "description": "Required. Immutable. User friendly name for TagKey. Short name should be unique for TagKeys within the same tag namespace. The short name must be 1-63 characters, beginning and ending with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "description": "Required. Immutable. The user friendly name for a TagKey. The short name should be unique for TagKeys within the same tag namespace. The short name must be 1-63 characters, beginning and ending with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.",
           "type": "string"
         },
         "namespacedName": {
@@ -929,11 +929,11 @@
     },
     "TagValue": {
       "id": "TagValue",
-      "description": "A TagValue is a child of a particular TagKey. This is used to group cloud resources for the purpose of controlling them via policies.",
+      "description": "A TagValue is a child of a particular TagKey. This is used to group cloud resources for the purpose of controlling them using policies.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. Resource name for TagValue in the format tagValues\/456.",
+          "description": "Immutable. Resource name for TagValue in the format `tagValues\/456`.",
           "type": "string"
         },
         "parent": {
@@ -941,11 +941,11 @@
           "type": "string"
         },
         "shortName": {
-          "description": "Required. Immutable. User-assigned short name for TagValue. Short name should be unique for TagValues within the same parent TagKey. The short name must be 63 characters or less, beginning and ending with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "description": "Required. Immutable. User-assigned short name for TagValue. The short name should be unique for TagValues within the same parent TagKey. The short name must be 63 characters or less, beginning and ending with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.",
           "type": "string"
         },
         "namespacedName": {
-          "description": "Output only. Namespaced name of the TagValue. Must be in the format {organization_id}\/{tag_key_short_name}\/{short_name}.",
+          "description": "Output only. Namespaced name of the TagValue. Must be in the format `{organization_id}\/{tag_key_short_name}\/{short_name}`.",
           "readOnly": true,
           "type": "string"
         },
@@ -2246,7 +2246,7 @@
           "httpMethod": "GET",
           "parameters": {
             "parent": {
-              "description": "Required. The full-resource-name of a resource to list TagBindings for. E.g. \"\/\/cloudresourcemanager.googleapis.com\/projects\/123\"",
+              "description": "Required. The full resource name of a resource for which you want to list existing TagBindings. E.g. \"\/\/cloudresourcemanager.googleapis.com\/projects\/123\"",
               "location": "query",
               "type": "string"
             },
@@ -2271,7 +2271,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-platform.read-only"
           ],
-          "description": "Lists the TagBindings for the given cloud resource, as specified with `parent`. NOTE: The `parent` field is expected to be a full-resource-name. https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name"
+          "description": "Lists the TagBindings for the given cloud resource, as specified with `parent`. NOTE: The `parent` field is expected to be a full resource name: https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name"
         },
         "create": {
           "id": "cloudresourcemanager.tagBindings.create",
@@ -2280,7 +2280,7 @@
           "httpMethod": "POST",
           "parameters": {
             "validateOnly": {
-              "description": "Optional. True to perform validations necessary for creating the resource, but not actually perform the action.",
+              "description": "Optional. Set to true to perform the validations necessary for creating the resource, but not actually perform the action.",
               "location": "query",
               "type": "boolean"
             }
@@ -2296,7 +2296,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Creates a TagBinding between a TagValue and a cloud resource (currently Project, Folder, or Organization)."
+          "description": "Creates a TagBinding between a TagValue and a cloud resource (currently project, folder, or organization)."
         },
         "delete": {
           "id": "cloudresourcemanager.tagBindings.delete",
@@ -2305,7 +2305,7 @@
           "httpMethod": "DELETE",
           "parameters": {
             "name": {
-              "description": "Required. The name of the TagBinding. This is a String of the form: 'tagBindings\/{id}' (e.g. 'tagBindings\/%2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2F123\/tagValues\/456').",
+              "description": "Required. The name of the TagBinding. This is a String of the form: `tagBindings\/{id}` (e.g. `tagBindings\/%2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2F123\/tagValues\/456`).",
               "location": "path",
               "required": true,
               "pattern": "^tagBindings\/[^\/]+$",
@@ -2385,7 +2385,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-platform.read-only"
           ],
-          "description": "Retrieves a TagKey. This method will return PERMISSION_DENIED if the key does not exist or the user does not have permission to view it."
+          "description": "Retrieves a TagKey. This method will return `PERMISSION_DENIED` if the key does not exist or the user does not have permission to view it."
         },
         "create": {
           "id": "cloudresourcemanager.tagKeys.create",
@@ -2394,7 +2394,7 @@
           "httpMethod": "POST",
           "parameters": {
             "validateOnly": {
-              "description": "Optional. True to perform validations necessary for creating the resource, but not actually perform the action.",
+              "description": "Optional. Set to true to perform validations necessary for creating the resource, but not actually perform the action.",
               "location": "query",
               "type": "boolean"
             }
@@ -2419,20 +2419,20 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "Immutable. Resource name for TagKey. Must be in the format tagKeys\/{tag_key_id} where tag_key_id is the generated numeric id for the tag key.",
+              "description": "Immutable. The resource name for a TagKey. Must be in the format `tagKeys\/{tag_key_id}`, where `tag_key_id` is the generated numeric id for the TagKey.",
               "location": "path",
               "required": true,
               "pattern": "^tagKeys\/[^\/]+$",
               "type": "string"
             },
             "updateMask": {
-              "description": "Fields to be updated. The mask may only contain \"description\" and\/or \"etag\". If omitted entirely, both \"description\" and \"etag\" are assumed to be significant.",
+              "description": "Fields to be updated. The mask may only contain `description` or `etag`. If omitted entirely, both `description` and `etag` are assumed to be significant.",
               "location": "query",
               "type": "string",
               "format": "google-fieldmask"
             },
             "validateOnly": {
-              "description": "True to perform validations necessary for updating the resource, but not actually perform the action.",
+              "description": "Set as true to perform validations necessary for updating the resource, but not actually perform the action.",
               "location": "query",
               "type": "boolean"
             }
@@ -2458,14 +2458,14 @@
           "httpMethod": "DELETE",
           "parameters": {
             "name": {
-              "description": "Required. Resource name for TagKey to be deleted in the format tagKeys\/123. The TagKey cannot be a parent of any existing TagValues to be deleted successfully.",
+              "description": "Required. The resource name of a TagKey to be deleted in the format `tagKeys\/123`. The TagKey cannot be a parent of any existing TagValues or it will not be deleted successfully.",
               "location": "path",
               "required": true,
               "pattern": "^tagKeys\/[^\/]+$",
               "type": "string"
             },
             "validateOnly": {
-              "description": "Optional. True to perform validations necessary for deletion, but not actually perform the action.",
+              "description": "Optional. Set as true to perform validations necessary for deletion, but not actually perform the action.",
               "location": "query",
               "type": "boolean"
             },
@@ -2513,7 +2513,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-platform.read-only"
           ],
-          "description": "Gets the access control policy for a TagKey. The returned policy may be empty if no such policy or resource exists. The `resource` field should be the TagKey's resource name, e.g. \"tagKeys\/1234\". The caller must have `cloudresourcemanager.googleapis.com\/tagKeys.getIamPolicy` permission on the identified tagKey."
+          "description": "Gets the access control policy for a TagKey. The returned policy may be empty if no such policy or resource exists. The `resource` field should be the TagKey's resource name. For example, \"tagKeys\/1234\". The caller must have `cloudresourcemanager.googleapis.com\/tagKeys.getIamPolicy` permission on the specified TagKey."
         },
         "setIamPolicy": {
           "id": "cloudresourcemanager.tagKeys.setIamPolicy",
@@ -2541,7 +2541,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Sets the access control policy on a TagKey, replacing any existing policy. The `resource` field should be the TagKey's resource name, e.g. \"tagKeys\/1234\". The caller must have `resourcemanager.tagKeys.setIamPolicy` permission on the identified tagValue."
+          "description": "Sets the access control policy on a TagKey, replacing any existing policy. The `resource` field should be the TagKey's resource name. For example, \"tagKeys\/1234\". The caller must have `resourcemanager.tagKeys.setIamPolicy` permission on the identified tagValue."
         },
         "testIamPermissions": {
           "id": "cloudresourcemanager.tagKeys.testIamPermissions",
@@ -2569,7 +2569,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Returns permissions that a caller has on the specified TagKey. The `resource` field should be the TagKey's resource name, e.g. \"tagKeys\/1234\". There are no permissions required for making this API call."
+          "description": "Returns permissions that a caller has on the specified TagKey. The `resource` field should be the TagKey's resource name. For example, \"tagKeys\/1234\". There are no permissions required for making this API call."
         }
       }
     },
@@ -2582,7 +2582,7 @@
           "httpMethod": "GET",
           "parameters": {
             "parent": {
-              "description": "Required. Resource name for TagKey, parent of the TagValues to be listed, in the format tagKeys\/123.",
+              "description": "Required. Resource name for TagKey, parent of the TagValues to be listed, in the format `tagKeys\/123`.",
               "location": "query",
               "type": "string"
             },
@@ -2633,7 +2633,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-platform.read-only"
           ],
-          "description": "Retrieves TagValue. This method will return PERMISSION_DENIED if the TagValue or namespaced name does not exist or the user does not have permission to view it."
+          "description": "Retrieves TagValue. If the TagValue or namespaced name does not exist, or if the user does not have permission to view it, this method will return `PERMISSION_DENIED`."
         },
         "create": {
           "id": "cloudresourcemanager.tagValues.create",
@@ -2642,7 +2642,7 @@
           "httpMethod": "POST",
           "parameters": {
             "validateOnly": {
-              "description": "Optional. True to perform validations necessary for creating the resource, but not actually perform the action.",
+              "description": "Optional. Set as true to perform the validations necessary for creating the resource, but not actually perform the action.",
               "location": "query",
               "type": "boolean"
             }
@@ -2667,7 +2667,7 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "Immutable. Resource name for TagValue in the format tagValues\/456.",
+              "description": "Immutable. Resource name for TagValue in the format `tagValues\/456`.",
               "location": "path",
               "required": true,
               "pattern": "^tagValues\/[^\/]+$",
@@ -2713,7 +2713,7 @@
               "type": "string"
             },
             "validateOnly": {
-              "description": "Optional. True to perform validations necessary for deletion, but not actually perform the action.",
+              "description": "Optional. Set as true to perform the validations necessary for deletion, but not actually perform the action.",
               "location": "query",
               "type": "boolean"
             },
@@ -2761,7 +2761,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-platform.read-only"
           ],
-          "description": "Gets the access control policy for a TagValue. The returned policy may be empty if no such policy or resource exists. The `resource` field should be the TagValue's resource name, e.g. \"tagValues\/1234\". The caller must have `cloudresourcemanager.googleapis.com\/tagValues.getIamPolicy` permission on the identified tagValue."
+          "description": "Gets the access control policy for a TagValue. The returned policy may be empty if no such policy or resource exists. The `resource` field should be the TagValue's resource name. For example: `tagValues\/1234`. The caller must have the `cloudresourcemanager.googleapis.com\/tagValues.getIamPolicy` permission on the identified TagValue to get the access control policy."
         },
         "setIamPolicy": {
           "id": "cloudresourcemanager.tagValues.setIamPolicy",
@@ -2789,7 +2789,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Sets the access control policy on a TagValue, replacing any existing policy. The `resource` field should be the TagValue's resource name, e.g. \"tagValues\/1234\". The caller must have `resourcemanager.tagValues.setIamPolicy` permission on the identified tagValue."
+          "description": "Sets the access control policy on a TagValue, replacing any existing policy. The `resource` field should be the TagValue's resource name. For example: `tagValues\/1234`. The caller must have `resourcemanager.tagValues.setIamPolicy` permission on the identified tagValue."
         },
         "testIamPermissions": {
           "id": "cloudresourcemanager.tagValues.testIamPermissions",
@@ -2817,7 +2817,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Returns permissions that a caller has on the specified TagValue. The `resource` field should be the TagValue's resource name, e.g. \"tagValues\/1234\". There are no permissions required for making this API call."
+          "description": "Returns permissions that a caller has on the specified TagValue. The `resource` field should be the TagValue's resource name. For example: `tagValues\/1234`. There are no permissions required for making this API call."
         }
       }
     }

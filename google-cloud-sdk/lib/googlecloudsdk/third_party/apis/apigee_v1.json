@@ -4589,11 +4589,11 @@
           "type": "string"
         },
         "analyticsRegion": {
-          "description": "Primary Cloud Platform region for analytics data storage. For valid values, see [Create an organization](https:\/\/docs.apigee.com\/hybrid\/latest\/precog-provision). Defaults to us-west1.",
+          "description": "Primary Cloud Platform region for analytics data storage. For valid values, see [Create an organization](https:\/\/cloud.google.com\/apigee\/docs\/hybrid\/latest\/precog-provision). Defaults to `us-west1`.",
           "type": "string"
         },
         "runtimeLocation": {
-          "description": "Cloud Platform location for the runtime instance. Defaults to us-west1-a.",
+          "description": "Cloud Platform location for the runtime instance. Defaults to `us-west1-a`.",
           "type": "string"
         }
       }

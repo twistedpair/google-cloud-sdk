@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://cloud.google.com/iam/docs/simulating-access",
   "protocol": "rest",
   "rootUrl": "https://policysimulator.googleapis.com/",
   "mtlsRootUrl": "https://policysimulator.mtls.googleapis.com/",
@@ -783,6 +783,18 @@
             "NORMAL",
             "HIGH"
           ]
+        }
+      }
+    },
+    "GoogleCloudPolicysimulatorV1beta1ReplayOperationMetadata": {
+      "id": "GoogleCloudPolicysimulatorV1beta1ReplayOperationMetadata",
+      "description": "Metadata about a ReplayAccessLogs operation.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Time when the request was received.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     }

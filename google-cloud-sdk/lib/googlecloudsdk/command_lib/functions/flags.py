@@ -150,6 +150,22 @@ def AddAllowUnauthenticatedFlag(parser):
             'callers, without checking authentication.'))
 
 
+def AddV2Flag(parser):
+  """Add the --v2 flag."""
+  parser.add_argument(
+      '--v2',
+      default=False,
+      action=actions.StoreBooleanProperty(properties.VALUES.functions.v2),
+      help=('If enabled, this command will use Cloud Functions V2. If disabled,'
+            'Cloud Functions V1 will be used. If not specified, the value of '
+            'this flag will be taken from the `functions/v2` configuration '
+            'property.'))
+
+
+def ShouldUseV2(args):
+  return properties.VALUES.functions.v2.GetBool()
+
+
 def ShouldEnsureAllUsersInvoke(args):
   if args.allow_unauthenticated:
     return True

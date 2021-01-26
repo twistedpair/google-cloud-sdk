@@ -3341,6 +3341,31 @@
                 },
                 "serviceaccounts": {
                   "methods": {
+                    "patch": {
+                      "id": "anthosevents.projects.locations.namespaces.serviceaccounts.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/serviceaccounts/{serviceaccountsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the serviceAccount being retrieved. If needed, replace {namespace_id} with the project ID.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/serviceaccounts\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ServiceAccount"
+                      },
+                      "response": {
+                        "$ref": "ServiceAccount"
+                      },
+                      "description": "Rpc to update Service Account."
+                    },
                     "replaceServiceAccount": {
                       "id": "anthosevents.projects.locations.namespaces.serviceaccounts.replaceServiceAccount",
                       "path": "v1/{+name}",
@@ -4136,6 +4161,31 @@
                         "$ref": "ListServiceAccountsResponse"
                       },
                       "description": "Rpc to list Service Accounts."
+                    },
+                    "patch": {
+                      "id": "anthosevents.api.v1.namespaces.serviceaccounts.patch",
+                      "path": "api/v1/{+name}",
+                      "flatPath": "api/v1/namespaces/{namespacesId}/serviceaccounts/{serviceaccountsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the serviceAccount being retrieved. If needed, replace {namespace_id} with the project ID.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^namespaces\/[^\/]+\/serviceaccounts\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ServiceAccount"
+                      },
+                      "response": {
+                        "$ref": "ServiceAccount"
+                      },
+                      "description": "Rpc to update Service Account."
                     },
                     "replaceServiceAccount": {
                       "id": "anthosevents.api.v1.namespaces.serviceaccounts.replaceServiceAccount",

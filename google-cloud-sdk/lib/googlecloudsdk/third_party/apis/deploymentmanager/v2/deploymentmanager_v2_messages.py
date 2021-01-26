@@ -1026,6 +1026,10 @@ class Manifest(_messages.Message):
     imports: Output only. The imported files for this manifest.
     insertTime: Output only. Creation timestamp in RFC3339 text format.
     layout: Output only. The YAML layout for this manifest.
+    manifestSizeBytes: Output only. The computed size of the fully expanded
+      manifest.
+    manifestSizeLimitBytes: Output only. The size limit for expanded manifests
+      in the project.
     name: Output only.  The name of the manifest.
     selfLink: Output only. Self link for the manifest.
   """
@@ -1036,8 +1040,10 @@ class Manifest(_messages.Message):
   imports = _messages.MessageField('ImportFile', 4, repeated=True)
   insertTime = _messages.StringField(5)
   layout = _messages.StringField(6)
-  name = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
+  manifestSizeBytes = _messages.IntegerField(7)
+  manifestSizeLimitBytes = _messages.IntegerField(8)
+  name = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
 
 
 class ManifestsListResponse(_messages.Message):

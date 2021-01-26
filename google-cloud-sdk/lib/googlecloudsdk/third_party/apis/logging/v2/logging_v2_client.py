@@ -42,6 +42,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.billingAccounts_buckets_views = self.BillingAccountsBucketsViewsService(self)
     self.billingAccounts_buckets = self.BillingAccountsBucketsService(self)
     self.billingAccounts_exclusions = self.BillingAccountsExclusionsService(self)
+    self.billingAccounts_locations_buckets_tables = self.BillingAccountsLocationsBucketsTablesService(self)
     self.billingAccounts_locations_buckets_views = self.BillingAccountsLocationsBucketsViewsService(self)
     self.billingAccounts_locations_buckets = self.BillingAccountsLocationsBucketsService(self)
     self.billingAccounts_locations = self.BillingAccountsLocationsService(self)
@@ -51,18 +52,22 @@ class LoggingV2(base_api.BaseApiClient):
     self.entries = self.EntriesService(self)
     self.exclusions = self.ExclusionsService(self)
     self.folders_exclusions = self.FoldersExclusionsService(self)
+    self.folders_locations_buckets_tables = self.FoldersLocationsBucketsTablesService(self)
     self.folders_locations_buckets_views = self.FoldersLocationsBucketsViewsService(self)
     self.folders_locations_buckets = self.FoldersLocationsBucketsService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders_logs = self.FoldersLogsService(self)
     self.folders_sinks = self.FoldersSinksService(self)
     self.folders = self.FoldersService(self)
+    self.locations_buckets_jobs = self.LocationsBucketsJobsService(self)
+    self.locations_buckets_tables = self.LocationsBucketsTablesService(self)
     self.locations_buckets_views = self.LocationsBucketsViewsService(self)
     self.locations_buckets = self.LocationsBucketsService(self)
     self.locations = self.LocationsService(self)
     self.logs = self.LogsService(self)
     self.monitoredResourceDescriptors = self.MonitoredResourceDescriptorsService(self)
     self.organizations_exclusions = self.OrganizationsExclusionsService(self)
+    self.organizations_locations_buckets_tables = self.OrganizationsLocationsBucketsTablesService(self)
     self.organizations_locations_buckets_views = self.OrganizationsLocationsBucketsViewsService(self)
     self.organizations_locations_buckets = self.OrganizationsLocationsBucketsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
@@ -70,6 +75,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.organizations_sinks = self.OrganizationsSinksService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_exclusions = self.ProjectsExclusionsService(self)
+    self.projects_locations_buckets_tables = self.ProjectsLocationsBucketsTablesService(self)
     self.projects_locations_buckets_views = self.ProjectsLocationsBucketsViewsService(self)
     self.projects_locations_buckets = self.ProjectsLocationsBucketsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -296,6 +302,43 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='logExclusion',
         request_type_name='LoggingBillingAccountsExclusionsPatchRequest',
         response_type_name='LogExclusion',
+        supports_download=False,
+    )
+
+  class BillingAccountsLocationsBucketsTablesService(base_api.BaseApiService):
+    """Service class for the billingAccounts_locations_buckets_tables resource."""
+
+    _NAME = 'billingAccounts_locations_buckets_tables'
+
+    def __init__(self, client):
+      super(LoggingV2.BillingAccountsLocationsBucketsTablesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists all tables in the specified log bucket.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsBucketsTablesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTablesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/tables',
+        http_method='GET',
+        method_id='logging.billingAccounts.locations.buckets.tables.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/tables',
+        request_field='',
+        request_type_name='LoggingBillingAccountsLocationsBucketsTablesListRequest',
+        response_type_name='ListTablesResponse',
         supports_download=False,
     )
 
@@ -1250,6 +1293,43 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class FoldersLocationsBucketsTablesService(base_api.BaseApiService):
+    """Service class for the folders_locations_buckets_tables resource."""
+
+    _NAME = 'folders_locations_buckets_tables'
+
+    def __init__(self, client):
+      super(LoggingV2.FoldersLocationsBucketsTablesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists all tables in the specified log bucket.
+
+      Args:
+        request: (LoggingFoldersLocationsBucketsTablesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTablesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/tables',
+        http_method='GET',
+        method_id='logging.folders.locations.buckets.tables.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/tables',
+        request_field='',
+        request_type_name='LoggingFoldersLocationsBucketsTablesListRequest',
+        response_type_name='ListTablesResponse',
+        supports_download=False,
+    )
+
   class FoldersLocationsBucketsViewsService(base_api.BaseApiService):
     """Service class for the folders_locations_buckets_views resource."""
 
@@ -1877,6 +1957,107 @@ class LoggingV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+  class LocationsBucketsJobsService(base_api.BaseApiService):
+    """Service class for the locations_buckets_jobs resource."""
+
+    _NAME = 'locations_buckets_jobs'
+
+    def __init__(self, client):
+      super(LoggingV2.LocationsBucketsJobsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get the results of a query job.
+
+      Args:
+        request: (LoggingLocationsBucketsJobsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetQueryResultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/jobs/{jobsId}',
+        http_method='GET',
+        method_id='logging.locations.buckets.jobs.get',
+        ordered_params=['jobName'],
+        path_params=['jobName'],
+        query_params=['pageSize', 'pageToken', 'startIndex'],
+        relative_path='v2/{+jobName}',
+        request_field='',
+        request_type_name='LoggingLocationsBucketsJobsGetRequest',
+        response_type_name='GetQueryResultsResponse',
+        supports_download=False,
+    )
+
+  class LocationsBucketsTablesService(base_api.BaseApiService):
+    """Service class for the locations_buckets_tables resource."""
+
+    _NAME = 'locations_buckets_tables'
+
+    def __init__(self, client):
+      super(LoggingV2.LocationsBucketsTablesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified table resource by table ID. This method does not return the data in the table, it only returns the table resource, which describes the structure of this table.
+
+      Args:
+        request: (LoggingLocationsBucketsTablesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Table) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/tables/{tablesId}',
+        http_method='GET',
+        method_id='logging.locations.buckets.tables.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingLocationsBucketsTablesGetRequest',
+        response_type_name='Table',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all tables in the specified log bucket.
+
+      Args:
+        request: (LoggingLocationsBucketsTablesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTablesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/tables',
+        http_method='GET',
+        method_id='logging.locations.buckets.tables.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/tables',
+        request_field='',
+        request_type_name='LoggingLocationsBucketsTablesListRequest',
+        response_type_name='ListTablesResponse',
+        supports_download=False,
+    )
+
   class LocationsBucketsViewsService(base_api.BaseApiService):
     """Service class for the locations_buckets_views resource."""
 
@@ -2500,6 +2681,43 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='logExclusion',
         request_type_name='LoggingOrganizationsExclusionsPatchRequest',
         response_type_name='LogExclusion',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsBucketsTablesService(base_api.BaseApiService):
+    """Service class for the organizations_locations_buckets_tables resource."""
+
+    _NAME = 'organizations_locations_buckets_tables'
+
+    def __init__(self, client):
+      super(LoggingV2.OrganizationsLocationsBucketsTablesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists all tables in the specified log bucket.
+
+      Args:
+        request: (LoggingOrganizationsLocationsBucketsTablesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTablesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/tables',
+        http_method='GET',
+        method_id='logging.organizations.locations.buckets.tables.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/tables',
+        request_field='',
+        request_type_name='LoggingOrganizationsLocationsBucketsTablesListRequest',
+        response_type_name='ListTablesResponse',
         supports_download=False,
     )
 
@@ -3326,6 +3544,43 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='logExclusion',
         request_type_name='LoggingProjectsExclusionsPatchRequest',
         response_type_name='LogExclusion',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBucketsTablesService(base_api.BaseApiService):
+    """Service class for the projects_locations_buckets_tables resource."""
+
+    _NAME = 'projects_locations_buckets_tables'
+
+    def __init__(self, client):
+      super(LoggingV2.ProjectsLocationsBucketsTablesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists all tables in the specified log bucket.
+
+      Args:
+        request: (LoggingProjectsLocationsBucketsTablesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTablesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/tables',
+        http_method='GET',
+        method_id='logging.projects.locations.buckets.tables.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/tables',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsBucketsTablesListRequest',
+        response_type_name='ListTablesResponse',
         supports_download=False,
     )
 
@@ -4280,6 +4535,32 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='LoggingGetCmekSettingsRequest',
         response_type_name='CmekSettings',
+        supports_download=False,
+    )
+
+    def Queries(self, request, global_params=None):
+      r"""Runs a SQL query synchronously and returns query results if the query completes within a specified timeout. The results of the query job can also be fetched with GetQueryResults.
+
+      Args:
+        request: (QueryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryResponse) The response message.
+      """
+      config = self.GetMethodConfig('Queries')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Queries.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='logging.queries',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v2/queries',
+        request_field='<request>',
+        request_type_name='QueryRequest',
+        response_type_name='QueryResponse',
         supports_download=False,
     )
 

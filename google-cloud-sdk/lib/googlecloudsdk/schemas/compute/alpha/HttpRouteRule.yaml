@@ -37,13 +37,18 @@ properties:
       applied before the matching pathMatchers[].headerAction and after
       pathMatchers[].routeRules[].routeA
       ction.weightedBackendService.backendServiceWeightAction[].headerAction
+      Note that headerAction is not supported for Loadbalancers that have their
+      loadBalancingScheme set to EXTERNAL. Not supported when the URL map is
+      bound to target gRPC proxy that has validateForProxyless field set to
+      true.
     $ref: HttpHeaderAction.yaml
   httpFilterConfigs:
     description: |-
       Outbound route specific configuration for networkservices.HttpFilter
       resources enabled by Traffic Director. httpFilterConfigs only applies for
       Loadbalancers with loadBalancingScheme set to INTERNAL_SELF_MANAGED. See
-      ForwardingRule for more details.
+      ForwardingRule for more details. Not supported when the URL map is bound
+      to target gRPC proxy that has validateForProxyless field set to true.
     type: array
     items:
       $ref: HttpFilterConfig.yaml
@@ -54,12 +59,20 @@ properties:
       httpFilterMetadata only applies for Loadbalancers with
       loadBalancingScheme set to INTERNAL_SELF_MANAGED. See ForwardingRule
       for more details. The only configTypeUrl supported is
-      type.googleapis.com/google.protobuf.Struct
+      type.googleapis.com/google.protobuf.Struct  Not supported when the URL
+      map is bound to target gRPC proxy that has validateForProxyless field
+      set to true.
     type: array
     items:
       $ref: HttpFilterConfig.yaml
   matchRules:
-    description: A HttpRouteRuleMatch attribute.
+    description: |-
+      The list of criteria for matching attributes of a request to this
+      routeRule. This list has OR semantics: the request matches this
+      routeRule when any of the matchRules are satisfied. However
+      predicates within a given matchRule have AND semantics. All
+      predicates within a matchRule must match for the request to match
+      the rule.
     type: array
     items:
       $ref: HttpRouteRuleMatch.yaml
@@ -89,7 +102,9 @@ properties:
       weightedBackendServices, service must not be set. Conversely
       if service is set, routeAction cannot contain any
       weightedBackendServices. Only one of urlRedirect, service or
-      routeAction.weightedBackendService must be set.
+      routeAction.weightedBackendService must be set. UrlMaps for
+      external HTTP(S) load balancers support only the urlRewrite
+      action within a routeRule's routeAction.
     $ref: HttpRouteAction.yaml
   service:
     description: |-
@@ -108,5 +123,6 @@ properties:
     description: |-
       When this rule is matched, the request is redirected to a URL
       specified by urlRedirect. If urlRedirect is specified, service
-      or routeAction must not be set.
+      or routeAction must not be set. Not supported when the URL map
+      is bound to target gRPC proxy.
     $ref: HttpRedirectAction.yaml

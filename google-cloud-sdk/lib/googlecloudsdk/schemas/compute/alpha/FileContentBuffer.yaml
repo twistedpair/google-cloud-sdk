@@ -29,7 +29,7 @@ properties:
     description: The raw content in the secure keys file.
     type: string
   fileType:
-    description: A FileTypeValueValuesEnum attribute.
+    description: The file type of source file.
     type: string
     enum:
     - BIN

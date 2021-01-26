@@ -41,7 +41,7 @@ LEGAL_SPECS = re.compile(
 EFFECTIVE_FIREWALL_LIST_FORMAT = """\
   table(
     type,
-    security_policy_id,
+    firewall_policy_name,
     priority,
     action,
     direction,
@@ -468,6 +468,30 @@ def SortFirewallPolicyRules(client, rules):
   return ingress_org_firewall_rule + egress_org_firewall_rule
 
 
+def ConvertFirewallPolicyRulesToEffectiveFwRules(firewall_policy):
+  """Convert organization firewall policy rules to effective firewall rules."""
+  result = []
+  for rule in firewall_policy.rules:
+    item = {}
+    item.update({'type': 'org-firewall'})
+    item.update({'description': rule.description})
+    item.update({'firewall_policy_name': firewall_policy.name})
+    item.update({'priority': rule.priority})
+    item.update({'direction': rule.direction})
+    item.update({'action': rule.action.upper()})
+    item.update({'disabled': rule.disabled})
+    if rule.match.srcIpRanges:
+      item.update({'ip_ranges': rule.match.srcIpRanges})
+    if rule.match.destIpRanges:
+      item.update({'ip_ranges': rule.match.destIpRanges})
+    if rule.targetServiceAccounts:
+      item.update({'target_svc_acct': rule.targetServiceAccounts})
+    if rule.targetResources:
+      item.update({'target_resources': rule.targetResources})
+    result.append(item)
+  return result
+
+
 def ConvertOrgSecurityPolicyRulesToEffectiveFwRules(security_policy):
   """Convert organization security policy rules to effective firewall rules."""
   result = []
@@ -475,10 +499,10 @@ def ConvertOrgSecurityPolicyRulesToEffectiveFwRules(security_policy):
     item = {}
     item.update({'type': 'org-firewall'})
     item.update({'description': rule.description})
-    item.update({'security_policy_id': security_policy.id})
+    item.update({'firewall_policy_name': security_policy.id})
     item.update({'priority': rule.priority})
     item.update({'direction': rule.direction})
-    item.update({'action': rule.action})
+    item.update({'action': rule.action.upper()})
     item.update({'disabled': 'False'})
     if rule.match.config.srcIpRanges:
       item.update({'ip_ranges': rule.match.config.srcIpRanges})

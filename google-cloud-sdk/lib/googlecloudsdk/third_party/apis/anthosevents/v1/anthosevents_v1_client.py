@@ -418,6 +418,33 @@ class AnthoseventsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Rpc to update Service Account.
+
+      Args:
+        request: (AnthoseventsApiV1NamespacesServiceaccountsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAccount) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='api/v1/namespaces/{namespacesId}/serviceaccounts/{serviceaccountsId}',
+        http_method='PATCH',
+        method_id='anthosevents.api.v1.namespaces.serviceaccounts.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='api/v1/{+name}',
+        request_field='serviceAccount',
+        request_type_name='AnthoseventsApiV1NamespacesServiceaccountsPatchRequest',
+        response_type_name='ServiceAccount',
+        supports_download=False,
+    )
+
     def ReplaceServiceAccount(self, request, global_params=None):
       r"""Rpc to replace a Service Account.
 
@@ -1735,6 +1762,33 @@ class AnthoseventsV1(base_api.BaseApiClient):
       super(AnthoseventsV1.ProjectsLocationsNamespacesServiceaccountsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Patch(self, request, global_params=None):
+      r"""Rpc to update Service Account.
+
+      Args:
+        request: (AnthoseventsProjectsLocationsNamespacesServiceaccountsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAccount) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/serviceaccounts/{serviceaccountsId}',
+        http_method='PATCH',
+        method_id='anthosevents.projects.locations.namespaces.serviceaccounts.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='serviceAccount',
+        request_type_name='AnthoseventsProjectsLocationsNamespacesServiceaccountsPatchRequest',
+        response_type_name='ServiceAccount',
+        supports_download=False,
+    )
 
     def ReplaceServiceAccount(self, request, global_params=None):
       r"""Rpc to replace a Service Account.

@@ -389,7 +389,7 @@ class CloudassetV1(base_api.BaseApiClient):
         method_id='cloudasset.searchAllIamPolicies',
         ordered_params=['scope'],
         path_params=['scope'],
-        query_params=['pageSize', 'pageToken', 'query'],
+        query_params=['assetTypes', 'pageSize', 'pageToken', 'query'],
         relative_path='v1/{+scope}:searchAllIamPolicies',
         request_field='',
         request_type_name='CloudassetSearchAllIamPoliciesRequest',

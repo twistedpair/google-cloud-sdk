@@ -234,6 +234,10 @@
       "description": "Membership contains information about a member cluster.",
       "type": "object",
       "properties": {
+        "endpoint": {
+          "description": "Optional. Endpoint information to reach this member.",
+          "$ref": "MembershipEndpoint"
+        },
         "name": {
           "description": "Output only. The full, unique name of this Membership resource in the format `projects\/*\/locations\/*\/memberships\/{membership_id}`, set during creation. `membership_id` must be a valid RFC 1123 compliant DNS label: 1. At most 63 characters in length 2. It must consist of lower case alphanumeric characters or `-` 3. It must start and end with an alphanumeric character Which can be expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.",
           "readOnly": true,
@@ -250,10 +254,6 @@
           "description": "Output only. Description of this membership, limited to 63 characters. Must match the regex: `a-zA-Z0-9*` This field is present for legacy purposes.",
           "readOnly": true,
           "type": "string"
-        },
-        "endpoint": {
-          "description": "Optional. Endpoint information to reach this member.",
-          "$ref": "MembershipEndpoint"
         },
         "state": {
           "description": "Output only. State of the Membership resource.",

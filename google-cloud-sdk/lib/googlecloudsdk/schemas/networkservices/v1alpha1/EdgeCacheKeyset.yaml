@@ -1,0 +1,56 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1alpha1 EdgeCacheKeyset export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- name
+- publicKeys
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  description:
+    description: A human-readable description of the resource.
+    type: string
+  labels:
+    description: Set of label tags associated with the EdgeCache resource.
+    $ref: LabelsValue.yaml
+  name:
+    description: |-
+      Name of the resource; provided by the client when the resource is created.
+      The name must be 1-64 characters long, and match the regular expression
+      a-zA-Z* which means the first character must be a letter, and all
+      following characters must be a dash, underscore, letter or digit.
+    type: string
+  publicKeys:
+    description: |-
+      An ordered list of Ed25519 public keys to use for validating signed
+      requests. You must specify at least one (1) key, and may have up to three
+      (3) keys. Ed25519 public keys are not secret, and only allow Google to
+      validate a request was signed by your corresponding private key. You
+      should ensure that the private key is kept secret, and that only
+      authorized users can add public keys to a keyset. You can rotate keys by
+      appending (pushing) a new key to the list of public keys, and removing any
+      superseded keys.
+    type: array
+    items:
+      $ref: PublicKey.yaml

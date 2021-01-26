@@ -636,8 +636,8 @@ class CloudresourcemanagerTagBindingsCreateRequest(_messages.Message):
 
   Fields:
     tagBinding: A TagBinding resource to be passed as the request body.
-    validateOnly: Optional. True to perform validations necessary for creating
-      the resource, but not actually perform the action.
+    validateOnly: Optional. Set to true to perform the validations necessary
+      for creating the resource, but not actually perform the action.
   """
 
   tagBinding = _messages.MessageField('TagBinding', 1)
@@ -649,8 +649,8 @@ class CloudresourcemanagerTagBindingsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the TagBinding. This is a String of the form:
-      'tagBindings/{id}' (e.g. 'tagBindings/%2F%2Fcloudresourcemanager.googlea
-      pis.com%2Fprojects%2F123/tagValues/456').
+      `tagBindings/{id}` (e.g. `tagBindings/%2F%2Fcloudresourcemanager.googlea
+      pis.com%2Fprojects%2F123/tagValues/456`).
   """
 
   name = _messages.StringField(1, required=True)
@@ -666,8 +666,9 @@ class CloudresourcemanagerTagBindingsListRequest(_messages.Message):
     pageToken: Optional. A pagination token returned from a previous call to
       `ListTagBindings` that indicates where this listing should continue
       from.
-    parent: Required. The full-resource-name of a resource to list TagBindings
-      for. E.g. "//cloudresourcemanager.googleapis.com/projects/123"
+    parent: Required. The full resource name of a resource for which you want
+      to list existing TagBindings. E.g.
+      "//cloudresourcemanager.googleapis.com/projects/123"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -680,8 +681,8 @@ class CloudresourcemanagerTagKeysCreateRequest(_messages.Message):
 
   Fields:
     tagKey: A TagKey resource to be passed as the request body.
-    validateOnly: Optional. True to perform validations necessary for creating
-      the resource, but not actually perform the action.
+    validateOnly: Optional. Set to true to perform validations necessary for
+      creating the resource, but not actually perform the action.
   """
 
   tagKey = _messages.MessageField('TagKey', 1)
@@ -694,10 +695,10 @@ class CloudresourcemanagerTagKeysDeleteRequest(_messages.Message):
   Fields:
     etag: Optional. The etag known to the client for the expected state of the
       TagKey. This is to be used for optimistic concurrency.
-    name: Required. Resource name for TagKey to be deleted in the format
-      tagKeys/123. The TagKey cannot be a parent of any existing TagValues to
-      be deleted successfully.
-    validateOnly: Optional. True to perform validations necessary for
+    name: Required. The resource name of a TagKey to be deleted in the format
+      `tagKeys/123`. The TagKey cannot be a parent of any existing TagValues
+      or it will not be deleted successfully.
+    validateOnly: Optional. Set as true to perform validations necessary for
       deletion, but not actually perform the action.
   """
 
@@ -756,15 +757,15 @@ class CloudresourcemanagerTagKeysPatchRequest(_messages.Message):
   r"""A CloudresourcemanagerTagKeysPatchRequest object.
 
   Fields:
-    name: Immutable. Resource name for TagKey. Must be in the format
-      tagKeys/{tag_key_id} where tag_key_id is the generated numeric id for
-      the tag key.
+    name: Immutable. The resource name for a TagKey. Must be in the format
+      `tagKeys/{tag_key_id}`, where `tag_key_id` is the generated numeric id
+      for the TagKey.
     tagKey: A TagKey resource to be passed as the request body.
-    updateMask: Fields to be updated. The mask may only contain "description"
-      and/or "etag". If omitted entirely, both "description" and "etag" are
+    updateMask: Fields to be updated. The mask may only contain `description`
+      or `etag`. If omitted entirely, both `description` and `etag` are
       assumed to be significant.
-    validateOnly: True to perform validations necessary for updating the
-      resource, but not actually perform the action.
+    validateOnly: Set as true to perform validations necessary for updating
+      the resource, but not actually perform the action.
   """
 
   name = _messages.StringField(1, required=True)
@@ -808,8 +809,8 @@ class CloudresourcemanagerTagValuesCreateRequest(_messages.Message):
 
   Fields:
     tagValue: A TagValue resource to be passed as the request body.
-    validateOnly: Optional. True to perform validations necessary for creating
-      the resource, but not actually perform the action.
+    validateOnly: Optional. Set as true to perform the validations necessary
+      for creating the resource, but not actually perform the action.
   """
 
   tagValue = _messages.MessageField('TagValue', 1)
@@ -824,8 +825,8 @@ class CloudresourcemanagerTagValuesDeleteRequest(_messages.Message):
       TagValue. This is to be used for optimistic concurrency.
     name: Required. Resource name for TagValue to be deleted in the format
       tagValues/456.
-    validateOnly: Optional. True to perform validations necessary for
-      deletion, but not actually perform the action.
+    validateOnly: Optional. Set as true to perform the validations necessary
+      for deletion, but not actually perform the action.
   """
 
   etag = _messages.StringField(1)
@@ -871,7 +872,7 @@ class CloudresourcemanagerTagValuesListRequest(_messages.Message):
       `ListTagValues` that indicates where this listing should continue from.
       This is currently not used by the server.
     parent: Required. Resource name for TagKey, parent of the TagValues to be
-      listed, in the format tagKeys/123.
+      listed, in the format `tagKeys/123`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -883,7 +884,7 @@ class CloudresourcemanagerTagValuesPatchRequest(_messages.Message):
   r"""A CloudresourcemanagerTagValuesPatchRequest object.
 
   Fields:
-    name: Immutable. Resource name for TagValue in the format tagValues/456.
+    name: Immutable. Resource name for TagValue in the format `tagValues/456`.
     tagValue: A TagValue resource to be passed as the request body.
     updateMask: Optional. Fields to be updated.
     validateOnly: Optional. True to perform validations necessary for updating
@@ -1992,19 +1993,19 @@ class Status(_messages.Message):
 
 class TagBinding(_messages.Message):
   r"""A TagBinding represents a connection between a TagValue and a cloud
-  resource (currently Project, Folder, or Organization). Once a TagBinding is
+  resource (currently project, folder, or organization). Once a TagBinding is
   created, the TagValue is applied to all the descendants of the cloud
   resource.
 
   Fields:
     name: The name of the TagBinding. This is a String of the form:
-      'tagBindings/{full-resource-name}/{tag-value-name}' (e.g. 'tagBindings/%
-      2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2F123/tagValues/456'
+      `tagBindings/{full-resource-name}/{tag-value-name}` (e.g. `tagBindings/%
+      2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2F123/tagValues/456`
       ).
     parent: The full resource name of the resource the TagValue is bound to.
-      E.g. //cloudresourcemanager.googleapis.com/projects/123
+      E.g. `//cloudresourcemanager.googleapis.com/projects/123`
     tagValue: The TagValue of the TagBinding. Must be of the form
-      "tagValues/456.
+      `tagValues/456`.
   """
 
   name = _messages.StringField(1)
@@ -2022,17 +2023,17 @@ class TagKey(_messages.Message):
     etag: Optional. Entity tag which users can pass to prevent race
       conditions. This field is always set in server responses. See
       UpdateTagKeyRequest for details.
-    name: Immutable. Resource name for TagKey. Must be in the format
-      tagKeys/{tag_key_id} where tag_key_id is the generated numeric id for
-      the tag key.
+    name: Immutable. The resource name for a TagKey. Must be in the format
+      `tagKeys/{tag_key_id}`, where `tag_key_id` is the generated numeric id
+      for the TagKey.
     namespacedName: Output only. Immutable. Namespaced name of the TagKey.
     parent: Immutable. The resource name of the new TagKey's parent. Must be
       of the form `organizations/{org_id}`.
-    shortName: Required. Immutable. User friendly name for TagKey. Short name
-      should be unique for TagKeys within the same tag namespace. The short
-      name must be 1-63 characters, beginning and ending with an alphanumeric
-      character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
-      alphanumerics between.
+    shortName: Required. Immutable. The user friendly name for a TagKey. The
+      short name should be unique for TagKeys within the same tag namespace.
+      The short name must be 1-63 characters, beginning and ending with an
+      alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_),
+      dots (.), and alphanumerics between.
     updateTime: Output only. Update time.
   """
 
@@ -2048,7 +2049,7 @@ class TagKey(_messages.Message):
 
 class TagValue(_messages.Message):
   r"""A TagValue is a child of a particular TagKey. This is used to group
-  cloud resources for the purpose of controlling them via policies.
+  cloud resources for the purpose of controlling them using policies.
 
   Fields:
     createTime: Output only. Creation time.
@@ -2057,13 +2058,13 @@ class TagValue(_messages.Message):
     etag: Optional. Entity tag which users can pass to prevent race
       conditions. This field is always set in server responses. See
       UpdateTagValueRequest for details.
-    name: Immutable. Resource name for TagValue in the format tagValues/456.
+    name: Immutable. Resource name for TagValue in the format `tagValues/456`.
     namespacedName: Output only. Namespaced name of the TagValue. Must be in
-      the format {organization_id}/{tag_key_short_name}/{short_name}.
+      the format `{organization_id}/{tag_key_short_name}/{short_name}`.
     parent: Immutable. The resource name of the new TagValue's parent TagKey.
       Must be of the form `tagKeys/{tag_key_id}`.
-    shortName: Required. Immutable. User-assigned short name for TagValue.
-      Short name should be unique for TagValues within the same parent TagKey.
+    shortName: Required. Immutable. User-assigned short name for TagValue. The
+      short name should be unique for TagValues within the same parent TagKey.
       The short name must be 63 characters or less, beginning and ending with
       an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores
       (_), dots (.), and alphanumerics between.

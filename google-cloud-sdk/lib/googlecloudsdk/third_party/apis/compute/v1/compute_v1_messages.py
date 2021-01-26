@@ -1444,6 +1444,7 @@ class AttachedDiskInitializeParams(_messages.Message):
       disks.
     onUpdateAction: Specifies which action to take on instance update with
       this disk. Default is to use the existing disk.
+    provisionedIops: Indicates how many IOPS must be provisioned for the disk.
     resourcePolicies: Resource policies applied to this disk for automatic
       snapshot creations. Specified using the full or partial URL. For
       instance template, specify only the resource policy name.
@@ -1523,11 +1524,12 @@ class AttachedDiskInitializeParams(_messages.Message):
   diskType = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 6)
-  resourcePolicies = _messages.StringField(7, repeated=True)
-  sourceImage = _messages.StringField(8)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
-  sourceSnapshot = _messages.StringField(10)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
+  provisionedIops = _messages.IntegerField(7)
+  resourcePolicies = _messages.StringField(8, repeated=True)
+  sourceImage = _messages.StringField(9)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
+  sourceSnapshot = _messages.StringField(11)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 12)
 
 
 class AuditConfig(_messages.Message):
@@ -2925,8 +2927,8 @@ class BackendService(_messages.Message):
       bound to target gRPC proxy that has validateForProxyless field set to
       true.
     backends: The list of backends that serve this BackendService.
-    cdnPolicy: Cloud CDN configuration for this BackendService. Not available
-      for Internal TCP/UDP Load Balancing and Network Load Balancing.
+    cdnPolicy: Cloud CDN configuration for this BackendService. Only available
+      for  external HTTP(S) Load Balancing.
     circuitBreakers: Settings controlling the volume of connections to a
       backend service. If not set, this feature is considered disabled.  This
       field is applicable to either:   - A regional backend service with the
@@ -3042,8 +3044,8 @@ class BackendService(_messages.Message):
       referenced by a URL map that is bound to target gRPC proxy that has
       validateForProxyless field set to true.
     port: Deprecated in favor of portName. The TCP port to connect on the
-      backend. The default value is 80.  This cannot be used if the
-      loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).
+      backend. The default value is 80.  Backend services for Internal TCP/UDP
+      Load Balancing and Network Load Balancing require you omit port.
     portName: A named port on a backend instance group representing the port
       for communication to the backend VMs in that group. Required when the
       loadBalancingScheme is EXTERNAL (except Network Load Balancing),
@@ -21517,6 +21519,7 @@ class Disk(_messages.Message):
       currently supported size is 4096, other sizes may be added in the
       future. If an unsupported value is requested, the error message will
       list the supported values for the caller's project.
+    provisionedIops: Indicates how many IOPS must be provisioned for the disk.
     region: [Output Only] URL of the region where the disk resides. Only
       applicable for regional resources. You must specify this field as part
       of the HTTP request URL. It is not settable as a field in the request
@@ -21661,25 +21664,26 @@ class Disk(_messages.Message):
   name = _messages.StringField(14)
   options = _messages.StringField(15)
   physicalBlockSizeBytes = _messages.IntegerField(16)
-  region = _messages.StringField(17)
-  replicaZones = _messages.StringField(18, repeated=True)
-  resourcePolicies = _messages.StringField(19, repeated=True)
-  satisfiesPzs = _messages.BooleanField(20)
-  selfLink = _messages.StringField(21)
-  sizeGb = _messages.IntegerField(22)
-  sourceDisk = _messages.StringField(23)
-  sourceDiskId = _messages.StringField(24)
-  sourceImage = _messages.StringField(25)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 26)
-  sourceImageId = _messages.StringField(27)
-  sourceSnapshot = _messages.StringField(28)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 29)
-  sourceSnapshotId = _messages.StringField(30)
-  sourceStorageObject = _messages.StringField(31)
-  status = _messages.EnumField('StatusValueValuesEnum', 32)
-  type = _messages.StringField(33)
-  users = _messages.StringField(34, repeated=True)
-  zone = _messages.StringField(35)
+  provisionedIops = _messages.IntegerField(17)
+  region = _messages.StringField(18)
+  replicaZones = _messages.StringField(19, repeated=True)
+  resourcePolicies = _messages.StringField(20, repeated=True)
+  satisfiesPzs = _messages.BooleanField(21)
+  selfLink = _messages.StringField(22)
+  sizeGb = _messages.IntegerField(23)
+  sourceDisk = _messages.StringField(24)
+  sourceDiskId = _messages.StringField(25)
+  sourceImage = _messages.StringField(26)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 27)
+  sourceImageId = _messages.StringField(28)
+  sourceSnapshot = _messages.StringField(29)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 30)
+  sourceSnapshotId = _messages.StringField(31)
+  sourceStorageObject = _messages.StringField(32)
+  status = _messages.EnumField('StatusValueValuesEnum', 33)
+  type = _messages.StringField(34)
+  users = _messages.StringField(35, repeated=True)
+  zone = _messages.StringField(36)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -23772,8 +23776,7 @@ class FirewallPolicyRule(_messages.Message):
     action: The Action to perform when the client connection triggers the
       rule. Can currently be either "allow" or "deny()" where valid values for
       status are 403, 404, and 502.
-    description: An optional description of this resource. Provide this
-      property when you create the resource.
+    description: An optional description for this resource.
     direction: The direction in which this rule applies.
     disabled: Denotes whether the firewall policy rule is disabled. When set
       to true, the firewall policy rule is not enforced and traffic behaves as
@@ -27003,6 +27006,7 @@ class Image(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     rawDisk: The parameters of the raw disk image.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined URL for the resource.
     shieldedInstanceInitialState: Set the secure boot keys of shielded
       instance.
@@ -27152,20 +27156,21 @@ class Image(_messages.Message):
   licenses = _messages.StringField(14, repeated=True)
   name = _messages.StringField(15)
   rawDisk = _messages.MessageField('RawDiskValue', 16)
-  selfLink = _messages.StringField(17)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 18)
-  sourceDisk = _messages.StringField(19)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
-  sourceDiskId = _messages.StringField(21)
-  sourceImage = _messages.StringField(22)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
-  sourceImageId = _messages.StringField(24)
-  sourceSnapshot = _messages.StringField(25)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 26)
-  sourceSnapshotId = _messages.StringField(27)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 28, default='RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 29)
-  storageLocations = _messages.StringField(30, repeated=True)
+  satisfiesPzs = _messages.BooleanField(17)
+  selfLink = _messages.StringField(18)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 19)
+  sourceDisk = _messages.StringField(20)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  sourceDiskId = _messages.StringField(22)
+  sourceImage = _messages.StringField(23)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
+  sourceImageId = _messages.StringField(25)
+  sourceSnapshot = _messages.StringField(26)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 27)
+  sourceSnapshotId = _messages.StringField(28)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 29, default='RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 30)
+  storageLocations = _messages.StringField(31, repeated=True)
 
 
 class ImageList(_messages.Message):

@@ -197,17 +197,6 @@
       "properties": {
       }
     },
-    "ScanContainerImageRequest": {
-      "id": "ScanContainerImageRequest",
-      "description": "ScanContainerImageRequest is the request to initiate a scan of a container image.",
-      "type": "object",
-      "properties": {
-        "resourceUri": {
-          "description": "Required. The resource URI of the container image being scanned.",
-          "type": "string"
-        }
-      }
-    },
     "AnalyzePackagesRequest": {
       "id": "AnalyzePackagesRequest",
       "description": "AnalyzePackagesRequest is the request to analyze a list of packages and create Vulnerability Occurrences for it.",
@@ -291,7 +280,7 @@
           "description": "Output only. This explicitly denotes which of the occurrence details are specified. This field can be used as a filter in list requests.",
           "type": "string",
           "enumDescriptions": [
-            "Unknown.",
+            "Default value. This value is unused.",
             "The note and occurrence represent a package vulnerability.",
             "The note and occurrence assert build provenance.",
             "This represents an image basis relationship.",
@@ -495,6 +484,10 @@
         "revision": {
           "description": "The iteration of the package build from the above version.",
           "type": "string"
+        },
+        "inclusive": {
+          "description": "Whether this version is specifying part of an inclusive range. Grafeas does not have the capability to specify version ranges; instead we have fields that specify start version and end versions. At times this is insufficient - we also need to specify whether the version is included in the range or is excluded from the range. This boolean is expected to be set to true when the version is included in a range.",
+          "type": "boolean"
         },
         "kind": {
           "description": "Required. Distinguishes between sentinel MIN\/MAX versions and normal versions.",
@@ -1287,33 +1280,6 @@
           "type": "string"
         }
       }
-    },
-    "ScanContainerImageMetadata": {
-      "id": "ScanContainerImageMetadata",
-      "description": "ScanContainerImageMetadata contains metadata for an active scan of a container image.",
-      "type": "object",
-      "properties": {
-        "resourceUri": {
-          "description": "The resource URI of the container image being scanned.",
-          "type": "string"
-        },
-        "createTime": {
-          "description": "When the scan was created.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "ScanContainerImageResponse": {
-      "id": "ScanContainerImageResponse",
-      "description": "ScanContainerImageResponse contains the information necessary to find results for the given scan.",
-      "type": "object",
-      "properties": {
-        "scan": {
-          "description": "The name of the scan resource created by this successful scan.",
-          "type": "string"
-        }
-      }
     }
   },
   "resources": {
@@ -1474,34 +1440,6 @@
             },
             "scans": {
               "methods": {
-                "scanContainerImage": {
-                  "id": "ondemandscanning.projects.locations.scans.scanContainerImage",
-                  "path": "v1beta1/{+parent}/scans:scanContainerImage",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/scans:scanContainerImage",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent of the resource for which scanning is requested. Format: projects\/[project_name]\/locations\/[location]",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "ScanContainerImageRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Initiates a scan of the provided resource."
-                },
                 "analyzePackages": {
                   "id": "ondemandscanning.projects.locations.scans.analyzePackages",
                   "path": "v1beta1/{+parent}/scans:analyzePackages",

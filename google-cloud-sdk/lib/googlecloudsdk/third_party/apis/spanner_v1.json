@@ -1637,6 +1637,10 @@
           "items": {
             "$ref": "Mutation"
           }
+        },
+        "returnCommitStats": {
+          "description": "If `true`, then statistics related to the transaction will be included in the CommitResponse. Default value is `false`.",
+          "type": "boolean"
         }
       }
     },
@@ -1719,6 +1723,22 @@
           "description": "The Cloud Spanner timestamp at which the transaction committed.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "commitStats": {
+          "description": "The statistics about this Commit. Not returned by default. For more information, see CommitRequest.return_commit_stats.",
+          "$ref": "CommitStats"
+        }
+      }
+    },
+    "CommitStats": {
+      "id": "CommitStats",
+      "description": "Additional statistics about a commit.",
+      "type": "object",
+      "properties": {
+        "mutationCount": {
+          "description": "The total number of mutations for the transaction. Knowing the `mutation_count` value can help you maximize the number of mutations in a transaction and minimize the number of API round trips. You can also monitor this value to prevent transactions from exceeding the system [limit](http:\/\/cloud.google.com\/spanner\/quotas#limits_for_creating_reading_updating_and_deleting_data). If the number of mutations exceeds the limit, the server returns [INVALID_ARGUMENT](http:\/\/cloud.google.com\/spanner\/docs\/reference\/rest\/v1\/Code#ENUM_VALUES.INVALID_ARGUMENT).",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

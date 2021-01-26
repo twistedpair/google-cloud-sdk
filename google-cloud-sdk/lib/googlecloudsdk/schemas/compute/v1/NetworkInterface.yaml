@@ -48,6 +48,11 @@ properties:
       order to update the NetworkInterface, otherwise the request will
       fail with error 412 conditionNotMet.
     type: string
+  ipv6Address:
+    description: |-
+      [Output Only] An IPv6 internal network address for this network
+      interface.
+    type: string
   kind:
     description: |-
       [Output Only] Type of the resource. Always
@@ -78,6 +83,15 @@ properties:
       network interface. If not specified by the user, an unused
       internal IP is assigned by the system.
     type: string
+  nicType:
+    description: |-
+      The type of vNIC to be used on this interface. This may be gVNIC
+      or VirtioNet.
+    type: string
+    enum:
+    - GVNIC
+    - UNSPECIFIED_NIC_TYPE
+    - VIRTIO_NET
   subnetwork:
     description: |-
       The URL of the Subnetwork resource for this instance. If the

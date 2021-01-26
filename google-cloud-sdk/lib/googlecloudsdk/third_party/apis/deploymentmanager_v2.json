@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20210111",
+ "revision": "20210119",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -530,6 +530,16 @@
     "layout": {
      "type": "string",
      "description": "Output only. The YAML layout for this manifest."
+    },
+    "manifestSizeBytes": {
+     "type": "string",
+     "description": "Output only. The computed size of the fully expanded manifest.",
+     "format": "int64"
+    },
+    "manifestSizeLimitBytes": {
+     "type": "string",
+     "description": "Output only. The size limit for expanded manifests in the project.",
+     "format": "int64"
     },
     "name": {
      "type": "string",

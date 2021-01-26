@@ -380,9 +380,14 @@ def CreateIfMissingFlag():
   )
 
 
-def ServiceFlag():
+def RevisionListServiceFlag():
   return StringFlag(
       '--service', help='List the revisions for only the specified service.')
+
+
+def ServiceListServiceFlag():
+  return StringFlag(
+      '--service', help='List only the specified service.')
 
 
 def CommonServiceFlags(is_create=False):
@@ -469,15 +474,16 @@ def ScalingFlags():
       '--init-instances',
       type=arg_parsers.BoundedInt(lower_bound=0),
       help='Initial number of container instances of the Service to run. '
-      'Can be 0 or a positive number.')
+      'Can be 0 or a positive number. '
+      'Pass "default" to unset this field and use the platform default.')
   min_instances_flag = StringFlag(
       '--min-instances',
       help='Minimum number of container instances of the Service to run '
-      "or 'default' to remove any minimum.")
+      'or "default" to remove any minimum.')
   max_instances_flag = StringFlag(
       '--max-instances',
       help='Maximum number of container instances of the Service to run. '
-      "Use 'default' to unset the limit and use the platform default.")
+      'Use "default" to unset the limit and use the platform default.')
   return FlagGroup(init_instances_flag, min_instances_flag, max_instances_flag)
 
 
@@ -632,7 +638,8 @@ def ServiceAccountFlag():
       'and determines what permissions the revision has. This is the name of '
       'a Kubernetes service account in the same namespace as the service. '
       'If not provided, the revision will use the default Kubernetes '
-      'namespace service account.')
+      'namespace service account. To reset this field to its default, pass an '
+      'empty string.')
 
 
 def TimeoutFlag():

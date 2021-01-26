@@ -37,19 +37,20 @@ https://cloud.google.com/kuberun/docs/default-domain.
 
 
 def _ComponentTable(components):
-  rows = [(x.name, x.deployment_state, x.commit_id[:6], x.deployment_time,
-           x.url) for x in components]
-  return cp.Table([('NAME', 'DEPLOYMENT', 'COMMIT', 'LAST-DEPLOYED', 'URL')] +
-                  rows)
+  rows = [(x.name, x.deployment_state, x.deployment_reason, x.commit_id[:6],
+           x.deployment_time, x.url) for x in components]
+  return cp.Table([('NAME', 'DEPLOYMENT', 'REASON', 'COMMIT', 'LAST-DEPLOYED',
+                    'URL')] + rows)
 
 
 def _ModulesTable(modules):
   rows = []
   for m in modules:
-    rows.extend([(x.name, m.name, x.deployment_state, x.commit_id[:6],
-                  x.deployment_time, x.url) for x in m.components])
-  return cp.Table([('NAME', 'MODULE', 'DEPLOYMENT', 'COMMIT', 'LAST-DEPLOYED',
-                    'URL')] + rows)
+    rows.extend([(x.name, m.name, x.deployment_state, x.deployment_reason,
+                  x.commit_id[:6], x.deployment_time, x.url)
+                 for x in m.components])
+  return cp.Table([('NAME', 'MODULE', 'DEPLOYMENT', 'REASON', 'COMMIT',
+                    'LAST-DEPLOYED', 'URL')] + rows)
 
 
 def _PickSymbol(best, alt, encoding):

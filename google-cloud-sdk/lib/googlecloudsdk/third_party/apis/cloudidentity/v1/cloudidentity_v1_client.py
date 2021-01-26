@@ -40,7 +40,6 @@ class CloudidentityV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.devices_deviceUsers_clientStates = self.DevicesDeviceUsersClientStatesService(self)
-    self.devices_deviceUsers_endpointApps = self.DevicesDeviceUsersEndpointAppsService(self)
     self.devices_deviceUsers = self.DevicesDeviceUsersService(self)
     self.devices = self.DevicesService(self)
     self.groups_memberships = self.GroupsMembershipsService(self)
@@ -137,43 +136,6 @@ class CloudidentityV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class DevicesDeviceUsersEndpointAppsService(base_api.BaseApiService):
-    """Service class for the devices_deviceUsers_endpointApps resource."""
-
-    _NAME = 'devices_deviceUsers_endpointApps'
-
-    def __init__(self, client):
-      super(CloudidentityV1.DevicesDeviceUsersEndpointAppsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists all managed apps intalled on the device.
-
-      Args:
-        request: (CloudidentityDevicesDeviceUsersEndpointAppsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/devices/{devicesId}/deviceUsers/{deviceUsersId}/endpointApps',
-        http_method='GET',
-        method_id='cloudidentity.devices.deviceUsers.endpointApps.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['customer', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1/{+parent}/endpointApps',
-        request_field='',
-        request_type_name='CloudidentityDevicesDeviceUsersEndpointAppsListRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
   class DevicesDeviceUsersService(base_api.BaseApiService):
     """Service class for the devices_deviceUsers resource."""
 
@@ -261,33 +223,6 @@ class CloudidentityV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:cancelWipe',
         request_field='googleAppsCloudidentityDevicesV1CancelWipeDeviceUserRequest',
         request_type_name='CloudidentityDevicesDeviceUsersCancelWipeRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def CollectBugReport(self, request, global_params=None):
-      r"""Collects bug report on the specified device, which can be later downloaded from [Admin Console](https://admin.google.com).
-
-      Args:
-        request: (CloudidentityDevicesDeviceUsersCollectBugReportRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('CollectBugReport')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    CollectBugReport.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/devices/{devicesId}/deviceUsers/{deviceUsersId}:collectBugReport',
-        http_method='POST',
-        method_id='cloudidentity.devices.deviceUsers.collectBugReport',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:collectBugReport',
-        request_field='googleAppsCloudidentityDevicesV1CollectBugReportRequest',
-        request_type_name='CloudidentityDevicesDeviceUsersCollectBugReportRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -397,114 +332,6 @@ class CloudidentityV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudidentityDevicesDeviceUsersLookupRequest',
         response_type_name='GoogleAppsCloudidentityDevicesV1LookupSelfDeviceUsersResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the specified DeviceUser.
-
-      Args:
-        request: (CloudidentityDevicesDeviceUsersPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/devices/{devicesId}/deviceUsers/{deviceUsersId}',
-        http_method='PATCH',
-        method_id='cloudidentity.devices.deviceUsers.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['customer', 'name1', 'updateMask'],
-        relative_path='v1/{+name}',
-        request_field='googleAppsCloudidentityDevicesV1DeviceUser',
-        request_type_name='CloudidentityDevicesDeviceUsersPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Signout(self, request, global_params=None):
-      r"""Signs out the user from the specified device.
-
-      Args:
-        request: (CloudidentityDevicesDeviceUsersSignoutRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Signout')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Signout.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/devices/{devicesId}/deviceUsers/{deviceUsersId}:signout',
-        http_method='POST',
-        method_id='cloudidentity.devices.deviceUsers.signout',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:signout',
-        request_field='googleAppsCloudidentityDevicesV1SignoutDeviceUserRequest',
-        request_type_name='CloudidentityDevicesDeviceUsersSignoutRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Sync(self, request, global_params=None):
-      r"""Syncs the device to company's policy.
-
-      Args:
-        request: (CloudidentityDevicesDeviceUsersSyncRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Sync')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Sync.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/devices/{devicesId}/deviceUsers/{deviceUsersId}:sync',
-        http_method='POST',
-        method_id='cloudidentity.devices.deviceUsers.sync',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:sync',
-        request_field='googleAppsCloudidentityDevicesV1SyncDeviceUserRequest',
-        request_type_name='CloudidentityDevicesDeviceUsersSyncRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Unenroll(self, request, global_params=None):
-      r"""Unenrolls the user from Advanced Windows Management without affecting their user account.
-
-      Args:
-        request: (CloudidentityDevicesDeviceUsersUnenrollRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Unenroll')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Unenroll.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/devices/{devicesId}/deviceUsers/{deviceUsersId}:unenroll',
-        http_method='POST',
-        method_id='cloudidentity.devices.deviceUsers.unenroll',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:unenroll',
-        request_field='googleAppsCloudidentityDevicesV1UnenrollDeviceUserRequest',
-        request_type_name='CloudidentityDevicesDeviceUsersUnenrollRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -675,114 +502,6 @@ class CloudidentityV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudidentityDevicesListRequest',
         response_type_name='GoogleAppsCloudidentityDevicesV1ListDevicesResponse',
-        supports_download=False,
-    )
-
-    def Lock(self, request, global_params=None):
-      r"""Locks the specified device, without signing out the user. Locking a device will require the user to enter their passcode, biometric or other device- level authentication in order to use the device again.
-
-      Args:
-        request: (CloudidentityDevicesLockRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Lock')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Lock.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/devices:lock',
-        http_method='POST',
-        method_id='cloudidentity.devices.lock',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:lock',
-        request_field='googleAppsCloudidentityDevicesV1LockDeviceRequest',
-        request_type_name='CloudidentityDevicesLockRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the specified device.
-
-      Args:
-        request: (CloudidentityDevicesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/devices/{devicesId}',
-        http_method='PATCH',
-        method_id='cloudidentity.devices.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['customer', 'name1', 'updateMask'],
-        relative_path='v1/{+name}',
-        request_field='googleAppsCloudidentityDevicesV1Device',
-        request_type_name='CloudidentityDevicesPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def ResetPin(self, request, global_params=None):
-      r"""Resets the specified device's pin.
-
-      Args:
-        request: (CloudidentityDevicesResetPinRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('ResetPin')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ResetPin.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/devices:resetPin',
-        http_method='POST',
-        method_id='cloudidentity.devices.resetPin',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:resetPin',
-        request_field='googleAppsCloudidentityDevicesV1ResetPinRequest',
-        request_type_name='CloudidentityDevicesResetPinRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Ring(self, request, global_params=None):
-      r"""Rings the specified device. A device typically has the functionality to attract user attention by providing an audio or vibration signal. This method enables the caller to activate that signal.
-
-      Args:
-        request: (CloudidentityDevicesRingRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Ring')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Ring.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/devices:ring',
-        http_method='POST',
-        method_id='cloudidentity.devices.ring',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:ring',
-        request_field='googleAppsCloudidentityDevicesV1RingDeviceRequest',
-        request_type_name='CloudidentityDevicesRingRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1036,33 +755,6 @@ class CloudidentityV1(base_api.BaseApiClient):
         request_field='modifyMembershipRolesRequest',
         request_type_name='CloudidentityGroupsMembershipsModifyMembershipRolesRequest',
         response_type_name='ModifyMembershipRolesResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates a `Membership`.
-
-      Args:
-        request: (CloudidentityGroupsMembershipsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/groups/{groupsId}/memberships/{membershipsId}',
-        http_method='PATCH',
-        method_id='cloudidentity.groups.memberships.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask'],
-        relative_path='v1/{+name}',
-        request_field='membership',
-        request_type_name='CloudidentityGroupsMembershipsPatchRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 

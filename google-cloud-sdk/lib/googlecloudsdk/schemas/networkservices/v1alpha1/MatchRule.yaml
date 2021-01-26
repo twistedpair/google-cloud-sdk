@@ -1,0 +1,61 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1alpha1 MatchRule export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  fullPathMatch:
+    description: |-
+      For satisfying the matchRule condition, the path of the request must
+      exactly match the value specified in fullPathMatch after removing any
+      query parameters and anchor that may be part of the original URL.
+      fullPathMatch must be between 1 and 1024 characters. Only one of
+      prefixMatch or fullPathMatch must be specified.
+    type: string
+  headerMatches:
+    description: |-
+      Specifies a list of header match criteria, all of which must match
+      corresponding headers in the request.
+    type: array
+    items:
+      $ref: HeaderMatch.yaml
+  ignoreCase:
+    description: |-
+      Specifies that prefixMatch and fullPathMatch matches are case
+      sensitive. The default value is false.
+    type: boolean
+  prefixMatch:
+    description: |-
+      For satisfying the matchRule condition, the request's path must begin
+      with the specified prefixMatch. prefixMatch must begin with a /. The
+      value must be between 1 and 1024 characters. Only one of prefixMatch
+      or fullPathMatch must be specified.
+    type: string
+  queryParameterMatches:
+    description: |-
+      Specifies a list of query parameter match criteria, all of which must
+      match corresponding query parameters in the request.
+    type: array
+    items:
+      $ref: QueryParameterMatcher.yaml

@@ -89,7 +89,7 @@ class LabelChanges(ConfigChanger):
     maybe_new_labels = update_result.GetOrNone()
     if maybe_new_labels:
       resource.metadata.labels = maybe_new_labels
-      if self._copy_to_revision:
+      if self._copy_to_revision and hasattr(resource.template, 'labels'):
         # Service labels are the source of truth and *overwrite* revision labels
         # See go/run-labels-prd for deets.
         # However, we need to preserve the nonce if there is one.
@@ -176,9 +176,7 @@ class SetTemplateAnnotationChange(ConfigChanger):
     self._value = value
 
   def Adjust(self, resource):
-    annotations = k8s_object.AnnotationsFromMetadata(
-        resource.MessagesModule(), resource.template.metadata)
-    annotations[self._key] = self._value
+    resource.template.annotations[self._key] = self._value
     return resource
 
 
@@ -190,8 +188,7 @@ class DeleteTemplateAnnotationChange(ConfigChanger):
     self._key = key
 
   def Adjust(self, resource):
-    annotations = k8s_object.AnnotationsFromMetadata(
-        resource.MessagesModule(), resource.template.metadata)
+    annotations = resource.template.annotations
     if self._key in annotations:
       del annotations[self._key]
     return resource
@@ -208,9 +205,8 @@ class SetLaunchStageAnnotationChange(ConfigChanger):
     if self._launch_stage == base.ReleaseTrack.GA:
       return resource
     else:
-      annotations = k8s_object.AnnotationsFromMetadata(
-          resource.MessagesModule(), resource.metadata)
-      annotations[k8s_object.LAUNCH_STAGE_ANNOTATION] = (self._launch_stage.id)
+      resource.annotations[
+          k8s_object.LAUNCH_STAGE_ANNOTATION] = self._launch_stage.id
       return resource
 
 
@@ -244,9 +240,8 @@ class SandboxChange(ConfigChanger):
     self._sandbox = sandbox
 
   def Adjust(self, resource):
-    annotations = k8s_object.AnnotationsFromMetadata(resource.MessagesModule(),
-                                                     resource.template.metadata)
-    annotations[container_resource.SANDBOX_ANNOTATION] = self._sandbox
+    resource.template.annotations[
+        container_resource.SANDBOX_ANNOTATION] = self._sandbox
     return resource
 
 
@@ -258,10 +253,8 @@ class VpcConnectorChange(ConfigChanger):
     self._connector_name = connector_name
 
   def Adjust(self, resource):
-    annotations = k8s_object.AnnotationsFromMetadata(resource.MessagesModule(),
-                                                     resource.template.metadata)
-    annotations[container_resource.VPC_ACCESS_ANNOTATION] = (
-        self._connector_name)
+    resource.template.annotations[
+        container_resource.VPC_ACCESS_ANNOTATION] = self._connector_name
     return resource
 
 
@@ -269,8 +262,7 @@ class ClearVpcConnectorChange(ConfigChanger):
   """Clears a VPC connector annotation on the service."""
 
   def Adjust(self, resource):
-    annotations = k8s_object.AnnotationsFromMetadata(resource.MessagesModule(),
-                                                     resource.template.metadata)
+    annotations = resource.template.annotations
     if container_resource.VPC_ACCESS_ANNOTATION in annotations:
       del annotations[container_resource.VPC_ACCESS_ANNOTATION]
     if container_resource.EGRESS_SETTINGS_ANNOTATION in annotations:
@@ -924,9 +916,9 @@ class JobMaxAttemptsChange(ConfigChanger):
 
   def Adjust(self, resource):
     if self._max_attempts == 1:
-      resource.restart_policy = job.RestartPolicy.NEVER
+      resource.template.restart_policy = job.RestartPolicy.NEVER
       resource.backoff_limit = 0
     else:
-      resource.restart_policy = job.RestartPolicy.ON_FAILRE
+      resource.template.restart_policy = job.RestartPolicy.ON_FAILURE
       resource.backoff_limit = self._max_attempts - 1
     return resource

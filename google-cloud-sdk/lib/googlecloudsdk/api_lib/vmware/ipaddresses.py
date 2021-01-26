@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.vmware import util
 from googlecloudsdk.command_lib.vmware import flags
+import six.moves.urllib.parse
 
 
 class IPAddressesClient(util.VmwareClientBase):
@@ -37,25 +38,43 @@ class IPAddressesClient(util.VmwareClientBase):
     request = self.messages.SddcProjectsLocationsClusterGroupsIpAddressesCreateRequest(
         ipAddress=ip_address,
         ipAddressId=resource.Name(),
-        parent=resource.Parent().RelativeName())
+        parent=self.GetResourcePath(
+            resource, resource_path=resource.Parent().RelativeName()))
 
     return self.service.Create(request)
 
   def Delete(self, resource):
     request = self.messages.SddcProjectsLocationsClusterGroupsIpAddressesDeleteRequest(
-        name=resource.RelativeName())
+        name=self.GetResourcePath(
+            resource, resource_path=resource.RelativeName()))
     return self.service.Delete(request)
 
   def Get(self, resource):
     request = self.messages.SddcProjectsLocationsClusterGroupsIpAddressesGetRequest(
-        name=resource.RelativeName())
+        name=self.GetResourcePath(
+            resource, resource_path=resource.RelativeName()))
     return self.service.Get(request)
 
-  def List(self,
-           resource,
-           filter_expression=None,
-           limit=None,
-           page_size=None):
+  def GetResourcePath(self,
+                      resource,
+                      resource_path,
+                      encoded_cluster_groups_id=False):
+    result = str(resource_path)
+
+    if '/' not in resource.clusterGroupsId:
+      return result
+
+    cluster_groups_id = resource.clusterGroupsId.split('/').pop()
+    cluster_groups_id_path = str(resource.clusterGroupsId)
+
+    if encoded_cluster_groups_id:
+      cluster_groups_id_path = six.moves.urllib.parse.quote(
+          cluster_groups_id_path, safe='')
+
+    return result.replace(cluster_groups_id_path, cluster_groups_id)
+
+  def List(self, resource, filter_expression=None,
+           limit=None, page_size=None):
     ip_name = resource.RelativeName()
     request = self.messages.SddcProjectsLocationsClusterGroupsIpAddressesListRequest(
         parent=ip_name, filter=filter_expression)

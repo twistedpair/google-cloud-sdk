@@ -297,6 +297,10 @@ class KrmApiHost(_messages.Message):
   r"""A KrmApiHost represents a GKE cluster which is pre-installed with KRM
   resources of services currently supported by the KRM API Hosting API.
 
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the internal state
+      machine for the KrmApiHost.
+
   Messages:
     LabelsValue: Labels are used for additional information for a KrmApiHost.
 
@@ -339,8 +343,30 @@ class KrmApiHost(_messages.Message):
       cluster's subnetwork to use for service ClusterIPs. Alternatively,
       services_cidr_block can be used to automatically create a GKE-managed
       one.
+    state: Output only. The current state of the internal state machine for
+      the KrmApiHost.
     usePrivateEndpoint: Only allow access to the master's private endpoint IP.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the internal state machine for the
+    KrmApiHost.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      CREATING: KrmApiHost is being created
+      RUNNING: KrmApiHost is running
+      DELETING: KrmApiHost is being deleted
+      SUSPENDED: KrmApiHost is suspended, set on specific wipeout events
+      READ_ONLY: KrmApiHost is read only, set on specific abuse & billing
+        events
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    RUNNING = 2
+    DELETING = 3
+    SUSPENDED = 4
+    READ_ONLY = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -381,7 +407,8 @@ class KrmApiHost(_messages.Message):
   network = _messages.StringField(13)
   servicesCidrBlock = _messages.StringField(14)
   servicesNamedRange = _messages.StringField(15)
-  usePrivateEndpoint = _messages.BooleanField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  usePrivateEndpoint = _messages.BooleanField(17)
 
 
 class KrmapihostingProjectsLocationsAnthosApiEndpointsCreateRequest(_messages.Message):

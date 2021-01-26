@@ -14,6 +14,10 @@
 # limitations under the License.
 """A library that used to interact with CTD-IA backend services."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from apitools.base.py import exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
@@ -263,16 +267,18 @@ class SettingsClient(object):
       return self._UpdateService(args, security_health_analytics_settings,
                                  SERVICE_STATUS_MASK)
     elif args.service == 'container-threat-detection':
-      web_security_center_settings = self.message_module.WebSecurityScannerSettings(
-          serviceEnablementState=self.message_module.WebSecurityScannerSettings
+      container_threat_detection_settings = self.message_module.ContainerThreatDetectionSettings(
+          serviceEnablementState=self.message_module
+          .ContainerThreatDetectionSettings
           .ServiceEnablementStateValueValuesEnum.ENABLED)
-      return self._UpdateService(args, web_security_center_settings,
+      return self._UpdateService(args, container_threat_detection_settings,
                                  SERVICE_STATUS_MASK)
     elif args.service == 'event-threat-detection':
-      web_security_center_settings = self.message_module.WebSecurityScannerSettings(
-          serviceEnablementState=self.message_module.WebSecurityScannerSettings
-          .ServiceEnablementStateValueValuesEnum.ENABLED)
-      return self._UpdateService(args, web_security_center_settings,
+      event_threat_detection_settings = self.message_module.EventThreatDetectionSettings(
+          serviceEnablementState=self.message_module
+          .EventThreatDetectionSettings.ServiceEnablementStateValueValuesEnum
+          .ENABLED)
+      return self._UpdateService(args, event_threat_detection_settings,
                                  SERVICE_STATUS_MASK)
 
   def DisableService(self, args):
@@ -291,17 +297,18 @@ class SettingsClient(object):
       return self._UpdateService(args, security_health_analytics_settings,
                                  SERVICE_STATUS_MASK)
     elif args.service == 'container-threat-detection':
-      web_security_center_settings = self.message_module.WebSecurityScannerSettings(
-          serviceEnablementState=self.message_module.WebSecurityScannerSettings
+      container_threat_detection_settings = self.message_module.ContainerThreatDetectionSettings(
+          serviceEnablementState=self.message_module
+          .ContainerThreatDetectionSettings
           .ServiceEnablementStateValueValuesEnum.DISABLED)
-      return self._UpdateService(args, web_security_center_settings,
+      return self._UpdateService(args, container_threat_detection_settings,
                                  SERVICE_STATUS_MASK)
     elif args.service == 'event-threat-detection':
-      web_security_center_settings = self.message_module.WebSecurityScannerSettings(
-          service_enablement_state=self.message_module
-          .WebSecurityScannerSettings.ServiceEnablementStateValueValuesEnum
-          .DISABLED)
-      return self._UpdateService(args, web_security_center_settings,
+      event_threat_detection_settings = self.message_module.EventThreatDetectionSettings(
+          serviceEnablementState=self.message_module
+          .EventThreatDetectionSettings
+          .ServiceEnablementStateValueValuesEnum.DISABLED)
+      return self._UpdateService(args, event_threat_detection_settings,
                                  SERVICE_STATUS_MASK)
 
   def _UpdateService(self, args, service_settings, update_mask):

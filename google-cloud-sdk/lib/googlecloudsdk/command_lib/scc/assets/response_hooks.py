@@ -90,12 +90,14 @@ def _ValidateAndGetAssetResult(response):
   return list_asset_response[0]
 
 
+# TODO(b/177658164): Avoid using assert.
 def _GetAssetResourceParent(asset_result):
   asset_parent = asset_result.asset.securityCenterProperties.resourceParent
   assert asset_parent is not None, ("Asset does not have a parent.")
   return asset_parent
 
 
+# TODO(b/177658164): Avoid using assert.
 def _GetAssetProject(asset_result):
   asset_project = asset_result.asset.securityCenterProperties.resourceProject
   assert asset_project is not None, (

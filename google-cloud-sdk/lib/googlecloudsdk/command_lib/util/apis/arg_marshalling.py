@@ -535,7 +535,6 @@ class AutoArgumentGenerator(object):
         if sub_kwargs:
           # Only construct the sub-message if we have something to put in it.
           value = field.type(**sub_kwargs)
-          # TODO(b/38000796): Handle repeated fields correctly.
           kwargs[field.name] = value if not field.repeated else [value]
       # Field is a scalar, just get the value.
       else:

@@ -50,11 +50,11 @@ def TransportTopicAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(name='transport-topic')
 
 
-def AddTransportTopicResourceArg(parser, release_track, required=False):
+def AddTransportTopicResourceArg(parser, required=False):
   """Adds a resource argument for a customer-provided transport topic."""
   resource_spec = concepts.ResourceSpec(
       'pubsub.projects.topics',
-      resource_name='transport Pub/Sub topic',
+      resource_name='Pub/Sub topic',
       topicsId=TransportTopicAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
   concept_parser = concept_parsers.ConceptParser.ForResource(
@@ -66,11 +66,7 @@ def AddTransportTopicResourceArg(parser, release_track, required=False):
       'The topic must be in the same project as the trigger. '
       'If not specified, a transport topic will be created.',
       required=required)
-  # hide transport-topic in beta, as it is not yet available in v1beta1 API.
-  # TODO(b/175331610): remove group when unhiding resource arg in beta.
-  group_parser = parser.add_argument_group(
-      hidden=release_track != base.ReleaseTrack.GA)
-  concept_parser.AddToParser(group_parser)
+  concept_parser.AddToParser(parser)
 
 
 def AddLocationResourceArg(parser, group_help_text, required=False):

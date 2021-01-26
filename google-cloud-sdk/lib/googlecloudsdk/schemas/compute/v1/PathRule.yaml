@@ -42,7 +42,8 @@ properties:
       specifies any  weightedBackendServices, service must not be set.
       Conversely if service is set, routeAction cannot contain any
       weightedBackendServices. Only one of routeAction or urlRedirect must
-      be set.
+      be set. UrlMaps for external HTTP(S) load balancers support only the
+      urlRewrite action within a pathRule's routeAction.
     $ref: HttpRouteAction.yaml
   service:
     description: |-
@@ -60,5 +61,6 @@ properties:
     description: |-
       When a path pattern is matched, the request is redirected to a URL
       specified by urlRedirect. If urlRedirect is specified, service or
-      routeAction must not be set.
+      routeAction must not be set. Not supported when the URL map is bound
+      to target gRPC proxy.
     $ref: HttpRedirectAction.yaml

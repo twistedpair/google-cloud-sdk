@@ -61,34 +61,44 @@ client [kubectl]. To install, run
 
 # Subcommand list can still be executed, but will be marked/handled as
 # deprecated until removed.
-SUBCOMMAND_DEPRECATION = [
+SUBCOMMAND_DEPRECATION = {
     # No subcommands currently in a deprecated state.
-]
+}
 
-SUBCOMMAND_WHITELIST = [
-    'backfill',
-    'clear',
-    'connections',
-    'dag_state',
-    'delete_dag',
-    'kerberos',
-    'list_dag_runs',
-    'list_dags',
-    'list_tasks',
-    'next_execution',
-    'pause',
-    'pool',
-    'render',
-    'run',
-    'sync_perm',
-    'task_failed_deps',
-    'task_state',
-    'test',
-    'trigger_dag',
-    'unpause',
-    'variables',
-    'version',
-] + SUBCOMMAND_DEPRECATION
+# {key: value}, key - name of subcommand, value - range of Airflow versions that
+# support. {'cmd': ('1.10.14', '2.0.0')} - command `cmd` is supported for
+# Airflow versions greater or equal to 1.10.14, prior to 2.0.0 (exclusive).
+# None - means no boundary.
+SUBCOMMAND_WHITELIST = {
+    'backfill': (None, '2.0.0'),
+    'clear': (None, '2.0.0'),
+    'connections': (None, '2.0.0'),
+    'dag_state': (None, '2.0.0'),
+    'delete_dag': ('1.10.1', '2.0.0'),
+    'kerberos': (None, '2.0.0'),
+    'list_dag_runs': ('1.10.2', '2.0.0'),
+    'list_dags': (None, '2.0.0'),
+    'list_tasks': (None, '2.0.0'),
+    'next_execution': ('1.10.2', '2.0.0'),
+    'pause': (None, '2.0.0'),
+    'pool': (None, '2.0.0'),
+    'render': (None, '2.0.0'),
+    'run': (None, '2.0.0'),
+    'sync_perm': ('1.10.2', '2.0.0'),
+    'task_failed_deps': (None, '2.0.0'),
+    'task_state': (None, '2.0.0'),
+    'test': (None, '2.0.0'),
+    'trigger_dag': (None, '2.0.0'),
+    'unpause': (None, '2.0.0'),
+    'variables': (None, '2.0.0'),
+    'version': (None, '2.0.0'),
+}
+SUBCOMMAND_WHITELIST.update(SUBCOMMAND_DEPRECATION)
+
+SUBCOMMAND_WHITELIST_BETA = dict(SUBCOMMAND_WHITELIST)
+SUBCOMMAND_WHITELIST_BETA.update({
+    'upgrade_check': ('1.10.14', '2.0.0'),
+})
 
 DEFAULT_NAMESPACE = 'default'
 NAMESPACE_ARG_NAME = '--namespace'

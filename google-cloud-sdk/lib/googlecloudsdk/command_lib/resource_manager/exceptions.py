@@ -27,3 +27,7 @@ class ResourceManagerError(exceptions.Error):
 
 class AncestorsIamPolicyAccessDeniedError(ResourceManagerError):
   """Exception for no permission for accessing ancestors' IAM policy."""
+
+
+class InvalidInputError(ResourceManagerError):
+  """Exception for invalid input."""

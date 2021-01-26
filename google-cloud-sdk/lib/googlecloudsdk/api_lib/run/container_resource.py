@@ -123,11 +123,6 @@ class ContainerResource(k8s_object.KubernetesObject):
       if self.spec.containers[0] is None or len(self.spec.containers) != 1:
         raise ValueError('List of containers must contain exactly one element')
       return self.spec.containers[0]
-    elif hasattr(self, 'instance_spec') and self.instance_spec.containers:
-      if self.instance_spec.containers[0] is None or len(
-          self.instance_spec.containers) != 1:
-        raise ValueError('List of containers must contain exactly one element')
-      return self.instance_spec.containers[0]
     else:
       raise ValueError('Either `container` or `containers` must be set')
 
@@ -151,9 +146,7 @@ class ContainerResource(k8s_object.KubernetesObject):
     given type. Any modifications to the returned object for these properties
     (i.e. setting and deleting keys) modify the underlying nested volumes.
     """
-    volume_field = self.spec.volumes if hasattr(
-        self.spec, 'volumes') else self.instance_spec.volumes
-    return VolumesAsDictionaryWrapper(volume_field, self._messages.Volume)
+    return VolumesAsDictionaryWrapper(self.spec.volumes, self._messages.Volume)
 
   @property
   def volume_mounts(self):

@@ -148,7 +148,7 @@ class ConfigureContactSettingsRequest(_messages.Message):
 
   Fields:
     contactNotices: The list of contact notices that the caller acknowledges.
-      The notices required here depend on the values specified in
+      The notices needed here depend on the values specified in
       `contact_settings`.
     contactSettings: Fields of the `ContactSettings` to update.
     updateMask: Required. The field mask describing which fields to update as
@@ -1293,7 +1293,7 @@ class RegisterDomainRequest(_messages.Message):
 
   Fields:
     contactNotices: The list of contact notices that the caller acknowledges.
-      The notices required here depend on the values specified in
+      The notices needed here depend on the values specified in
       `registration.contact_settings`.
     domainNotices: The list of domain notices that you acknowledge. Call
       `RetrieveRegisterParameters` to see the notices that need

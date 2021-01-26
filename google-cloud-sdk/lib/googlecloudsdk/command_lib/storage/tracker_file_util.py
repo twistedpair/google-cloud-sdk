@@ -25,6 +25,7 @@ import os
 import re
 
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
@@ -42,6 +43,25 @@ class TrackerFileType(enum.Enum):
   PARALLEL_UPLOAD = 'parallel_upload'
   SLICED_DOWNLOAD = 'sliced_download'
   REWRITE = 'rewrite'
+
+
+def _get_unwritable_tracker_file_error(error, tracker_file_path):
+  """Edits error to use custom unwritable message.
+
+  Args:
+    error (Exception): Python error to modify message of.
+    tracker_file_path (str): Tracker file path there were issues writing to.
+
+  Returns:
+    Exception argument with altered error message.
+  """
+  original_error_text = getattr(error, 'strerror')
+  if not original_error_text:
+    original_error_text = '[No strerror]'
+  return type(error)(
+      ('Could not write tracker file ({}): {}. This can happen if gcloud '
+       'storage is configured to save tracker files to an unwritable directory.'
+      ).format(tracker_file_path, original_error_text))
 
 
 def _create_tracker_directory_if_needed():
@@ -224,16 +244,160 @@ def delete_download_tracker_files(destination_url):
     delete_tracker_file(tracker_file)
 
 
-def get_download_start_byte():
-  # TODO (http://b/176977838): Implement rest of tracker file utils.
-  raise NotImplementedError
+def _write_tracker_file(tracker_file_path, data):
+  """Creates a tracker file, storing the input data."""
+  try:
+    file_descriptor = os.open(tracker_file_path,
+                              os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(file_descriptor, 'w') as write_stream:
+      write_stream.write(data)
+  except OSError as e:
+    raise _get_unwritable_tracker_file_error(e, tracker_file_path)
 
 
-def read_or_create_download_tracker_file():
-  # TODO (http://b/176977838): Implement rest of tracker file utils.
-  raise NotImplementedError
+def write_json_to_tracker_file(tracker_file_path, data):
+  """Creates a tracker file and writes JSON to it.
+
+  Args:
+    tracker_file_path (str): The path to the tracker file.
+    data (object): JSON-serializable data to write to file.
+  """
+  json_string = json.dumps(data)
+  _write_tracker_file(tracker_file_path, json_string)
 
 
-def write_download_component_tracker_file():
-  # TODO (http://b/176977838): Implement rest of tracker file utils.
-  raise NotImplementedError
+def write_download_component_tracker_file(tracker_file_path,
+                                          source_object_resource,
+                                          download_start_byte):
+  """Updates or creates a download component tracker file on disk.
+
+  Args:
+    tracker_file_path (str): The path to the tracker file.
+    source_object_resource (resource_reference.ObjectResource): Needed for
+      object etag and optionally generation.
+    download_start_byte (int): Where to resume downloading from.
+  """
+  component_data = {
+      'etag': source_object_resource.etag,
+      'generation': source_object_resource.generation,
+      'download_start_byte': download_start_byte,
+  }
+
+  write_json_to_tracker_file(tracker_file_path, component_data)
+
+
+def read_or_create_download_tracker_file(source_object_resource,
+                                         destination_url,
+                                         start_byte,
+                                         existing_file_size,
+                                         component_number=None,
+                                         create=True):
+  """Checks for a download tracker file and creates one if it does not exist.
+
+  For normal downloads, if the tracker file exists, the existing_file_size
+  in bytes is presumed to downloaded from the server. Therefore,
+  existing_file_size becomes the download start point.
+
+  For sliced downloads, the number of bytes previously retrieved from the server
+  cannot be determined from existing_file_size. Therefore, it is retrieved
+  from the tracker file.
+
+  Args:
+    source_object_resource (resource_reference.ObjectResource): Needed for
+      object etag and generation.
+    destination_url (storage_url.StorageUrl): Destination URL for tracker file.
+    start_byte (int): Start byte for download to use if we cannot find a
+      matching tracker file.
+    existing_file_size (int): Amount of file on disk that already exists.
+    component_number (int?): The download component number to find the start
+      point for.
+    create (bool): Creates tracker file if one could not be found.
+
+  Returns:
+    tracker_file_path (str?): The path to the tracker file, if one was used.
+    download_start_byte (int): The first byte that still needs to be downloaded.
+
+  Raises:
+    ValueCannotBeDeterminedError: Source object resource does not have
+      necessary metadata to decide on download start byte.
+  """
+  if not source_object_resource.etag:
+    raise errors.ValueCannotBeDeterminedError(
+        'Source object resource is missing etag.')
+
+  tracker_file_path = None
+  if (not source_object_resource.size or
+      (source_object_resource.size <
+       properties.VALUES.storage.resumable_threshold.GetInt())):
+    # There is no tracker file for small downloads, so start from scratch.
+    return tracker_file_path, start_byte
+
+  if component_number is None:
+    tracker_file_type = TrackerFileType.DOWNLOAD
+    download_name_for_logger = destination_url.object_name
+  else:
+    tracker_file_type = TrackerFileType.DOWNLOAD_COMPONENT
+    download_name_for_logger = '{} component {}'.format(
+        destination_url.object_name, component_number)
+
+  tracker_file_path = get_tracker_file_path(
+      destination_url, tracker_file_type, component_number=component_number)
+  tracker_file = None
+  # Check to see if we already have a matching tracker file.
+  try:
+    tracker_file = files.FileReader(tracker_file_path)
+    if tracker_file_type is TrackerFileType.DOWNLOAD:
+      etag_value = tracker_file.readline().rstrip('\n')
+      if etag_value == source_object_resource.etag:
+        return tracker_file_path, existing_file_size
+    elif tracker_file_type is TrackerFileType.DOWNLOAD_COMPONENT:
+      component_data = json.loads(tracker_file.read())
+      if (component_data['etag'] == source_object_resource.etag and
+          component_data['generation'] == source_object_resource.generation):
+        return tracker_file_path, int(component_data['download_start_byte'])
+
+  except (FileNotFoundError, ValueError):
+    # Cannot read from file.
+    pass
+
+  finally:
+    if tracker_file:
+      tracker_file.close()
+
+  if create:
+    log.warning('Tracker file doesn\'t match for download of {}. Restarting'
+                ' download from scratch.'.format(download_name_for_logger))
+    if tracker_file_type is TrackerFileType.DOWNLOAD:
+      _write_tracker_file(tracker_file_path, source_object_resource.etag + '\n')
+    elif tracker_file_type is TrackerFileType.DOWNLOAD_COMPONENT:
+      write_download_component_tracker_file(tracker_file_path,
+                                            source_object_resource, start_byte)
+
+  # No matching tracker file, so the starting point is start_byte.
+  return tracker_file_path, start_byte
+
+
+def get_download_start_byte(source_object_resource, destination_url, start_byte,
+                            existing_file_size, component_number):
+  """Returns the download starting point for a component.
+
+  Args:
+    source_object_resource (resource_reference.ObjectResource): Needed for
+      object etag and generation.
+    destination_url (storage_url.StorageUrl): Destination URL for tracker file.
+    start_byte (int): The start byte of the byte range for this download.
+    existing_file_size (int): Amount of file on disk that already exists.
+    component_number (int): The download component number to find the start
+      point for.
+
+  Returns:
+    download_start_byte (int): The first byte that still needs to be downloaded.
+  """
+  _, download_start_byte = read_or_create_download_tracker_file(
+      source_object_resource,
+      destination_url,
+      start_byte,
+      existing_file_size,
+      component_number,
+      create=False)
+  return download_start_byte

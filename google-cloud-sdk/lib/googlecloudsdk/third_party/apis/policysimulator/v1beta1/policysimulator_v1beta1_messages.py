@@ -598,6 +598,16 @@ class GoogleCloudPolicysimulatorV1beta1ReplayDiff(_messages.Message):
   accessDiff = _messages.MessageField('GoogleCloudPolicysimulatorV1beta1AccessStateDiff', 1)
 
 
+class GoogleCloudPolicysimulatorV1beta1ReplayOperationMetadata(_messages.Message):
+  r"""Metadata about a ReplayAccessLogs operation.
+
+  Fields:
+    startTime: Time when the request was received.
+  """
+
+  startTime = _messages.StringField(1)
+
+
 class GoogleCloudPolicysimulatorV1beta1ReplayResult(_messages.Message):
   r"""The result of replaying a single access tuple against a simulated state.
 

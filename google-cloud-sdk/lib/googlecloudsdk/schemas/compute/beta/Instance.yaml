@@ -25,6 +25,9 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  advancedMachineFeatures:
+    description: Controls for advanced machine-related behavior features.
+    $ref: AdvancedMachineFeatures.yaml
   canIpForward:
     description: |-
       Allows this instance to send and receive packets with non- matching
@@ -32,6 +35,9 @@ properties:
       instance to forward routes. For more information, see Enabling IP
       Forwarding.
     type: boolean
+  confidentialInstanceConfig:
+    description: A ConfidentialInstanceConfig attribute.
+    $ref: ConfidentialInstanceConfig.yaml
   cpuPlatform:
     description: '[Output Only] The CPU platform used by this instance.'
     type: string
@@ -91,7 +97,7 @@ properties:
     description: |-
       [Output Only] The unique identifier for the resource. This
       identifier is defined by the server.
-    type: string
+    type: integer
   kind:
     description: |-
       [Output Only] Type of the resource. Always compute#instance for
@@ -111,6 +117,18 @@ properties:
       Labels to apply to this instance. These can be later modified by
       the setLabels method.
     $ref: LabelsValue.yaml
+  lastStartTimestamp:
+    description: |-
+      [Output Only] Last start timestamp in RFC3339 text format.
+    type: string
+  lastStopTimestamp:
+    description: |-
+      [Output Only] Last stop timestamp in RFC3339 text format.
+    type: string
+  lastSuspendedTimestamp:
+    description: |-
+      [Output Only] Last suspended timestamp in RFC3339 text format.
+    type: string
   machineType:
     description: |-
       Full or partial URL of the machine type resource to use for this
@@ -175,6 +193,9 @@ properties:
     type: array
     items:
       type: string
+  satisfiesPzs:
+    description: '[Output Only] Reserved for future use.'
+    type: boolean
   scheduling:
     description: Sets the scheduling options for this instance.
     $ref: Scheduling.yaml
@@ -201,10 +222,13 @@ properties:
       A ShieldedInstanceIntegrityPolicy attribute.
     $ref: ShieldedInstanceIntegrityPolicy.yaml
   shieldedVmConfig:
-    description: A ShieldedVmConfig attribute.
+    description: |-
+      Deprecating, please use shielded_instance_config.
     $ref: ShieldedVmConfig.yaml
   shieldedVmIntegrityPolicy:
-    description: A ShieldedVmIntegrityPolicy attribute.
+    description: |-
+      Deprecating, please use
+      shielded_instance_integrity_policy.
     $ref: ShieldedVmIntegrityPolicy.yaml
   sourceMachineImage:
     description: Source machine image

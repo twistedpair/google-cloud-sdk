@@ -1403,9 +1403,11 @@ class GoogleCloudDialogflowCxV3FormParameter(_messages.Message):
       types.
     fillBehavior: Required. Defines fill behavior for the parameter.
     isList: Indicates whether the parameter represents a list of values.
-    redact: Indicates whether the parameter content is logged in text and
-      audio. If it is set to true, the parameter content will be replaced to
-      parameter name in both request and response. The default value is false.
+    redact: Indicates whether the parameter content should be redacted in text
+      and audio. If the flag is set to true, the parameter content will be
+      replaced by parameter name in both request and response. Note: the
+      parameter content is subject to redaction if either parameter level
+      redaction or entity type level redaction is enabled.
     required: Indicates whether the parameter is required. Optional parameters
       will not trigger prompts; however, they are filled if the user specifies
       them. Required parameters must be filled before form filling concludes.
@@ -1843,9 +1845,11 @@ class GoogleCloudDialogflowCxV3IntentParameter(_messages.Message):
     id: Required. The unique identifier of the parameter. This field is used
       by training phrases to annotate their parts.
     isList: Indicates whether the parameter represents a list of values.
-    redact: Indicates whether the parameter content is logged in text and
-      audio. If it is set to true, the parameter content will be replaced to
-      parameter id in both request and response. The default value is false.
+    redact: Indicates whether the parameter content should be redacted in text
+      and audio. If the flag is set to true, the parameter content will be
+      replaced by parameter name in both request and response. Note: the
+      parameter content is subject to redaction if either parameter level
+      redaction or entity type level redaction is enabled.
   """
 
   entityType = _messages.StringField(1)
@@ -3146,9 +3150,11 @@ class GoogleCloudDialogflowCxV3beta1FormParameter(_messages.Message):
       types.
     fillBehavior: Required. Defines fill behavior for the parameter.
     isList: Indicates whether the parameter represents a list of values.
-    redact: Indicates whether the parameter content is logged in text and
-      audio. If it is set to true, the parameter content will be replaced to
-      parameter name in both request and response. The default value is false.
+    redact: Indicates whether the parameter content should be redacted in text
+      and audio. If the flag is set to true, the parameter content will be
+      replaced by parameter name in both request and response. Note: the
+      parameter content is subject to redaction if either parameter level
+      redaction or entity type level redaction is enabled.
     required: Indicates whether the parameter is required. Optional parameters
       will not trigger prompts; however, they are filled if the user specifies
       them. Required parameters must be filled before form filling concludes.
@@ -3586,9 +3592,11 @@ class GoogleCloudDialogflowCxV3beta1IntentParameter(_messages.Message):
     id: Required. The unique identifier of the parameter. This field is used
       by training phrases to annotate their parts.
     isList: Indicates whether the parameter represents a list of values.
-    redact: Indicates whether the parameter content is logged in text and
-      audio. If it is set to true, the parameter content will be replaced to
-      parameter id in both request and response. The default value is false.
+    redact: Indicates whether the parameter content should be redacted in text
+      and audio. If the flag is set to true, the parameter content will be
+      replaced by parameter name in both request and response. Note: the
+      parameter content is subject to redaction if either parameter level
+      redaction or entity type level redaction is enabled.
   """
 
   entityType = _messages.StringField(1)

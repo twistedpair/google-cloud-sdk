@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20210112",
+ "revision": "20210119",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -661,7 +661,7 @@
     },
     "region": {
      "type": "string",
-     "description": "[Output Only] The URL of the region where the regional address resides. This field is not applicable to global addresses. You must specify this field as part of the HTTP request URL."
+     "description": "[Output Only] The URL of the region where a regional address resides. For regional addresses, you must specify the region as a path parameter in the HTTP request URL. This field is not applicable to global addresses."
     },
     "selfLink": {
      "type": "string",
@@ -1098,6 +1098,10 @@
      "items": {
       "$ref": "AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk"
      }
+    },
+    "locationHint": {
+     "type": "string",
+     "description": "An opaque location hint used to place the allocation close to other resources. This field is for use by internal tools that use the public API."
     },
     "machineType": {
      "type": "string",
@@ -2452,7 +2456,7 @@
     },
     "cdnPolicy": {
      "$ref": "BackendServiceCdnPolicy",
-     "description": "Cloud CDN configuration for this BackendService. Not available for Internal TCP/UDP Load Balancing and Network Load Balancing."
+     "description": "Cloud CDN configuration for this BackendService. Only available for  external HTTP(S) Load Balancing."
     },
     "circuitBreakers": {
      "$ref": "CircuitBreakers",
@@ -2583,7 +2587,7 @@
     },
     "port": {
      "type": "integer",
-     "description": "Deprecated in favor of portName. The TCP port to connect on the backend. The default value is 80.\n\nThis cannot be used if the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).",
+     "description": "Deprecated in favor of portName. The TCP port to connect on the backend. The default value is 80.\n\nBackend services for Internal TCP/UDP Load Balancing and Network Load Balancing require you omit port.",
      "format": "int32"
     },
     "portName": {
@@ -6396,7 +6400,7 @@
     },
     "description": {
      "type": "string",
-     "description": "An optional description of this resource. Provide this property when you create the resource."
+     "description": "An optional description for this resource."
     },
     "direction": {
      "type": "string",
@@ -6684,6 +6688,11 @@
      "items": {
       "type": "string"
      }
+    },
+    "pscConnectionId": {
+     "type": "string",
+     "description": "[Output Only] The PSC connection id of the PSC Forwarding Rule.",
+     "format": "uint64"
     },
     "region": {
      "type": "string",
@@ -8157,7 +8166,7 @@
     },
     "ipAddress": {
      "type": "string",
-     "description": "A forwarding rule IP address assigned to this instance."
+     "description": "For target pool based Network Load Balancing, it indicates the forwarding rule's IP address assigned to this instance. For other types of load balancing, the field indicates VM internal ip."
     },
     "port": {
      "type": "integer",
@@ -9114,6 +9123,10 @@
       }
      }
     },
+    "satisfiesPzs": {
+     "type": "boolean",
+     "description": "[Output Only] Reserved for future use."
+    },
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
@@ -9472,6 +9485,9 @@
      "items": {
       "$ref": "NetworkInterface"
      }
+    },
+    "networkPerformanceConfig": {
+     "$ref": "NetworkPerformanceConfig"
     },
     "privateIpv6GoogleAccess": {
      "type": "string",
@@ -11716,6 +11732,9 @@
      "items": {
       "$ref": "NetworkInterface"
      }
+    },
+    "networkPerformanceConfig": {
+     "$ref": "NetworkPerformanceConfig"
     },
     "postKeyRevocationActionType": {
      "type": "string",
@@ -14114,6 +14133,10 @@
       ]
      }
     },
+    "satisfiesPzs": {
+     "type": "boolean",
+     "description": "[Output Only] Reserved for future use."
+    },
     "selfLink": {
      "type": "string",
      "description": "[Output Only] The URL for this machine image. The server defines this URL."
@@ -16027,6 +16050,23 @@
     }
    }
   },
+  "NetworkPerformanceConfig": {
+   "id": "NetworkPerformanceConfig",
+   "type": "object",
+   "properties": {
+    "totalEgressBandwidthTier": {
+     "type": "string",
+     "enum": [
+      "DEFAULT",
+      "TIER_1"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   }
+  },
   "NetworkRoutingConfig": {
    "id": "NetworkRoutingConfig",
    "type": "object",
@@ -16203,6 +16243,10 @@
      "type": "string",
      "description": "[Output Only] The type of the resource. Always compute#nodeGroup for node group.",
      "default": "compute#nodeGroup"
+    },
+    "locationHint": {
+     "type": "string",
+     "description": "An opaque location hint used to place the Node close to other resources. This field is for use by internal tools that use the public API. The location hint here on the NodeGroup overrides any location_hint present in the NodeTemplate."
     },
     "maintenancePolicy": {
      "type": "string",
@@ -16593,6 +16637,10 @@
     "nodeType": {
      "type": "string",
      "description": "The type of this node."
+    },
+    "satisfiesPzs": {
+     "type": "boolean",
+     "description": "[Output Only] Reserved for future use."
     },
     "serverBinding": {
      "$ref": "ServerBinding",
@@ -21755,6 +21803,10 @@
       ]
      }
     },
+    "satisfiesPzs": {
+     "type": "boolean",
+     "description": "[Output Only] Reserved for future use."
+    },
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined fully-qualified URL for this resource."
@@ -25017,7 +25069,7 @@
   "ServiceAttachment": {
    "id": "ServiceAttachment",
    "type": "object",
-   "description": "Represents a ServiceAttachment resource.\n\nA service attachment represents a service that a producer has exposed. It encapsulates the load balancer which fronts the service runs and a list of NAT IP ranges that the producers uses to represent the consumers connecting to the service.",
+   "description": "Represents a ServiceAttachment resource.\n\nA service attachment represents a service that a producer has exposed. It encapsulates the load balancer which fronts the service runs and a list of NAT IP ranges that the producers uses to represent the consumers connecting to the service. next tag = 15",
    "properties": {
     "connectionPreference": {
      "type": "string",
@@ -25104,9 +25156,9 @@
      "type": "string",
      "description": "The status of the forwarding rule.",
      "enum": [
-      "ACTIVE",
-      "INACTIVE",
+      "ACCEPTED",
       "PENDING",
+      "REJECTED",
       "STATUS_UNSPECIFIED"
      ],
      "enumDescriptions": [

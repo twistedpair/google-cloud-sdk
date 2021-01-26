@@ -32,15 +32,17 @@ properties:
   diskName:
     description: |-
       Specifies the disk name. If not specified, the default is to use the name
-      of the instance. If the disk with the instance name exists already in the
-      given zone/region, a new name will be automatically generated.
+      of the instance. If a disk with the same name already exists in the given
+      region, the existing disk is attached to the new instance and the new disk
+      is not created.
     type: string
   diskSizeGb:
     description: |-
-      Specifies the size of the disk in base-2 GB. If not specified, the disk
-      will be the same size as the image (usually 10GB). If specified, the size
-      must be equal to or larger than 10GB.
-    type: string
+      Specifies the size of the disk in base-2 GB. The size must be at least 10
+      GB. If you specify a sourceImage, which is required for boot disks, the
+      default size is the size of the sourceImage. If you do not specify a
+      sourceImage, the default disk size is 500 GB.
+    type: integer
   diskType:
     description: |-
       Specifies the disk type to use to create the instance. If not specified,
@@ -61,6 +63,23 @@ properties:
       disks.setLabels method. This field is only applicable for persistent
       disks.
     $ref: LabelsValue.yaml
+  multiWriter:
+    description: |-
+      Indicates whether or not the disk can be read/write attached to more
+      than one instance.
+    type: boolean
+  onUpdateAction:
+    description: |-
+      Specifies which action to take on instance update with this disk.
+      Default is to use the existing disk.
+    type: string
+    enum:
+    - RECREATE_DISK
+    - RECREATE_DISK_IF_SOURCE_CHANGED
+    - USE_EXISTING_DISK
+  provisionedIops:
+    description: Indicates how many IOPS must be provisioned for the disk.
+    type: integer
   replicaZones:
     description: |-
       URLs of the zones where the disk should be replicated to. Only
@@ -86,9 +105,10 @@ properties:
       For example, specify family/debian-9 to use the latest Debian
       9 image: projects/debian- cloud/global/images/family/debian-9
       Alternatively, use a specific version of a public operating
-      system image: projects/debian- cloud/global/images/debian-9
-      -stretch-vYYYYMMDD   To create a disk with a custom image that
-      you created, specify the image name in the following
+      system image: projects/debian-
+      cloud/global/images/debian-9-stretch-vYYYYMMDD   To create a
+      disk with a custom image that you created, specify the image
+      name in the following
     type: string
   sourceImageEncryptionKey:
     description: |-

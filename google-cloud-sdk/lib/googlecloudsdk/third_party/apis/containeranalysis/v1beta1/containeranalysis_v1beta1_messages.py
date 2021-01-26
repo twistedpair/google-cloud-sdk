@@ -1046,6 +1046,7 @@ class Detail(_messages.Message):
       node.js packages etc).
     severityName: The severity (eg: distro assigned severity) for this
       vulnerability.
+    source: The source from which the information in this Detail was obtained.
     sourceUpdateTime: The time this information was last changed at the
       source. This is an upstream timestamp from the underlying information
       source - e.g. Ubuntu security tracker.
@@ -1060,7 +1061,8 @@ class Detail(_messages.Message):
   package = _messages.StringField(7)
   packageType = _messages.StringField(8)
   severityName = _messages.StringField(9)
-  sourceUpdateTime = _messages.StringField(10)
+  source = _messages.StringField(10)
+  sourceUpdateTime = _messages.StringField(11)
 
 
 class Details(_messages.Message):
@@ -1147,7 +1149,7 @@ class Discovery(_messages.Message):
     discovery.
 
     Values:
-      NOTE_KIND_UNSPECIFIED: Unknown.
+      NOTE_KIND_UNSPECIFIED: Default value. This value is unused.
       VULNERABILITY: The note and occurrence represent a package
         vulnerability.
       BUILD: The note and occurrence assert build provenance.
@@ -1968,7 +1970,7 @@ class Note(_messages.Message):
     in list requests.
 
     Values:
-      NOTE_KIND_UNSPECIFIED: Unknown.
+      NOTE_KIND_UNSPECIFIED: Default value. This value is unused.
       VULNERABILITY: The note and occurrence represent a package
         vulnerability.
       BUILD: The note and occurrence assert build provenance.
@@ -2049,7 +2051,7 @@ class Occurrence(_messages.Message):
     are specified. This field can be used as a filter in list requests.
 
     Values:
-      NOTE_KIND_UNSPECIFIED: Unknown.
+      NOTE_KIND_UNSPECIFIED: Default value. This value is unused.
       VULNERABILITY: The note and occurrence represent a package
         vulnerability.
       BUILD: The note and occurrence assert build provenance.
@@ -2665,6 +2667,12 @@ class Version(_messages.Message):
 
   Fields:
     epoch: Used to correct mistakes in the version numbering scheme.
+    inclusive: Whether this version is specifying part of an inclusive range.
+      Grafeas does not have the capability to specify version ranges; instead
+      we have fields that specify start version and end versions. At times
+      this is insufficient - we also need to specify whether the version is
+      included in the range or is excluded from the range. This boolean is
+      expected to be set to true when the version is included in a range.
     kind: Required. Distinguishes between sentinel MIN/MAX versions and normal
       versions.
     name: Required only when version kind is NORMAL. The main part of the
@@ -2688,9 +2696,10 @@ class Version(_messages.Message):
     MAXIMUM = 3
 
   epoch = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  kind = _messages.EnumField('KindValueValuesEnum', 2)
-  name = _messages.StringField(3)
-  revision = _messages.StringField(4)
+  inclusive = _messages.BooleanField(2)
+  kind = _messages.EnumField('KindValueValuesEnum', 3)
+  name = _messages.StringField(4)
+  revision = _messages.StringField(5)
 
 
 class Vulnerability(_messages.Message):

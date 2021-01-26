@@ -201,6 +201,17 @@ def AddBucketFlag(parser):
       required=False).AddToParser(parser)
 
 
+def AddIgnoreActiveCertificatesFlag(parser):
+  base.Argument(
+      '--ignore-active-certificates',
+      help='If this flag is set, the Certificate Authority will be '
+      'scheduled for deletion even if the Certificate Authority has '
+      'un-revoked or un-expired certificates.',
+      action='store_true',
+      default=False,
+      required=False).AddToParser(parser)
+
+
 def AddInlineReusableConfigFlags(parser, is_ca):
   """Adds flags for providing inline reusable config values.
 

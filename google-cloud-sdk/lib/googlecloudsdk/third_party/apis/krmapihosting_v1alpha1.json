@@ -399,6 +399,27 @@
           "description": "Output only. KrmApiHost GCP self link used for identifying the underlying endpoint (GKE cluster currently).",
           "readOnly": true,
           "type": "string"
+        },
+        "state": {
+          "description": "Output only. The current state of the internal state machine for the KrmApiHost.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "KrmApiHost is being created",
+            "KrmApiHost is running",
+            "KrmApiHost is being deleted",
+            "KrmApiHost is suspended, set on specific wipeout events",
+            "KrmApiHost is read only, set on specific abuse & billing events"
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "RUNNING",
+            "DELETING",
+            "SUSPENDED",
+            "READ_ONLY"
+          ]
         }
       }
     },

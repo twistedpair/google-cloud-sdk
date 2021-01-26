@@ -131,11 +131,11 @@
     },
     "GoogleCloudGsuiteaddonsV1Deployment": {
       "id": "GoogleCloudGsuiteaddonsV1Deployment",
-      "description": "A Google Workspace Add-on Deployment",
+      "description": "A Google Workspace Add-on deployment",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The deployment resource name. This field is read-only. Example: projects\/123\/deployments\/my_deployment.",
+          "description": "The deployment resource name. Example: projects\/123\/deployments\/my_deployment.",
           "type": "string"
         },
         "oauthScopes": {
@@ -150,7 +150,7 @@
           "$ref": "GoogleCloudGsuiteaddonsV1AddOns"
         },
         "etag": {
-          "description": "This value is computed by the server based on the version of the `Deployment` in storage, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+          "description": "This value is computed by the server based on the version of the deployment in storage, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
         }
       }
@@ -582,13 +582,6 @@
       "description": "Sheets add-on manifest.",
       "type": "object",
       "properties": {
-        "macros": {
-          "description": "Defines Sheets actions (macros) contained within the project.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleAppsScriptTypeSheetsSheetsActionDefinition"
-          }
-        },
         "homepageTrigger": {
           "description": "If present, this overrides the configuration from `addOns.common.homepageTrigger`.",
           "$ref": "GoogleAppsScriptTypeHomepageExtensionPoint"
@@ -596,29 +589,6 @@
         "onFileScopeGrantedTrigger": {
           "description": "Endpoint to execute when file scope authorization is granted for this document\/user pair.",
           "$ref": "GoogleAppsScriptTypeSheetsSheetsExtensionPoint"
-        },
-        "onSelectionTrigger": {
-          "description": "Endpoint to execute when a selection in the Sheets client occurs.",
-          "$ref": "GoogleAppsScriptTypeSheetsSheetsExtensionPoint"
-        }
-      }
-    },
-    "GoogleAppsScriptTypeSheetsSheetsActionDefinition": {
-      "id": "GoogleAppsScriptTypeSheetsSheetsActionDefinition",
-      "description": "Defines a script action within Sheets.",
-      "type": "object",
-      "properties": {
-        "menuName": {
-          "description": "Required. The name of the macro, used for display purposes.",
-          "type": "string"
-        },
-        "functionName": {
-          "description": "Required. The endpoint to execute which performs the macro.",
-          "type": "string"
-        },
-        "defaultShortcut": {
-          "description": "Optional. The default shortcut in Sheets to execute the macro (e.g., \"Ctrl+Alt+Shift+0\")",
-          "type": "string"
         }
       }
     },
@@ -810,7 +780,7 @@
               "httpMethod": "PUT",
               "parameters": {
                 "name": {
-                  "description": "The deployment resource name. This field is read-only. Example: projects\/123\/deployments\/my_deployment.",
+                  "description": "The deployment resource name. Example: projects\/123\/deployments\/my_deployment.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
@@ -870,7 +840,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of Deployments to return. The service may return fewer than this value. If unspecified, at most 1000 Deployments will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                  "description": "The maximum number of deployments to return. The service may return fewer than this value. If unspecified, at most 1000 deployments will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -948,7 +918,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Installs a Deployment in developer mode. See: https:\/\/developers.google.com\/gsuite\/add-ons\/how-tos\/testing-gsuite-addons."
+              "description": "Installs a deployment in developer mode. See: https:\/\/developers.google.com\/gsuite\/add-ons\/how-tos\/testing-gsuite-addons."
             },
             "uninstall": {
               "id": "gsuiteaddons.projects.deployments.uninstall",
@@ -976,7 +946,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Uninstalls a developer mode Deployment. See: https:\/\/developers.google.com\/gsuite\/add-ons\/how-tos\/testing-gsuite-addons."
+              "description": "Uninstalls a developer mode deployment. See: https:\/\/developers.google.com\/gsuite\/add-ons\/how-tos\/testing-gsuite-addons."
             },
             "getInstallStatus": {
               "id": "gsuiteaddons.projects.deployments.getInstallStatus",
@@ -1001,7 +971,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Fetches the install status of a developer mode Deployment."
+              "description": "Fetches the install status of a developer mode deployment."
             }
           }
         }

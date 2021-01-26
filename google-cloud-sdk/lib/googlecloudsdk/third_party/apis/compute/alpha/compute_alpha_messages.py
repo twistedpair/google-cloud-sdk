@@ -680,9 +680,10 @@ class Address(_messages.Message):
       from a private IP range that are reserved for a VLAN attachment in an
       IPsec encrypted Interconnect configuration. These addresses are regional
       resources.
-    region: [Output Only] The URL of the region where the regional address
-      resides. This field is not applicable to global addresses. You must
-      specify this field as part of the HTTP request URL.
+    region: [Output Only] The URL of the region where a regional address
+      resides. For regional addresses, you must specify the region as a path
+      parameter in the HTTP request URL. This field is not applicable to
+      global addresses.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
@@ -3498,8 +3499,8 @@ class BackendService(_messages.Message):
       bound to target gRPC proxy that has validateForProxyless field set to
       true.
     backends: The list of backends that serve this BackendService.
-    cdnPolicy: Cloud CDN configuration for this BackendService. Not available
-      for Internal TCP/UDP Load Balancing and Network Load Balancing.
+    cdnPolicy: Cloud CDN configuration for this BackendService. Only available
+      for  external HTTP(S) Load Balancing.
     circuitBreakers: Settings controlling the volume of connections to a
       backend service. If not set, this feature is considered disabled.  This
       field is applicable to either:   - A regional backend service with the
@@ -3626,8 +3627,8 @@ class BackendService(_messages.Message):
       referenced by a URL map that is bound to target gRPC proxy that has
       validateForProxyless field set to true.
     port: Deprecated in favor of portName. The TCP port to connect on the
-      backend. The default value is 80.  This cannot be used if the
-      loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).
+      backend. The default value is 80.  Backend services for Internal TCP/UDP
+      Load Balancing and Network Load Balancing require you omit port.
     portName: A named port on a backend instance group representing the port
       for communication to the backend VMs in that group. Required when the
       loadBalancingScheme is EXTERNAL (except Network Load Balancing),
@@ -29423,8 +29424,7 @@ class FirewallPolicyRule(_messages.Message):
     action: The Action to perform when the client connection triggers the
       rule. Can currently be either "allow" or "deny()" where valid values for
       status are 403, 404, and 502.
-    description: An optional description of this resource. Provide this
-      property when you create the resource.
+    description: An optional description for this resource.
     direction: The direction in which this rule applies.
     disabled: Denotes whether the firewall policy rule is disabled. When set
       to true, the firewall policy rule is not enforced and traffic behaves as
@@ -29739,6 +29739,8 @@ class ForwardingRule(_messages.Message):
       Balancing, if you specify allPorts, you should not specify ports.  For
       more information, see [Port specifications](/load-
       balancing/docs/forwarding-rule-concepts#port_specifications).
+    pscConnectionId: [Output Only] The PSC connection id of the PSC Forwarding
+      Rule.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules. You
       must specify this field as part of the HTTP request URL. It is not
@@ -29914,14 +29916,15 @@ class ForwardingRule(_messages.Message):
   networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 19)
   portRange = _messages.StringField(20)
   ports = _messages.StringField(21, repeated=True)
-  region = _messages.StringField(22)
-  selfLink = _messages.StringField(23)
-  selfLinkWithId = _messages.StringField(24)
-  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 25, repeated=True)
-  serviceLabel = _messages.StringField(26)
-  serviceName = _messages.StringField(27)
-  subnetwork = _messages.StringField(28)
-  target = _messages.StringField(29)
+  pscConnectionId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
+  region = _messages.StringField(23)
+  selfLink = _messages.StringField(24)
+  selfLinkWithId = _messages.StringField(25)
+  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 26, repeated=True)
+  serviceLabel = _messages.StringField(27)
+  serviceName = _messages.StringField(28)
+  subnetwork = _messages.StringField(29)
+  target = _messages.StringField(30)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -31995,7 +31998,9 @@ class HealthStatus(_messages.Message):
     annotations: Metadata defined as annotations for network endpoint.
     healthState: Health state of the instance.
     instance: URL of the instance resource.
-    ipAddress: A forwarding rule IP address assigned to this instance.
+    ipAddress: For target pool based Network Load Balancing, it indicates the
+      forwarding rule's IP address assigned to this instance. For other types
+      of load balancing, the field indicates VM internal ip.
     port: The named port of the instance group, not necessarily the port that
       is health-checked.
     weight: A string attribute.
@@ -49655,6 +49660,7 @@ class Reservation(_messages.Message):
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
@@ -49693,13 +49699,14 @@ class Reservation(_messages.Message):
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default='compute#reservation')
   name = _messages.StringField(6)
-  selfLink = _messages.StringField(7)
-  selfLinkWithId = _messages.StringField(8)
-  shareSettings = _messages.MessageField('AllocationShareSettings', 9)
-  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 10)
-  specificReservationRequired = _messages.BooleanField(11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  zone = _messages.StringField(13)
+  satisfiesPzs = _messages.BooleanField(7)
+  selfLink = _messages.StringField(8)
+  selfLinkWithId = _messages.StringField(9)
+  shareSettings = _messages.MessageField('AllocationShareSettings', 10)
+  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 11)
+  specificReservationRequired = _messages.BooleanField(12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  zone = _messages.StringField(14)
 
 
 class ReservationAffinity(_messages.Message):
@@ -53875,7 +53882,8 @@ class ServiceAttachment(_messages.Message):
   r"""Represents a ServiceAttachment resource.  A service attachment
   represents a service that a producer has exposed. It encapsulates the load
   balancer which fronts the service runs and a list of NAT IP ranges that the
-  producers uses to represent the consumers connecting to the service.
+  producers uses to represent the consumers connecting to the service. next
+  tag = 15
 
   Enums:
     ConnectionPreferenceValueValuesEnum: The connection preference of service
@@ -53963,14 +53971,14 @@ class ServiceAttachmentConsumerForwardingRule(_messages.Message):
     r"""The status of the forwarding rule.
 
     Values:
-      ACTIVE: <no description>
-      INACTIVE: <no description>
+      ACCEPTED: <no description>
       PENDING: <no description>
+      REJECTED: <no description>
       STATUS_UNSPECIFIED: <no description>
     """
-    ACTIVE = 0
-    INACTIVE = 1
-    PENDING = 2
+    ACCEPTED = 0
+    PENDING = 1
+    REJECTED = 2
     STATUS_UNSPECIFIED = 3
 
   forwardingRule = _messages.StringField(1)

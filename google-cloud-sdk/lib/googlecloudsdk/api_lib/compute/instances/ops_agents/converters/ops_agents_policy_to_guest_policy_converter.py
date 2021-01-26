@@ -49,8 +49,7 @@ _AGENT_RULE_TEMPLATES = {
                 clear_prev_repo=(
                     'sudo rm /etc/yum.repos.d/google-cloud-logging.repo || '
                     "true; find /var/cache/yum -name '*google-cloud-logging*' "
-                    '| xargs sudo rm -rf || true'
-                ),
+                    '| xargs sudo rm -rf || true'),
                 install_with_version=(
                     "sudo yum remove -y google-fluentd || true; "
                     "sudo yum install -y 'google-fluentd%s'; "
@@ -61,8 +60,7 @@ _AGENT_RULE_TEMPLATES = {
                 clear_prev_repo=(
                     'sudo rm /etc/zypp/repos.d/google-cloud-logging.repo || '
                     "true; find /var/cache/zypp -name '*google-cloud-logging*' "
-                    '| xargs sudo rm -rf || true'
-                ),
+                    '| xargs sudo rm -rf || true'),
                 install_with_version=(
                     "sudo zypper remove -y google-fluentd || true; "
                     "sudo zypper install -y 'google-fluentd%s'; "
@@ -71,10 +69,9 @@ _AGENT_RULE_TEMPLATES = {
             apt_package=_PackageTemplates(
                 repo='google-cloud-logging-%s-%s',
                 clear_prev_repo=(
-                    'sudo rm /etc/apt/sources.list.d/google-cloud-logging.repo '
+                    'sudo rm /etc/apt/sources.list.d/google-cloud-logging.list '
                     '|| true; find /var/cache/apt -name '
-                    "'*google-cloud-logging*' | xargs sudo rm -rf || true"
-                ),
+                    "'*google-cloud-logging*' | xargs sudo rm -rf || true"),
                 install_with_version=(
                     "sudo apt-get remove -y google-fluentd || true; "
                     "sudo apt-get install -y 'google-fluentd%s'; "
@@ -101,8 +98,7 @@ _AGENT_RULE_TEMPLATES = {
                 clear_prev_repo=(
                     'sudo rm /etc/yum.repos.d/google-cloud-monitoring.repo || '
                     'true; find /var/cache/yum -name '
-                    "'*google-cloud-monitoring*' | xargs sudo rm -rf || true"
-                ),
+                    "'*google-cloud-monitoring*' | xargs sudo rm -rf || true"),
                 install_with_version=(
                     "sudo yum remove -y stackdriver-agent || true; "
                     "sudo yum install -y 'stackdriver-agent%s'"),
@@ -112,8 +108,7 @@ _AGENT_RULE_TEMPLATES = {
                 clear_prev_repo=(
                     'sudo rm /etc/zypp/repos.d/google-cloud-monitoring.repo || '
                     'true; find /var/cache/zypp -name '
-                    "'*google-cloud-monitoring*' | xargs sudo rm -rf || true"
-                ),
+                    "'*google-cloud-monitoring*' | xargs sudo rm -rf || true"),
                 install_with_version=(
                     "sudo zypper remove -y stackdriver-agent || true; "
                     "sudo zypper install -y 'stackdriver-agent%s'"),
@@ -122,10 +117,9 @@ _AGENT_RULE_TEMPLATES = {
                 repo='google-cloud-monitoring-%s-%s',
                 clear_prev_repo=(
                     'sudo rm '
-                    '/etc/apt/sources.list.d/google-cloud-monitoring.repo || '
+                    '/etc/apt/sources.list.d/google-cloud-monitoring.list || '
                     'true; find /var/cache/apt -name '
-                    "'*google-cloud-monitoring*' | xargs sudo rm -rf || true"
-                ),
+                    "'*google-cloud-monitoring*' | xargs sudo rm -rf || true"),
                 install_with_version=(
                     "sudo apt-get remove -y stackdriver-agent || true; "
                     "sudo apt-get install -y 'stackdriver-agent%s'"),
@@ -151,8 +145,7 @@ _AGENT_RULE_TEMPLATES = {
                 clear_prev_repo=(
                     'sudo rm /etc/yum.repos.d/google-cloud-ops-agent.repo || '
                     'true; find /var/cache/yum -name '
-                    "'*google-cloud-ops-agent*' | xargs sudo rm -rf || true"
-                ),
+                    "'*google-cloud-ops-agent*' | xargs sudo rm -rf || true"),
                 install_with_version=(
                     "sudo yum remove -y google-cloud-ops-agent || true; "
                     "sudo yum install -y 'google-cloud-ops-agent%s'"),
@@ -162,8 +155,7 @@ _AGENT_RULE_TEMPLATES = {
                 clear_prev_repo=(
                     'sudo rm /etc/zypp/repos.d/google-cloud-ops-agent.repo || '
                     'true; find /var/cache/zypp -name '
-                    "'*google-cloud-ops-agent*' | xargs sudo rm -rf || true"
-                ),
+                    "'*google-cloud-ops-agent*' | xargs sudo rm -rf || true"),
                 install_with_version=(
                     "sudo zypper remove -y google-cloud-ops-agent || true; "
                     "sudo zypper install -y 'google-cloud-ops-agent%s'"),
@@ -172,10 +164,9 @@ _AGENT_RULE_TEMPLATES = {
                 repo='google-cloud-ops-agent-%s-%s',
                 clear_prev_repo=(
                     'sudo rm '
-                    '/etc/apt/sources.list.d/google-cloud-ops-agent.repo || '
+                    '/etc/apt/sources.list.d/google-cloud-ops-agent.list || '
                     'true; find /var/cache/apt -name '
-                    "'*google-cloud-ops-agent*' | xargs sudo rm -rf || true"
-                ),
+                    "'*google-cloud-ops-agent*' | xargs sudo rm -rf || true"),
                 install_with_version=(
                     "sudo apt-get remove -y google-cloud-ops-agent || true; "
                     "sudo apt-get install -y 'google-cloud-ops-agent%s'"),

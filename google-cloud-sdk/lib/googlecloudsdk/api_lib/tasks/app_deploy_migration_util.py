@@ -731,15 +731,24 @@ def DeployQueuesYamlFile(
         release_track=ct_api_version)
     updated_fields = parsers.GetSpecifiedFieldsMask(
         cloud_task_args, constants.PUSH_QUEUE, release_track=ct_api_version)
+    # TaskTTL and TombstoneTTL are both immutable so we only set them upon
+    # queue creation. The values set here are as close as possible to the
+    # default values used with legacy app deploy which used superapps.
+    if not cur_queue_object:
+      updated_fields.extend(['taskTtl', 'tombstoneTtl'])
     app_engine_routing_override = (
         queue_config.appEngineHttpQueue.appEngineRoutingOverride
         if queue_config.appEngineHttpQueue is not None else None)
+
     response = queues_client.Patch(
         queue_ref,
         updated_fields,
         retry_config=queue_config.retryConfig,
         rate_limits=queue_config.rateLimits,
         app_engine_routing_override=app_engine_routing_override,
+        task_ttl=constants.MAX_TASK_TTL if not cur_queue_object else None,
+        task_tombstone_ttl=(
+            constants.MAX_TASK_TOMBSTONE_TTL if not cur_queue_object else None),
         queue_type=queue_config.type
     )
     responses.append(response)

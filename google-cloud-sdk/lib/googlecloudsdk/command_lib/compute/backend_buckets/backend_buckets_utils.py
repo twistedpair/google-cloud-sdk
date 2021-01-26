@@ -111,11 +111,11 @@ def ApplyCdnPolicyArgs(client,
     if args.cache_mode:
       cdn_policy.cacheMode = client.messages.BackendBucketCdnPolicy.\
         CacheModeValueValuesEnum(args.cache_mode)
-    if args.client_ttl:
+    if args.client_ttl is not None:
       cdn_policy.clientTtl = args.client_ttl
-    if args.default_ttl:
+    if args.default_ttl is not None:
       cdn_policy.defaultTtl = args.default_ttl
-    if args.max_ttl:
+    if args.max_ttl is not None:
       cdn_policy.maxTtl = args.max_ttl
 
     if is_update:
@@ -156,7 +156,7 @@ def ApplyCdnPolicyArgs(client,
         cdn_policy.negativeCachingPolicy = []
 
   if support_flexible_cache_step_two:
-    if args.serve_while_stale:
+    if args.serve_while_stale is not None:
       cdn_policy.serveWhileStale = args.serve_while_stale
 
     bypass_cache_on_request_headers = GetBypassCacheOnRequestHeaders(

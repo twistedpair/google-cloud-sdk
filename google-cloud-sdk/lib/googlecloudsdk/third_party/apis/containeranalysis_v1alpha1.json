@@ -379,6 +379,10 @@
             "MINIMUM",
             "MAXIMUM"
           ]
+        },
+        "inclusive": {
+          "description": "Whether this version is vulnerable, when defining the version bounds. For example, if the minimum version is 2.0, inclusive=true would say 2.0 is vulnerable, while inclusive=false would say it's not",
+          "type": "boolean"
         }
       }
     },
@@ -1365,6 +1369,10 @@
         "isObsolete": {
           "description": "Whether this Detail is obsolete. Occurrences are expected not to point to obsolete details.",
           "type": "boolean"
+        },
+        "source": {
+          "description": "The source from which the information in this Detail was obtained.",
+          "type": "string"
         }
       }
     },

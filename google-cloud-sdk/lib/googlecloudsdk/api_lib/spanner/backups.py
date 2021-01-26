@@ -71,7 +71,7 @@ def GetBackup(backup_ref):
   return client.projects_instances_backups.Get(req)
 
 
-def CreateBackup(backup_ref, args, encryption_type=None):
+def CreateBackup(backup_ref, args, encryption_type=None, kms_key=None):
   """Create a new backup."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
@@ -79,6 +79,8 @@ def CreateBackup(backup_ref, args, encryption_type=None):
   query_params = {'alt': 'json', 'backupId': args.backup}
   if encryption_type:
     query_params['encryptionConfig.encryptionType'] = encryption_type
+  if kms_key:
+    query_params['encryptionConfig.kmsKeyName'] = kms_key
   parent = backup_ref.Parent().RelativeName()
   url = '{}v1/{}/backups?{}'.format(client.url, parent,
                                     urllib.parse.urlencode(query_params))

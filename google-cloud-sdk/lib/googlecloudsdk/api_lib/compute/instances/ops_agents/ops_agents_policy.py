@@ -44,22 +44,22 @@ class OpsAgentPolicy(object):
 
     def __init__(self,
                  agent_type,
+                 enable_autoupgrade,
                  version=Version.CURRENT_MAJOR,
-                 package_state=PackageState.INSTALLED,
-                 enable_autoupgrade=True):
+                 package_state=PackageState.INSTALLED):
       """Initialize AgentRule instance.
 
       Args:
         agent_type: Type, agent type to be installed.
-        version: str, agent version, e.g. 'latest', '5.5.2', '5.*.*'.
-        package_state: Optional PackageState. DesiredState for the package.
-        enable_autoupgrade: Optional bool. Enable autoupgrade for the package or
+        enable_autoupgrade: bool, enable autoupgrade for the package or
           not.
+        version: str, agent version, e.g. 'latest', '5.5.2', '5.*.*'.
+        package_state: Optional PackageState, desiredState for the package.
       """
       self.type = agent_type
+      self.enable_autoupgrade = enable_autoupgrade
       self.version = version
       self.package_state = package_state
-      self.enable_autoupgrade = enable_autoupgrade
 
     def __eq__(self, other):
       return self.__dict__ == other.__dict__
@@ -185,12 +185,12 @@ def CreateAgentRules(agent_rules):
     ops_agents.append(
         OpsAgentPolicy.AgentRule(
             OpsAgentPolicy.AgentRule.Type(agent_rule['type']),
+            agent_rule['enable-autoupgrade'],
             agent_rule.get('version',
                            OpsAgentPolicy.AgentRule.Version.CURRENT_MAJOR),
             OpsAgentPolicy.AgentRule.PackageState(agent_rule.get(
                 'package-state',
-                OpsAgentPolicy.AgentRule.PackageState.INSTALLED)),
-            agent_rule.get('enable-autoupgrade', True)))
+                OpsAgentPolicy.AgentRule.PackageState.INSTALLED))))
   return ops_agents
 
 

@@ -33,6 +33,14 @@ properties:
       cannot be automatically restarted.  By default, this is set to true so an
       instance is automatically restarted if it is terminated by Compute Engine.
     type: boolean
+  availabilityDomain:
+    description: |-
+      Specifies the availability domain (AD), which this instance should be
+      scheduled on. The AD belongs to the spread GroupPlacementPolicy resource
+      policy that has been assigned to the instance. Specify a value between
+      1-max count of availability domains in your GroupPlacementPolicy. See
+      go/placement-policy-extension for more details.
+    type: integer
   latencyTolerant:
     description: |-
       Defines whether the instance is tolerant of higher cpu latency. This can
@@ -46,6 +54,19 @@ properties:
       resources. This field is for use by internal tools that use the public
       API.
     type: string
+  maintenanceFreezeDurationHours:
+    description: |-
+      Specifies the number of hours after instance creation where the instance
+      won't be scheduled for maintenance.
+    type: integer
+  maintenanceInterval:
+    description: |-
+      Specifies whether this VM may be a stable fleet VM. Setting this to
+      "Periodic" designates this VM as a Stable Fleet VM.  See go/stable-fleet-
+      ug for more details.
+    type: string
+    enum:
+    - PERIODIC
   minNodeCpus:
     description: |-
       The minimum number of virtual CPUs this instance will consume when running
@@ -54,7 +75,8 @@ properties:
   nodeAffinities:
     description: |-
       A set of node affinity and anti-affinity configurations. Refer to
-      Configuring node affinity for more information.
+      Configuring node affinity for more information. Overrides
+      reservationAffinity.
     type: array
     items:
       $ref: SchedulingNodeAffinity.yaml
@@ -71,6 +93,7 @@ properties:
   preemptible:
     description: |-
       Defines whether the instance is preemptible. This can only be set
-      during instance creation, it cannot be set or changed after the
-      instance has been created.
+      during instance creation or while the instance is stopped and
+      therefore, in a `TERMINATED` state. See Instance Life Cycle for more
+      information on the possible instance states.
     type: boolean

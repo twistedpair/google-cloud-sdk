@@ -32,8 +32,9 @@ properties:
   diskName:
     description: |-
       Specifies the disk name. If not specified, the default is to use the name
-      of the instance. If the disk with the instance name exists already in the
-      given zone/region, a new name will be automatically generated.
+      of the instance. If a disk with the same name already exists in the given
+      region, the existing disk is attached to the new instance and the new disk
+      is not created.
     type: string
   diskSizeGb:
     description: |-
@@ -41,7 +42,7 @@ properties:
       GB. If you specify a sourceImage, which is required for boot disks, the
       default size is the size of the sourceImage. If you do not specify a
       sourceImage, the default disk size is 500 GB.
-    type: string
+    type: integer
   diskType:
     description: |-
       Specifies the disk type to use to create the instance. If not specified,

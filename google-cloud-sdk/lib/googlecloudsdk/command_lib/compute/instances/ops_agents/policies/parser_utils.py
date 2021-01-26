@@ -147,7 +147,7 @@ def AddMutationArgs(parser, required=True):
                   'enable-autoupgrade':
                       arg_parsers.ArgBoolean(),
               },
-              required_keys=['type']),
+              required_keys=['type', 'enable-autoupgrade']),
       ),
       help="""\
       A non-empty list of agent rules to be enforced by the policy.
@@ -169,6 +169,12 @@ def AddMutationArgs(parser, required=True):
       ``ops-agent''. See
       https://cloud.google.com/stackdriver/docs/solutions/ops-agent#which_agent
       for which agent to use.
+
+      *enable-autoupgrade*::: Whether to enable autoupgrade of the agent.
+
+      *Required*. Allowed values: ``true'' or ``false''. This has to be
+      ``false'' if the agent version is set to a specific patch version in the
+      format of ``version=MAJOR_VERSION.MINOR_VERSION.PATCH_VERSION''.
 
       *version*::: Version of the agent to install.
 
@@ -238,7 +244,7 @@ def AddMutationArgs(parser, required=True):
       can only ensure that the agent is re-installed. It is not able to restore
       the expected exact version of the agent.
 
-      ```version=5.5.2-BUILD_NUMBER```::::
+      *version=5.5.2-BUILD_NUMBER*::::
 
       Allowed for the metrics agent (``type=metrics'') only.
 
@@ -257,7 +263,8 @@ def AddMutationArgs(parser, required=True):
       can only ensure that the agent is re-installed. It is not able to restore
       the expected exact version of the agent.
 
-      *package-state*::: Desired package state of the agent.
+      *package-state*:::
+      Desired package state of the agent.
 
       Optional. Default to ``package-state=installed''. The allowed values are
       as follows.
@@ -271,13 +278,6 @@ def AddMutationArgs(parser, required=True):
 
       With this setting, the policy will ensure the agent package is removed
       from the instances, which stops the service from running.
-
-      *enable-autoupgrade*::: Whether to enable autoupgrade of the agent.
-
-      Optional. Default to ``enable-autoupgrade=true''. Allowed values: ``true''
-      or ``false''. This has to be ``false'' if the agent version is set to a
-      specific patch version in the format of
-      ``version=MAJOR_VERSION.MINOR_VERSION.PATCH_VERSION''.
       """)
   parser.add_argument(
       '--os-types',
@@ -303,7 +303,7 @@ def AddMutationArgs(parser, required=True):
       A non-empty list of OS types to filter instances that the policy applies
       to.
 
-      For Alpha, exactly one OS type needs to be specified. The support for
+      For Alpha and Beta, exactly one OS type needs to be specified. The support for
       multiple OS types will be added later for more flexibility. Each OS type
       contains the following fields.
 

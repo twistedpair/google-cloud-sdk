@@ -62,10 +62,14 @@ properties:
       use your own keys to encrypt disks in a managed instance group.
     $ref: CustomerEncryptionKey.yaml
   diskSizeGb:
+    description: The size of the disk in GB.
+    type: integer
+  forceAttach:
     description: |-
-      The size of the disk in base-2 GB. This supersedes disk_size_gb in
-      InitializeParams.
-    type: string
+      [Input Only] Whether to force attach the regional disk even if it's
+      currently attached to another instance. If you try to force attach a zonal
+      disk to an instance, you will receive an error.
+    type: boolean
   guestOsFeatures:
     description: |-
       A list of features to enable on the guest operating system. Applicable
@@ -95,8 +99,7 @@ properties:
       use SCSI and the request will fail if you attempt to attach a
       persistent disk in any other format than SCSI. Local SSDs can use
       either NVME or SCSI. For performance characteristics of SCSI over
-      NVMe, see Local SSD performance. TODO(b/131765817): Update
-      documentation when NVME is supported.
+      NVMe, see Local SSD performance.
     type: string
     enum:
     - NVDIMM
@@ -153,3 +156,11 @@ properties:
     enum:
     - PERSISTENT
     - SCRATCH
+  userLicenses:
+    description: |-
+      [Output Only] A list of user provided licenses. It represents a
+      list of URLs to the license resource. Unlike regular licenses,
+      user provided licenses can be modified after the disk is created.
+    type: array
+    items:
+      type: string

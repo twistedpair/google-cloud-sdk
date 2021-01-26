@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Utilities for IAM Assist API."""
+"""Utilities for IAM Simulator API."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -21,8 +21,8 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
 
-_API_NAME = 'iamassist'
-_API_VERSION = 'v1alpha3'
+_API_NAME = 'policysimulator'
+_API_VERSION = 'v1beta1'
 
 
 def GetClientAndMessages():

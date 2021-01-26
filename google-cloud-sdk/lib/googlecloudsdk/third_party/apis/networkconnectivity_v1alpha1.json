@@ -283,7 +283,7 @@
     },
     "Hub": {
       "id": "Hub",
-      "description": "The Network Connectivity Center is a hub-and-spoke abstraction for network connectivity management in Google Cloud. It aims to reduce operational complexity through a simple, centralized connectivity management model. Following is the resource message of a hub.",
+      "description": "Network Connectivity Center is a hub-and-spoke abstraction for network connectivity management in Google Cloud. It reduces operational complexity through a simple, centralized connectivity management model. Following is the resource message of a hub.",
       "type": "object",
       "properties": {
         "name": {
@@ -323,6 +323,23 @@
           "description": "Output only. Google-generated UUID for this resource. This is unique across all Hub resources. If a Hub resource is deleted and another with the same name is created, it gets a different unique_id.",
           "readOnly": true,
           "type": "string"
+        },
+        "state": {
+          "description": "Output only. The current lifecycle state of this Hub.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "No state information available",
+            "The resource's create operation is in progress",
+            "The resource is active",
+            "The resource's Delete operation is in progress"
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "DELETING"
+          ]
         }
       }
     },
@@ -410,6 +427,23 @@
           "description": "Output only. Google-generated UUID for this resource. This is unique across all Spoke resources. If a Spoke resource is deleted and another with the same name is created, it gets a different unique_id.",
           "readOnly": true,
           "type": "string"
+        },
+        "state": {
+          "description": "Output only. The current lifecycle state of this Hub.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "No state information available",
+            "The resource's create operation is in progress",
+            "The resource is active",
+            "The resource's Delete operation is in progress"
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "DELETING"
+          ]
         }
       }
     },

@@ -130,11 +130,11 @@
     },
     "GoogleCloudOrgpolicyV2Constraint": {
       "id": "GoogleCloudOrgpolicyV2Constraint",
-      "description": "A `Constraint` describes a way in which a resource's configuration can be restricted. For example, it controls which cloud services can be activated across an organization, or whether a Compute Engine instance can have serial port connections established. `Constraints` can be configured by the organization's policy adminstrator to fit the needs of the organzation by setting Policies for `Constraints` at different locations in the organization's resource hierarchy. Policies are inherited down the resource hierarchy from higher levels, but can also be overridden. For details about the inheritance rules please read about Policies. `Constraints` have a default behavior determined by the `constraint_default` field, which is the enforcement behavior that is used in the absence of a `Policy` being defined or inherited for the resource in question.",
+      "description": "A `constraint` describes a way to restrict resource's configuration. For example, you could enforce a constraint that controls which cloud services can be activated across an organization, or whether a Compute Engine instance can have serial port connections established. `Constraints` can be configured by the organization's policy adminstrator to fit the needs of the organzation by setting a `policy` that includes `constraints` at different locations in the organization's resource hierarchy. Policies are inherited down the resource hierarchy from higher levels, but can also be overridden. For details about the inheritance rules please read about `policies`. `Constraints` have a default behavior determined by the `constraint_default` field, which is the enforcement behavior that is used in the absence of a `policy` being defined or inherited for the resource in question.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the Constraint. Must be in one of the following forms: * `projects\/{project_number}\/constraints\/{constraint_name}` * `folders\/{folder_id}\/constraints\/{constraint_name}` * `organizations\/{organization_id}\/constraints\/{constraint_name}` For example, \"\/projects\/123\/constraints\/compute.disableSerialPortAccess\". Immutable.",
+          "description": "Immutable. The resource name of the Constraint. Must be in one of the following forms: * `projects\/{project_number}\/constraints\/{constraint_name}` * `folders\/{folder_id}\/constraints\/{constraint_name}` * `organizations\/{organization_id}\/constraints\/{constraint_name}` For example, \"\/projects\/123\/constraints\/compute.disableSerialPortAccess\".",
           "type": "string"
         },
         "displayName": {
@@ -146,7 +146,7 @@
           "type": "string"
         },
         "constraintDefault": {
-          "description": "The evaluation behavior of this constraint in the absense of 'Policy'.",
+          "description": "The evaluation behavior of this constraint in the absence of 'Policy'.",
           "type": "string",
           "enumDescriptions": [
             "This is only used for distinguishing unset values and should never be used.",
@@ -234,7 +234,7 @@
       "type": "object",
       "properties": {
         "etag": {
-          "description": "An opaque tag indicating the current version of the `Policy`, used for concurrency control. This field is ignored if used in a `CreatePolicy` request. When the `Policy` is returned from either a `GetPolicy` or a `ListPolicies` request, this `etag` indicates the version of the current `Policy` to use when executing a read-modify-write loop. When the `Policy` is returned from a `GetEffectivePolicy` request, the `etag` will be unset. When the `Policy` is used in a `UpdatePolicy` method, use the `etag` value that was returned from a `GetPolicy` request as part of a read-modify-write loop for concurrency control. If `UpdatePolicyRequest`'s `force_unconditional_write` field is set to true, this field must not be set. Otherwise, the `etag` is required for `UpdatePolicy`.",
+          "description": "An opaque tag indicating the current version of the `Policy`, used for concurrency control. This field is ignored if used in a `CreatePolicy` request. When the `Policy` is returned from either a `GetPolicy` or a `ListPolicies` request, this `etag` indicates the version of the current `Policy` to use when executing a read-modify-write loop. When the `Policy` is returned from a `GetEffectivePolicy` request, the `etag` will be unset.",
           "type": "string"
         },
         "updateTime": {
@@ -282,7 +282,7 @@
           "type": "boolean"
         },
         "condition": {
-          "description": "Optional. A condition which determines whether this rule is used in the evaluation of the policy. When set, the `expression` field in the `Expr' must include from 1 to 10 subexpressions, joined by the \"||\" or \"&&\" operators. Each subexpression must be of the form \"resource.matchLabels(key_name, value_name)\", where key_name and value_name are the resource names for Label Keys and Values. These names are available from the Label Manager Service. An example expression is: \"resource.matchLabels('labelKeys\/123, 'labelValues\/456')\".",
+          "description": "A condition which determines whether this rule is used in the evaluation of the policy. When set, the `expression` field in the `Expr' must include from 1 to 10 subexpressions, joined by the \"||\" or \"&&\" operators. Each subexpression must be of the form \"resource.matchLabels(key_name, value_name)\", where key_name and value_name are the resource names for Label Keys and Values. These names are available from the Label Manager Service. An example expression is: \"resource.matchLabels('labelKeys\/123, 'labelValues\/456')\".",
           "$ref": "GoogleTypeExpr"
         }
       }
@@ -341,6 +341,7 @@
           "type": "string"
         },
         "spec": {
+          "description": "Specify `Constraint` for configurations of Cloud Platform resources.",
           "$ref": "GoogleCloudOrgpolicyV2PolicySpec"
         }
       }
@@ -363,7 +364,7 @@
           "httpMethod": "GET",
           "parameters": {
             "parent": {
-              "description": "The Cloud resource that parents the constraint. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+              "description": "Required. The Cloud resource that parents the constraint. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+$",
@@ -403,7 +404,7 @@
           "httpMethod": "GET",
           "parameters": {
             "parent": {
-              "description": "The target Cloud resource that parents the set of constraints and policies that will be returned from this call. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+              "description": "Required. The target Cloud resource that parents the set of constraints and policies that will be returned from this call. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+$",
@@ -439,7 +440,7 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "Resource name of the policy. See `Policy` for naming requirements.",
+              "description": "Required. Resource name of the policy. See `Policy` for naming requirements.",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+\/policies\/[^\/]+$",
@@ -464,7 +465,7 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "The effective policy to compute. See `Policy` for naming rules.",
+              "description": "Required. The effective policy to compute. See `Policy` for naming rules.",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+\/policies\/[^\/]+$",
@@ -489,15 +490,10 @@
           "httpMethod": "POST",
           "parameters": {
             "parent": {
-              "description": "The Cloud resource that will parent the new Policy. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+              "description": "Required. The Cloud resource that will parent the new Policy. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+$",
-              "type": "string"
-            },
-            "constraint": {
-              "description": "The name of the `Constraint` the `Policy` is configuring, for example, `constraints\/compute.disableSerialPortAccess`.",
-              "location": "query",
               "type": "string"
             }
           },
@@ -527,11 +523,6 @@
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+\/policies\/[^\/]+$",
               "type": "string"
-            },
-            "forceUnconditionalWrite": {
-              "description": "Indicates that this request should overwrite the current policy and ignore the `etag` used for optimistic currency control. When set to true, `etag` in `Policy` must be unset. Otherwise, `etag` is required.",
-              "location": "query",
-              "type": "boolean"
             }
           },
           "parameterOrder": [
@@ -555,7 +546,7 @@
           "httpMethod": "DELETE",
           "parameters": {
             "name": {
-              "description": "Name of the policy to delete. See `Policy` for naming rules.",
+              "description": "Required. Name of the policy to delete. See `Policy` for naming rules.",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+\/policies\/[^\/]+$",

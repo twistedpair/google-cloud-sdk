@@ -37,15 +37,15 @@ class Client(object):
 
   @classmethod
   def FromApiVersion(cls, version):
-    return cls(apis.GetClientInstance('iamassist', version))
+    return cls(apis.GetClientInstance('policysimulator', version))
 
   def Get(self, operation_ref):
-    request = self._messages.IamassistOperationsGetRequest(
+    request = self._messages.PolicysimulatorOperationsGetRequest(
         name=operation_ref.RelativeName())
     return self._service.Get(request)
 
   def List(self, parent_ref, limit=None, page_size=None, list_filter=None):
-    request = self._messages.IamassistReplaysListRequest(
+    request = self._messages.PolicysimulatorOperationsListRequest(
         name=parent_ref.RelativeName(), filter=list_filter)
     return list_pager.YieldFromList(
         self._service,
@@ -57,12 +57,9 @@ class Client(object):
 
   def WaitForOperation(self, operation, message):
     registry = resources.REGISTRY.Clone()
-    registry.RegisterApiByName('iamassist', 'v1alpha3')
+    registry.RegisterApiByName('policysimulator', 'v1beta1')
     operation_ref = registry.Parse(
-        operation.name, collection='iamassist.operations')
+        operation.name, collection='policysimulator.operations')
     poller = waiter.CloudOperationPollerNoResources(self._service)
     return waiter.WaitFor(
-        poller,
-        operation_ref,
-        message,
-        wait_ceiling_ms=_MAX_WAIT_TIME_MS)
+        poller, operation_ref, message, wait_ceiling_ms=_MAX_WAIT_TIME_MS)

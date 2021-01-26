@@ -33,6 +33,7 @@ from googlecloudsdk.core.configurations import properties_file as prop_files_lib
 from googlecloudsdk.core.docker import constants as const_lib
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_proxy_types
+from googlecloudsdk.core.util import scaled_integer
 from googlecloudsdk.core.util import times
 
 import six
@@ -150,6 +151,16 @@ def _BuildTimeoutValidator(timeout):
   seconds = times.ParseDuration(timeout, default_suffix='s').total_seconds
   if seconds <= 0:
     raise InvalidValueError('Timeout must be a positive time duration.')
+
+
+def _HumanReadableByteAmountValidator(size_string):
+  """Validates human readable byte amounts, e.g. 1KiB."""
+  if size_string is None:
+    return
+  try:
+    scaled_integer.ParseInteger(size_string)
+  except ValueError as e:
+    raise InvalidValueError(str(e))
 
 
 class Error(exceptions.Error):
@@ -927,6 +938,12 @@ class _SectionFunctions(_Section):
         'valid choices, run `gcloud beta functions regions list`.',
         completer=('googlecloudsdk.command_lib.functions.flags:'
                    'LocationsCompleter'))
+    self.v2 = self._AddBool(
+        'v2',
+        default=False,
+        help_text='Default product version to use when working with Cloud '
+        'Functions resources. When neither `--v2` nor `--no-v2` is provided, '
+        'the decision of whether to use V2 falls back to this value.')
 
 
 class _SectionGcloudignore(_Section):
@@ -2027,6 +2044,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.orgpolicy = self._Add('orgpolicy')
     self.osconfig = self._Add('osconfig')
     self.oslogin = self._Add('oslogin')
+    self.policysimulator = self._Add('policysimulator')
     self.policytroubleshooter = self._Add('policytroubleshooter')
     self.privateca = self._Add('privateca')
     self.pubsub = self._Add('pubsub')
@@ -2282,6 +2300,7 @@ class _SectionStorage(_Section):
   DEFAULT_THREAD_COUNT = 4
 
   DEFAULT_CHUNK_SIZE = 104857600  # 100 MB, or 1024 * 1024 * 100.
+  DEFAULT_RESUMABLE_THRESHOLD = 8388608  # 8 MB, or 1024 * 1024 * 8.
 
   def __init__(self):
     super(_SectionStorage, self).__init__('storage', hidden=True)
@@ -2297,6 +2316,11 @@ class _SectionStorage(_Section):
         help_text='Chunk size used for uploading and downloading from '
         'Cloud Storage.')
 
+    self.number_retries = self._Add(
+        'number_retries',
+        default=23,
+        help_text='Number of retries for operations like copy.')
+
     self.process_count = self._Add(
         'process_count',
         default=min(multiprocessing.cpu_count(),
@@ -2305,21 +2329,30 @@ class _SectionStorage(_Section):
         'use. When process_count and thread_count are both 1, commands use '
         'sequential execution.')
 
+    self.resumable_threshold = self._Add(
+        'resumable_threshold',
+        default=self.DEFAULT_RESUMABLE_THRESHOLD,
+        help_text='File operations above this size in bytes will use resumable'
+        ' instead of one-shot strategies. For example, a resumable download.')
+
     self.sliced_object_download_component_size = self._Add(
         'sliced_object_download_component_size',
         default='200M',
+        validator=_HumanReadableByteAmountValidator,
         help_text='Target size and upper bound for files to be sliced into.'
         ' Analogous to parallel_composite_upload_component_size.')
 
     self.sliced_object_download_max_components = self._Add(
         'sliced_object_download_max_components',
         default=4,
+        validator=_HumanReadableByteAmountValidator,
         help_text='Specifies the maximum number of slices to be used when'
         ' performing a sliced object download.')
 
     self.sliced_object_download_threshold = self._Add(
         'sliced_object_download_threshold',
         default='150M',
+        validator=_HumanReadableByteAmountValidator,
         help_text='Slice files larger than this value. Zero will block sliced'
         ' downloads. Analogous to parallel_composite_upload_threshold.')
 
@@ -2330,10 +2363,10 @@ class _SectionStorage(_Section):
         'process. When process_count and thread_count are both 1, commands use '
         'sequential execution.')
 
-    # TODO(b/175899956): Add validation for human readable sizes.
     self.parallel_composite_upload_component_size = self._Add(
         'parallel_composite_upload_component_size',
         default='50M',
+        validator=_HumanReadableByteAmountValidator,
         help_text='Specifies the ideal size of a component in bytes, which '
         'will act as an upper bound to the size of the components if '
         'ceil(file_size / parallel_composite_upload_component_size) is less '
@@ -2344,6 +2377,7 @@ class _SectionStorage(_Section):
     self.parallel_composite_upload_threshold = self._Add(
         'parallel_composite_upload_threshold',
         default='0',
+        validator=_HumanReadableByteAmountValidator,
         help_text='Specifies the maximum size of a file to upload in a single '
         'stream. Files larger than this threshold will be partitioned into '
         'component parts, uploaded in parallel, then composed into a single '

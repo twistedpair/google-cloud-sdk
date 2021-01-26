@@ -34,7 +34,9 @@ properties:
       weightedBackendServices, defaultService must not be set. Conversely if
       defaultService is set, defaultRouteAction cannot contain any
       weightedBackendServices. Only one of defaultRouteAction or
-      defaultUrlRedirect must be set.
+      defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load
+      balancers support only the urlRewrite action within a pathMatcher's
+      defaultRouteAction.
     $ref: HttpRouteAction.yaml
   defaultService:
     description: |-
@@ -60,7 +62,8 @@ properties:
     description: |-
       When none of the specified pathRules or routeRules match, the request is
       redirected to a URL specified by defaultUrlRedirect. If defaultUrlRedirect
-      is specified, defaultService or defaultRouteAction must not be set.
+      is specified, defaultService or defaultRouteAction must not be set. Not
+      supported when the URL map is bound to target gRPC proxy.
     $ref: HttpRedirectAction.yaml
   description:
     description: |-
@@ -72,7 +75,10 @@ properties:
       Specifies changes to request and response headers that need to take effect
       for the selected backendService. HeaderAction specified here are applied
       after the matching HttpRouteRule HeaderAction and before the HeaderAction
-      in the UrlMap
+      in the UrlMap  Note that headerAction is not supported for Loadbalancers
+      that have their loadBalancingScheme set to EXTERNAL. Not supported when
+      the URL map is bound to target gRPC proxy that has validateForProxyless
+      field set to true.
     $ref: HttpHeaderAction.yaml
   name:
     description: The name to which this PathMatcher is referred by the HostRule.

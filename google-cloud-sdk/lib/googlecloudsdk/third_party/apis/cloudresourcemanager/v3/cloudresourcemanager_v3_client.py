@@ -964,7 +964,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a TagBinding between a TagValue and a cloud resource (currently Project, Folder, or Organization).
+      r"""Creates a TagBinding between a TagValue and a cloud resource (currently project, folder, or organization).
 
       Args:
         request: (CloudresourcemanagerTagBindingsCreateRequest) input message
@@ -1017,7 +1017,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the TagBindings for the given cloud resource, as specified with `parent`. NOTE: The `parent` field is expected to be a full-resource-name. https://cloud.google.com/apis/design/resource_names#full_resource_name.
+      r"""Lists the TagBindings for the given cloud resource, as specified with `parent`. NOTE: The `parent` field is expected to be a full resource name: https://cloud.google.com/apis/design/resource_names#full_resource_name.
 
       Args:
         request: (CloudresourcemanagerTagBindingsListRequest) input message
@@ -1106,7 +1106,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a TagKey. This method will return PERMISSION_DENIED if the key does not exist or the user does not have permission to view it.
+      r"""Retrieves a TagKey. This method will return `PERMISSION_DENIED` if the key does not exist or the user does not have permission to view it.
 
       Args:
         request: (CloudresourcemanagerTagKeysGetRequest) input message
@@ -1133,7 +1133,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a TagKey. The returned policy may be empty if no such policy or resource exists. The `resource` field should be the TagKey's resource name, e.g. "tagKeys/1234". The caller must have `cloudresourcemanager.googleapis.com/tagKeys.getIamPolicy` permission on the identified tagKey.
+      r"""Gets the access control policy for a TagKey. The returned policy may be empty if no such policy or resource exists. The `resource` field should be the TagKey's resource name. For example, "tagKeys/1234". The caller must have `cloudresourcemanager.googleapis.com/tagKeys.getIamPolicy` permission on the specified TagKey.
 
       Args:
         request: (CloudresourcemanagerTagKeysGetIamPolicyRequest) input message
@@ -1213,7 +1213,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on a TagKey, replacing any existing policy. The `resource` field should be the TagKey's resource name, e.g. "tagKeys/1234". The caller must have `resourcemanager.tagKeys.setIamPolicy` permission on the identified tagValue.
+      r"""Sets the access control policy on a TagKey, replacing any existing policy. The `resource` field should be the TagKey's resource name. For example, "tagKeys/1234". The caller must have `resourcemanager.tagKeys.setIamPolicy` permission on the identified tagValue.
 
       Args:
         request: (CloudresourcemanagerTagKeysSetIamPolicyRequest) input message
@@ -1240,7 +1240,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified TagKey. The `resource` field should be the TagKey's resource name, e.g. "tagKeys/1234". There are no permissions required for making this API call.
+      r"""Returns permissions that a caller has on the specified TagKey. The `resource` field should be the TagKey's resource name. For example, "tagKeys/1234". There are no permissions required for making this API call.
 
       Args:
         request: (CloudresourcemanagerTagKeysTestIamPermissionsRequest) input message
@@ -1330,7 +1330,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves TagValue. This method will return PERMISSION_DENIED if the TagValue or namespaced name does not exist or the user does not have permission to view it.
+      r"""Retrieves TagValue. If the TagValue or namespaced name does not exist, or if the user does not have permission to view it, this method will return `PERMISSION_DENIED`.
 
       Args:
         request: (CloudresourcemanagerTagValuesGetRequest) input message
@@ -1357,7 +1357,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a TagValue. The returned policy may be empty if no such policy or resource exists. The `resource` field should be the TagValue's resource name, e.g. "tagValues/1234". The caller must have `cloudresourcemanager.googleapis.com/tagValues.getIamPolicy` permission on the identified tagValue.
+      r"""Gets the access control policy for a TagValue. The returned policy may be empty if no such policy or resource exists. The `resource` field should be the TagValue's resource name. For example: `tagValues/1234`. The caller must have the `cloudresourcemanager.googleapis.com/tagValues.getIamPolicy` permission on the identified TagValue to get the access control policy.
 
       Args:
         request: (CloudresourcemanagerTagValuesGetIamPolicyRequest) input message
@@ -1437,7 +1437,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on a TagValue, replacing any existing policy. The `resource` field should be the TagValue's resource name, e.g. "tagValues/1234". The caller must have `resourcemanager.tagValues.setIamPolicy` permission on the identified tagValue.
+      r"""Sets the access control policy on a TagValue, replacing any existing policy. The `resource` field should be the TagValue's resource name. For example: `tagValues/1234`. The caller must have `resourcemanager.tagValues.setIamPolicy` permission on the identified tagValue.
 
       Args:
         request: (CloudresourcemanagerTagValuesSetIamPolicyRequest) input message
@@ -1464,7 +1464,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified TagValue. The `resource` field should be the TagValue's resource name, e.g. "tagValues/1234". There are no permissions required for making this API call.
+      r"""Returns permissions that a caller has on the specified TagValue. The `resource` field should be the TagValue's resource name. For example: `tagValues/1234`. There are no permissions required for making this API call.
 
       Args:
         request: (CloudresourcemanagerTagValuesTestIamPermissionsRequest) input message

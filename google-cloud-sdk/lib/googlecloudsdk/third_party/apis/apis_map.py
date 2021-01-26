@@ -1000,6 +1000,24 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'essentialcontacts': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.essentialcontacts.v1alpha1',
+                client_classpath='essentialcontacts_v1alpha1_client.EssentialcontactsV1alpha1',
+                messages_modulepath='essentialcontacts_v1alpha1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.essentialcontacts.v1beta1',
+                client_classpath='essentialcontacts_v1beta1_client.EssentialcontactsV1beta1',
+                messages_modulepath='essentialcontacts_v1beta1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'eventarc': {
         'v1':
             APIDef(
@@ -1349,7 +1367,7 @@ MAP = {
                 client_classpath='logging_v2_client.LoggingV2',
                 messages_modulepath='logging_v2_messages',
                 default_version=True,
-                enable_mtls=False,
+                enable_mtls=True,
                 mtls_endpoint_override=''),
     },
     'managedidentities': {
@@ -1384,7 +1402,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.memcache.v1',
                 client_classpath='memcache_v1_client.MemcacheV1',
                 messages_modulepath='memcache_v1_messages',
-                default_version=False,
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
         'v1beta2':
@@ -1392,7 +1410,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.memcache.v1beta2',
                 client_classpath='memcache_v1beta2_client.MemcacheV1beta2',
                 messages_modulepath='memcache_v1beta2_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

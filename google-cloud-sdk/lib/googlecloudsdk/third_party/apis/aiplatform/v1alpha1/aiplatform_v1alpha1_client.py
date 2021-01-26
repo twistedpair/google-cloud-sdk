@@ -15,7 +15,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
   MTLS_BASE_URL = 'https://aiplatform.mtls.googleapis.com/'
 
   _PACKAGE = 'aiplatform'
-  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only']
   _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
@@ -5171,6 +5171,168 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a TensorboardTimeSeries.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1TensorboardTimeSeries) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['tensorboardTimeSeriesId'],
+        relative_path='v1alpha1/{+parent}/timeSeries',
+        request_field='googleCloudAiplatformV1alpha1TensorboardTimeSeries',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1TensorboardTimeSeries',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a TensorboardTimeSeries.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a TensorboardTimeSeries.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1TensorboardTimeSeries) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesGetRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1TensorboardTimeSeries',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists TensorboardTimeSeries in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1ListTensorboardTimeSeriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'readMask'],
+        relative_path='v1alpha1/{+parent}/timeSeries',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesListRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1ListTensorboardTimeSeriesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a TensorboardTimeSeries.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1TensorboardTimeSeries) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='googleCloudAiplatformV1alpha1TensorboardTimeSeries',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1TensorboardTimeSeries',
+        supports_download=False,
+    )
+
+    def Read(self, request, global_params=None):
+      r"""Reads a TensorboardTimeSeries' data. Data is returned in paginated responses. By default, if the number of data points stored is less than 1000, all data will be returned. Otherwise, 1000 data points will be randomly selected from this time series and returned. This value can be changed by changing max_data_points.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1ReadTensorboardTimeSeriesDataResponse) The response message.
+      """
+      config = self.GetMethodConfig('Read')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Read.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}:read',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.read',
+        ordered_params=['tensorboardTimeSeries'],
+        path_params=['tensorboardTimeSeries'],
+        query_params=['filter', 'maxDataPoints'],
+        relative_path='v1alpha1/{+tensorboardTimeSeries}:read',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1ReadTensorboardTimeSeriesDataResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsTensorboardsExperimentsRunsService(base_api.BaseApiService):
     """Service class for the projects_locations_tensorboards_experiments_runs resource."""
 
@@ -5181,6 +5343,168 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a TensorboardRun.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1TensorboardRun) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['tensorboardRunId'],
+        relative_path='v1alpha1/{+parent}/runs',
+        request_field='googleCloudAiplatformV1alpha1TensorboardRun',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1TensorboardRun',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a TensorboardRun.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a TensorboardRun.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1TensorboardRun) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1TensorboardRun',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists TensorboardRuns in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1ListTensorboardRunsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'readMask'],
+        relative_path='v1alpha1/{+parent}/runs',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsListRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1ListTensorboardRunsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a TensorboardRun.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1TensorboardRun) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='googleCloudAiplatformV1alpha1TensorboardRun',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1TensorboardRun',
+        supports_download=False,
+    )
+
+    def Write(self, request, global_params=None):
+      r"""Write time series data points into multiple TensorboardTimeSeries under a TensorboardRun. If any data fail to be ingested, an error will be returned.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsWriteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1WriteTensorboardRunDataResponse) The response message.
+      """
+      config = self.GetMethodConfig('Write')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Write.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}:write',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.write',
+        ordered_params=['tensorboardRun'],
+        path_params=['tensorboardRun'],
+        query_params=[],
+        relative_path='v1alpha1/{+tensorboardRun}:write',
+        request_field='googleCloudAiplatformV1alpha1WriteTensorboardRunDataRequest',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsWriteRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1WriteTensorboardRunDataResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsTensorboardsExperimentsService(base_api.BaseApiService):
     """Service class for the projects_locations_tensorboards_experiments resource."""
 
@@ -5190,6 +5514,141 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
       super(AiplatformV1alpha1.ProjectsLocationsTensorboardsExperimentsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a TensorboardExperiment.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1TensorboardExperiment) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['tensorboardExperimentId'],
+        relative_path='v1alpha1/{+parent}/experiments',
+        request_field='googleCloudAiplatformV1alpha1TensorboardExperiment',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1TensorboardExperiment',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a TensorboardExperiment.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a TensorboardExperiment.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1TensorboardExperiment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1TensorboardExperiment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists TensorboardExperiments in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1ListTensorboardExperimentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'readMask'],
+        relative_path='v1alpha1/{+parent}/experiments',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsListRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1ListTensorboardExperimentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a TensorboardExperiment.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1TensorboardExperiment) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='googleCloudAiplatformV1alpha1TensorboardExperiment',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1TensorboardExperiment',
+        supports_download=False,
+    )
 
   class ProjectsLocationsTensorboardsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_tensorboards_operations resource."""
@@ -5345,6 +5804,141 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
       super(AiplatformV1alpha1.ProjectsLocationsTensorboardsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Tensorboard.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tensorboards.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha1/{+parent}/tensorboards',
+        request_field='googleCloudAiplatformV1alpha1Tensorboard',
+        request_type_name='AiplatformProjectsLocationsTensorboardsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Tensorboard.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.tensorboards.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a Tensorboard.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1Tensorboard) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tensorboards.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1Tensorboard',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Tensorboards in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1ListTensorboardsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tensorboards.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'readMask'],
+        relative_path='v1alpha1/{+parent}/tensorboards',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsListRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1ListTensorboardsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a Tensorboard.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.tensorboards.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='googleCloudAiplatformV1alpha1Tensorboard',
+        request_type_name='AiplatformProjectsLocationsTensorboardsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsTrainingPipelinesOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_trainingPipelines_operations resource."""

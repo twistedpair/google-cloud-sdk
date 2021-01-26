@@ -50,11 +50,17 @@ def WarnIfSettingNonExistentRegionZone(prop, zonal=True):
   list_implementation = lister.GlobalLister(
       client, client.apitools_client.zones if zonal
       else client.apitools_client.regions)
-
-  response = lister.Invoke(request_data, list_implementation)
-  zones = [i['name'] for i in list(response)]
-  if prop not in zones:
-    log.warning(zonal_msg if zonal else regional_msg)
+  try:
+    response = lister.Invoke(request_data, list_implementation)
+    zones = [i['name'] for i in list(response)]
+    if prop not in zones:
+      log.warning(zonal_msg if zonal else regional_msg)
+  except (lister.ListException,
+          apitools_exceptions.HttpError,
+          c_store.NoCredentialsForAccountException,
+          api_lib_util_exceptions.HttpException):
+    log.warning('Property validation for compute/{} was skipped.'.format(
+        'zone' if zonal else 'region'))
 
 
 def WarnIfSettingProjectWithNoAccess(scope, project):
