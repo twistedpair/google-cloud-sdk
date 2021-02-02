@@ -481,18 +481,24 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_TENSORBOARDS = (
       'projects.locations.tensorboards',
-      'projects/{projectsId}/locations/{locationsId}/tensorboards/'
-      '{tensorboardsId}',
-      {},
-      ['projectsId', 'locationsId', 'tensorboardsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/tensorboards/'
+              '{tensorboardsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_TENSORBOARDS_EXPERIMENTS = (
       'projects.locations.tensorboards.experiments',
-      'projects/{projectsId}/locations/{locationsId}/tensorboards/'
-      '{tensorboardsId}/experiments/{experimentsId}',
-      {},
-      ['projectsId', 'locationsId', 'tensorboardsId', 'experimentsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/tensorboards/'
+              '{tensorboardsId}/experiments/{experimentsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_TENSORBOARDS_EXPERIMENTS_OPERATIONS = (
@@ -509,10 +515,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_TENSORBOARDS_EXPERIMENTS_RUNS = (
       'projects.locations.tensorboards.experiments.runs',
-      'projects/{projectsId}/locations/{locationsId}/tensorboards/'
-      '{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}',
-      {},
-      ['projectsId', 'locationsId', 'tensorboardsId', 'experimentsId', 'runsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/tensorboards/'
+              '{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_TENSORBOARDS_EXPERIMENTS_RUNS_OPERATIONS = (
@@ -529,11 +538,14 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_TENSORBOARDS_EXPERIMENTS_RUNS_TIMESERIES = (
       'projects.locations.tensorboards.experiments.runs.timeSeries',
-      'projects/{projectsId}/locations/{locationsId}/tensorboards/'
-      '{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/'
-      '{timeSeriesId}',
-      {},
-      ['projectsId', 'locationsId', 'tensorboardsId', 'experimentsId', 'runsId', 'timeSeriesId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/tensorboards/'
+              '{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/'
+              'timeSeries/{timeSeriesId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_TENSORBOARDS_EXPERIMENTS_RUNS_TIMESERIES_OPERATIONS = (

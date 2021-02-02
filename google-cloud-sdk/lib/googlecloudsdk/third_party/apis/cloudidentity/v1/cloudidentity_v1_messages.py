@@ -855,6 +855,81 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
+class DynamicGroupMetadata(_messages.Message):
+  r"""Dynamic group metadata like queries and status.
+
+  Fields:
+    queries: Memberships will be the union of all queries. Only one entry with
+      USER resource is currently supported. Customers can create up to 100
+      dynamic groups.
+    status: Output only. Status of the dynamic group.
+  """
+
+  queries = _messages.MessageField('DynamicGroupQuery', 1, repeated=True)
+  status = _messages.MessageField('DynamicGroupStatus', 2)
+
+
+class DynamicGroupQuery(_messages.Message):
+  r"""Defines a query on a resource.
+
+  Enums:
+    ResourceTypeValueValuesEnum: Resource type for the Dynamic Group Query
+
+  Fields:
+    query: Query that determines the memberships of the dynamic group.
+      Examples: All users with at least one `organizations.department` of
+      engineering. `user.organizations.exists(org,
+      org.department=='engineering')` All users with at least one location
+      that has `area` of `foo` and `building_id` of `bar`.
+      `user.locations.exists(loc, loc.area=='foo' && loc.building_id=='bar')`
+    resourceType: Resource type for the Dynamic Group Query
+  """
+
+  class ResourceTypeValueValuesEnum(_messages.Enum):
+    r"""Resource type for the Dynamic Group Query
+
+    Values:
+      RESOURCE_TYPE_UNSPECIFIED: Default value (not valid)
+      USER: For queries on User
+    """
+    RESOURCE_TYPE_UNSPECIFIED = 0
+    USER = 1
+
+  query = _messages.StringField(1)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
+
+
+class DynamicGroupStatus(_messages.Message):
+  r"""The current status of a dynamic group along with timestamp.
+
+  Enums:
+    StatusValueValuesEnum: Status of the dynamic group.
+
+  Fields:
+    status: Status of the dynamic group.
+    statusTime: The latest time at which the dynamic group is guaranteed to be
+      in the given status. If status is `UP_TO_DATE`, the latest time at which
+      the dynamic group was confirmed to be up-to-date. If status is
+      `UPDATING_MEMBERSHIPS`, the time at which dynamic group was created.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Status of the dynamic group.
+
+    Values:
+      STATUS_UNSPECIFIED: Default.
+      UP_TO_DATE: The dynamic group is up-to-date.
+      UPDATING_MEMBERSHIPS: The dynamic group has just been created and
+        memberships are being updated.
+    """
+    STATUS_UNSPECIFIED = 0
+    UP_TO_DATE = 1
+    UPDATING_MEMBERSHIPS = 2
+
+  status = _messages.EnumField('StatusValueValuesEnum', 1)
+  statusTime = _messages.StringField(2)
+
+
 class EntityKey(_messages.Message):
   r"""A unique identifier for an entity in the Cloud Identity Groups API. An
   entity can represent either a group with an optional `namespace` or a user
@@ -876,6 +951,16 @@ class EntityKey(_messages.Message):
 
   id = _messages.StringField(1)
   namespace = _messages.StringField(2)
+
+
+class ExpiryDetail(_messages.Message):
+  r"""The `MembershipRole` expiry details.
+
+  Fields:
+    expireTime: The time at which the `MembershipRole` will expire.
+  """
+
+  expireTime = _messages.StringField(1)
 
 
 class GetMembershipGraphResponse(_messages.Message):
@@ -1611,6 +1696,8 @@ class Group(_messages.Message):
     description: An extended description to help users determine the purpose
       of a `Group`. Must not be longer than 4,096 characters.
     displayName: The display name of the `Group`.
+    dynamicGroupMetadata: Optional. Dynamic group metadata like queries and
+      status.
     groupKey: Required. Immutable. The `EntityKey` of the `Group`.
     labels: Required. One or more label entries that apply to the Group.
       Currently supported labels contain a key with an empty value. Google
@@ -1674,11 +1761,12 @@ class Group(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
-  groupKey = _messages.MessageField('EntityKey', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  parent = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  dynamicGroupMetadata = _messages.MessageField('DynamicGroupMetadata', 4)
+  groupKey = _messages.MessageField('EntityKey', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  parent = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class GroupRelation(_messages.Message):
@@ -1907,11 +1995,15 @@ class MembershipRole(_messages.Message):
   `MembershipRole` defines the privileges granted to a `Membership`.
 
   Fields:
+    expiryDetail: The expiry details of the `MembershipRole`. Expiry details
+      are only supported for `MEMBER` `MembershipRoles`. May be set if `name`
+      is `MEMBER`. Must not be set if `name` is any other value.
     name: The name of the `MembershipRole`. Must be one of `OWNER`, `MANAGER`,
       `MEMBER`.
   """
 
-  name = _messages.StringField(1)
+  expiryDetail = _messages.MessageField('ExpiryDetail', 1)
+  name = _messages.StringField(2)
 
 
 class ModifyMembershipRolesRequest(_messages.Message):
@@ -1927,10 +2019,14 @@ class ModifyMembershipRolesRequest(_messages.Message):
       to delete a `Membership`, call MembershipsService.DeleteMembership
       instead. Must not contain `MEMBER`. Must not be set if
       `update_roles_params` is set.
+    updateRolesParams: The `MembershipRole`s to be updated. Updating roles in
+      the same request as adding or removing roles is not supported. Must not
+      be set if either `add_roles` or `remove_roles` is set.
   """
 
   addRoles = _messages.MessageField('MembershipRole', 1, repeated=True)
   removeRoles = _messages.StringField(2, repeated=True)
+  updateRolesParams = _messages.MessageField('UpdateMembershipRolesParams', 3, repeated=True)
 
 
 class ModifyMembershipRolesResponse(_messages.Message):
@@ -2214,6 +2310,59 @@ class TransitiveMembershipRole(_messages.Message):
   """
 
   role = _messages.StringField(1)
+
+
+class UpdateMembershipRolesParams(_messages.Message):
+  r"""The details of an update to a `MembershipRole`.
+
+  Fields:
+    fieldMask: The fully-qualified names of fields to update. May only contain
+      the field `expiry_detail`.
+    membershipRole: The `MembershipRole`s to be updated. Only `MEMBER`
+      `MembershipRole` can currently be updated.
+  """
+
+  fieldMask = _messages.StringField(1)
+  membershipRole = _messages.MessageField('MembershipRole', 2)
+
+
+class UserInvitation(_messages.Message):
+  r"""UserInvitation to join a Google Workspace organization.
+
+  Enums:
+    StateValueValuesEnum: State of the `UserInvitation`.
+
+  Fields:
+    mailsSentCount: Number of invitation emails sent to the user.
+    name: Shall be of the form
+      `customers/{customer}/userinvitations/{user_email_address}`
+    state: State of the `UserInvitation`.
+    updateTime: Time when the `UserInvitation` was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the `UserInvitation`.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        omitted.
+      NOT_YET_SENT: The `UserInvitation` has been created and is ready for
+        sending as an email.
+      INVITED: The user has been invited by email.
+      ACCEPTED: The user has accepted the invitation and is part of the
+        organization.
+      DECLINED: The user declined the invitation.
+    """
+    STATE_UNSPECIFIED = 0
+    NOT_YET_SENT = 1
+    INVITED = 2
+    ACCEPTED = 3
+    DECLINED = 4
+
+  mailsSentCount = _messages.IntegerField(1)
+  name = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  updateTime = _messages.StringField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -28,6 +28,7 @@ from __future__ import unicode_literals
 import json
 
 from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import http_wrapper as apitools_http_wrapper
 from apitools.base.py import list_pager
 from apitools.base.py import transfer as apitools_transfer
 
@@ -38,20 +39,21 @@ from googlecloudsdk.api_lib.storage import errors as cloud_errors
 from googlecloudsdk.api_lib.storage import patch_gcs_messages
 # pylint: enable=unused-import
 from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.calliope import exceptions as calliope_errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests
 from googlecloudsdk.core.credentials import transports
+from googlecloudsdk.core.util import retry
 
+import oauth2client
 
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 MAX_READ_SIZE = 8 * 1024  # 8 KiB.
-# The API limits the number of objects that can be composed in a single call.
-# https://cloud.google.com/storage/docs/json_api/v1/objects/compose
-MAX_OBJECTS_PER_COMPOSE_CALL = 32
 
 
 def _catch_http_error_raise_gcs_api_error(format_str=None):
@@ -209,6 +211,10 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
 class GcsApi(cloud_api.CloudApi):
   """Client for Google Cloud Storage API."""
 
+  # The API limits the number of objects that can be composed in a single call.
+  # https://cloud.google.com/storage/docs/json_api/v1/objects/compose
+  MAX_OBJECTS_PER_COMPOSE_CALL = 32
+
   def __init__(self):
     self.client = core_apis.GetClientInstance('storage', 'v1')
     self.messages = core_apis.GetMessagesModule('storage', 'v1')
@@ -360,14 +366,14 @@ class GcsApi(cloud_api.CloudApi):
       request_config = GcsRequestConfig()
 
     # S3 requires a string, but GCS uses an int for generation.
-    if object_resource.generation is not None:
-      generation = int(object_resource.generation)
+    if object_resource.storage_url.generation is not None:
+      generation = int(object_resource.storage_url.generation)
     else:
       generation = None
 
     request = self.messages.StorageObjectsDeleteRequest(
-        bucket=object_resource.bucket,
-        object=object_resource.name,
+        bucket=object_resource.storage_url.bucket_name,
+        object=object_resource.storage_url.object_name,
         generation=generation,
         ifGenerationMatch=request_config.precondition_generation_match,
         ifMetagenerationMatch=request_config.precondition_metageneration_match)
@@ -539,7 +545,63 @@ class GcsApi(cloud_api.CloudApi):
           use_chunks=False)
     return apitools_download.encoding
 
-  # pylint: disable=unused-argument
+  def _download_object_resumable(self,
+                                 cloud_resource,
+                                 download_stream,
+                                 apitools_download,
+                                 apitools_request,
+                                 compressed_encoding=False,
+                                 decryption_wrapper=None,
+                                 generation=None,
+                                 serialization_data=None,
+                                 start_byte=0,
+                                 end_byte=None):
+    """Wraps _download_object to make it retriable."""
+    # Hack because nonlocal keyword causes Python 2 syntax error.
+    progress_state = {'last_byte_processed': start_byte}
+
+    def _should_retry_resumable_download(exc_type, exc_value, exc_traceback,
+                                         state):
+      converted_error, _ = calliope_errors.ConvertKnownError(exc_value)
+      if isinstance(exc_value, oauth2client.client.HttpAccessTokenRefreshError):
+        if exc_value.status < 500 and exc_value.status != 429:
+          # Not server error or too many requests error.
+          return False
+      elif not isinstance(converted_error, core_exceptions.NetworkIssueError):
+        # Not known transient network error.
+        return False
+
+      start_byte = download_stream.tell()
+      if start_byte > progress_state['last_byte_processed']:
+        # We've made progress, so allow a fresh set of retries.
+        progress_state['last_byte_processed'] = start_byte
+        state.retrial = 0
+      log.debug('Retrying download from byte {} after exception: {}.'
+                ' Trace: {}'.format(start_byte, exc_type, exc_traceback))
+
+      apitools_http_wrapper.RebuildHttpConnections(apitools_download.bytes_http)
+      return True
+
+    def _call_download_object():
+      return self._download_object(
+          cloud_resource,
+          download_stream,
+          apitools_download,
+          apitools_request,
+          compressed_encoding=compressed_encoding,
+          decryption_wrapper=decryption_wrapper,
+          generation=generation,
+          serialization_data=serialization_data,
+          start_byte=start_byte,
+          end_byte=end_byte)
+
+    return retry.RetryOnException(
+        _call_download_object,
+        max_retrials=properties.VALUES.storage.max_retries.GetInt(),
+        # Convert seconds to miliseconds.
+        max_wait_ms=properties.VALUES.storage.max_retry_delay.GetInt() * 1000,
+        should_retry_if=_should_retry_resumable_download)()
+
   @_catch_http_error_raise_gcs_api_error()
   def download_object(self,
                       cloud_resource,
@@ -547,7 +609,7 @@ class GcsApi(cloud_api.CloudApi):
                       compressed_encoding=False,
                       decryption_wrapper=None,
                       digesters=None,
-                      download_strategy=cloud_api.DownloadStrategy.ONE_SHOT,
+                      download_strategy=cloud_api.DownloadStrategy.RESUMABLE,
                       progress_callback=None,
                       serialization_data=None,
                       start_byte=0,
@@ -557,20 +619,23 @@ class GcsApi(cloud_api.CloudApi):
     generation = (
         int(cloud_resource.generation) if cloud_resource.generation else None)
 
+    download_stream_handler = _StorageStreamResponseHandler(download_stream)
+    apitools_requests_http_client = transports.GetApitoolsTransport(
+        response_encoding=None, response_handler=download_stream_handler)
     if not serialization_data:
       # New download.
       apitools_download = apitools_transfer.Download.FromStream(
           download_stream,
           auto_transfer=False,
           total_size=cloud_resource.size,
-          num_retries=properties.VALUES.storage.number_retries.GetInt())
-      download_stream_handler = _StorageStreamResponseHandler(download_stream)
-      apitools_requests_http_client = transports.GetApitoolsTransport(
-          response_encoding=None, response_handler=download_stream_handler)
-      apitools_download.bytes_http = apitools_requests_http_client
+          num_retries=properties.VALUES.storage.max_retries.GetInt())
     else:
-      # TODO(b/161437901): Handle resumed download.
-      pass
+      apitools_download = apitools_transfer.Download.FromData(
+          download_stream,
+          serialization_data,
+          num_retries=properties.VALUES.storage.max_retries.GetInt())
+
+    apitools_download.bytes_http = apitools_requests_http_client
 
     # TODO(b/161460749) Handle download retries.
     request = self.messages.StorageObjectsGetRequest(
@@ -591,8 +656,17 @@ class GcsApi(cloud_api.CloudApi):
           start_byte=start_byte,
           end_byte=end_byte)
     else:
-      # TODO(b/161437901): Handle resumable download.
-      pass
+      return self._download_object_resumable(
+          cloud_resource,
+          download_stream,
+          apitools_download,
+          request,
+          compressed_encoding=compressed_encoding,
+          decryption_wrapper=decryption_wrapper,
+          generation=generation,
+          serialization_data=serialization_data,
+          start_byte=start_byte,
+          end_byte=end_byte)
 
   # pylint: disable=unused-argument
   def _upload_object(self,
@@ -654,7 +728,7 @@ class GcsApi(cloud_api.CloudApi):
           auto_transfer=True,
           chunksize=properties.VALUES.storage.chunk_size.GetInt(),
           gzip_encoded=request_config.gzip_encoded,
-          num_retries=properties.VALUES.storage.number_retries.GetInt(),
+          num_retries=properties.VALUES.storage.max_retries.GetInt(),
           total_size=request_config.size)
 
       result_object_metadata = self.client.objects.Insert(
@@ -706,10 +780,10 @@ class GcsApi(cloud_api.CloudApi):
       raise cloud_errors.GcsApiError(
           'Compose requires at least one component object.')
 
-    if len(source_resources) > MAX_OBJECTS_PER_COMPOSE_CALL:
+    if len(source_resources) > self.MAX_OBJECTS_PER_COMPOSE_CALL:
       raise cloud_errors.GcsApiError(
           'Compose was called with {} objects. The limit is {}.'.format(
-              len(source_resources), MAX_OBJECTS_PER_COMPOSE_CALL))
+              len(source_resources), self.MAX_OBJECTS_PER_COMPOSE_CALL))
 
     validated_request_config = cloud_api.get_provider_request_config(
         request_config, GcsRequestConfig)

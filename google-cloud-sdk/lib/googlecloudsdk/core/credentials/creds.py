@@ -22,25 +22,26 @@ from __future__ import unicode_literals
 import abc
 import base64
 import copy
+import datetime
 import enum
 import hashlib
 import json
 import os
 
+from google.auth import compute_engine as google_auth_compute_engine
+from google.auth import credentials as google_auth_creds
+from google.auth import impersonated_credentials as google_auth_impersonated
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.util import files
-
 from oauth2client import client
 from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
 import six
 import sqlite3
-from google.auth import compute_engine as google_auth_compute_engine
-from google.auth import credentials as google_auth_creds
 
 ADC_QUOTA_PROJECT_FIELD_NAME = 'quota_project_id'
 
@@ -52,6 +53,7 @@ SERVICE_ACCOUNT_CREDS_NAME = 'service_account'
 P12_SERVICE_ACCOUNT_CREDS_NAME = 'service_account_p12'
 DEVSHELL_CREDS_NAME = 'devshell'
 GCE_CREDS_NAME = 'gce'
+IMPERSONATED_ACCOUNT_CREDS_NAME = 'impersonated_account'
 
 
 class Error(exceptions.Error):
@@ -672,9 +674,10 @@ class CredentialTypeGoogleAuth(enum.Enum):
   UNKNOWN = (0, UNKNOWN_CREDS_NAME, False, False)
   USER_ACCOUNT = (1, USER_ACCOUNT_CREDS_NAME, True, True)
   SERVICE_ACCOUNT = (2, SERVICE_ACCOUNT_CREDS_NAME, True, False)
-  P12_SERVICE_ACCOUNT = (3, P12_SERVICE_ACCOUNT_CREDS_NAME, True, False)
-  DEVSHELL = (4, DEVSHELL_CREDS_NAME, False, True)
-  GCE = (5, GCE_CREDS_NAME, False, False)
+  P12_SERVICE_ACCOUNT = (3, P12_SERVICE_ACCOUNT_CREDS_NAME, False, False)
+  DEVSHELL = (4, DEVSHELL_CREDS_NAME, True, True)
+  GCE = (5, GCE_CREDS_NAME, True, False)
+  IMPERSONATED_ACCOUNT = (6, IMPERSONATED_ACCOUNT_CREDS_NAME, True, False)
 
   def __init__(self, type_id, key, is_serializable, is_user):
     """Builds a credentials type instance given the credentials information.
@@ -716,6 +719,8 @@ class CredentialTypeGoogleAuth(enum.Enum):
       return CredentialTypeGoogleAuth.DEVSHELL
     if isinstance(creds, google_auth_compute_engine.Credentials):
       return CredentialTypeGoogleAuth.GCE
+    if isinstance(creds, google_auth_impersonated.Credentials):
+      return CredentialTypeGoogleAuth.IMPERSONATED_ACCOUNT
     # Import only when necessary to decrease the startup time. Move it to
     # global once google-auth is ready to replace oauth2client.
     # pylint: disable=g-import-not-at-top
@@ -803,6 +808,82 @@ def ToJsonGoogleAuth(credentials):
             creds_type.key))
   return json.dumps(
       creds_dict, sort_keys=True, indent=2, separators=(',', ': '))
+
+
+def SerializeCredsGoogleAuth(credentials):
+  """Given google-auth credentials, return serialized json string.
+
+  This method is added because google-auth credentials are not serializable
+  natively.
+
+  Args:
+    credentials: google-auth credential object.
+
+  Returns:
+    Json string representation of the credential.
+  """
+  creds_dict = ToDictGoogleAuth(credentials)
+  return json.dumps(
+      creds_dict, sort_keys=True, indent=2, separators=(',', ': '))
+
+
+def ToDictGoogleAuth(credentials):
+  """Given google-auth credentials, recursively return dict representation.
+
+  This method is added because google-auth credentials are not serializable
+  natively.
+
+  Args:
+    credentials: google-auth credential object.
+
+  Returns:
+    Dict representation of the credential.
+
+  Raises:
+    UnknownCredentialsType: An error for when we fail to determine the type
+    of the credentials.
+  """
+  creds_type = CredentialTypeGoogleAuth.FromCredentials(credentials)
+
+  if not creds_type.is_serializable:
+    raise UnknownCredentialsType(
+        'Google auth does not support serialization of {} credentials.'.format(
+            creds_type.key))
+
+  creds_dict = {'type': creds_type.key}
+  # Serializing all attributes found on the credential object. Since
+  # credentials generated in different scenarios contain different attributes,
+  # no predefined attribute lists are used. Do not include `signer` as it is a
+  # repeated field. Do not include class attributes that start with `__`.
+  # Do not include `_abc_negative_cache_version` as this attribute is
+  # irrelevant to the credentials.
+  filtered_list = [attr for attr in dir(credentials)
+                   if not attr.startswith('__') and
+                   attr not in ['signer', '_abc_negative_cache_version']]
+  # Include protected attributes that do not have a corresponding non-protected
+  # attribute.
+  attr_list = [attr for attr in filtered_list
+               if not attr.startswith('_') or attr[1:] not in filtered_list]
+  attr_list = sorted(attr_list)
+  for attr in attr_list:
+    if hasattr(credentials, attr):
+      val = getattr(credentials, attr)
+      val_type = type(val)
+      if val_type == datetime.datetime:
+        val = val.strftime('%m-%d-%Y %H:%M:%S')
+      # Nested credential object
+      elif issubclass(val_type, google_auth_creds.Credentials):
+        try:
+          val = ToDictGoogleAuth(val)
+        except UnknownCredentialsType:
+          continue
+      # Allow only primitive types and list/dict/tuple for json dump input.
+      elif (val is not None and not isinstance(val, six.string_types) and
+            val_type not in (int, float, bool, str, list, dict, tuple)):
+        continue
+      creds_dict[attr] = val
+
+  return creds_dict
 
 
 def FromJson(json_value):

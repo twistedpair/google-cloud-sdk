@@ -1419,6 +1419,12 @@ class SCPCommand(object):
     if self.compress:
       args.append('-C')
 
+    if env.suite is Suite.PUTTY and self.port is None:
+      # TODO(b/178487155) - This addresses a regression in pscp.exe 0.74 in
+      # which the port defaults to 0. It's fixed in the latest dev builds so we
+      # can remove this special handling once 0.75 is released and we bundle
+      # that version.
+      args.extend(['-P', '22'])
     if self.port:
       args.extend(['-P', self.port])
 

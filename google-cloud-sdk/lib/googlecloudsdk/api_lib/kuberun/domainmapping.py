@@ -18,7 +18,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.kuberun import kubernetesobject
-from googlecloudsdk.api_lib.kuberun import mapobject
+from googlecloudsdk.api_lib.kuberun import structuredout
 
 
 class DomainMapping(kubernetesobject.KubernetesObject):
@@ -36,7 +36,7 @@ class DomainMapping(kubernetesobject.KubernetesObject):
     ]
 
 
-class ResourceRecord(mapobject.MapObject):
+class ResourceRecord(structuredout.MapObject):
   """Wraps JSON-based dict object of a resource record of a domain mapping."""
 
   @property

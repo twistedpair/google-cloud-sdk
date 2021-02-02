@@ -21,23 +21,31 @@ from __future__ import unicode_literals
 import uuid
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
 import six
 
-_DEFAULT_API_VERSION = 'v1alpha2'
+
+def GetApiVersion(release_track):
+  """Returns the API version based on the release track."""
+  if release_track == base.ReleaseTrack.ALPHA:
+    return 'v1alpha2'
+  return 'v1'
 
 
-def GetClientInstance(api_version=_DEFAULT_API_VERSION, no_http=False):
-  return apis.GetClientInstance('datamigration', api_version, no_http=no_http)
+def GetClientInstance(release_track, no_http=False):
+  return apis.GetClientInstance('datamigration', GetApiVersion(release_track),
+                                no_http=no_http)
 
 
-def GetMessagesModule(api_version=_DEFAULT_API_VERSION):
-  return apis.GetMessagesModule('datamigration', api_version)
+def GetMessagesModule(release_track):
+  return apis.GetMessagesModule('datamigration', GetApiVersion(release_track))
 
 
-def GetResourceParser(api_version=_DEFAULT_API_VERSION):
+def GetResourceParser(release_track):
   resource_parser = resources.Registry()
-  resource_parser.RegisterApiByName('datamigration', api_version)
+  resource_parser.RegisterApiByName('datamigration',
+                                    GetApiVersion(release_track))
   return resource_parser
 
 

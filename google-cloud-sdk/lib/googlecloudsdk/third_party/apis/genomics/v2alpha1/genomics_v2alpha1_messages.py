@@ -345,6 +345,7 @@ class CheckInResponse(_messages.Message):
   r"""The response to the CheckIn method.
 
   Messages:
+    FeaturesValue: Feature configuration for the operation.
     MetadataValue: The metadata that describes the operation assigned to the
       worker.
 
@@ -353,9 +354,35 @@ class CheckInResponse(_messages.Message):
       backend will allow for network transmission time and other delays, but
       the worker must attempt to transmit the extension request no later than
       the deadline.
+    features: Feature configuration for the operation.
     metadata: The metadata that describes the operation assigned to the
       worker.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FeaturesValue(_messages.Message):
+    r"""Feature configuration for the operation.
+
+    Messages:
+      AdditionalProperty: An additional property for a FeaturesValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FeaturesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
@@ -383,7 +410,8 @@ class CheckInResponse(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   deadline = _messages.StringField(1)
-  metadata = _messages.MessageField('MetadataValue', 2)
+  features = _messages.MessageField('FeaturesValue', 2)
+  metadata = _messages.MessageField('MetadataValue', 3)
 
 
 class ComputeEngine(_messages.Message):

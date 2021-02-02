@@ -760,8 +760,16 @@ used for production workloads."""
       '--enable-kubernetes-alpha', action='store_true', help=help_text)
 
 
+def _AddLegacyCloudRunFlag(parser, flag, **kwargs):
+  """Adds a flag with the new and old product name for KubeRun."""
+  new_kwargs = kwargs.copy()
+  new_kwargs['hidden'] = True
+  parser.add_argument(flag.format('kuberun'), **new_kwargs)
+  parser.add_argument(flag.format('cloud-run'), **kwargs)
+
+
 def AddEnableCloudRunAlphaFlag(parser):
-  """Adds a --enable-cloud-run-alpha flag to parser."""
+  """Adds the --enable-cloud-run-alpha flags to parser."""
   help_text = """\
 Enable Cloud Run alpha features on this cluster. Selecting this
 option will result in the cluster having all Cloud Run alpha API groups and
@@ -769,8 +777,8 @@ features turned on.
 
 Cloud Run alpha clusters are not covered by the Cloud Run SLA and should not be
 used for production workloads."""
-  parser.add_argument(
-      '--enable-cloud-run-alpha', action='store_true', help=help_text)
+  _AddLegacyCloudRunFlag(
+      parser, '--enable-{0}-alpha', action='store_true', help=help_text)
 
 
 def AddCloudRunConfigFlag(parser, suppressed=False):
@@ -784,14 +792,28 @@ Example:
 
   $ {command} example-cluster --cloud-run-config=load-balancer-type=INTERNAL
 """
-  parser.add_argument(
-      '--cloud-run-config',
+  _AddLegacyCloudRunFlag(
+      parser,
+      '--{0}-config',
       metavar='load-balancer-type=EXTERNAL',
       type=arg_parsers.ArgDict(spec={
           'load-balancer-type': (lambda x: x.upper()),
       }),
       help=help_text,
       hidden=suppressed)
+
+
+def GetLegacyCloudRunFlag(flag, args, get_default):
+  """Gets the value for a flag that supports cloud_run and kuberun."""
+  oldflag = flag.format('cloud_run')
+  newflag = flag.format('kuberun')
+  specified = args.GetSpecifiedArgNames()
+  oldarg = '--' + oldflag.replace('_', '-')
+  newarg = '--' + newflag.replace('_', '-')
+  if oldarg in specified and newarg in specified:
+    log.warning('{} and {} are both specified, ignoring the latter.'.format(
+        newarg, oldarg))
+  return get_default(oldflag) or get_default(newflag)
 
 
 def ValidateCloudRunConfigCreateArgs(cloud_run_config_args, addons_args):
@@ -810,13 +832,13 @@ def ValidateCloudRunConfigCreateArgs(cloud_run_config_args, addons_args):
     load_balancer_type = cloud_run_config_args.get('load-balancer-type', '')
     if load_balancer_type not in ['EXTERNAL', 'INTERNAL']:
       raise exceptions.InvalidArgumentException(
-          '--cloudrun-config',
+          '--kuberun-config',
           'load-balancer-type is either EXTERNAL or INTERNAL'
-          'e.g. --cloudrun-config load-balancer-type=EXTERNAL')
-    if 'CloudRun' not in addons_args:
+          'e.g. --kuberun-config load-balancer-type=EXTERNAL')
+    if all((v not in addons_args) for v in api_adapter.CLOUDRUN_ADDONS):
       raise exceptions.InvalidArgumentException(
-          '--cloudrun-config', '--addon=CloudRun must be specified when '
-          '--cloudrun-config is given')
+          '--kuberun-config', '--addon=KubeRun must be specified when '
+          '--kuberun-config is given')
 
 
 def ValidateCloudRunConfigUpdateArgs(cloud_run_config_args, update_addons_args):
@@ -835,14 +857,14 @@ def ValidateCloudRunConfigUpdateArgs(cloud_run_config_args, update_addons_args):
     load_balancer_type = cloud_run_config_args.get('load-balancer-type', '')
     if load_balancer_type not in ['EXTERNAL', 'INTERNAL']:
       raise exceptions.InvalidArgumentException(
-          '--cloud-run-config', 'load-balancer-type must be one of EXTERNAL or '
-          'INTERNAL e.g. --cloud-run-config load-balancer-type=EXTERNAL')
-    disable_cloud_run = update_addons_args.get('CloudRun')
-    if disable_cloud_run is None or disable_cloud_run:
+          '--kuberun-config', 'load-balancer-type must be one of EXTERNAL or '
+          'INTERNAL e.g. --kuberun-config load-balancer-type=EXTERNAL')
+    if any([(update_addons_args.get(v) or False)
+            for v in api_adapter.CLOUDRUN_ADDONS]):
       raise exceptions.InvalidArgumentException(
-          '--cloud-run-config',
-          '--update-addons=CloudRun=ENABLED must be specified '
-          'when --cloud-run-config is given')
+          '--kuberun-config',
+          '--update-addons=KubeRun=ENABLED must be specified '
+          'when --kuberun-config is given')
 
 
 def AddEnableStackdriverKubernetesFlag(parser):
@@ -2140,7 +2162,10 @@ def AddAddonsFlagsWithOptions(parser, addon_options):
   """Adds the --addons flag to the parser with the given addon options."""
   parser.add_argument(
       '--addons',
-      type=arg_parsers.ArgList(choices=addon_options),
+      type=arg_parsers.ArgList(
+          choices=(addon_options + api_adapter.CLOUDRUN_ADDONS),
+          visible_choices=(addon_options +
+                           api_adapter.VISIBLE_CLOUDRUN_ADDONS)),
       metavar='ADDON',
       help="""\
 Addons
@@ -3462,4 +3487,76 @@ Convert an cluster from autopilot mode to standard mode."""
       help=help_text,
       default=None,
       hidden=hidden,
+      action='store_true')
+
+
+def AddPrivateEndpointSubnetworkFlag(parser, hidden=True):
+  """Adds the argument to handle private endpoint subnetwork."""
+  help_text = ' '
+  parser.add_argument(
+      '--private-endpoint-subnetwork',
+      help=help_text,
+      hidden=hidden,
+      metavar='NAME')
+
+
+def AddCrossConnectSubnetworksFlag(parser, hidden=True):
+  """Adds the cross connect items to the operations."""
+  help_text = ' '
+
+  parser.add_argument(
+      '--cross-connect-subnetworks',
+      help=help_text,
+      hidden=hidden,
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='SUBNETS')
+
+
+def AddCrossConnectSubnetworkFlag(parser, hidden=True):
+  """Adds the argument for identifying the cross connect subnet."""
+  parser.add_argument(
+      '--cross-connect-subnetwork',
+      hidden=hidden,
+      help='full path of cross connect subnet whose endpoint to persist')
+
+
+def AddGetCredentialsArgs(parser):
+  """Add common arguments for `get-credentials` command."""
+  parser.add_argument(
+      'name',
+      help='Name of the cluster to get credentials for.',
+      action=actions.StoreProperty(properties.VALUES.container.cluster))
+  parser.add_argument(
+      '--internal-ip',
+      help='Whether to use the internal IP address of the cluster endpoint.',
+      action='store_true')
+
+
+def AddCrossConnectSubnetworksMutationFlags(parser, hidden=True):
+  """Adds flags for mutating cross connect subnetworks in cluster update."""
+  add_help_text = ' '
+
+  remove_help_text = ' '
+
+  clear_help_text = ' '
+
+  parser.add_argument(
+      '--add-cross-connect-subnetworks',
+      help=add_help_text,
+      hidden=hidden,
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='SUBNETS')
+
+  parser.add_argument(
+      '--remove-cross-connect-subnetworks',
+      help=remove_help_text,
+      hidden=hidden,
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='SUBNETS')
+
+  parser.add_argument(
+      '--clear-cross-connect-subnetworks',
+      help=clear_help_text,
+      hidden=hidden,
+      default=None,
       action='store_true')

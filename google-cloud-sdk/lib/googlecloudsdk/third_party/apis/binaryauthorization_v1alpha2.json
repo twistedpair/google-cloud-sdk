@@ -1101,6 +1101,35 @@
           }
         }
       }
+    },
+    "systempolicy": {
+      "methods": {
+        "getPolicy": {
+          "id": "binaryauthorization.systempolicy.getPolicy",
+          "path": "v1alpha2/{+name}",
+          "flatPath": "v1alpha2/locations/{locationsId}/policy",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The resource name, in the format `locations\/*\/policy`. Note that the system policy is not associated with a project.",
+              "location": "path",
+              "required": true,
+              "pattern": "^locations\/[^\/]+\/policy$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Policy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Gets the current system policy in the specified location."
+        }
+      }
     }
   },
   "basePath": ""

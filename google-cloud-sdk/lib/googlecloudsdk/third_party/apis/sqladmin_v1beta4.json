@@ -3550,7 +3550,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/sqlservice.admin"
           ],
-          "description": "Truncate MySQL general and slow query log tables"
+          "description": "Truncate MySQL general and slow query log tables MySQL only."
         },
         "update": {
           "id": "sql.instances.update",

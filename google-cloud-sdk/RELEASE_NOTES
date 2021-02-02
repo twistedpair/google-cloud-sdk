@@ -5,6 +5,92 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 326.0.0 (2021-02-02)
+
+### App Engine
+
+* Updated backend when using `gcloud app deploy <queue|cron>.yaml`. The only
+  noticeable change is that when removing queues from the queues YAML file,
+  previously the queues were marked as "PAUSED" but now they are marked
+  "DISABLED". In terms of functionality, there is no difference between the two.
+
+### Artifact Registry
+
+*  Fixed issue where `gcloud docker images delete` failed if the image is referenced by a tag.
+
+### Cloud Asset Inventory
+
+*  Added new searchable fields (`kmsKey`, `state`, `createTime` and `updateTime`) to `gcloud asset search-all-resources`.
+
+### Cloud Composer
+
+* Added `gcloud beta composer environments run my-environment upgrade_check` to run upgrade check to Airflow 2.0 for Composer environments with Airflow 1.10.14+.
+* Added support of CLI commands for Airflow 2.0 to `gcloud beta composer environments run`.
+
+### Cloud Dataflow
+
+* Added `--additional-experiments` flag to `gcloud beta dataflow jobs run`.
+* Added `--additional-experiments` flag to `gcloud dataflow jobs run`.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.11.12
+  * Fix onCreate/onWrite events triggering when deleting nonexistent documents.
+
+### Cloud On Demand Scanning
+
+*   Launched commands for the On-Demand Scanning API in the Artifact Registry
+    command group.
+    *   `gcloud beta artifacts docker images scan` to scan an image.
+    *   `gcloud beta artifacts docker images get-operation` to poll an ongoing
+         scan.
+    *   `gcloud beta artifacts docker images list-vulnerabilities` to retrieve
+         scan results.
+*   Introduced a new component called `local-extract` to aid in the commands for
+    the On-Demand Scanning API.
+
+### Compute Engine
+
+* Added `--compute-service-account` to `gcloud beta compute images import`.
+* Changed `--os` flag to be optional for `gcloud compute images import`.
+* Added `--enable-nested-virtualization` flag to enable or disable nested virtualization to both beta and GA for:
+    * `gcloud compute instances create`
+    * `gcloud compute instances create-with-container`
+    * `gcloud compute instance-templates create`
+* Fixed issue where policies created or updated via `gcloud beta compute
+  instances ops-agents policies [create|update]` that included `short-name`
+  values of 'debian' or 'ubuntu' in `--os-types` had trouble locating packages
+  due to a missing call to `apt-get update`.
+* Updated Windows PuTTY executables to version 0.74.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.37.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Eventarc
+
+*   Promoted `gcloud eventarc triggers` to GA. Renamed `--matching-criteria`
+    flag as `--event-filters` in GA.
+*   Promoted `gcloud eventarc locations` to GA.
+
+### GKE Hub
+
+* Promoted `gcloud container hub memberships register --enable-workload-identity --public-issuer-url=$URL` to GA.
+
+### Notebooks
+
+*   Promoted `gcloud notebooks` to GA.
+
+### VPC Access
+
+* Added `--machine-type` to `gcloud beta compute networks vpc-access connectors create` to support machine type configuration of the managed instance group underlying the connector.
+* Added `--min-instances` and `--max-instances` to `gcloud beta compute networks vpc-access connectors create` to allow users to configure the scaling bounds of the underlying managed instance group.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 325.0.0 (2021-01-26)
 
 ### Breaking Changes

@@ -41,6 +41,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_projector
@@ -62,8 +63,9 @@ class Filterer(peek_iterable.Tap):
       expression: The resource filter expression string.
       defaults: The resource format and filter default projection.
     """
-    self._match = resource_filter.Compile(
-        expression, defaults=defaults).Evaluate
+    self._compiled_expression = resource_filter.Compile(
+        expression, defaults=defaults)
+    self._missing_keys = resource_filter.GetAllKeys(self._compiled_expression)
 
   def Tap(self, resource):
     """Returns True if resource matches the filter expression.
@@ -74,9 +76,25 @@ class Filterer(peek_iterable.Tap):
     Returns:
       True if resource matches the filter expression.
     """
+    self._missing_keys -= set(
+        key for key in self._missing_keys
+        if resource_property.ResourceContainsKey(resource, key))
     if resource_printer_base.IsResourceMarker(resource):
       return True
-    return self._match(resource_projector.MakeSerializable(resource))
+    return self._compiled_expression.Evaluate(
+        resource_projector.MakeSerializable(resource))
+
+  def Done(self):
+
+    def WarnMissingKeys(missing_keys):
+      missing_keys_str = ', '.join(
+          ['.'.join(map(str, key)) for key in sorted(missing_keys)])
+      log.warning(
+          'The following filter keys were not present in any resource : ' +
+          missing_keys_str)
+
+    if self._missing_keys:
+      WarnMissingKeys(self._missing_keys)
 
 
 class Flattener(peek_iterable.Tap):
@@ -134,7 +152,8 @@ class Flattener(peek_iterable.Tap):
     else:
       parent = self._resource
     parent[self._child_name] = item
-    return peek_iterable.TapInjector(self._resource)
+    return peek_iterable.TapInjector(
+        resource_projector.MakeSerializable(self._resource))
 
 
 class Limiter(peek_iterable.Tap):

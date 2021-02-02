@@ -685,7 +685,7 @@ def ValidateMigStatefulFlagsForInstanceConfigs(args,
       if stateful_disk_to_update.get(
           'device-name') in remove_stateful_disks_set:
         raise exceptions.InvalidArgumentException(
-            parameter_name=flag_name,
+            parameter_name='--remove-stateful-disks',
             message=('the same [device-name] `{0}` cannot be updated and'
                      ' removed in one command call'.format(
                          stateful_disk_to_update.get('device-name'))))
@@ -696,7 +696,7 @@ def ValidateMigStatefulFlagsForInstanceConfigs(args,
         update_stateful_metadata_set)
     if keys_intersection:
       raise exceptions.InvalidArgumentException(
-          parameter_name=flag_name,
+          parameter_name='--remove-stateful-metadata',
           message=('the same metadata key(s) `{0}` cannot be updated and'
                    ' removed in one command call'.format(
                        ', '.join(keys_intersection))))

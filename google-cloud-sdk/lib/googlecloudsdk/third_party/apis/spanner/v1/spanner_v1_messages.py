@@ -30,6 +30,9 @@ class Backup(_messages.Message):
       from which this backup was created. This needs to be in the same
       instance as the backup. Values are of the form
       `projects//instances//databases/`.
+    encryptionInfo: Output only. The encryption information for the backup. If
+      the encryption key protecting this resource is customer managed, then
+      kms_key_version will be filled.
     expireTime: Required for the CreateBackup operation. The expiration time
       of the backup, with microseconds granularity that must be at least 6
       hours and at most 366 days from the time the CreateBackup request is
@@ -69,11 +72,12 @@ class Backup(_messages.Message):
 
   createTime = _messages.StringField(1)
   database = _messages.StringField(2)
-  expireTime = _messages.StringField(3)
-  name = _messages.StringField(4)
-  referencingDatabases = _messages.StringField(5, repeated=True)
-  sizeBytes = _messages.IntegerField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 3)
+  expireTime = _messages.StringField(4)
+  name = _messages.StringField(5)
+  referencingDatabases = _messages.StringField(6, repeated=True)
+  sizeBytes = _messages.IntegerField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class BackupInfo(_messages.Message):

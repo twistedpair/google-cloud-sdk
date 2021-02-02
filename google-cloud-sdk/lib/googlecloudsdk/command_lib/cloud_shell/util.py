@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import argparse
-import base64
 import datetime
 
 from googlecloudsdk.api_lib.util import apis
@@ -76,7 +75,7 @@ def AddSshArgFlag(parser):
       """)
 
 
-def PrepareV1Environment(args):
+def PrepareEnvironment(args):
   """Ensures that the user's environment is ready to accept SSH connections."""
 
   # Load Cloud Shell API.
@@ -140,79 +139,8 @@ def PrepareV1Environment(args):
         sleep_ms=500,
         max_wait_ms=None)
 
-  return ConnectionInfo(
-      ssh_env=ssh_env,
-      user=environment.sshUsername,
-      host=environment.sshHost,
-      port=environment.sshPort,
-      key=keys.key_file,
-  )
-
-
-def PrepareEnvironment(args):
-  """Ensures that the user's environment is ready to accept SSH connections."""
-
-  # Load Cloud Shell API.
-  client = apis.GetClientInstance('cloudshell', 'v1alpha1')
-  messages = apis.GetMessagesModule('cloudshell', 'v1alpha1')
-  operations_client = apis.GetClientInstance('cloudshell', 'v1')
-
-  # Ensure we have a key pair on the local machine.
-  ssh_env = ssh.Environment.Current()
-  ssh_env.RequireSSH()
-  keys = ssh.Keys.FromFilename(filename=args.ssh_key_file)
-  keys.EnsureKeysExist(overwrite=args.force_key_file_overwrite)
-
-  # Look up the Cloud Shell environment.
-  environment = client.users_environments.Get(
-      messages.CloudshellUsersEnvironmentsGetRequest(
-          name=DEFAULT_ENVIRONMENT_NAME))
-
-  # If the environment doesn't have the public key, push it.
-  key_parts = keys.GetPublicKey().ToEntry().split(' ')
-  key_format = ValidateKeyType(key_parts[0].replace('-', '_').upper(), messages)
-  key = messages.PublicKey(
-      format=key_format,
-      key=base64.b64decode(key_parts[1]),
-  )
-  has_key = False
-  for candidate in environment.publicKeys:
-    if key.format == candidate.format and key.key == candidate.key:
-      has_key = True
-      break
-  if not has_key:
-    log.Print('Pushing your public key to Cloud Shell...')
-    client.users_environments_publicKeys.Create(
-        messages.CloudshellUsersEnvironmentsPublicKeysCreateRequest(
-            parent=DEFAULT_ENVIRONMENT_NAME,
-            createPublicKeyRequest=messages.CreatePublicKeyRequest(key=key),
-        ))
-
-  # If the environment isn't running, start it.
-  if environment.state != messages.Environment.StateValueValuesEnum.RUNNING:
-    log.Print('Starting your Cloud Shell machine...')
-
-    access_token = None
-    if args.authorize_session:
-      access_token = store.GetFreshAccessTokenIfEnabled(
-          min_expiry_duration=MIN_CREDS_EXPIRY_SECONDS)
-
-    start_operation = client.users_environments.Start(
-        messages.CloudshellUsersEnvironmentsStartRequest(
-            name=DEFAULT_ENVIRONMENT_NAME,
-            startEnvironmentRequest=messages.StartEnvironmentRequest(
-                accessToken=access_token)))
-
-    environment = waiter.WaitFor(
-        EnvironmentPoller(client.users_environments,
-                          operations_client.operations),
-        start_operation,
-        'Waiting for your Cloud Shell machine to start',
-        sleep_ms=500,
-        max_wait_ms=None)
-
-    if not environment.sshHost:
-      raise core_exceptions.Error('The Cloud Shell machine did not start.')
+  if not environment.sshHost:
+    raise core_exceptions.Error('The Cloud Shell machine did not start.')
 
   return ConnectionInfo(
       ssh_env=ssh_env,
@@ -221,38 +149,13 @@ def PrepareEnvironment(args):
       port=environment.sshPort,
       key=keys.key_file,
   )
-
-
-def ValidateKeyType(key_format, messages):
-  try:
-    return messages.PublicKey.FormatValueValuesEnum(key_format)
-  except TypeError:
-    raise ssh.InvalidKeyError('{} format of the key is not supported '
-                              'yet.'.format(key_format))
-
-
-def AuthorizeV1Environment():
-  """Pushes gcloud command-line tool credentials to the user's environment."""
-
-  client = apis.GetClientInstance('cloudshell', 'v1')
-  messages = apis.GetMessagesModule('cloudshell', 'v1')
-
-  # Load creds and refresh them if they're about to expire.
-  access_token = store.GetFreshAccessTokenIfEnabled(
-      min_expiry_duration=MIN_CREDS_EXPIRY_SECONDS)
-  if access_token:
-    client.users_environments.Authorize(
-        messages.CloudshellUsersEnvironmentsAuthorizeRequest(
-            name=DEFAULT_ENVIRONMENT_NAME,
-            authorizeEnvironmentRequest=messages.AuthorizeEnvironmentRequest(
-                accessToken=access_token)))
 
 
 def AuthorizeEnvironment():
   """Pushes gcloud command-line tool credentials to the user's environment."""
 
-  client = apis.GetClientInstance('cloudshell', 'v1alpha1')
-  messages = apis.GetMessagesModule('cloudshell', 'v1alpha1')
+  client = apis.GetClientInstance('cloudshell', 'v1')
+  messages = apis.GetMessagesModule('cloudshell', 'v1')
 
   # Load creds and refresh them if they're about to expire.
   access_token = store.GetFreshAccessTokenIfEnabled(

@@ -367,6 +367,14 @@ MAP = {
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
+        'v1alpha2':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.certificatemanager.v1alpha2',
+                client_classpath='certificatemanager_v1alpha2_client.CertificatemanagerV1alpha2',
+                messages_modulepath='certificatemanager_v1alpha2_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
     },
     'cloudasset': {
         'v1':
@@ -1761,12 +1769,20 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'resourcesettings': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.resourcesettings.v1',
+                client_classpath='resourcesettings_v1_client.ResourcesettingsV1',
+                messages_modulepath='resourcesettings_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.resourcesettings.v1alpha1',
                 client_classpath='resourcesettings_v1alpha1_client.ResourcesettingsV1alpha1',
                 messages_modulepath='resourcesettings_v1alpha1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

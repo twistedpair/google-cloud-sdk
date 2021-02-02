@@ -59,11 +59,16 @@ def AddMatcher(parser, required=True):
       help='The Cloud Armor rules language expression to match for this rule.')
 
 
-def AddAction(parser, required=True):
+def AddAction(parser, required=True, support_redirect=False):
   """Adds the action argument to the argparse."""
+  actions = [
+      'allow', 'deny-403', 'deny-404', 'deny-502', 'redirect-to-recaptcha'
+  ]
+  if support_redirect:
+    actions.append('redirect')
   parser.add_argument(
       '--action',
-      choices=['allow', 'deny-403', 'deny-404', 'deny-502'],
+      choices=actions,
       type=lambda x: x.lower(),
       required=required,
       help='The action to take if the request matches the match condition.')
@@ -83,3 +88,11 @@ def AddPreview(parser, default):
       action='store_true',
       default=default,
       help='If specified, the action will not be enforced.')
+
+
+def AddRedirectTarget(parser):
+  """Adds redirect-target argument to the argparse."""
+  parser.add_argument(
+      '--redirect-target',
+      help='The URL to which traffic is routed when the rule action is set to "redirect".'
+  )

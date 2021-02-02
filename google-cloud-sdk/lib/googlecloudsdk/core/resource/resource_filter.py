@@ -91,7 +91,7 @@ from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_property
 
-from six.moves import range  # pylint: disable=redefined-builtin
+import six
 
 
 class _Parser(object):
@@ -116,7 +116,7 @@ class _Parser(object):
     _parenthesize: A LIFO stack of _OP_* sets for each (...) level. Used to
       determine when AND and OR are combined in the same parenthesis group.
   """
-  _OP_AND, _OP_OR = range(2)
+  _OP_AND, _OP_OR = six.moves.range(2)
 
   _LOGICAL = ['AND', 'NOT', 'OR']
 
@@ -481,6 +481,17 @@ class _Parser(object):
           'Unexpected tokens [{0}] in expression.'.format(self._lex.Annotate()))
     self._lex = None
     return tree or self._backend.ExprTRUE()
+
+
+def GetAllKeys(expression):
+  """Recursively collects all keys in compiled filter expression."""
+  keys = set()
+  if expression.contains_key:
+    keys.add(tuple(expression.key))
+  for _, obj in six.iteritems(vars(expression)):
+    if hasattr(obj, 'contains_key'):
+      keys |= GetAllKeys(obj)
+  return keys
 
 
 def Compile(expression, defaults=None, backend=None):

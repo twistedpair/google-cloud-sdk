@@ -2693,12 +2693,13 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
     bytesLimitPerFile: Max number of bytes to scan from a file. If a scanned
       file's size is bigger than this value then the rest of the bytes are
       omitted. Only one of bytes_limit_per_file and
-      bytes_limit_per_file_percent can be specified.
+      bytes_limit_per_file_percent can be specified. Cannot be set if de-
+      identification is requested.
     bytesLimitPerFilePercent: Max percentage of bytes to scan from a file. The
       rest are omitted. The number of bytes scanned is rounded down. Must be
       between 0 and 100, inclusively. Both 0 and 100 means no limit. Defaults
       to 0. Only one of bytes_limit_per_file and bytes_limit_per_file_percent
-      can be specified.
+      can be specified. Cannot be set if de-identification is requested.
     fileSet: The set of one or more files to scan.
     fileTypes: List of file type groups to include in the scan. If empty, all
       files are scanned and available data format processors are applied. In
@@ -3998,7 +3999,8 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
 
 
 class GooglePrivacyDlpV2FindingLimits(_messages.Message):
-  r"""Configuration to control the number of findings returned.
+  r"""Configuration to control the number of findings returned. Cannot be set
+  if de-identification is requested.
 
   Fields:
     maxFindingsPerInfoType: Configuration of findings limit given for
@@ -5770,7 +5772,7 @@ class GooglePrivacyDlpV2SaveFindings(_messages.Message):
 
 
 class GooglePrivacyDlpV2Schedule(_messages.Message):
-  r"""Schedule for triggeredJobs.
+  r"""Schedule for inspect job triggers.
 
   Fields:
     recurrencePeriodDuration: With this option a job is started a regular

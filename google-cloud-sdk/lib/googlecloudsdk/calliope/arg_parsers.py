@@ -803,8 +803,13 @@ class ArgList(ArgType):
   DEFAULT_DELIM_CHAR = ','
   ALT_DELIM_CHAR = '^'
 
-  def __init__(self, element_type=None, min_length=0, max_length=None,
-               choices=None, custom_delim_char=None):
+  def __init__(self,
+               element_type=None,
+               min_length=0,
+               max_length=None,
+               choices=None,
+               custom_delim_char=None,
+               visible_choices=None):
     """Initialize an ArgList.
 
     Args:
@@ -814,6 +819,8 @@ class ArgList(ArgType):
       choices: [element_type], a list of valid possibilities for elements. If
           None, then no constraints are imposed.
       custom_delim_char: char, A customized delimiter character.
+      visible_choices: [element_type], a list of valid possibilities for
+          elements to be shown to the user. If None, defaults to choices.
 
     Returns:
       (str)->[str], A function to parse the list of values in the argument.
@@ -823,8 +830,10 @@ class ArgList(ArgType):
     """
     self.element_type = element_type
     self.choices = choices
+    self.visible_choices = (
+        visible_choices if visible_choices is not None else choices)
 
-    if choices:
+    if self.visible_choices:
       def ChoiceType(raw_value):
         if element_type:
           typed_value = element_type(raw_value)
@@ -832,8 +841,9 @@ class ArgList(ArgType):
           typed_value = raw_value
         if typed_value not in choices:
           raise ArgumentTypeError('{value} must be one of [{choices}]'.format(
-              value=typed_value, choices=', '.join(
-                  [six.text_type(choice) for choice in choices])))
+              value=typed_value,
+              choices=', '.join(
+                  [six.text_type(choice) for choice in self.visible_choices])))
         return typed_value
       self.element_type = ChoiceType
 

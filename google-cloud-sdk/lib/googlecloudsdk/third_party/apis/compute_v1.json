@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20210119",
+ "revision": "20210122",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -18384,6 +18384,7 @@
       "COMMITTED_A2_CPUS",
       "COMMITTED_C2_CPUS",
       "COMMITTED_CPUS",
+      "COMMITTED_E2_CPUS",
       "COMMITTED_LICENSES",
       "COMMITTED_LOCAL_SSD_TOTAL_GB",
       "COMMITTED_MEMORY_OPTIMIZED_CPUS",
@@ -18486,6 +18487,7 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -26670,6 +26672,10 @@
      "type": "string",
      "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
      "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+    },
+    "proxyBind": {
+     "type": "boolean",
+     "description": "This field only applies when the forwarding rule that references this target proxy has a loadBalancingScheme set to INTERNAL_SELF_MANAGED.\n\nWhen this field is set to true, Envoy proxies set up inbound traffic interception and bind to the IP address and port specified in the forwarding rule. This is generally useful when using Traffic Director to configure Envoy as a gateway or middle proxy (in other words, not a sidecar proxy). The Envoy proxy listens for inbound requests and handles requests when it receives them.\n\nThe default is false."
     },
     "proxyHeader": {
      "type": "string",

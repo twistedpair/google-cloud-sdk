@@ -207,7 +207,7 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an existing Account. An account can only be deleted when all outstanding orders against that account is also deleted.
+      r"""Deletes an existing Account. An account can only be deleted when there are no orders associated with that account.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsAccountsDeleteRequest) input message

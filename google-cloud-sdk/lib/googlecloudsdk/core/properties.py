@@ -221,6 +221,7 @@ class RequiredPropertyError(Error):
     else:
       section = ''
 
+    flag = flag or prop.default_flag
     if flag:
       flag_msg = RequiredPropertyError.FLAG_STRING.format(flag=flag)
     else:
@@ -651,7 +652,8 @@ class _Section(object):
            default=None,
            validator=None,
            choices=None,
-           completer=None):
+           completer=None,
+           default_flag=None):
     prop = _Property(
         section=self.__name,
         name=name,
@@ -662,7 +664,8 @@ class _Section(object):
         default=default,
         validator=validator,
         choices=choices,
-        completer=completer)
+        completer=completer,
+        default_flag=default_flag)
     self.__properties[name] = prop
     return prop
 
@@ -1448,7 +1451,8 @@ class _SectionCore(_Section):
         'flag.',
         validator=ProjectValidator,
         completer=('googlecloudsdk.command_lib.resource_manager.completers:'
-                   'ProjectCompleter'))
+                   'ProjectCompleter'),
+        default_flag='--project')
     self.credentialed_hosted_repo_domains = self._Add(
         'credentialed_hosted_repo_domains', hidden=True)
 
@@ -1766,7 +1770,7 @@ class _SectionDataflow(_Section):
         default=False)
     self.enable_streaming_engine = self._AddBool(
         'enable_streaming_engine',
-        help_text='Specifies that enabling Streaming Engine for the job.',
+        help_text='Set this to true to enable Streaming Engine for the job.',
         default=False)
 
 
@@ -1970,7 +1974,6 @@ class _SectionApiEndpointOverrides(_Section):
   def __init__(self):
     super(_SectionApiEndpointOverrides, self).__init__(
         'api_endpoint_overrides', hidden=True)
-    self.remotebuildexecution = self._Add('remotebuildexecution')
     self.accessapproval = self._Add('accessapproval')
     self.accesscontextmanager = self._Add('accesscontextmanager')
     self.anthosevents = self._Add('anthosevents')
@@ -2016,6 +2019,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.domains = self._Add('domains')
     self.eventarc = self._Add('eventarc')
     self.events = self._Add('events')
+    self.kubernetesedge = self._Add('kubernetesedge')
     self.file = self._Add('file')
     self.firestore = self._Add('firestore')
     self.gameservices = self._Add('gameservices')
@@ -2050,6 +2054,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.pubsub = self._Add('pubsub')
     self.pubsublite = self._Add('pubsublite')
     self.recommender = self._Add('recommender')
+    self.remotebuildexecution = self._Add('remotebuildexecution')
     self.replicapoolupdater = self._Add('replicapoolupdater')
     self.resourcesettings = self._Add('resourcesettings')
     self.runtimeconfig = self._Add('runtimeconfig')
@@ -2316,10 +2321,15 @@ class _SectionStorage(_Section):
         help_text='Chunk size used for uploading and downloading from '
         'Cloud Storage.')
 
-    self.number_retries = self._Add(
-        'number_retries',
+    self.max_retries = self._Add(
+        'max_retries',
         default=23,
-        help_text='Number of retries for operations like copy.')
+        help_text='Max number of retries for operations like copy.')
+
+    self.max_retry_delay = self._Add(
+        'max_retry_delay',
+        default=32,
+        help_text='Max second delay between retriable operations.')
 
     self.process_count = self._Add(
         'process_count',
@@ -2399,6 +2409,14 @@ class _SectionStorage(_Section):
         default=False,
         help_text='If True, use the deprecated upload implementation which '
         'uses gsutil.')
+
+    self.use_threading_local = self._AddBool(
+        'use_threading_local',
+        default=True,
+        help_text='If True, reuses some resource if they are already declared on'
+        ' a thread. If False, creates duplicates of resources like API clients'
+        ' on the same thread. Turning off can help with some bugs but will'
+        ' hurt performance.')
 
 
 class _SectionSurvey(_Section):
@@ -2533,6 +2551,9 @@ class _Property(object):
     default: str, A final value to use if no value is found after the callbacks.
       The default value is never shown when listing properties regardless of
       whether the property is hidden or not.
+    default_flag: default_flag name to include in RequiredPropertyError if
+      property fails on Get. This can be used for flags that are tightly
+      coupled with a property.
     validator: func(str), A function that is called on the value when .Set()'d
       or .Get()'d. For valid values, the function should do nothing. For invalid
       values, it should raise InvalidValueError with an explanation of why it
@@ -2551,7 +2572,8 @@ class _Property(object):
                default=None,
                validator=None,
                choices=None,
-               completer=None):
+               completer=None,
+               default_flag=None):
     self.__section = section
     self.__name = name
     self.__help_text = help_text
@@ -2562,6 +2584,7 @@ class _Property(object):
     self.__validator = validator
     self.__choices = choices
     self.__completer = completer
+    self.__default_flag = default_flag
 
   @property
   def section(self):
@@ -2598,6 +2621,10 @@ class _Property(object):
   @property
   def completer(self):
     return self.__completer
+
+  @property
+  def default_flag(self):
+    return self.__default_flag
 
   def __hash__(self):
     return hash(self.section) + hash(self.name)

@@ -5061,7 +5061,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Restricts the artifacts returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings The fields available for filtering are: - user_id - consent_content_version",
+                              "description": "Restricts the artifacts returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings The fields available for filtering are: - user_id - consent_content_version - metadata. For example, `Metadata(\"key\")=\"value\"` or `HasMetadata(\"key\")`.",
                               "location": "query",
                               "type": "string"
                             }

@@ -389,6 +389,13 @@ class DockerRepo(object):
   def repo(self):
     return self._repo
 
+  def __eq__(self, other):
+    if isinstance(other, DockerRepo):
+      return self._project == other._project \
+        and self._location == other._location \
+        and self._repo == other._repo
+    return NotImplemented
+
   def GetDockerString(self):
     return "{}-docker.pkg.dev/{}/{}".format(self.location, self.project,
                                             self.repo)
@@ -426,6 +433,11 @@ class DockerImage(object):
   def pkg(self):
     return self._pkg
 
+  def __eq__(self, other):
+    if isinstance(other, DockerImage):
+      return self._docker_repo == other._docker_repo and self._pkg == other._pkg
+    return NotImplemented
+
   def GetPackageName(self):
     return "{}/packages/{}".format(self.docker_repo.GetRepositoryName(),
                                    self.pkg.replace("/", "%2F"))
@@ -460,6 +472,11 @@ class DockerTag(object):
   @property
   def tag(self):
     return self._tag
+
+  def __eq__(self, other):
+    if isinstance(other, DockerTag):
+      return self._image == other._image and self._tag == other._tag
+    return NotImplemented
 
   def GetTagName(self):
     return "{}/tags/{}".format(self.image.GetPackageName(), self.tag)
@@ -498,6 +515,11 @@ class DockerVersion(object):
   @property
   def project(self):
     return self._image.docker_repo.project
+
+  def __eq__(self, other):
+    if isinstance(other, DockerVersion):
+      return self._image == other._image and self._digest == other._digest
+    return NotImplemented
 
   def GetVersionName(self):
     return "{}/versions/{}".format(self.image.GetPackageName(), self.digest)
@@ -619,31 +641,29 @@ def DeleteDockerImage(args):
     return ar_requests.DeletePackage(client, messages, image.GetPackageName())
 
   else:
-    tags_to_delete = []
+    provided_tags = []
     docker_version = version_or_tag
     if isinstance(version_or_tag, DockerTag):
       docker_version = DockerVersion(
           version_or_tag.image,
           ar_requests.GetVersionFromTag(client, messages,
                                         version_or_tag.GetTagName()))
-      tags_to_delete.append(version_or_tag)
+      provided_tags.append(version_or_tag)
     existing_tags = _GetDockerVersionTags(client, messages, docker_version)
-    if args.delete_tags:
-      tags_to_delete.extend(existing_tags)
 
-    if len(existing_tags) != len(tags_to_delete):
+    if not args.delete_tags and existing_tags != provided_tags:
       raise ar_exceptions.ArtifactRegistryError(
           "Cannot delete image {} because it is tagged. "
           "Existing tags are:\n- {}".format(
               args.IMAGE,
               "\n- ".join(tag.GetDockerString() for tag in existing_tags)))
 
-    _LogResourcesToDelete(docker_version, tags_to_delete)
+    _LogResourcesToDelete(docker_version, existing_tags)
     console_io.PromptContinue(
         message="\nThis operation will delete the above resources.",
         cancel_on_no=True)
 
-    for tag in tags_to_delete:
+    for tag in existing_tags:
       ar_requests.DeleteTag(client, messages, tag.GetTagName())
     return ar_requests.DeleteVersion(client, messages,
                                      docker_version.GetVersionName())

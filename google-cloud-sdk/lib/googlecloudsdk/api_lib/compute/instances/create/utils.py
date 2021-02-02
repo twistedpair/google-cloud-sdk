@@ -829,7 +829,6 @@ def CreateNetworkInterfaceMessage(resources,
         messages.AccessConfig.NetworkTierValueValuesEnum(ipv6_network_tier))
 
   if ipv6_public_ptr_domain is not None:
-    ipv6_access_config.setPublicPtr = True
     ipv6_access_config.publicPtrDomainName = ipv6_public_ptr_domain
 
   return network_interface

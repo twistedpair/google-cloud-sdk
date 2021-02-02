@@ -42,6 +42,6 @@
       table(
         name.basename():label=NAME,
         % for field in create_args:
-        ${field}:label=${field.upper()}
+        ${field}:label=${field.upper()}${'' if loop.last else ','}
         % endfor
       )

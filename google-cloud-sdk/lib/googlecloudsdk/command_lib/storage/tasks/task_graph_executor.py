@@ -29,6 +29,8 @@ from googlecloudsdk.command_lib.storage.tasks import task_buffer
 from googlecloudsdk.command_lib.storage.tasks import task_graph as task_graph_module
 from googlecloudsdk.core import log
 
+from six.moves import queue
+
 
 # When threads get this value, they should prepare to exit.
 #
@@ -129,7 +131,8 @@ class TaskGraphExecutor:
     self._process_start_lock = multiprocessing.Lock()
 
     # Sends task_graph.TaskWrapper instances to child processes.
-    self._task_queue = multiprocessing.Queue(maxsize=self._worker_count)
+    # Size must be 1. go/lazy-process-spawning-addendum.
+    self._task_queue = multiprocessing.Queue(maxsize=1)
 
     # Sends information about completed tasks to the main process.
     self._task_output_queue = multiprocessing.Queue(maxsize=self._worker_count)
@@ -183,15 +186,21 @@ class TaskGraphExecutor:
   @crash_handling.CrashManager
   def _add_executable_tasks_to_queue(self):
     """Sends executable tasks to consumer threads in child processes."""
+    task_wrapper = None
     while True:
-      task_wrapper = self._executable_tasks.get()
-      if task_wrapper == _SHUTDOWN:
-        break
-      self._task_queue.put(task_wrapper)
+      if task_wrapper is None:
+        task_wrapper = self._executable_tasks.get()
+        if task_wrapper == _SHUTDOWN:
+          break
 
-      if len(self._processes) < self._max_process_count:
+      reached_process_limit = len(self._processes) >= self._max_process_count
+
+      try:
+        self._task_queue.put(task_wrapper, block=reached_process_limit)
+        task_wrapper = None
+      except queue.Full:
         if self._idle_thread_count.acquire(block=False):
-          # Idle worker will take the new task. Restore semaphore count.
+          # Idle worker will take a task. Restore semaphore count.
           self._idle_thread_count.release()
         else:
           # Create workers because current workers are busy.

@@ -39,18 +39,20 @@ class ComponentPrinter(cp.CustomPrinterBase):
 
   def _Header(self, record):
     con = console_attr.GetConsoleAttr()
-    return con.Emphasize('Component {}'.format(record.name))
+    return con.Emphasize('Component {}'.format(record['metadata']['name']))
 
   def _SpecSection(self, record):
+    spec = record.get('spec', {})
     return cp.Section([cp.Labeled([
-        ('Type', record.type),
-        ('DevKit', record.devkit),
-        ('DevKit Version', record.devkit_version),
+        ('Type', spec.get('type', '')),
+        ('DevKit', spec.get('devkit', '')),
+        ('DevKit Version', spec.get('devkit-version', '')),
     ])])
 
   def _ConfigSections(self, record):
+    config = record.get('spec', {}).get('config', {})
     sections = []
-    for section_name, data in sorted(record.config().items()):
+    for section_name, data in sorted(config.items()):
       title = _ConfigTitle(section_name)
       section = cp.Section([
           cp.Labeled([(title, _ConfigSectionData(data))])

@@ -79,6 +79,10 @@ class TriggerCreationError(exceptions.Error):
   """When trigger creation fails."""
 
 
+class NamespaceCreationError(exceptions.Error):
+  """When namespace creation fails."""
+
+
 class SourceNotFound(exceptions.Error):
   """When a specified source is not found."""
 
@@ -92,4 +96,8 @@ class ServiceAccountMissingRequiredPermissions(exceptions.Error):
 
 
 class EventingInstallError(exceptions.Error):
+  """When eventing fails to be installed."""
+
+
+class EventingInitializationError(exceptions.Error):
   """When eventing fails to be installed."""

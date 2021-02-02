@@ -165,8 +165,6 @@ class BetaQueues(BaseQueues):
             retry_config=None,
             rate_limits=None,
             app_engine_routing_override=None,
-            task_ttl=None,
-            task_tombstone_ttl=None,
             stackdriver_logging_config=None,
             queue_type=None):
     """Prepares and sends a Patch request for modifying a queue."""
@@ -191,13 +189,10 @@ class BetaQueues(BaseQueues):
       else:
         queue.appEngineHttpQueue = self.messages.AppEngineHttpQueue(
             appEngineRoutingOverride=app_engine_routing_override)
-    if task_ttl is not None:
-      queue.taskTtl = task_ttl
-    if task_tombstone_ttl is not None:
-      queue.tombstoneTtl = task_tombstone_ttl
     if stackdriver_logging_config is not None:
       queue.stackdriverLoggingConfig = stackdriver_logging_config
     update_mask = ','.join(updated_fields)
+
     request = self.messages.CloudtasksProjectsLocationsQueuesPatchRequest(
         name=queue_ref.RelativeName(), queue=queue, updateMask=update_mask)
     return self.queues_service.Patch(request)

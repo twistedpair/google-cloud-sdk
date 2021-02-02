@@ -123,7 +123,7 @@ class TaskGraph:
       if task.parallel_processing_key is not None:
         identifier = task.parallel_processing_key
       else:
-        identifier = hash(task)
+        identifier = id(task)
 
       if identifier in self._task_wrappers_in_graph:
         if task.parallel_processing_key is not None:

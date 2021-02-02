@@ -133,18 +133,24 @@ apis:
       resources:
         projects.policy:
           path: projects/{projectsId}/policy
+        systempolicy:
+          path: locations/{locationsId}/policy
     v1beta1:
       default: false
       discovery_doc: binaryauthorization_v1beta1.json
       resources:
         projects.policy:
           path: projects/{projectsId}/policy
+        systempolicy:
+          path: locations/{locationsId}/policy
     v1:
       default: false
       discovery_doc: binaryauthorization_v1.json
       resources:
         projects.policy:
           path: projects/{projectsId}/policy
+        systempolicy:
+          path: locations/{locationsId}/policy
   billingbudgets:
     v1alpha1:
       discovery_doc: billingbudgets_v1alpha1.json
@@ -157,6 +163,8 @@ apis:
     v1alpha1:
       discovery_doc: certificatemanager_v1alpha1.json
       default: true
+    v1alpha2:
+      discovery_doc: certificatemanager_v1alpha2.json
   cloudasset:
     v1:
       default: true
@@ -820,6 +828,16 @@ apis:
       - resourcesettings.organizations.settings.updateValue
       - resourcesettings.projects.settings.value.create
       - resourcesettings.projects.settings.updateValue
+    v1:
+      discovery_doc: resourcesettings_v1.json
+      unelidable_request_methods:
+      - resourcesettings.folders.settings.value.create
+      - resourcesettings.folders.settings.updateValue
+      - resourcesettings.organizations.settings.value.create
+      - resourcesettings.organizations.settings.updateValue
+      - resourcesettings.projects.settings.value.create
+      - resourcesettings.projects.settings.updateValue
+      default: true
   run:
     v1alpha1:
       discovery_doc: run_v1alpha1.json

@@ -1467,7 +1467,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes an existing Account. An account can only be deleted when all outstanding orders against that account is also deleted."
+              "description": "Deletes an existing Account. An account can only be deleted when there are no orders associated with that account."
             }
           }
           ,

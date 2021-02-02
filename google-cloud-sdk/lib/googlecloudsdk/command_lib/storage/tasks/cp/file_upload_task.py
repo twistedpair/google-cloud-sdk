@@ -23,10 +23,30 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import math
 import os
 
+from googlecloudsdk.api_lib.storage import api_factory
+from googlecloudsdk.command_lib.storage import temporary_components
+from googlecloudsdk.command_lib.storage.tasks import compose_objects_task
+from googlecloudsdk.command_lib.storage.tasks import delete_object_task
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_upload_task
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import scaled_integer
+
+
+def _get_component_count(file_size, api_max_component_count):
+  """Returns the number of components to use for an upload."""
+  preferred_component_size = scaled_integer.ParseInteger(
+      properties.VALUES.storage.parallel_composite_upload_component_size.Get())
+  component_count = math.ceil(file_size / preferred_component_size)
+
+  if component_count < 2:
+    return 2
+  if component_count > api_max_component_count:
+    return api_max_component_count
+  return component_count
 
 
 class FileUploadTask(task.Task):
@@ -49,12 +69,62 @@ class FileUploadTask(task.Task):
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
 
+    self._composite_upload_threshold = scaled_integer.ParseInteger(
+        properties.VALUES.storage.parallel_composite_upload_threshold.Get())
+
   def execute(self, callback=None):
     source_filename = self._source_resource.storage_url.object_name
     size = os.path.getsize(source_filename)
 
-    # TODO(b/175901291): Split up files for composite uploads.
-    file_part_upload_task.FilePartUploadTask(
-        self._source_resource,
-        self._destination_resource,
-        0, size).execute()
+    should_perform_single_transfer = (
+        size < self._composite_upload_threshold or
+        not self._composite_upload_threshold
+    )
+
+    if should_perform_single_transfer:
+      file_part_upload_task.FilePartUploadTask(
+          self._source_resource,
+          self._destination_resource,
+          offset=0,
+          length=size).execute()
+    else:
+      destination_url = self._destination_resource.storage_url
+      provider = destination_url.scheme
+      api_instance = api_factory.get_api(provider)
+
+      component_count = _get_component_count(
+          size, api_instance.MAX_OBJECTS_PER_COMPOSE_CALL)
+      component_size = math.ceil(size / component_count)
+
+      file_part_upload_tasks = []
+      compose_objects_sources = []
+      delete_object_tasks = []
+      for component_index in range(component_count):
+
+        temporary_component_resource = temporary_components.get_resource(
+            self._source_resource,
+            self._destination_resource,
+            component_index)
+
+        compose_objects_sources.append(temporary_component_resource)
+
+        offset = component_index * component_size
+        length = min(component_size, size - offset)
+        upload_task = file_part_upload_task.FilePartUploadTask(
+            self._source_resource, temporary_component_resource, offset,
+            length)
+
+        file_part_upload_tasks.append(upload_task)
+
+        delete_task = delete_object_task.DeleteObjectTask(
+            temporary_component_resource)
+        delete_object_tasks.append(delete_task)
+
+      compose_objects_tasks = [compose_objects_task.ComposeObjectsTask(
+          compose_objects_sources, self._destination_resource)]
+
+      return [
+          file_part_upload_tasks,
+          compose_objects_tasks,
+          delete_object_tasks,
+      ]

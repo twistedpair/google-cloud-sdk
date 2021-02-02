@@ -45,3 +45,9 @@ class ComposeObjectsTask(task.Task):
     api_factory.get_api(provider).compose_objects(
         self._source_resources,
         self._destination_resource)
+
+  def __eq__(self, other):
+    if not isinstance(other, ComposeObjectsTask):
+      return NotImplemented
+    return (self._source_resources == other._source_resources and
+            self._destination_resource == other._destination_resource)

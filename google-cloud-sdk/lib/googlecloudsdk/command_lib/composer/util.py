@@ -97,7 +97,15 @@ SUBCOMMAND_WHITELIST.update(SUBCOMMAND_DEPRECATION)
 
 SUBCOMMAND_WHITELIST_BETA = dict(SUBCOMMAND_WHITELIST)
 SUBCOMMAND_WHITELIST_BETA.update({
+    'connections': (None, '3.0.0'),
+    'dags': ('2.0.0', '3.0.0'),
+    'kerberos': (None, '3.0.0'),
+    'pools': ('2.0.0', '3.0.0'),
+    'sync-perm': ('2.0.0', '3.0.0'),
+    'tasks': ('2.0.0', '3.0.0'),
     'upgrade_check': ('1.10.14', '2.0.0'),
+    'variables': (None, '3.0.0'),
+    'version': (None, '3.0.0'),
 })
 
 DEFAULT_NAMESPACE = 'default'

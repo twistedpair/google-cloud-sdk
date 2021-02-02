@@ -977,14 +977,6 @@
           "lastAdded": "1607367890"
         },
         {
-          "methodName": "apphosting.admin.proto.RuntimeWhitelisting.SetAllowsDeprecatedJava",
-          "lastAdded": "1607367890"
-        },
-        {
-          "methodName": "apphosting.admin.proto.RuntimeWhitelisting.SetAllowsPython25",
-          "lastAdded": "1607367890"
-        },
-        {
           "methodName": "com.google.appengine.legacy.conf_updated",
           "lastAdded": "1607367890"
         },
@@ -8256,22 +8248,6 @@
       "serviceName": "deploymentmanager.googleapis.com",
       "displayName": "Cloud Deployment Manager",
       "methods": [
-        {
-          "methodName": "dogfood.deploymentmanager.deployments.delete",
-          "lastAdded": "1607367890"
-        },
-        {
-          "methodName": "dogfood.deploymentmanager.deployments.insert",
-          "lastAdded": "1607367890"
-        },
-        {
-          "methodName": "dogfood.deploymentmanager.deployments.setIamPolicy",
-          "lastAdded": "1607367890"
-        },
-        {
-          "methodName": "dogfood.deploymentmanager.deployments.update",
-          "lastAdded": "1607367890"
-        },
         {
           "methodName": "v2.deploymentmanager.deployments.cancelPreview",
           "lastAdded": "1607367890"

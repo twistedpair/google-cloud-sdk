@@ -347,6 +347,16 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class BatchGetMessagesResponse(_messages.Message):
+  r"""Gets multiple messages in a specified HL7v2 store.
+
+  Fields:
+    messages: The returned Messages. See `MessageView` for populated fields.
+  """
+
+  messages = _messages.MessageField('Message', 1, repeated=True)
+
+
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
@@ -1738,6 +1748,8 @@ class FhirStore(_messages.Message):
       account](https://cloud.google.com/iam/docs/service-accounts). Some lag
       (typically on the order of dozens of seconds) is expected before the
       results show up in the streaming destination.
+    validationConfig: Configuration for how to validate incoming FHIR
+      resources against configured profiles.
     version: Immutable. The FHIR specification version that this FHIR store
       supports natively. This field is immutable after store creation.
       Requests are rejected if they contain FHIR resources of a different
@@ -1802,7 +1814,8 @@ class FhirStore(_messages.Message):
   name = _messages.StringField(6)
   notificationConfig = _messages.MessageField('NotificationConfig', 7)
   streamConfigs = _messages.MessageField('StreamConfig', 8, repeated=True)
-  version = _messages.EnumField('VersionValueValuesEnum', 9)
+  validationConfig = _messages.MessageField('ValidationConfig', 9)
+  version = _messages.EnumField('VersionValueValuesEnum', 10)
 
 
 class Field(_messages.Message):
@@ -2878,7 +2891,8 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsListReques
     filter: Restricts the artifacts returned to those matching a filter.
       Syntax: https://cloud.google.com/appengine/docs/standard/python/search/q
       uery_strings The fields available for filtering are: - user_id -
-      consent_content_version
+      consent_content_version - metadata. For example,
+      `Metadata("key")="value"` or `HasMetadata("key")`.
     pageSize: Limit on the number of consent artifacts to return in a single
       response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
@@ -4208,6 +4222,30 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirResourcePurgeRequest(_mes
   name = _messages.StringField(1, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirResourceValidateRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsFhirStoresFhirResourceValidateRequest
+  object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: The name of the FHIR store that holds the profiles being used for
+      validation.
+    profile: A profile that this resource should be validated against.
+    type: The FHIR resource type of the resource being validated. For a
+      complete list, see the FHIR Resource Index ([DSTU2](http://hl7.org/imple
+      ment/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
+      or [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+      Must match the resource type in the provided content.
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  parent = _messages.StringField(2, required=True)
+  profile = _messages.StringField(3)
+  type = _messages.StringField(4, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchRequest object.
 
@@ -4517,6 +4555,54 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest(_messages.Messag
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesBatchGetRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesBatchGetRequest
+  object.
+
+  Enums:
+    ViewValueValuesEnum: Specifies the parts of the Messages resource to
+      return in the response. When unspecified, equivalent to BASIC.
+
+  Fields:
+    ids: The resource id of the HL7v2 messages to retrieve in the format:
+      `{message_id}`, where the full resource name is
+      `{parent}/messages/{message_id}` A maximum of 100 messages can be
+      retrieved in a batch. All 'ids' have to be under parent.
+    parent: Name of the HL7v2 store to retrieve messages from, in the format:
+      `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/hl7
+      v2Stores/{hl7v2_store_id}`.
+    view: Specifies the parts of the Messages resource to return in the
+      response. When unspecified, equivalent to BASIC.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Specifies the parts of the Messages resource to return in the
+    response. When unspecified, equivalent to BASIC.
+
+    Values:
+      MESSAGE_VIEW_UNSPECIFIED: Not specified, equivalent to FULL for
+        getMessage, equivalent to BASIC for listMessages.
+      RAW_ONLY: Server responses include all the message fields except
+        parsed_data, and schematized_data fields.
+      PARSED_ONLY: Server responses include all the message fields except data
+        and schematized_data fields.
+      FULL: Server responses include all the message fields.
+      SCHEMATIZED_ONLY: Server responses include all the message fields except
+        data and parsed_data fields.
+      BASIC: Server responses include only the name field.
+    """
+    MESSAGE_VIEW_UNSPECIFIED = 0
+    RAW_ONLY = 1
+    PARSED_ONLY = 2
+    FULL = 3
+    SCHEMATIZED_ONLY = 4
+    BASIC = 5
+
+  ids = _messages.StringField(1, repeated=True)
+  parent = _messages.StringField(2, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 3)
 
 
 class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesCreateRequest(_messages.Message):
@@ -6911,6 +6997,34 @@ class UserDataMapping(_messages.Message):
   name = _messages.StringField(4)
   resourceAttributes = _messages.MessageField('Attribute', 5, repeated=True)
   userId = _messages.StringField(6)
+
+
+class ValidationConfig(_messages.Message):
+  r"""Contains the configuration for FHIR profiles and validation.
+
+  Fields:
+    disableProfileValidation: Whether to disable profile validation for this
+      FHIR store. Set this to true to disable checking incoming resources for
+      conformance against StructureDefinitions in this FHIR store.
+    enabledImplementationGuides: A list of ImplementationGuide URLs in this
+      FHIR store that are used to configure the profiles to use for
+      validation. For example, to use the US Core profiles for validation, set
+      `enabled_implementation_guides` to
+      `["http://hl7.org/fhir/us/core/ImplementationGuide/ig"]`. If
+      `enabled_implementation_guides` is empty or omitted, then incoming
+      resources are only required to conform to the base FHIR profiles.
+      Otherwise, a resource must conform to at least one profile listed in the
+      `global` property of one of the enabled ImplementationGuides. The Cloud
+      Healthcare API does not currently enforce all of the rules in a
+      StructureDefinition. The following rules are supported: - min/max -
+      minValue/maxValue - maxLength - type - fixed[x] - pattern[x] on simple
+      types - slicing, when using "value" as the discriminator type When a URL
+      cannot be resolved (for example, in a type assertion), the server does
+      not return an error.
+  """
+
+  disableProfileValidation = _messages.BooleanField(1)
+  enabledImplementationGuides = _messages.StringField(2, repeated=True)
 
 
 class VersionSource(_messages.Message):

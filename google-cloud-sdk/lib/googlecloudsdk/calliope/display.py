@@ -34,8 +34,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import copy
-
 from googlecloudsdk.calliope import display_taps
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -225,7 +223,7 @@ class Displayer(object):
         return six.text_type(value)
 
     self._resources = sorted(
-        map(copy.deepcopy, self._resources),
+        self._resources,
         key=lambda r: [_GetKey(r, k) for k in keys],
         reverse=reverse)
 

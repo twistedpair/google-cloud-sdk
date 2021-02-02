@@ -319,9 +319,18 @@ def CreateAdvancedMachineFeaturesMessage(messages,
                                          enable_nested_virtualization=None,
                                          threads_per_core=None):
   """Create AdvancedMachineFeatures message for an Instance."""
-  return messages.AdvancedMachineFeatures(
-      enableNestedVirtualization=enable_nested_virtualization,
-      threadsPerCore=threads_per_core)
+  # Start with an empty AdvancedMachineFeatures and optionally add on
+  # the features we have like CreateSchedulingMessage does. This lets us
+  # treat None as also "not supported in this version of the API (yet)".
+  features = messages.AdvancedMachineFeatures()
+
+  if enable_nested_virtualization is not None:
+    features.enableNestedVirtualization = enable_nested_virtualization
+
+  if threads_per_core is not None:
+    features.threadsPerCore = threads_per_core
+
+  return features
 
 
 def ParseDiskResource(resources, name, project, zone, type_):

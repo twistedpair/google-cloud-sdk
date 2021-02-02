@@ -8834,22 +8834,7 @@
     },
     "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResult": {
       "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResult",
-      "description": "Represents a line of JSONL in the text sentiment batch prediction output file. This is a hack to allow printing of integer values.",
-      "type": "object",
-      "properties": {
-        "instance": {
-          "description": "User's input instance.",
-          "$ref": "GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextSentimentPredictionInstance"
-        },
-        "prediction": {
-          "description": "The prediction result.",
-          "$ref": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction": {
-      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction",
-      "description": "Prediction output format for Text Sentiment.",
+      "description": "Prediction output format for Text Sentiment",
       "type": "object",
       "properties": {
         "sentiment": {
@@ -11715,22 +11700,7 @@
     },
     "GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResult": {
       "id": "GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResult",
-      "description": "Represents a line of JSONL in the text sentiment batch prediction output file. This is a hack to allow printing of integer values.",
-      "type": "object",
-      "properties": {
-        "instance": {
-          "description": "User's input instance.",
-          "$ref": "GoogleCloudAiplatformV1SchemaPredictInstanceTextSentimentPredictionInstance"
-        },
-        "prediction": {
-          "description": "The prediction result.",
-          "$ref": "GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResultPrediction"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResultPrediction": {
-      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResultPrediction",
-      "description": "Prediction output format for Text Sentiment.",
+      "description": "Prediction output format for Text Sentiment",
       "type": "object",
       "properties": {
         "sentiment": {

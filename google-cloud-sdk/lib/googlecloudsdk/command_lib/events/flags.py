@@ -21,8 +21,8 @@ from __future__ import unicode_literals
 
 import collections
 
-from googlecloudsdk.api_lib.events import iam_util
 from googlecloudsdk.api_lib.events import trigger
+from googlecloudsdk.api_lib.kuberun.core import events_constants
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
@@ -98,7 +98,7 @@ def AddControlPlaneServiceAccountFlag(parser):
       help='Email address of an existing IAM service account which '
       'represents the identity of the internal events operator. If no '
       'service account is provided, a default service account ({}) will be '
-      'created.'.format(iam_util.EVENTS_CONTROL_PLANE_SERVICE_ACCOUNT))
+      'created.'.format(events_constants.EVENTS_CONTROL_PLANE_SERVICE_ACCOUNT))
 
 
 def AddBrokerServiceAccountFlag(parser):
@@ -108,7 +108,7 @@ def AddBrokerServiceAccountFlag(parser):
       type=core_iam_util.GetIamAccountFormatValidator(),
       help='Email address of an existing events broker IAM service account. '
       'If no service account is provided, a default service account ({}) will '
-      'be created.'.format(iam_util.EVENTS_BROKER_SERVICE_ACCOUNT))
+      'be created.'.format(events_constants.EVENTS_BROKER_SERVICE_ACCOUNT))
 
 
 def AddSourcesServiceAccountFlag(parser):
@@ -118,7 +118,7 @@ def AddSourcesServiceAccountFlag(parser):
       type=core_iam_util.GetIamAccountFormatValidator(),
       help='Email address of an existing events sources IAM service account. '
       'If no service account is provided, a default service account ({}) will '
-      'be created.'.format(iam_util.EVENTS_SOURCES_SERVICE_ACCOUNT))
+      'be created.'.format(events_constants.EVENTS_SOURCES_SERVICE_ACCOUNT))
 
 
 def AddCustomEventTypeFlag(parser):

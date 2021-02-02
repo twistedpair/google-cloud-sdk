@@ -33,6 +33,8 @@ from googlecloudsdk.api_lib.events import kube_run
 from googlecloudsdk.api_lib.events import metric_names
 from googlecloudsdk.api_lib.events import source
 from googlecloudsdk.api_lib.events import trigger
+from googlecloudsdk.api_lib.kuberun.core import events_constants
+from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import secret
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
@@ -59,12 +61,10 @@ _ANTHOS_EVENTS_CLIENT_VERSION = 'v1beta1'
 _CORE_CLIENT_VERSION = 'v1'
 _OPERATOR_CLIENT_VERSION = 'v1alpha1'
 
-_CLOUD_RUN_EVENTS_NAMESPACE = 'cloud-run-events'
 _DEFAULT_SOURCES_KEY = 'google-cloud-sources-key'
 SOURCES_KEY = 'google-cloud-key'
 
 _CLUSTER_INITIALIZED_ANNOTATION = 'events.cloud.google.com/initialized'
-_CONTROL_PLANE_NAMESPACE = 'cloud-run-events'
 _CONFIG_GCP_AUTH_NAME = 'config-gcp-auth'
 _CONFIGMAP_COLLECTION = 'anthosevents.api.v1.namespaces.configmaps'
 _SECRET_COLLECTION = 'anthosevents.api.v1.namespaces.secrets'
@@ -289,6 +289,32 @@ class AnthosEventsOperations(object):
       client = self._client
     self._client_from_crd_cache[crd_name] = client
     return client
+
+  def GetNamespace(self, namespace_ref):
+    """Returns the referenced namespace."""
+    request = (
+        self._core_client.MESSAGES_MODULE.AnthoseventsApiV1NamespacesGetRequest(
+            name=namespace_ref.RelativeName()))
+    try:
+      return self._core_client.api_v1_namespaces.Get(request)
+    except api_exceptions.HttpNotFoundError:
+      return None
+
+  def CreateNamespace(self, namespace_ref):
+    """Create a namespace."""
+    namespace_name = namespace_ref.Name()
+    namespace_message = self._core_client.MESSAGES_MODULE.Namespace()
+    arg_utils.ParseStaticFieldsIntoMessage(namespace_message,
+                                           {'metadata.name': namespace_name})
+    request = (
+        self._core_client.MESSAGES_MODULE
+        .AnthoseventsApiV1NamespacesCreateRequest(
+            namespace=namespace_message, parent=namespace_ref.RelativeName()))
+    try:
+      return self._core_client.api_v1_namespaces.Create(request)
+    except api_exceptions.HttpConflictError:
+      raise exceptions.NamespaceCreationError(
+          'Namespace [{}] already exists'.format(namespace_name))
 
   def ListNamespaces(self):
     """Returns a list of namespaces' names."""
@@ -646,7 +672,10 @@ class AnthosEventsOperations(object):
       raise exceptions.BrokerNotFound(
           'Broker [{}] not found.'.format(broker_name))
 
-  def CreateOrReplaceSourcesSecret(self, namespace_ref):
+  def CreateOrReplaceSourcesSecret(self,
+                                   namespace_ref,
+                                   cluster_eventing_type=events_constants
+                                   .ClusterEventingType.CLOUDRUN_SECRETS):
     """Create or replace the namespaces' sources secret.
 
     Retrieves default sources secret 'google-cloud-sources-key' from
@@ -654,14 +683,19 @@ class AnthosEventsOperations(object):
     namespace.
 
     Args:
-      namespace_ref: googolecloudsdk.core.resources.Resource, namespace resource
+      namespace_ref: googlecloudsdk.core.resources.Resource, namespace resource
+      cluster_eventing_type: Enum, specifies which namespace to target.
 
     Returns:
       None
     """
+    control_plane_namespace = (
+        events_constants.ControlPlaneNamespaceFromEventingType(
+            cluster_eventing_type))
+
     messages = self._core_client.MESSAGES_MODULE
     default_secret_full_name = 'namespaces/{}/secrets/{}'.format(
-        _CLOUD_RUN_EVENTS_NAMESPACE, _DEFAULT_SOURCES_KEY)
+        control_plane_namespace, _DEFAULT_SOURCES_KEY)
     secret_ref = resources.REGISTRY.Parse(
         SOURCES_KEY,
         params={'namespacesId': namespace_ref.Name()},
@@ -676,7 +710,7 @@ class AnthosEventsOperations(object):
     except api_exceptions.HttpNotFoundError:
       raise exceptions.SecretNotFound(
           'Secret [{}] not found in namespace [{}].'.format(
-              _DEFAULT_SOURCES_KEY, _CLOUD_RUN_EVENTS_NAMESPACE))
+              _DEFAULT_SOURCES_KEY, control_plane_namespace))
 
     existing_secret_obj = secret.Secret(response, messages)
 
@@ -735,26 +769,90 @@ class AnthosEventsOperations(object):
             request)
     return secret.Secret(response, messages), key_ref
 
-  def IsClusterInitialized(self):
+  def GetServiceAccount(self, k8s_service_account_ref):
+    """Returns kubernetes service account."""
+    messages = self._core_client.MESSAGES_MODULE
+    try:
+      request = messages.AnthoseventsApiV1NamespacesServiceaccountsGetRequest(
+          name=k8s_service_account_ref.RelativeName())
+      response = self._core_client.api_v1_namespaces_serviceaccounts.Get(
+          request)
+    except api_exceptions.HttpNotFoundError:
+      return None
+    return k8s_object.KubernetesObject(response, messages, 'ServiceAccount')
+
+  def ReplaceServiceAccount(self, k8s_service_account_ref, service_account_obj):
+    """Replace kubernetes service account."""
+    messages = self._core_client.MESSAGES_MODULE
+
+    try:
+      request = (
+          messages.
+          AnthoseventsApiV1NamespacesServiceaccountsReplaceServiceAccountRequest(
+              name=k8s_service_account_ref.RelativeName(),
+              serviceAccount=service_account_obj.Message()))
+      response = (
+          self._core_client.api_v1_namespaces_serviceaccounts
+          .ReplaceServiceAccount(request))
+    except api_exceptions.HttpNotFoundError:
+      raise exceptions.EventingInitializationError(
+          'Kubernetes service account not found')
+    return k8s_object.KubernetesObject(response, messages, 'ServiceAccount')
+
+  def AnnotateServiceAccount(self, k8s_service_account_ref, annotation_key,
+                             annotation_value):
+    """Annotate kubernetes service account."""
+    service_account_obj = self.GetServiceAccount(k8s_service_account_ref)
+
+    if service_account_obj is None:
+      raise api_exceptions.HttpNotFoundError(k8s_service_account_ref.Name())
+
+    annotations_map = {}
+    if service_account_obj.metadata.annotations:
+      for additional_property in service_account_obj.metadata.annotations.additionalProperties:
+        annotations_map[additional_property.key] = additional_property.value
+
+    annotations_map[annotation_key] = annotation_value
+
+    arg_utils.SetFieldInMessage(service_account_obj.Message(),
+                                'metadata.annotations', annotations_map)
+
+    return self.ReplaceServiceAccount(k8s_service_account_ref,
+                                      service_account_obj)
+
+  def IsClusterInitialized(self,
+                           cluster_eventing_type=events_constants
+                           .ClusterEventingType.CLOUDRUN_SECRETS):
     """Returns whether the cluster has been initialized for eventing."""
+    control_plane_namespace = (
+        events_constants.ControlPlaneNamespaceFromEventingType(
+            cluster_eventing_type))
     configmap_obj = self._GetConfigMap(
-        _ConfigMapRef(_CONTROL_PLANE_NAMESPACE, _CONFIG_GCP_AUTH_NAME))
+        _ConfigMapRef(control_plane_namespace, _CONFIG_GCP_AUTH_NAME))
     if configmap_obj is None:
       return False
     return configmap_obj.annotations.get(
         _CLUSTER_INITIALIZED_ANNOTATION) == 'true'
 
-  def MarkClusterInitialized(self):
+  def MarkClusterInitialized(self,
+                             cluster_eventing_type=events_constants
+                             .ClusterEventingType.CLOUDRUN_SECRETS):
     """Marks the cluster as initialized for eventing.
 
     This creates or updates a ConfigMap which involves adding an annotation
     and setting some default configuration for eventing to use.
+
+    Args:
+      cluster_eventing_type: Enum, specifies which namespace to target.
     """
+    control_plane_namespace = (
+        events_constants.ControlPlaneNamespaceFromEventingType(
+            cluster_eventing_type))
     configmap_obj = self._GetConfigMap(
-        _ConfigMapRef(_CONTROL_PLANE_NAMESPACE, _CONFIG_GCP_AUTH_NAME))
+        _ConfigMapRef(control_plane_namespace, _CONFIG_GCP_AUTH_NAME))
     if configmap_obj is None:
       configmap_obj = configmap.ConfigMap.New(self._core_client,
-                                              _CONTROL_PLANE_NAMESPACE)
+                                              control_plane_namespace)
       configmap_obj.name = _CONFIG_GCP_AUTH_NAME
       self._PopulateDefaultAuthConfig(configmap_obj)
       self._CreateConfigMap(configmap_obj)

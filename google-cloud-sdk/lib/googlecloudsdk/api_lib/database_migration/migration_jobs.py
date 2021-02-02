@@ -33,11 +33,11 @@ class MigrationJobsClient(object):
   _FIELDS_MAP = ['display_name', 'type', 'dump_path', 'source', 'destination']
   _REVERSE_MAP = ['vm_ip', 'vm_port', 'vm', 'vpc']
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or api_util.GetClientInstance()
-    self.messages = messages or api_util.GetMessagesModule()
+  def __init__(self, release_track):
+    self.client = api_util.GetClientInstance(release_track)
+    self.messages = api_util.GetMessagesModule(release_track)
     self._service = self.client.projects_locations_migrationJobs
-    self.resource_parser = api_util.GetResourceParser()
+    self.resource_parser = api_util.GetResourceParser(release_track)
 
   def _ValidateArgs(self, args):
     self._ValidateDumpPath(args)

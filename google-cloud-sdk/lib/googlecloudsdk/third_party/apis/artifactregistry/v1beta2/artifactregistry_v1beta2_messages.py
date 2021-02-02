@@ -979,12 +979,14 @@ class Repository(_messages.Message):
       MAVEN: Maven package format.
       NPM: NPM package format.
       APT: APT package format.
+      YUM: YUM package format.
     """
     FORMAT_UNSPECIFIED = 0
     DOCKER = 1
     MAVEN = 2
     NPM = 3
     APT = 4
+    YUM = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

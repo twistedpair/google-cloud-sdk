@@ -18,7 +18,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.kuberun import mapobject
+from googlecloudsdk.api_lib.kuberun import structuredout
 
 # Designated key value for latest.
 # Revisions' names may not be uppercase, so this is distinct.
@@ -38,7 +38,7 @@ def GetKey(target):
   return LATEST_REVISION_KEY if target.latestRevision else target.revisionName
 
 
-class TrafficTarget(mapobject.MapObject):
+class TrafficTarget(structuredout.MapObject):
   """Wraps the traffic target of Knative service revision."""
 
   def __str__(self):

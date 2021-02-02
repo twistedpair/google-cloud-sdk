@@ -18,7 +18,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.kuberun import kubernetesobject
-from googlecloudsdk.api_lib.kuberun import mapobject
 
 
 class BackendBinding(kubernetesobject.KubernetesObject):
@@ -27,30 +26,3 @@ class BackendBinding(kubernetesobject.KubernetesObject):
   @property
   def service(self):
     return self._props['spec']['targetService']
-
-  @property
-  def ready(self):
-    for c in self._props['status']['conditions']:
-      if c['type'] == 'Ready':
-        return c['status']
-    return 'UNKNOWN'
-
-
-class ResourceRecord(mapobject.MapObject):
-  """Wraps JSON-based dict object of a resource record of a domain mapping."""
-
-  @property
-  def type(self):
-    return self._props['type']
-
-  @property
-  def rrdata(self):
-    return self._props['rrdata']
-
-  @property
-  def name(self):
-    return self._props.get('name')
-
-  @name.setter
-  def name(self, n):
-    self._props['name'] = n

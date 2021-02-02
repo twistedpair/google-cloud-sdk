@@ -2438,7 +2438,8 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsListReques
     filter: Restricts the artifacts returned to those matching a filter.
       Syntax: https://cloud.google.com/appengine/docs/standard/python/search/q
       uery_strings The fields available for filtering are: - user_id -
-      consent_content_version
+      consent_content_version - metadata. For example,
+      `Metadata("key")="value"` or `HasMetadata("key")`.
     pageSize: Limit on the number of consent artifacts to return in a single
       response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List

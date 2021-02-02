@@ -18,10 +18,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.kuberun import mapobject
+from googlecloudsdk.api_lib.kuberun import structuredout
 
 
-class Status(mapobject.MapObject):
+class Status(structuredout.MapObject):
   """Wraps the status field of a Kubernetes object."""
 
   @property
@@ -41,7 +41,7 @@ class Status(mapobject.MapObject):
     return self._props.get('url')
 
 
-class Condition(mapobject.MapObject):
+class Condition(structuredout.MapObject):
   """Wraps the condition field of a Kubernetes Status object."""
 
   @property

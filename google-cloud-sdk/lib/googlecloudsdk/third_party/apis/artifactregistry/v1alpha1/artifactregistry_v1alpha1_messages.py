@@ -15,6 +15,22 @@ from apitools.base.py import extra_types
 package = 'artifactregistry'
 
 
+class ArtifactregistryProjectsLocationsRepositoriesAptArtifactsImportRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesAptArtifactsImportRequest
+  object.
+
+  Fields:
+    googleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest: A
+      GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest resource
+      to be passed as the request body.
+    parent: The name of the parent resource where the artifacts will be
+      imported.
+  """
+
+  googleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class ArtifactregistryProjectsLocationsRepositoriesImportRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsRepositoriesImportRequest object.
 
@@ -27,6 +43,22 @@ class ArtifactregistryProjectsLocationsRepositoriesImportRequest(_messages.Messa
   """
 
   googleDevtoolsArtifactregistryV1alpha1ImportArtifactsRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesYumArtifactsImportRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesYumArtifactsImportRequest
+  object.
+
+  Fields:
+    googleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest: A
+      GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest resource
+      to be passed as the request body.
+    parent: The name of the parent resource where the artifacts will be
+      imported.
+  """
+
+  googleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest', 1)
   parent = _messages.StringField(2, required=True)
 
 
@@ -86,6 +118,29 @@ class GoogleDevtoolsArtifactregistryV1alpha1GcsSource(_messages.Message):
   useWildcards = _messages.BooleanField(2)
 
 
+class GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsGcsSource(_messages.Message):
+  r"""Google Cloud Storage location where the artifacts currently reside.
+
+  Fields:
+    uris: Cloud Storage paths URI (e.g., gs://my_bucket//my_object).
+    useWildcards: Supports URI wildcards for matching multiple objects from a
+      single URI.
+  """
+
+  uris = _messages.StringField(1, repeated=True)
+  useWildcards = _messages.BooleanField(2)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest(_messages.Message):
+  r"""The request to import new apt artifacts.
+
+  Fields:
+    gcsSource: Google Cloud Storage location where input content is located.
+  """
+
+  gcsSource = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsGcsSource', 1)
+
+
 class GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsRequest(_messages.Message):
   r"""The request to import new artifacts.
 
@@ -106,6 +161,29 @@ class GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsResponse(_messages.Me
 
   errors = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ErrorInfo', 1, repeated=True)
   packages = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1Package', 2, repeated=True)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsGcsSource(_messages.Message):
+  r"""Google Cloud Storage location where the artifacts currently reside.
+
+  Fields:
+    uris: Cloud Storage paths URI (e.g., gs://my_bucket//my_object).
+    useWildcards: Supports URI wildcards for matching multiple objects from a
+      single URI.
+  """
+
+  uris = _messages.StringField(1, repeated=True)
+  useWildcards = _messages.BooleanField(2)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest(_messages.Message):
+  r"""The request to import new yum artifacts.
+
+  Fields:
+    gcsSource: Google Cloud Storage location where input content is located.
+  """
+
+  gcsSource = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsGcsSource', 1)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1Package(_messages.Message):

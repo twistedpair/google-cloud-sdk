@@ -43,7 +43,10 @@ class KubeRunCli(binary_operations.BinaryBackedOperation):
         'MISSING_EXEC': messages.MISSING_BINARY.format(binary='kuberun')
     }
     super(KubeRunCli, self).__init__(
-        binary='kuberun', custom_errors=custom_errors, **kwargs)
+        binary='kuberun',
+        check_hidden=True,
+        custom_errors=custom_errors,
+        **kwargs)
 
   def _ParseArgsForCommand(self, command, **kwargs):
     # TODO(b/168745545) this should return only arguments, however by the time
@@ -59,7 +62,10 @@ class KubeRunStreamingCli(binary_operations.StreamingBinaryBackedOperation):
         'MISSING_EXEC': messages.MISSING_BINARY.format(binary='kuberun')
     }
     super(KubeRunStreamingCli, self).__init__(
-        binary='kuberun', custom_errors=custom_errors, **kwargs)
+        binary='kuberun',
+        check_hidden=True,
+        custom_errors=custom_errors,
+        **kwargs)
 
   def _ParseArgsForCommand(self, command, **kwargs):
     # TODO(b/168745545) this should return only arguments, however by the time

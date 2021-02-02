@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 
+import six
+
 
 class SecurityPolicy(object):
   """Abstracts SecurityPolicy resource."""
@@ -115,6 +117,7 @@ class SecurityPolicyRule(object):
         'deny-403': 'deny(403)',
         'deny-404': 'deny(404)',
         'deny-502': 'deny(502)',
+        'redirect-to-recaptcha': 'redirect_to_recaptcha'
     }.get(action, action)
 
   def _MakeDeleteRequestTuple(self):
@@ -132,7 +135,7 @@ class SecurityPolicyRule(object):
                 securityPolicy=self.ref.securityPolicy))
 
   def _MakeCreateRequestTuple(self, src_ip_ranges, expression, action,
-                              description, preview):
+                              description, preview, redirect_target):
     """Generates a SecurityPolicies AddRule request.
 
     Args:
@@ -141,6 +144,9 @@ class SecurityPolicyRule(object):
       action: The action to enforce on match.
       description: The description of the rule.
       preview: If true, the action will not be enforced.
+      redirect_target: The URL to which traffic is routed when the rule action
+        is set to "redirect".
+
 
     Returns:
       A tuple containing the resource collection, verb, and request.
@@ -154,19 +160,24 @@ class SecurityPolicyRule(object):
     elif expression:
       matcher = self._messages.SecurityPolicyRuleMatcher(
           expr=self._messages.Expr(expression=expression))
+
+    security_policy_rule = self._messages.SecurityPolicyRule(
+        priority=self._ConvertPriorityToInt(self.ref.Name()),
+        description=description,
+        action=self._ConvertAction(action),
+        match=matcher,
+        preview=preview)
+    if redirect_target is not None:
+      security_policy_rule.redirectTarget = six.text_type(redirect_target)
+
     return (self._client.securityPolicies, 'AddRule',
             self._messages.ComputeSecurityPoliciesAddRuleRequest(
                 project=self.ref.project,
-                securityPolicyRule=self._messages.SecurityPolicyRule(
-                    priority=self._ConvertPriorityToInt(self.ref.Name()),
-                    description=description,
-                    action=self._ConvertAction(action),
-                    match=matcher,
-                    preview=preview),
+                securityPolicyRule=security_policy_rule,
                 securityPolicy=self.ref.securityPolicy))
 
   def _MakePatchRequestTuple(self, src_ip_ranges, expression, action,
-                             description, preview):
+                             description, preview, redirect_target):
     """Generates a SecurityPolicies PatchRule request.
 
     Args:
@@ -175,6 +186,9 @@ class SecurityPolicyRule(object):
       action: The action to enforce on match.
       description: The description of the rule.
       preview: If true, the action will not be enforced.
+      redirect_target: The URL to which traffic is routed when the rule action
+        is set to "redirect".
+
 
     Returns:
       A tuple containing the resource collection, verb, and request.
@@ -189,16 +203,21 @@ class SecurityPolicyRule(object):
     elif expression:
       matcher = self._messages.SecurityPolicyRuleMatcher(
           expr=self._messages.Expr(expression=expression))
+
+    security_policy_rule = self._messages.SecurityPolicyRule(
+        priority=self._ConvertPriorityToInt(self.ref.Name()),
+        description=description,
+        action=self._ConvertAction(action),
+        match=matcher,
+        preview=preview)
+    if redirect_target is not None:
+      security_policy_rule.redirectTarget = six.text_type(redirect_target)
+
     return (self._client.securityPolicies, 'PatchRule',
             self._messages.ComputeSecurityPoliciesPatchRuleRequest(
                 project=self.ref.project,
                 priority=self._ConvertPriorityToInt(self.ref.Name()),
-                securityPolicyRule=self._messages.SecurityPolicyRule(
-                    priority=self._ConvertPriorityToInt(self.ref.Name()),
-                    description=description,
-                    action=self._ConvertAction(action),
-                    match=matcher,
-                    preview=preview),
+                securityPolicyRule=security_policy_rule,
                 securityPolicy=self.ref.securityPolicy))
 
   def Delete(self, only_generate_request=False):
@@ -219,10 +238,12 @@ class SecurityPolicyRule(object):
              action=None,
              description=None,
              preview=False,
+             redirect_target=None,
              only_generate_request=False):
+    """Make and optionally send a request to Create a security policy rule."""
     requests = [
         self._MakeCreateRequestTuple(src_ip_ranges, expression, action,
-                                     description, preview)
+                                     description, preview, redirect_target)
     ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
@@ -234,10 +255,12 @@ class SecurityPolicyRule(object):
             action=None,
             description=None,
             preview=None,
+            redirect_target=None,
             only_generate_request=False):
+    """Make and optionally send a request to Patch a security policy rule."""
     requests = [
         self._MakePatchRequestTuple(src_ip_ranges, expression, action,
-                                    description, preview)
+                                    description, preview, redirect_target)
     ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)

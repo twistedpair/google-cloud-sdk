@@ -2565,6 +2565,20 @@
         }
       }
     },
+    "BatchGetMessagesResponse": {
+      "id": "BatchGetMessagesResponse",
+      "description": "Gets multiple messages in a specified HL7v2 store.",
+      "type": "object",
+      "properties": {
+        "messages": {
+          "description": "The returned Messages. See `MessageView` for populated fields.",
+          "type": "array",
+          "items": {
+            "$ref": "Message"
+          }
+        }
+      }
+    },
     "ListMessagesResponse": {
       "id": "ListMessagesResponse",
       "description": "Lists the messages in the specified HL7v2 store.",
@@ -2735,6 +2749,10 @@
             "$ref": "StreamConfig"
           }
         },
+        "validationConfig": {
+          "description": "Configuration for how to validate incoming FHIR resources against configured profiles.",
+          "$ref": "ValidationConfig"
+        },
         "defaultSearchHandlingStrict": {
           "description": "If true, overrides the default search behavior for this FHIR store to `handling=strict` which returns an error for unrecognized search parameters. If false, uses the FHIR specification default `handling=lenient` which ignores unrecognized search parameters. The handling can always be changed from the default on an individual API call by setting the HTTP header `Prefer: handling=strict` or `Prefer: handling=lenient`.",
           "type": "boolean"
@@ -2817,6 +2835,24 @@
           "description": "The depth for all recursive structures in the output analytics schema. For example, `concept` in the CodeSystem resource is a recursive structure; when the depth is 2, the CodeSystem table will have a column called `concept.concept` but not `concept.concept.concept`. If not specified or set to 0, the server will use the default value 2. The maximum depth allowed is 5.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "ValidationConfig": {
+      "id": "ValidationConfig",
+      "description": "Contains the configuration for FHIR profiles and validation.",
+      "type": "object",
+      "properties": {
+        "disableProfileValidation": {
+          "description": "Whether to disable profile validation for this FHIR store. Set this to true to disable checking incoming resources for conformance against StructureDefinitions in this FHIR store.",
+          "type": "boolean"
+        },
+        "enabledImplementationGuides": {
+          "description": "A list of ImplementationGuide URLs in this FHIR store that are used to configure the profiles to use for validation. For example, to use the US Core profiles for validation, set `enabled_implementation_guides` to `[\"http:\/\/hl7.org\/fhir\/us\/core\/ImplementationGuide\/ig\"]`. If `enabled_implementation_guides` is empty or omitted, then incoming resources are only required to conform to the base FHIR profiles. Otherwise, a resource must conform to at least one profile listed in the `global` property of one of the enabled ImplementationGuides. The Cloud Healthcare API does not currently enforce all of the rules in a StructureDefinition. The following rules are supported: - min\/max - minValue\/maxValue - maxLength - type - fixed[x] - pattern[x] on simple types - slicing, when using \"value\" as the discriminator type When a URL cannot be resolved (for example, in a type assertion), the server does not return an error.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -5078,6 +5114,58 @@
                           ],
                           "description": "Gets an HL7v2 message."
                         },
+                        "batchGet": {
+                          "id": "healthcare.projects.locations.datasets.hl7V2Stores.messages.batchGet",
+                          "path": "v1beta1/{+parent}/messages:batchGet",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}/messages:batchGet",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Name of the HL7v2 store to retrieve messages from, in the format: `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/hl7v2Stores\/{hl7v2_store_id}`.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/hl7V2Stores\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "ids": {
+                              "description": "The resource id of the HL7v2 messages to retrieve in the format: `{message_id}`, where the full resource name is `{parent}\/messages\/{message_id}` A maximum of 100 messages can be retrieved in a batch. All 'ids' have to be under parent.",
+                              "location": "query",
+                              "repeated": true,
+                              "type": "string"
+                            },
+                            "view": {
+                              "description": "Specifies the parts of the Messages resource to return in the response. When unspecified, equivalent to BASIC.",
+                              "location": "query",
+                              "type": "string",
+                              "enumDescriptions": [
+                                "Not specified, equivalent to FULL for getMessage, equivalent to BASIC for listMessages.",
+                                "Server responses include all the message fields except parsed_data, and schematized_data fields.",
+                                "Server responses include all the message fields except data and schematized_data fields.",
+                                "Server responses include all the message fields.",
+                                "Server responses include all the message fields except data and parsed_data fields.",
+                                "Server responses include only the name field."
+                              ],
+                              "enum": [
+                                "MESSAGE_VIEW_UNSPECIFIED",
+                                "RAW_ONLY",
+                                "PARSED_ONLY",
+                                "FULL",
+                                "SCHEMATIZED_ONLY",
+                                "BASIC"
+                              ]
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "BatchGetMessagesResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets multiple messages in the given HL7v2 store."
+                        },
                         "delete": {
                           "id": "healthcare.projects.locations.datasets.hl7V2Stores.messages.delete",
                           "path": "v1beta1/{+name}",
@@ -6240,6 +6328,47 @@
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
                           "description": "Translates a code from one value set to another by searching for appropriate concept maps. Implements the FHIR standard $translate operation ([DSTU2](https:\/\/www.hl7.org\/fhir\/DSTU2\/operation-conceptmap-translate.html), [STU3](https:\/\/www.hl7.org\/fhir\/STU3\/operation-conceptmap-translate.html), [R4](https:\/\/www.hl7.org\/fhir\/R4\/operation-conceptmap-translate.html)). On success, the response body contains a JSON-encoded representation of a FHIR Parameters resource, which includes the translation result. Errors generated by the FHIR store contain a JSON-encoded `OperationOutcome` resource describing the reason for the error. If the request cannot be mapped to a valid API method on a FHIR store, a generic GCP error might be returned instead."
+                        },
+                        "Resource-validate": {
+                          "id": "healthcare.projects.locations.datasets.fhirStores.fhir.Resource-validate",
+                          "path": "v1beta1/{+parent}/fhir/{+type}/$validate",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/{fhirId}/$validate",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "The name of the FHIR store that holds the profiles being used for validation.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "type": {
+                              "description": "The FHIR resource type of the resource being validated. For a complete list, see the FHIR Resource Index ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/resourcelist.html), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resourcelist.html), or [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/resourcelist.html)). Must match the resource type in the provided content.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^[^\/]+$",
+                              "type": "string"
+                            },
+                            "profile": {
+                              "description": "A profile that this resource should be validated against.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent",
+                            "type"
+                          ],
+                          "request": {
+                            "$ref": "HttpBody"
+                          },
+                          "response": {
+                            "$ref": "HttpBody"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Validates an input FHIR resource's conformance to its profiles and the profiles configured on the FHIR store. Implements the FHIR extended operation $validate ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/resource-operations.html#validate), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resource-operations.html#validate), or [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/resource-operation-validate.html)). The request body must contain a JSON-encoded FHIR resource, and the request headers must contain `Content-Type: application\/fhir+json`. The `Parameters` input syntax is not supported. The `profile` query parameter can be used to request that the resource only be validated against a specific profile. If a profile with the given URL cannot be found in the FHIR store then an error is returned. Errors generated by validation contain a JSON-encoded `OperationOutcome` resource describing the reason for the error. If the request cannot be mapped to a valid API method on a FHIR store, a generic GCP error might be returned instead."
                         }
                       }
                     }
@@ -7354,7 +7483,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Restricts the artifacts returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings The fields available for filtering are: - user_id - consent_content_version",
+                              "description": "Restricts the artifacts returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings The fields available for filtering are: - user_id - consent_content_version - metadata. For example, `Metadata(\"key\")=\"value\"` or `HasMetadata(\"key\")`.",
                               "location": "query",
                               "type": "string"
                             }

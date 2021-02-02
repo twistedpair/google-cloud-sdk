@@ -280,14 +280,16 @@
             "Docker package format.",
             "Maven package format.",
             "NPM package format.",
-            "APT package format."
+            "APT package format.",
+            "YUM package format."
           ],
           "enum": [
             "FORMAT_UNSPECIFIED",
             "DOCKER",
             "MAVEN",
             "NPM",
-            "APT"
+            "APT",
+            "YUM"
           ]
         },
         "description": {

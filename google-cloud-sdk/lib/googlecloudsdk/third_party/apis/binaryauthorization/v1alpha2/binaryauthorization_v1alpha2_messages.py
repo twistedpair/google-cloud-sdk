@@ -416,6 +416,17 @@ class BinaryauthorizationProjectsPolicyTestIamPermissionsRequest(_messages.Messa
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class BinaryauthorizationSystempolicyGetPolicyRequest(_messages.Message):
+  r"""A BinaryauthorizationSystempolicyGetPolicyRequest object.
+
+  Fields:
+    name: Required. The resource name, in the format `locations/*/policy`.
+      Note that the system policy is not associated with a project.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 

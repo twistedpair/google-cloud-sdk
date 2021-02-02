@@ -26,18 +26,29 @@ from googlecloudsdk.command_lib.util.args import labels_util
 class ConnectionProfilesClient(object):
   """Client for connection profiles service in the API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or api_util.GetClientInstance()
-    self.messages = messages or api_util.GetMessagesModule()
+  def __init__(self, release_track):
+    self._api_version = api_util.GetApiVersion(release_track)
+    self.client = api_util.GetClientInstance(release_track)
+    self.messages = api_util.GetMessagesModule(release_track)
     self._service = self.client.projects_locations_connectionProfiles
-    self.resource_parser = api_util.GetResourceParser()
+    self.resource_parser = api_util.GetResourceParser(release_track)
+
+  def _ClientCertificateArgName(self):
+    if self._api_version == 'v1alpha2':
+      return 'certificate'
+    return 'client_certificate'
+
+  def _InstanceArgName(self):
+    if self._api_version == 'v1alpha2':
+      return 'instance'
+    return 'cloudsql_instance'
 
   def _ValidateArgs(self, args):
     self._ValidateSslConfigArgs(args)
 
   def _ValidateSslConfigArgs(self, args):
     self._ValidateCertificateFormat(args, 'ca_certificate')
-    self._ValidateCertificateFormat(args, 'certificate')
+    self._ValidateCertificateFormat(args, self._ClientCertificateArgName())
     self._ValidateCertificateFormat(args, 'private_key')
 
   def _ValidateCertificateFormat(self, args, field):
@@ -56,18 +67,20 @@ class ConnectionProfilesClient(object):
   def _GetSslConfig(self, args):
     return self.messages.SslConfig(
         clientKey=args.private_key,
-        clientCertificate=args.certificate,
+        clientCertificate=args.GetValue(self._ClientCertificateArgName()),
         caCertificate=args.ca_certificate)
 
   def _UpdateSslConfig(self, connection_profile, args, update_fields):
+    """Fills connection_profile and update_fields with SSL data from args."""
     if args.IsSpecified('ca_certificate'):
       connection_profile.mysql.ssl.caCertificate = args.ca_certificate
       update_fields.append('mysql.ssl.caCertificate')
     if args.IsSpecified('private_key'):
       connection_profile.mysql.ssl.clientKey = args.private_key
       update_fields.append('mysql.ssl.clientKey')
-    if args.IsSpecified('certificate'):
-      connection_profile.mysql.ssl.clientCertificate = args.certificate
+    if args.IsSpecified(self._ClientCertificateArgName()):
+      connection_profile.mysql.ssl.clientCertificate = args.GetValue(
+          self._ClientCertificateArgName())
       update_fields.append('mysql.ssl.clientCertificate')
 
   def _GetMySqlConnectionProfile(self, args):
@@ -78,7 +91,7 @@ class ConnectionProfilesClient(object):
         username=args.username,
         password=args.password,
         ssl=ssl_config,
-        cloudSqlId=args.instance)
+        cloudSqlId=args.GetValue(self._InstanceArgName()))
 
   def _UpdateMySqlConnectionProfile(
       self, connection_profile, args, update_fields):
@@ -95,8 +108,9 @@ class ConnectionProfilesClient(object):
     if args.IsSpecified('password'):
       connection_profile.mysql.password = args.password
       update_fields.append('mysql.password')
-    if args.IsSpecified('instance'):
-      connection_profile.mysql.cloudSqlId = args.instance
+    if args.IsSpecified(self._InstanceArgName()):
+      connection_profile.mysql.cloudSqlId = args.GetValue(
+          self._InstanceArgName())
       update_fields.append('mysql.instance')
     self._UpdateSslConfig(connection_profile, args, update_fields)
 

@@ -981,7 +981,7 @@
           "$ref": "GoogleCloudMlV1__TreeShapAttribution"
         },
         "saabasAttribution": {
-          "description": "Attributes credit by running a faster aproximation to the TreeShap method. Please refer to this link for more details: https:\/\/blog.datadive.net\/interpreting-random-forests\/ This attribution method is only supported for XGBoost models.",
+          "description": "Attributes credit by running a faster approximation to the TreeShap method. Please refer to this link for more details: https:\/\/blog.datadive.net\/interpreting-random-forests\/ This attribution method is only supported for XGBoost models.",
           "$ref": "GoogleCloudMlV1__SaabasAttribution"
         }
       }

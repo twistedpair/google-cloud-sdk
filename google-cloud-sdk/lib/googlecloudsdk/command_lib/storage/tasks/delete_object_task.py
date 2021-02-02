@@ -38,3 +38,8 @@ class DeleteObjectTask(task.Task):
     provider = self._object_resource.storage_url.scheme
     api_factory.get_api(provider).delete_object(self._object_resource)
 
+  def __eq__(self, other):
+    if not isinstance(other, DeleteObjectTask):
+      return NotImplemented
+    return self._object_resource == other._object_resource
+

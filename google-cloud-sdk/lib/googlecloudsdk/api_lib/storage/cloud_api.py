@@ -200,7 +200,8 @@ class CloudApi(object):
     """Deletes an object.
 
     Args:
-      object_resource (resource_reference.ObjectResource): The object to delete.
+      object_resource (resource_reference.ObjectResource|UnknownResource):
+          The object to delete.
       request_config (RequestConfig): Object containing general API function
           arguments. Subclasses for specific cloud providers are available.
 

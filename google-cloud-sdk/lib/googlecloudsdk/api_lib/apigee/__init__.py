@@ -23,6 +23,7 @@ import json
 import re
 
 from googlecloudsdk.api_lib.apigee import base
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.apigee import errors
 from googlecloudsdk.command_lib.apigee import request
 from googlecloudsdk.command_lib.apigee import resource_args
@@ -240,3 +241,103 @@ class ProductsClient(base.PagedListClient):
         identifiers, ["organization", "product"],
         method="PUT",
         body=json.dumps(product_dict))
+
+
+class ArchivesClient(base.BaseClient):
+  """Client for the Apigee archiveDeployments API."""
+  _entity_path = ["organization", "environment", "archiveDeployment"]
+
+  @classmethod
+  def GetUploadUrl(cls, identifiers):
+    """Apigee API for generating a signed URL for uploading archives.
+
+    This API uses the custom method:
+    organizations/*/environments/*/archiveDeployments:generateUploadUrl
+
+    Args:
+      identifiers: Dict of identifiers for the request entity path, which must
+        include "organizationsId" and "environmentsId".
+
+    Returns:
+      A dict of the API response in the form of:
+        {"uploadUri": "https://storage.googleapis.com/ ... (full URI)"}
+
+    Raises:
+      command_lib.apigee.errors.RequestError if there is an error with the API
+        request.
+    """
+    try:
+      # The API call doesn't need to specify an archiveDeployment resource id,
+      # so only the "organizations/environments" entity path is needed.
+      # "archiveDeployment" is provided as the entity_collection argument.
+      return request.ResponseToApiRequest(
+          identifiers,
+          entity_path=cls._entity_path[:-1],
+          entity_collection=cls._entity_path[-1],
+          method=":generateUploadUrl")
+    except errors.RequestError as error:
+      raise error.RewrittenError("archive deployment", "get upload url for")
+
+  @classmethod
+  def CreateArchiveDeployment(cls, identifiers, gcs_uri):
+    """Apigee API for creating a new archive deployment.
+
+    Args:
+      identifiers: Dict of identifiers for the request entity path, which must
+        include "organizationsId" and "environmentsId".
+      gcs_uri: A string of the signed URL used to upload the archive deployment.
+
+    Returns:
+      A dict of the API response. The API call starts a long-running operation,
+        so the response dict will contain info about the operation id.
+
+    Raises:
+      command_lib.apigee.errors.RequestError if there is an error with the API
+        request.
+    """
+    create_archive_deployment_req = {"gcs_uri": gcs_uri}
+    try:
+      # The API call doesn't need to specify an archiveDeployment resource name
+      # so only the "organizations/environments" entity path is needed.
+      # "archiveDeployment" is provided as the entity_collection argument.
+      return request.ResponseToApiRequest(
+          identifiers,
+          cls._entity_path[:-1],
+          cls._entity_path[-1],
+          method="POST",
+          body=json.dumps(create_archive_deployment_req))
+    except errors.RequestError as error:
+      raise error.RewrittenError("archive deployment", "create")
+
+
+class LROPoller(waiter.OperationPoller):
+  """Polls on completion of an Apigee long running operation."""
+
+  def __init__(self, organization):
+    super(LROPoller, self).__init__()
+    self.organization = organization
+
+  def IsDone(self, operation):
+    finished = False
+    try:
+      finished = (operation["metadata"]["state"] == "FINISHED")
+    except KeyError as err:
+      raise waiter.OperationError("Malformed operation; %s\n%r" %
+                                  (err, operation))
+    if finished and "error" in operation:
+      raise errors.RequestError(
+          "operation", {"name": operation["name"]},
+          "await",
+          body=json.dumps(operation))
+    return finished
+
+  def Poll(self, operation_uuid):
+    return OperationsClient.Describe({
+        "organizationsId": self.organization,
+        "operationsId": operation_uuid
+    })
+
+  def GetResult(self, operation):
+    if "response" in operation:
+      return operation["response"]
+    return None

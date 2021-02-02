@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Wraps a Cloud Run revision message with convenience methods."""
+"""Wraps a resource message with a container with convenience methods."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -34,7 +34,12 @@ EGRESS_SETTINGS_PRIVATE_RANGES_ONLY = 'private-ranges-only'
 
 
 class ContainerResource(k8s_object.KubernetesObject):
-  """Wraps a Cloud Run Revision message, making fields more convenient."""
+  """Wraps a resource message with a container, making fields more convenient.
+
+  Provides convience fields for Cloud Run resources that contain a container.
+  These resources also typically have other overlapping fields such as volumes
+  which are also handled by this wrapper.
+  """
 
   @property
   def env_vars(self):

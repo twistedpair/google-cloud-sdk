@@ -19,13 +19,9 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import atexit
-import base64
 import io
 import os
 import re
-import ssl
-import tempfile
 
 from googlecloudsdk.api_lib.container import api_adapter as gke_api_adapter
 from googlecloudsdk.api_lib.container import kubeconfig as kconfig
@@ -42,9 +38,12 @@ from googlecloudsdk.core import requests
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
+from kubernetes import client as kube_client_lib
+from kubernetes import config as kube_client_config
+
+
 # import urljoin in a Python 2 and 3 compatible way
 from six.moves.urllib.parse import urljoin
-import urllib3
 
 NAMESPACE_DELETION_INITIAL_WAIT_MS = 0
 NAMESPACE_DELETION_TIMEOUT_MS = 1000 * 60 * 2
@@ -215,116 +214,26 @@ class KubeconfigProcessor(object):
 
     return kubeconfig, context_name
 
-  def GetClientConfig(self, kubeconfig, context_name):
-    """Gets client info from the kubeconfig file for the context.
+  def GetKubeClient(self, kubeconfig=None, context=None):
+    """Gets a client derived from the kubeconfig and context.
 
     Args:
-      kubeconfig: string, path to a kubeconfig file
-      context_name: string, name of a context to extract client info for
+      kubeconfig: path to a kubeconfig file, None if in-cluster config.
+      context: the kubeconfig context to use, None if in-cluster config.
 
     Returns:
-      A dictionary containing the following client info:
-        server: string, the address of the API server
-        cluster_ca_cert: string, the base64-encoded cert for the CA that issued
-                         the API server's serving cert
-        client_cert: string, the base64-encoded client cert
-        client_key: string, the base64-encoded client private key
-        insecure: bool, whether to verify the server's TLS certificate
-
-    Raises:
-      Error: If critical info is missing from the kubeconfig or client info
-             could not otherwise be extracted.
+      kubernetes.client.ApiClient
     """
-    k = kconfig.Kubeconfig.LoadFromFile(kubeconfig)
-
-    # TODO(b/150317368): The below is based on
-    # third_party/py/googlecloudsdk/api_lib/container/util.py. Remove it once
-    # we can migrate to the official client, which can parse the kubeconfig
-    # for us.
-    context = (
-        k.contexts.get(context_name) and
-        k.contexts[context_name].get('context'))
-    if not context:
-      raise exceptions.Error('Missing kubeconfig context: {}'.format(
-          context_name))
-
-    cluster_key = context.get('cluster')
-    user_key = context.get('user')
-    if not cluster_key or not user_key:
-      raise exceptions.Error('Missing kubeconfig cluster '
-                             'or user in context: {}'.format(context_name))
-
-    cluster = (
-        k.clusters.get(cluster_key)
-        and k.clusters[cluster_key].get('cluster'))
-    user = k.users.get(user_key) and k.users[user_key].get('user')
-    if not cluster or not user:
-      raise exceptions.Error('Missing kubeconfig entries '
-                             'for cluster: {} and/or user: {} '
-                             'in context: {}'.format(cluster_key, user_key,
-                                                     context_name))
-    # Verify cluster data
-    server = cluster.get('server')
-    if not server:
-      raise exceptions.Error('Missing server entry for cluster: {}'.format(
-          cluster_key))
-
-    # TODO(b/150317368): The value at `certificate-authority-data` is an inline
-    # CA bundle. The value at `certificate-authority` is a path to a file
-    # containing the CA bundle. We currently only support the former. When
-    # b/149872627 is fixed, we will move to the official client, which supports
-    # both. This is ok for GKE on GCP and GKE On-Prem, for now, but we will
-    # need both to support arbitrary clusters.
-    ca_file = cluster.get('certificate-authority')
-    if ca_file:
-      raise exceptions.Error('certificate-authority not yet supported. '
-                             'Please use certificate-authority-data instead.')
-    ca_data = cluster.get('certificate-authority-data')
-
-    insecure = cluster.get('insecure-skip-tls-verify')
-    if insecure:
-      if ca_data:
-        raise exceptions.Error('Cluster cannot specify both '
-                               'certificate-authority-data and '
-                               'insecure-skip-tls-verify')
-    elif not ca_data:
-      raise exceptions.Error('Cluster must specify one of '
-                             'certificate-authority-data or '
-                             'insecure-skip-tls-verify')
-
-    # Verify user data
-    # TODO(b/150317368): Use official client to support full kubeconfig.
-    cert_file = user.get('client-certificate')
-    if cert_file:
-      raise exceptions.Error('client-certificate not yet supported. '
-                             'Please use client-certificate-data instead.')
-    cert_data = user.get('client-certificate-data')
-
-    # TODO(b/150317368): Use official client to support full kubeconfig.
-    key_file = user.get('client-key')
-    if key_file:
-      raise exceptions.Error('client-key not yet supported. '
-                             'Please use client-key-data instead.')
-    key_data = user.get('client-key-data')
-
-    auth_provider = user.get('auth-provider')
-    cert_auth = cert_data and key_data
-
-    # TODO(b/149872627): Use official client to support full kubeconfig.
-    if auth_provider:
-      raise exceptions.Error(
-          'auth-provider is not yet supported, user: {}'.format(user_key))
-    elif not cert_auth:
-      raise exceptions.Error('Missing auth info for user: {}'.format(
-          user_key))
-
-    client_config = {}
-    client_config['server'] = server
-    client_config['cluster_ca_cert'] = ca_data
-    client_config['client_cert'] = cert_data
-    client_config['client_key'] = key_data
-    client_config['insecure'] = insecure
-    return client_config
+    # If processor.GetKubeconfigAndContext returns `None` for the kubeconfig
+    # path, that indicates we should be using in-cluster config. Otherwise,
+    # the first return value is the path to the kubeconfig file.
+    if kubeconfig is not None:
+      kube_client_config.load_kube_config(config_file=kubeconfig,
+                                          context=context)
+      return kube_client_lib.ApiClient()
+    else:
+      kube_client_config.load_incluster_config()
+      return kube_client_lib.ApiClient()
 
 
 class KubernetesPoller(waiter.OperationPoller):
@@ -370,78 +279,24 @@ class KubernetesClient(object):
     self.kubeconfig, self.context = self.processor.GetKubeconfigAndContext(
         flags, self.temp_kubeconfig_dir)
 
-    # If --public-issuer-url is set or if gke_cluster_uri is set, we must not
-    # attempt to construct the cluster client, because it may use a kubeconfig
-    # that we don't fully support yet. See: b/152465794.
-    # TODO(b/149872627): Switch to official client to fully support kubeconfig.
+    # This previously fixed b/152465794. It is probably unnecessary now that
+    # we use the official K8s client, but it's also still true that we don't
+    # need a K8s client to talk to the cluster in this case. Consider removing
+    # this check later if we need the K8s client in other scenarios. For now,
+    # the impact of switching to the official client can be minimized to only
+    # scenarios where we actually need it.
     if (hasattr(flags, 'public_issuer_url') and
         flags.public_issuer_url) or (hasattr(flags, 'enable_workload_identity')
                                      and self.processor.gke_cluster_uri):
       return
 
-    # Due to an issue between the gcloud third_party yaml library, which the
-    # official K8s client depends on, and python3 (b/149872627), we construct
-    # our own client below. Since this is not as robust a solution as using the
-    # official client, and this client is currently only used for Workload
-    # Identity related calls, we also gate it on --enable-workload-identity
-    # (for the register command) and --manage-workload-identity-bucket
-    # (for the unregister command).
     if (flags and
         ((hasattr(flags, 'enable_workload_identity') and
           flags.enable_workload_identity) or
          (hasattr(flags, 'manage_workload_identity_bucket') and
           flags.manage_workload_identity_bucket))):
-
-      # If processor.GetKubeconfigAndContext returns `None` for the kubeconfig
-      # path, that indicates we should be using in-cluster config. Otherwise,
-      # the first return value is the path to the kubeconfig file. Since the
-      # client we are using for Workload Identity related calls does not support
-      # in-cluster config yet, this will raise an exception if
-      # --enable-workload-identity is set in an environment that requires in-
-      # cluster config.
-      if self.kubeconfig is not None:
-        client_config = self.processor.GetClientConfig(
-            self.kubeconfig, self.context)
-
-        self.apiserver = client_config['server']
-
-        ca_file = None
-        cert_file = None
-        key_file = None
-        if client_config['insecure']:
-          cert_reqs = ssl.CERT_NONE
-        else:
-          cert_reqs = ssl.CERT_REQUIRED
-          # Cert info needs to be written to a file so PoolManager can read it.
-          ca_file = _WriteTempFile(base64.standard_b64decode(
-              client_config['cluster_ca_cert']))
-          cert_file = _WriteTempFile(base64.standard_b64decode(
-              client_config['client_cert']))
-          key_file = _WriteTempFile(base64.standard_b64decode(
-              client_config['client_key']))
-
-        # TODO(b/149872627): If for some reason we don't switch to the official
-        # client before beta, figure out whether we need to support proxies.
-        # The official client has Configuration.proxy, which can be a proxy
-        # URL and causes it to use urllib3.ProxyManager instead of PoolManager.
-        # Since the official client's kubeconfig loader doesn't set
-        # Configuration.proxy, and the default is None, it's possible that
-        # it's not used unless configured in-process. This doesn't seem to be
-        # an option that can be set via a kubeconfig file, though there is an
-        # unresolved Open Source issue that was created several years ago
-        # to allow proxy configuration in kubeconfig:
-        # https://github.com/kubernetes/client-go/issues/351.
-        self.cluster_pool_manager = urllib3.PoolManager(
-            num_pools=4,  # Official client's default.
-            maxsize=4,  # Official client's default.
-            cert_reqs=cert_reqs,
-            ca_certs=ca_file,
-            cert_file=cert_file,
-            key_file=key_file,
-            **{})
-      else:
-        raise exceptions.Error('Workload Identity feature does not support '
-                               'constructing a client from in-cluster config')
+      self.kube_client = self.processor.GetKubeClient(
+          self.kubeconfig, self.context)
 
   def __enter__(self):
     return self
@@ -668,12 +523,12 @@ class KubernetesClient(object):
       raise exceptions.Error('status: {}, reason: {}'.format(status, r.reason))
     return content
 
-  def _ClusterRequest(self, method, url, headers=None):
+  def _ClusterRequest(self, method, api_path, headers=None):
     """Internal method to make requests against the target cluster.
 
     Args:
       method: request method, e.g. GET
-      url: request URL
+      api_path: path to request against the API server
       headers: dictionary of request headers
 
     Returns:
@@ -682,16 +537,22 @@ class KubernetesClient(object):
     Raises:
       Error: If the response has a status code >= 400.
     """
-    r = self.cluster_pool_manager.request(method, url, headers=headers)
-    if not r:
-      raise exceptions.Error('null response')
-    elif r.status >= 400:
-      raise exceptions.Error(
-          'status: {}, reason: {}'.format(r.status, r.reason))
-    elif not hasattr(r, 'data'):
-      raise exceptions.Error('missing response data: {}'.format(r))
+    if headers is None:
+      headers = {}
 
-    return r.data.decode('utf-8')
+    # This works for both client certificate and bearer token auth. Passing
+    # auth_settings=['BearerToken'] causes the client to update the headers
+    # if a bearer token value is present in the config. If client certs are
+    # used instead, there is no token value, and the client skips modifying
+    # the headers.
+    self.kube_client.update_params_for_auth(
+        headers=headers, querys=None, auth_settings=['BearerToken'])
+
+    # The official client takes care of raising ApiException on bad HTTP codes,
+    # and also takes care of decoding the data from bytes to UTF-8 in PY3.
+    url = urljoin(self.kube_client.configuration.host, api_path)
+    r = self.kube_client.rest_client.request(method, url, headers=headers)
+    return r.data
 
   def GetOpenIDConfiguration(self, issuer_url=None):
     """Get the OpenID Provider Configuration for the K8s API server.
@@ -716,9 +577,7 @@ class KubernetesClient(object):
         url = issuer_url.rstrip('/') + '/.well-known/openid-configuration'
         return self._WebRequest('GET', url, headers=headers)
       else:
-        # Here, urljoin is ok, the full path is explicitly defined by K8s API.
-        url = urljoin(self.apiserver,
-                      '/.well-known/openid-configuration')
+        url = '/.well-known/openid-configuration'
         return self._ClusterRequest('GET', url, headers=headers)
     except Exception as e:  # pylint: disable=broad-except
       raise exceptions.Error('Failed to get OpenID Provider Configuration '
@@ -746,7 +605,7 @@ class KubernetesClient(object):
         url = jwks_uri
         return self._WebRequest('GET', url, headers=headers)
       else:
-        url = urljoin(self.apiserver, '/openid/v1/jwks')
+        url = '/openid/v1/jwks'
         return self._ClusterRequest('GET', url, headers=headers)
     except Exception as e:  # pylint: disable=broad-except
       raise exceptions.Error('Failed to get JSON Web Key Set '
@@ -1068,29 +927,3 @@ def IsGKECluster(kube_client):
   if not vm_instance_id:
     return False
   return True
-
-
-def _WriteTempFile(data):
-  """Write a new temporary file and register for cleanup at program exit.
-
-  Args:
-    data: data to write to the file
-
-  Returns:
-    string: the path to the new temporary file
-
-  Raises:
-    Error: if the write failed
-  """
-  try:
-    _, f = tempfile.mkstemp()
-  except Exception as e:  # pylint: disable=broad-except
-    raise exceptions.Error('failed to create temp file: {}'.format(e))
-
-  try:
-    files.WriteFileContents(f, data, private=True)
-    atexit.register(lambda: os.remove(f))
-    return f
-  except Exception as e:  # pylint: disable=broad-except
-    os.remove(f)
-    raise exceptions.Error('failed to write temp file {}: {}'.format(f, e))

@@ -691,6 +691,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messag
     exclude: Optional. Exclude instance from maintenance. When true, rollout
       service will not attempt maintenance on the instance. Rollout service
       will include the instance in reported rollout progress as not attempted.
+    isRollback: Optional. If the update call is triggered from rollback, set
+      the value as true.
     maintenancePolicies: Optional. The MaintenancePolicies that have been
       attached to the instance. The key must be of the type name of the oneof
       policy name defined in MaintenancePolicy, and the embedded policy must
@@ -733,7 +735,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messag
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   exclude = _messages.BooleanField(1)
-  maintenancePolicies = _messages.MessageField('MaintenancePoliciesValue', 2)
+  isRollback = _messages.BooleanField(2)
+  maintenancePolicies = _messages.MessageField('MaintenancePoliciesValue', 3)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.Message):

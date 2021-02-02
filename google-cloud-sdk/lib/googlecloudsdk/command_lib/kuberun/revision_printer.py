@@ -23,9 +23,9 @@ import collections
 
 from googlecloudsdk.api_lib.kuberun import revision
 from googlecloudsdk.command_lib.kuberun import k8s_object_printer
+from googlecloudsdk.command_lib.kuberun import kubernetes_consts
 from googlecloudsdk.core.resource import custom_printer_base as cp
 import six
-
 
 REVISION_PRINTER_FORMAT = 'revision'
 
@@ -73,16 +73,12 @@ class RevisionPrinter(cp.CustomPrinterBase):
     return collections.defaultdict(str, rev.resource_limits)
 
   def GetUserEnvironmentVariables(self, record):
-    return cp.Mapped(
-        k8s_object_printer.OrderByKey(
-            record.env_vars.literals))
+    return cp.Mapped(k8s_object_printer.OrderByKey(record.env_vars.literals))
 
   def GetSecrets(self, record):
     secrets = {}
-    secrets.update({
-        k: FormatSecretKeyRef(v)
-        for k, v in record.env_vars.secrets.items()
-    })
+    secrets.update(
+        {k: FormatSecretKeyRef(v) for k, v in record.env_vars.secrets.items()})
     secrets.update({
         k: FormatSecretVolumeSource(v)
         for k, v in record.MountedVolumeJoin('secrets').items()
@@ -128,8 +124,7 @@ class RevisionPrinter(cp.CustomPrinterBase):
         ('Command', ' '.join(record.container.command)),
         ('Args', ' '.join(record.container.args)),
         ('Port', ' '.join(
-            six.text_type(p.containerPort)
-            for p in record.container.ports)),
+            six.text_type(p.containerPort) for p in record.container.ports)),
         ('Memory', limits['memory']),
         ('CPU', limits['cpu']),
         ('GPU', limits[revision.NVIDIA_GPU_RESOURCE]),
@@ -143,3 +138,17 @@ class RevisionPrinter(cp.CustomPrinterBase):
         ('Max Instances', self.GetMaxInstances(record)),
         ('Timeout', self.GetTimeout(record)),
     ])
+
+
+def Active(record):
+  """Returns whether the given resource is active."""
+  active_cond = [
+      x for x in record.get(kubernetes_consts.FIELD_STATUS, {}).get(
+          kubernetes_consts.FIELD_CONDITIONS, [])
+      if x[kubernetes_consts.FIELD_TYPE] == kubernetes_consts.VAL_ACTIVE
+  ]
+  if active_cond:
+    status = active_cond[0].get(kubernetes_consts.FIELD_STATUS)
+    return True if status == kubernetes_consts.VAL_TRUE else False
+  else:
+    return None

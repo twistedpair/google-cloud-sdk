@@ -93,7 +93,7 @@ class KubeRunCommand(base.BinaryBackedCommand):
     command.extend(self.BuildKubeRunArgs(args))
 
     devkit_dir = ''  # '' to force Go binary to use the fdk-dir for gcloud_lite
-    if config.Paths().sdk_root is not None:
+    if config.Paths().sdk_root:
       devkit_dir = os.path.join(config.Paths().sdk_root, 'lib', 'kuberun',
                                 'kuberun_devkits')
     env_vars = {
@@ -110,11 +110,11 @@ class KubeRunCommand(base.BinaryBackedCommand):
 
     region = properties.VALUES.compute.region.Get(
         required=False, validate=False)
-    if region is not None:
+    if region:
       env_vars['CLOUDSDK_COMPUTE_REGION'] = region
 
     zone = properties.VALUES.compute.zone.Get(required=False, validate=False)
-    if zone is not None:
+    if zone:
       env_vars['CLOUDSDK_COMPUTE_ZONE'] = zone
 
     response = self.command_executor(

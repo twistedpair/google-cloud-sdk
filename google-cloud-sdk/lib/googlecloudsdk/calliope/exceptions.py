@@ -405,21 +405,48 @@ def _GetTokenRefreshError(exc):
 # errors when they come up.  Only add errors here if there is no other way to
 # handle them.
 _KNOWN_ERRORS = {
-    'apitools.base.py.exceptions.HttpError': HttpException,
-    'googlecloudsdk.calliope.parser_errors.ArgumentError': lambda x: None,
-    'googlecloudsdk.core.util.files.Error': lambda x: None,
-    'httplib.ResponseNotReady': core_exceptions.NetworkIssueError,
-    'httplib.BadStatusLine': core_exceptions.NetworkIssueError,
+    # Raised for "TooManyRequests" or 500s error codes.
+    'apitools.base.py.exceptions.BadStatusCodeError':
+        core_exceptions.NetworkIssueError,
+    'apitools.base.py.exceptions.HttpError':
+        HttpException,
+    'apitools.base.py.exceptions.RequestError':
+        core_exceptions.NetworkIssueError,
+    'apitools.base.py.exceptions.RetryAfterError':
+        core_exceptions.NetworkIssueError,
+    'apitools.base.py.exceptions.TransferRetryError':
+        core_exceptions.NetworkIssueError,
+    'googlecloudsdk.calliope.parser_errors.ArgumentError':
+        lambda x: None,
+    'googlecloudsdk.core.util.files.Error':
+        lambda x: None,
+    'httplib.ResponseNotReady':
+        core_exceptions.NetworkIssueError,
+    'httplib.BadStatusLine':
+        core_exceptions.NetworkIssueError,
+    'httplib.IncompleteRead':
+        core_exceptions.NetworkIssueError,
     # Same error but different location on PY3.
-    'http.client.ResponseNotReady': core_exceptions.NetworkIssueError,
-    'http.client.BadStatusLine': core_exceptions.NetworkIssueError,
-    'oauth2client.client.AccessTokenRefreshError': _GetTokenRefreshError,
-    'ssl.SSLError': core_exceptions.NetworkIssueError,
-    'socket.error': core_exceptions.NetworkIssueError,
-    'socket.timeout': core_exceptions.NetworkIssueError,
-    'builtins.ConnectionAbortedError': core_exceptions.NetworkIssueError,
-    'builtins.ConnectionRefusedError': core_exceptions.NetworkIssueError,
-    'builtins.ConnectionResetError': core_exceptions.NetworkIssueError,
+    'http.client.ResponseNotReady':
+        core_exceptions.NetworkIssueError,
+    'http.client.BadStatusLine':
+        core_exceptions.NetworkIssueError,
+    'http.client.IncompleteRead':
+        core_exceptions.NetworkIssueError,
+    'oauth2client.client.AccessTokenRefreshError':
+        _GetTokenRefreshError,
+    'ssl.SSLError':
+        core_exceptions.NetworkIssueError,
+    'socket.error':
+        core_exceptions.NetworkIssueError,
+    'socket.timeout':
+        core_exceptions.NetworkIssueError,
+    'builtins.ConnectionAbortedError':
+        core_exceptions.NetworkIssueError,
+    'builtins.ConnectionRefusedError':
+        core_exceptions.NetworkIssueError,
+    'builtins.ConnectionResetError':
+        core_exceptions.NetworkIssueError,
 }
 
 

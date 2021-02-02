@@ -23,6 +23,7 @@ import copy
 
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.orgpolicy import service as org_policy_service
+from googlecloudsdk.api_lib.orgpolicy import utils as org_policy_utils
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.org_policies import arguments
 from googlecloudsdk.command_lib.org_policies import exceptions
@@ -54,9 +55,11 @@ class OrgPolicyGetAndUpdateCommand(
     """
     super(OrgPolicyGetAndUpdateCommand, self).__init__(cli, context)
 
-    self.policy_service = org_policy_service.PolicyService()
-    self.constraint_service = org_policy_service.ConstraintService()
-    self.org_policy_messages = org_policy_service.OrgPolicyMessages()
+    self.policy_service = org_policy_service.PolicyService(self.ReleaseTrack())
+    self.constraint_service = org_policy_service.ConstraintService(
+        self.ReleaseTrack())
+    self.org_policy_messages = org_policy_service.OrgPolicyMessages(
+        self.ReleaseTrack())
 
     self.disable_create = False
 
@@ -108,8 +111,8 @@ class OrgPolicyGetAndUpdateCommand(
     """Updates the fields on the retrieved (or empty) policy before it is created/updated on the backend.
 
     Args:
-      policy: messages.GoogleCloudOrgpolicyV2alpha1Policy, The policy object to
-        be updated.
+      policy: messages.GoogleCloudOrgpolicy{api_version}Policy, The policy
+        object to be updated.
       args: argparse.Namespace, An object that contains the values for the
         arguments specified in the Args method.
 
@@ -150,22 +153,16 @@ class OrgPolicyGetAndUpdateCommand(
       The created policy.
     """
     name = utils.GetPolicyNameFromArgs(args)
-    constraint = utils.GetConstraintFromArgs(args)
-    parent = utils.GetResourceFromArgs(args)
 
-    empty_policy = self.org_policy_messages.GoogleCloudOrgpolicyV2alpha1Policy(
-        name=name,
-        spec=self.org_policy_messages.GoogleCloudOrgpolicyV2alpha1PolicySpec())
+    empty_policy = org_policy_utils.CreatePolicy(self.ReleaseTrack(), name=name)
     new_policy = self.UpdatePolicy(empty_policy, args)
 
     if not new_policy.spec.rules and not new_policy.spec.inheritFromParent and not new_policy.spec.reset:
       # Return the response received after a successful DeletePolicy.
       return self.org_policy_messages.GoogleProtobufEmpty()
 
-    create_request = self.org_policy_messages.OrgpolicyPoliciesCreateRequest(
-        constraint=constraint,
-        parent=parent,
-        googleCloudOrgpolicyV2alpha1Policy=new_policy)
+    create_request = org_policy_utils.CreatePolicyCreateRequest(
+        self.ReleaseTrack(), new_policy=new_policy)
     create_response = self.policy_service.Create(create_request)
     log.CreatedResource(name, 'policy')
     return create_response
@@ -174,8 +171,8 @@ class OrgPolicyGetAndUpdateCommand(
     """Update or delete the policy on the service as needed.
 
     Args:
-      policy: messages.GoogleCloudOrgpolicyV2alpha1Policy, The policy object to
-        be updatedmen.
+      policy: messages.GoogleCloudOrgpolicy{api_version}Policy, The policy
+        object to be updated.
       args: argparse.Namespace, An object that contains the values for the
         arguments specified in the Args method.
 
@@ -198,10 +195,10 @@ class OrgPolicyGetAndUpdateCommand(
       log.DeletedResource(policy_name, 'policy')
       return delete_response
 
-    update_request = self.org_policy_messages.OrgpolicyPoliciesPatchRequest(
-        name=policy_name,
-        forceUnconditionalWrite=False,
-        googleCloudOrgpolicyV2alpha1Policy=updated_policy)
+    update_request = org_policy_utils.CreatePolicyPatchRequest(
+        self.ReleaseTrack(),
+        policy_name=policy_name,
+        updated_policy=updated_policy)
     update_response = self.policy_service.Patch(update_request)
     log.UpdatedResource(policy_name, 'policy')
     return update_response

@@ -272,10 +272,10 @@ def GetArgDetails(arg, depth=0):
   if arg.is_group or arg.is_positional:
     choices = None
   elif arg.choices:
-    choices = arg.choices
+    choices = getattr(arg, 'visible_choices', arg.choices)
   else:
     try:
-      choices = arg.type.choices
+      choices = getattr(arg.type, 'visible_choices', arg.type.choices)
     except AttributeError:
       choices = None
   extra_help = []

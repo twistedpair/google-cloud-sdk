@@ -324,7 +324,7 @@ TARGET_SSL_PROXY_ARG = compute_flags.ResourceArgument(
     global_collection='compute.targetSslProxies',
     short_help='Target SSL proxy that receives the traffic.',
     detailed_help=('Target SSL proxy that receives the traffic. '
-                   'Acceptable values for --ports flag are: '
+                   'Acceptable values for `--ports` flag are: '
                    '25, 43, 110, 143, 195, 443, 465, 587, '
                    '700, 993, 995, 1883, 5222.'))
 
@@ -346,8 +346,8 @@ TARGET_VPN_GATEWAY_ARG = compute_flags.ResourceArgument(
     regional_collection='compute.targetVpnGateways',
     short_help='Target VPN gateway that receives forwarded traffic.',
     detailed_help=(
-        'Target VPN gateway (Cloud VPN Classic gateway) that receives forwarded'
-        'traffic. '
+        'Target VPN gateway (Cloud VPN Classic gateway) that receives '
+        'forwarded traffic. '
         'Acceptable values for --ports flag are: 500, 4500.'),
     region_explanation=('If not specified, the region is set to the'
                         ' region of the forwarding rule.'))

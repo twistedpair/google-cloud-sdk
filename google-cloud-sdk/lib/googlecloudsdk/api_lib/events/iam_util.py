@@ -33,10 +33,6 @@ from googlecloudsdk.core.console import console_io
 # permissions.
 _OWNER_ROLE = 'roles/owner'
 
-EVENTS_CONTROL_PLANE_SERVICE_ACCOUNT = 'cloud-run-events'
-EVENTS_BROKER_SERVICE_ACCOUNT = 'cloud-run-events-broker'
-EVENTS_SOURCES_SERVICE_ACCOUNT = 'cloud-run-events-sources'
-
 
 def CreateServiceAccountKey(service_account_ref):
   """Creates and returns a new service account key."""
@@ -186,4 +182,3 @@ def PrintOrBindMissingRolesWithPrompt(service_account_ref, recommended_roles,
     log.status.Print('Roles successfully bound.')
   else:
     log.warning('Manual binding of above roles may be necessary.')
-

@@ -126,14 +126,14 @@ def ArgsForSqlQuery(parser):
       '--sql-launcher-template-engine',
       hidden=True,
       help='The template engine to use for the SQL launcher template.',
-      choices=['dynamic', 'flex'],
-      default='dynamic')
+      choices=['flex', 'dynamic'],
+      default='flex')
 
   parser.add_argument(
       '--sql-launcher-template',
       hidden=True,
       help='The full GCS path to a SQL launcher template spec, e.g. '
-      'gs://dataflow-sql-templates-us-west1/cloud_dataflow_sql_launcher_template_20200128_RC00/sql_launcher_template. '
+      'gs://dataflow-sql-templates-us-west1/cloud_dataflow_sql_launcher_template_20201208_RC00/sql_launcher_flex_template. '
       'If None is specified, default to the latest release in the region. '
       'Note that older releases are not guaranteed to be compatible.')
 

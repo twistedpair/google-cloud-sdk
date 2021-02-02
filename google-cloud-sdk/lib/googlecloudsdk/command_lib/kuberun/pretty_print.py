@@ -33,12 +33,33 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.kuberun import kubernetes_consts
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr
+from googlecloudsdk.core.resource import resource_transform
 
+# TODO(b/175729243) remove this once all commands use dictionary objects for
+# output
 READY_COLUMN = ('ready_symbol.color(red="[xX]",'
                 'green="[\N{CHECK MARK}\N{HEAVY CHECK MARK}]",'
                 'yellow="[!\N{HORIZONTAL ELLIPSIS}]"):label=""')
+
+READY_COLUMN_ALIAS_KEY = 'status'
+
+READY_COLUMN_DICT = ('aliases.%s.enum(status).color(red="X",'
+                     'green="\N{HEAVY CHECK MARK}",'
+                     'yellow="\N{HORIZONTAL ELLIPSIS}"):alias=STATUS:label=""' %
+                     READY_COLUMN_ALIAS_KEY)
+
+
+def AddPrettyPrintTransform(parser):
+  status = {
+      kubernetes_consts.VAL_TRUE: '\N{HEAVY CHECK MARK}',
+      kubernetes_consts.VAL_FALSE: 'X',
+      kubernetes_consts.VAL_UNKNOWN: '\N{HORIZONTAL ELLIPSIS}'
+  }
+  transforms = {resource_transform.GetTypeDataName('status', 'enum'): status}
+  parser.display_info.AddTransforms(transforms)
 
 
 def _Print(prefix, color, msg, **formatters):
@@ -72,4 +93,3 @@ def Info(msg, **formatters):
     **formatters: extra args acting like .format()
   """
   _Print('  ', None, msg, **formatters)
-

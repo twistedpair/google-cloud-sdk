@@ -1561,14 +1561,17 @@ class CrossConnectItem(_messages.Message):
   r"""Item for controlling single cross connect network's configuration.
 
   Fields:
+    displayName: Optional. display_name is intended only for UI elements to
+      help humans identify this item, not as a unique identifier.
     privateEndpoint: Output only. The internal IP address of this cluster's
       endpoint in the requested subnetwork.
     subnetwork: Subnetworks where cluster's private endpoint is accessible.
       specified in projects/*/regions/*/subnetworks/* format.
   """
 
-  privateEndpoint = _messages.StringField(1)
-  subnetwork = _messages.StringField(2)
+  displayName = _messages.StringField(1)
+  privateEndpoint = _messages.StringField(2)
+  subnetwork = _messages.StringField(3)
 
 
 class CustomImageConfig(_messages.Message):
@@ -2592,6 +2595,18 @@ class NetworkPolicyConfig(_messages.Message):
   disabled = _messages.BooleanField(1)
 
 
+class NetworkTags(_messages.Message):
+  r"""Collection of Compute Engine network tags that can be applied to a
+  node's underlying VM instance. (See `tags` field in
+  [`NodeConfig`](/kubernetes-engine/docs/reference/rest/v1/NodeConfig)).
+
+  Fields:
+    tags: List of network tags.
+  """
+
+  tags = _messages.StringField(1, repeated=True)
+
+
 class NodeConfig(_messages.Message):
   r"""Parameters that describe the nodes in a cluster.
 
@@ -2852,6 +2867,45 @@ class NodeKubeletConfig(_messages.Message):
   cpuManagerPolicy = _messages.StringField(3)
 
 
+class NodeLabels(_messages.Message):
+  r"""Collection of node-level [Kubernetes
+  labels](https://kubernetes.io/docs/concepts/overview/working-with-
+  objects/labels).
+
+  Messages:
+    LabelsValue: Map of node label keys and node label values.
+
+  Fields:
+    labels: Map of node label keys and node label values.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Map of node label keys and node label values.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+
+
 class NodeManagement(_messages.Message):
   r"""NodeManagement defines the set of node management services turned on for
   the node pool.
@@ -2902,6 +2956,9 @@ class NodeNetworkConfig(_messages.Message):
       range to use.
     podRange: The ID of the secondary range for pod IPs. If `create_pod_range`
       is true, this ID is used for the new range.
+    privateNodesConfig: Configuration for controlling private nodes settings.
+      If there are no private_nodes specified, then
+      private_cluster_cofnig.enable_private_node's value used as a default.
     subnetwork: The ID of the [subnetwork](https://cloud.google.com/vpc/docs/v
       pc#vpc_networks_and_subnets) for this node pool. If `create_subnetwork`
       is true, this ID is used for the new subnet.
@@ -2913,7 +2970,8 @@ class NodeNetworkConfig(_messages.Message):
   nodeIpv4CidrBlock = _messages.StringField(4)
   podIpv4CidrBlock = _messages.StringField(5)
   podRange = _messages.StringField(6)
-  subnetwork = _messages.StringField(7)
+  privateNodesConfig = _messages.MessageField('PrivateNodesConfig', 7)
+  subnetwork = _messages.StringField(8)
 
 
 class NodeNetworkPolicy(_messages.Message):
@@ -3076,6 +3134,18 @@ class NodeTaint(_messages.Message):
   effect = _messages.EnumField('EffectValueValuesEnum', 1)
   key = _messages.StringField(2)
   value = _messages.StringField(3)
+
+
+class NodeTaints(_messages.Message):
+  r"""Collection of Kubernetes [node
+  taints](https://kubernetes.io/docs/concepts/configuration/taint-and-
+  toleration).
+
+  Fields:
+    taints: List of node taints.
+  """
+
+  taints = _messages.MessageField('NodeTaint', 1, repeated=True)
 
 
 class NotificationConfig(_messages.Message):
@@ -3254,10 +3324,6 @@ class PodSecurityPolicyConfig(_messages.Message):
 class PrivateClusterConfig(_messages.Message):
   r"""Configuration options for private clusters.
 
-  Enums:
-    NetworkConnectivityTypeValueValuesEnum: The network connectivity type used
-      for connecting customer's network and master's network.
-
   Fields:
     crossConnectConfig: Controls cross connect configuration.
     enablePrivateEndpoint: Whether the master's internal IP address is used as
@@ -3271,10 +3337,9 @@ class PrivateClusterConfig(_messages.Message):
       addresses to the master or set of masters, as well as the ILB VIP. This
       range must not overlap with any other ranges in use within the cluster's
       network.
-    networkConnectivityType: The network connectivity type used for connecting
-      customer's network and master's network.
     peeringName: Output only. The peering name in the customer VPC used by
       this cluster.
+    privateCluster: Whether the cluster is private.
     privateEndpoint: Output only. The internal IP address of this cluster's
       endpoint.
     privateEndpointFqdn: Output only. The private endpoint's FQDN.
@@ -3285,28 +3350,13 @@ class PrivateClusterConfig(_messages.Message):
       endpoint.
   """
 
-  class NetworkConnectivityTypeValueValuesEnum(_messages.Enum):
-    r"""The network connectivity type used for connecting customer's network
-    and master's network.
-
-    Values:
-      NETWORK_CONNECTIVITY_TYPE_UNSPECIFIED: Default behavior.
-      VPC_PEERING: VPC Peering used for connecting cluster's network and
-        master's network.
-      PSC: Private Service Connect used for connecting cluster's network and
-        master's network.
-    """
-    NETWORK_CONNECTIVITY_TYPE_UNSPECIFIED = 0
-    VPC_PEERING = 1
-    PSC = 2
-
   crossConnectConfig = _messages.MessageField('CrossConnectConfig', 1)
   enablePrivateEndpoint = _messages.BooleanField(2)
   enablePrivateNodes = _messages.BooleanField(3)
   masterGlobalAccessConfig = _messages.MessageField('PrivateClusterMasterGlobalAccessConfig', 4)
   masterIpv4CidrBlock = _messages.StringField(5)
-  networkConnectivityType = _messages.EnumField('NetworkConnectivityTypeValueValuesEnum', 6)
-  peeringName = _messages.StringField(7)
+  peeringName = _messages.StringField(6)
+  privateCluster = _messages.BooleanField(7)
   privateEndpoint = _messages.StringField(8)
   privateEndpointFqdn = _messages.StringField(9)
   privateEndpointSubnetwork = _messages.StringField(10)
@@ -3334,6 +3384,16 @@ class PrivateIPv6Status(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
+
+
+class PrivateNodesConfig(_messages.Message):
+  r"""Configuration for controlling private nodes settings.
+
+  Fields:
+    privateNodes: Whether nodes have internal IP addresses only.
+  """
+
+  privateNodes = _messages.BooleanField(1)
 
 
 class PubSub(_messages.Message):
@@ -4415,6 +4475,10 @@ class UpdateNodePoolRequest(_messages.Message):
       node pool. This is used to create clusters using a custom image.
     imageType: The desired image type for the node pool.
     kubeletConfig: Node kubelet configs.
+    labels: The desired node labels to be applied to all nodes in the node
+      pool. If this field is not present, the labels will not be changed.
+      Otherwise, the existing node labels will be *replaced* with the provided
+      labels.
     linuxNodeConfig: Parameters that can be configured on Linux nodes.
     locations: The desired list of Google Compute Engine
       [zones](/compute/docs/zones#available) in which the node pool's nodes
@@ -4424,6 +4488,7 @@ class UpdateNodePoolRequest(_messages.Message):
     name: The name (project, location, cluster, node pool) of the node pool to
       update. Specified in the format
       'projects/*/locations/*/clusters/*/nodePools/*'.
+    nodeNetworkConfig: Node network config.
     nodePoolId: Deprecated. The name of the node pool to upgrade. This field
       has been deprecated and replaced by the name field.
     nodeVersion: The Kubernetes version to change the nodes to (typically an
@@ -4437,6 +4502,14 @@ class UpdateNodePoolRequest(_messages.Message):
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
+    tags: The desired network tags to be applied to all nodes in the node
+      pool. If this field is not present, the tags will not be changed.
+      Otherwise, the existing network tags will be *replaced* with the
+      provided tags.
+    taints: The desired node taints to be applied to all nodes in the node
+      pool. If this field is not present, the taints will not be changed.
+      Otherwise, the existing node taints will be *replaced* with the provided
+      taints.
     updatedNodePool: The updated node pool object. This field must be empty if
       any other node pool field is set (e.g. 'node_version', 'image_type',
       'locations', etc.)
@@ -4454,16 +4527,20 @@ class UpdateNodePoolRequest(_messages.Message):
   imageProject = _messages.StringField(3)
   imageType = _messages.StringField(4)
   kubeletConfig = _messages.MessageField('NodeKubeletConfig', 5)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 6)
-  locations = _messages.StringField(7, repeated=True)
-  name = _messages.StringField(8)
-  nodePoolId = _messages.StringField(9)
-  nodeVersion = _messages.StringField(10)
-  projectId = _messages.StringField(11)
-  updatedNodePool = _messages.MessageField('NodePool', 12)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 13)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 14)
-  zone = _messages.StringField(15)
+  labels = _messages.MessageField('NodeLabels', 6)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 7)
+  locations = _messages.StringField(8, repeated=True)
+  name = _messages.StringField(9)
+  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 10)
+  nodePoolId = _messages.StringField(11)
+  nodeVersion = _messages.StringField(12)
+  projectId = _messages.StringField(13)
+  tags = _messages.MessageField('NetworkTags', 14)
+  taints = _messages.MessageField('NodeTaints', 15)
+  updatedNodePool = _messages.MessageField('NodePool', 16)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 17)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 18)
+  zone = _messages.StringField(19)
 
 
 class UpgradeEvent(_messages.Message):

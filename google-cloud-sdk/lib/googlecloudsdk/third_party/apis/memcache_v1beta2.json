@@ -934,6 +934,10 @@
           "additionalProperties": {
             "$ref": "MaintenancePolicy"
           }
+        },
+        "isRollback": {
+          "description": "Optional. If the update call is triggered from rollback, set the value as true.",
+          "type": "boolean"
         }
       }
     },

@@ -18,10 +18,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.kuberun import mapobject
+from googlecloudsdk.api_lib.kuberun import structuredout
 
 
-class Metadata(mapobject.MapObject):
+class Metadata(structuredout.MapObject):
   """Wraps the metadata fields of Kubernetes objects."""
 
   @property

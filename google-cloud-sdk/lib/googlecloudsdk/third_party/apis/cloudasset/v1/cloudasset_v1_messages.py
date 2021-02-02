@@ -652,17 +652,6 @@ class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
   r"""A CloudassetSearchAllIamPoliciesRequest object.
 
   Fields:
-    assetTypes: Optional. A list of asset types that this request searches
-      for. If empty, it will search all the [searchable asset
-      types](https://cloud.google.com/asset-inventory/docs/supported-asset-
-      types#searchable_asset_types). Regular expressions are also supported.
-      For example: * "compute.googleapis.com.*" snapshots resources whose
-      asset type starts with "compute.googleapis.com". * ".*Instance"
-      snapshots resources whose asset type ends with "Instance". *
-      ".*Instance.*" snapshots resources whose asset type contains "Instance".
-      See [RE2](https://github.com/google/re2/wiki/Syntax) for all supported
-      regular expression syntax. If the regular expression does not match any
-      supported asset type, an INVALID_ARGUMENT error will be returned.
     pageSize: Optional. The page size for search result pagination. Page size
       is capped at 500 even if a larger value is given. If set to zero, server
       will pick an appropriate default. Returned results may be fewer than
@@ -715,11 +704,10 @@ class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
       organizations/{ORGANIZATION_NUMBER} (e.g., "organizations/123456")
   """
 
-  assetTypes = _messages.StringField(1, repeated=True)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  query = _messages.StringField(4)
-  scope = _messages.StringField(5, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  query = _messages.StringField(3)
+  scope = _messages.StringField(4, required=True)
 
 
 class CloudassetSearchAllResourcesRequest(_messages.Message):
@@ -2974,6 +2962,11 @@ class ResourceSearchResult(_messages.Message):
     assetType: Required. The type of this resource. Example:
       `compute.googleapis.com/Disk`. To search against the `asset_type`: *
       specify the `asset_type` field in your search request.
+    createTime: Optional. The create timestamp of this resource, at which the
+      resource was created. The granularity is in seconds. Timestamp.nanos
+      will always be 0. This field is available only when the resource's proto
+      contains it. To search against `create_time`: * use a field query (value
+      in seconds). Example: `createTime >= 1594294238`
     description: Optional. One or more paragraphs of text description of this
       resource. Maximum length could be up to 1M bytes. This field is
       available only when the resource's proto contains it. To search against
@@ -2988,6 +2981,13 @@ class ResourceSearchResult(_messages.Message):
       resource belongs to one or more folders. To search against `folders`: *
       use a field query. Example: `folders:(123 OR 456)` * specify the `scope`
       field as this folder in your search request.
+    kmsKey: Optional. The Cloud KMS [CryptoKey](https://cloud.google.com/kms/d
+      ocs/reference/rest/v1/projects.locations.keyRings.cryptoKeys?hl=en) name
+      or [CryptoKeyVersion](https://cloud.google.com/kms/docs/reference/rest/v
+      1/projects.locations.keyRings.cryptoKeys.cryptoKeyVersions?hl=en) name.
+      This field is available only when the resource's proto contains it. To
+      search against the `kms_key`: * use a field query. Example: `kmsKey:key`
+      * use a free text query. Example: `key`
     labels: Optional. Labels associated with this resource. See [Labelling and
       grouping GCP
       resources](https://cloud.google.com/blog/products/gcp/labelling-and-
@@ -3027,6 +3027,27 @@ class ResourceSearchResult(_messages.Message):
       belongs to a project. To search against `project`: * use a field query.
       Example: `project:12345` * specify the `scope` field as this project in
       your search request.
+    state: Optional. The state of this resource. Different resources types
+      have different state definitions that are mapped from various fields of
+      different resource types. This field is available only when the
+      resource's proto contains it. Example: If the resource is an instance
+      provided by Compute Engine, its state will include PROVISIONING,
+      STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED, REPAIRING, and
+      TERMINATED. See `status` definition in [API Reference](https://cloud.goo
+      gle.com/compute/docs/reference/rest/v1/instances). If the resource is a
+      project provided by Cloud Resource Manager, its state will include
+      LIFECYCLE_STATE_UNSPECIFIED, ACTIVE, DELETE_REQUESTED and
+      DELETE_IN_PROGRESS. See `lifecycleState` definition in [API
+      Reference](https://cloud.google.com/resource-
+      manager/reference/rest/v1/projects). To search against the `state`: *
+      use a field query. Example: `state:RUNNING` * use a free text query.
+      Example: `RUNNING`
+    updateTime: Optional. The last update timestamp of this resource, at which
+      the resource was last modified or deleted. The granularity is in
+      seconds. Timestamp.nanos will always be 0. This field is available only
+      when the resource's proto contains it. To search against `update_time`:
+      * use a field query (value in seconds). Example: `updateTime <
+      1594294238`
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -3101,15 +3122,19 @@ class ResourceSearchResult(_messages.Message):
 
   additionalAttributes = _messages.MessageField('AdditionalAttributesValue', 1)
   assetType = _messages.StringField(2)
-  description = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  folders = _messages.StringField(5, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 6)
-  location = _messages.StringField(7)
-  name = _messages.StringField(8)
-  networkTags = _messages.StringField(9, repeated=True)
-  organization = _messages.StringField(10)
-  project = _messages.StringField(11)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  folders = _messages.StringField(6, repeated=True)
+  kmsKey = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  location = _messages.StringField(9)
+  name = _messages.StringField(10)
+  networkTags = _messages.StringField(11, repeated=True)
+  organization = _messages.StringField(12)
+  project = _messages.StringField(13)
+  state = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class ResourceSelector(_messages.Message):

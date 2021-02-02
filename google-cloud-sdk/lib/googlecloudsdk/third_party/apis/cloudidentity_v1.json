@@ -851,6 +851,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "dynamicGroupMetadata": {
+          "description": "Optional. Dynamic group metadata like queries and status.",
+          "$ref": "DynamicGroupMetadata"
         }
       }
     },
@@ -866,6 +870,74 @@
         "namespace": {
           "description": "The namespace in which the entity exists. If not specified, the `EntityKey` represents a Google-managed entity such as a Google user or a Google Group. If specified, the `EntityKey` represents an external-identity-mapped group. The namespace must correspond to an identity source created in Admin Console and must be in the form of `identitysources\/{identity_source_id}.",
           "type": "string"
+        }
+      }
+    },
+    "DynamicGroupMetadata": {
+      "id": "DynamicGroupMetadata",
+      "description": "Dynamic group metadata like queries and status.",
+      "type": "object",
+      "properties": {
+        "queries": {
+          "description": "Memberships will be the union of all queries. Only one entry with USER resource is currently supported. Customers can create up to 100 dynamic groups.",
+          "type": "array",
+          "items": {
+            "$ref": "DynamicGroupQuery"
+          }
+        },
+        "status": {
+          "description": "Output only. Status of the dynamic group.",
+          "readOnly": true,
+          "$ref": "DynamicGroupStatus"
+        }
+      }
+    },
+    "DynamicGroupQuery": {
+      "id": "DynamicGroupQuery",
+      "description": "Defines a query on a resource.",
+      "type": "object",
+      "properties": {
+        "resourceType": {
+          "description": "Resource type for the Dynamic Group Query",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value (not valid)",
+            "For queries on User"
+          ],
+          "enum": [
+            "RESOURCE_TYPE_UNSPECIFIED",
+            "USER"
+          ]
+        },
+        "query": {
+          "description": "Query that determines the memberships of the dynamic group. Examples: All users with at least one `organizations.department` of engineering. `user.organizations.exists(org, org.department=='engineering')` All users with at least one location that has `area` of `foo` and `building_id` of `bar`. `user.locations.exists(loc, loc.area=='foo' && loc.building_id=='bar')`",
+          "type": "string"
+        }
+      }
+    },
+    "DynamicGroupStatus": {
+      "id": "DynamicGroupStatus",
+      "description": "The current status of a dynamic group along with timestamp.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "Status of the dynamic group.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default.",
+            "The dynamic group is up-to-date.",
+            "The dynamic group has just been created and memberships are being updated."
+          ],
+          "enum": [
+            "STATUS_UNSPECIFIED",
+            "UP_TO_DATE",
+            "UPDATING_MEMBERSHIPS"
+          ]
+        },
+        "statusTime": {
+          "description": "The latest time at which the dynamic group is guaranteed to be in the given status. If status is `UP_TO_DATE`, the latest time at which the dynamic group was confirmed to be up-to-date. If status is `UPDATING_MEMBERSHIPS`, the time at which dynamic group was created.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -978,6 +1050,22 @@
         "name": {
           "description": "The name of the `MembershipRole`. Must be one of `OWNER`, `MANAGER`, `MEMBER`.",
           "type": "string"
+        },
+        "expiryDetail": {
+          "description": "The expiry details of the `MembershipRole`. Expiry details are only supported for `MEMBER` `MembershipRoles`. May be set if `name` is `MEMBER`. Must not be set if `name` is any other value.",
+          "$ref": "ExpiryDetail"
+        }
+      }
+    },
+    "ExpiryDetail": {
+      "id": "ExpiryDetail",
+      "description": "The `MembershipRole` expiry details.",
+      "type": "object",
+      "properties": {
+        "expireTime": {
+          "description": "The time at which the `MembershipRole` will expire.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -1028,6 +1116,29 @@
           "items": {
             "type": "string"
           }
+        },
+        "updateRolesParams": {
+          "description": "The `MembershipRole`s to be updated. Updating roles in the same request as adding or removing roles is not supported. Must not be set if either `add_roles` or `remove_roles` is set.",
+          "type": "array",
+          "items": {
+            "$ref": "UpdateMembershipRolesParams"
+          }
+        }
+      }
+    },
+    "UpdateMembershipRolesParams": {
+      "id": "UpdateMembershipRolesParams",
+      "description": "The details of an update to a `MembershipRole`.",
+      "type": "object",
+      "properties": {
+        "fieldMask": {
+          "description": "The fully-qualified names of fields to update. May only contain the field `expiry_detail`.",
+          "type": "string",
+          "format": "google-fieldmask"
+        },
+        "membershipRole": {
+          "description": "The `MembershipRole`s to be updated. Only `MEMBER` `MembershipRole` can currently be updated.",
+          "$ref": "MembershipRole"
         }
       }
     },
@@ -1292,6 +1403,45 @@
         "device": {
           "description": "Resultant Device object for the action. Note that asset tags will not be returned in the device object.",
           "$ref": "GoogleAppsCloudidentityDevicesV1Device"
+        }
+      }
+    },
+    "UserInvitation": {
+      "id": "UserInvitation",
+      "description": "UserInvitation to join a Google Workspace organization.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Shall be of the form `customers\/{customer}\/userinvitations\/{user_email_address}`",
+          "type": "string"
+        },
+        "state": {
+          "description": "State of the `UserInvitation`.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value is used if the state is omitted.",
+            "The `UserInvitation` has been created and is ready for sending as an email.",
+            "The user has been invited by email.",
+            "The user has accepted the invitation and is part of the organization.",
+            "The user declined the invitation."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "NOT_YET_SENT",
+            "INVITED",
+            "ACCEPTED",
+            "DECLINED"
+          ]
+        },
+        "mailsSentCount": {
+          "description": "Number of invitation emails sent to the user.",
+          "type": "string",
+          "format": "int64"
+        },
+        "updateTime": {
+          "description": "Time when the `UserInvitation` was last updated.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     }

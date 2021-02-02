@@ -201,6 +201,64 @@
         }
       }
     },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest",
+      "description": "The request to import new apt artifacts.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location where input content is located.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsGcsSource"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsGcsSource": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsGcsSource",
+      "description": "Google Cloud Storage location where the artifacts currently reside.",
+      "type": "object",
+      "properties": {
+        "uris": {
+          "description": "Cloud Storage paths URI (e.g., gs:\/\/my_bucket\/\/my_object).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "useWildcards": {
+          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest",
+      "description": "The request to import new yum artifacts.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location where input content is located.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsGcsSource"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsGcsSource": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsGcsSource",
+      "description": "Google Cloud Storage location where the artifacts currently reside.",
+      "type": "object",
+      "properties": {
+        "uris": {
+          "description": "Cloud Storage paths URI (e.g., gs:\/\/my_bucket\/\/my_object).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "useWildcards": {
+          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
+          "type": "boolean"
+        }
+      }
+    },
     "GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsResponse": {
       "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsResponse",
       "description": "The response message from importing artifacts.",
@@ -333,6 +391,73 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Imports artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
+                }
+              }
+              ,
+              "resources": {
+                "aptArtifacts": {
+                  "methods": {
+                    "import": {
+                      "id": "artifactregistry.projects.locations.repositories.aptArtifacts.import",
+                      "path": "v1alpha1/{+parent}/aptArtifacts:import",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/aptArtifacts:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be imported.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Imports Apt artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
+                "yumArtifacts": {
+                  "methods": {
+                    "import": {
+                      "id": "artifactregistry.projects.locations.repositories.yumArtifacts.import",
+                      "path": "v1alpha1/{+parent}/yumArtifacts:import",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be imported.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Imports Yum (RPM) artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
                 }
               }
             }

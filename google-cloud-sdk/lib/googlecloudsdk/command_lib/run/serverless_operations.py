@@ -1439,6 +1439,6 @@ class ServerlessOperations(object):
         resource=six.text_type(oneplatform_service),
         testIamPermissionsRequest=messages.TestIamPermissionsRequest(
             permissions=NEEDED_IAM_PERMISSIONS))
-    response = self._op_client.projects_locations_services.TestIamPermissions(
+    response = self._client.projects_locations_services.TestIamPermissions(
         request)
     return set(NEEDED_IAM_PERMISSIONS).issubset(set(response.permissions))

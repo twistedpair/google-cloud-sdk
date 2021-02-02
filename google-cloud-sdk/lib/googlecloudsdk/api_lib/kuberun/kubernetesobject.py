@@ -19,9 +19,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-from googlecloudsdk.api_lib.kuberun import mapobject
 from googlecloudsdk.api_lib.kuberun import metadata
 from googlecloudsdk.api_lib.kuberun import status
+from googlecloudsdk.api_lib.kuberun import structuredout
 from googlecloudsdk.core.console import console_attr
 
 LAST_MODIFIER_ANNOTATION = 'serving.knative.dev/lastModifier'
@@ -38,7 +38,7 @@ INTERNAL_GROUPS = (
     GOOGLE_GROUP)
 
 
-class KubernetesObject(mapobject.MapObject):
+class KubernetesObject(structuredout.MapObject):
   """Common base class for wrapping K8s JSON objects."""
 
   def Kind(self):

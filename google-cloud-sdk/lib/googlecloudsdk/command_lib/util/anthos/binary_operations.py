@@ -395,23 +395,27 @@ def NonZeroSuccessFailureHandler(result_holder, show_exec_error=False):
     _LogDefaultOperationFailure(result_holder)
 
 
-def CheckBinaryComponentInstalled(component_name):
+def CheckBinaryComponentInstalled(component_name, check_hidden=False):
   platform = platforms.Platform.Current() if config.Paths().sdk_root else None
   try:
     manager = update_manager.UpdateManager(platform_filter=platform, warn=False)
-    return component_name in manager.GetCurrentVersionsInformation()
+    return component_name in manager.GetCurrentVersionsInformation(
+        include_hidden=check_hidden)
   except local_state.Error:
     log.warning('Component check failed. Could not verify SDK install path.')
     return None
 
 
-def CheckForInstalledBinary(binary_name, custom_message=None):
+def CheckForInstalledBinary(binary_name,
+                            check_hidden=False,
+                            custom_message=None):
   """Check if binary is installed and return path or raise error.
 
   Prefer the installed component over any version found on path.
 
   Args:
     binary_name: str, name of binary to search for.
+    check_hidden: bool, whether to check hidden components for the binary.
     custom_message: str, custom message to used by
       MissingExecutableException if thrown.
 
@@ -422,7 +426,7 @@ def CheckForInstalledBinary(binary_name, custom_message=None):
     MissingExecutableException: if executable can not be found and is not
      installed as a component.
   """
-  is_component = CheckBinaryComponentInstalled(binary_name)
+  is_component = CheckBinaryComponentInstalled(binary_name, check_hidden)
 
   if is_component:
     return os.path.join(config.Paths().sdk_bin_path, binary_name)
@@ -500,6 +504,7 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
   def __init__(self,
                binary,
                binary_version=None,
+               check_hidden=False,
                std_out_func=None,
                std_err_func=None,
                failure_func=None,
@@ -511,6 +516,7 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
       binary: executable, the name of binary containing the underlying
         operations that this class will invoke.
       binary_version: string, version of the wrapped binary.
+      check_hidden: bool, whether to look for the binary in hidden components.
       std_out_func: callable(OperationResult, **kwargs), returns a function to
         call to process stdout from executable and build OperationResult
       std_err_func: callable(OperationResult, **kwargs), returns a function to
@@ -525,7 +531,8 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
         for known errors.
     """
     self._executable = CheckForInstalledBinary(
-        binary, custom_errors['MISSING_EXEC'] if custom_errors else None)
+        binary, check_hidden,
+        custom_errors['MISSING_EXEC'] if custom_errors else None)
     self._binary = binary
     self._version = binary_version
     self._default_args = default_args
@@ -631,6 +638,7 @@ class StreamingBinaryBackedOperation(
   def __init__(self,
                binary,
                binary_version=None,
+               check_hidden=False,
                std_out_func=None,
                std_err_func=None,
                failure_func=None,
@@ -639,8 +647,9 @@ class StreamingBinaryBackedOperation(
                capture_output=False,
                structured_output=False):
     super(StreamingBinaryBackedOperation,
-          self).__init__(binary, binary_version, std_out_func, std_err_func,
-                         failure_func, default_args, custom_errors)
+          self).__init__(binary, binary_version, check_hidden, std_out_func,
+                         std_err_func, failure_func, default_args,
+                         custom_errors)
     self.capture_output = capture_output
     if structured_output:
       default_out_handler = DefaultStreamStructuredOutHandler

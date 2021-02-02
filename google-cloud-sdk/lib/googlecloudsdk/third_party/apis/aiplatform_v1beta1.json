@@ -1588,6 +1588,10 @@
             "type": "string"
           }
         },
+        "encryptionSpec": {
+          "description": "Customer-managed encryption key spec for a DataLabelingJob. If set, this DataLabelingJob will be secured by this key. Note: Annotations created in the DataLabelingJob are associated with the EncryptionSpec of the Dataset they are exported to.",
+          "$ref": "GoogleCloudAiplatformV1beta1EncryptionSpec"
+        },
         "activeLearningConfig": {
           "description": "Parameters that configure active learning pipeline. Active learning will label the data incrementally via several iterations. For every iteration, it will select a batch of data based on the sampling strategy.",
           "$ref": "GoogleCloudAiplatformV1beta1ActiveLearningConfig"
@@ -1865,6 +1869,20 @@
             "OBSERVATION_NOISE_UNSPECIFIED",
             "LOW",
             "HIGH"
+          ]
+        },
+        "measurementSelectionType": {
+          "description": "Describe which measurement selection type will be used",
+          "type": "string",
+          "enumDescriptions": [
+            "Will be treated as LAST_MEASUREMENT.",
+            "Use the last measurement reported.",
+            "Use the best measurement reported."
+          ],
+          "enum": [
+            "MEASUREMENT_SELECTION_TYPE_UNSPECIFIED",
+            "LAST_MEASUREMENT",
+            "BEST_MEASUREMENT"
           ]
         }
       }
@@ -3655,9 +3673,56 @@
           "description": "The parameters that govern the prediction. The schema of the parameters may be specified via Endpoint's DeployedModels' Model's PredictSchemata's parameters_schema_uri.",
           "type": "any"
         },
+        "explanationSpecOverride": {
+          "description": "If specified, overrides the explanation_spec of the DeployedModel. Can be used for explaining prediction results with different configurations, such as: - Explaining top-5 predictions results as opposed to top-1; - Increasing path count or step count of the attribution methods to reduce approximate errors; - Using different baselines for explaining the prediction results.",
+          "$ref": "GoogleCloudAiplatformV1beta1ExplanationSpecOverride"
+        },
         "deployedModelId": {
           "description": "If specified, this ExplainRequest will be served by the chosen DeployedModel, overriding Endpoint.traffic_split.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ExplanationSpecOverride": {
+      "id": "GoogleCloudAiplatformV1beta1ExplanationSpecOverride",
+      "description": "The ExplanationSpec entries that can be overridden at online explanation[google.cloud.aiplatform.v1beta1.PredictionService.Explain] time.",
+      "type": "object",
+      "properties": {
+        "parameters": {
+          "description": "The parameters to be overridden. Note that the method cannot be changed. If not specified, no parameter is overridden.",
+          "$ref": "GoogleCloudAiplatformV1beta1ExplanationParameters"
+        },
+        "metadata": {
+          "description": "The metadata to be overridden. If not specified, no metadata is overridden.",
+          "$ref": "GoogleCloudAiplatformV1beta1ExplanationMetadataOverride"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ExplanationMetadataOverride": {
+      "id": "GoogleCloudAiplatformV1beta1ExplanationMetadataOverride",
+      "description": "The ExplanationMetadata entries that can be overridden at online explanation time.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "Required. Overrides the input metadata of the features. The key is the name of the feature to be overridden. The keys specified here must exist in the input metadata to be overridden. If a feature is not specified here, the corresponding feature's input metadata is not overridden.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1beta1ExplanationMetadataOverrideInputMetadataOverride"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ExplanationMetadataOverrideInputMetadataOverride": {
+      "id": "GoogleCloudAiplatformV1beta1ExplanationMetadataOverrideInputMetadataOverride",
+      "description": "The input metadata entries to be overridden.",
+      "type": "object",
+      "properties": {
+        "inputBaselines": {
+          "description": "Baseline inputs for this feature. This overrides the `input_baseline` field of the ExplanationMetadata.InputMetadata object of the corresponding feature's input metadata. If it's not specified, the original baselines are not overridden.",
+          "type": "array",
+          "items": {
+            "type": "any"
+          }
         }
       }
     },
@@ -3753,6 +3818,425 @@
           "description": "The standard List next-page token.",
           "type": "string"
         }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1Tensorboard": {
+      "id": "GoogleCloudAiplatformV1beta1Tensorboard",
+      "description": "Tensorboard is a physical database that stores users\u2019 training metrics. A default Tensorboard is provided in each region of a GCP project. If needed users can also create extra Tensorboards in their projects.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Name of the Tensorboard. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. User provided name of this Tensorboard.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of this Tensorboard.",
+          "type": "string"
+        },
+        "kmsKeyName": {
+          "description": "By default Tensorboard is encrypted with Google provided keys. Users can optionally supply a KMS key to encrypt their data Format: `projects\/{project_id}\/locations\/{location}\/keyRings\/{key_ring_id}\/cryptoKeys\/{key_id}`",
+          "type": "string"
+        },
+        "runCount": {
+          "description": "Output only. The number of Runs stored in this Tensorboard.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this Tensorboard was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this Tensorboard was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "The labels with user-defined metadata to organize your Tensorboards. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. No more than 64 user labels can be associated with one Tensorboard (System labels are excluded). See https:\/\/goo.gl\/xmQnxf for more information and examples of labels. System reserved label keys are prefixed with \"aiplatform.googleapis.com\/\" and are immutable.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "etag": {
+          "description": "Used to perform a consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ListTensorboardsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ListTensorboardsResponse",
+      "description": "Response message for TensorboardService.ListTensorboards.",
+      "type": "object",
+      "properties": {
+        "tensorboards": {
+          "description": "The Tensorboards mathching the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1Tensorboard"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as ListTensorboardsRequest.page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1TensorboardExperiment": {
+      "id": "GoogleCloudAiplatformV1beta1TensorboardExperiment",
+      "description": "A TensorboardExperiment is a group of TensorboardRuns, that are typically the results of a training job run, in a Tensorboard.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Name of the TensorboardExperiment. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/tensorboardExperiments\/{experiment}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. User provided name of this TensorboardExperiment.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of this TensorboardExperiment.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this TensorboardExperiment was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this TensorboardExperiment was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "The labels with user-defined metadata to organize your Datasets. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. No more than 64 user labels can be associated with one Dataset (System labels are excluded). See https:\/\/goo.gl\/xmQnxf for more information and examples of labels. System reserved label keys are prefixed with \"aiplatform.googleapis.com\/\" and are immutable. Following system labels exist for each Dataset: * \"aiplatform.googleapis.com\/dataset_metadata_schema\": - output only, its value is the metadata_schema's title.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "etag": {
+          "description": "Used to perform consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
+          "type": "string"
+        },
+        "source": {
+          "description": "Immutable. Source of the TensorboardExperiment. Example: a custom training job.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ListTensorboardExperimentsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ListTensorboardExperimentsResponse",
+      "description": "Response message for TensorboardService.ListTensorboardExperiments.",
+      "type": "object",
+      "properties": {
+        "tensorboardExperiments": {
+          "description": "The TensorboardExperiments mathching the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1TensorboardExperiment"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as ListTensorboardExperimentsRequest.page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1TensorboardRun": {
+      "id": "GoogleCloudAiplatformV1beta1TensorboardRun",
+      "description": "TensorboardRun maps to a specific execution of a training job with a given set of hyperparameter values, model definition, dataset, etc",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Name of the TensorboardRun. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/runs\/{run}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. User provided name of this TensorboardRun. This value must be unique among all TensorboardRuns belonging to the same parent TensorboardExperiment.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of this TensorboardRun.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this TensorboardRun was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this TensorboardRun was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "etag": {
+          "description": "Used to perform a consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ListTensorboardRunsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ListTensorboardRunsResponse",
+      "description": "Response message for TensorboardService.ListTensorboardRuns.",
+      "type": "object",
+      "properties": {
+        "tensorboardRuns": {
+          "description": "The TensorboardRuns mathching the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1TensorboardRun"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as ListTensorboardRunsRequest.page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1TensorboardTimeSeries": {
+      "id": "GoogleCloudAiplatformV1beta1TensorboardTimeSeries",
+      "description": "TensorboardTimeSeries maps to times series produced in training runs",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Name of the TensorboardTimeSeries.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. User provided name of this TensorboardTimeSeries. This value should be unique among all TensorboardTimeSeries resources belonging to the same TensorboardRun resource (parent resource).",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of this TensorboardTimeSeries.",
+          "type": "string"
+        },
+        "valueType": {
+          "description": "Required. Immutable. Type of TensorboardTimeSeries value.",
+          "type": "string",
+          "enumDescriptions": [
+            "The value type is unspecified.",
+            "Used for TensorboardTimeSeries that is a list of scalars. E.g. accuracy of a model over epochs\/time.",
+            "Used for TensorboardTimeSeries that is a list of tensors. E.g. histograms of weights of layer in a model over epoch\/time.",
+            "Used for TensorboardTimeSeries that is a list of blob sequences. E.g. set of sample images with labels over epochs\/time."
+          ],
+          "enum": [
+            "VALUE_TYPE_UNSPECIFIED",
+            "SCALAR",
+            "TENSOR",
+            "BLOB_SEQUENCE"
+          ]
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this TensorboardTimeSeries was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this TensorboardTimeSeries was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "etag": {
+          "description": "Used to perform a consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
+          "type": "string"
+        },
+        "pluginName": {
+          "description": "Immutable. Name of the plugin this time series pertain to. Such as Scalar, Tensor, Blob",
+          "type": "string"
+        },
+        "pluginData": {
+          "description": "Data of the current plugin, with the size limited to 65KB.",
+          "type": "string",
+          "format": "byte"
+        },
+        "metadata": {
+          "description": "Output only. Scalar, Tensor, or Blob metadata for this TensorboardTimeSeries.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1TensorboardTimeSeriesMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1TensorboardTimeSeriesMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1TensorboardTimeSeriesMetadata",
+      "description": "Describes metadata for a TensorboardTimeSeries.",
+      "type": "object",
+      "properties": {
+        "maxStep": {
+          "description": "Output only. Max step index of all data points within a TensorboardTimeSeries.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "maxWallTime": {
+          "description": "Output only. Max wall clock timestamp of all data points within a TensorboardTimeSeries.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ListTensorboardTimeSeriesResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ListTensorboardTimeSeriesResponse",
+      "description": "Response message for TensorboardService.ListTensorboardTimeSeries.",
+      "type": "object",
+      "properties": {
+        "tensorboardTimeSeries": {
+          "description": "The TensorboardTimeSeries mathching the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1TensorboardTimeSeries"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as ListTensorboardTimeSeriesRequest.page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ReadTensorboardTimeSeriesDataResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ReadTensorboardTimeSeriesDataResponse",
+      "description": "Response message for TensorboardService.ReadTensorboardTimeSeriesData.",
+      "type": "object",
+      "properties": {
+        "timeSeriesData": {
+          "description": "The returned time series data.",
+          "$ref": "GoogleCloudAiplatformV1beta1TimeSeriesData"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1TimeSeriesData": {
+      "id": "GoogleCloudAiplatformV1beta1TimeSeriesData",
+      "description": "All the data stored in a TensorboardTimeSeries.",
+      "type": "object",
+      "properties": {
+        "tensorboardTimeSeriesId": {
+          "description": "Required. The ID of the TensorboardTimeSeries, which will become the final component of the TensorboardTimeSeries' resource name",
+          "type": "string"
+        },
+        "valueType": {
+          "description": "Required. Immutable. The value type of this time series. All the values in this time series data must match this value type.",
+          "type": "string",
+          "enumDescriptions": [
+            "The value type is unspecified.",
+            "Used for TensorboardTimeSeries that is a list of scalars. E.g. accuracy of a model over epochs\/time.",
+            "Used for TensorboardTimeSeries that is a list of tensors. E.g. histograms of weights of layer in a model over epoch\/time.",
+            "Used for TensorboardTimeSeries that is a list of blob sequences. E.g. set of sample images with labels over epochs\/time."
+          ],
+          "enum": [
+            "VALUE_TYPE_UNSPECIFIED",
+            "SCALAR",
+            "TENSOR",
+            "BLOB_SEQUENCE"
+          ]
+        },
+        "values": {
+          "description": "Required. Data points in this time series.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1TimeSeriesDataPoint"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1TimeSeriesDataPoint": {
+      "id": "GoogleCloudAiplatformV1beta1TimeSeriesDataPoint",
+      "description": "A TensorboardTimeSeries data point.",
+      "type": "object",
+      "properties": {
+        "scalar": {
+          "description": "A scalar value.",
+          "$ref": "GoogleCloudAiplatformV1beta1Scalar"
+        },
+        "tensor": {
+          "description": "A tensor value.",
+          "$ref": "GoogleCloudAiplatformV1beta1TensorboardTensor"
+        },
+        "wallTime": {
+          "description": "Wall clock timestamp when this data point is generated by the end user.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "step": {
+          "description": "Step index of this data point within the run.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1Scalar": {
+      "id": "GoogleCloudAiplatformV1beta1Scalar",
+      "description": "One point viewable on a scalar metric plot.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "Value of the point at this step \/ timestamp.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1TensorboardTensor": {
+      "id": "GoogleCloudAiplatformV1beta1TensorboardTensor",
+      "description": "One point viewable on a tensor metric plot.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "Required. Serialized form of https: \/\/github.com\/tensorflow\/tensorflow\/blob\/ \/\/ master\/tensorflow\/core\/framework\/tensor.proto",
+          "type": "string",
+          "format": "byte"
+        },
+        "versionNumber": {
+          "description": "Optional. Version number of TensorProto used to serialize value.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1WriteTensorboardRunDataRequest": {
+      "id": "GoogleCloudAiplatformV1beta1WriteTensorboardRunDataRequest",
+      "description": "Request message for TensorboardService.WriteTensorboardRunData.",
+      "type": "object",
+      "properties": {
+        "timeSeriesData": {
+          "description": "Required. The TensorboardTimeSeries data to write. Values with in a time series are indexed by their step value. Repeated writes to the same step will overwrite the existing value for that step. The upper limit of data points per write request is 5000.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1TimeSeriesData"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1WriteTensorboardRunDataResponse": {
+      "id": "GoogleCloudAiplatformV1beta1WriteTensorboardRunDataResponse",
+      "description": "Response message for TensorboardService.WriteTensorboardRunData.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudAiplatformInternalCreateHumanInTheLoopOperationMetadata": {
@@ -4729,6 +5213,17 @@
         }
       }
     },
+    "GoogleCloudAiplatformUiCreateTensorboardOperationMetadata": {
+      "id": "GoogleCloudAiplatformUiCreateTensorboardOperationMetadata",
+      "description": "Details of operations that perform create Tensorboard.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for Tensorboard.",
+          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformUiDeleteOperationMetadata": {
       "id": "GoogleCloudAiplatformUiDeleteOperationMetadata",
       "description": "Details of operations that perform deletes of any entities.",
@@ -5585,6 +6080,17 @@
         },
         "genericMetadata": {
           "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiUpdateTensorboardOperationMetadata": {
+      "id": "GoogleCloudAiplatformUiUpdateTensorboardOperationMetadata",
+      "description": "Details of operations that perform update Tensorboard.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for Tensorboard.",
           "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
         }
       }
@@ -6677,6 +7183,17 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1alpha1CreateTensorboardOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1alpha1CreateTensorboardOperationMetadata",
+      "description": "Details of operations that perform create Tensorboard.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for Tensorboard.",
+          "$ref": "GoogleCloudAiplatformV1alpha1GenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1alpha1DeleteOperationMetadata": {
       "id": "GoogleCloudAiplatformV1alpha1DeleteOperationMetadata",
       "description": "Details of operations that perform deletes of any entities.",
@@ -7096,6 +7613,17 @@
         },
         "genericMetadata": {
           "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1alpha1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1UpdateTensorboardOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1alpha1UpdateTensorboardOperationMetadata",
+      "description": "Details of operations that perform update Tensorboard.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for Tensorboard.",
           "$ref": "GoogleCloudAiplatformV1alpha1GenericOperationMetadata"
         }
       }
@@ -7827,6 +8355,17 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1CreateTensorboardOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1CreateTensorboardOperationMetadata",
+      "description": "Details of operations that perform create Tensorboard.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for Tensorboard.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1DeleteOperationMetadata": {
       "id": "GoogleCloudAiplatformV1beta1DeleteOperationMetadata",
       "description": "Details of operations that perform deletes of any entities.",
@@ -7977,6 +8516,17 @@
         },
         "genericMetadata": {
           "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1UpdateTensorboardOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1UpdateTensorboardOperationMetadata",
+      "description": "Details of operations that perform update Tensorboard.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for Tensorboard.",
           "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
         }
       }
@@ -8457,22 +9007,7 @@
     },
     "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResult": {
       "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResult",
-      "description": "Represents a line of JSONL in the text sentiment batch prediction output file. This is a hack to allow printing of integer values.",
-      "type": "object",
-      "properties": {
-        "instance": {
-          "description": "User's input instance.",
-          "$ref": "GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextSentimentPredictionInstance"
-        },
-        "prediction": {
-          "description": "The prediction result.",
-          "$ref": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction": {
-      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction",
-      "description": "Prediction output format for Text Sentiment.",
+      "description": "Prediction output format for Text Sentiment",
       "type": "object",
       "properties": {
         "sentiment": {
@@ -8963,6 +9498,45 @@
         "multiLabel": {
           "description": "If false, a single-label (multi-class) Model will be trained (i.e. assuming that for each image just up to one annotation may be applicable). If true, a multi-label Model will be trained (i.e. assuming that for each image multiple annotations may be applicable).",
           "type": "boolean"
+        },
+        "evaluationExplanationSpec": {
+          "description": "Specification for explaining the evaluation results. If specified, the ModelEvaluation of the trained Model will include explanations for predictions on the test data. Each prediction will be explained twice, using integrated gradients and XRAI attribution methods respectively.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpecGroup"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpecGroup": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpecGroup",
+      "description": "Specification for explaining the evaluation results.",
+      "type": "object",
+      "properties": {
+        "imageGcsDestination": {
+          "description": "The Cloud Storage location to store the images explaining the evaluation result of the images in the test data.",
+          "type": "string"
+        },
+        "integratedGradients": {
+          "description": "Specification for explaining the evaluation results using integrated gradients attribution method. The full ExplanationSpec used for explaining the evaluation can be found in the ModelEvaluation.explanationSpecs object.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpec"
+        },
+        "xrai": {
+          "description": "Specification for explaining the evaluation results using XRAI attribution method. The full ExplanationSpec used for explaining the evaluation can be found in the ModelEvaluation.explanationSpecs object.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpec"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpec": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpec",
+      "description": "Specification of a specified explanation attribution method.",
+      "type": "object",
+      "properties": {
+        "stepCount": {
+          "description": "The number of steps for approximating the path integral. A good value to start is 50 and gradually increase until the sum to diff property is within the desired error range. Valid range of its value is [1, 100], inclusively.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "visualization": {
+          "description": "Visualization configurations for image explanation.",
+          "$ref": "GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataVisualization"
         }
       }
     },
@@ -11299,22 +11873,7 @@
     },
     "GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResult": {
       "id": "GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResult",
-      "description": "Represents a line of JSONL in the text sentiment batch prediction output file. This is a hack to allow printing of integer values.",
-      "type": "object",
-      "properties": {
-        "instance": {
-          "description": "User's input instance.",
-          "$ref": "GoogleCloudAiplatformV1SchemaPredictInstanceTextSentimentPredictionInstance"
-        },
-        "prediction": {
-          "description": "The prediction result.",
-          "$ref": "GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResultPrediction"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResultPrediction": {
-      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResultPrediction",
-      "description": "Prediction output format for Text Sentiment.",
+      "description": "Prediction output format for Text Sentiment",
       "type": "object",
       "properties": {
         "sentiment": {
@@ -14146,626 +14705,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Waits for the specified long-running operation until it is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
-                    }
-                  }
-                }
-              }
-            },
-            "tensorboards": {
-              "resources": {
-                "operations": {
-                  "methods": {
-                    "list": {
-                      "id": "aiplatform.projects.locations.tensorboards.operations.list",
-                      "path": "v1beta1/{+name}/operations",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/operations",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation's parent resource.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "The standard list filter.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The standard list page size.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "The standard list page token.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningListOperationsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
-                    },
-                    "get": {
-                      "id": "aiplatform.projects.locations.tensorboards.operations.get",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/operations/{operationsId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/operations\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
-                    },
-                    "delete": {
-                      "id": "aiplatform.projects.locations.tensorboards.operations.delete",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/operations/{operationsId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource to be deleted.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/operations\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleProtobufEmpty"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
-                    },
-                    "cancel": {
-                      "id": "aiplatform.projects.locations.tensorboards.operations.cancel",
-                      "path": "v1beta1/{+name}:cancel",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/operations/{operationsId}:cancel",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource to be cancelled.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/operations\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleProtobufEmpty"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
-                    },
-                    "wait": {
-                      "id": "aiplatform.projects.locations.tensorboards.operations.wait",
-                      "path": "v1beta1/{+name}:wait",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/operations/{operationsId}:wait",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource to wait on.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/operations\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "timeout": {
-                          "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-duration"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Waits for the specified long-running operation until it is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
-                    }
-                  }
-                },
-                "experiments": {
-                  "resources": {
-                    "operations": {
-                      "methods": {
-                        "list": {
-                          "id": "aiplatform.projects.locations.tensorboards.experiments.operations.list",
-                          "path": "v1beta1/{+name}/operations",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/operations",
-                          "httpMethod": "GET",
-                          "parameters": {
-                            "name": {
-                              "description": "The name of the operation's parent resource.",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+$",
-                              "type": "string"
-                            },
-                            "filter": {
-                              "description": "The standard list filter.",
-                              "location": "query",
-                              "type": "string"
-                            },
-                            "pageSize": {
-                              "description": "The standard list page size.",
-                              "location": "query",
-                              "type": "integer",
-                              "format": "int32"
-                            },
-                            "pageToken": {
-                              "description": "The standard list page token.",
-                              "location": "query",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "GoogleLongrunningListOperationsResponse"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
-                        },
-                        "get": {
-                          "id": "aiplatform.projects.locations.tensorboards.experiments.operations.get",
-                          "path": "v1beta1/{+name}",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/operations/{operationsId}",
-                          "httpMethod": "GET",
-                          "parameters": {
-                            "name": {
-                              "description": "The name of the operation resource.",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/operations\/[^\/]+$",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "GoogleLongrunningOperation"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
-                        },
-                        "delete": {
-                          "id": "aiplatform.projects.locations.tensorboards.experiments.operations.delete",
-                          "path": "v1beta1/{+name}",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/operations/{operationsId}",
-                          "httpMethod": "DELETE",
-                          "parameters": {
-                            "name": {
-                              "description": "The name of the operation resource to be deleted.",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/operations\/[^\/]+$",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "GoogleProtobufEmpty"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
-                        },
-                        "cancel": {
-                          "id": "aiplatform.projects.locations.tensorboards.experiments.operations.cancel",
-                          "path": "v1beta1/{+name}:cancel",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/operations/{operationsId}:cancel",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "name": {
-                              "description": "The name of the operation resource to be cancelled.",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/operations\/[^\/]+$",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "GoogleProtobufEmpty"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
-                        },
-                        "wait": {
-                          "id": "aiplatform.projects.locations.tensorboards.experiments.operations.wait",
-                          "path": "v1beta1/{+name}:wait",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/operations/{operationsId}:wait",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "name": {
-                              "description": "The name of the operation resource to wait on.",
-                              "location": "path",
-                              "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/operations\/[^\/]+$",
-                              "type": "string"
-                            },
-                            "timeout": {
-                              "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
-                              "location": "query",
-                              "type": "string",
-                              "format": "google-duration"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "GoogleLongrunningOperation"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Waits for the specified long-running operation until it is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
-                        }
-                      }
-                    },
-                    "runs": {
-                      "resources": {
-                        "operations": {
-                          "methods": {
-                            "list": {
-                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.operations.list",
-                              "path": "v1beta1/{+name}/operations",
-                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/operations",
-                              "httpMethod": "GET",
-                              "parameters": {
-                                "name": {
-                                  "description": "The name of the operation's parent resource.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+$",
-                                  "type": "string"
-                                },
-                                "filter": {
-                                  "description": "The standard list filter.",
-                                  "location": "query",
-                                  "type": "string"
-                                },
-                                "pageSize": {
-                                  "description": "The standard list page size.",
-                                  "location": "query",
-                                  "type": "integer",
-                                  "format": "int32"
-                                },
-                                "pageToken": {
-                                  "description": "The standard list page token.",
-                                  "location": "query",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "name"
-                              ],
-                              "response": {
-                                "$ref": "GoogleLongrunningListOperationsResponse"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform"
-                              ],
-                              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
-                            },
-                            "get": {
-                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.operations.get",
-                              "path": "v1beta1/{+name}",
-                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/operations/{operationsId}",
-                              "httpMethod": "GET",
-                              "parameters": {
-                                "name": {
-                                  "description": "The name of the operation resource.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/operations\/[^\/]+$",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "name"
-                              ],
-                              "response": {
-                                "$ref": "GoogleLongrunningOperation"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform"
-                              ],
-                              "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
-                            },
-                            "delete": {
-                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.operations.delete",
-                              "path": "v1beta1/{+name}",
-                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/operations/{operationsId}",
-                              "httpMethod": "DELETE",
-                              "parameters": {
-                                "name": {
-                                  "description": "The name of the operation resource to be deleted.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/operations\/[^\/]+$",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "name"
-                              ],
-                              "response": {
-                                "$ref": "GoogleProtobufEmpty"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform"
-                              ],
-                              "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
-                            },
-                            "cancel": {
-                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.operations.cancel",
-                              "path": "v1beta1/{+name}:cancel",
-                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/operations/{operationsId}:cancel",
-                              "httpMethod": "POST",
-                              "parameters": {
-                                "name": {
-                                  "description": "The name of the operation resource to be cancelled.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/operations\/[^\/]+$",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "name"
-                              ],
-                              "response": {
-                                "$ref": "GoogleProtobufEmpty"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform"
-                              ],
-                              "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
-                            },
-                            "wait": {
-                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.operations.wait",
-                              "path": "v1beta1/{+name}:wait",
-                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/operations/{operationsId}:wait",
-                              "httpMethod": "POST",
-                              "parameters": {
-                                "name": {
-                                  "description": "The name of the operation resource to wait on.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/operations\/[^\/]+$",
-                                  "type": "string"
-                                },
-                                "timeout": {
-                                  "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
-                                  "location": "query",
-                                  "type": "string",
-                                  "format": "google-duration"
-                                }
-                              },
-                              "parameterOrder": [
-                                "name"
-                              ],
-                              "response": {
-                                "$ref": "GoogleLongrunningOperation"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform"
-                              ],
-                              "description": "Waits for the specified long-running operation until it is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
-                            }
-                          }
-                        },
-                        "timeSeries": {
-                          "resources": {
-                            "operations": {
-                              "methods": {
-                                "list": {
-                                  "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.operations.list",
-                                  "path": "v1beta1/{+name}/operations",
-                                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}/operations",
-                                  "httpMethod": "GET",
-                                  "parameters": {
-                                    "name": {
-                                      "description": "The name of the operation's parent resource.",
-                                      "location": "path",
-                                      "required": true,
-                                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+$",
-                                      "type": "string"
-                                    },
-                                    "filter": {
-                                      "description": "The standard list filter.",
-                                      "location": "query",
-                                      "type": "string"
-                                    },
-                                    "pageSize": {
-                                      "description": "The standard list page size.",
-                                      "location": "query",
-                                      "type": "integer",
-                                      "format": "int32"
-                                    },
-                                    "pageToken": {
-                                      "description": "The standard list page token.",
-                                      "location": "query",
-                                      "type": "string"
-                                    }
-                                  },
-                                  "parameterOrder": [
-                                    "name"
-                                  ],
-                                  "response": {
-                                    "$ref": "GoogleLongrunningListOperationsResponse"
-                                  },
-                                  "scopes": [
-                                    "https://www.googleapis.com/auth/cloud-platform"
-                                  ],
-                                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
-                                },
-                                "get": {
-                                  "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.operations.get",
-                                  "path": "v1beta1/{+name}",
-                                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}/operations/{operationsId}",
-                                  "httpMethod": "GET",
-                                  "parameters": {
-                                    "name": {
-                                      "description": "The name of the operation resource.",
-                                      "location": "path",
-                                      "required": true,
-                                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+\/operations\/[^\/]+$",
-                                      "type": "string"
-                                    }
-                                  },
-                                  "parameterOrder": [
-                                    "name"
-                                  ],
-                                  "response": {
-                                    "$ref": "GoogleLongrunningOperation"
-                                  },
-                                  "scopes": [
-                                    "https://www.googleapis.com/auth/cloud-platform"
-                                  ],
-                                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
-                                },
-                                "delete": {
-                                  "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.operations.delete",
-                                  "path": "v1beta1/{+name}",
-                                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}/operations/{operationsId}",
-                                  "httpMethod": "DELETE",
-                                  "parameters": {
-                                    "name": {
-                                      "description": "The name of the operation resource to be deleted.",
-                                      "location": "path",
-                                      "required": true,
-                                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+\/operations\/[^\/]+$",
-                                      "type": "string"
-                                    }
-                                  },
-                                  "parameterOrder": [
-                                    "name"
-                                  ],
-                                  "response": {
-                                    "$ref": "GoogleProtobufEmpty"
-                                  },
-                                  "scopes": [
-                                    "https://www.googleapis.com/auth/cloud-platform"
-                                  ],
-                                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
-                                },
-                                "cancel": {
-                                  "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.operations.cancel",
-                                  "path": "v1beta1/{+name}:cancel",
-                                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}/operations/{operationsId}:cancel",
-                                  "httpMethod": "POST",
-                                  "parameters": {
-                                    "name": {
-                                      "description": "The name of the operation resource to be cancelled.",
-                                      "location": "path",
-                                      "required": true,
-                                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+\/operations\/[^\/]+$",
-                                      "type": "string"
-                                    }
-                                  },
-                                  "parameterOrder": [
-                                    "name"
-                                  ],
-                                  "response": {
-                                    "$ref": "GoogleProtobufEmpty"
-                                  },
-                                  "scopes": [
-                                    "https://www.googleapis.com/auth/cloud-platform"
-                                  ],
-                                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
-                                },
-                                "wait": {
-                                  "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.operations.wait",
-                                  "path": "v1beta1/{+name}:wait",
-                                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}/operations/{operationsId}:wait",
-                                  "httpMethod": "POST",
-                                  "parameters": {
-                                    "name": {
-                                      "description": "The name of the operation resource to wait on.",
-                                      "location": "path",
-                                      "required": true,
-                                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+\/operations\/[^\/]+$",
-                                      "type": "string"
-                                    },
-                                    "timeout": {
-                                      "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
-                                      "location": "query",
-                                      "type": "string",
-                                      "format": "google-duration"
-                                    }
-                                  },
-                                  "parameterOrder": [
-                                    "name"
-                                  ],
-                                  "response": {
-                                    "$ref": "GoogleLongrunningOperation"
-                                  },
-                                  "scopes": [
-                                    "https://www.googleapis.com/auth/cloud-platform"
-                                  ],
-                                  "description": "Waits for the specified long-running operation until it is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
                     }
                   }
                 }
@@ -18931,6 +18870,1373 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Waits for the specified long-running operation until it is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                    }
+                  }
+                }
+              }
+            },
+            "tensorboards": {
+              "methods": {
+                "create": {
+                  "id": "aiplatform.projects.locations.tensorboards.create",
+                  "path": "v1beta1/{+parent}/tensorboards",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the Location to create the Tensorboard in. Format: `projects\/{project}\/locations\/{location}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1beta1Tensorboard"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a Tensorboard."
+                },
+                "get": {
+                  "id": "aiplatform.projects.locations.tensorboards.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Tensorboard resource. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1Tensorboard"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets a Tensorboard."
+                },
+                "patch": {
+                  "id": "aiplatform.projects.locations.tensorboards.patch",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. Name of the Tensorboard. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the Tensorboard resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten if new values are specified.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1beta1Tensorboard"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates a Tensorboard."
+                },
+                "list": {
+                  "id": "aiplatform.projects.locations.tensorboards.list",
+                  "path": "v1beta1/{+parent}/tensorboards",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the Location to list Tensorboards. Format: 'projects\/{project}\/locations\/{location}'",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Lists the Tensorboards that match the filter expression.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of Tensorboards to return. The service may return fewer than this value. If unspecified, at most 50 Tensorboards will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous TensorboardService.ListTensorboards call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to TensorboardService.ListTensorboards must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Field to use to sort the list.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "readMask": {
+                      "description": "Mask specifying which fields to read.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1ListTensorboardsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Tensorboards in a Location."
+                },
+                "delete": {
+                  "id": "aiplatform.projects.locations.tensorboards.delete",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Tensorboard to be deleted. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a Tensorboard."
+                }
+              }
+              ,
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "list": {
+                      "id": "aiplatform.projects.locations.tensorboards.operations.list",
+                      "path": "v1beta1/{+name}/operations",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/operations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation's parent resource.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningListOperationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                    },
+                    "get": {
+                      "id": "aiplatform.projects.locations.tensorboards.operations.get",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/operations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    },
+                    "delete": {
+                      "id": "aiplatform.projects.locations.tensorboards.operations.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/operations/{operationsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be deleted.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/operations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                    },
+                    "cancel": {
+                      "id": "aiplatform.projects.locations.tensorboards.operations.cancel",
+                      "path": "v1beta1/{+name}:cancel",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/operations/{operationsId}:cancel",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be cancelled.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/operations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                    },
+                    "wait": {
+                      "id": "aiplatform.projects.locations.tensorboards.operations.wait",
+                      "path": "v1beta1/{+name}:wait",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/operations/{operationsId}:wait",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to wait on.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/operations\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "timeout": {
+                          "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-duration"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Waits for the specified long-running operation until it is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                    }
+                  }
+                },
+                "experiments": {
+                  "methods": {
+                    "create": {
+                      "id": "aiplatform.projects.locations.tensorboards.experiments.create",
+                      "path": "v1beta1/{+parent}/experiments",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the Tensorboard to create the TensorboardExperiment in. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "tensorboardExperimentId": {
+                          "description": "Required. The ID to use for the Tensorboard experiment, which will become the final component of the Tensorboard experiment's resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1TensorboardExperiment"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1TensorboardExperiment"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a TensorboardExperiment."
+                    },
+                    "get": {
+                      "id": "aiplatform.projects.locations.tensorboards.experiments.get",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the TensorboardExperiment resource. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1TensorboardExperiment"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets a TensorboardExperiment."
+                    },
+                    "patch": {
+                      "id": "aiplatform.projects.locations.tensorboards.experiments.patch",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. Name of the TensorboardExperiment. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/tensorboardExperiments\/{experiment}`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Field mask is used to specify the fields to be overwritten in the TensorboardExperiment resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten if new values are specified.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1TensorboardExperiment"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1TensorboardExperiment"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates a TensorboardExperiment."
+                    },
+                    "list": {
+                      "id": "aiplatform.projects.locations.tensorboards.experiments.list",
+                      "path": "v1beta1/{+parent}/experiments",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the Tensorboard to list TensorboardExperiments. Format: 'projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}'",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Lists the TensorboardExperiments that match the filter expression.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of TensorboardExperiments to return. The service may return fewer than this value. If unspecified, at most 50 TensorboardExperiments will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous TensorboardService.ListTensorboardExperiments call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to TensorboardService.ListTensorboardExperiments must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Field to use to sort the list.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "readMask": {
+                          "description": "Mask specifying which fields to read.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1ListTensorboardExperimentsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists TensorboardExperiments in a Location."
+                    },
+                    "delete": {
+                      "id": "aiplatform.projects.locations.tensorboards.experiments.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the TensorboardExperiment to be deleted. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a TensorboardExperiment."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "operations": {
+                      "methods": {
+                        "list": {
+                          "id": "aiplatform.projects.locations.tensorboards.experiments.operations.list",
+                          "path": "v1beta1/{+name}/operations",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/operations",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation's parent resource.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "The standard list filter.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The standard list page size.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "The standard list page token.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleLongrunningListOperationsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                        },
+                        "get": {
+                          "id": "aiplatform.projects.locations.tensorboards.experiments.operations.get",
+                          "path": "v1beta1/{+name}",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/operations/{operationsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation resource.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/operations\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleLongrunningOperation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                        },
+                        "delete": {
+                          "id": "aiplatform.projects.locations.tensorboards.experiments.operations.delete",
+                          "path": "v1beta1/{+name}",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/operations/{operationsId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation resource to be deleted.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/operations\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleProtobufEmpty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                        },
+                        "cancel": {
+                          "id": "aiplatform.projects.locations.tensorboards.experiments.operations.cancel",
+                          "path": "v1beta1/{+name}:cancel",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/operations/{operationsId}:cancel",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation resource to be cancelled.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/operations\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleProtobufEmpty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                        },
+                        "wait": {
+                          "id": "aiplatform.projects.locations.tensorboards.experiments.operations.wait",
+                          "path": "v1beta1/{+name}:wait",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/operations/{operationsId}:wait",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation resource to wait on.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/operations\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "timeout": {
+                              "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-duration"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleLongrunningOperation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Waits for the specified long-running operation until it is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                        }
+                      }
+                    },
+                    "runs": {
+                      "methods": {
+                        "create": {
+                          "id": "aiplatform.projects.locations.tensorboards.experiments.runs.create",
+                          "path": "v1beta1/{+parent}/runs",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The resource name of the Tensorboard to create the TensorboardRun in. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}`",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "tensorboardRunId": {
+                              "description": "Required. The ID to use for the Tensorboard run, which will become the final component of the Tensorboard run's resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "GoogleCloudAiplatformV1beta1TensorboardRun"
+                          },
+                          "response": {
+                            "$ref": "GoogleCloudAiplatformV1beta1TensorboardRun"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Creates a TensorboardRun."
+                        },
+                        "get": {
+                          "id": "aiplatform.projects.locations.tensorboards.experiments.runs.get",
+                          "path": "v1beta1/{+name}",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The name of the TensorboardRun resource. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}`",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleCloudAiplatformV1beta1TensorboardRun"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets a TensorboardRun."
+                        },
+                        "patch": {
+                          "id": "aiplatform.projects.locations.tensorboards.experiments.runs.patch",
+                          "path": "v1beta1/{+name}",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}",
+                          "httpMethod": "PATCH",
+                          "parameters": {
+                            "name": {
+                              "description": "Output only. Name of the TensorboardRun. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/runs\/{run}`",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "updateMask": {
+                              "description": "Required. Field mask is used to specify the fields to be overwritten in the TensorboardRun resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten if new values are specified.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "GoogleCloudAiplatformV1beta1TensorboardRun"
+                          },
+                          "response": {
+                            "$ref": "GoogleCloudAiplatformV1beta1TensorboardRun"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Updates a TensorboardRun."
+                        },
+                        "list": {
+                          "id": "aiplatform.projects.locations.tensorboards.experiments.runs.list",
+                          "path": "v1beta1/{+parent}/runs",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The resource name of the Tensorboard to list TensorboardRuns. Format: 'projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}'",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "Lists the TensorboardRuns that match the filter expression.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The maximum number of TensorboardRuns to return. The service may return fewer than this value. If unspecified, at most 50 TensorboardRuns will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "A page token, received from a previous TensorboardService.ListTensorboardRuns call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to TensorboardService.ListTensorboardRuns must match the call that provided the page token.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "orderBy": {
+                              "description": "Field to use to sort the list.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "readMask": {
+                              "description": "Mask specifying which fields to read.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "GoogleCloudAiplatformV1beta1ListTensorboardRunsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists TensorboardRuns in a Location."
+                        },
+                        "delete": {
+                          "id": "aiplatform.projects.locations.tensorboards.experiments.runs.delete",
+                          "path": "v1beta1/{+name}",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The name of the TensorboardRun to be deleted. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}`",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleLongrunningOperation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Deletes a TensorboardRun."
+                        },
+                        "write": {
+                          "id": "aiplatform.projects.locations.tensorboards.experiments.runs.write",
+                          "path": "v1beta1/{+tensorboardRun}:write",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}:write",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "tensorboardRun": {
+                              "description": "Required. The resource name of the TensorboardRun to write data to. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}`",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "tensorboardRun"
+                          ],
+                          "request": {
+                            "$ref": "GoogleCloudAiplatformV1beta1WriteTensorboardRunDataRequest"
+                          },
+                          "response": {
+                            "$ref": "GoogleCloudAiplatformV1beta1WriteTensorboardRunDataResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Write time series data points into multiple TensorboardTimeSeries under a TensorboardRun. If any data fail to be ingested, an error will be returned."
+                        }
+                      }
+                      ,
+                      "resources": {
+                        "operations": {
+                          "methods": {
+                            "list": {
+                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.operations.list",
+                              "path": "v1beta1/{+name}/operations",
+                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/operations",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "name": {
+                                  "description": "The name of the operation's parent resource.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+$",
+                                  "type": "string"
+                                },
+                                "filter": {
+                                  "description": "The standard list filter.",
+                                  "location": "query",
+                                  "type": "string"
+                                },
+                                "pageSize": {
+                                  "description": "The standard list page size.",
+                                  "location": "query",
+                                  "type": "integer",
+                                  "format": "int32"
+                                },
+                                "pageToken": {
+                                  "description": "The standard list page token.",
+                                  "location": "query",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "GoogleLongrunningListOperationsResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                            },
+                            "get": {
+                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.operations.get",
+                              "path": "v1beta1/{+name}",
+                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/operations/{operationsId}",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "name": {
+                                  "description": "The name of the operation resource.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/operations\/[^\/]+$",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "GoogleLongrunningOperation"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                            },
+                            "delete": {
+                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.operations.delete",
+                              "path": "v1beta1/{+name}",
+                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/operations/{operationsId}",
+                              "httpMethod": "DELETE",
+                              "parameters": {
+                                "name": {
+                                  "description": "The name of the operation resource to be deleted.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/operations\/[^\/]+$",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "GoogleProtobufEmpty"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                            },
+                            "cancel": {
+                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.operations.cancel",
+                              "path": "v1beta1/{+name}:cancel",
+                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/operations/{operationsId}:cancel",
+                              "httpMethod": "POST",
+                              "parameters": {
+                                "name": {
+                                  "description": "The name of the operation resource to be cancelled.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/operations\/[^\/]+$",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "GoogleProtobufEmpty"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                            },
+                            "wait": {
+                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.operations.wait",
+                              "path": "v1beta1/{+name}:wait",
+                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/operations/{operationsId}:wait",
+                              "httpMethod": "POST",
+                              "parameters": {
+                                "name": {
+                                  "description": "The name of the operation resource to wait on.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/operations\/[^\/]+$",
+                                  "type": "string"
+                                },
+                                "timeout": {
+                                  "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
+                                  "location": "query",
+                                  "type": "string",
+                                  "format": "google-duration"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "GoogleLongrunningOperation"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Waits for the specified long-running operation until it is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                            }
+                          }
+                        },
+                        "timeSeries": {
+                          "methods": {
+                            "create": {
+                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.create",
+                              "path": "v1beta1/{+parent}/timeSeries",
+                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries",
+                              "httpMethod": "POST",
+                              "parameters": {
+                                "parent": {
+                                  "description": "Required. The resource name of the TensorboardRun to create the TensorboardTimeSeries in. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}`",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+$",
+                                  "type": "string"
+                                },
+                                "tensorboardTimeSeriesId": {
+                                  "description": "Optional. The user specified unique ID to use for the TensorboardTimeSeries, which will become the final component of the TensorboardTimeSeries's resource name. Ref: go\/ucaip-user-specified-id This value should match \"a-z0-9{0, 127}\"",
+                                  "location": "query",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "parent"
+                              ],
+                              "request": {
+                                "$ref": "GoogleCloudAiplatformV1beta1TensorboardTimeSeries"
+                              },
+                              "response": {
+                                "$ref": "GoogleCloudAiplatformV1beta1TensorboardTimeSeries"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Creates a TensorboardTimeSeries."
+                            },
+                            "get": {
+                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.get",
+                              "path": "v1beta1/{+name}",
+                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "name": {
+                                  "description": "Required. The name of the TensorboardTimeSeries resource. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}\/timeSeries\/{time_series}`",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+$",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "GoogleCloudAiplatformV1beta1TensorboardTimeSeries"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Gets a TensorboardTimeSeries."
+                            },
+                            "patch": {
+                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.patch",
+                              "path": "v1beta1/{+name}",
+                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}",
+                              "httpMethod": "PATCH",
+                              "parameters": {
+                                "name": {
+                                  "description": "Output only. Name of the TensorboardTimeSeries.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+$",
+                                  "type": "string"
+                                },
+                                "updateMask": {
+                                  "description": "Required. Field mask is used to specify the fields to be overwritten in the TensorboardTimeSeries resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten if new values are specified.",
+                                  "location": "query",
+                                  "type": "string",
+                                  "format": "google-fieldmask"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "request": {
+                                "$ref": "GoogleCloudAiplatformV1beta1TensorboardTimeSeries"
+                              },
+                              "response": {
+                                "$ref": "GoogleCloudAiplatformV1beta1TensorboardTimeSeries"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Updates a TensorboardTimeSeries."
+                            },
+                            "list": {
+                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.list",
+                              "path": "v1beta1/{+parent}/timeSeries",
+                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "parent": {
+                                  "description": "Required. The resource name of the TensorboardRun to list TensorboardTimeSeries. Format: 'projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}'",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+$",
+                                  "type": "string"
+                                },
+                                "filter": {
+                                  "description": "Lists the TensorboardTimeSeries that match the filter expression.",
+                                  "location": "query",
+                                  "type": "string"
+                                },
+                                "pageSize": {
+                                  "description": "The maximum number of TensorboardTimeSeries to return. The service may return fewer than this value. If unspecified, at most 50 TensorboardTimeSeries will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                                  "location": "query",
+                                  "type": "integer",
+                                  "format": "int32"
+                                },
+                                "pageToken": {
+                                  "description": "A page token, received from a previous TensorboardService.ListTensorboardTimeSeries call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to TensorboardService.ListTensorboardTimeSeries must match the call that provided the page token.",
+                                  "location": "query",
+                                  "type": "string"
+                                },
+                                "orderBy": {
+                                  "description": "Field to use to sort the list.",
+                                  "location": "query",
+                                  "type": "string"
+                                },
+                                "readMask": {
+                                  "description": "Mask specifying which fields to read.",
+                                  "location": "query",
+                                  "type": "string",
+                                  "format": "google-fieldmask"
+                                }
+                              },
+                              "parameterOrder": [
+                                "parent"
+                              ],
+                              "response": {
+                                "$ref": "GoogleCloudAiplatformV1beta1ListTensorboardTimeSeriesResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Lists TensorboardTimeSeries in a Location."
+                            },
+                            "delete": {
+                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.delete",
+                              "path": "v1beta1/{+name}",
+                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}",
+                              "httpMethod": "DELETE",
+                              "parameters": {
+                                "name": {
+                                  "description": "Required. The name of the TensorboardTimeSeries to be deleted. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}\/timeSeries\/{time_series}`",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+$",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "GoogleLongrunningOperation"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Deletes a TensorboardTimeSeries."
+                            },
+                            "read": {
+                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.read",
+                              "path": "v1beta1/{+tensorboardTimeSeries}:read",
+                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}:read",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "tensorboardTimeSeries": {
+                                  "description": "Required. The resource name of the TensorboardTimeSeries to read data from. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}\/timeSeries\/{time_series}`",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+$",
+                                  "type": "string"
+                                },
+                                "maxDataPoints": {
+                                  "description": "The maximum number of TensorboardTimeSeries' data to return. This value should be a positive integer. This value can be set to -1 to return all data.",
+                                  "location": "query",
+                                  "type": "integer",
+                                  "format": "int32"
+                                },
+                                "filter": {
+                                  "description": "Reads the TensorboardTimeSeries' data that match the filter expression.",
+                                  "location": "query",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "tensorboardTimeSeries"
+                              ],
+                              "response": {
+                                "$ref": "GoogleCloudAiplatformV1beta1ReadTensorboardTimeSeriesDataResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Reads a TensorboardTimeSeries' data. Data is returned in paginated responses. By default, if the number of data points stored is less than 1000, all data will be returned. Otherwise, 1000 data points will be randomly selected from this time series and returned. This value can be changed by changing max_data_points."
+                            }
+                          }
+                          ,
+                          "resources": {
+                            "operations": {
+                              "methods": {
+                                "list": {
+                                  "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.operations.list",
+                                  "path": "v1beta1/{+name}/operations",
+                                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}/operations",
+                                  "httpMethod": "GET",
+                                  "parameters": {
+                                    "name": {
+                                      "description": "The name of the operation's parent resource.",
+                                      "location": "path",
+                                      "required": true,
+                                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+$",
+                                      "type": "string"
+                                    },
+                                    "filter": {
+                                      "description": "The standard list filter.",
+                                      "location": "query",
+                                      "type": "string"
+                                    },
+                                    "pageSize": {
+                                      "description": "The standard list page size.",
+                                      "location": "query",
+                                      "type": "integer",
+                                      "format": "int32"
+                                    },
+                                    "pageToken": {
+                                      "description": "The standard list page token.",
+                                      "location": "query",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "parameterOrder": [
+                                    "name"
+                                  ],
+                                  "response": {
+                                    "$ref": "GoogleLongrunningListOperationsResponse"
+                                  },
+                                  "scopes": [
+                                    "https://www.googleapis.com/auth/cloud-platform"
+                                  ],
+                                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                                },
+                                "get": {
+                                  "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.operations.get",
+                                  "path": "v1beta1/{+name}",
+                                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}/operations/{operationsId}",
+                                  "httpMethod": "GET",
+                                  "parameters": {
+                                    "name": {
+                                      "description": "The name of the operation resource.",
+                                      "location": "path",
+                                      "required": true,
+                                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+\/operations\/[^\/]+$",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "parameterOrder": [
+                                    "name"
+                                  ],
+                                  "response": {
+                                    "$ref": "GoogleLongrunningOperation"
+                                  },
+                                  "scopes": [
+                                    "https://www.googleapis.com/auth/cloud-platform"
+                                  ],
+                                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                                },
+                                "delete": {
+                                  "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.operations.delete",
+                                  "path": "v1beta1/{+name}",
+                                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}/operations/{operationsId}",
+                                  "httpMethod": "DELETE",
+                                  "parameters": {
+                                    "name": {
+                                      "description": "The name of the operation resource to be deleted.",
+                                      "location": "path",
+                                      "required": true,
+                                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+\/operations\/[^\/]+$",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "parameterOrder": [
+                                    "name"
+                                  ],
+                                  "response": {
+                                    "$ref": "GoogleProtobufEmpty"
+                                  },
+                                  "scopes": [
+                                    "https://www.googleapis.com/auth/cloud-platform"
+                                  ],
+                                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                                },
+                                "cancel": {
+                                  "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.operations.cancel",
+                                  "path": "v1beta1/{+name}:cancel",
+                                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}/operations/{operationsId}:cancel",
+                                  "httpMethod": "POST",
+                                  "parameters": {
+                                    "name": {
+                                      "description": "The name of the operation resource to be cancelled.",
+                                      "location": "path",
+                                      "required": true,
+                                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+\/operations\/[^\/]+$",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "parameterOrder": [
+                                    "name"
+                                  ],
+                                  "response": {
+                                    "$ref": "GoogleProtobufEmpty"
+                                  },
+                                  "scopes": [
+                                    "https://www.googleapis.com/auth/cloud-platform"
+                                  ],
+                                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                                },
+                                "wait": {
+                                  "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.operations.wait",
+                                  "path": "v1beta1/{+name}:wait",
+                                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}/operations/{operationsId}:wait",
+                                  "httpMethod": "POST",
+                                  "parameters": {
+                                    "name": {
+                                      "description": "The name of the operation resource to wait on.",
+                                      "location": "path",
+                                      "required": true,
+                                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+\/operations\/[^\/]+$",
+                                      "type": "string"
+                                    },
+                                    "timeout": {
+                                      "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
+                                      "location": "query",
+                                      "type": "string",
+                                      "format": "google-duration"
+                                    }
+                                  },
+                                  "parameterOrder": [
+                                    "name"
+                                  ],
+                                  "response": {
+                                    "$ref": "GoogleLongrunningOperation"
+                                  },
+                                  "scopes": [
+                                    "https://www.googleapis.com/auth/cloud-platform"
+                                  ],
+                                  "description": "Waits for the specified long-running operation until it is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }

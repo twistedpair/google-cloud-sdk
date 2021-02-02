@@ -2269,6 +2269,108 @@ class AiplatformProjectsLocationsStudiesTrialsOperationsWaitRequest(_messages.Me
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectsLocationsTensorboardsCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsCreateRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1Tensorboard: A
+      GoogleCloudAiplatformV1beta1Tensorboard resource to be passed as the
+      request body.
+    parent: Required. The resource name of the Location to create the
+      Tensorboard in. Format: `projects/{project}/locations/{location}`
+  """
+
+  googleCloudAiplatformV1beta1Tensorboard = _messages.MessageField('GoogleCloudAiplatformV1beta1Tensorboard', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the Tensorboard to be deleted. Format:
+      `projects/{project}/locations/{location}/tensorboards/{tensorboard}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsCreateRequest
+  object.
+
+  Fields:
+    googleCloudAiplatformV1beta1TensorboardExperiment: A
+      GoogleCloudAiplatformV1beta1TensorboardExperiment resource to be passed
+      as the request body.
+    parent: Required. The resource name of the Tensorboard to create the
+      TensorboardExperiment in. Format:
+      `projects/{project}/locations/{location}/tensorboards/{tensorboard}`
+    tensorboardExperimentId: Required. The ID to use for the Tensorboard
+      experiment, which will become the final component of the Tensorboard
+      experiment's resource name. This value should be 1-128 characters, and
+      valid characters are /a-z-/.
+  """
+
+  googleCloudAiplatformV1beta1TensorboardExperiment = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardExperiment', 1)
+  parent = _messages.StringField(2, required=True)
+  tensorboardExperimentId = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the TensorboardExperiment to be deleted.
+      Format: `projects/{project}/locations/{location}/tensorboards/{tensorboa
+      rd}/experiments/{experiment}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsGetRequest object.
+
+  Fields:
+    name: Required. The name of the TensorboardExperiment resource. Format: `p
+      rojects/{project}/locations/{location}/tensorboards/{tensorboard}/experi
+      ments/{experiment}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsListRequest object.
+
+  Fields:
+    filter: Lists the TensorboardExperiments that match the filter expression.
+    orderBy: Field to use to sort the list.
+    pageSize: The maximum number of TensorboardExperiments to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      TensorboardExperiments will be returned. The maximum value is 1000;
+      values above 1000 will be coerced to 1000.
+    pageToken: A page token, received from a previous
+      TensorboardService.ListTensorboardExperiments call. Provide this to
+      retrieve the subsequent page. When paginating, all other parameters
+      provided to TensorboardService.ListTensorboardExperiments must match the
+      call that provided the page token.
+    parent: Required. The resource name of the Tensorboard to list
+      TensorboardExperiments. Format:
+      'projects/{project}/locations/{location}/tensorboards/{tensorboard}'
+    readMask: Mask specifying which fields to read.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  readMask = _messages.StringField(6)
+
+
 class AiplatformProjectsLocationsTensorboardsExperimentsOperationsCancelRequest(_messages.Message):
   r"""A
   AiplatformProjectsLocationsTensorboardsExperimentsOperationsCancelRequest
@@ -2337,6 +2439,106 @@ class AiplatformProjectsLocationsTensorboardsExperimentsOperationsWaitRequest(_m
 
   name = _messages.StringField(1, required=True)
   timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsPatchRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsPatchRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1TensorboardExperiment: A
+      GoogleCloudAiplatformV1beta1TensorboardExperiment resource to be passed
+      as the request body.
+    name: Output only. Name of the TensorboardExperiment. Format: `projects/{p
+      roject}/locations/{location}/tensorboards/{tensorboard}/tensorboardExper
+      iments/{experiment}`
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the TensorboardExperiment resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten if
+      new values are specified.
+  """
+
+  googleCloudAiplatformV1beta1TensorboardExperiment = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardExperiment', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsCreateRequest
+  object.
+
+  Fields:
+    googleCloudAiplatformV1beta1TensorboardRun: A
+      GoogleCloudAiplatformV1beta1TensorboardRun resource to be passed as the
+      request body.
+    parent: Required. The resource name of the Tensorboard to create the
+      TensorboardRun in. Format: `projects/{project}/locations/{location}/tens
+      orboards/{tensorboard}/experiments/{experiment}`
+    tensorboardRunId: Required. The ID to use for the Tensorboard run, which
+      will become the final component of the Tensorboard run's resource name.
+      This value should be 1-128 characters, and valid characters are /a-z-/.
+  """
+
+  googleCloudAiplatformV1beta1TensorboardRun = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardRun', 1)
+  parent = _messages.StringField(2, required=True)
+  tensorboardRunId = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the TensorboardRun to be deleted. Format: `pro
+      jects/{project}/locations/{location}/tensorboards/{tensorboard}/experime
+      nts/{experiment}/runs/{run}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the TensorboardRun resource. Format: `projects
+      /{project}/locations/{location}/tensorboards/{tensorboard}/experiments/{
+      experiment}/runs/{run}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsListRequest
+  object.
+
+  Fields:
+    filter: Lists the TensorboardRuns that match the filter expression.
+    orderBy: Field to use to sort the list.
+    pageSize: The maximum number of TensorboardRuns to return. The service may
+      return fewer than this value. If unspecified, at most 50 TensorboardRuns
+      will be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: A page token, received from a previous
+      TensorboardService.ListTensorboardRuns call. Provide this to retrieve
+      the subsequent page. When paginating, all other parameters provided to
+      TensorboardService.ListTensorboardRuns must match the call that provided
+      the page token.
+    parent: Required. The resource name of the Tensorboard to list
+      TensorboardRuns. Format: 'projects/{project}/locations/{location}/tensor
+      boards/{tensorboard}/experiments/{experiment}'
+    readMask: Mask specifying which fields to read.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  readMask = _messages.StringField(6)
 
 
 class AiplatformProjectsLocationsTensorboardsExperimentsRunsOperationsCancelRequest(_messages.Message):
@@ -2408,6 +2610,109 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsOperationsWaitReques
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsPatchRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsPatchRequest
+  object.
+
+  Fields:
+    googleCloudAiplatformV1beta1TensorboardRun: A
+      GoogleCloudAiplatformV1beta1TensorboardRun resource to be passed as the
+      request body.
+    name: Output only. Name of the TensorboardRun. Format: `projects/{project}
+      /locations/{location}/tensorboards/{tensorboard}/runs/{run}`
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the TensorboardRun resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten if new
+      values are specified.
+  """
+
+  googleCloudAiplatformV1beta1TensorboardRun = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardRun', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesCreate
+  Request object.
+
+  Fields:
+    googleCloudAiplatformV1beta1TensorboardTimeSeries: A
+      GoogleCloudAiplatformV1beta1TensorboardTimeSeries resource to be passed
+      as the request body.
+    parent: Required. The resource name of the TensorboardRun to create the
+      TensorboardTimeSeries in. Format: `projects/{project}/locations/{locatio
+      n}/tensorboards/{tensorboard}/experiments/{experiment}/runs/{run}`
+    tensorboardTimeSeriesId: Optional. The user specified unique ID to use for
+      the TensorboardTimeSeries, which will become the final component of the
+      TensorboardTimeSeries's resource name. Ref: go/ucaip-user-specified-id
+      This value should match "a-z0-9{0, 127}"
+  """
+
+  googleCloudAiplatformV1beta1TensorboardTimeSeries = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardTimeSeries', 1)
+  parent = _messages.StringField(2, required=True)
+  tensorboardTimeSeriesId = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesDelete
+  Request object.
+
+  Fields:
+    name: Required. The name of the TensorboardTimeSeries to be deleted.
+      Format: `projects/{project}/locations/{location}/tensorboards/{tensorboa
+      rd}/experiments/{experiment}/runs/{run}/timeSeries/{time_series}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesGetRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the TensorboardTimeSeries resource. Format: `p
+      rojects/{project}/locations/{location}/tensorboards/{tensorboard}/experi
+      ments/{experiment}/runs/{run}/timeSeries/{time_series}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesListRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesListRequest
+  object.
+
+  Fields:
+    filter: Lists the TensorboardTimeSeries that match the filter expression.
+    orderBy: Field to use to sort the list.
+    pageSize: The maximum number of TensorboardTimeSeries to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      TensorboardTimeSeries will be returned. The maximum value is 1000;
+      values above 1000 will be coerced to 1000.
+    pageToken: A page token, received from a previous
+      TensorboardService.ListTensorboardTimeSeries call. Provide this to
+      retrieve the subsequent page. When paginating, all other parameters
+      provided to TensorboardService.ListTensorboardTimeSeries must match the
+      call that provided the page token.
+    parent: Required. The resource name of the TensorboardRun to list
+      TensorboardTimeSeries. Format: 'projects/{project}/locations/{location}/
+      tensorboards/{tensorboard}/experiments/{experiment}/runs/{run}'
+    readMask: Mask specifying which fields to read.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  readMask = _messages.StringField(6)
+
+
 class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperationsCancelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperat
   ionsCancelRequest object.
@@ -2474,6 +2779,107 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperations
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesPatchRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesPatchRequest
+  object.
+
+  Fields:
+    googleCloudAiplatformV1beta1TensorboardTimeSeries: A
+      GoogleCloudAiplatformV1beta1TensorboardTimeSeries resource to be passed
+      as the request body.
+    name: Output only. Name of the TensorboardTimeSeries.
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the TensorboardTimeSeries resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten if
+      new values are specified.
+  """
+
+  googleCloudAiplatformV1beta1TensorboardTimeSeries = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardTimeSeries', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadRequest
+  object.
+
+  Fields:
+    filter: Reads the TensorboardTimeSeries' data that match the filter
+      expression.
+    maxDataPoints: The maximum number of TensorboardTimeSeries' data to
+      return. This value should be a positive integer. This value can be set
+      to -1 to return all data.
+    tensorboardTimeSeries: Required. The resource name of the
+      TensorboardTimeSeries to read data from. Format: `projects/{project}/loc
+      ations/{location}/tensorboards/{tensorboard}/experiments/{experiment}/ru
+      ns/{run}/timeSeries/{time_series}`
+  """
+
+  filter = _messages.StringField(1)
+  maxDataPoints = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  tensorboardTimeSeries = _messages.StringField(3, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsWriteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsWriteRequest
+  object.
+
+  Fields:
+    googleCloudAiplatformV1beta1WriteTensorboardRunDataRequest: A
+      GoogleCloudAiplatformV1beta1WriteTensorboardRunDataRequest resource to
+      be passed as the request body.
+    tensorboardRun: Required. The resource name of the TensorboardRun to write
+      data to. Format: `projects/{project}/locations/{location}/tensorboards/{
+      tensorboard}/experiments/{experiment}/runs/{run}`
+  """
+
+  googleCloudAiplatformV1beta1WriteTensorboardRunDataRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1WriteTensorboardRunDataRequest', 1)
+  tensorboardRun = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsGetRequest object.
+
+  Fields:
+    name: Required. The name of the Tensorboard resource. Format:
+      `projects/{project}/locations/{location}/tensorboards/{tensorboard}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsListRequest object.
+
+  Fields:
+    filter: Lists the Tensorboards that match the filter expression.
+    orderBy: Field to use to sort the list.
+    pageSize: The maximum number of Tensorboards to return. The service may
+      return fewer than this value. If unspecified, at most 50 Tensorboards
+      will be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: A page token, received from a previous
+      TensorboardService.ListTensorboards call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      TensorboardService.ListTensorboards must match the call that provided
+      the page token.
+    parent: Required. The resource name of the Location to list Tensorboards.
+      Format: 'projects/{project}/locations/{location}'
+    readMask: Mask specifying which fields to read.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  readMask = _messages.StringField(6)
+
+
 class AiplatformProjectsLocationsTensorboardsOperationsCancelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsTensorboardsOperationsCancelRequest object.
 
@@ -2533,6 +2939,28 @@ class AiplatformProjectsLocationsTensorboardsOperationsWaitRequest(_messages.Mes
 
   name = _messages.StringField(1, required=True)
   timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsTensorboardsPatchRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsPatchRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1Tensorboard: A
+      GoogleCloudAiplatformV1beta1Tensorboard resource to be passed as the
+      request body.
+    name: Output only. Name of the Tensorboard. Format:
+      `projects/{project}/locations/{location}/tensorboards/{tensorboard}`
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Tensorboard resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten if new
+      values are specified.
+  """
+
+  googleCloudAiplatformV1beta1Tensorboard = _messages.MessageField('GoogleCloudAiplatformV1beta1Tensorboard', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class AiplatformProjectsLocationsTrainingPipelinesCancelRequest(_messages.Message):
@@ -3315,6 +3743,16 @@ class GoogleCloudAiplatformUiCreateSpecialistPoolOperationMetadata(_messages.Mes
 
   Fields:
     genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformUiCreateTensorboardOperationMetadata(_messages.Message):
+  r"""Details of operations that perform create Tensorboard.
+
+  Fields:
+    genericMetadata: Operation metadata for Tensorboard.
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
@@ -5187,6 +5625,16 @@ class GoogleCloudAiplatformUiUpdateSpecialistPoolOperationMetadata(_messages.Mes
   specialistPool = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformUiUpdateTensorboardOperationMetadata(_messages.Message):
+  r"""Details of operations that perform update Tensorboard.
+
+  Fields:
+    genericMetadata: Operation metadata for Tensorboard.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformUiUploadModelOperationMetadata(_messages.Message):
   r"""Details of ModelService.UploadModel operation.
 
@@ -6351,20 +6799,7 @@ class GoogleCloudAiplatformV1SchemaPredictPredictionTextExtractionPredictionResu
 
 
 class GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResult(_messages.Message):
-  r"""Represents a line of JSONL in the text sentiment batch prediction output
-  file. This is a hack to allow printing of integer values.
-
-  Fields:
-    instance: User's input instance.
-    prediction: The prediction result.
-  """
-
-  instance = _messages.MessageField('GoogleCloudAiplatformV1SchemaPredictInstanceTextSentimentPredictionInstance', 1)
-  prediction = _messages.MessageField('GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResultPrediction', 2)
-
-
-class GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResultPrediction(_messages.Message):
-  r"""Prediction output format for Text Sentiment.
+  r"""Prediction output format for Text Sentiment
 
   Fields:
     sentiment: The integer sentiment labels between 0 (inclusive) and
@@ -8354,6 +8789,16 @@ class GoogleCloudAiplatformV1alpha1CreateSpecialistPoolOperationMetadata(_messag
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1alpha1CreateTensorboardOperationMetadata(_messages.Message):
+  r"""Details of operations that perform create Tensorboard.
+
+  Fields:
+    genericMetadata: Operation metadata for Tensorboard.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1alpha1DedicatedResources(_messages.Message):
   r"""A description of resources that are dedicated to a DeployedModel, and
   that need a higher degree of manual configuration.
@@ -9589,6 +10034,16 @@ class GoogleCloudAiplatformV1alpha1UpdateSpecialistPoolOperationMetadata(_messag
   specialistPool = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1alpha1UpdateTensorboardOperationMetadata(_messages.Message):
+  r"""Details of operations that perform update Tensorboard.
+
+  Fields:
+    genericMetadata: Operation metadata for Tensorboard.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1alpha1UploadModelOperationMetadata(_messages.Message):
   r"""Details of ModelService.UploadModel operation.
 
@@ -10290,6 +10745,16 @@ class GoogleCloudAiplatformV1beta1CreateSpecialistPoolOperationMetadata(_message
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1beta1CreateTensorboardOperationMetadata(_messages.Message):
+  r"""Details of operations that perform create Tensorboard.
+
+  Fields:
+    genericMetadata: Operation metadata for Tensorboard.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
   r"""Represents a job that runs custom workloads such as a Docker container
   or a Python package. A CustomJob can have multiple worker pools and each
@@ -10558,6 +11023,10 @@ class GoogleCloudAiplatformV1beta1DataLabelingJob(_messages.Message):
     displayName: Required. The user-defined name of the DataLabelingJob. The
       name can be up to 128 characters long and can be consist of any UTF-8
       characters. Display name of a DataLabelingJob.
+    encryptionSpec: Customer-managed encryption key spec for a
+      DataLabelingJob. If set, this DataLabelingJob will be secured by this
+      key. Note: Annotations created in the DataLabelingJob are associated
+      with the EncryptionSpec of the Dataset they are exported to.
     error: Output only. DataLabelingJob errors. It is only populated when
       job's state is `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.
     inputs: Required. Input config parameters for the DataLabelingJob.
@@ -10687,17 +11156,18 @@ class GoogleCloudAiplatformV1beta1DataLabelingJob(_messages.Message):
   currentSpend = _messages.MessageField('GoogleTypeMoney', 4)
   datasets = _messages.StringField(5, repeated=True)
   displayName = _messages.StringField(6)
-  error = _messages.MessageField('GoogleRpcStatus', 7)
-  inputs = _messages.MessageField('extra_types.JsonValue', 8)
-  inputsSchemaUri = _messages.StringField(9)
-  instructionUri = _messages.StringField(10)
-  labelerCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  labelingProgress = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  labels = _messages.MessageField('LabelsValue', 13)
-  name = _messages.StringField(14)
-  specialistPools = _messages.StringField(15, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  updateTime = _messages.StringField(17)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 7)
+  error = _messages.MessageField('GoogleRpcStatus', 8)
+  inputs = _messages.MessageField('extra_types.JsonValue', 9)
+  inputsSchemaUri = _messages.StringField(10)
+  instructionUri = _messages.StringField(11)
+  labelerCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  labelingProgress = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  labels = _messages.MessageField('LabelsValue', 14)
+  name = _messages.StringField(15)
+  specialistPools = _messages.StringField(16, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  updateTime = _messages.StringField(18)
 
 
 class GoogleCloudAiplatformV1beta1Dataset(_messages.Message):
@@ -11145,6 +11615,12 @@ class GoogleCloudAiplatformV1beta1ExplainRequest(_messages.Message):
   Fields:
     deployedModelId: If specified, this ExplainRequest will be served by the
       chosen DeployedModel, overriding Endpoint.traffic_split.
+    explanationSpecOverride: If specified, overrides the explanation_spec of
+      the DeployedModel. Can be used for explaining prediction results with
+      different configurations, such as: - Explaining top-5 predictions
+      results as opposed to top-1; - Increasing path count or step count of
+      the attribution methods to reduce approximate errors; - Using different
+      baselines for explaining the prediction results.
     instances: Required. The instances that are the input to the explanation
       call. A DeployedModel may have an upper limit on the number of instances
       it supports per request, and when it is exceeded the explanation call
@@ -11158,8 +11634,9 @@ class GoogleCloudAiplatformV1beta1ExplainRequest(_messages.Message):
   """
 
   deployedModelId = _messages.StringField(1)
-  instances = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
-  parameters = _messages.MessageField('extra_types.JsonValue', 3)
+  explanationSpecOverride = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpecOverride', 2)
+  instances = _messages.MessageField('extra_types.JsonValue', 3, repeated=True)
+  parameters = _messages.MessageField('extra_types.JsonValue', 4)
 
 
 class GoogleCloudAiplatformV1beta1ExplainResponse(_messages.Message):
@@ -11603,6 +12080,69 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataOutputMetadata(_messages.Me
   outputTensorName = _messages.StringField(3)
 
 
+class GoogleCloudAiplatformV1beta1ExplanationMetadataOverride(_messages.Message):
+  r"""The ExplanationMetadata entries that can be overridden at online
+  explanation time.
+
+  Messages:
+    InputsValue: Required. Overrides the input metadata of the features. The
+      key is the name of the feature to be overridden. The keys specified here
+      must exist in the input metadata to be overridden. If a feature is not
+      specified here, the corresponding feature's input metadata is not
+      overridden.
+
+  Fields:
+    inputs: Required. Overrides the input metadata of the features. The key is
+      the name of the feature to be overridden. The keys specified here must
+      exist in the input metadata to be overridden. If a feature is not
+      specified here, the corresponding feature's input metadata is not
+      overridden.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InputsValue(_messages.Message):
+    r"""Required. Overrides the input metadata of the features. The key is the
+    name of the feature to be overridden. The keys specified here must exist
+    in the input metadata to be overridden. If a feature is not specified
+    here, the corresponding feature's input metadata is not overridden.
+
+    Messages:
+      AdditionalProperty: An additional property for a InputsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type InputsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InputsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformV1beta1ExplanationMetadataOverrideInputM
+          etadataOverride attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationMetadataOverrideInputMetadataOverride', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  inputs = _messages.MessageField('InputsValue', 1)
+
+
+class GoogleCloudAiplatformV1beta1ExplanationMetadataOverrideInputMetadataOverride(_messages.Message):
+  r"""The input metadata entries to be overridden.
+
+  Fields:
+    inputBaselines: Baseline inputs for this feature. This overrides the
+      `input_baseline` field of the ExplanationMetadata.InputMetadata object
+      of the corresponding feature's input metadata. If it's not specified,
+      the original baselines are not overridden.
+  """
+
+  inputBaselines = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
+
+
 class GoogleCloudAiplatformV1beta1ExplanationParameters(_messages.Message):
   r"""Parameters to configure explaining for Model's predictions.
 
@@ -11655,6 +12195,21 @@ class GoogleCloudAiplatformV1beta1ExplanationSpec(_messages.Message):
   """
 
   metadata = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationMetadata', 1)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationParameters', 2)
+
+
+class GoogleCloudAiplatformV1beta1ExplanationSpecOverride(_messages.Message):
+  r"""The ExplanationSpec entries that can be overridden at online
+  explanation[google.cloud.aiplatform.v1beta1.PredictionService.Explain] time.
+
+  Fields:
+    metadata: The metadata to be overridden. If not specified, no metadata is
+      overridden.
+    parameters: The parameters to be overridden. Note that the method cannot
+      be changed. If not specified, no parameter is overridden.
+  """
+
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationMetadataOverride', 1)
   parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationParameters', 2)
 
 
@@ -12394,6 +12949,62 @@ class GoogleCloudAiplatformV1beta1ListSpecialistPoolsResponse(_messages.Message)
 
   nextPageToken = _messages.StringField(1)
   specialistPools = _messages.MessageField('GoogleCloudAiplatformV1beta1SpecialistPool', 2, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1ListTensorboardExperimentsResponse(_messages.Message):
+  r"""Response message for TensorboardService.ListTensorboardExperiments.
+
+  Fields:
+    nextPageToken: A token, which can be sent as
+      ListTensorboardExperimentsRequest.page_token to retrieve the next page.
+      If this field is omitted, there are no subsequent pages.
+    tensorboardExperiments: The TensorboardExperiments mathching the request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tensorboardExperiments = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardExperiment', 2, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1ListTensorboardRunsResponse(_messages.Message):
+  r"""Response message for TensorboardService.ListTensorboardRuns.
+
+  Fields:
+    nextPageToken: A token, which can be sent as
+      ListTensorboardRunsRequest.page_token to retrieve the next page. If this
+      field is omitted, there are no subsequent pages.
+    tensorboardRuns: The TensorboardRuns mathching the request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tensorboardRuns = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardRun', 2, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1ListTensorboardTimeSeriesResponse(_messages.Message):
+  r"""Response message for TensorboardService.ListTensorboardTimeSeries.
+
+  Fields:
+    nextPageToken: A token, which can be sent as
+      ListTensorboardTimeSeriesRequest.page_token to retrieve the next page.
+      If this field is omitted, there are no subsequent pages.
+    tensorboardTimeSeries: The TensorboardTimeSeries mathching the request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tensorboardTimeSeries = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardTimeSeries', 2, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1ListTensorboardsResponse(_messages.Message):
+  r"""Response message for TensorboardService.ListTensorboards.
+
+  Fields:
+    nextPageToken: A token, which can be sent as
+      ListTensorboardsRequest.page_token to retrieve the next page. If this
+      field is omitted, there are no subsequent pages.
+    tensorboards: The Tensorboards mathching the request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tensorboards = _messages.MessageField('GoogleCloudAiplatformV1beta1Tensorboard', 2, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1ListTrainingPipelinesResponse(_messages.Message):
@@ -13317,6 +13928,16 @@ class GoogleCloudAiplatformV1beta1PythonPackageSpec(_messages.Message):
   pythonModule = _messages.StringField(4)
 
 
+class GoogleCloudAiplatformV1beta1ReadTensorboardTimeSeriesDataResponse(_messages.Message):
+  r"""Response message for TensorboardService.ReadTensorboardTimeSeriesData.
+
+  Fields:
+    timeSeriesData: The returned time series data.
+  """
+
+  timeSeriesData = _messages.MessageField('GoogleCloudAiplatformV1beta1TimeSeriesData', 1)
+
+
 class GoogleCloudAiplatformV1beta1ResourcesConsumed(_messages.Message):
   r"""Statistics information about resource consumption.
 
@@ -13376,6 +13997,16 @@ class GoogleCloudAiplatformV1beta1SampledShapleyAttribution(_messages.Message):
   """
 
   pathCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1Scalar(_messages.Message):
+  r"""One point viewable on a scalar metric plot.
+
+  Fields:
+    value: Value of the point at this step / timestamp.
+  """
+
+  value = _messages.FloatField(1)
 
 
 class GoogleCloudAiplatformV1beta1Scheduling(_messages.Message):
@@ -13950,20 +14581,7 @@ class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextExtractionPredictio
 
 
 class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResult(_messages.Message):
-  r"""Represents a line of JSONL in the text sentiment batch prediction output
-  file. This is a hack to allow printing of integer values.
-
-  Fields:
-    instance: User's input instance.
-    prediction: The prediction result.
-  """
-
-  instance = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextSentimentPredictionInstance', 1)
-  prediction = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction', 2)
-
-
-class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction(_messages.Message):
-  r"""Prediction output format for Text Sentiment.
+  r"""Prediction output format for Text Sentiment
 
   Fields:
     sentiment: The integer sentiment labels between 0 (inclusive) and
@@ -14863,6 +15481,11 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
       early stopping feature. When false the early stopping feature is
       enabled, which means that AutoML Image Classification might stop
       training before the entire training budget has been used.
+    evaluationExplanationSpec: Specification for explaining the evaluation
+      results. If specified, the ModelEvaluation of the trained Model will
+      include explanations for predictions on the test data. Each prediction
+      will be explained twice, using integrated gradients and XRAI attribution
+      methods respectively.
     modelType: A ModelTypeValueValuesEnum attribute.
     multiLabel: If false, a single-label (multi-class) Model will be trained
       (i.e. assuming that for each image just up to one annotation may be
@@ -14902,8 +15525,9 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
   baseModelId = _messages.StringField(1)
   budgetMilliNodeHours = _messages.IntegerField(2)
   disableEarlyStopping = _messages.BooleanField(3)
-  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 4)
-  multiLabel = _messages.BooleanField(5)
+  evaluationExplanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpecGroup', 4)
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 5)
+  multiLabel = _messages.BooleanField(6)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassificationMetadata(_messages.Message):
@@ -14938,6 +15562,41 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
 
   costMilliNodeHours = _messages.IntegerField(1)
   successfulStopReason = _messages.EnumField('SuccessfulStopReasonValueValuesEnum', 2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpec(_messages.Message):
+  r"""Specification of a specified explanation attribution method.
+
+  Fields:
+    stepCount: The number of steps for approximating the path integral. A good
+      value to start is 50 and gradually increase until the sum to diff
+      property is within the desired error range. Valid range of its value is
+      [1, 100], inclusively.
+    visualization: Visualization configurations for image explanation.
+  """
+
+  stepCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  visualization = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataVisualization', 2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpecGroup(_messages.Message):
+  r"""Specification for explaining the evaluation results.
+
+  Fields:
+    imageGcsDestination: The Cloud Storage location to store the images
+      explaining the evaluation result of the images in the test data.
+    integratedGradients: Specification for explaining the evaluation results
+      using integrated gradients attribution method. The full ExplanationSpec
+      used for explaining the evaluation can be found in the
+      ModelEvaluation.explanationSpecs object.
+    xrai: Specification for explaining the evaluation results using XRAI
+      attribution method. The full ExplanationSpec used for explaining the
+      evaluation can be found in the ModelEvaluation.explanationSpecs object.
+  """
+
+  imageGcsDestination = _messages.StringField(1)
+  integratedGradients = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpec', 2)
+  xrai = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpec', 3)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDetection(_messages.Message):
@@ -15881,12 +16540,16 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
 
   Enums:
     AlgorithmValueValuesEnum: The search algorithm specified for the Study.
+    MeasurementSelectionTypeValueValuesEnum: Describe which measurement
+      selection type will be used
     ObservationNoiseValueValuesEnum: The observation noise level of the study.
       Currently only supported by the Vizier service. Not supported by
       HyperparamterTuningJob or TrainingPipeline.
 
   Fields:
     algorithm: The search algorithm specified for the Study.
+    measurementSelectionType: Describe which measurement selection type will
+      be used
     metrics: Required. Metric specs for the Study.
     observationNoise: The observation noise level of the study. Currently only
       supported by the Vizier service. Not supported by HyperparamterTuningJob
@@ -15909,6 +16572,19 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
     GRID_SEARCH = 1
     RANDOM_SEARCH = 2
 
+  class MeasurementSelectionTypeValueValuesEnum(_messages.Enum):
+    r"""Describe which measurement selection type will be used
+
+    Values:
+      MEASUREMENT_SELECTION_TYPE_UNSPECIFIED: Will be treated as
+        LAST_MEASUREMENT.
+      LAST_MEASUREMENT: Use the last measurement reported.
+      BEST_MEASUREMENT: Use the best measurement reported.
+    """
+    MEASUREMENT_SELECTION_TYPE_UNSPECIFIED = 0
+    LAST_MEASUREMENT = 1
+    BEST_MEASUREMENT = 2
+
   class ObservationNoiseValueValuesEnum(_messages.Enum):
     r"""The observation noise level of the study. Currently only supported by
     the Vizier service. Not supported by HyperparamterTuningJob or
@@ -15928,9 +16604,10 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
     HIGH = 2
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
-  metrics = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecMetricSpec', 2, repeated=True)
-  observationNoise = _messages.EnumField('ObservationNoiseValueValuesEnum', 3)
-  parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpec', 4, repeated=True)
+  measurementSelectionType = _messages.EnumField('MeasurementSelectionTypeValueValuesEnum', 2)
+  metrics = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecMetricSpec', 3, repeated=True)
+  observationNoise = _messages.EnumField('ObservationNoiseValueValuesEnum', 4)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpec', 5, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1StudySpecMetricSpec(_messages.Message):
@@ -16110,6 +16787,371 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecIntegerValueSpec(_messag
 
   maxValue = _messages.IntegerField(1)
   minValue = _messages.IntegerField(2)
+
+
+class GoogleCloudAiplatformV1beta1Tensorboard(_messages.Message):
+  r"""Tensorboard is a physical database that stores users' training metrics.
+  A default Tensorboard is provided in each region of a GCP project. If needed
+  users can also create extra Tensorboards in their projects.
+
+  Messages:
+    LabelsValue: The labels with user-defined metadata to organize your
+      Tensorboards. Label keys and values can be no longer than 64 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. No more than 64 user labels can be associated with one
+      Tensorboard (System labels are excluded). See https://goo.gl/xmQnxf for
+      more information and examples of labels. System reserved label keys are
+      prefixed with "aiplatform.googleapis.com/" and are immutable.
+
+  Fields:
+    createTime: Output only. Timestamp when this Tensorboard was created.
+    description: Description of this Tensorboard.
+    displayName: Required. User provided name of this Tensorboard.
+    etag: Used to perform a consistent read-modify-write updates. If not set,
+      a blind "overwrite" update happens.
+    kmsKeyName: By default Tensorboard is encrypted with Google provided keys.
+      Users can optionally supply a KMS key to encrypt their data Format: `pro
+      jects/{project_id}/locations/{location}/keyRings/{key_ring_id}/cryptoKey
+      s/{key_id}`
+    labels: The labels with user-defined metadata to organize your
+      Tensorboards. Label keys and values can be no longer than 64 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. No more than 64 user labels can be associated with one
+      Tensorboard (System labels are excluded). See https://goo.gl/xmQnxf for
+      more information and examples of labels. System reserved label keys are
+      prefixed with "aiplatform.googleapis.com/" and are immutable.
+    name: Output only. Name of the Tensorboard. Format:
+      `projects/{project}/locations/{location}/tensorboards/{tensorboard}`
+    runCount: Output only. The number of Runs stored in this Tensorboard.
+    updateTime: Output only. Timestamp when this Tensorboard was last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels with user-defined metadata to organize your Tensorboards.
+    Label keys and values can be no longer than 64 characters (Unicode
+    codepoints), can only contain lowercase letters, numeric characters,
+    underscores and dashes. International characters are allowed. No more than
+    64 user labels can be associated with one Tensorboard (System labels are
+    excluded). See https://goo.gl/xmQnxf for more information and examples of
+    labels. System reserved label keys are prefixed with
+    "aiplatform.googleapis.com/" and are immutable.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  kmsKeyName = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  runCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(9)
+
+
+class GoogleCloudAiplatformV1beta1TensorboardExperiment(_messages.Message):
+  r"""A TensorboardExperiment is a group of TensorboardRuns, that are
+  typically the results of a training job run, in a Tensorboard.
+
+  Messages:
+    LabelsValue: The labels with user-defined metadata to organize your
+      Datasets. Label keys and values can be no longer than 64 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. No more than 64 user labels can be associated with one Dataset
+      (System labels are excluded). See https://goo.gl/xmQnxf for more
+      information and examples of labels. System reserved label keys are
+      prefixed with "aiplatform.googleapis.com/" and are immutable. Following
+      system labels exist for each Dataset: *
+      "aiplatform.googleapis.com/dataset_metadata_schema": - output only, its
+      value is the metadata_schema's title.
+
+  Fields:
+    createTime: Output only. Timestamp when this TensorboardExperiment was
+      created.
+    description: Description of this TensorboardExperiment.
+    displayName: Required. User provided name of this TensorboardExperiment.
+    etag: Used to perform consistent read-modify-write updates. If not set, a
+      blind "overwrite" update happens.
+    labels: The labels with user-defined metadata to organize your Datasets.
+      Label keys and values can be no longer than 64 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. No more
+      than 64 user labels can be associated with one Dataset (System labels
+      are excluded). See https://goo.gl/xmQnxf for more information and
+      examples of labels. System reserved label keys are prefixed with
+      "aiplatform.googleapis.com/" and are immutable. Following system labels
+      exist for each Dataset: *
+      "aiplatform.googleapis.com/dataset_metadata_schema": - output only, its
+      value is the metadata_schema's title.
+    name: Output only. Name of the TensorboardExperiment. Format: `projects/{p
+      roject}/locations/{location}/tensorboards/{tensorboard}/tensorboardExper
+      iments/{experiment}`
+    source: Immutable. Source of the TensorboardExperiment. Example: a custom
+      training job.
+    updateTime: Output only. Timestamp when this TensorboardExperiment was
+      last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels with user-defined metadata to organize your Datasets. Label
+    keys and values can be no longer than 64 characters (Unicode codepoints),
+    can only contain lowercase letters, numeric characters, underscores and
+    dashes. International characters are allowed. No more than 64 user labels
+    can be associated with one Dataset (System labels are excluded). See
+    https://goo.gl/xmQnxf for more information and examples of labels. System
+    reserved label keys are prefixed with "aiplatform.googleapis.com/" and are
+    immutable. Following system labels exist for each Dataset: *
+    "aiplatform.googleapis.com/dataset_metadata_schema": - output only, its
+    value is the metadata_schema's title.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  source = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class GoogleCloudAiplatformV1beta1TensorboardRun(_messages.Message):
+  r"""TensorboardRun maps to a specific execution of a training job with a
+  given set of hyperparameter values, model definition, dataset, etc
+
+  Messages:
+    LabelsValue: A LabelsValue object.
+
+  Fields:
+    createTime: Output only. Timestamp when this TensorboardRun was created.
+    description: Description of this TensorboardRun.
+    displayName: Required. User provided name of this TensorboardRun. This
+      value must be unique among all TensorboardRuns belonging to the same
+      parent TensorboardExperiment.
+    etag: Used to perform a consistent read-modify-write updates. If not set,
+      a blind "overwrite" update happens.
+    labels: A LabelsValue attribute.
+    name: Output only. Name of the TensorboardRun. Format: `projects/{project}
+      /locations/{location}/tensorboards/{tensorboard}/runs/{run}`
+    updateTime: Output only. Timestamp when this TensorboardRun was last
+      updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""A LabelsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
+class GoogleCloudAiplatformV1beta1TensorboardTensor(_messages.Message):
+  r"""One point viewable on a tensor metric plot.
+
+  Fields:
+    value: Required. Serialized form of https:
+      //github.com/tensorflow/tensorflow/blob/ //
+      master/tensorflow/core/framework/tensor.proto
+    versionNumber: Optional. Version number of TensorProto used to serialize
+      value.
+  """
+
+  value = _messages.BytesField(1)
+  versionNumber = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1TensorboardTimeSeries(_messages.Message):
+  r"""TensorboardTimeSeries maps to times series produced in training runs
+
+  Enums:
+    ValueTypeValueValuesEnum: Required. Immutable. Type of
+      TensorboardTimeSeries value.
+
+  Fields:
+    createTime: Output only. Timestamp when this TensorboardTimeSeries was
+      created.
+    description: Description of this TensorboardTimeSeries.
+    displayName: Required. User provided name of this TensorboardTimeSeries.
+      This value should be unique among all TensorboardTimeSeries resources
+      belonging to the same TensorboardRun resource (parent resource).
+    etag: Used to perform a consistent read-modify-write updates. If not set,
+      a blind "overwrite" update happens.
+    metadata: Output only. Scalar, Tensor, or Blob metadata for this
+      TensorboardTimeSeries.
+    name: Output only. Name of the TensorboardTimeSeries.
+    pluginData: Data of the current plugin, with the size limited to 65KB.
+    pluginName: Immutable. Name of the plugin this time series pertain to.
+      Such as Scalar, Tensor, Blob
+    updateTime: Output only. Timestamp when this TensorboardTimeSeries was
+      last updated.
+    valueType: Required. Immutable. Type of TensorboardTimeSeries value.
+  """
+
+  class ValueTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. Type of TensorboardTimeSeries value.
+
+    Values:
+      VALUE_TYPE_UNSPECIFIED: The value type is unspecified.
+      SCALAR: Used for TensorboardTimeSeries that is a list of scalars. E.g.
+        accuracy of a model over epochs/time.
+      TENSOR: Used for TensorboardTimeSeries that is a list of tensors. E.g.
+        histograms of weights of layer in a model over epoch/time.
+      BLOB_SEQUENCE: Used for TensorboardTimeSeries that is a list of blob
+        sequences. E.g. set of sample images with labels over epochs/time.
+    """
+    VALUE_TYPE_UNSPECIFIED = 0
+    SCALAR = 1
+    TENSOR = 2
+    BLOB_SEQUENCE = 3
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardTimeSeriesMetadata', 5)
+  name = _messages.StringField(6)
+  pluginData = _messages.BytesField(7)
+  pluginName = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 10)
+
+
+class GoogleCloudAiplatformV1beta1TensorboardTimeSeriesMetadata(_messages.Message):
+  r"""Describes metadata for a TensorboardTimeSeries.
+
+  Fields:
+    maxStep: Output only. Max step index of all data points within a
+      TensorboardTimeSeries.
+    maxWallTime: Output only. Max wall clock timestamp of all data points
+      within a TensorboardTimeSeries.
+  """
+
+  maxStep = _messages.IntegerField(1)
+  maxWallTime = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1TimeSeriesData(_messages.Message):
+  r"""All the data stored in a TensorboardTimeSeries.
+
+  Enums:
+    ValueTypeValueValuesEnum: Required. Immutable. The value type of this time
+      series. All the values in this time series data must match this value
+      type.
+
+  Fields:
+    tensorboardTimeSeriesId: Required. The ID of the TensorboardTimeSeries,
+      which will become the final component of the TensorboardTimeSeries'
+      resource name
+    valueType: Required. Immutable. The value type of this time series. All
+      the values in this time series data must match this value type.
+    values: Required. Data points in this time series.
+  """
+
+  class ValueTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. The value type of this time series. All the
+    values in this time series data must match this value type.
+
+    Values:
+      VALUE_TYPE_UNSPECIFIED: The value type is unspecified.
+      SCALAR: Used for TensorboardTimeSeries that is a list of scalars. E.g.
+        accuracy of a model over epochs/time.
+      TENSOR: Used for TensorboardTimeSeries that is a list of tensors. E.g.
+        histograms of weights of layer in a model over epoch/time.
+      BLOB_SEQUENCE: Used for TensorboardTimeSeries that is a list of blob
+        sequences. E.g. set of sample images with labels over epochs/time.
+    """
+    VALUE_TYPE_UNSPECIFIED = 0
+    SCALAR = 1
+    TENSOR = 2
+    BLOB_SEQUENCE = 3
+
+  tensorboardTimeSeriesId = _messages.StringField(1)
+  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 2)
+  values = _messages.MessageField('GoogleCloudAiplatformV1beta1TimeSeriesDataPoint', 3, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1TimeSeriesDataPoint(_messages.Message):
+  r"""A TensorboardTimeSeries data point.
+
+  Fields:
+    scalar: A scalar value.
+    step: Step index of this data point within the run.
+    tensor: A tensor value.
+    wallTime: Wall clock timestamp when this data point is generated by the
+      end user.
+  """
+
+  scalar = _messages.MessageField('GoogleCloudAiplatformV1beta1Scalar', 1)
+  step = _messages.IntegerField(2)
+  tensor = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardTensor', 3)
+  wallTime = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1beta1TimestampSplit(_messages.Message):
@@ -16455,6 +17497,16 @@ class GoogleCloudAiplatformV1beta1UpdateSpecialistPoolOperationMetadata(_message
   specialistPool = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1beta1UpdateTensorboardOperationMetadata(_messages.Message):
+  r"""Details of operations that perform update Tensorboard.
+
+  Fields:
+    genericMetadata: Operation metadata for Tensorboard.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1beta1UploadModelOperationMetadata(_messages.Message):
   r"""Details of ModelService.UploadModel operation.
 
@@ -16523,6 +17575,23 @@ class GoogleCloudAiplatformV1beta1WorkerPoolSpec(_messages.Message):
   machineSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1MachineSpec', 3)
   pythonPackageSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1PythonPackageSpec', 4)
   replicaCount = _messages.IntegerField(5)
+
+
+class GoogleCloudAiplatformV1beta1WriteTensorboardRunDataRequest(_messages.Message):
+  r"""Request message for TensorboardService.WriteTensorboardRunData.
+
+  Fields:
+    timeSeriesData: Required. The TensorboardTimeSeries data to write. Values
+      with in a time series are indexed by their step value. Repeated writes
+      to the same step will overwrite the existing value for that step. The
+      upper limit of data points per write request is 5000.
+  """
+
+  timeSeriesData = _messages.MessageField('GoogleCloudAiplatformV1beta1TimeSeriesData', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1WriteTensorboardRunDataResponse(_messages.Message):
+  r"""Response message for TensorboardService.WriteTensorboardRunData."""
 
 
 class GoogleCloudAiplatformV1beta1XraiAttribution(_messages.Message):

@@ -618,8 +618,11 @@ version [{1}].  To clear your fixed version setting, run:
         latest_snapshot, platform_filter=self.__platform_filter)
     return install_state, diff
 
-  def GetCurrentVersionsInformation(self):
+  def GetCurrentVersionsInformation(self, include_hidden=False):
     """Get the current version for every installed component.
+
+    Args:
+      include_hidden: bool, include hidden components.
 
     Returns:
       {str:str}, A mapping from component id to version string.
@@ -629,7 +632,8 @@ version [{1}].  To clear your fixed version setting, run:
     installed_components = current_state.InstalledComponents()
     for component_id, component in six.iteritems(installed_components):
       component_def = component.ComponentDefinition()
-      if component_def.is_configuration or component_def.is_hidden:
+      if (component_def.is_configuration or
+          component_def.is_hidden and not include_hidden):
         continue
       versions[component_id] = component.VersionString()
     return versions

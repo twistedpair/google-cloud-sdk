@@ -610,7 +610,7 @@ class GoogleCloudMlV1ExplanationConfig(_messages.Message):
       Shapley value taking advantage of the model's fully differentiable
       structure. Refer to this paper for more details:
       https://arxiv.org/abs/1703.01365
-    saabasAttribution: Attributes credit by running a faster aproximation to
+    saabasAttribution: Attributes credit by running a faster approximation to
       the TreeShap method. Please refer to this link for more details:
       https://blog.datadive.net/interpreting-random-forests/ This attribution
       method is only supported for XGBoost models.

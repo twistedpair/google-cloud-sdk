@@ -30,6 +30,7 @@ from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import name_generator
+from googlecloudsdk.command_lib.run import platforms
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import repeated
 
@@ -68,6 +69,13 @@ def WithChanges(resource, changes):
   for config_change in changes:
     resource = config_change.Adjust(resource)
   return resource
+
+
+def _AssertValidSecretKey(key, platform):
+  if platform == platforms.PLATFORM_MANAGED:
+    if not (key.isdigit() or key == 'latest'):
+      raise exceptions.ConfigurationError(
+          "Secret key must be an integer or 'latest'.")
 
 
 class LabelChanges(ConfigChanger):
@@ -371,12 +379,16 @@ class EnvVarSourceChanges(ConfigChanger):
         #    [env var source name, source data item key]
         value = v.split(':', 1)
         if len(value) < 2:
-          raise exceptions.ConfigurationError(
-              'Missing required item key for environment variable [{}].'
-              .format(name))
+          value.append(self._OmittedSecretKeyDefault(name))
         self._to_update[name] = value
     if env_vars_to_remove:
       self._to_remove = [k.lstrip() for k in env_vars_to_remove]
+
+  def _OmittedSecretKeyDefault(self, name):
+    if platforms.GetPlatform() == platforms.PLATFORM_MANAGED:
+      return 'latest'
+    raise exceptions.ConfigurationError(
+        'Missing required item key for environment variable [{}].'.format(name))
 
   @abc.abstractmethod
   def _MakeEnvVarSource(self, messages, name, key):
@@ -427,6 +439,7 @@ class SecretEnvVarChanges(EnvVarSourceChanges):
   """Represents the user intent to modify environment variable secrets."""
 
   def _MakeEnvVarSource(self, messages, name, key):
+    _AssertValidSecretKey(key, platforms.GetPlatform())
     return messages.EnvVarSource(
         secretKeyRef=messages.SecretKeySelector(
             name=name,
@@ -723,6 +736,7 @@ class SecretVolumeChanges(_VolumeChanges):
   def _MakeVolumeSource(self, messages, name, key=None):
     source = messages.SecretVolumeSource(secretName=name)
     if key is not None:
+      _AssertValidSecretKey(key, platforms.GetPlatform())
       source.items.append(messages.KeyToPath(key=key, path=key))
     return source
 

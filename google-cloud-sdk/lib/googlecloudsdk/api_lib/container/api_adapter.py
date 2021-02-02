@@ -235,7 +235,6 @@ INGRESS = 'HttpLoadBalancing'
 HPA = 'HorizontalPodAutoscaling'
 DASHBOARD = 'KubernetesDashboard'
 CLOUDBUILD = 'CloudBuild'
-CLOUDRUN = 'CloudRun'
 CONFIGCONNECTOR = 'ConfigConnector'
 GCEPDCSIDRIVER = 'GcePersistentDiskCsiDriver'
 ISTIO = 'Istio'
@@ -260,10 +259,11 @@ SHIELDED_INSTANCE_CONFIG = 'shieldedInstanceConfig'
 ENABLE_SECURE_BOOT = 'enableSecureBoot'
 ENABLE_INTEGRITY_MONITORING = 'enableIntegrityMonitoring'
 DEFAULT_ADDONS = [INGRESS, HPA]
+CLOUDRUN_ADDONS = ['CloudRun', 'KubeRun']
+VISIBLE_CLOUDRUN_ADDONS = ['CloudRun']
 ADDONS_OPTIONS = DEFAULT_ADDONS + [
     DASHBOARD,
     NETWORK_POLICY,
-    CLOUDRUN,
     NODELOCALDNS,
     CONFIGCONNECTOR,
     GCEPDCSIDRIVER,
@@ -526,7 +526,7 @@ class CreateClusterOptions(object):
       master_logs=None,
       release_channel=None,
       notification_config=None,
-      auto_gke=None,
+      autopilot=None,
       private_ipv6_google_access_type=None,
       enable_confidential_nodes=None,
       cluster_dns=None,
@@ -535,6 +535,8 @@ class CreateClusterOptions(object):
       kubernetes_objects_changes_target=None,
       kubernetes_objects_snapshots_target=None,
       enable_gcfs=None,
+      private_endpoint_subnetwork=None,
+      cross_connect_subnetworks=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -661,7 +663,7 @@ class CreateClusterOptions(object):
     self.master_logs = master_logs
     self.release_channel = release_channel
     self.notification_config = notification_config
-    self.auto_gke = auto_gke
+    self.autopilot = autopilot
     self.private_ipv6_google_access_type = private_ipv6_google_access_type
     self.enable_confidential_nodes = enable_confidential_nodes
     self.cluster_dns = cluster_dns
@@ -670,6 +672,8 @@ class CreateClusterOptions(object):
     self.kubernetes_objects_changes_target = kubernetes_objects_changes_target
     self.kubernetes_objects_snapshots_target = kubernetes_objects_snapshots_target
     self.enable_gcfs = enable_gcfs
+    self.private_endpoint_subnetwork = private_endpoint_subnetwork
+    self.cross_connect_subnetworks = cross_connect_subnetworks
 
 
 class UpdateClusterOptions(object):
@@ -752,7 +756,10 @@ class UpdateClusterOptions(object):
                private_ipv6_google_access_type=None,
                kubernetes_objects_changes_target=None,
                kubernetes_objects_snapshots_target=None,
-               disable_autopilot=None):
+               disable_autopilot=None,
+               add_cross_connect_subnetworks=None,
+               remove_cross_connect_subnetworks=None,
+               clear_cross_connect_subnetworks=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -831,6 +838,9 @@ class UpdateClusterOptions(object):
     self.kubernetes_objects_changes_target = kubernetes_objects_changes_target
     self.kubernetes_objects_snapshots_target = kubernetes_objects_snapshots_target
     self.disable_autopilot = disable_autopilot
+    self.add_cross_connect_subnetworks = add_cross_connect_subnetworks
+    self.remove_cross_connect_subnetworks = remove_cross_connect_subnetworks
+    self.clear_cross_connect_subnetworks = clear_cross_connect_subnetworks
 
 
 class SetMasterAuthOptions(object):
@@ -1390,9 +1400,9 @@ class APIAdapter(object):
 
     cluster.releaseChannel = _GetReleaseChannel(options, self.messages)
 
-    if options.auto_gke:
-      cluster.autogke = self.messages.AutoGKE()
-      cluster.autogke.enabled = True
+    if options.autopilot:
+      cluster.autopilot = self.messages.Autopilot()
+      cluster.autopilot.enabled = True
 
     if options.enable_confidential_nodes:
       cluster.confidentialNodes = self.messages.ConfidentialNodes(
@@ -1747,7 +1757,7 @@ class APIAdapter(object):
           cluster_ref, options, False)
     if options.addons:
       # CloudRun is disabled by default.
-      if CLOUDRUN in options.addons:
+      if any((v in options.addons) for v in CLOUDRUN_ADDONS):
         if not options.enable_stackdriver_kubernetes:
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
@@ -2227,12 +2237,15 @@ class APIAdapter(object):
       raise util.Error(NOTHING_TO_UPDATE_ERROR_MSG)
 
     if options.disable_addons is not None:
-      if options.disable_addons.get(CLOUDRUN) is not None:
+      if any(
+          (options.disable_addons.get(v) is not None) for v in CLOUDRUN_ADDONS):
         load_balancer_type = _GetCloudRunLoadBalancerType(
             options, self.messages)
         update.desiredAddonsConfig.cloudRunConfig = (
             self.messages.CloudRunConfig(
-                disabled=options.disable_addons.get(CLOUDRUN),
+                disabled=any(
+                    options.disable_addons.get(v) or False
+                    for v in CLOUDRUN_ADDONS),
                 loadBalancerType=load_balancer_type))
 
     op = self.client.projects_locations_clusters.Update(
@@ -3137,6 +3150,40 @@ class APIAdapter(object):
         filter=filters)
     return self.client.projects_aggregated_usableSubnetworks.List(req)
 
+  def ModifyCrossConnectSubnetworks(self,
+                                    cluster_ref,
+                                    existing_cross_connect_config,
+                                    add_subnetworks=None,
+                                    remove_subnetworks=None,
+                                    clear_all_subnetworks=None):
+    """Add/Remove/Clear cross connect subnetworks and schedule cluster update request."""
+    items = existing_cross_connect_config.items
+    if clear_all_subnetworks:
+      items = []
+    if remove_subnetworks:
+      items = [x for x in items if x.subnetwork not in remove_subnetworks]
+    if add_subnetworks:
+      existing_subnetworks = set([x.subnetwork for x in items])
+      items.extend([
+          self.messages.CrossConnectItem(subnetwork=subnetwork)
+          for subnetwork in add_subnetworks
+          if subnetwork not in existing_subnetworks
+      ])
+
+    cross_connect_config = self.messages.CrossConnectConfig(
+        fingerprint=existing_cross_connect_config.fingerprint, items=items)
+    private_cluster_config = self.messages.PrivateClusterConfig(
+        crossConnectConfig=cross_connect_config)
+    update = self.messages.ClusterUpdate(
+        desiredPrivateClusterConfig=private_cluster_config)
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref.zone,
+                                        cluster_ref.clusterId),
+            update=update))
+
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
 
 class V1Adapter(APIAdapter):
   """APIAdapter for v1."""
@@ -3149,7 +3196,7 @@ class V1Beta1Adapter(V1Adapter):
     cluster = self.CreateClusterCommon(cluster_ref, options)
     if options.addons:
       # CloudRun is disabled by default.
-      if CLOUDRUN in options.addons:
+      if any((v in options.addons) for v in CLOUDRUN_ADDONS):
         if not options.enable_stackdriver_kubernetes:
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
@@ -3199,6 +3246,9 @@ class V1Beta1Adapter(V1Adapter):
       cluster.privateClusterConfig.masterGlobalAccessConfig = \
           self.messages.PrivateClusterMasterGlobalAccessConfig(
               enabled=options.enable_master_global_access)
+    _AddPSCPrivateClustersOptionsToClusterForCreateCluster(
+        cluster, options, self.messages)
+
     _AddNotificationConfigToCluster(cluster, options, self.messages)
 
     cluster_telemetry_type = self._GetClusterTelemetryType(
@@ -3282,7 +3332,7 @@ class V1Beta1Adapter(V1Adapter):
 
     if options.disable_autopilot is not None:
       update = self.messages.ClusterUpdate(
-          desiredAutoGke=self.messages.AutoGKE(
+          desiredAutopilot=self.messages.Autopilot(
               enabled=False))
 
     if options.enable_stackdriver_kubernetes:
@@ -3336,12 +3386,15 @@ class V1Beta1Adapter(V1Adapter):
               istio_auth = mtls
         update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=options.disable_addons.get(ISTIO), auth=istio_auth)
-      if options.disable_addons.get(CLOUDRUN) is not None:
+      if any(
+          (options.disable_addons.get(v) is not None) for v in CLOUDRUN_ADDONS):
         load_balancer_type = _GetCloudRunLoadBalancerType(
             options, self.messages)
         update.desiredAddonsConfig.cloudRunConfig = (
             self.messages.CloudRunConfig(
-                disabled=options.disable_addons.get(CLOUDRUN),
+                disabled=any(
+                    options.disable_addons.get(v) or False
+                    for v in CLOUDRUN_ADDONS),
                 loadBalancerType=load_balancer_type))
       if options.disable_addons.get(APPLICATIONMANAGER) is not None:
         update.desiredAddonsConfig.kalmConfig = (
@@ -3582,7 +3635,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           None, options, False)
     if options.addons:
       # CloudRun is disabled by default.
-      if CLOUDRUN in options.addons:
+      if any((v in options.addons) for v in CLOUDRUN_ADDONS):
         if not options.enable_stackdriver_kubernetes:
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
@@ -3645,6 +3698,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.privateClusterConfig.masterGlobalAccessConfig = \
           self.messages.PrivateClusterMasterGlobalAccessConfig(
               enabled=options.enable_master_global_access)
+    _AddPSCPrivateClustersOptionsToClusterForCreateCluster(
+        cluster, options, self.messages)
+
     cluster.releaseChannel = _GetReleaseChannel(options, self.messages)
     _AddNotificationConfigToCluster(cluster, options, self.messages)
     if options.enable_cost_management:
@@ -3742,7 +3798,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
 
     if options.disable_autopilot is not None:
       update = self.messages.ClusterUpdate(
-          desiredAutoGke=self.messages.AutoGKE(
+          desiredAutopilot=self.messages.Autopilot(
               enabled=False))
 
     if options.enable_stackdriver_kubernetes:
@@ -3796,12 +3852,15 @@ class V1Alpha1Adapter(V1Beta1Adapter):
               istio_auth = mtls
         update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=options.disable_addons.get(ISTIO), auth=istio_auth)
-      if options.disable_addons.get(CLOUDRUN) is not None:
+      if any(
+          (options.disable_addons.get(v) is not None) for v in CLOUDRUN_ADDONS):
         load_balancer_type = _GetCloudRunLoadBalancerType(
             options, self.messages)
         update.desiredAddonsConfig.cloudRunConfig = (
             self.messages.CloudRunConfig(
-                disabled=options.disable_addons.get(CLOUDRUN),
+                disabled=any(
+                    options.disable_addons.get(v) or False
+                    for v in CLOUDRUN_ADDONS),
                 loadBalancerType=load_balancer_type))
       if options.disable_addons.get(APPLICATIONMANAGER) is not None:
         update.desiredAddonsConfig.kalmConfig = (
@@ -4270,6 +4329,19 @@ def _GetKubernetesObjectsExportConfigForClusterUpdate(options, messages):
     return messages.KubernetesObjectsExportConfig(
         kubernetesObjectsSnapshotsTarget=snapshots_target,
         kubernetesObjectsChangesTarget=changes_target)
+
+
+def _AddPSCPrivateClustersOptionsToClusterForCreateCluster(
+    cluster, options, messages):
+  """Adds all PSC private cluster options to cluster during create cluster."""
+  if options.private_endpoint_subnetwork is not None:
+    cluster.privateClusterConfig.privateEndpointSubnetwork = options.private_endpoint_subnetwork
+  if options.cross_connect_subnetworks is not None:
+    items = []
+    for subnetwork in sorted(options.cross_connect_subnetworks):
+      items.append(messages.CrossConnectItem(subnetwork=subnetwork))
+    cluster.privateClusterConfig.crossConnectConfig = messages.CrossConnectConfig(
+        items=items)
 
 
 def ProjectLocation(project, location):

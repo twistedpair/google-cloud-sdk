@@ -421,6 +421,10 @@
         "endpointConfig": {
           "description": "Optional. Port\/endpoint configuration for this cluster",
           "$ref": "EndpointConfig"
+        },
+        "metastoreConfig": {
+          "description": "Optional. Metastore configuration.",
+          "$ref": "MetastoreConfig"
         }
       }
     },
@@ -930,6 +934,17 @@
         "enableHttpPortAccess": {
           "description": "Optional. If true, enable http access to specific ports on the cluster from external sources. Defaults to false.",
           "type": "boolean"
+        }
+      }
+    },
+    "MetastoreConfig": {
+      "id": "MetastoreConfig",
+      "description": "Specifies a Metastore configuration.",
+      "type": "object",
+      "properties": {
+        "dataprocMetastoreService": {
+          "description": "Required. Resource name of an existing Dataproc Metastore service.Example: projects\/[project_id]\/locations\/[dataproc_region]\/services\/[service-name]",
+          "type": "string"
         }
       }
     },

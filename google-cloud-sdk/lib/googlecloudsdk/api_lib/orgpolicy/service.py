@@ -19,28 +19,36 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 
 ORG_POLICY_API_NAME = 'orgpolicy'
-ORG_POLICY_API_VERSION = 'v2alpha1'
+VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v2alpha1', base.ReleaseTrack.GA: 'v2'}
 
 
-def OrgPolicyClient():
+def GetApiVersion(release_track):
+  """Returns the api version of the Org Policy service."""
+  return VERSION_MAP.get(release_track)
+
+
+def OrgPolicyClient(release_track):
   """Returns a client instance of the Org Policy service."""
-  return apis.GetClientInstance(ORG_POLICY_API_NAME, ORG_POLICY_API_VERSION)
+  api_version = GetApiVersion(release_track)
+  return apis.GetClientInstance(ORG_POLICY_API_NAME, api_version)
 
 
-def OrgPolicyMessages():
+def OrgPolicyMessages(release_track):
   """Returns the messages module for the Org Policy service."""
-  return apis.GetMessagesModule(ORG_POLICY_API_NAME, ORG_POLICY_API_VERSION)
+  api_version = GetApiVersion(release_track)
+  return apis.GetMessagesModule(ORG_POLICY_API_NAME, api_version)
 
 
-def PolicyService():
+def PolicyService(release_track):
   """Returns the service class for the Policy resource."""
-  client = OrgPolicyClient()
+  client = OrgPolicyClient(release_track)
   return client.policies
 
 
-def ConstraintService():
+def ConstraintService(release_track):
   """Returns the service class for the Constraint resource."""
-  client = OrgPolicyClient()
+  client = OrgPolicyClient(release_track)
   return client.constraints

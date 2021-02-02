@@ -871,7 +871,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def TruncateLog(self, request, global_params=None):
-      r"""Truncate MySQL general and slow query log tables.
+      r"""Truncate MySQL general and slow query log tables MySQL only.
 
       Args:
         request: (SqlInstancesTruncateLogRequest) input message

@@ -140,13 +140,30 @@ def GenerateClusterUrl(cluster_ref):
               project=cluster_ref.projectId)
 
 
-def _GetClusterEndpoint(cluster, use_internal_ip):
+def _GetCrossConnectConfigItemFromSubnetwork(cluster, cross_connect_subnetwork):
+  for item in cluster.privateClusterConfig.crossConnectConfig.items:
+    if item.subnetwork == cross_connect_subnetwork:
+      return item
+  raise MissingCrossConnectError(cluster, cross_connect_subnetwork)
+
+
+def _GetCrossConnectSubnetworkEndpoint(cluster, cross_connect_subnetwork):
+  """Extract endpoint for the kubeconfig from the cross connect subnetwork."""
+  cross_connect_config_item = _GetCrossConnectConfigItemFromSubnetwork(
+      cluster, cross_connect_subnetwork)
+  return cross_connect_config_item.privateEndpoint
+
+
+def _GetClusterEndpoint(cluster, use_internal_ip, cross_connect_subnetwork):
   """Get the cluster endpoint suitable for writing to kubeconfig."""
-  if use_internal_ip:
+  if use_internal_ip or cross_connect_subnetwork is not None:
     if not cluster.privateClusterConfig:
       raise NonPrivateClusterError(cluster)
     if not cluster.privateClusterConfig.privateEndpoint:
       raise MissingPrivateEndpointError(cluster)
+    if cross_connect_subnetwork is not None:
+      return _GetCrossConnectSubnetworkEndpoint(cluster,
+                                                cross_connect_subnetwork)
     return cluster.privateClusterConfig.privateEndpoint
 
   if not cluster.endpoint:
@@ -156,6 +173,15 @@ def _GetClusterEndpoint(cluster, use_internal_ip):
 
 KUBECONFIG_USAGE_FMT = '''\
 kubeconfig entry generated for {cluster}.'''
+
+
+class MissingCrossConnectError(Error):
+  """Error for retrieving cross-connect-subnet of a cluster that has none."""
+
+  def __init__(self, cluster, cross_connect_subnet):
+    super(MissingCrossConnectError, self).__init__(
+        'cluster {0} is missing cross-connect subnetwork {1}.'.format(
+            cluster.name, cross_connect_subnet))
 
 
 class MissingEndpointError(Error):
@@ -286,8 +312,12 @@ class ClusterConfig(object):
         cluster=self.cluster_name, context=context))
 
   @classmethod
-  def Persist(cls, cluster, project_id, use_internal_ip=False):
-    """Save config data for the given cluster.
+  def Persist(cls,
+              cluster,
+              project_id,
+              use_internal_ip=False,
+              cross_connect_subnetwork=None):
+    """Saves config data for the given cluster.
 
     Persists config file and kubernetes auth file for the given cluster
     to cloud-sdk config directory and returns ClusterConfig object
@@ -297,13 +327,16 @@ class ClusterConfig(object):
       cluster: valid Cluster message to persist config data for.
       project_id: project that owns this cluster.
       use_internal_ip: whether to persist the internal IP of the endpoint.
+      cross_connect_subnetwork: full path of the cross connect subnet whose
+      endpoint to persist (optional)
     Returns:
       ClusterConfig of the persisted data.
     Raises:
       Error: if cluster has no endpoint (will be the case for first few
         seconds while cluster is PROVISIONING).
     """
-    endpoint = _GetClusterEndpoint(cluster, use_internal_ip)
+    endpoint = _GetClusterEndpoint(cluster, use_internal_ip,
+                                   cross_connect_subnetwork)
     kwargs = {
         'cluster_name': cluster.name,
         'zone_id': cluster.zone,

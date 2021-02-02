@@ -30,6 +30,8 @@ import textwrap
 import time
 
 import dateutil
+from google.auth import exceptions as google_auth_exceptions
+import google.auth.compute_engine as google_auth_gce
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
@@ -43,8 +45,6 @@ from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import gce as c_gce
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
-
-
 import httplib2
 from oauth2client import client
 from oauth2client import crypt
@@ -53,8 +53,6 @@ from oauth2client.contrib import gce as oauth2client_gce
 from oauth2client.contrib import reauth_errors
 import six
 from six.moves import urllib
-from google.auth import exceptions as google_auth_exceptions
-import google.auth.compute_engine as google_auth_gce
 
 
 GOOGLE_OAUTH2_PROVIDER_AUTHORIZATION_URI = (
@@ -1114,7 +1112,9 @@ def Store(credentials, account=None, scopes=None):
   else:
     cred_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(credentials)
 
-  if not cred_type.is_serializable:
+  if cred_type.key not in [c_creds.USER_ACCOUNT_CREDS_NAME,
+                           c_creds.SERVICE_ACCOUNT_CREDS_NAME,
+                           c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME]:
     return
 
   if not account:

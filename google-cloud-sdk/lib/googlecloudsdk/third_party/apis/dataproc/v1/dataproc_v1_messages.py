@@ -305,6 +305,7 @@ class ClusterConfig(_messages.Message):
     lifecycleConfig: Optional. Lifecycle setting for the cluster.
     masterConfig: Optional. The Compute Engine config settings for the master
       instance in a cluster.
+    metastoreConfig: Optional. Metastore configuration.
     secondaryWorkerConfig: Optional. The Compute Engine config settings for
       additional worker instances in a cluster.
     securityConfig: Optional. Security settings for the cluster.
@@ -331,11 +332,12 @@ class ClusterConfig(_messages.Message):
   initializationActions = _messages.MessageField('NodeInitializationAction', 6, repeated=True)
   lifecycleConfig = _messages.MessageField('LifecycleConfig', 7)
   masterConfig = _messages.MessageField('InstanceGroupConfig', 8)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 9)
-  securityConfig = _messages.MessageField('SecurityConfig', 10)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 11)
-  tempBucket = _messages.StringField(12)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 13)
+  metastoreConfig = _messages.MessageField('MetastoreConfig', 9)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 10)
+  securityConfig = _messages.MessageField('SecurityConfig', 11)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 12)
+  tempBucket = _messages.StringField(13)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 14)
 
 
 class ClusterMetrics(_messages.Message):
@@ -3055,6 +3057,19 @@ class MasterDriverRunner(_messages.Message):
   internal fields.
   """
 
+
+
+class MetastoreConfig(_messages.Message):
+  r"""Specifies a Metastore configuration.
+
+  Fields:
+    dataprocMetastoreService: Required. Resource name of an existing Dataproc
+      Metastore service.Example:
+      projects/[project_id]/locations/[dataproc_region]/services/[service-
+      name]
+  """
+
+  dataprocMetastoreService = _messages.StringField(1)
 
 
 class NodeGroupAffinity(_messages.Message):

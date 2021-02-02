@@ -1318,6 +1318,21 @@
         "enableEndpointsliceProxying": {
           "description": "If true, kube-proxy will read from EndpointSlices instead of Endpoints. This flag only applies to GKE 1.18.",
           "type": "boolean"
+        },
+        "privateNodesConfig": {
+          "description": "Configuration for controlling private nodes settings. If there are no private_nodes specified, then private_cluster_cofnig.enable_private_node\u2019s value used as a default.",
+          "$ref": "PrivateNodesConfig"
+        }
+      }
+    },
+    "PrivateNodesConfig": {
+      "id": "PrivateNodesConfig",
+      "description": "Configuration for controlling private nodes settings.",
+      "type": "object",
+      "properties": {
+        "privateNodes": {
+          "description": "Whether nodes have internal IP addresses only.",
+          "type": "boolean"
         }
       }
     },
@@ -2008,20 +2023,6 @@
           "description": "Controls master global access settings.",
           "$ref": "PrivateClusterMasterGlobalAccessConfig"
         },
-        "networkConnectivityType": {
-          "description": "The network connectivity type used for connecting customer's network and master\u2019s network.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default behavior.",
-            "VPC Peering used for connecting cluster\u2019s network and master\u2019s network.",
-            "Private Service Connect used for connecting cluster\u2019s network and master\u2019s network."
-          ],
-          "enum": [
-            "NETWORK_CONNECTIVITY_TYPE_UNSPECIFIED",
-            "VPC_PEERING",
-            "PSC"
-          ]
-        },
         "privateEndpointSubnetwork": {
           "description": "Subnetwork in cluster's network where master's endpoint will be provisioned. Specified in projects\/*\/regions\/*\/subnetworks\/* format.",
           "type": "string"
@@ -2034,6 +2035,10 @@
         "crossConnectConfig": {
           "description": "Controls cross connect configuration.",
           "$ref": "CrossConnectConfig"
+        },
+        "privateCluster": {
+          "description": "Whether the cluster is private.",
+          "type": "boolean"
         }
       }
     },
@@ -2078,6 +2083,10 @@
         "privateEndpoint": {
           "description": "Output only. The internal IP address of this cluster's endpoint in the requested subnetwork.",
           "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Optional. display_name is intended only for UI elements to help humans identify this item, not as a unique identifier.",
           "type": "string"
         }
       }
@@ -2970,6 +2979,18 @@
           "description": "Upgrade settings control disruption and speed of the upgrade.",
           "$ref": "UpgradeSettings"
         },
+        "tags": {
+          "description": "The desired network tags to be applied to all nodes in the node pool. If this field is not present, the tags will not be changed. Otherwise, the existing network tags will be *replaced* with the provided tags.",
+          "$ref": "NetworkTags"
+        },
+        "taints": {
+          "description": "The desired node taints to be applied to all nodes in the node pool. If this field is not present, the taints will not be changed. Otherwise, the existing node taints will be *replaced* with the provided taints.",
+          "$ref": "NodeTaints"
+        },
+        "labels": {
+          "description": "The desired node labels to be applied to all nodes in the node pool. If this field is not present, the labels will not be changed. Otherwise, the existing node labels will be *replaced* with the provided labels.",
+          "$ref": "NodeLabels"
+        },
         "linuxNodeConfig": {
           "description": "Parameters that can be configured on Linux nodes.",
           "$ref": "LinuxNodeConfig"
@@ -2977,6 +2998,52 @@
         "kubeletConfig": {
           "description": "Node kubelet configs.",
           "$ref": "NodeKubeletConfig"
+        },
+        "nodeNetworkConfig": {
+          "description": "Node network config.",
+          "$ref": "NodeNetworkConfig"
+        }
+      }
+    },
+    "NetworkTags": {
+      "id": "NetworkTags",
+      "description": "Collection of Compute Engine network tags that can be applied to a node's underlying VM instance. (See `tags` field in [`NodeConfig`](\/kubernetes-engine\/docs\/reference\/rest\/v1\/NodeConfig)).",
+      "type": "object",
+      "properties": {
+        "tags": {
+          "description": "List of network tags.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "NodeTaints": {
+      "id": "NodeTaints",
+      "description": "Collection of Kubernetes [node taints](https:\/\/kubernetes.io\/docs\/concepts\/configuration\/taint-and-toleration).",
+      "type": "object",
+      "properties": {
+        "taints": {
+          "description": "List of node taints.",
+          "type": "array",
+          "items": {
+            "$ref": "NodeTaint"
+          }
+        }
+      }
+    },
+    "NodeLabels": {
+      "id": "NodeLabels",
+      "description": "Collection of node-level [Kubernetes labels](https:\/\/kubernetes.io\/docs\/concepts\/overview\/working-with-objects\/labels).",
+      "type": "object",
+      "properties": {
+        "labels": {
+          "description": "Map of node label keys and node label values.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

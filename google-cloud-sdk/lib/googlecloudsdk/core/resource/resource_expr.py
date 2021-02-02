@@ -300,6 +300,10 @@ class _Expr(object):
     """
     pass
 
+  @property
+  def contains_key(self):
+    return False
+
 
 class _ExprTRUE(_Expr):
   """TRUE node.
@@ -451,6 +455,7 @@ class _ExprOperator(_Expr):
     _normalize: The resource value normalization function.
     _operand: The term ExprOperand operand.
     _transform: Optional key value transform calls.
+    key : Property decorator for the resource object key.
   """
 
   def __init__(self, backend, key, operand, transform):
@@ -499,6 +504,14 @@ class _ExprOperator(_Expr):
     # More type checks go here.
 
     return value
+
+  @property
+  def contains_key(self):
+    return True
+
+  @property
+  def key(self):
+    return self._key
 
   def Evaluate(self, obj):
     """Evaluate a term node.

@@ -722,3 +722,10 @@ class EnvironmentFlag(StringFlag):
   def FormatFlags(self, args):
     env = _GetEnvironment(args)
     return ['--environment', env]
+
+
+def MaxRateFlag(required=False):
+  return StringFlag(
+      '--max-rate',
+      help='Maximum number of requests per second that the backend can handle.',
+      required=required)

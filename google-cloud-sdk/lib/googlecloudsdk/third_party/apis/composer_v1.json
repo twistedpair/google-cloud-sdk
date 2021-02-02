@@ -295,6 +295,10 @@
           "description": "Optional. The configuration settings for the Airflow web server App Engine instance.",
           "$ref": "WebServerConfig"
         },
+        "encryptionConfig": {
+          "description": "Optional. The encryption options for the Cloud Composer environment and its dependencies. Cannot be updated.",
+          "$ref": "EncryptionConfig"
+        },
         "airflowUri": {
           "description": "Output only. The URI of the Apache Airflow Web UI hosted within this environment (see [Airflow web interface](\/composer\/docs\/how-to\/accessing\/airflow-web-interface)).",
           "type": "string"
@@ -351,7 +355,7 @@
           "type": "string"
         },
         "network": {
-          "description": "Optional. The Compute Engine network to be used for machine communications, specified as a [relative resource name](\/apis\/design\/resource_names#relative_resource_name). For example: \"projects\/{projectId}\/global\/networks\/{networkId}\". [Shared VPC](\/vpc\/docs\/shared-vpc) is not currently supported. The network must belong to the environment's project. If unspecified, the \"default\" network ID in the environment's project is used. If a [Custom Subnet Network](\/vpc\/docs\/vpc#vpc_networks_and_subnets) is provided, `nodeConfig.subnetwork` must also be provided.",
+          "description": "Optional. The Compute Engine network to be used for machine communications, specified as a [relative resource name](\/apis\/design\/resource_names#relative_resource_name). For example: \"projects\/{projectId}\/global\/networks\/{networkId}\". If unspecified, the \"default\" network ID in the environment's project is used. If a [Custom Subnet Network](\/vpc\/docs\/vpc#vpc_networks_and_subnets) is provided, `nodeConfig.subnetwork` must also be provided. For [Shared VPC](\/vpc\/docs\/shared-vpc) subnetwork requirements, see `nodeConfig.subnetwork`.",
           "type": "string"
         },
         "subnetwork": {
@@ -509,6 +513,17 @@
       "properties": {
         "machineType": {
           "description": "Optional. Machine type on which Airflow web server is running. It has to be one of: composer-n1-webserver-2, composer-n1-webserver-4 or composer-n1-webserver-8. If not specified, composer-n1-webserver-2 will be used. Value custom is returned only in response, if Airflow web server parameters were manually changed to a non-standard values.",
+          "type": "string"
+        }
+      }
+    },
+    "EncryptionConfig": {
+      "id": "EncryptionConfig",
+      "description": "The encryption options for the Cloud Composer environment and its dependencies.",
+      "type": "object",
+      "properties": {
+        "kmsKeyName": {
+          "description": "Optional. Customer-managed Encryption Key available through Google's Key Management Service. Cannot be updated. If not specified, Google-managed key will be used.",
           "type": "string"
         }
       }

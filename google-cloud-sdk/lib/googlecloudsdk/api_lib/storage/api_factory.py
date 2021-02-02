@@ -18,26 +18,45 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import threading
+
 from googlecloudsdk.api_lib.storage import gcs_api
 from googlecloudsdk.api_lib.storage import s3_api
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.core import properties
+
+# Module variable for holding one API instance per thread per provider.
+_cloud_api_thread_local_storage = threading.local()
 
 
 def get_api(provider):
-  """Returns API instance for cloud provider.
+  """Returns thread local API instance for cloud provider.
+
+  Uses thread local storage to make sure only one instance of an API exists
+  per thread per provider.
 
   Args:
-    provider (ProviderPrefix): Cloud provider prefix.
+    provider (storage_url.ProviderPrefix): Cloud provider prefix.
 
   Returns:
-    CloudApi instance for specific cloud provider.
+    CloudApi client object for provider argument.
 
   Raises:
     ValueError: Invalid API provider.
   """
-  # TODO(b/167685797): Use thread-local.
+  if properties.VALUES.storage.use_threading_local.GetBool():
+    api_client = getattr(_cloud_api_thread_local_storage, provider.value, None)
+    if api_client:
+      return api_client
+
   if provider == storage_url.ProviderPrefix.GCS:
-    return gcs_api.GcsApi()
+    api_client = gcs_api.GcsApi()
   elif provider == storage_url.ProviderPrefix.S3:
-    return s3_api.S3Api()
-  raise ValueError('Provider API value must be "gs" or "s3".')
+    api_client = s3_api.S3Api()
+  else:
+    raise ValueError('Provider must be a valid storage_url.ProviderPrefix.')
+
+  if properties.VALUES.storage.use_threading_local.GetBool():
+    setattr(_cloud_api_thread_local_storage, provider.value, api_client)
+
+  return api_client

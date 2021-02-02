@@ -19,7 +19,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.kuberun import kubernetesobject
-from googlecloudsdk.api_lib.kuberun import mapobject
+from googlecloudsdk.api_lib.kuberun import structuredout
 
 AUTHOR_ANNOTATION = 'serving.knative.dev/creator'
 INITIAL_SCALE_ANNOTATION = 'autoscaling.knative.dev/initialScale'
@@ -149,7 +149,7 @@ class Revision(kubernetesobject.KubernetesObject):
     return super(Revision, self).ReadySymbolAndColor()
 
 
-class Spec(mapobject.MapObject):
+class Spec(structuredout.MapObject):
   """Wraps the spec field of the Template resource."""
 
   @property
@@ -176,7 +176,7 @@ class Spec(mapobject.MapObject):
     return self._props.get('serviceAccountName')
 
 
-class Container(mapobject.MapObject):
+class Container(structuredout.MapObject):
   """Wraps a container resource."""
 
   @property
@@ -248,7 +248,7 @@ class EnvVars():
     }
 
 
-class EnvValueFrom(mapobject.MapObject):
+class EnvValueFrom(structuredout.MapObject):
   """Represents the ValueFrom field of an EnvVar."""
 
   @property
@@ -266,7 +266,7 @@ class EnvValueFrom(mapobject.MapObject):
       return None
 
 
-class Key(mapobject.MapObject):
+class Key(structuredout.MapObject):
 
   @property
   def key(self):
@@ -285,7 +285,7 @@ class SecretKey(Key):
   pass
 
 
-class ContainerPort(mapobject.MapObject):
+class ContainerPort(structuredout.MapObject):
 
   @property
   def containerPort(self):
@@ -339,7 +339,7 @@ class VolumeMounts():
     }
 
 
-class VolumeItem(mapobject.MapObject):
+class VolumeItem(structuredout.MapObject):
 
   @property
   def items(self):
@@ -360,7 +360,7 @@ class ConfigMapVolumeItem(VolumeItem):
     return self._props.get('name')
 
 
-class KeyToPath(mapobject.MapObject):
+class KeyToPath(structuredout.MapObject):
 
   @property
   def key(self):

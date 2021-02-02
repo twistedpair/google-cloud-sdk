@@ -48,7 +48,7 @@ _AGENT_RULE_TEMPLATES = {
                 repo='google-cloud-logging-el%s-x86_64-%s',
                 clear_prev_repo=(
                     'sudo rm /etc/yum.repos.d/google-cloud-logging.repo || '
-                    "true; find /var/cache/yum -name '*google-cloud-logging*' "
+                    "true; find /var/cache/{yum,dnf} -name '*google-cloud-logging*' "
                     '| xargs sudo rm -rf || true'),
                 install_with_version=(
                     "sudo yum remove -y google-fluentd || true; "
@@ -71,9 +71,10 @@ _AGENT_RULE_TEMPLATES = {
                 clear_prev_repo=(
                     'sudo rm /etc/apt/sources.list.d/google-cloud-logging.list '
                     '|| true; find /var/cache/apt -name '
-                    "'*google-cloud-logging*' | xargs sudo rm -rf || true"),
+                    "'*google-fluentd*' | xargs sudo rm -rf || true"),
                 install_with_version=(
                     "sudo apt-get remove -y google-fluentd || true; "
+                    "sudo apt-get update; "
                     "sudo apt-get install -y 'google-fluentd%s'; "
                     "sudo apt-get install -y google-fluentd-catch-all-config"),
             ),
@@ -97,7 +98,7 @@ _AGENT_RULE_TEMPLATES = {
                 repo='google-cloud-monitoring-el%s-x86_64-%s',
                 clear_prev_repo=(
                     'sudo rm /etc/yum.repos.d/google-cloud-monitoring.repo || '
-                    'true; find /var/cache/yum -name '
+                    'true; find /var/cache/{yum,dnf} -name '
                     "'*google-cloud-monitoring*' | xargs sudo rm -rf || true"),
                 install_with_version=(
                     "sudo yum remove -y stackdriver-agent || true; "
@@ -119,9 +120,10 @@ _AGENT_RULE_TEMPLATES = {
                     'sudo rm '
                     '/etc/apt/sources.list.d/google-cloud-monitoring.list || '
                     'true; find /var/cache/apt -name '
-                    "'*google-cloud-monitoring*' | xargs sudo rm -rf || true"),
+                    "'*stackdriver-agent*' | xargs sudo rm -rf || true"),
                 install_with_version=(
                     "sudo apt-get remove -y stackdriver-agent || true; "
+                    "sudo apt-get update; "
                     "sudo apt-get install -y 'stackdriver-agent%s'"),
             ),
             repo_id='google-cloud-monitoring',
@@ -144,7 +146,7 @@ _AGENT_RULE_TEMPLATES = {
                 repo='google-cloud-ops-agent-el%s-x86_64-%s',
                 clear_prev_repo=(
                     'sudo rm /etc/yum.repos.d/google-cloud-ops-agent.repo || '
-                    'true; find /var/cache/yum -name '
+                    'true; find /var/cache/{yum,dnf} -name '
                     "'*google-cloud-ops-agent*' | xargs sudo rm -rf || true"),
                 install_with_version=(
                     "sudo yum remove -y google-cloud-ops-agent || true; "
@@ -169,6 +171,7 @@ _AGENT_RULE_TEMPLATES = {
                     "'*google-cloud-ops-agent*' | xargs sudo rm -rf || true"),
                 install_with_version=(
                     "sudo apt-get remove -y google-cloud-ops-agent || true; "
+                    "sudo apt-get update; "
                     "sudo apt-get install -y 'google-cloud-ops-agent%s'"),
             ),
             repo_id='google-cloud-ops-agent',
@@ -511,13 +514,12 @@ def _CreateStepInScript(messages, agent_rule, os_type):
       agent_rule.version
       if '-' in agent_rule.version else agent_rule.version + '-1')
   if os_type.short_name in {'centos', 'rhel'}:
-    os_version = os_type.version.split('.')[0]
     if agent_rule.version == 'latest':
       agent_version = ''
     elif '*.*' in agent_rule.version:
       agent_version = '-%s' % agent_rule.version.replace('*.*', '*')
     else:
-      agent_version = '-%s.el%s' % (version_with_build, os_version)
+      agent_version = '-%s*' % version_with_build
     clear_prev_repo = _AGENT_RULE_TEMPLATES[
         agent_rule.type].yum_package.clear_prev_repo
     install_with_version = _AGENT_RULE_TEMPLATES[
@@ -527,6 +529,8 @@ def _CreateStepInScript(messages, agent_rule, os_type):
       agent_version = ''
     elif '*.*' in agent_rule.version:
       agent_version = '=%s' % agent_rule.version.replace('*.*', '*')
+    elif agent_rule.type is agent_policy.OpsAgentPolicy.AgentRule.Type.OPS_AGENT:
+      agent_version = '=%s~*' % agent_rule.version
     else:
       agent_version = '=%s*' % version_with_build
     clear_prev_repo = _AGENT_RULE_TEMPLATES[
@@ -539,7 +543,7 @@ def _CreateStepInScript(messages, agent_rule, os_type):
     elif '*.*' in agent_rule.version:
       agent_version = '<%d.*' % (int(agent_rule.version.split('.')[0]) + 1)
     else:
-      agent_version = '=%s' % version_with_build
+      agent_version = '=%s*' % version_with_build
     clear_prev_repo = _AGENT_RULE_TEMPLATES[
         agent_rule.type].zypper_package.clear_prev_repo
     install_with_version = _AGENT_RULE_TEMPLATES[

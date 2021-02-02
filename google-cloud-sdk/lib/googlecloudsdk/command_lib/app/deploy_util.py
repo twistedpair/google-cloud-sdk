@@ -568,7 +568,7 @@ def RunDeploy(
     parallel_build=True,
     flex_image_build_option=FlexImageBuildOptions.ON_CLIENT,
     dispatch_admin_api=False,
-    use_legacy_apis=False):
+    use_ct_apis=False):
   """Perform a deployment based on the given args.
 
   Args:
@@ -588,9 +588,9 @@ def RunDeploy(
       image on client.
     dispatch_admin_api: bool, speak to the (new) Admin API rather than the (old)
       Admin Console for config push of dispatch.yaml.
-    use_legacy_apis: bool, if true, use the legacy deprecated admin-console-hr
-      superapp for queue.yaml and cron.yaml uploads instead of Cloud Tasks &
-      Cloud Scheduler FEs.
+    use_ct_apis: bool, if true, use the new Cloud Tasks and Cloud Scheduler FE
+      APIs instead of the soon-to-be deprecated admin-console-hr superapp for
+      queue.yaml and cron.yaml uploads
 
   Returns:
     A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
@@ -693,15 +693,9 @@ def RunDeploy(
           api_client.UpdateDispatchRules(config.GetRules())
         elif config.name == yaml_parsing.ConfigYamlInfo.INDEX:
           index_api.CreateMissingIndexes(project, config.parsed)
-        elif (
-            not use_legacy_apis and
-            config.name == yaml_parsing.ConfigYamlInfo.QUEUE
-        ):
+        elif use_ct_apis and config.name == yaml_parsing.ConfigYamlInfo.QUEUE:
           RunDeployCloudTasks(config)
-        elif (
-            not use_legacy_apis and
-            config.name == yaml_parsing.ConfigYamlInfo.CRON
-        ):
+        elif use_ct_apis and config.name == yaml_parsing.ConfigYamlInfo.CRON:
           RunDeployCloudScheduler(config)
         else:
           ac_client.UpdateConfig(config.name, config.parsed)

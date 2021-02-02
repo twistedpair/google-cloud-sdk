@@ -6792,20 +6792,7 @@ class GoogleCloudAiplatformV1SchemaPredictPredictionTextExtractionPredictionResu
 
 
 class GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResult(_messages.Message):
-  r"""Represents a line of JSONL in the text sentiment batch prediction output
-  file. This is a hack to allow printing of integer values.
-
-  Fields:
-    instance: User's input instance.
-    prediction: The prediction result.
-  """
-
-  instance = _messages.MessageField('GoogleCloudAiplatformV1SchemaPredictInstanceTextSentimentPredictionInstance', 1)
-  prediction = _messages.MessageField('GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResultPrediction', 2)
-
-
-class GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResultPrediction(_messages.Message):
-  r"""Prediction output format for Text Sentiment.
+  r"""Prediction output format for Text Sentiment
 
   Fields:
     sentiment: The integer sentiment labels between 0 (inclusive) and
@@ -15359,20 +15346,7 @@ class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextExtractionPredictio
 
 
 class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResult(_messages.Message):
-  r"""Represents a line of JSONL in the text sentiment batch prediction output
-  file. This is a hack to allow printing of integer values.
-
-  Fields:
-    instance: User's input instance.
-    prediction: The prediction result.
-  """
-
-  instance = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextSentimentPredictionInstance', 1)
-  prediction = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction', 2)
-
-
-class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPredictionResultPrediction(_messages.Message):
-  r"""Prediction output format for Text Sentiment.
+  r"""Prediction output format for Text Sentiment
 
   Fields:
     sentiment: The integer sentiment labels between 0 (inclusive) and

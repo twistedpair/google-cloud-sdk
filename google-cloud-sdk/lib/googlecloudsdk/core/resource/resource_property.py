@@ -369,6 +369,11 @@ def Get(resource_obj, resource_key, default=None):
   return resource
 
 
+def ResourceContainsKey(resource, key):
+  """True if resource contains key, else False."""
+  return Get(resource, key, None) is not None
+
+
 def EvaluateGlobalRestriction(resource, restriction, pattern):
   """Returns True if any attribute value in resource matches the RE pattern.
 

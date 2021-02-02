@@ -42,16 +42,13 @@ def AddParentArgToParser(parser, required=True, message=""):
   Args:
     parser: ArgumentInterceptor, An argparse parser.
     required: Boolean, to enforce --parent as a required flag.
-    message: String, additional help text for flag.
+    message: String, replacement help text for flag.
   """
   parser.add_argument(
       "--parent",
       metavar="PARENT",
       required=required,
-      help=("Parent of the TagKey or TagValue. For TagKey, this must be in the "
-            "form of organizations/{org_id}. For TagValues, it must be either "
-            "tagKeys/{id} or organizations/{org_id}/{tagkey_short_name}"
-            + message))
+      help=message if message else ("Parent of the resource."))
 
 
 def AddDescriptionArgToParser(parser):
@@ -149,19 +146,20 @@ def AddPolicyFileArgToParser(parser):
           "a [Policy](https://cloud.google.com/iam/reference/rest/v1/Policy)."))
 
 
-def AddTagKeyArgToParser(parser):
-  """Adds the TagKey arugument to the parser.
+def AddTagValueArgToParser(parser):
+  """Adds the TagValue arugument to the parser.
 
   Args:
     parser: ArgumentInterceptor, An argparse parser.
   """
   parser.add_argument(
-      "--tag-key",
-      metavar="TAG_KEY",
+      "--tag-value",
+      metavar="TAG_VALUE",
       required=True,
-      help=("Tag key name or namespaced name. The tag key name should "
-            "be in the form tagKeys/{numeric_id}. The namespaced name "
-            "should be in the form {org_id}/{short_name} where short_name "
-            "must be 1-63 characters, beginning and ending with an "
-            "alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores "
-            "(_), dots (.), and alphanumerics between."))
+      help=("Tag value name or namespaced name. The name should "
+            "be in the form tagValues/{numeric_id}. The namespaced name "
+            "should be in the form {org_id}/{tag_key_short_name}/{short_name} "
+            "where short_name must be 1-63 characters, beginning and ending "
+            "with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), "
+            "underscores (_), dots (.), and alphanumerics between."))
+

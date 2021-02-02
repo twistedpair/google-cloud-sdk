@@ -112,10 +112,10 @@ def AddFunctionMemoryFlag(parser):
       help="""\
       Limit on the amount of memory the function can use.
 
-      Allowed values are: 128MB, 256MB, 512MB, 1024MB, and 2048MB. By default,
-      a new function is limited to 256MB of memory. When deploying an update to
-      an existing function, the function will keep its old memory limit unless
-      you specify this flag.""")
+      Allowed values are: 128MB, 256MB, 512MB, 1024MB, 2048MB, and 4096MB. By
+      default, a new function is limited to 256MB of memory. When deploying an
+      update to an existing function, the function keeps its old memory
+      limit unless you specify this flag.""")
 
 
 def AddFunctionTimeoutFlag(parser):
@@ -156,10 +156,10 @@ def AddV2Flag(parser):
       '--v2',
       default=False,
       action=actions.StoreBooleanProperty(properties.VALUES.functions.v2),
-      help=('If enabled, this command will use Cloud Functions V2. If disabled,'
-            'Cloud Functions V1 will be used. If not specified, the value of '
-            'this flag will be taken from the `functions/v2` configuration '
-            'property.'))
+      help=('If enabled, this command will use Cloud Functions V2. If '
+            'disabled, Cloud Functions V1 will be used. If not specified, the '
+            'value of this flag will be taken from the `functions/v2` '
+            'configuration property.'))
 
 
 def ShouldUseV2(args):

@@ -67,3 +67,14 @@ def GetHeader(record):
   place = 'namespace ' + record.namespace
   return con.Emphasize('{} {} {} in {}'.format(status, record.Kind(),
                                                record.name, place))
+
+
+def ReadyCondition(record):
+  ready_cond = [
+      x for x in record.get('status', {}).get('conditions', [])
+      if x['type'] == 'Ready'
+  ]
+  if ready_cond:
+    return ready_cond[0]
+  else:
+    return None

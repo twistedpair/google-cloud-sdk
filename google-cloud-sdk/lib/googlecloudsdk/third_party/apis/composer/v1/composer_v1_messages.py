@@ -271,6 +271,19 @@ class Empty(_messages.Message):
 
 
 
+class EncryptionConfig(_messages.Message):
+  r"""The encryption options for the Cloud Composer environment and its
+  dependencies.
+
+  Fields:
+    kmsKeyName: Optional. Customer-managed Encryption Key available through
+      Google's Key Management Service. Cannot be updated. If not specified,
+      Google-managed key will be used.
+  """
+
+  kmsKeyName = _messages.StringField(1)
+
+
 class Environment(_messages.Message):
   r"""An environment for running orchestration tasks.
 
@@ -378,6 +391,8 @@ class EnvironmentConfig(_messages.Message):
       directory with the given prefix.
     databaseConfig: Optional. The configuration settings for Cloud SQL
       instance used internally by Apache Airflow software.
+    encryptionConfig: Optional. The encryption options for the Cloud Composer
+      environment and its dependencies. Cannot be updated.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
       environment.
     nodeConfig: The configuration used for the Kubernetes Engine cluster.
@@ -397,13 +412,14 @@ class EnvironmentConfig(_messages.Message):
   airflowUri = _messages.StringField(1)
   dagGcsPrefix = _messages.StringField(2)
   databaseConfig = _messages.MessageField('DatabaseConfig', 3)
-  gkeCluster = _messages.StringField(4)
-  nodeConfig = _messages.MessageField('NodeConfig', 5)
-  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 7)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 8)
-  webServerConfig = _messages.MessageField('WebServerConfig', 9)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 10)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
+  gkeCluster = _messages.StringField(5)
+  nodeConfig = _messages.MessageField('NodeConfig', 6)
+  nodeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 8)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 9)
+  webServerConfig = _messages.MessageField('WebServerConfig', 10)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 11)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -551,12 +567,12 @@ class NodeConfig(_messages.Message):
     network: Optional. The Compute Engine network to be used for machine
       communications, specified as a [relative resource
       name](/apis/design/resource_names#relative_resource_name). For example:
-      "projects/{projectId}/global/networks/{networkId}". [Shared
-      VPC](/vpc/docs/shared-vpc) is not currently supported. The network must
-      belong to the environment's project. If unspecified, the "default"
-      network ID in the environment's project is used. If a [Custom Subnet
-      Network](/vpc/docs/vpc#vpc_networks_and_subnets) is provided,
-      `nodeConfig.subnetwork` must also be provided.
+      "projects/{projectId}/global/networks/{networkId}". If unspecified, the
+      "default" network ID in the environment's project is used. If a [Custom
+      Subnet Network](/vpc/docs/vpc#vpc_networks_and_subnets) is provided,
+      `nodeConfig.subnetwork` must also be provided. For [Shared
+      VPC](/vpc/docs/shared-vpc) subnetwork requirements, see
+      `nodeConfig.subnetwork`.
     oauthScopes: Optional. The set of Google API scopes to be made available
       on all node VMs. If `oauth_scopes` is empty, defaults to
       ["https://www.googleapis.com/auth/cloud-platform"]. Cannot be updated.

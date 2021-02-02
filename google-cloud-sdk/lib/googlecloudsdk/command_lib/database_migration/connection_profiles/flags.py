@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.database_migration import api_util
+
 
 def AddDisplayNameFlag(parser):
   """Adds a --display-name flag to the given parser."""
@@ -64,20 +66,23 @@ def AddHostFlag(parser, required=False):
 
 
 def AddPortFlag(parser, required=False):
-  """Adds --host flag to the given parser."""
+  """Adds --port flag to the given parser."""
   help_text = """\
     Network port of the source MySQL database.
   """
   parser.add_argument('--port', help=help_text, required=required, type=int)
 
 
-def AddSslConfigGroup(parser):
+def AddSslConfigGroup(parser, release_track):
   """Adds --password and --prompt-for-password flags to the given parser."""
   ssl_config = parser.add_group()
   AddCaCertificateFlag(ssl_config, True)
   client_cert = ssl_config.add_group()
-  AddCertificateFlag(client_cert, required=True)
   AddPrivateKeyFlag(client_cert, required=True)
+  if api_util.GetApiVersion(release_track) == 'v1alpha2':
+    AddCertificateFlag(client_cert, required=True)
+  else:
+    AddClientCertificateFlag(client_cert, required=True)
 
 
 def AddCaCertificateFlag(parser, required=False):
@@ -99,6 +104,15 @@ def AddCertificateFlag(parser, required=False):
   parser.add_argument('--certificate', help=help_text, required=required)
 
 
+def AddClientCertificateFlag(parser, required=False):
+  """Adds --client-certificate flag to the given parser."""
+  help_text = """\
+    x509 PEM-encoded certificate that will be used by the replica to
+    authenticate against the source database server.
+  """
+  parser.add_argument('--client-certificate', help=help_text, required=required)
+
+
 def AddPrivateKeyFlag(parser, required=False):
   """Adds --private-key flag to the given parser."""
   help_text = """\
@@ -108,13 +122,22 @@ def AddPrivateKeyFlag(parser, required=False):
   parser.add_argument('--private-key', help=help_text, required=required)
 
 
-def AddCloudSQLInstanceFlag(parser, required=False):
+def AddInstanceFlag(parser, required=False):
   """Adds --instance flag to the given parser."""
   help_text = """\
     If the source is a Cloud SQL database, use this field to provide the Cloud
     SQL instance ID of the source.
   """
   parser.add_argument('--instance', help=help_text, required=required)
+
+
+def AddCloudSQLInstanceFlag(parser, required=False):
+  """Adds --cloudsql-instance flag to the given parser."""
+  help_text = """\
+    If the source is a Cloud SQL database, use this field to provide the Cloud
+    SQL instance ID of the source.
+  """
+  parser.add_argument('--cloudsql-instance', help=help_text, required=required)
 
 
 def AddProviderFlag(parser):

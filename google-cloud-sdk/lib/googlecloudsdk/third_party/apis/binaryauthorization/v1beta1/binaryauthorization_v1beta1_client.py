@@ -42,6 +42,7 @@ class BinaryauthorizationV1beta1(base_api.BaseApiClient):
     self.projects_attestors = self.ProjectsAttestorsService(self)
     self.projects_policy = self.ProjectsPolicyService(self)
     self.projects = self.ProjectsService(self)
+    self.systempolicy = self.SystempolicyService(self)
 
   class ProjectsAttestorsService(base_api.BaseApiService):
     """Service class for the projects_attestors resource."""
@@ -447,6 +448,43 @@ class BinaryauthorizationV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}',
         request_field='<request>',
         request_type_name='Policy',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+  class SystempolicyService(base_api.BaseApiService):
+    """Service class for the systempolicy resource."""
+
+    _NAME = 'systempolicy'
+
+    def __init__(self, client):
+      super(BinaryauthorizationV1beta1.SystempolicyService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetPolicy(self, request, global_params=None):
+      r"""Gets the current system policy in the specified location.
+
+      Args:
+        request: (BinaryauthorizationSystempolicyGetPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/locations/{locationsId}/policy',
+        http_method='GET',
+        method_id='binaryauthorization.systempolicy.getPolicy',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='BinaryauthorizationSystempolicyGetPolicyRequest',
         response_type_name='Policy',
         supports_download=False,
     )

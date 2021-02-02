@@ -189,6 +189,6 @@ def GetClusterResourceSpec():
 CLUSTER_PRESENTATION = presentation_specs.ResourcePresentationSpec(
     '--cluster',
     GetClusterResourceSpec(),
-    'Kubernetes Engine cluster to connect to.',
+    'The GKE cluster to which you want to connect.',
     required=False,
     prefixes=True)

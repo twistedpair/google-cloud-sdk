@@ -596,6 +596,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "encryptionInfo": {
+          "description": "Output only. The encryption information for the backup. If the encryption key protecting this resource is customer managed, then kms_key_version will be filled.",
+          "readOnly": true,
+          "$ref": "EncryptionInfo"
         }
       }
     },

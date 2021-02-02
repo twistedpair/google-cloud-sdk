@@ -267,6 +267,9 @@ class TemplateArguments(object):
   enable_streaming_engine = None
   additional_experiments = None
   additional_user_labels = None
+  streaming_update = None
+  transform_name_mappings = None
+  flexrs_goal = None
 
   def __init__(self,
                project_id=None,
@@ -288,7 +291,10 @@ class TemplateArguments(object):
                worker_zone=None,
                enable_streaming_engine=None,
                additional_experiments=None,
-               additional_user_labels=None):
+               additional_user_labels=None,
+               streaming_update=None,
+               transform_name_mappings=None,
+               flexrs_goal=None):
     self.project_id = project_id
     self.region_id = region_id
     self.job_name = job_name
@@ -309,6 +315,9 @@ class TemplateArguments(object):
     self.enable_streaming_engine = enable_streaming_engine
     self.additional_experiments = additional_experiments
     self.additional_user_labels = additional_user_labels
+    self.streaming_update = streaming_update
+    self.transform_name_mappings = transform_name_mappings
+    self.flexrs_goal = flexrs_goal
 
 
 class Templates(object):
@@ -323,8 +332,11 @@ class Templates(object):
   FLEX_TEMPLATE_USER_LABELS_VALUE = FLEX_TEMPLATE_ENVIRONMENT.AdditionalUserLabelsValue
   FLEX_TEMPLATE_PARAMETER = GetMessagesModule().LaunchFlexTemplateParameter
   FLEX_TEMPLATE_PARAMETERS_VALUE = FLEX_TEMPLATE_PARAMETER.ParametersValue
+  FLEX_TEMPLATE_TRANSFORM_NAME_MAPPING_VALUE = FLEX_TEMPLATE_PARAMETER.TransformNameMappingsValue
   IP_CONFIGURATION_ENUM_VALUE = GetMessagesModule(
       ).FlexTemplateRuntimeEnvironment.IpConfigurationValueValuesEnum
+  FLEXRS_GOAL_ENUM_VALUE = GetMessagesModule(
+      ).FlexTemplateRuntimeEnvironment.FlexrsGoalValueValuesEnum
   TEMPLATE_METADATA = GetMessagesModule().TemplateMetadata
   SDK_INFO = GetMessagesModule().SDKInfo
   SDK_LANGUAGE = GetMessagesModule().SDKInfo.LanguageValueValuesEnum
@@ -399,7 +411,11 @@ class Templates(object):
             ipConfiguration=ip_configuration,
             workerRegion=template_args.worker_region,
             workerZone=template_args.worker_zone,
-            enableStreamingEngine=template_args.enable_streaming_engine),
+            enableStreamingEngine=template_args.enable_streaming_engine,
+            additionalExperiments=(
+                template_args.additional_experiments
+                if template_args.additional_experiments
+                else [])),
         parameters=Templates.PARAMETERS_VALUE(
             additionalProperties=params_list) if parameters else None)
     request = GetMessagesModule(
@@ -756,6 +772,17 @@ class Templates(object):
 
     params_list = Templates.__ConvertDictArguments(
         template_args.parameters, Templates.FLEX_TEMPLATE_PARAMETERS_VALUE)
+    transform_mapping_list = Templates.__ConvertDictArguments(
+        template_args.transform_name_mappings,
+        Templates.FLEX_TEMPLATE_TRANSFORM_NAME_MAPPING_VALUE)
+    transform_mappings = None
+    streaming_update = None
+    if template_args.streaming_update:
+      streaming_update = template_args.streaming_update
+      if transform_mapping_list:
+        transform_mappings = Templates.FLEX_TEMPLATE_TRANSFORM_NAME_MAPPING_VALUE(
+            additionalProperties=transform_mapping_list)
+
     user_labels_list = Templates.__ConvertDictArguments(
         template_args.additional_user_labels,
         Templates.FLEX_TEMPLATE_USER_LABELS_VALUE)
@@ -765,6 +792,13 @@ class Templates(object):
 
     ip_private = Templates.IP_CONFIGURATION_ENUM_VALUE.WORKER_IP_PRIVATE
     ip_configuration = ip_private if template_args.disable_public_ips else None
+
+    flexrs_goal = None
+    if template_args.flexrs_goal:
+      if template_args.flexrs_goal == 'SPEED_OPTIMIZED':
+        flexrs_goal = Templates.FLEXRS_GOAL_ENUM_VALUE.FLEXRS_SPEED_OPTIMIZED
+      elif template_args.flexrs_goal == 'COST_OPTIMIZED':
+        flexrs_goal = Templates.FLEXRS_GOAL_ENUM_VALUE.FLEXRS_COST_OPTIMIZED
 
     body = Templates.LAUNCH_FLEX_TEMPLATE_REQUEST(
         launchParameter=Templates.FLEX_TEMPLATE_PARAMETER(
@@ -783,6 +817,7 @@ class Templates(object):
                 workerRegion=template_args.worker_region,
                 workerZone=template_args.worker_zone,
                 enableStreamingEngine=template_args.enable_streaming_engine,
+                flexrsGoal=flexrs_goal,
                 additionalExperiments=(
                     template_args.additional_experiments
                     if template_args.additional_experiments
@@ -790,6 +825,8 @@ class Templates(object):
                 additionalUserLabels=Templates.FLEX_TEMPLATE_USER_LABELS_VALUE(
                     additionalProperties=user_labels_list
                 ) if user_labels_list else None),
+            update=streaming_update,
+            transformNameMappings=transform_mappings,
             parameters=Templates.FLEX_TEMPLATE_PARAMETERS_VALUE(
                 additionalProperties=params_list) if params_list else None))
     request = GetMessagesModule(
