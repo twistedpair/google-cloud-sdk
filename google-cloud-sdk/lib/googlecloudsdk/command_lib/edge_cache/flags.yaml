@@ -258,26 +258,27 @@ service:
   edge_security_policy:
     arg_name: edge-security-policy
     api_field: edgeCacheService.edgeSecurityPolicy
-    type: googlecloudsdk.command_lib.util.hooks.types:Resource:collection=compute.securityPolicies
-    processor: googlecloudsdk.command_lib.util.hooks.processors:RelativeName
     help_text: |
       Resource URL that points at the Cloud Armor edge security policy that is
       applied on each request against the EdgeCacheService.
 
+      Security Policies should be specified as relative resource URLs - for example `projects/my-project/locations/global/securityPolicies/my-policy`
+
+      Note that only security policies with a type of `EDGE` can be attached to an EdgeCacheService.
   edge_ssl_certificate:
     arg_name: edge-ssl-certificate
     api_field: edgeCacheService.edgeSslCertificates
-    type: googlecloudsdk.command_lib.util.hooks.types:Resource:collection=certificatemanager.projects.locations.certificates
-    processor: googlecloudsdk.command_lib.util.hooks.processors:RelativeName
     repeated: true
     help_text: |
       URLs to sslCertificate resources that are used to authenticate
       connections between users and the EdgeCacheService.
 
-      Note that only "global" certificates with a "scope" of "EDGE_CACHE" can be
+      Certificates should be specified as relative resource URLs - for example `projects/my-project/locations/global/certificates/my-cert`
+
+      Note that only "global" certificates with a "scope" of `EDGE_CACHE` can be
       attached to an EdgeCacheService.
 
-      You may specify up to 5 SSL certificates.
+      You may specify up to 5 SSL certificates per Service.
 
   enable_logging:
     arg_name: enable-logging

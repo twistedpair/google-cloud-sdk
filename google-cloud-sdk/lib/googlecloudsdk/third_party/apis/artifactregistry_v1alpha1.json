@@ -259,6 +259,90 @@
         }
       }
     },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse",
+      "description": "The response message from importing artifacts.",
+      "type": "object",
+      "properties": {
+        "aptArtifacts": {
+          "description": "The Apt artifacts updated.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1AptArtifact"
+          }
+        },
+        "errors": {
+          "description": "Detailed error info for packages that were not imported.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsErrorInfo"
+          }
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1AptArtifact": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1AptArtifact",
+      "description": "A detailed representation of an Apt artifact. Information in the record is derived from the archive's control file. See https:\/\/www.debian.org\/doc\/debian-policy\/ch-controlfields.html",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The Artifact Registry resource name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "packageName": {
+          "description": "Output only. The Apt package name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "packageType": {
+          "description": "Output only. An artifact is a binary or source package.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Package type is not specified.",
+            "Binary package.",
+            "Source package."
+          ],
+          "enum": [
+            "PACKAGE_TYPE_UNSPECIFIED",
+            "BINARY",
+            "SOURCE"
+          ]
+        },
+        "architecture": {
+          "description": "Output only. Operating system architecture of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "component": {
+          "description": "Output only. Repository component of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "controlFile": {
+          "description": "Output only. Contents of the artifact's control metadata file.",
+          "readOnly": true,
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsErrorInfo": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsErrorInfo",
+      "description": "Error information explaining why a package was not imported.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location requested.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsGcsSource"
+        },
+        "error": {
+          "description": "The detailed error status.",
+          "$ref": "Status"
+        }
+      }
+    },
     "GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsResponse": {
       "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsResponse",
       "description": "The response message from importing artifacts.",
@@ -313,6 +397,79 @@
         "gcsSource": {
           "description": "Google Cloud Storage location requested.",
           "$ref": "GoogleDevtoolsArtifactregistryV1alpha1GcsSource"
+        },
+        "error": {
+          "description": "The detailed error status.",
+          "$ref": "Status"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsResponse",
+      "description": "The response message from importing artifacts.",
+      "type": "object",
+      "properties": {
+        "yumArtifacts": {
+          "description": "The yum artifacts updated.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1YumArtifact"
+          }
+        },
+        "errors": {
+          "description": "Detailed error info for packages that were not imported.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsErrorInfo"
+          }
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1YumArtifact": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1YumArtifact",
+      "description": "A detailed representation of a Yum artifact.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The Artifact Registry resource name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "packageName": {
+          "description": "Output only. The yum package name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "packageType": {
+          "description": "Output only. An artifact is a binary or source package.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Package type is not specified.",
+            "Binary package (.rpm). .rpm",
+            "Source package (.srpm)."
+          ],
+          "enum": [
+            "PACKAGE_TYPE_UNSPECIFIED",
+            "BINARY",
+            "SOURCE"
+          ]
+        },
+        "architecture": {
+          "description": "Output only. Operating system architecture of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsErrorInfo": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsErrorInfo",
+      "description": "Error information explaining why a package was not imported.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location requested.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsGcsSource"
         },
         "error": {
           "description": "The detailed error status.",

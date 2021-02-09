@@ -19,15 +19,12 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import json
-import os
 
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core.util import encoding
-from googlecloudsdk.core.util import files
+from googlecloudsdk.core import requests
 
-_SERVICE_CATALOG_FILE_NAME = 'service_catalog.json'
-_SERVICE_CATALOG_PATH = os.path.join(
-    os.path.dirname(encoding.Decode(__file__)), _SERVICE_CATALOG_FILE_NAME)
+
+_SERVICE_CATALOG_URL = 'https://raw.githubusercontent.com/googleapis/google-cloudevents/master/json/audit/service_catalog.json'
 
 
 class InvalidServiceName(exceptions.Error):
@@ -35,9 +32,9 @@ class InvalidServiceName(exceptions.Error):
 
 
 def GetServices():
-  with files.FileReader(_SERVICE_CATALOG_PATH) as f:
-    catalog = json.load(f)
-    return catalog['services']
+  response = requests.GetSession().get(_SERVICE_CATALOG_URL)
+  catalog = json.loads(response.text)
+  return catalog['services']
 
 
 def GetMethods(service_name):

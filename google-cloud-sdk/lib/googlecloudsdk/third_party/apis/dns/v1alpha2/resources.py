@@ -73,6 +73,21 @@ class Collections(enum.Enum):
       ['project', 'managedZone', 'name', 'type'],
       True
   )
+  RESPONSEPOLICIES = (
+      'responsePolicies',
+      'projects/{project}/responsePolicies/{responsePolicy}',
+      {},
+      ['project', 'responsePolicy'],
+      True
+  )
+  RESPONSEPOLICYRULES = (
+      'responsePolicyRules',
+      'projects/{project}/responsePolicies/{responsePolicy}/rules/'
+      '{responsePolicyRule}',
+      {},
+      ['project', 'responsePolicy', 'responsePolicyRule'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

@@ -1232,8 +1232,8 @@ class ServerlessOperations(object):
         response = self._client.namespaces_domainmappings.Create(request)
       except api_exceptions.HttpConflictError:
         raise serverless_exceptions.DomainMappingCreationError(
-            'Domain mapping to [{}] for service [{}] already exists.'.format(
-                domain_mapping_ref.Name(), service_name))
+            'Domain mapping to [{}] already exists in this region.'.format(
+                domain_mapping_ref.Name()))
       # 'run domain-mappings create' is synchronous. Poll for its completion.x
       with progress_tracker.ProgressTracker('Creating...'):
         mapping = waiter.PollUntilDone(

@@ -399,9 +399,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -440,9 +440,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -470,9 +470,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -511,9 +511,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -536,9 +536,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -561,9 +561,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -593,9 +593,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Project and location from which the workflows should be listed, for example, \"projects\/project1\/locations\/us-central1\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -639,9 +639,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the workflow which information should be retrieved, for example, \"projects\/project1\/locations\/us-central1\/workflows\/workflow1\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -664,9 +664,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Project and location in which the workflow should be created, for example \"projects\/project1\/locations\/us-central1\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "workflowId": {
@@ -697,9 +697,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the workflow which should be deleted, for example, \"projects\/project1\/locations\/us-central1\/workflows\/workflow1\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -722,9 +722,9 @@
                   "parameters": {
                     "name": {
                       "description": "Name of the workflow resource, for example, \"projects\/project1\/locations\/us-central1\/workflows\/workflow1\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {

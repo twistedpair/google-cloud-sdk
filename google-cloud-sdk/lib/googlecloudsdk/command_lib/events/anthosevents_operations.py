@@ -672,10 +672,7 @@ class AnthosEventsOperations(object):
       raise exceptions.BrokerNotFound(
           'Broker [{}] not found.'.format(broker_name))
 
-  def CreateOrReplaceSourcesSecret(self,
-                                   namespace_ref,
-                                   cluster_eventing_type=events_constants
-                                   .ClusterEventingType.CLOUDRUN_SECRETS):
+  def CreateOrReplaceSourcesSecret(self, namespace_ref, product_type):
     """Create or replace the namespaces' sources secret.
 
     Retrieves default sources secret 'google-cloud-sources-key' from
@@ -684,14 +681,13 @@ class AnthosEventsOperations(object):
 
     Args:
       namespace_ref: googlecloudsdk.core.resources.Resource, namespace resource
-      cluster_eventing_type: Enum, specifies which namespace to target.
+      product_type: Enum, specifies which namespace to target.
 
     Returns:
       None
     """
     control_plane_namespace = (
-        events_constants.ControlPlaneNamespaceFromEventingType(
-            cluster_eventing_type))
+        events_constants.ControlPlaneNamespaceFromProductType(product_type))
 
     messages = self._core_client.MESSAGES_MODULE
     default_secret_full_name = 'namespaces/{}/secrets/{}'.format(
@@ -735,7 +731,7 @@ class AnthosEventsOperations(object):
                                           service_account_ref):
     """Create a new secret or replace an existing one.
 
-    Secret data contains the key of the given service account.
+    Secret data contains the key of the given Google service account.
 
     Args:
       secret_ref: googlecloudsdk.core.resources.Resource, secret resource.
@@ -820,13 +816,10 @@ class AnthosEventsOperations(object):
     return self.ReplaceServiceAccount(k8s_service_account_ref,
                                       service_account_obj)
 
-  def IsClusterInitialized(self,
-                           cluster_eventing_type=events_constants
-                           .ClusterEventingType.CLOUDRUN_SECRETS):
+  def IsClusterInitialized(self, product_type):
     """Returns whether the cluster has been initialized for eventing."""
     control_plane_namespace = (
-        events_constants.ControlPlaneNamespaceFromEventingType(
-            cluster_eventing_type))
+        events_constants.ControlPlaneNamespaceFromProductType(product_type))
     configmap_obj = self._GetConfigMap(
         _ConfigMapRef(control_plane_namespace, _CONFIG_GCP_AUTH_NAME))
     if configmap_obj is None:
@@ -834,42 +827,34 @@ class AnthosEventsOperations(object):
     return configmap_obj.annotations.get(
         _CLUSTER_INITIALIZED_ANNOTATION) == 'true'
 
-  def MarkClusterInitialized(self,
-                             cluster_eventing_type=events_constants
-                             .ClusterEventingType.CLOUDRUN_SECRETS):
+  def MarkClusterInitialized(self, cluster_defaults, product_type):
     """Marks the cluster as initialized for eventing.
 
     This creates or updates a ConfigMap which involves adding an annotation
     and setting some default configuration for eventing to use.
-
     Args:
-      cluster_eventing_type: Enum, specifies which namespace to target.
+      cluster_defaults: Dictionary with secrets or workload identity options.
+      product_type: An enum denoting the eventing product type.
     """
     control_plane_namespace = (
-        events_constants.ControlPlaneNamespaceFromEventingType(
-            cluster_eventing_type))
+        events_constants.ControlPlaneNamespaceFromProductType(product_type))
     configmap_obj = self._GetConfigMap(
         _ConfigMapRef(control_plane_namespace, _CONFIG_GCP_AUTH_NAME))
     if configmap_obj is None:
       configmap_obj = configmap.ConfigMap.New(self._core_client,
                                               control_plane_namespace)
       configmap_obj.name = _CONFIG_GCP_AUTH_NAME
-      self._PopulateDefaultAuthConfig(configmap_obj)
+      self._PopulateDefaultAuthConfig(configmap_obj, cluster_defaults)
       self._CreateConfigMap(configmap_obj)
     else:
-      self._PopulateDefaultAuthConfig(configmap_obj)
+      self._PopulateDefaultAuthConfig(configmap_obj, cluster_defaults)
       self._ReplaceConfigMap(configmap_obj)
 
-  def _PopulateDefaultAuthConfig(self, configmap_obj):
+  def _PopulateDefaultAuthConfig(self, configmap_obj, cluster_defaults):
     """Populates the default eventing config and adds an annotation."""
     auth_config = yaml.load(
         configmap_obj.data.get('default-auth-config', '{}'))
-    auth_config['clusterDefaults'] = {
-        'secret': {
-            'name': 'google-cloud-key',
-            'key': 'key.json',
-        }
-    }
+    auth_config['clusterDefaults'] = cluster_defaults
     configmap_obj.data['default-auth-config'] = yaml.dump(auth_config)
     configmap_obj.annotations[_CLUSTER_INITIALIZED_ANNOTATION] = 'true'
 

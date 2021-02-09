@@ -216,9 +216,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. Name of the workflow from which the executions should be listed, for example, \"projects\/project1\/locations\/us-central1\/workflows\/workflow1\".",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -257,9 +257,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. Name of the workflow for which an execution should be created, for example, \"projects\/project1\/locations\/us-central1\/workflows\/workflow1\".",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -285,9 +285,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the workflow execution which should be cancelled. \"projects\/project1\/locations\/us-central1\/workflows\/workflow1\/executions\/execution1\"",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -313,9 +313,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the workflow execution which information should be retrieved, for example, \"projects\/project1\/locations\/us-central1\/workflows\/workflow1\/executions\/execution1\"",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
                           "type": "string"
                         }
                       },

@@ -31,3 +31,27 @@ operation:
     parameter_name: operationsId
     attribute_name: operation
     help: Certificate Manager operation.
+
+dnsAuthorization:
+  name: dnsAuthorization
+  collection: certificatemanager.projects.locations.dnsAuthorizations
+  request_id_field: dnsAuthorizationId
+  attributes:
+  - *project
+  - *location
+  - &dnsAuthorization
+    parameter_name: dnsAuthorizationsId
+    attribute_name: dns_authorization
+    help: Certificate Manager DNS Authorization
+
+certificate:
+  name: certificate
+  collection: certificatemanager.projects.locations.certificates
+  request_id_field: certificateId
+  attributes:
+  - *project
+  - *location
+  - &certificate
+    parameter_name: certificatesId
+    attribute_name: certificate
+    help: Certificate Manager Certificate

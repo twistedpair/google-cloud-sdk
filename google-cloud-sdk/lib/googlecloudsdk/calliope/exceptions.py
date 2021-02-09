@@ -617,7 +617,7 @@ def _BuildMissingAuthScopesAdditionalHelp(known_exc):
       'If you are in a compute engine VM, it is likely that the specified '
       'scopes during VM creation are not enough to run this command.\nSee '
       'https://cloud.google.com/compute/docs/access/service-accounts#accesscopesiam'
-      ' for more information of access scopes.\nSee '
+      ' for more information about access scopes.\nSee '
       'https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#changeserviceaccountandscopes'
       ' for how to update access scopes of the VM.')
   return HttpExceptionAdditionalHelp(known_exc, error_message_signature,

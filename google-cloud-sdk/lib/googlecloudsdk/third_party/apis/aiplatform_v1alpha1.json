@@ -375,7 +375,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1GcsSource"
         },
         "dataItemLabels": {
-          "description": "Labels that will be applied to newly imported DataItems. If an identical DataItem as one being imported already exists in the Dataset, then these labels will be appended to these of the already existing one, and if labels with identical key is imported before, the old label value will be overwritten. If two DataItems are identical in the same import data operation, the labels will be combined and if key collision happens in this case, one of the values will be picked randomly. Two DataItems are considered identical if their content bytes are identical (e.g. image bytes or pdf bytes). These labels will be overridden by Annotation labels specified inside index file refenced by import_schema_uri, e.g. jsonl file.",
+          "description": "Labels that will be applied to newly imported DataItems. If an identical DataItem as one being imported already exists in the Dataset, then these labels will be appended to these of the already existing one, and if labels with identical key is imported before, the old label value will be overwritten. If two DataItems are identical in the same import data operation, the labels will be combined and if key collision happens in this case, one of the values will be picked randomly. Two DataItems are considered identical if their content bytes are identical (e.g. image bytes or pdf bytes). These labels will be overridden by Annotation labels specified inside index file referenced by import_schema_uri, e.g. jsonl file.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -490,7 +490,7 @@
           "type": "any"
         },
         "etag": {
-          "description": "Optional. Used to perform a consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
+          "description": "Optional. Used to perform consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
           "type": "string"
         }
       }
@@ -522,7 +522,7 @@
           "format": "google-datetime"
         },
         "etag": {
-          "description": "Optional. Used to perform a consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
+          "description": "Optional. Used to perform consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
           "type": "string"
         }
       }
@@ -576,7 +576,7 @@
           "format": "google-datetime"
         },
         "etag": {
-          "description": "Optional. Used to perform a consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
+          "description": "Optional. Used to perform consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
           "type": "string"
         },
         "annotationSource": {
@@ -585,7 +585,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1UserActionReference"
         },
         "labels": {
-          "description": "Optional. The labels with user-defined metadata to organize your Annotations. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. No more than 64 user labels can be associated with one Annotation(System labels are excluded). See https:\/\/goo.gl\/xmQnxf for more information and examples of labels. System reserved label keys are prefixed with \"aiplatform.googleapis.com\/\" and are immutable. Following system labels exist for each Annotation: * \"aiplatform.googleapis.com\/annotation_set_name\": optional, name of the UI's annotation set this Annotation belongs to. If not set the Annotation is not visible in the UI. * \"aiplatform.googleapis.com\/payload_schema\": output only, its value is the payload_schema's title.",
+          "description": "Optional. The labels with user-defined metadata to organize your Annotations. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. No more than 64 user labels can be associated with one Annotation(System labels are excluded). See https:\/\/goo.gl\/xmQnxf for more information and examples of labels. System reserved label keys are prefixed with \"aiplatform.googleapis.com\/\" and are immutable. Following system labels exist for each Annotation: * \"aiplatform.googleapis.com\/annotation_set_name\": optional, name of the UI's annotation set this Annotation belongs to. If not set, the Annotation is not visible in the UI. * \"aiplatform.googleapis.com\/payload_schema\": output only, its value is the payload_schema's title.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -694,7 +694,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The name of the Model this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
           "type": "string"
         },
         "displayName": {
@@ -775,12 +775,12 @@
       "type": "object",
       "properties": {
         "minReplicaCount": {
-          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If requested value is too large, the deployment will error.",
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If the requested value is too large, the deployment will error.",
           "type": "integer",
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though AI Platform may be unable to scale beyond certain replica number.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though AI Platform may be unable to scale beyond certain replica number.",
           "type": "integer",
           "format": "int32"
         }
@@ -891,7 +891,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A token to retrieve next page of results. Pass to ListEndpointsRequest.page_token to obtain that page.",
+          "description": "A token to retrieve the next page of results. Pass to ListEndpointsRequest.page_token to obtain that page.",
           "type": "string"
         }
       }
@@ -931,6 +931,245 @@
             "type": "integer",
             "format": "int32"
           }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1Index": {
+      "id": "GoogleCloudAiplatformV1alpha1Index",
+      "description": "A representation of a collection of database items organized in a way that allows for approximate nearest neighbor (a.k.a ANN) algorithms search.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the Index.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The display name of the Index. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The description of the Index.",
+          "type": "string"
+        },
+        "metadataSchemaUri": {
+          "description": "Immutable. Points to a YAML file stored on Google Cloud Storage describing additional information about the Index, that is specific to it. Unset if the Index does not have any additional information. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/tinyurl.com\/y538mdwt#schema-object). Note: The URI given on output will be immutable and probably different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "An additional information about the Index; the schema of the metadata can be found in metadata_schema.",
+          "type": "any"
+        },
+        "deployedIndexes": {
+          "description": "Output only. The pointers to DeployedIndexes created from this Index. An Index can be only deleted if all its DeployedIndexes had been undeployed first.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1DeployedIndexRef"
+          }
+        },
+        "etag": {
+          "description": "Used to perform consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "The labels with user-defined metadata to organize your Indexes. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. See https:\/\/goo.gl\/xmQnxf for more information and examples of labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this Index was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this Index was most recently updated. This also includes any update to the contents of the Index. Note that Operations working on this Index may have their Operations.metadata.generic_metadata.update_time a little after the value of this timestamp, yet that does not mean their results are not already reflected in the Index. Result of any successfully completed Operation on the Index is reflected in it.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1DeployedIndexRef": {
+      "id": "GoogleCloudAiplatformV1alpha1DeployedIndexRef",
+      "description": "Points to a DeployedIndex.",
+      "type": "object",
+      "properties": {
+        "indexEndpoint": {
+          "description": "Immutable. A resource name of the IndexEndpoint.",
+          "type": "string"
+        },
+        "deployedIndexId": {
+          "description": "Immutable. The ID of the DeployedIndex in the above IndexEndpoint.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ListIndexesResponse": {
+      "id": "GoogleCloudAiplatformV1alpha1ListIndexesResponse",
+      "description": "Response message for IndexService.ListIndexes.",
+      "type": "object",
+      "properties": {
+        "indexes": {
+          "description": "List of indexes in the requested page.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1Index"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve next page of results. Pass to ListIndexesRequest.page_token to obtain that page.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1IndexEndpoint": {
+      "id": "GoogleCloudAiplatformV1alpha1IndexEndpoint",
+      "description": "Indexes are deployed into it. An IndexEndpoint can have multiple DeployedIndexes.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the IndexEndpoint.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The display name of the IndexEndpoint. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The description of the IndexEndpoint.",
+          "type": "string"
+        },
+        "deployedIndexes": {
+          "description": "Output only. The indexes deployed in this endpoint.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1DeployedIndex"
+          }
+        },
+        "etag": {
+          "description": "Used to perform consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "The labels with user-defined metadata to organize your IndexEndpoints. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. See https:\/\/goo.gl\/xmQnxf for more information and examples of labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this IndexEndpoint was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this IndexEndpoint was last updated. This timestamp is not updated when the endpoint's DeployedIndexes are updated, e.g. due to updates of the original Indexes they are the deployments of.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "network": {
+          "description": "Required. Immutable. The full name of the Google Compute Engine [network](https: \/\/cloud.google.com\/compute\/docs\/networks-and-firewalls#networks) to which the IndexEndpoint should be peered. Private services access must already be configured for the network. If left unspecified, the Endpoint is not peered with any network. [Format](https: \/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert): projects\/{project}\/global\/networks\/{network}. Where {project} is a project number, as in '12345', and {network} is network name.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1DeployedIndex": {
+      "id": "GoogleCloudAiplatformV1alpha1DeployedIndex",
+      "description": "A deployment of an Index. IndexEndpoints contain one or more DeployedIndexes.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required. The user specified ID of the DeployedIndex. The ID can be up to 128 characters long and must start with a letter and only contain letters, numbers, and underscores. The ID must be unique within the project it is created in.",
+          "type": "string"
+        },
+        "index": {
+          "description": "Required. The name of the Index this is the deployment of. We may refer to this Index as the DeployedIndex's \"original\" Index.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the DeployedIndex. If not provided upon creation, the Index's display_name is used.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when the DeployedIndex was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "privateEndpoints": {
+          "description": "Output only. Provides paths for users to send requests directly to the deployed index services running on Cloud via private services access. This field is populated if network is configured.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1alpha1IndexPrivateEndpoints"
+        },
+        "indexSyncTime": {
+          "description": "Output only. The DeployedIndex may depend on various data on its original Index. Additionally when certain changes to the original Index are being done (e.g. when what the Index contains is being changed) the DeployedIndex may be asynchronously updated in the background to reflect this changes. If this timestamp's value is at least the Index.update_time of the original Index, it means that this DeployedIndex and the original Index are in sync. If this timestamp is older, then to see which updates this DeployedIndex already contains (and which not), one must list Operations working on the original Index. Only the successfully completed Operations with Operations.metadata.generic_metadata.update_time equal or before this sync time are contained in this DeployedIndex.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "automaticResources": {
+          "description": "A description of resources that the DeployedIndex uses, which to large degree are decided by AI Platform, and optionally allows only a modest additional configuration. The user is billed for the resources (at least their minimal amount) even if the DeployedIndex receives no traffic.",
+          "$ref": "GoogleCloudAiplatformV1alpha1AutomaticResources"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1IndexPrivateEndpoints": {
+      "id": "GoogleCloudAiplatformV1alpha1IndexPrivateEndpoints",
+      "description": "IndexPrivateEndpoints proto is used to provide paths for users to send requests via private services access.",
+      "type": "object",
+      "properties": {
+        "matchGrpcAddress": {
+          "description": "Output only. The ip address used to send match gRPC requests.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ListIndexEndpointsResponse": {
+      "id": "GoogleCloudAiplatformV1alpha1ListIndexEndpointsResponse",
+      "description": "Response message for IndexEndpointService.ListIndexEndpoints.",
+      "type": "object",
+      "properties": {
+        "indexEndpoints": {
+          "description": "List of IndexEndpoints in the requested page.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1IndexEndpoint"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve next page of results. Pass to ListIndexEndpointsRequest.page_token to obtain that page.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1DeployIndexRequest": {
+      "id": "GoogleCloudAiplatformV1alpha1DeployIndexRequest",
+      "description": "Request message for IndexEndpointService.DeployIndex.",
+      "type": "object",
+      "properties": {
+        "deployedIndex": {
+          "description": "Required. The DeployedIndex to be created within the IndexEndpoint.",
+          "$ref": "GoogleCloudAiplatformV1alpha1DeployedIndex"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1UndeployIndexRequest": {
+      "id": "GoogleCloudAiplatformV1alpha1UndeployIndexRequest",
+      "description": "Request message for IndexEndpointService.UndeployIndex.",
+      "type": "object",
+      "properties": {
+        "deployedIndexId": {
+          "description": "Required. The ID of the DeployedIndex to be undeployed from the IndexEndpoint.",
+          "type": "string"
         }
       }
     },
@@ -1150,7 +1389,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A token to retrieve next page of results. Pass to ListCustomJobsRequest.page_token to obtain that page.",
+          "description": "A token to retrieve the next page of results. Pass to ListCustomJobsRequest.page_token to obtain that page.",
           "type": "string"
         }
       }
@@ -1281,7 +1520,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1EncryptionSpec"
         },
         "activeLearningConfig": {
-          "description": "Parameters that configure active learning pipeline. Active learning will label the data incrementally via several iterations. For every iteration, it will select a batch of data based on the sampling strategy.",
+          "description": "Parameters that configure the active learning pipeline. Active learning will label the data incrementally via several iterations. For every iteration, it will select a batch of data based on the sampling strategy.",
           "$ref": "GoogleCloudAiplatformV1alpha1ActiveLearningConfig"
         }
       }
@@ -1309,7 +1548,7 @@
     },
     "GoogleCloudAiplatformV1alpha1ActiveLearningConfig": {
       "id": "GoogleCloudAiplatformV1alpha1ActiveLearningConfig",
-      "description": "Parameters that configure active learning pipeline. Active learning will label the data incrementally by several iterations. For every iteration, it will select a batch of data based on the sampling strategy.",
+      "description": "Parameters that configure the active learning pipeline. Active learning will label the data incrementally by several iterations. For every iteration, it will select a batch of data based on the sampling strategy.",
       "type": "object",
       "properties": {
         "maxDataItemCount": {
@@ -1348,7 +1587,7 @@
           "format": "int32"
         },
         "sampleStrategy": {
-          "description": "Field to chose sampling strategy. Sampling strategy will decide which data should be selected for human labeling in every batch.",
+          "description": "Field to choose sampling strategy. Sampling strategy will decide which data should be selected for human labeling in every batch.",
           "type": "string",
           "enumDescriptions": [
             "Default will be treated as UNCERTAINTY.",
@@ -1819,7 +2058,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A token to retrieve next page of results. Pass to ListHyperparameterTuningJobsRequest.page_token to obtain that page.",
+          "description": "A token to retrieve the next page of results. Pass to ListHyperparameterTuningJobsRequest.page_token to obtain that page.",
           "type": "string"
         }
       }
@@ -2020,7 +2259,7 @@
       "type": "object",
       "properties": {
         "outputUri": {
-          "description": "Required. BigQuery URI to a project, up to 2000 characters long. Accepted forms: * BigQuery path. For example: `bq:\/\/projectId`.",
+          "description": "Required. BigQuery URI to a project or table, up to 2000 characters long. When only the project is specified, the Dataset and Table is created. When the full table reference is specified, the Dataset must exist and table must not exist. Accepted forms: * BigQuery path. For example: `bq:\/\/projectId` or `bq:\/\/projectId.bqDatasetId.bqTableId`.",
           "type": "string"
         }
       }
@@ -2126,7 +2365,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A token to retrieve next page of results. Pass to ListBatchPredictionJobsRequest.page_token to obtain that page.",
+          "description": "A token to retrieve the next page of results. Pass to ListBatchPredictionJobsRequest.page_token to obtain that page.",
           "type": "string"
         }
       }
@@ -2153,7 +2392,7 @@
           "type": "string"
         },
         "filter": {
-          "description": "Supported filters are: * Resource type: For a specific type of MigratableResource. * `ml_engine_model_version:*` * `automl_model:*`, * `automl_dataset:*` * `data_labeling_dataset:*`. * Migrated or not: Filter migrated resource or not by last_migrate_time. * `last_migrate_time:*` will filter migrated resources. * `NOT last_migrate_time:*` will filter not yet migrated resource.",
+          "description": "Supported filters are: * Resource type: For a specific type of MigratableResource. * `ml_engine_model_version:*` * `automl_model:*`, * `automl_dataset:*` * `data_labeling_dataset:*`. * Migrated or not: Filter migrated resource or not by last_migrate_time. * `last_migrate_time:*` will filter migrated resources. * `NOT last_migrate_time:*` will filter not yet migrated resources.",
           "type": "string"
         }
       }
@@ -2202,7 +2441,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1MigratableResourceDataLabelingDataset"
         },
         "lastMigrateTime": {
-          "description": "Output only. Timestamp when last migrate attempt on this MigratableResource started. Will not be set if there's no migrate attempt on this MigratableResource.",
+          "description": "Output only. Timestamp when the last migration attempt on this MigratableResource started. Will not be set if there's no migration attempt on this MigratableResource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -2449,7 +2688,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1PredictSchemata"
         },
         "metadataSchemaUri": {
-          "description": "Immutable. Points to a YAML file stored on Google Cloud Storage describing additional information about the Model, that is specific to it. Unset if the Model does not have any additional information. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/tinyurl.com\/y538mdwt#schema-object). AutoML Models always have this field populated by AI Platform, if no additional metadata is needed this field is set to an empty string. Note: The URI given on output will be immutable and probably different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
+          "description": "Immutable. Points to a YAML file stored on Google Cloud Storage describing additional information about the Model, that is specific to it. Unset if the Model does not have any additional information. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/tinyurl.com\/y538mdwt#schema-object). AutoML Models always have this field populated by AI Platform, if no additional metadata is needed, this field is set to an empty string. Note: The URI given on output will be immutable and probably different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
           "type": "string"
         },
         "metadata": {
@@ -2562,7 +2801,7 @@
           "type": "string"
         },
         "parametersSchemaUri": {
-          "description": "Immutable. Points to a YAML file stored on Google Cloud Storage describing the parameters of prediction and explanation via PredictRequest.parameters, ExplainRequest.parameters and BatchPredictionJob.model_parameters. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/tinyurl.com\/y538mdwt#schema-object). AutoML Models always have this field populated by AI Platform, if no parameters are supported it is set to an empty string. Note: The URI given on output will be immutable and probably different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
+          "description": "Immutable. Points to a YAML file stored on Google Cloud Storage describing the parameters of prediction and explanation via PredictRequest.parameters, ExplainRequest.parameters and BatchPredictionJob.model_parameters. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/tinyurl.com\/y538mdwt#schema-object). AutoML Models always have this field populated by AI Platform, if no parameters are supported, then it is set to an empty string. Note: The URI given on output will be immutable and probably different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
           "type": "string"
         },
         "predictionSchemaUri": {
@@ -2573,7 +2812,7 @@
     },
     "GoogleCloudAiplatformV1alpha1ModelExportFormat": {
       "id": "GoogleCloudAiplatformV1alpha1ModelExportFormat",
-      "description": "Represents a supported by the Model export format. All formats export to Google Cloud Storage.",
+      "description": "Represents export format supported by the Model. All formats export to Google Cloud Storage.",
       "type": "object",
       "properties": {
         "id": {
@@ -2625,7 +2864,7 @@
           "type": "string"
         },
         "healthRoute": {
-          "description": "Immutable. HTTP path on the container to send health checkss to. AI Platform intermittently sends GET requests to this path on the container's IP address and port to check that the container is healthy. Read more about [health checks](https:\/\/tinyurl.com\/cust-cont-reqs#checks). For example, if you set this field to `\/bar`, then AI Platform intermittently sends a GET request to the `\/bar` path on the port of your container specified by the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/DEPLOYED_MODEL :predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (AI Platform makes this value available to your container code as the [`AIP_ENDPOINT_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.)",
+          "description": "Immutable. HTTP path on the container to send health checks to. AI Platform intermittently sends GET requests to this path on the container's IP address and port to check that the container is healthy. Read more about [health checks](https:\/\/tinyurl.com\/cust-cont-reqs#checks). For example, if you set this field to `\/bar`, then AI Platform intermittently sends a GET request to the `\/bar` path on the port of your container specified by the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/DEPLOYED_MODEL :predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (AI Platform makes this value available to your container code as the [`AIP_ENDPOINT_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID`](https:\/\/tinyurl.com\/cust-cont-reqs#aip-variables) environment variable.)",
           "type": "string"
         }
       }
@@ -3177,7 +3416,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A token to retrieve next page of results. Pass to ListTrainingPipelinesRequest.page_token to obtain that page.",
+          "description": "A token to retrieve the next page of results. Pass to ListTrainingPipelinesRequest.page_token to obtain that page.",
           "type": "string"
         }
       }
@@ -3423,7 +3662,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. User provided name of this TensorboardExperiment.",
+          "description": "User provided name of this TensorboardExperiment.",
           "type": "string"
         },
         "description": {
@@ -3760,14 +3999,18 @@
       "properties": {
       }
     },
-    "GoogleCloudAiplatformInternalCreateHumanInTheLoopOperationMetadata": {
-      "id": "GoogleCloudAiplatformInternalCreateHumanInTheLoopOperationMetadata",
-      "description": "Runtime operation information for HumanInTheLoopService.CreateHumanInTheLoop.",
+    "GoogleCloudAiplatformInternalCalculateSavedQueryStatsOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalCalculateSavedQueryStatsOperationMetadata",
+      "description": "Runtime operation information for DatasetService.CalculateSavedQueryStats.",
       "type": "object",
       "properties": {
         "genericMetadata": {
-          "description": "The operation generic information.",
+          "description": "The common part of the operation metadata.",
           "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        },
+        "calculateStatsConfig": {
+          "description": "Whether calculate the stats by MlUse and the standard filters by MlUse.",
+          "$ref": "GoogleCloudAiplatformInternalCalculateStatsConfig"
         }
       }
     },
@@ -3826,6 +4069,801 @@
             "type": "string"
           }
         }
+      }
+    },
+    "GoogleCloudAiplatformInternalCalculateStatsConfig": {
+      "id": "GoogleCloudAiplatformInternalCalculateStatsConfig",
+      "description": "Describes how the stats of a SavedQuery will be calculated.",
+      "type": "object",
+      "properties": {
+        "trainingFilter": {
+          "description": "A filter on DataItems of the Dataset. Training set stats will be calculated from DataItems that match this filter. The filter only support filtering by at most one resource label.",
+          "type": "string"
+        },
+        "validationFilter": {
+          "description": "A filter on DataItems of the Dataset. Validation set stats will be calculated from DataItems that match this filter and does not match the filter specified in training_filter. The filter only support filtering by at most one resource label.",
+          "type": "string"
+        },
+        "testFilter": {
+          "description": "A filter on DataItems of the Dataset. Test set stats will be calculated from DataItems that match this filter and does not match the filters specified in training_filter and validation_filter. The filter only support filtering by at most one resource label.",
+          "type": "string"
+        },
+        "annotationFilter": {
+          "description": "A filter on Annotations. If this field is set, all of the stats will be restricted to the DataItems with the Annotations that match this filter. Supported filter: `data_labeling_job_id` - for =. Filters by the specified data_labeling_job.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalCalculateSavedQueryStatsResponse": {
+      "id": "GoogleCloudAiplatformInternalCalculateSavedQueryStatsResponse",
+      "description": "Response message for DatasetService.CalculateSavedQueryStats.",
+      "type": "object",
+      "properties": {
+        "dataItemsCount": {
+          "description": "Count on DataItems in the SavedQuery.",
+          "type": "string",
+          "format": "int64"
+        },
+        "annotatedDataItemsCount": {
+          "description": "Count on DataItems that are annotated with at least one AnnotationSpec in this SavedQuery.",
+          "type": "string",
+          "format": "int64"
+        },
+        "trainingDataItemsCount": {
+          "description": "Output only. Count on DataItems that match training_filter.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "validationDataItemsCount": {
+          "description": "Output only. Count on DataItems that match validation_filter.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "testDataItemsCount": {
+          "description": "Output only. Count on DataItems that match test_filter.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "annotationSpecStats": {
+          "description": "A list of per AnnotationSpec stats of the SavedQuery. This list contains stats of each AnnotationSpec that is associated with the SavedQuery even if there is no DataItem annotated with the AnnotationSpec.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformInternalAnnotationSpecStats"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalAnnotationSpecStats": {
+      "id": "GoogleCloudAiplatformInternalAnnotationSpecStats",
+      "description": "Stats of DataItems annotated by the specified AnnotationSpec and Annotations with the AnnotationSpec in a SavedQuery.",
+      "type": "object",
+      "properties": {
+        "annotationSpecId": {
+          "description": "Output only. ID of an AnnotationSpec. Counters in the stats are for DataItems annotated by this anntoation spec and Annotations have this AnnotationSpec in the SavedQuery.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "annotationSpecDisplayName": {
+          "description": "Output only. The user-defined name of the AnnotationSpec.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "dataItemsCount": {
+          "description": "Output only. Count on DataItems that are annotated with the AnnotationSpec identified by annotation_spec_id.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "trainingDataItemsCount": {
+          "description": "Output only. Count on DataItems that match training_filter and annotated with the AnnotationSpec identified by annotation_spec_id.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "validationDataItemsCount": {
+          "description": "Output only. Count on DataItems that match validation_filter and do not match training_filter and are annotated with the AnnotationSpec identified by annotation_spec_id.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "testDataItemsCount": {
+          "description": "Output only. Count on DataItems that match test_filter and do not match training_filter and validation_filter and are annotated with the AnnotationSpec identified by annotation_spec_id.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "annotationsCount": {
+          "description": "Output only. Count on Annotations with AnnotationSpec identified by annotation_spec_id.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "trainingAnnotationsCount": {
+          "description": "Output only. Count on Annotations with AnnotationSpec identified by annotation_spec_id and under all DataItems that match training_filter.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "validationAnnotationsCount": {
+          "description": "Output only. Count on Annotations with AnnotationSpec identified by annotation_spec_id and under all DataItems that match validation_filter and do not match training_filter.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "testAnnotationsCount": {
+          "description": "Output only. Count on Annotations with AnnotationSpec identified by annotation_spec_id and under all DataItems that match test_filter and do not match training_filter and validation_filter.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalCreateDatasetOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalCreateDatasetOperationMetadata",
+      "description": "Runtime operation information for DatasetService.CreateDataset.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalCreateEndpointOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalCreateEndpointOperationMetadata",
+      "description": "Runtime operation information for EndpointService.CreateEndpoint.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalCreateHumanInTheLoopOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalCreateHumanInTheLoopOperationMetadata",
+      "description": "Runtime operation information for HumanInTheLoopService.CreateHumanInTheLoop.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalCreateSpecialistPoolOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalCreateSpecialistPoolOperationMetadata",
+      "description": "Runtime operation information for SpecialistPoolService.CreateSpecialistPool.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDeleteOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalDeleteOperationMetadata",
+      "description": "Details of operations that perform deletes of any entities.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDeployModelOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalDeployModelOperationMetadata",
+      "description": "Runtime operation information for EndpointService.DeployModel.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDeployModelResponse": {
+      "id": "GoogleCloudAiplatformInternalDeployModelResponse",
+      "description": "Response message for EndpointService.DeployModel.",
+      "type": "object",
+      "properties": {
+        "deployedModel": {
+          "description": "The DeployedModel that had been deployed in the Endpoint.",
+          "$ref": "GoogleCloudAiplatformInternalDeployedModel"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDeployedModel": {
+      "id": "GoogleCloudAiplatformInternalDeployedModel",
+      "description": "A deployment of a Model. Endpoints contain one or more DeployedModels.",
+      "type": "object",
+      "properties": {
+        "dedicatedResources": {
+          "description": "A description of resources that are dedicated to the DeployedModel, and that need a higher degree of manual configuration.",
+          "$ref": "GoogleCloudAiplatformInternalDedicatedResources"
+        },
+        "automaticResources": {
+          "description": "A description of resources that to large degree are decided by AI Platform, and require only a modest additional configuration.",
+          "$ref": "GoogleCloudAiplatformInternalAutomaticResources"
+        },
+        "id": {
+          "description": "Output only. The ID of the DeployedModel.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "model": {
+          "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the DeployedModel. If not provided upon creation, the Model's display_name is used.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when the DeployedModel was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "explanationSpec": {
+          "description": "Explanation configuration for this DeployedModel. When deploying a Model using EndpointService.DeployModel, this value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of explanation_spec is not populated, the value of the same field of Model.explanation_spec is inherited. The corresponding Model.explanation_spec must be populated, otherwise explanation for this Model is not allowed.",
+          "$ref": "GoogleCloudAiplatformInternalExplanationSpec"
+        },
+        "serviceAccount": {
+          "description": "The service account that the DeployedModel's container runs as. Specify the email address of the service account. If this service account is not specified, the container runs as a service account that doesn't have access to the resource project. Users deploying the Model must have the `iam.serviceAccounts.actAs` permission on this service account.",
+          "type": "string"
+        },
+        "disableContainerLogging": {
+          "description": "For custom-trained Models and AutoML Tabular Models, the container of the DeployedModel instances will send `stderr` and `stdout` streams to Stackdriver Logging by default. Please note that the logs incur cost, which are subject to [Cloud Logging pricing](https:\/\/cloud.google.com\/stackdriver\/pricing). User can disable container logging by setting this flag to true.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDedicatedResources": {
+      "id": "GoogleCloudAiplatformInternalDedicatedResources",
+      "description": "A description of resources that are dedicated to a DeployedModel, and that need a higher degree of manual configuration.",
+      "type": "object",
+      "properties": {
+        "machineSpec": {
+          "description": "Required. Immutable. The specification of a single machine used by the prediction.",
+          "$ref": "GoogleCloudAiplatformInternalMachineSpec"
+        },
+        "minReplicaCount": {
+          "description": "Required. Immutable. The minimum number of machine replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas, and as traffic decreases, some of these extra replicas may be freed. Note: if machine_spec.accelerator_count is above 0, currently the model will be always deployed precisely on min_replica_count.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalMachineSpec": {
+      "id": "GoogleCloudAiplatformInternalMachineSpec",
+      "description": "Specification of a single machine.",
+      "type": "object",
+      "properties": {
+        "machineType": {
+          "description": "Immutable. The type of the machine. For the machine types supported for prediction, see https:\/\/tinyurl.com\/aip-docs\/predictions\/machine-types. For machine types supported for creating a custom training job, see https:\/\/tinyurl.com\/aip-docs\/training\/configure-compute. For DeployedModel this field is optional, and the default value is `n1-standard-2`. For BatchPredictionJob or as part of WorkerPoolSpec this field is required.",
+          "type": "string"
+        },
+        "acceleratorType": {
+          "description": "Immutable. The type of accelerator(s) that may be attached to the machine as per accelerator_count.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified accelerator type, which means no accelerator.",
+            "Nvidia Tesla K80 GPU.",
+            "Nvidia Tesla P100 GPU.",
+            "Nvidia Tesla V100 GPU.",
+            "Nvidia Tesla P4 GPU.",
+            "Nvidia Tesla T4 GPU.",
+            "TPU v2.",
+            "TPU v3."
+          ],
+          "enum": [
+            "ACCELERATOR_TYPE_UNSPECIFIED",
+            "NVIDIA_TESLA_K80",
+            "NVIDIA_TESLA_P100",
+            "NVIDIA_TESLA_V100",
+            "NVIDIA_TESLA_P4",
+            "NVIDIA_TESLA_T4",
+            "TPU_V2",
+            "TPU_V3"
+          ]
+        },
+        "acceleratorCount": {
+          "description": "The number of accelerators to attach to the machine.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalAutomaticResources": {
+      "id": "GoogleCloudAiplatformInternalAutomaticResources",
+      "description": "A description of resources that to large degree are decided by AI Platform, and require only a modest additional configuration. Each Model supporting these resources documents its specific guidelines.",
+      "type": "object",
+      "properties": {
+        "minReplicaCount": {
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If the requested value is too large, the deployment will error.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxReplicaCount": {
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though AI Platform may be unable to scale beyond certain replica number.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalExplanationSpec": {
+      "id": "GoogleCloudAiplatformInternalExplanationSpec",
+      "description": "Specification of Model explanation.",
+      "type": "object",
+      "properties": {
+        "parameters": {
+          "description": "Required. Parameters that configure explaining of the Model's predictions.",
+          "$ref": "GoogleCloudAiplatformInternalExplanationParameters"
+        },
+        "metadata": {
+          "description": "Required. Metadata describing the Model's input and output for explanation.",
+          "$ref": "GoogleCloudAiplatformInternalExplanationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalExplanationParameters": {
+      "id": "GoogleCloudAiplatformInternalExplanationParameters",
+      "description": "Parameters to configure explaining for Model's predictions.",
+      "type": "object",
+      "properties": {
+        "sampledShapleyAttribution": {
+          "description": "An attribution method that approximates Shapley values for features that contribute to the label being predicted. A sampling strategy is used to approximate the value rather than considering all subsets of features. Refer to this paper for model details: https:\/\/arxiv.org\/abs\/1306.4265.",
+          "$ref": "GoogleCloudAiplatformInternalSampledShapleyAttribution"
+        },
+        "integratedGradientsAttribution": {
+          "description": "An attribution method that computes Aumann-Shapley values taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1703.01365",
+          "$ref": "GoogleCloudAiplatformInternalIntegratedGradientsAttribution"
+        },
+        "xraiAttribution": {
+          "description": "An attribution method that redistributes Integrated Gradients attribution to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 XRAI currently performs better on natural images, like a picture of a house or an animal. If the images are taken in artificial environments, like a lab or manufacturing line, or from diagnostic equipment, like x-rays or quality-control cameras, use Integrated Gradients instead.",
+          "$ref": "GoogleCloudAiplatformInternalXraiAttribution"
+        },
+        "topK": {
+          "description": "If populated, returns attributions for top K indices of outputs (defaults to 1). Only applies to Models that predicts more than one outputs (e,g, multi-class Models). When set to -1, returns explanations for all outputs.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "outputIndices": {
+          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indeices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
+          "type": "array",
+          "items": {
+            "type": "any"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalSampledShapleyAttribution": {
+      "id": "GoogleCloudAiplatformInternalSampledShapleyAttribution",
+      "description": "An attribution method that approximates Shapley values for features that contribute to the label being predicted. A sampling strategy is used to approximate the value rather than considering all subsets of features.",
+      "type": "object",
+      "properties": {
+        "pathCount": {
+          "description": "Required. The number of feature permutations to consider when approximating the Shapley values. Valid range of its value is [1, 50], inclusively.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalIntegratedGradientsAttribution": {
+      "id": "GoogleCloudAiplatformInternalIntegratedGradientsAttribution",
+      "description": "An attribution method that computes the Aumann-Shapley value taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1703.01365",
+      "type": "object",
+      "properties": {
+        "stepCount": {
+          "description": "Required. The number of steps for approximating the path integral. A good value to start is 50 and gradually increase until the sum to diff property is within the desired error range. Valid range of its value is [1, 100], inclusively.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "smoothGradConfig": {
+          "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
+          "$ref": "GoogleCloudAiplatformInternalSmoothGradConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalSmoothGradConfig": {
+      "id": "GoogleCloudAiplatformInternalSmoothGradConfig",
+      "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
+      "type": "object",
+      "properties": {
+        "noiseSigma": {
+          "description": "This is a single float value and will be used to add noise to all the features. Use this field when all features are normalized to have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring, where features are normalized to have 0-mean and 1-variance. For more details about normalization: https:\/\/tinyurl.com\/dgc-normalization. For best results the recommended value is about 10% - 20% of the standard deviation of the input feature. Refer to section 3.2 of the SmoothGrad paper: https:\/\/arxiv.org\/pdf\/1706.03825.pdf. Defaults to 0.1. If the distribution is different per feature, set feature_noise_sigma instead for each feature.",
+          "type": "number",
+          "format": "float"
+        },
+        "featureNoiseSigma": {
+          "description": "This is similar to noise_sigma, but provides additional flexibility. A separate noise sigma can be provided for each feature, which is useful if their distributions are different. No noise is added to features that are not set. If this field is unset, noise_sigma will be used for all features.",
+          "$ref": "GoogleCloudAiplatformInternalFeatureNoiseSigma"
+        },
+        "noisySampleCount": {
+          "description": "The number of gradient samples to use for approximation. The higher this number, the more accurate the gradient is, but the runtime complexity increases by this factor as well. Valid range of its value is [1, 50]. Defaults to 3.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalFeatureNoiseSigma": {
+      "id": "GoogleCloudAiplatformInternalFeatureNoiseSigma",
+      "description": "Noise sigma by features. Noise sigma represents the standard deviation of the gaussian kernel that will be used to add noise to interpolated inputs prior to computing gradients.",
+      "type": "object",
+      "properties": {
+        "noiseSigma": {
+          "description": "Noise sigma per feature. No noise is added to features that are not set.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformInternalFeatureNoiseSigmaNoiseSigmaForFeature"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalFeatureNoiseSigmaNoiseSigmaForFeature": {
+      "id": "GoogleCloudAiplatformInternalFeatureNoiseSigmaNoiseSigmaForFeature",
+      "description": "Noise sigma for a single feature.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the input feature for which noise sigma is provided. The features are defined in explanation metadata inputs.",
+          "type": "string"
+        },
+        "sigma": {
+          "description": "This represents the standard deviation of the Gaussian kernel that will be used to add noise to the feature prior to computing gradients. Similar to noise_sigma but represents the noise added to the current feature. Defaults to 0.1.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalXraiAttribution": {
+      "id": "GoogleCloudAiplatformInternalXraiAttribution",
+      "description": "An explanation method that redistributes Integrated Gradients attributions to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 Supported only by image Models.",
+      "type": "object",
+      "properties": {
+        "stepCount": {
+          "description": "Required. The number of steps for approximating the path integral. A good value to start is 50 and gradually increase until the sum to diff property is met within the desired error range. Valid range of its value is [1, 100], inclusively.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "smoothGradConfig": {
+          "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
+          "$ref": "GoogleCloudAiplatformInternalSmoothGradConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalExplanationMetadata": {
+      "id": "GoogleCloudAiplatformInternalExplanationMetadata",
+      "description": "Metadata describing the Model's input and output for explanation.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by AI Platform. For AI Platform provided Tensorflow images, the key can be any friendly name of the feature. Once specified, featureAttributions are keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformInternalExplanationMetadataInputMetadata"
+          }
+        },
+        "outputs": {
+          "description": "Required. Map from output names to output metadata. For AI Platform provided Tensorflow images, keys can be any string user defines. For custom images, keys are the name of the output field in the prediction to be explained. Currently only one key is allowed.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformInternalExplanationMetadataOutputMetadata"
+          }
+        },
+        "featureAttributionsSchemaUri": {
+          "description": "Points to a YAML file stored on Google Cloud Storage describing the format of the feature attributions. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/tinyurl.com\/y538mdwt#schema-object). AutoML tabular Models always have this field populated by AI Platform. Note: The URI given on output may be different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalExplanationMetadataInputMetadata": {
+      "id": "GoogleCloudAiplatformInternalExplanationMetadataInputMetadata",
+      "description": "Metadata of the input of a feature. Fields other than InputMetadata.input_baselines are applicable only for Models that are using AI Platform-provided images for Tensorflow.",
+      "type": "object",
+      "properties": {
+        "inputBaselines": {
+          "description": "Baseline inputs for this feature. If no baseline is specified, AI Platform chooses the baseline for this feature. If multiple baselines are specified, AI Platform returns the average attributions across them in Attributions.baseline_attribution. For AI Platform provided Tensorflow images (both 1.x and 2.x), the shape of each baseline must match the shape of the input tensor. If a scalar is provided, we broadcast to the same shape as the input tensor. For custom images, the element of the baselines must be in the same format as the feature's input in the instance[]. The schema of any single instance may be specified via Endpoint's DeployedModels' Model's PredictSchemata's instance_schema_uri.",
+          "type": "array",
+          "items": {
+            "type": "any"
+          }
+        },
+        "inputTensorName": {
+          "description": "Name of the input tensor for this feature. Required and is only applicable to AI Platform provided images for Tensorflow.",
+          "type": "string"
+        },
+        "encoding": {
+          "description": "Defines how the feature is encoded into the input tensor. Defaults to IDENTITY.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This is the same as IDENTITY.",
+            "The tensor represents one feature.",
+            "The tensor represents a bag of features where each index maps to a feature. InputMetadata.index_feature_mapping must be provided for this encoding. For example: ``` input = [27, 6.0, 150] index_feature_mapping = [\"age\", \"height\", \"weight\"] ```",
+            "The tensor represents a bag of features where each index maps to a feature. Zero values in the tensor indicates feature being non-existent. InputMetadata.index_feature_mapping must be provided for this encoding. For example: ``` input = [2, 0, 5, 0, 1] index_feature_mapping = [\"a\", \"b\", \"c\", \"d\", \"e\"] ```",
+            "The tensor is a list of binaries representing whether a feature exists or not (1 indicates existence). InputMetadata.index_feature_mapping must be provided for this encoding. For example: ``` input = [1, 0, 1, 0, 1] index_feature_mapping = [\"a\", \"b\", \"c\", \"d\", \"e\"] ```",
+            "The tensor is encoded into a 1-dimensional array represented by an encoded tensor. InputMetadata.encoded_tensor_name must be provided for this encoding. For example: ``` input = [\"This\", \"is\", \"a\", \"test\", \".\"] encoded = [0.1, 0.2, 0.3, 0.4, 0.5] ```",
+            "Select this encoding when the input tensor is encoded into a 2-dimensional array represented by an encoded tensor. InputMetadata.encoded_tensor_name must be provided for this encoding. The first dimension of the encoded tensor's shape is the same as the input tensor's shape. For example: ``` input = [\"This\", \"is\", \"a\", \"test\", \".\"] encoded = [[0.1, 0.2, 0.3, 0.4, 0.5], [0.2, 0.1, 0.4, 0.3, 0.5], [0.5, 0.1, 0.3, 0.5, 0.4], [0.5, 0.3, 0.1, 0.2, 0.4], [0.4, 0.3, 0.2, 0.5, 0.1]] ```"
+          ],
+          "enum": [
+            "ENCODING_UNSPECIFIED",
+            "IDENTITY",
+            "BAG_OF_FEATURES",
+            "BAG_OF_FEATURES_SPARSE",
+            "INDICATOR",
+            "COMBINED_EMBEDDING",
+            "CONCAT_EMBEDDING"
+          ]
+        },
+        "modality": {
+          "description": "Modality of the feature. Valid values are: numeric, image. Defaults to numeric.",
+          "type": "string"
+        },
+        "featureValueDomain": {
+          "description": "The domain details of the input feature value. Like min\/max, original mean or standard deviation if normalized.",
+          "$ref": "GoogleCloudAiplatformInternalExplanationMetadataInputMetadataFeatureValueDomain"
+        },
+        "indicesTensorName": {
+          "description": "Specifies the index of the values of the input tensor. Required when the input tensor is a sparse representation. Refer to Tensorflow documentation for more details: https:\/\/www.tensorflow.org\/api_docs\/python\/tf\/sparse\/SparseTensor.",
+          "type": "string"
+        },
+        "denseShapeTensorName": {
+          "description": "Specifies the shape of the values of the input if the input is a sparse representation. Refer to Tensorflow documentation for more details: https:\/\/www.tensorflow.org\/api_docs\/python\/tf\/sparse\/SparseTensor.",
+          "type": "string"
+        },
+        "indexFeatureMapping": {
+          "description": "A list of feature names for each index in the input tensor. Required when the input InputMetadata.encoding is BAG_OF_FEATURES, BAG_OF_FEATURES_SPARSE, INDICATOR.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "encodedTensorName": {
+          "description": "Encoded tensor is a transformation of the input tensor. Must be provided if choosing Integrated Gradients attribution or XRAI attribution and the input tensor is not differentiable. An encoded tensor is generated if the input tensor is encoded by a lookup table.",
+          "type": "string"
+        },
+        "encodedBaselines": {
+          "description": "A list of baselines for the encoded tensor. The shape of each baseline should match the shape of the encoded tensor. If a scalar is provided, AI Platform broadcast to the same shape as the encoded tensor.",
+          "type": "array",
+          "items": {
+            "type": "any"
+          }
+        },
+        "visualization": {
+          "description": "Visualization configurations for image explanation.",
+          "$ref": "GoogleCloudAiplatformInternalExplanationMetadataInputMetadataVisualization"
+        },
+        "groupName": {
+          "description": "Name of the group that the input belongs to. Features with the same group name will be treated as one feature when computing attributions. Features grouped together can have different shapes in value. If provided, there will be one single attribution generated in featureAttributions, keyed by the group name.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalExplanationMetadataInputMetadataFeatureValueDomain": {
+      "id": "GoogleCloudAiplatformInternalExplanationMetadataInputMetadataFeatureValueDomain",
+      "description": "Domain details of the input feature value. Provides numeric information about the feature, such as its range (min, max). If the feature has been pre-processed, for example with z-scoring, then it provides information about how to recover the original feature. For example, if the input feature is an image and it has been pre-processed to obtain 0-mean and stddev = 1 values, then original_mean, and original_stddev refer to the mean and stddev of the original feature (e.g. image tensor) from which input feature (with mean = 0 and stddev = 1) was obtained.",
+      "type": "object",
+      "properties": {
+        "minValue": {
+          "description": "The minimum permissible value for this feature.",
+          "type": "number",
+          "format": "float"
+        },
+        "maxValue": {
+          "description": "The maximum permissible value for this feature.",
+          "type": "number",
+          "format": "float"
+        },
+        "originalMean": {
+          "description": "If this input feature has been normalized to a mean value of 0, the original_mean specifies the mean value of the domain prior to normalization.",
+          "type": "number",
+          "format": "float"
+        },
+        "originalStddev": {
+          "description": "If this input feature has been normalized to a standard deviation of 1.0, the original_stddev specifies the standard deviation of the domain prior to normalization.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalExplanationMetadataInputMetadataVisualization": {
+      "id": "GoogleCloudAiplatformInternalExplanationMetadataInputMetadataVisualization",
+      "description": "Visualization configurations for image explanation.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Type of the image visualization. Only applicable to Integrated Gradients attribution. OUTLINES shows regions of attribution, while PIXELS shows per-pixel attribution. Defaults to OUTLINES.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "Shows which pixel contributed to the image prediction.",
+            "Shows which region contributed to the image prediction by outlining the region."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "PIXELS",
+            "OUTLINES"
+          ]
+        },
+        "polarity": {
+          "description": "Whether to only highlight pixels with positive contributions, negative or both. Defaults to POSITIVE.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This is the same as POSITIVE.",
+            "Highlights the pixels\/outlines that were most influential to the model's prediction.",
+            "Setting polarity to negative highlights areas that does not lead to the models's current prediction.",
+            "Shows both positive and negative attributions."
+          ],
+          "enum": [
+            "POLARITY_UNSPECIFIED",
+            "POSITIVE",
+            "NEGATIVE",
+            "BOTH"
+          ]
+        },
+        "colorMap": {
+          "description": "The color scheme used for the highlighted areas. Defaults to PINK_GREEN for Integrated Gradients attribution, which shows positive attributions in green and negative in pink. Defaults to VIRIDIS for XRAI attribution, which highlights the most influential regions in yellow and the least influential in blue.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "Positive: green. Negative: pink.",
+            "Viridis color map: A perceptually uniform color mapping which is easier to see by those with colorblindness and progresses from yellow to green to blue. Positive: yellow. Negative: blue.",
+            "Positive: red. Negative: red.",
+            "Positive: green. Negative: green.",
+            "Positive: green. Negative: red.",
+            "PiYG palette."
+          ],
+          "enum": [
+            "COLOR_MAP_UNSPECIFIED",
+            "PINK_GREEN",
+            "VIRIDIS",
+            "RED",
+            "GREEN",
+            "RED_GREEN",
+            "PINK_WHITE_GREEN"
+          ]
+        },
+        "clipPercentUpperbound": {
+          "description": "Excludes attributions above the specified percentile from the highlighted areas. Using the clip_percent_upperbound and clip_percent_lowerbound together can be useful for filtering out noise and making it easier to see areas of strong attribution. Defaults to 99.9.",
+          "type": "number",
+          "format": "float"
+        },
+        "clipPercentLowerbound": {
+          "description": "Excludes attributions below the specified percentile, from the highlighted areas. Defaults to 35.",
+          "type": "number",
+          "format": "float"
+        },
+        "overlayType": {
+          "description": "How the original image is displayed in the visualization. Adjusting the overlay can help increase visual clarity if the original image makes it difficult to view the visualization. Defaults to NONE.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This is the same as NONE.",
+            "No overlay.",
+            "The attributions are shown on top of the original image.",
+            "The attributions are shown on top of grayscaled version of the original image.",
+            "The attributions are used as a mask to reveal predictive parts of the image and hide the un-predictive parts."
+          ],
+          "enum": [
+            "OVERLAY_TYPE_UNSPECIFIED",
+            "NONE",
+            "ORIGINAL",
+            "GRAYSCALE",
+            "MASK_BLACK"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalExplanationMetadataOutputMetadata": {
+      "id": "GoogleCloudAiplatformInternalExplanationMetadataOutputMetadata",
+      "description": "Metadata of the prediction output to be explained.",
+      "type": "object",
+      "properties": {
+        "indexDisplayNameMapping": {
+          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimentions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
+          "type": "any"
+        },
+        "displayNameMappingKey": {
+          "description": "Specify a field name in the prediction to look for the display name. Use this if the prediction contains the display names for the outputs. The display names in the prediction must have the same shape of the outputs, so that it can be located by Attribution.output_index for a specific output.",
+          "type": "string"
+        },
+        "outputTensorName": {
+          "description": "Name of the output tensor. Required and is only applicable to AI Platform provided images for Tensorflow.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalExportDataOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalExportDataOperationMetadata",
+      "description": "Runtime operation information for DatasetService.ExportData.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        },
+        "gcsOutputDirectory": {
+          "description": "A Google Cloud Storage directory which path ends with '\/'. The exported data is stored in the directory.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalExportDataResponse": {
+      "id": "GoogleCloudAiplatformInternalExportDataResponse",
+      "description": "Response message for DatasetService.ExportData.",
+      "type": "object",
+      "properties": {
+        "exportedFiles": {
+          "description": "All of the files that are exported in this export operation.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalExportModelOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalExportModelOperationMetadata",
+      "description": "Details of ModelService.ExportModel operation.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        },
+        "outputInfo": {
+          "description": "Output only. Information further describing the output of this Model export.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformInternalExportModelOperationMetadataOutputInfo"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalExportModelOperationMetadataOutputInfo": {
+      "id": "GoogleCloudAiplatformInternalExportModelOperationMetadataOutputInfo",
+      "description": "Further describes the output of the ExportModel. Supplements ExportModelRequest.OutputConfig.",
+      "type": "object",
+      "properties": {
+        "artifactOutputUri": {
+          "description": "Output only. If the Model artifact is being exported to Google Cloud Storage this is the full path of the directory created, into which the Model files are being written to.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "imageOutputUri": {
+          "description": "Output only. If the Model image is being exported to Google Container Registry or Artifact Registry this is the full path of the image created.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalExportModelResponse": {
+      "id": "GoogleCloudAiplatformInternalExportModelResponse",
+      "description": "Response message of ModelService.ExportModel operation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformInternalGenerateDatasetStatsOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalGenerateDatasetStatsOperationMetadata",
+      "description": "Runtime operation information for DatasetService.GenerateDatasetStats.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalGenerateDatasetStatsResponse": {
+      "id": "GoogleCloudAiplatformInternalGenerateDatasetStatsResponse",
+      "description": "Response message for DatasetService.GenerateDatasetStats.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudAiplatformInternalHumanInTheLoop": {
@@ -4089,6 +5127,35 @@
         }
       }
     },
+    "GoogleCloudAiplatformInternalImportDataOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalImportDataOperationMetadata",
+      "description": "Runtime operation information for DatasetService.ImportData.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalImportDataResponse": {
+      "id": "GoogleCloudAiplatformInternalImportDataResponse",
+      "description": "Response message for DatasetService.ImportData.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformInternalRemoveAnnotationSpecFromSavedQueryOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalRemoveAnnotationSpecFromSavedQueryOperationMetadata",
+      "description": "Runtime operation information for DatasetService.RemoveAnnotationSpecFromSavedQuery.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformInternalSendHumanInTheLoopEntryOperationMetadata": {
       "id": "GoogleCloudAiplatformInternalSendHumanInTheLoopEntryOperationMetadata",
       "description": "Runtime operation information for HumanInTheLoopService.SendHumanInTheLoopEntry",
@@ -4161,6 +5228,98 @@
         }
       }
     },
+    "GoogleCloudAiplatformInternalSpecialistPool": {
+      "id": "GoogleCloudAiplatformInternalSpecialistPool",
+      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers who are responsible for managing the labelers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and labelers work with the jobs using CrowdCompute console.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource name of the SpecialistPool.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "type": "string"
+        },
+        "specialistManagersCount": {
+          "description": "Output only. The number of Specialists in this SpecialistPool.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "specialistManagerEmails": {
+          "description": "The email addresses of the specialists in the SpecialistPool.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pendingDataLabelingJobs": {
+          "description": "Output only. The resource name of the pending data labeling jobs.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalUndeployModelOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalUndeployModelOperationMetadata",
+      "description": "Runtime operation information for EndpointService.UndeployModel.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalUndeployModelResponse": {
+      "id": "GoogleCloudAiplatformInternalUndeployModelResponse",
+      "description": "Response message for EndpointService.UndeployModel.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformInternalUpdateSpecialistPoolOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalUpdateSpecialistPoolOperationMetadata",
+      "description": "Runtime operation metadata for SpecialistPoolService.UpdateSpecialistPool.",
+      "type": "object",
+      "properties": {
+        "specialistPool": {
+          "description": "Output only. The name of the SpecialistPool to which the specialists are being added. Format: `projects\/{project_id}\/locations\/{location_id}\/specialistPools\/{specialist_pool}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalUploadModelOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalUploadModelOperationMetadata",
+      "description": "Details of ModelService.UploadModel operation.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalUploadModelResponse": {
+      "id": "GoogleCloudAiplatformInternalUploadModelResponse",
+      "description": "Response message of ModelService.UploadModel operation.",
+      "type": "object",
+      "properties": {
+        "model": {
+          "description": "The name of the uploaded Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAiplatformUiBatchMigrateResourcesOperationMetadata": {
       "id": "GoogleCloudAiplatformUiBatchMigrateResourcesOperationMetadata",
       "description": "Runtime operation information for MigrationService.BatchMigrateResources.",
@@ -4171,7 +5330,7 @@
           "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
         },
         "partialResults": {
-          "description": "Partial results that reflects the latest migration operation progress.",
+          "description": "Partial results that reflect the latest migration operation progress.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformUiBatchMigrateResourcesOperationMetadataPartialResult"
@@ -4238,7 +5397,7 @@
     },
     "GoogleCloudAiplatformUiBatchMigrateResourcesOperationMetadataPartialResult": {
       "id": "GoogleCloudAiplatformUiBatchMigrateResourcesOperationMetadataPartialResult",
-      "description": "Represents a partial result in batch migration opreation for one MigrateResourceRequest.",
+      "description": "Represents a partial result in batch migration operation for one MigrateResourceRequest.",
       "type": "object",
       "properties": {
         "error": {
@@ -4431,7 +5590,7 @@
           "$ref": "GoogleCloudAiplatformUiMigratableResourceDataLabelingDataset"
         },
         "lastMigrateTime": {
-          "description": "Output only. Timestamp when last migrate attempt on this MigratableResource started. Will not be set if there's no migrate attempt on this MigratableResource.",
+          "description": "Output only. Timestamp when the last migration attempt on this MigratableResource started. Will not be set if there's no migration attempt on this MigratableResource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -4797,7 +5956,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The name of the Model this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
           "type": "string"
         },
         "displayName": {
@@ -4876,16 +6035,9 @@
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
           "type": "integer",
           "format": "int32"
-        },
-        "autoscalingMetricSpecs": {
-          "description": "Immutable. The metric specifications that overrides a resource utilization metric (CPU utilization, accelerator's duty cycle, and so on) target value (default to 60 if not set). At most one entry is allowed per metric. If machine_spec.accelerator_count is above 0, the autoscaling will be based on both CPU utilization and accelerator's duty cycle metrics and scale up when either metrics exceeds its target value while scale down if both metrics are under their target value. The default target value is 60 for both metrics. If machine_spec.accelerator_count is 0, the autoscaling will be based on CPU utilization metric only with default target value 60 if not explicitly set. For example, in the case of Online Prediction, if you want to override target CPU utilization to 80, you should set autoscaling_metric_specs.metric_name to `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization` and autoscaling_metric_specs.target to `80`.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformUiAutoscalingMetricSpec"
-          }
         }
       }
     },
@@ -4929,34 +6081,18 @@
         }
       }
     },
-    "GoogleCloudAiplatformUiAutoscalingMetricSpec": {
-      "id": "GoogleCloudAiplatformUiAutoscalingMetricSpec",
-      "description": "The metric specification that defines the target resource utilization (CPU utilization, accelerator's duty cycle, and so on) for calculating the desired replica count.",
-      "type": "object",
-      "properties": {
-        "metricName": {
-          "description": "Required. The resource metric name. Supported metrics: * For Online Prediction: * `aiplatform.googleapis.com\/prediction\/online\/accelerator\/duty_cycle` * `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization`",
-          "type": "string"
-        },
-        "target": {
-          "description": "The target resource utilization in percentage (1% - 100%) for the given metric; once the real usage deviates from the target by a certain percentage, the machine replicas change. The default value is 60 (representing 60%) if not provided.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
     "GoogleCloudAiplatformUiAutomaticResources": {
       "id": "GoogleCloudAiplatformUiAutomaticResources",
       "description": "A description of resources that to large degree are decided by AI Platform, and require only a modest additional configuration. Each Model supporting these resources documents its specific guidelines.",
       "type": "object",
       "properties": {
         "minReplicaCount": {
-          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If requested value is too large, the deployment will error.",
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If the requested value is too large, the deployment will error.",
           "type": "integer",
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though AI Platform may be unable to scale beyond certain replica number.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though AI Platform may be unable to scale beyond certain replica number.",
           "type": "integer",
           "format": "int32"
         }
@@ -6354,7 +7490,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1GenericOperationMetadata"
         },
         "partialResults": {
-          "description": "Partial results that reflects the latest migration operation progress.",
+          "description": "Partial results that reflect the latest migration operation progress.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1alpha1BatchMigrateResourcesOperationMetadataPartialResult"
@@ -6391,7 +7527,7 @@
     },
     "GoogleCloudAiplatformV1alpha1BatchMigrateResourcesOperationMetadataPartialResult": {
       "id": "GoogleCloudAiplatformV1alpha1BatchMigrateResourcesOperationMetadataPartialResult",
-      "description": "Represents a partial result in batch migration opreation for one MigrateResourceRequest.",
+      "description": "Represents a partial result in batch migration operation for one MigrateResourceRequest.",
       "type": "object",
       "properties": {
         "error": {
@@ -6467,6 +7603,119 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1alpha1CreateIndexOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1alpha1CreateIndexOperationMetadata",
+      "description": "Runtime operation information for IndexService.CreateIndex.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1alpha1GenericOperationMetadata"
+        },
+        "nearestNeighborSearchOperationMetadata": {
+          "description": "The operation metadata with regard to ScaNN Index operation.",
+          "$ref": "GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadata",
+      "description": "Runtime operation metadata with regard to ScaNN Index.",
+      "type": "object",
+      "properties": {
+        "contentValidationStats": {
+          "description": "The validation stats of the content (per file) to be inserted or updated on the ScaNN Index resource. Populated if contentsDeltaUri is provided as part of Index.metadata. Please note that, currently for those files that are broken or has unsupported file format, we will not have the stats for those files.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataContentValidationStats"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataContentValidationStats": {
+      "id": "GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataContentValidationStats",
+      "type": "object",
+      "properties": {
+        "sourceGcsUri": {
+          "description": "GCS uri pointing to the original file in user's bucket.",
+          "type": "string"
+        },
+        "validRecordCount": {
+          "description": "Number of records in this file that were successfully processed.",
+          "type": "string",
+          "format": "int64"
+        },
+        "invalidRecordCount": {
+          "description": "Number of records in this file we skipped due to validate errors.",
+          "type": "string",
+          "format": "int64"
+        },
+        "partialErrors": {
+          "description": "The detail information of the partial failures encountered for those invalid records that couldn't be parsed. Up to 50 partial errors will be reported.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataRecordError"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataRecordError": {
+      "id": "GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataRecordError",
+      "type": "object",
+      "properties": {
+        "errorType": {
+          "description": "The error type of this record.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default, shall not be used.",
+            "The record is empty.",
+            "Invalid json format.",
+            "Invalid csv format.",
+            "Invalid avro format.",
+            "The embedding id is not valid.",
+            "The size of the embedding vectors does not match with the specified dimension.",
+            "The `namespace` field is missing."
+          ],
+          "enum": [
+            "ERROR_TYPE_UNSPECIFIED",
+            "EMPTY_LINE",
+            "INVALID_JSON_SYNTAX",
+            "INVALID_CSV_SYNTAX",
+            "INVALID_AVRO_SYNTAX",
+            "INVALID_EMBEDDING_ID",
+            "EMBEDDING_SIZE_MISMATCH",
+            "NAMESPACE_MISSING"
+          ]
+        },
+        "errorMessage": {
+          "description": "A human-readable message that is shown to the user to help them fix the error. Note that this message may change from time to time, your code should check against error_type as the source of truth.",
+          "type": "string"
+        },
+        "sourceGcsUri": {
+          "description": "GCS uri pointing to the original file in user's bucket.",
+          "type": "string"
+        },
+        "embeddingId": {
+          "description": "Empty if the embedding id is failed to parse.",
+          "type": "string"
+        },
+        "rawRecord": {
+          "description": "The original content of this record.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1CreateIndexEndpointOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1alpha1CreateIndexEndpointOperationMetadata",
+      "description": "Runtime operation information for IndexEndpointService.CreateIndexEndpoint.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1alpha1GenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1alpha1CreateSpecialistPoolOperationMetadata": {
       "id": "GoogleCloudAiplatformV1alpha1CreateSpecialistPoolOperationMetadata",
       "description": "Runtime operation information for SpecialistPoolService.CreateSpecialistPool.",
@@ -6519,6 +7768,28 @@
         "deployedModel": {
           "description": "The DeployedModel that had been deployed in the Endpoint.",
           "$ref": "GoogleCloudAiplatformV1alpha1DeployedModel"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1DeployIndexOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1alpha1DeployIndexOperationMetadata",
+      "description": "Runtime operation information for IndexEndpointService.DeployIndex.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1alpha1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1DeployIndexResponse": {
+      "id": "GoogleCloudAiplatformV1alpha1DeployIndexResponse",
+      "description": "Response message for IndexEndpointService.DeployIndex.",
+      "type": "object",
+      "properties": {
+        "deployedIndex": {
+          "description": "The DeployedIndex that had been deployed in the IndexEndpoint.",
+          "$ref": "GoogleCloudAiplatformV1alpha1DeployedIndex"
         }
       }
     },
@@ -6655,6 +7926,39 @@
       "description": "Response message for EndpointService.UndeployModel.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1UndeployIndexOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1alpha1UndeployIndexOperationMetadata",
+      "description": "Runtime operation information for IndexEndpointService.UndeployIndex.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1alpha1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1UndeployIndexResponse": {
+      "id": "GoogleCloudAiplatformV1alpha1UndeployIndexResponse",
+      "description": "Response message for IndexEndpointService.UndeployIndex.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1UpdateIndexOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1alpha1UpdateIndexOperationMetadata",
+      "description": "Runtime operation information for IndexService.UpdateIndex.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1alpha1GenericOperationMetadata"
+        },
+        "nearestNeighborSearchOperationMetadata": {
+          "description": "The operation metadata with regard to ScaNN Index operation.",
+          "$ref": "GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadata"
+        }
       }
     },
     "GoogleCloudAiplatformV1alpha1UpdateSpecialistPoolOperationMetadata": {
@@ -7287,7 +8591,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
         },
         "partialResults": {
-          "description": "Partial results that reflects the latest migration operation progress.",
+          "description": "Partial results that reflect the latest migration operation progress.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadataPartialResult"
@@ -7324,7 +8628,7 @@
     },
     "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadataPartialResult": {
       "id": "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadataPartialResult",
-      "description": "Represents a partial result in batch migration opreation for one MigrateResourceRequest.",
+      "description": "Represents a partial result in batch migration operation for one MigrateResourceRequest.",
       "type": "object",
       "properties": {
         "error": {
@@ -7509,7 +8813,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1MigratableResourceDataLabelingDataset"
         },
         "lastMigrateTime": {
-          "description": "Output only. Timestamp when last migrate attempt on this MigratableResource started. Will not be set if there's no migrate attempt on this MigratableResource.",
+          "description": "Output only. Timestamp when the last migration attempt on this MigratableResource started. Will not be set if there's no migration attempt on this MigratableResource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -7626,6 +8930,119 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1CreateIndexOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1CreateIndexOperationMetadata",
+      "description": "Runtime operation information for IndexService.CreateIndex.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        },
+        "nearestNeighborSearchOperationMetadata": {
+          "description": "The operation metadata with regard to ScaNN Index operation.",
+          "$ref": "GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadata",
+      "description": "Runtime operation metadata with regard to ScaNN Index.",
+      "type": "object",
+      "properties": {
+        "contentValidationStats": {
+          "description": "The validation stats of the content (per file) to be inserted or updated on the ScaNN Index resource. Populated if contentsDeltaUri is provided as part of Index.metadata. Please note that, currently for those files that are broken or has unsupported file format, we will not have the stats for those files.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataContentValidationStats"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataContentValidationStats": {
+      "id": "GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataContentValidationStats",
+      "type": "object",
+      "properties": {
+        "sourceGcsUri": {
+          "description": "GCS uri pointing to the original file in user's bucket.",
+          "type": "string"
+        },
+        "validRecordCount": {
+          "description": "Number of records in this file that were successfully processed.",
+          "type": "string",
+          "format": "int64"
+        },
+        "invalidRecordCount": {
+          "description": "Number of records in this file we skipped due to validate errors.",
+          "type": "string",
+          "format": "int64"
+        },
+        "partialErrors": {
+          "description": "The detail information of the partial failures encountered for those invalid records that couldn't be parsed. Up to 50 partial errors will be reported.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataRecordError"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataRecordError": {
+      "id": "GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataRecordError",
+      "type": "object",
+      "properties": {
+        "errorType": {
+          "description": "The error type of this record.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default, shall not be used.",
+            "The record is empty.",
+            "Invalid json format.",
+            "Invalid csv format.",
+            "Invalid avro format.",
+            "The embedding id is not valid.",
+            "The size of the embedding vectors does not match with the specified dimension.",
+            "The `namespace` field is missing."
+          ],
+          "enum": [
+            "ERROR_TYPE_UNSPECIFIED",
+            "EMPTY_LINE",
+            "INVALID_JSON_SYNTAX",
+            "INVALID_CSV_SYNTAX",
+            "INVALID_AVRO_SYNTAX",
+            "INVALID_EMBEDDING_ID",
+            "EMBEDDING_SIZE_MISMATCH",
+            "NAMESPACE_MISSING"
+          ]
+        },
+        "errorMessage": {
+          "description": "A human-readable message that is shown to the user to help them fix the error. Note that this message may change from time to time, your code should check against error_type as the source of truth.",
+          "type": "string"
+        },
+        "sourceGcsUri": {
+          "description": "GCS uri pointing to the original file in user's bucket.",
+          "type": "string"
+        },
+        "embeddingId": {
+          "description": "Empty if the embedding id is failed to parse.",
+          "type": "string"
+        },
+        "rawRecord": {
+          "description": "The original content of this record.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CreateIndexEndpointOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1CreateIndexEndpointOperationMetadata",
+      "description": "Runtime operation information for IndexEndpointService.CreateIndexEndpoint.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1CreateSpecialistPoolOperationMetadata": {
       "id": "GoogleCloudAiplatformV1beta1CreateSpecialistPoolOperationMetadata",
       "description": "Runtime operation information for SpecialistPoolService.CreateSpecialistPool.",
@@ -7700,7 +9117,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The name of the Model this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
           "type": "string"
         },
         "displayName": {
@@ -7746,7 +9163,7 @@
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
           "type": "integer",
           "format": "int32"
         }
@@ -7798,12 +9215,12 @@
       "type": "object",
       "properties": {
         "minReplicaCount": {
-          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If requested value is too large, the deployment will error.",
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If the requested value is too large, the deployment will error.",
           "type": "integer",
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though AI Platform may be unable to scale beyond certain replica number.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though AI Platform may be unable to scale beyond certain replica number.",
           "type": "integer",
           "format": "int32"
         }
@@ -8190,6 +9607,80 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1DeployIndexOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1DeployIndexOperationMetadata",
+      "description": "Runtime operation information for IndexEndpointService.DeployIndex.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1DeployIndexResponse": {
+      "id": "GoogleCloudAiplatformV1beta1DeployIndexResponse",
+      "description": "Response message for IndexEndpointService.DeployIndex.",
+      "type": "object",
+      "properties": {
+        "deployedIndex": {
+          "description": "The DeployedIndex that had been deployed in the IndexEndpoint.",
+          "$ref": "GoogleCloudAiplatformV1beta1DeployedIndex"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1DeployedIndex": {
+      "id": "GoogleCloudAiplatformV1beta1DeployedIndex",
+      "description": "A deployment of an Index. IndexEndpoints contain one or more DeployedIndexes.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required. The user specified ID of the DeployedIndex. The ID can be up to 128 characters long and must start with a letter and only contain letters, numbers, and underscores. The ID must be unique within the project it is created in.",
+          "type": "string"
+        },
+        "index": {
+          "description": "Required. The name of the Index this is the deployment of. We may refer to this Index as the DeployedIndex's \"original\" Index.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the DeployedIndex. If not provided upon creation, the Index's display_name is used.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when the DeployedIndex was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "privateEndpoints": {
+          "description": "Output only. Provides paths for users to send requests directly to the deployed index services running on Cloud via private services access. This field is populated if network is configured.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1IndexPrivateEndpoints"
+        },
+        "indexSyncTime": {
+          "description": "Output only. The DeployedIndex may depend on various data on its original Index. Additionally when certain changes to the original Index are being done (e.g. when what the Index contains is being changed) the DeployedIndex may be asynchronously updated in the background to reflect this changes. If this timestamp's value is at least the Index.update_time of the original Index, it means that this DeployedIndex and the original Index are in sync. If this timestamp is older, then to see which updates this DeployedIndex already contains (and which not), one must list Operations working on the original Index. Only the successfully completed Operations with Operations.metadata.generic_metadata.update_time equal or before this sync time are contained in this DeployedIndex.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "automaticResources": {
+          "description": "A description of resources that the DeployedIndex uses, which to large degree are decided by AI Platform, and optionally allows only a modest additional configuration. The user is billed for the resources (at least their minimal amount) even if the DeployedIndex receives no traffic.",
+          "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1IndexPrivateEndpoints": {
+      "id": "GoogleCloudAiplatformV1beta1IndexPrivateEndpoints",
+      "description": "IndexPrivateEndpoints proto is used to provide paths for users to send requests via private services access.",
+      "type": "object",
+      "properties": {
+        "matchGrpcAddress": {
+          "description": "Output only. The ip address used to send match gRPC requests.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1ExportDataOperationMetadata": {
       "id": "GoogleCloudAiplatformV1beta1ExportDataOperationMetadata",
       "description": "Runtime operation information for DatasetService.ExportData.",
@@ -8329,6 +9820,39 @@
       "description": "Response message for EndpointService.UndeployModel.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1beta1UndeployIndexOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1UndeployIndexOperationMetadata",
+      "description": "Runtime operation information for IndexEndpointService.UndeployIndex.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1UndeployIndexResponse": {
+      "id": "GoogleCloudAiplatformV1beta1UndeployIndexResponse",
+      "description": "Response message for IndexEndpointService.UndeployIndex.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1beta1UpdateIndexOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1UpdateIndexOperationMetadata",
+      "description": "Runtime operation information for IndexService.UpdateIndex.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        },
+        "nearestNeighborSearchOperationMetadata": {
+          "description": "The operation metadata with regard to ScaNN Index operation.",
+          "$ref": "GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadata"
+        }
       }
     },
     "GoogleCloudAiplatformV1beta1UpdateSpecialistPoolOperationMetadata": {
@@ -9101,6 +10625,10 @@
             "type": "number",
             "format": "double"
           }
+        },
+        "validationOptions": {
+          "description": "Validation options for the data validation component. The available options are: \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. \"ignore-validation\" - ignore the results of the validation and continue",
+          "type": "string"
         }
       }
     },
@@ -10560,7 +12088,7 @@
           "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
         },
         "partialResults": {
-          "description": "Partial results that reflects the latest migration operation progress.",
+          "description": "Partial results that reflect the latest migration operation progress.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1BatchMigrateResourcesOperationMetadataPartialResult"
@@ -10597,7 +12125,7 @@
     },
     "GoogleCloudAiplatformV1BatchMigrateResourcesOperationMetadataPartialResult": {
       "id": "GoogleCloudAiplatformV1BatchMigrateResourcesOperationMetadataPartialResult",
-      "description": "Represents a partial result in batch migration opreation for one MigrateResourceRequest.",
+      "description": "Represents a partial result in batch migration operation for one MigrateResourceRequest.",
       "type": "object",
       "properties": {
         "error": {
@@ -10782,7 +12310,7 @@
           "$ref": "GoogleCloudAiplatformV1MigratableResourceDataLabelingDataset"
         },
         "lastMigrateTime": {
-          "description": "Output only. Timestamp when last migrate attempt on this MigratableResource started. Will not be set if there's no migrate attempt on this MigratableResource.",
+          "description": "Output only. Timestamp when the last migration attempt on this MigratableResource started. Will not be set if there's no migration attempt on this MigratableResource.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -10962,7 +12490,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The name of the Model this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
+          "description": "Required. The name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint.",
           "type": "string"
         },
         "displayName": {
@@ -11004,7 +12532,7 @@
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
           "type": "integer",
           "format": "int32"
         }
@@ -11056,12 +12584,12 @@
       "type": "object",
       "properties": {
         "minReplicaCount": {
-          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If requested value is too large, the deployment will error.",
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If the requested value is too large, the deployment will error.",
           "type": "integer",
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though AI Platform may be unable to scale beyond certain replica number.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though AI Platform may be unable to scale beyond certain replica number.",
           "type": "integer",
           "format": "int32"
         }
@@ -11967,6 +13495,10 @@
             "type": "number",
             "format": "double"
           }
+        },
+        "validationOptions": {
+          "description": "Validation options for the data validation component. The available options are: \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. \"ignore-validation\" - ignore the results of the validation and continue",
+          "type": "string"
         }
       }
     },
@@ -16099,6 +17631,388 @@
                 }
               }
             },
+            "indexes": {
+              "methods": {
+                "create": {
+                  "id": "aiplatform.projects.locations.indexes.create",
+                  "path": "v1alpha1/{+parent}/indexes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/indexes",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the Location to create the Index in. Format: `projects\/{project}\/locations\/{location}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1Index"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates an Index."
+                },
+                "get": {
+                  "id": "aiplatform.projects.locations.indexes.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Index resource. Format: `projects\/{project}\/locations\/{location}\/indexes\/{index}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexes\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1Index"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets an Index."
+                },
+                "list": {
+                  "id": "aiplatform.projects.locations.indexes.list",
+                  "path": "v1alpha1/{+parent}/indexes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/indexes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the Location from which to list the Indexes. Format: `projects\/{project}\/locations\/{location}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token. Typically obtained via ListIndexesResponse.next_page_token of the previous IndexService.ListIndexes call.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "readMask": {
+                      "description": "Mask specifying which fields to read.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1ListIndexesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Indexes in a Location."
+                },
+                "patch": {
+                  "id": "aiplatform.projects.locations.indexes.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of the Index.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexes\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The update mask applies to the resource. For the `FieldMask` definition, see [FieldMask](https:\/\/tinyurl.com\/protobufs#google.protobuf.FieldMask).",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1Index"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates an Index."
+                },
+                "delete": {
+                  "id": "aiplatform.projects.locations.indexes.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Index resource to be deleted. Format: `projects\/{project}\/locations\/{location}\/indexes\/{index}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexes\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes an Index. An Index can only be deleted when all its DeployedIndexes had been undeployed."
+                }
+              }
+            },
+            "indexEndpoints": {
+              "methods": {
+                "create": {
+                  "id": "aiplatform.projects.locations.indexEndpoints.create",
+                  "path": "v1alpha1/{+parent}/indexEndpoints",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/indexEndpoints",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the Location to create the IndexEndpoint in. Format: `projects\/{project}\/locations\/{location}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1IndexEndpoint"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates an IndexEndpoint."
+                },
+                "get": {
+                  "id": "aiplatform.projects.locations.indexEndpoints.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the IndexEndpoint resource. Format: `projects\/{project}\/locations\/{location}\/indexEndpoints\/{index_endpoint}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexEndpoints\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1IndexEndpoint"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets an IndexEndpoint."
+                },
+                "list": {
+                  "id": "aiplatform.projects.locations.indexEndpoints.list",
+                  "path": "v1alpha1/{+parent}/indexEndpoints",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/indexEndpoints",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the Location from which to list the IndexEndpoints. Format: `projects\/{project}\/locations\/{location}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Optional. An expression for filtering the results of the request. For field names both snake_case and camelCase are supported. * `index_endpoint` supports = and !=. `index_endpoint` represents the IndexEndpoint ID, ie. the last segment of the IndexEndpoint's resourcename. * `display_name` supports =, != and regex() (uses [re2](https:\/\/github.com\/google\/re2\/wiki\/Syntax) syntax) * `labels` supports general map functions that is: `labels.key=value` - key:value equality `labels.key:* or labels:key - key existence A key including a space must be quoted. `labels.\"a key\"`. Some examples: * `index_endpoint=\"1\"` * `display_name=\"myDisplayName\"` * `regex(display_name, \"^A\") -> The display name starts with an A. * `labels.myKey=\"myValue\"`",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. The standard list page token. Typically obtained via ListIndexEndpointsResponse.next_page_token of the previous IndexEndpointService.ListIndexEndpoints call.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "readMask": {
+                      "description": "Optional. Mask specifying which fields to read.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1ListIndexEndpointsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists IndexEndpoints in a Location."
+                },
+                "patch": {
+                  "id": "aiplatform.projects.locations.indexEndpoints.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of the IndexEndpoint.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexEndpoints\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. The update mask applies to the resource. See [FieldMask](https:\/\/tinyurl.com\/protobufs\/google.protobuf#fieldmask).",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1IndexEndpoint"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1IndexEndpoint"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates an IndexEndpoint."
+                },
+                "delete": {
+                  "id": "aiplatform.projects.locations.indexEndpoints.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the IndexEndpoint resource to be deleted. Format: `projects\/{project}\/locations\/{location}\/indexEndpoints\/{index_endpoint}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexEndpoints\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes an IndexEndpoint."
+                },
+                "deployIndex": {
+                  "id": "aiplatform.projects.locations.indexEndpoints.deployIndex",
+                  "path": "v1alpha1/{+indexEndpoint}:deployIndex",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}:deployIndex",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "indexEndpoint": {
+                      "description": "Required. The name of the IndexEndpoint resource into which to deploy an Index. Format: `projects\/{project}\/locations\/{location}\/indexEndpoints\/{index_endpoint}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexEndpoints\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "indexEndpoint"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1DeployIndexRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deploys an Index into this IndexEndpoint, creating a DeployedIndex within it. Only non-empty Indexes can be deployed."
+                },
+                "undeployIndex": {
+                  "id": "aiplatform.projects.locations.indexEndpoints.undeployIndex",
+                  "path": "v1alpha1/{+indexEndpoint}:undeployIndex",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}:undeployIndex",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "indexEndpoint": {
+                      "description": "Required. The name of the IndexEndpoint resource from which to undeploy an Index. Format: `projects\/{project}\/locations\/{location}\/indexEndpoints\/{index_endpoint}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexEndpoints\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "indexEndpoint"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1UndeployIndexRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Undeploys an Index from an IndexEndpoint, removing a DeployedIndex from it, and freeing all resources it's using."
+                }
+              }
+            },
             "customJobs": {
               "methods": {
                 "create": {
@@ -17101,7 +19015,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name=\"my_job\"` * `state=\"JOB_STATE_RUNNING\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `state=\"JOB_STATE_FAILED\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. * `model_display_name` supports = and != Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name=\"my_job\"` * `state=\"JOB_STATE_RUNNING\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `state=\"JOB_STATE_FAILED\"`",
                       "location": "query",
                       "type": "string"
                     },

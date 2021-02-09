@@ -1010,11 +1010,12 @@ class APIAdapter(object):
     self.messages = messages
 
   def ParseCluster(self, name, location, project=None):
-    # TODO(b/63383536): Migrate to container.projects.locations.clusters when
-    # apiserver supports it.
     project = project or properties.VALUES.core.project.GetOrFail()
+    # Note: we don't directly use container.projects.locations.clusters, etc,
+    # because it has different fields and thus would change the rest of our
+    # code heavily.
     return self.registry.Parse(
-        name,
+        util.LocationalResourceToZonal(name),
         params={
             'projectId': project,
             'zone': location,
@@ -1022,11 +1023,9 @@ class APIAdapter(object):
         collection='container.projects.zones.clusters')
 
   def ParseOperation(self, operation_id, location, project=None):
-    # TODO(b/63383536): Migrate to container.projects.locations.operations when
-    # apiserver supports it.
     project = project or properties.VALUES.core.project.GetOrFail()
     return self.registry.Parse(
-        operation_id,
+        util.LocationalResourceToZonal(operation_id),
         params={
             'projectId': project,
             'zone': location,
@@ -1034,11 +1033,9 @@ class APIAdapter(object):
         collection='container.projects.zones.operations')
 
   def ParseNodePool(self, node_pool_id, location, project=None):
-    # TODO(b/63383536): Migrate to container.projects.locations.nodePools when
-    # apiserver supports it.
     project = project or properties.VALUES.core.project.GetOrFail()
     return self.registry.Parse(
-        node_pool_id,
+        util.LocationalResourceToZonal(node_pool_id),
         params={
             'projectId': project,
             'clusterId': properties.VALUES.container.cluster.GetOrFail,

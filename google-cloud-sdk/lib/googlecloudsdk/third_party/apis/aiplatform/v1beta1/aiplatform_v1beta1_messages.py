@@ -75,11 +75,11 @@ class AiplatformProjectsLocationsBatchPredictionJobsListRequest(_messages.Messag
 
   Fields:
     filter: The standard list filter. Supported fields: * `display_name`
-      supports = and !=. * `state` supports = and !=. Some examples of using
-      the filter are: * `state="JOB_STATE_SUCCEEDED" AND
-      display_name="my_job"` * `state="JOB_STATE_RUNNING" OR
-      display_name="my_job"` * `NOT display_name="my_job"` *
-      `state="JOB_STATE_FAILED"`
+      supports = and !=. * `state` supports = and !=. * `model_display_name`
+      supports = and != Some examples of using the filter are: *
+      `state="JOB_STATE_SUCCEEDED" AND display_name="my_job"` *
+      `state="JOB_STATE_RUNNING" OR display_name="my_job"` * `NOT
+      display_name="my_job"` * `state="JOB_STATE_FAILED"`
     pageSize: The standard list page size.
     pageToken: The standard list page token. Typically obtained via
       ListBatchPredictionJobsResponse.next_page_token of the previous
@@ -1464,6 +1464,200 @@ class AiplatformProjectsLocationsHyperparameterTuningJobsOperationsWaitRequest(_
 
   name = _messages.StringField(1, required=True)
   timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsIndexEndpointsCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexEndpointsCreateRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1IndexEndpoint: A
+      GoogleCloudAiplatformV1beta1IndexEndpoint resource to be passed as the
+      request body.
+    parent: Required. The resource name of the Location to create the
+      IndexEndpoint in. Format: `projects/{project}/locations/{location}`
+  """
+
+  googleCloudAiplatformV1beta1IndexEndpoint = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexEndpoint', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsIndexEndpointsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexEndpointsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the IndexEndpoint resource to be deleted.
+      Format: `projects/{project}/locations/{location}/indexEndpoints/{index_e
+      ndpoint}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsIndexEndpointsDeployIndexRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexEndpointsDeployIndexRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1DeployIndexRequest: A
+      GoogleCloudAiplatformV1beta1DeployIndexRequest resource to be passed as
+      the request body.
+    indexEndpoint: Required. The name of the IndexEndpoint resource into which
+      to deploy an Index. Format: `projects/{project}/locations/{location}/ind
+      exEndpoints/{index_endpoint}`
+  """
+
+  googleCloudAiplatformV1beta1DeployIndexRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployIndexRequest', 1)
+  indexEndpoint = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsIndexEndpointsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexEndpointsGetRequest object.
+
+  Fields:
+    name: Required. The name of the IndexEndpoint resource. Format:
+      `projects/{project}/locations/{location}/indexEndpoints/{index_endpoint}
+      `
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsIndexEndpointsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexEndpointsListRequest object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      For field names both snake_case and camelCase are supported. *
+      `index_endpoint` supports = and !=. `index_endpoint` represents the
+      IndexEndpoint ID, ie. the last segment of the IndexEndpoint's
+      resourcename. * `display_name` supports =, != and regex() (uses
+      [re2](https://github.com/google/re2/wiki/Syntax) syntax) * `labels`
+      supports general map functions that is: `labels.key=value` - key:value
+      equality `labels.key:* or labels:key - key existence A key including a
+      space must be quoted. `labels."a key"`. Some examples: *
+      `index_endpoint="1"` * `display_name="myDisplayName"` *
+      `regex(display_name, "^A") -> The display name starts with an A. *
+      `labels.myKey="myValue"`
+    pageSize: Optional. The standard list page size.
+    pageToken: Optional. The standard list page token. Typically obtained via
+      ListIndexEndpointsResponse.next_page_token of the previous
+      IndexEndpointService.ListIndexEndpoints call.
+    parent: Required. The resource name of the Location from which to list the
+      IndexEndpoints. Format: `projects/{project}/locations/{location}`
+    readMask: Optional. Mask specifying which fields to read.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  readMask = _messages.StringField(5)
+
+
+class AiplatformProjectsLocationsIndexEndpointsPatchRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexEndpointsPatchRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1IndexEndpoint: A
+      GoogleCloudAiplatformV1beta1IndexEndpoint resource to be passed as the
+      request body.
+    name: Output only. The resource name of the IndexEndpoint.
+    updateMask: Required. The update mask applies to the resource. See
+      [FieldMask](https://tinyurl.com/protobufs/google.protobuf#fieldmask).
+  """
+
+  googleCloudAiplatformV1beta1IndexEndpoint = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexEndpoint', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsIndexEndpointsUndeployIndexRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexEndpointsUndeployIndexRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1UndeployIndexRequest: A
+      GoogleCloudAiplatformV1beta1UndeployIndexRequest resource to be passed
+      as the request body.
+    indexEndpoint: Required. The name of the IndexEndpoint resource from which
+      to undeploy an Index. Format: `projects/{project}/locations/{location}/i
+      ndexEndpoints/{index_endpoint}`
+  """
+
+  googleCloudAiplatformV1beta1UndeployIndexRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1UndeployIndexRequest', 1)
+  indexEndpoint = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsIndexesCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexesCreateRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1Index: A GoogleCloudAiplatformV1beta1Index
+      resource to be passed as the request body.
+    parent: Required. The resource name of the Location to create the Index
+      in. Format: `projects/{project}/locations/{location}`
+  """
+
+  googleCloudAiplatformV1beta1Index = _messages.MessageField('GoogleCloudAiplatformV1beta1Index', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsIndexesDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the Index resource to be deleted. Format:
+      `projects/{project}/locations/{location}/indexes/{index}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsIndexesGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexesGetRequest object.
+
+  Fields:
+    name: Required. The name of the Index resource. Format:
+      `projects/{project}/locations/{location}/indexes/{index}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsIndexesListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexesListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token. Typically obtained via
+      ListIndexesResponse.next_page_token of the previous
+      IndexService.ListIndexes call.
+    parent: Required. The resource name of the Location from which to list the
+      Indexes. Format: `projects/{project}/locations/{location}`
+    readMask: Mask specifying which fields to read.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  readMask = _messages.StringField(5)
+
+
+class AiplatformProjectsLocationsIndexesPatchRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexesPatchRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1Index: A GoogleCloudAiplatformV1beta1Index
+      resource to be passed as the request body.
+    name: Output only. The resource name of the Index.
+    updateMask: The update mask applies to the resource. For the `FieldMask`
+      definition, see
+      [FieldMask](https://tinyurl.com/protobufs#google.protobuf.FieldMask).
+  """
+
+  googleCloudAiplatformV1beta1Index = _messages.MessageField('GoogleCloudAiplatformV1beta1Index', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class AiplatformProjectsLocationsListRequest(_messages.Message):
@@ -3110,6 +3304,80 @@ class AiplatformProjectsLocationsTrainingPipelinesOperationsWaitRequest(_message
   timeout = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformInternalAnnotationSpecStats(_messages.Message):
+  r"""Stats of DataItems annotated by the specified AnnotationSpec and
+  Annotations with the AnnotationSpec in a SavedQuery.
+
+  Fields:
+    annotationSpecDisplayName: Output only. The user-defined name of the
+      AnnotationSpec.
+    annotationSpecId: Output only. ID of an AnnotationSpec. Counters in the
+      stats are for DataItems annotated by this anntoation spec and
+      Annotations have this AnnotationSpec in the SavedQuery.
+    annotationsCount: Output only. Count on Annotations with AnnotationSpec
+      identified by annotation_spec_id.
+    dataItemsCount: Output only. Count on DataItems that are annotated with
+      the AnnotationSpec identified by annotation_spec_id.
+    testAnnotationsCount: Output only. Count on Annotations with
+      AnnotationSpec identified by annotation_spec_id and under all DataItems
+      that match test_filter and do not match training_filter and
+      validation_filter.
+    testDataItemsCount: Output only. Count on DataItems that match test_filter
+      and do not match training_filter and validation_filter and are annotated
+      with the AnnotationSpec identified by annotation_spec_id.
+    trainingAnnotationsCount: Output only. Count on Annotations with
+      AnnotationSpec identified by annotation_spec_id and under all DataItems
+      that match training_filter.
+    trainingDataItemsCount: Output only. Count on DataItems that match
+      training_filter and annotated with the AnnotationSpec identified by
+      annotation_spec_id.
+    validationAnnotationsCount: Output only. Count on Annotations with
+      AnnotationSpec identified by annotation_spec_id and under all DataItems
+      that match validation_filter and do not match training_filter.
+    validationDataItemsCount: Output only. Count on DataItems that match
+      validation_filter and do not match training_filter and are annotated
+      with the AnnotationSpec identified by annotation_spec_id.
+  """
+
+  annotationSpecDisplayName = _messages.StringField(1)
+  annotationSpecId = _messages.IntegerField(2)
+  annotationsCount = _messages.IntegerField(3)
+  dataItemsCount = _messages.IntegerField(4)
+  testAnnotationsCount = _messages.IntegerField(5)
+  testDataItemsCount = _messages.IntegerField(6)
+  trainingAnnotationsCount = _messages.IntegerField(7)
+  trainingDataItemsCount = _messages.IntegerField(8)
+  validationAnnotationsCount = _messages.IntegerField(9)
+  validationDataItemsCount = _messages.IntegerField(10)
+
+
+class GoogleCloudAiplatformInternalAutomaticResources(_messages.Message):
+  r"""A description of resources that to large degree are decided by AI
+  Platform, and require only a modest additional configuration. Each Model
+  supporting these resources documents its specific guidelines.
+
+  Fields:
+    maxReplicaCount: Immutable. The maximum number of replicas this
+      DeployedModel may be deployed on when the traffic against it increases.
+      If the requested value is too large, the deployment will error, but if
+      deployment succeeds then the ability to scale the model to that many
+      replicas is guaranteed (barring service outages). If traffic against the
+      DeployedModel increases beyond what its replicas at maximum may handle,
+      a portion of the traffic will be dropped. If this value is not provided,
+      a no upper bound for scaling under heavy traffic will be assume, though
+      AI Platform may be unable to scale beyond certain replica number.
+    minReplicaCount: Immutable. The minimum number of replicas this
+      DeployedModel will be always deployed on. If traffic against it
+      increases, it may dynamically be deployed onto more replicas up to
+      max_replica_count, and as traffic decreases, some of these extra
+      replicas may be freed. If the requested value is too large, the
+      deployment will error.
+  """
+
+  maxReplicaCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudAiplatformInternalBatchConfig(_messages.Message):
   r"""Configurations describing how to construct labeling tasks from collected
   prediction results.
@@ -3125,6 +3393,94 @@ class GoogleCloudAiplatformInternalBatchConfig(_messages.Message):
   pendingDuration = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformInternalCalculateSavedQueryStatsOperationMetadata(_messages.Message):
+  r"""Runtime operation information for
+  DatasetService.CalculateSavedQueryStats.
+
+  Fields:
+    calculateStatsConfig: Whether calculate the stats by MlUse and the
+      standard filters by MlUse.
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  calculateStatsConfig = _messages.MessageField('GoogleCloudAiplatformInternalCalculateStatsConfig', 1)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 2)
+
+
+class GoogleCloudAiplatformInternalCalculateSavedQueryStatsResponse(_messages.Message):
+  r"""Response message for DatasetService.CalculateSavedQueryStats.
+
+  Fields:
+    annotatedDataItemsCount: Count on DataItems that are annotated with at
+      least one AnnotationSpec in this SavedQuery.
+    annotationSpecStats: A list of per AnnotationSpec stats of the SavedQuery.
+      This list contains stats of each AnnotationSpec that is associated with
+      the SavedQuery even if there is no DataItem annotated with the
+      AnnotationSpec.
+    dataItemsCount: Count on DataItems in the SavedQuery.
+    testDataItemsCount: Output only. Count on DataItems that match
+      test_filter.
+    trainingDataItemsCount: Output only. Count on DataItems that match
+      training_filter.
+    validationDataItemsCount: Output only. Count on DataItems that match
+      validation_filter.
+  """
+
+  annotatedDataItemsCount = _messages.IntegerField(1)
+  annotationSpecStats = _messages.MessageField('GoogleCloudAiplatformInternalAnnotationSpecStats', 2, repeated=True)
+  dataItemsCount = _messages.IntegerField(3)
+  testDataItemsCount = _messages.IntegerField(4)
+  trainingDataItemsCount = _messages.IntegerField(5)
+  validationDataItemsCount = _messages.IntegerField(6)
+
+
+class GoogleCloudAiplatformInternalCalculateStatsConfig(_messages.Message):
+  r"""Describes how the stats of a SavedQuery will be calculated.
+
+  Fields:
+    annotationFilter: A filter on Annotations. If this field is set, all of
+      the stats will be restricted to the DataItems with the Annotations that
+      match this filter. Supported filter: `data_labeling_job_id` - for =.
+      Filters by the specified data_labeling_job.
+    testFilter: A filter on DataItems of the Dataset. Test set stats will be
+      calculated from DataItems that match this filter and does not match the
+      filters specified in training_filter and validation_filter. The filter
+      only support filtering by at most one resource label.
+    trainingFilter: A filter on DataItems of the Dataset. Training set stats
+      will be calculated from DataItems that match this filter. The filter
+      only support filtering by at most one resource label.
+    validationFilter: A filter on DataItems of the Dataset. Validation set
+      stats will be calculated from DataItems that match this filter and does
+      not match the filter specified in training_filter. The filter only
+      support filtering by at most one resource label.
+  """
+
+  annotationFilter = _messages.StringField(1)
+  testFilter = _messages.StringField(2)
+  trainingFilter = _messages.StringField(3)
+  validationFilter = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformInternalCreateDatasetOperationMetadata(_messages.Message):
+  r"""Runtime operation information for DatasetService.CreateDataset.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalCreateEndpointOperationMetadata(_messages.Message):
+  r"""Runtime operation information for EndpointService.CreateEndpoint.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformInternalCreateHumanInTheLoopOperationMetadata(_messages.Message):
   r"""Runtime operation information for
   HumanInTheLoopService.CreateHumanInTheLoop.
@@ -3134,6 +3490,115 @@ class GoogleCloudAiplatformInternalCreateHumanInTheLoopOperationMetadata(_messag
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalCreateSpecialistPoolOperationMetadata(_messages.Message):
+  r"""Runtime operation information for
+  SpecialistPoolService.CreateSpecialistPool.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalDedicatedResources(_messages.Message):
+  r"""A description of resources that are dedicated to a DeployedModel, and
+  that need a higher degree of manual configuration.
+
+  Fields:
+    machineSpec: Required. Immutable. The specification of a single machine
+      used by the prediction.
+    minReplicaCount: Required. Immutable. The minimum number of machine
+      replicas this DeployedModel will be always deployed on. If traffic
+      against it increases, it may dynamically be deployed onto more replicas,
+      and as traffic decreases, some of these extra replicas may be freed.
+      Note: if machine_spec.accelerator_count is above 0, currently the model
+      will be always deployed precisely on min_replica_count.
+  """
+
+  machineSpec = _messages.MessageField('GoogleCloudAiplatformInternalMachineSpec', 1)
+  minReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformInternalDeleteOperationMetadata(_messages.Message):
+  r"""Details of operations that perform deletes of any entities.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalDeployModelOperationMetadata(_messages.Message):
+  r"""Runtime operation information for EndpointService.DeployModel.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalDeployModelResponse(_messages.Message):
+  r"""Response message for EndpointService.DeployModel.
+
+  Fields:
+    deployedModel: The DeployedModel that had been deployed in the Endpoint.
+  """
+
+  deployedModel = _messages.MessageField('GoogleCloudAiplatformInternalDeployedModel', 1)
+
+
+class GoogleCloudAiplatformInternalDeployedModel(_messages.Message):
+  r"""A deployment of a Model. Endpoints contain one or more DeployedModels.
+
+  Fields:
+    automaticResources: A description of resources that to large degree are
+      decided by AI Platform, and require only a modest additional
+      configuration.
+    createTime: Output only. Timestamp when the DeployedModel was created.
+    dedicatedResources: A description of resources that are dedicated to the
+      DeployedModel, and that need a higher degree of manual configuration.
+    disableContainerLogging: For custom-trained Models and AutoML Tabular
+      Models, the container of the DeployedModel instances will send `stderr`
+      and `stdout` streams to Stackdriver Logging by default. Please note that
+      the logs incur cost, which are subject to [Cloud Logging
+      pricing](https://cloud.google.com/stackdriver/pricing). User can disable
+      container logging by setting this flag to true.
+    displayName: The display name of the DeployedModel. If not provided upon
+      creation, the Model's display_name is used.
+    explanationSpec: Explanation configuration for this DeployedModel. When
+      deploying a Model using EndpointService.DeployModel, this value
+      overrides the value of Model.explanation_spec. All fields of
+      explanation_spec are optional in the request. If a field of
+      explanation_spec is not populated, the value of the same field of
+      Model.explanation_spec is inherited. The corresponding
+      Model.explanation_spec must be populated, otherwise explanation for this
+      Model is not allowed.
+    id: Output only. The ID of the DeployedModel.
+    model: Required. The name of the Model that this is the deployment of.
+      Note that the Model may be in a different location than the
+      DeployedModel's Endpoint.
+    serviceAccount: The service account that the DeployedModel's container
+      runs as. Specify the email address of the service account. If this
+      service account is not specified, the container runs as a service
+      account that doesn't have access to the resource project. Users
+      deploying the Model must have the `iam.serviceAccounts.actAs` permission
+      on this service account.
+  """
+
+  automaticResources = _messages.MessageField('GoogleCloudAiplatformInternalAutomaticResources', 1)
+  createTime = _messages.StringField(2)
+  dedicatedResources = _messages.MessageField('GoogleCloudAiplatformInternalDedicatedResources', 3)
+  disableContainerLogging = _messages.BooleanField(4)
+  displayName = _messages.StringField(5)
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformInternalExplanationSpec', 6)
+  id = _messages.StringField(7)
+  model = _messages.StringField(8)
+  serviceAccount = _messages.StringField(9)
 
 
 class GoogleCloudAiplatformInternalDocumentCriteria(_messages.Message):
@@ -3225,6 +3690,565 @@ class GoogleCloudAiplatformInternalDocumentMetadata(_messages.Message):
   """
 
   processorVersion = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformInternalExplanationMetadata(_messages.Message):
+  r"""Metadata describing the Model's input and output for explanation.
+
+  Messages:
+    InputsValue: Required. Map from feature names to feature input metadata.
+      Keys are the name of the features. Values are the specification of the
+      feature. An empty InputMetadata is valid. It describes a text feature
+      which has the name specified as the key in ExplanationMetadata.inputs.
+      The baseline of the empty feature is chosen by AI Platform. For AI
+      Platform provided Tensorflow images, the key can be any friendly name of
+      the feature. Once specified, featureAttributions are keyed by this key
+      (if not grouped with another feature). For custom images, the key must
+      match with the key in instance.
+    OutputsValue: Required. Map from output names to output metadata. For AI
+      Platform provided Tensorflow images, keys can be any string user
+      defines. For custom images, keys are the name of the output field in the
+      prediction to be explained. Currently only one key is allowed.
+
+  Fields:
+    featureAttributionsSchemaUri: Points to a YAML file stored on Google Cloud
+      Storage describing the format of the feature attributions. The schema is
+      defined as an OpenAPI 3.0.2 [Schema
+      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML tabular
+      Models always have this field populated by AI Platform. Note: The URI
+      given on output may be different, including the URI scheme, than the one
+      given on input. The output URI will point to a location where the user
+      only has a read access.
+    inputs: Required. Map from feature names to feature input metadata. Keys
+      are the name of the features. Values are the specification of the
+      feature. An empty InputMetadata is valid. It describes a text feature
+      which has the name specified as the key in ExplanationMetadata.inputs.
+      The baseline of the empty feature is chosen by AI Platform. For AI
+      Platform provided Tensorflow images, the key can be any friendly name of
+      the feature. Once specified, featureAttributions are keyed by this key
+      (if not grouped with another feature). For custom images, the key must
+      match with the key in instance.
+    outputs: Required. Map from output names to output metadata. For AI
+      Platform provided Tensorflow images, keys can be any string user
+      defines. For custom images, keys are the name of the output field in the
+      prediction to be explained. Currently only one key is allowed.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InputsValue(_messages.Message):
+    r"""Required. Map from feature names to feature input metadata. Keys are
+    the name of the features. Values are the specification of the feature. An
+    empty InputMetadata is valid. It describes a text feature which has the
+    name specified as the key in ExplanationMetadata.inputs. The baseline of
+    the empty feature is chosen by AI Platform. For AI Platform provided
+    Tensorflow images, the key can be any friendly name of the feature. Once
+    specified, featureAttributions are keyed by this key (if not grouped with
+    another feature). For custom images, the key must match with the key in
+    instance.
+
+    Messages:
+      AdditionalProperty: An additional property for a InputsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type InputsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InputsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformInternalExplanationMetadataInputMetadata
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformInternalExplanationMetadataInputMetadata', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OutputsValue(_messages.Message):
+    r"""Required. Map from output names to output metadata. For AI Platform
+    provided Tensorflow images, keys can be any string user defines. For
+    custom images, keys are the name of the output field in the prediction to
+    be explained. Currently only one key is allowed.
+
+    Messages:
+      AdditionalProperty: An additional property for a OutputsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type OutputsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OutputsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A
+          GoogleCloudAiplatformInternalExplanationMetadataOutputMetadata
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformInternalExplanationMetadataOutputMetadata', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  featureAttributionsSchemaUri = _messages.StringField(1)
+  inputs = _messages.MessageField('InputsValue', 2)
+  outputs = _messages.MessageField('OutputsValue', 3)
+
+
+class GoogleCloudAiplatformInternalExplanationMetadataInputMetadata(_messages.Message):
+  r"""Metadata of the input of a feature. Fields other than
+  InputMetadata.input_baselines are applicable only for Models that are using
+  AI Platform-provided images for Tensorflow.
+
+  Enums:
+    EncodingValueValuesEnum: Defines how the feature is encoded into the input
+      tensor. Defaults to IDENTITY.
+
+  Fields:
+    denseShapeTensorName: Specifies the shape of the values of the input if
+      the input is a sparse representation. Refer to Tensorflow documentation
+      for more details:
+      https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor.
+    encodedBaselines: A list of baselines for the encoded tensor. The shape of
+      each baseline should match the shape of the encoded tensor. If a scalar
+      is provided, AI Platform broadcast to the same shape as the encoded
+      tensor.
+    encodedTensorName: Encoded tensor is a transformation of the input tensor.
+      Must be provided if choosing Integrated Gradients attribution or XRAI
+      attribution and the input tensor is not differentiable. An encoded
+      tensor is generated if the input tensor is encoded by a lookup table.
+    encoding: Defines how the feature is encoded into the input tensor.
+      Defaults to IDENTITY.
+    featureValueDomain: The domain details of the input feature value. Like
+      min/max, original mean or standard deviation if normalized.
+    groupName: Name of the group that the input belongs to. Features with the
+      same group name will be treated as one feature when computing
+      attributions. Features grouped together can have different shapes in
+      value. If provided, there will be one single attribution generated in
+      featureAttributions, keyed by the group name.
+    indexFeatureMapping: A list of feature names for each index in the input
+      tensor. Required when the input InputMetadata.encoding is
+      BAG_OF_FEATURES, BAG_OF_FEATURES_SPARSE, INDICATOR.
+    indicesTensorName: Specifies the index of the values of the input tensor.
+      Required when the input tensor is a sparse representation. Refer to
+      Tensorflow documentation for more details:
+      https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor.
+    inputBaselines: Baseline inputs for this feature. If no baseline is
+      specified, AI Platform chooses the baseline for this feature. If
+      multiple baselines are specified, AI Platform returns the average
+      attributions across them in Attributions.baseline_attribution. For AI
+      Platform provided Tensorflow images (both 1.x and 2.x), the shape of
+      each baseline must match the shape of the input tensor. If a scalar is
+      provided, we broadcast to the same shape as the input tensor. For custom
+      images, the element of the baselines must be in the same format as the
+      feature's input in the instance[]. The schema of any single instance may
+      be specified via Endpoint's DeployedModels' Model's PredictSchemata's
+      instance_schema_uri.
+    inputTensorName: Name of the input tensor for this feature. Required and
+      is only applicable to AI Platform provided images for Tensorflow.
+    modality: Modality of the feature. Valid values are: numeric, image.
+      Defaults to numeric.
+    visualization: Visualization configurations for image explanation.
+  """
+
+  class EncodingValueValuesEnum(_messages.Enum):
+    r"""Defines how the feature is encoded into the input tensor. Defaults to
+    IDENTITY.
+
+    Values:
+      ENCODING_UNSPECIFIED: Default value. This is the same as IDENTITY.
+      IDENTITY: The tensor represents one feature.
+      BAG_OF_FEATURES: The tensor represents a bag of features where each
+        index maps to a feature. InputMetadata.index_feature_mapping must be
+        provided for this encoding. For example: ``` input = [27, 6.0, 150]
+        index_feature_mapping = ["age", "height", "weight"] ```
+      BAG_OF_FEATURES_SPARSE: The tensor represents a bag of features where
+        each index maps to a feature. Zero values in the tensor indicates
+        feature being non-existent. InputMetadata.index_feature_mapping must
+        be provided for this encoding. For example: ``` input = [2, 0, 5, 0,
+        1] index_feature_mapping = ["a", "b", "c", "d", "e"] ```
+      INDICATOR: The tensor is a list of binaries representing whether a
+        feature exists or not (1 indicates existence).
+        InputMetadata.index_feature_mapping must be provided for this
+        encoding. For example: ``` input = [1, 0, 1, 0, 1]
+        index_feature_mapping = ["a", "b", "c", "d", "e"] ```
+      COMBINED_EMBEDDING: The tensor is encoded into a 1-dimensional array
+        represented by an encoded tensor. InputMetadata.encoded_tensor_name
+        must be provided for this encoding. For example: ``` input = ["This",
+        "is", "a", "test", "."] encoded = [0.1, 0.2, 0.3, 0.4, 0.5] ```
+      CONCAT_EMBEDDING: Select this encoding when the input tensor is encoded
+        into a 2-dimensional array represented by an encoded tensor.
+        InputMetadata.encoded_tensor_name must be provided for this encoding.
+        The first dimension of the encoded tensor's shape is the same as the
+        input tensor's shape. For example: ``` input = ["This", "is", "a",
+        "test", "."] encoded = [[0.1, 0.2, 0.3, 0.4, 0.5], [0.2, 0.1, 0.4,
+        0.3, 0.5], [0.5, 0.1, 0.3, 0.5, 0.4], [0.5, 0.3, 0.1, 0.2, 0.4], [0.4,
+        0.3, 0.2, 0.5, 0.1]] ```
+    """
+    ENCODING_UNSPECIFIED = 0
+    IDENTITY = 1
+    BAG_OF_FEATURES = 2
+    BAG_OF_FEATURES_SPARSE = 3
+    INDICATOR = 4
+    COMBINED_EMBEDDING = 5
+    CONCAT_EMBEDDING = 6
+
+  denseShapeTensorName = _messages.StringField(1)
+  encodedBaselines = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+  encodedTensorName = _messages.StringField(3)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 4)
+  featureValueDomain = _messages.MessageField('GoogleCloudAiplatformInternalExplanationMetadataInputMetadataFeatureValueDomain', 5)
+  groupName = _messages.StringField(6)
+  indexFeatureMapping = _messages.StringField(7, repeated=True)
+  indicesTensorName = _messages.StringField(8)
+  inputBaselines = _messages.MessageField('extra_types.JsonValue', 9, repeated=True)
+  inputTensorName = _messages.StringField(10)
+  modality = _messages.StringField(11)
+  visualization = _messages.MessageField('GoogleCloudAiplatformInternalExplanationMetadataInputMetadataVisualization', 12)
+
+
+class GoogleCloudAiplatformInternalExplanationMetadataInputMetadataFeatureValueDomain(_messages.Message):
+  r"""Domain details of the input feature value. Provides numeric information
+  about the feature, such as its range (min, max). If the feature has been
+  pre-processed, for example with z-scoring, then it provides information
+  about how to recover the original feature. For example, if the input feature
+  is an image and it has been pre-processed to obtain 0-mean and stddev = 1
+  values, then original_mean, and original_stddev refer to the mean and stddev
+  of the original feature (e.g. image tensor) from which input feature (with
+  mean = 0 and stddev = 1) was obtained.
+
+  Fields:
+    maxValue: The maximum permissible value for this feature.
+    minValue: The minimum permissible value for this feature.
+    originalMean: If this input feature has been normalized to a mean value of
+      0, the original_mean specifies the mean value of the domain prior to
+      normalization.
+    originalStddev: If this input feature has been normalized to a standard
+      deviation of 1.0, the original_stddev specifies the standard deviation
+      of the domain prior to normalization.
+  """
+
+  maxValue = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  minValue = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  originalMean = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  originalStddev = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformInternalExplanationMetadataInputMetadataVisualization(_messages.Message):
+  r"""Visualization configurations for image explanation.
+
+  Enums:
+    ColorMapValueValuesEnum: The color scheme used for the highlighted areas.
+      Defaults to PINK_GREEN for Integrated Gradients attribution, which shows
+      positive attributions in green and negative in pink. Defaults to VIRIDIS
+      for XRAI attribution, which highlights the most influential regions in
+      yellow and the least influential in blue.
+    OverlayTypeValueValuesEnum: How the original image is displayed in the
+      visualization. Adjusting the overlay can help increase visual clarity if
+      the original image makes it difficult to view the visualization.
+      Defaults to NONE.
+    PolarityValueValuesEnum: Whether to only highlight pixels with positive
+      contributions, negative or both. Defaults to POSITIVE.
+    TypeValueValuesEnum: Type of the image visualization. Only applicable to
+      Integrated Gradients attribution. OUTLINES shows regions of attribution,
+      while PIXELS shows per-pixel attribution. Defaults to OUTLINES.
+
+  Fields:
+    clipPercentLowerbound: Excludes attributions below the specified
+      percentile, from the highlighted areas. Defaults to 35.
+    clipPercentUpperbound: Excludes attributions above the specified
+      percentile from the highlighted areas. Using the clip_percent_upperbound
+      and clip_percent_lowerbound together can be useful for filtering out
+      noise and making it easier to see areas of strong attribution. Defaults
+      to 99.9.
+    colorMap: The color scheme used for the highlighted areas. Defaults to
+      PINK_GREEN for Integrated Gradients attribution, which shows positive
+      attributions in green and negative in pink. Defaults to VIRIDIS for XRAI
+      attribution, which highlights the most influential regions in yellow and
+      the least influential in blue.
+    overlayType: How the original image is displayed in the visualization.
+      Adjusting the overlay can help increase visual clarity if the original
+      image makes it difficult to view the visualization. Defaults to NONE.
+    polarity: Whether to only highlight pixels with positive contributions,
+      negative or both. Defaults to POSITIVE.
+    type: Type of the image visualization. Only applicable to Integrated
+      Gradients attribution. OUTLINES shows regions of attribution, while
+      PIXELS shows per-pixel attribution. Defaults to OUTLINES.
+  """
+
+  class ColorMapValueValuesEnum(_messages.Enum):
+    r"""The color scheme used for the highlighted areas. Defaults to
+    PINK_GREEN for Integrated Gradients attribution, which shows positive
+    attributions in green and negative in pink. Defaults to VIRIDIS for XRAI
+    attribution, which highlights the most influential regions in yellow and
+    the least influential in blue.
+
+    Values:
+      COLOR_MAP_UNSPECIFIED: Should not be used.
+      PINK_GREEN: Positive: green. Negative: pink.
+      VIRIDIS: Viridis color map: A perceptually uniform color mapping which
+        is easier to see by those with colorblindness and progresses from
+        yellow to green to blue. Positive: yellow. Negative: blue.
+      RED: Positive: red. Negative: red.
+      GREEN: Positive: green. Negative: green.
+      RED_GREEN: Positive: green. Negative: red.
+      PINK_WHITE_GREEN: PiYG palette.
+    """
+    COLOR_MAP_UNSPECIFIED = 0
+    PINK_GREEN = 1
+    VIRIDIS = 2
+    RED = 3
+    GREEN = 4
+    RED_GREEN = 5
+    PINK_WHITE_GREEN = 6
+
+  class OverlayTypeValueValuesEnum(_messages.Enum):
+    r"""How the original image is displayed in the visualization. Adjusting
+    the overlay can help increase visual clarity if the original image makes
+    it difficult to view the visualization. Defaults to NONE.
+
+    Values:
+      OVERLAY_TYPE_UNSPECIFIED: Default value. This is the same as NONE.
+      NONE: No overlay.
+      ORIGINAL: The attributions are shown on top of the original image.
+      GRAYSCALE: The attributions are shown on top of grayscaled version of
+        the original image.
+      MASK_BLACK: The attributions are used as a mask to reveal predictive
+        parts of the image and hide the un-predictive parts.
+    """
+    OVERLAY_TYPE_UNSPECIFIED = 0
+    NONE = 1
+    ORIGINAL = 2
+    GRAYSCALE = 3
+    MASK_BLACK = 4
+
+  class PolarityValueValuesEnum(_messages.Enum):
+    r"""Whether to only highlight pixels with positive contributions, negative
+    or both. Defaults to POSITIVE.
+
+    Values:
+      POLARITY_UNSPECIFIED: Default value. This is the same as POSITIVE.
+      POSITIVE: Highlights the pixels/outlines that were most influential to
+        the model's prediction.
+      NEGATIVE: Setting polarity to negative highlights areas that does not
+        lead to the models's current prediction.
+      BOTH: Shows both positive and negative attributions.
+    """
+    POLARITY_UNSPECIFIED = 0
+    POSITIVE = 1
+    NEGATIVE = 2
+    BOTH = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the image visualization. Only applicable to Integrated
+    Gradients attribution. OUTLINES shows regions of attribution, while PIXELS
+    shows per-pixel attribution. Defaults to OUTLINES.
+
+    Values:
+      TYPE_UNSPECIFIED: Should not be used.
+      PIXELS: Shows which pixel contributed to the image prediction.
+      OUTLINES: Shows which region contributed to the image prediction by
+        outlining the region.
+    """
+    TYPE_UNSPECIFIED = 0
+    PIXELS = 1
+    OUTLINES = 2
+
+  clipPercentLowerbound = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  clipPercentUpperbound = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  colorMap = _messages.EnumField('ColorMapValueValuesEnum', 3)
+  overlayType = _messages.EnumField('OverlayTypeValueValuesEnum', 4)
+  polarity = _messages.EnumField('PolarityValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+
+
+class GoogleCloudAiplatformInternalExplanationMetadataOutputMetadata(_messages.Message):
+  r"""Metadata of the prediction output to be explained.
+
+  Fields:
+    displayNameMappingKey: Specify a field name in the prediction to look for
+      the display name. Use this if the prediction contains the display names
+      for the outputs. The display names in the prediction must have the same
+      shape of the outputs, so that it can be located by
+      Attribution.output_index for a specific output.
+    indexDisplayNameMapping: Static mapping between the index and display
+      name. Use this if the outputs are a deterministic n-dimensional array,
+      e.g. a list of scores of all the classes in a pre-defined order for a
+      multi-classification Model. It's not feasible if the outputs are non-
+      deterministic, e.g. the Model produces top-k classes or sort the outputs
+      by their values. The shape of the value must be an n-dimensional array
+      of strings. The number of dimentions must match that of the outputs to
+      be explained. The Attribution.output_display_name is populated by
+      locating in the mapping with Attribution.output_index.
+    outputTensorName: Name of the output tensor. Required and is only
+      applicable to AI Platform provided images for Tensorflow.
+  """
+
+  displayNameMappingKey = _messages.StringField(1)
+  indexDisplayNameMapping = _messages.MessageField('extra_types.JsonValue', 2)
+  outputTensorName = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformInternalExplanationParameters(_messages.Message):
+  r"""Parameters to configure explaining for Model's predictions.
+
+  Fields:
+    integratedGradientsAttribution: An attribution method that computes
+      Aumann-Shapley values taking advantage of the model's fully
+      differentiable structure. Refer to this paper for more details:
+      https://arxiv.org/abs/1703.01365
+    outputIndices: If populated, only returns attributions that have
+      output_index contained in output_indices. It must be an ndarray of
+      integers, with the same shape of the output it's explaining. If not
+      populated, returns attributions for top_k indices of outputs. If neither
+      top_k nor output_indeices is populated, returns the argmax index of the
+      outputs. Only applicable to Models that predict multiple outputs (e,g,
+      multi-class Models that predict multiple classes).
+    sampledShapleyAttribution: An attribution method that approximates Shapley
+      values for features that contribute to the label being predicted. A
+      sampling strategy is used to approximate the value rather than
+      considering all subsets of features. Refer to this paper for model
+      details: https://arxiv.org/abs/1306.4265.
+    topK: If populated, returns attributions for top K indices of outputs
+      (defaults to 1). Only applies to Models that predicts more than one
+      outputs (e,g, multi-class Models). When set to -1, returns explanations
+      for all outputs.
+    xraiAttribution: An attribution method that redistributes Integrated
+      Gradients attribution to segmented regions, taking advantage of the
+      model's fully differentiable structure. Refer to this paper for more
+      details: https://arxiv.org/abs/1906.02825 XRAI currently performs better
+      on natural images, like a picture of a house or an animal. If the images
+      are taken in artificial environments, like a lab or manufacturing line,
+      or from diagnostic equipment, like x-rays or quality-control cameras,
+      use Integrated Gradients instead.
+  """
+
+  integratedGradientsAttribution = _messages.MessageField('GoogleCloudAiplatformInternalIntegratedGradientsAttribution', 1)
+  outputIndices = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformInternalSampledShapleyAttribution', 3)
+  topK = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  xraiAttribution = _messages.MessageField('GoogleCloudAiplatformInternalXraiAttribution', 5)
+
+
+class GoogleCloudAiplatformInternalExplanationSpec(_messages.Message):
+  r"""Specification of Model explanation.
+
+  Fields:
+    metadata: Required. Metadata describing the Model's input and output for
+      explanation.
+    parameters: Required. Parameters that configure explaining of the Model's
+      predictions.
+  """
+
+  metadata = _messages.MessageField('GoogleCloudAiplatformInternalExplanationMetadata', 1)
+  parameters = _messages.MessageField('GoogleCloudAiplatformInternalExplanationParameters', 2)
+
+
+class GoogleCloudAiplatformInternalExportDataOperationMetadata(_messages.Message):
+  r"""Runtime operation information for DatasetService.ExportData.
+
+  Fields:
+    gcsOutputDirectory: A Google Cloud Storage directory which path ends with
+      '/'. The exported data is stored in the directory.
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  gcsOutputDirectory = _messages.StringField(1)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 2)
+
+
+class GoogleCloudAiplatformInternalExportDataResponse(_messages.Message):
+  r"""Response message for DatasetService.ExportData.
+
+  Fields:
+    exportedFiles: All of the files that are exported in this export
+      operation.
+  """
+
+  exportedFiles = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudAiplatformInternalExportModelOperationMetadata(_messages.Message):
+  r"""Details of ModelService.ExportModel operation.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+    outputInfo: Output only. Information further describing the output of this
+      Model export.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+  outputInfo = _messages.MessageField('GoogleCloudAiplatformInternalExportModelOperationMetadataOutputInfo', 2)
+
+
+class GoogleCloudAiplatformInternalExportModelOperationMetadataOutputInfo(_messages.Message):
+  r"""Further describes the output of the ExportModel. Supplements
+  ExportModelRequest.OutputConfig.
+
+  Fields:
+    artifactOutputUri: Output only. If the Model artifact is being exported to
+      Google Cloud Storage this is the full path of the directory created,
+      into which the Model files are being written to.
+    imageOutputUri: Output only. If the Model image is being exported to
+      Google Container Registry or Artifact Registry this is the full path of
+      the image created.
+  """
+
+  artifactOutputUri = _messages.StringField(1)
+  imageOutputUri = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformInternalExportModelResponse(_messages.Message):
+  r"""Response message of ModelService.ExportModel operation."""
+
+
+class GoogleCloudAiplatformInternalFeatureNoiseSigma(_messages.Message):
+  r"""Noise sigma by features. Noise sigma represents the standard deviation
+  of the gaussian kernel that will be used to add noise to interpolated inputs
+  prior to computing gradients.
+
+  Fields:
+    noiseSigma: Noise sigma per feature. No noise is added to features that
+      are not set.
+  """
+
+  noiseSigma = _messages.MessageField('GoogleCloudAiplatformInternalFeatureNoiseSigmaNoiseSigmaForFeature', 1, repeated=True)
+
+
+class GoogleCloudAiplatformInternalFeatureNoiseSigmaNoiseSigmaForFeature(_messages.Message):
+  r"""Noise sigma for a single feature.
+
+  Fields:
+    name: The name of the input feature for which noise sigma is provided. The
+      features are defined in explanation metadata inputs.
+    sigma: This represents the standard deviation of the Gaussian kernel that
+      will be used to add noise to the feature prior to computing gradients.
+      Similar to noise_sigma but represents the noise added to the current
+      feature. Defaults to 0.1.
+  """
+
+  name = _messages.StringField(1)
+  sigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformInternalGenerateDatasetStatsOperationMetadata(_messages.Message):
+  r"""Runtime operation information for DatasetService.GenerateDatasetStats.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalGenerateDatasetStatsResponse(_messages.Message):
+  r"""Response message for DatasetService.GenerateDatasetStats."""
 
 
 class GoogleCloudAiplatformInternalGenericOperationMetadata(_messages.Message):
@@ -3451,6 +4475,115 @@ class GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling(_messages.Messag
   rate = _messages.FloatField(1)
 
 
+class GoogleCloudAiplatformInternalImportDataOperationMetadata(_messages.Message):
+  r"""Runtime operation information for DatasetService.ImportData.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalImportDataResponse(_messages.Message):
+  r"""Response message for DatasetService.ImportData."""
+
+
+class GoogleCloudAiplatformInternalIntegratedGradientsAttribution(_messages.Message):
+  r"""An attribution method that computes the Aumann-Shapley value taking
+  advantage of the model's fully differentiable structure. Refer to this paper
+  for more details: https://arxiv.org/abs/1703.01365
+
+  Fields:
+    smoothGradConfig: Config for SmoothGrad approximation of gradients. When
+      enabled, the gradients are approximated by averaging the gradients from
+      noisy samples in the vicinity of the inputs. Adding noise can help
+      improve the computed gradients. Refer to this paper for more details:
+      https://arxiv.org/pdf/1706.03825.pdf
+    stepCount: Required. The number of steps for approximating the path
+      integral. A good value to start is 50 and gradually increase until the
+      sum to diff property is within the desired error range. Valid range of
+      its value is [1, 100], inclusively.
+  """
+
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformInternalSmoothGradConfig', 1)
+  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
+  r"""Specification of a single machine.
+
+  Enums:
+    AcceleratorTypeValueValuesEnum: Immutable. The type of accelerator(s) that
+      may be attached to the machine as per accelerator_count.
+
+  Fields:
+    acceleratorCount: The number of accelerators to attach to the machine.
+    acceleratorType: Immutable. The type of accelerator(s) that may be
+      attached to the machine as per accelerator_count.
+    machineType: Immutable. The type of the machine. For the machine types
+      supported for prediction, see https://tinyurl.com/aip-
+      docs/predictions/machine-types. For machine types supported for creating
+      a custom training job, see https://tinyurl.com/aip-
+      docs/training/configure-compute. For DeployedModel this field is
+      optional, and the default value is `n1-standard-2`. For
+      BatchPredictionJob or as part of WorkerPoolSpec this field is required.
+  """
+
+  class AcceleratorTypeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The type of accelerator(s) that may be attached to the
+    machine as per accelerator_count.
+
+    Values:
+      ACCELERATOR_TYPE_UNSPECIFIED: Unspecified accelerator type, which means
+        no accelerator.
+      NVIDIA_TESLA_K80: Nvidia Tesla K80 GPU.
+      NVIDIA_TESLA_P100: Nvidia Tesla P100 GPU.
+      NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
+      NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
+      NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
+      TPU_V2: TPU v2.
+      TPU_V3: TPU v3.
+    """
+    ACCELERATOR_TYPE_UNSPECIFIED = 0
+    NVIDIA_TESLA_K80 = 1
+    NVIDIA_TESLA_P100 = 2
+    NVIDIA_TESLA_V100 = 3
+    NVIDIA_TESLA_P4 = 4
+    NVIDIA_TESLA_T4 = 5
+    TPU_V2 = 6
+    TPU_V3 = 7
+
+  acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
+  machineType = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformInternalRemoveAnnotationSpecFromSavedQueryOperationMetadata(_messages.Message):
+  r"""Runtime operation information for
+  DatasetService.RemoveAnnotationSpecFromSavedQuery.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalSampledShapleyAttribution(_messages.Message):
+  r"""An attribution method that approximates Shapley values for features that
+  contribute to the label being predicted. A sampling strategy is used to
+  approximate the value rather than considering all subsets of features.
+
+  Fields:
+    pathCount: Required. The number of feature permutations to consider when
+      approximating the Shapley values. Valid range of its value is [1, 50],
+      inclusively.
+  """
+
+  pathCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudAiplatformInternalSendHumanInTheLoopEntryOperationMetadata(_messages.Message):
   r"""Runtime operation information for
   HumanInTheLoopService.SendHumanInTheLoopEntry
@@ -3513,6 +4646,140 @@ class GoogleCloudAiplatformInternalSendHumanInTheLoopEntryResponse(_messages.Mes
   state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
+class GoogleCloudAiplatformInternalSmoothGradConfig(_messages.Message):
+  r"""Config for SmoothGrad approximation of gradients. When enabled, the
+  gradients are approximated by averaging the gradients from noisy samples in
+  the vicinity of the inputs. Adding noise can help improve the computed
+  gradients. Refer to this paper for more details:
+  https://arxiv.org/pdf/1706.03825.pdf
+
+  Fields:
+    featureNoiseSigma: This is similar to noise_sigma, but provides additional
+      flexibility. A separate noise sigma can be provided for each feature,
+      which is useful if their distributions are different. No noise is added
+      to features that are not set. If this field is unset, noise_sigma will
+      be used for all features.
+    noiseSigma: This is a single float value and will be used to add noise to
+      all the features. Use this field when all features are normalized to
+      have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring,
+      where features are normalized to have 0-mean and 1-variance. For more
+      details about normalization: https://tinyurl.com/dgc-normalization. For
+      best results the recommended value is about 10% - 20% of the standard
+      deviation of the input feature. Refer to section 3.2 of the SmoothGrad
+      paper: https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
+      distribution is different per feature, set feature_noise_sigma instead
+      for each feature.
+    noisySampleCount: The number of gradient samples to use for approximation.
+      The higher this number, the more accurate the gradient is, but the
+      runtime complexity increases by this factor as well. Valid range of its
+      value is [1, 50]. Defaults to 3.
+  """
+
+  featureNoiseSigma = _messages.MessageField('GoogleCloudAiplatformInternalFeatureNoiseSigma', 1)
+  noiseSigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  noisySampleCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformInternalSpecialistPool(_messages.Message):
+  r"""SpecialistPool represents customers' own workforce to work on their data
+  labeling jobs. It includes a group of specialist managers who are
+  responsible for managing the labelers in this pool as well as customers'
+  data labeling jobs associated with this pool. Customers create specialist
+  pool as well as start data labeling jobs on Cloud, managers and labelers
+  work with the jobs using CrowdCompute console.
+
+  Fields:
+    displayName: Required. The user-defined name of the SpecialistPool. The
+      name can be up to 128 characters long and can be consist of any UTF-8
+      characters. This field should be unique on project-level.
+    name: Required. The resource name of the SpecialistPool.
+    pendingDataLabelingJobs: Output only. The resource name of the pending
+      data labeling jobs.
+    specialistManagerEmails: The email addresses of the specialists in the
+      SpecialistPool.
+    specialistManagersCount: Output only. The number of Specialists in this
+      SpecialistPool.
+  """
+
+  displayName = _messages.StringField(1)
+  name = _messages.StringField(2)
+  pendingDataLabelingJobs = _messages.StringField(3, repeated=True)
+  specialistManagerEmails = _messages.StringField(4, repeated=True)
+  specialistManagersCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformInternalUndeployModelOperationMetadata(_messages.Message):
+  r"""Runtime operation information for EndpointService.UndeployModel.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalUndeployModelResponse(_messages.Message):
+  r"""Response message for EndpointService.UndeployModel."""
+
+
+class GoogleCloudAiplatformInternalUpdateSpecialistPoolOperationMetadata(_messages.Message):
+  r"""Runtime operation metadata for
+  SpecialistPoolService.UpdateSpecialistPool.
+
+  Fields:
+    genericMetadata: The operation generic information.
+    specialistPool: Output only. The name of the SpecialistPool to which the
+      specialists are being added. Format: `projects/{project_id}/locations/{l
+      ocation_id}/specialistPools/{specialist_pool}`
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+  specialistPool = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformInternalUploadModelOperationMetadata(_messages.Message):
+  r"""Details of ModelService.UploadModel operation.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalUploadModelResponse(_messages.Message):
+  r"""Response message of ModelService.UploadModel operation.
+
+  Fields:
+    model: The name of the uploaded Model resource. Format:
+      `projects/{project}/locations/{location}/models/{model}`
+  """
+
+  model = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformInternalXraiAttribution(_messages.Message):
+  r"""An explanation method that redistributes Integrated Gradients
+  attributions to segmented regions, taking advantage of the model's fully
+  differentiable structure. Refer to this paper for more details:
+  https://arxiv.org/abs/1906.02825 Supported only by image Models.
+
+  Fields:
+    smoothGradConfig: Config for SmoothGrad approximation of gradients. When
+      enabled, the gradients are approximated by averaging the gradients from
+      noisy samples in the vicinity of the inputs. Adding noise can help
+      improve the computed gradients. Refer to this paper for more details:
+      https://arxiv.org/pdf/1706.03825.pdf
+    stepCount: Required. The number of steps for approximating the path
+      integral. A good value to start is 50 and gradually increase until the
+      sum to diff property is met within the desired error range. Valid range
+      of its value is [1, 100], inclusively.
+  """
+
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformInternalSmoothGradConfig', 1)
+  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudAiplatformUiAnnotationSpecStats(_messages.Message):
   r"""Stats of DataItems annotated by the specified AnnotationSpec and
   Annotations with the AnnotationSpec in a SavedQuery.
@@ -3568,7 +4835,7 @@ class GoogleCloudAiplatformUiAutomaticResources(_messages.Message):
   Fields:
     maxReplicaCount: Immutable. The maximum number of replicas this
       DeployedModel may be deployed on when the traffic against it increases.
-      If requested value is too large, the deployment will error, but if
+      If the requested value is too large, the deployment will error, but if
       deployment succeeds then the ability to scale the model to that many
       replicas is guaranteed (barring service outages). If traffic against the
       DeployedModel increases beyond what its replicas at maximum may handle,
@@ -3579,32 +4846,12 @@ class GoogleCloudAiplatformUiAutomaticResources(_messages.Message):
       DeployedModel will be always deployed on. If traffic against it
       increases, it may dynamically be deployed onto more replicas up to
       max_replica_count, and as traffic decreases, some of these extra
-      replicas may be freed. If requested value is too large, the deployment
-      will error.
+      replicas may be freed. If the requested value is too large, the
+      deployment will error.
   """
 
   maxReplicaCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   minReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
-class GoogleCloudAiplatformUiAutoscalingMetricSpec(_messages.Message):
-  r"""The metric specification that defines the target resource utilization
-  (CPU utilization, accelerator's duty cycle, and so on) for calculating the
-  desired replica count.
-
-  Fields:
-    metricName: Required. The resource metric name. Supported metrics: * For
-      Online Prediction: *
-      `aiplatform.googleapis.com/prediction/online/accelerator/duty_cycle` *
-      `aiplatform.googleapis.com/prediction/online/cpu/utilization`
-    target: The target resource utilization in percentage (1% - 100%) for the
-      given metric; once the real usage deviates from the target by a certain
-      percentage, the machine replicas change. The default value is 60
-      (representing 60%) if not provided.
-  """
-
-  metricName = _messages.StringField(1)
-  target = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformUiBatchMigrateResourcesOperationMetadata(_messages.Message):
@@ -3613,7 +4860,7 @@ class GoogleCloudAiplatformUiBatchMigrateResourcesOperationMetadata(_messages.Me
 
   Fields:
     genericMetadata: The common part of the operation metadata.
-    partialResults: Partial results that reflects the latest migration
+    partialResults: Partial results that reflect the latest migration
       operation progress.
   """
 
@@ -3622,7 +4869,7 @@ class GoogleCloudAiplatformUiBatchMigrateResourcesOperationMetadata(_messages.Me
 
 
 class GoogleCloudAiplatformUiBatchMigrateResourcesOperationMetadataPartialResult(_messages.Message):
-  r"""Represents a partial result in batch migration opreation for one
+  r"""Represents a partial result in batch migration operation for one
   MigrateResourceRequest.
 
   Fields:
@@ -3783,26 +5030,11 @@ class GoogleCloudAiplatformUiDedicatedResources(_messages.Message):
   that need a higher degree of manual configuration.
 
   Fields:
-    autoscalingMetricSpecs: Immutable. The metric specifications that
-      overrides a resource utilization metric (CPU utilization, accelerator's
-      duty cycle, and so on) target value (default to 60 if not set). At most
-      one entry is allowed per metric. If machine_spec.accelerator_count is
-      above 0, the autoscaling will be based on both CPU utilization and
-      accelerator's duty cycle metrics and scale up when either metrics
-      exceeds its target value while scale down if both metrics are under
-      their target value. The default target value is 60 for both metrics. If
-      machine_spec.accelerator_count is 0, the autoscaling will be based on
-      CPU utilization metric only with default target value 60 if not
-      explicitly set. For example, in the case of Online Prediction, if you
-      want to override target CPU utilization to 80, you should set
-      autoscaling_metric_specs.metric_name to
-      `aiplatform.googleapis.com/prediction/online/cpu/utilization` and
-      autoscaling_metric_specs.target to `80`.
     machineSpec: Required. Immutable. The specification of a single machine
       used by the prediction.
     maxReplicaCount: Immutable. The maximum number of replicas this
       DeployedModel may be deployed on when the traffic against it increases.
-      If requested value is too large, the deployment will error, but if
+      If the requested value is too large, the deployment will error, but if
       deployment succeeds then the ability to scale the model to that many
       replicas is guaranteed (barring service outages). If traffic against the
       DeployedModel increases beyond what its replicas at maximum may handle,
@@ -3816,10 +5048,9 @@ class GoogleCloudAiplatformUiDedicatedResources(_messages.Message):
       will be always deployed precisely on min_replica_count.
   """
 
-  autoscalingMetricSpecs = _messages.MessageField('GoogleCloudAiplatformUiAutoscalingMetricSpec', 1, repeated=True)
-  machineSpec = _messages.MessageField('GoogleCloudAiplatformUiMachineSpec', 2)
-  maxReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  minReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  machineSpec = _messages.MessageField('GoogleCloudAiplatformUiMachineSpec', 1)
+  maxReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformUiDeleteOperationMetadata(_messages.Message):
@@ -3893,9 +5124,9 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
       Model.explanation_spec must be populated, otherwise explanation for this
       Model is not allowed.
     id: Output only. The ID of the DeployedModel.
-    model: Required. The name of the Model this is the deployment of. Note
-      that the Model may be in a different location than the DeployedModel's
-      Endpoint.
+    model: Required. The name of the Model that this is the deployment of.
+      Note that the Model may be in a different location than the
+      DeployedModel's Endpoint.
     modelDisplayName: Output only. The display name of the Model this
       DeployedModel was created from.
     modelObjective: Output only. The objective of the Model this DeployedModel
@@ -4684,8 +5915,8 @@ class GoogleCloudAiplatformUiMigratableResource(_messages.Message):
     automlModel: Output only. Represents one Model in automl.googleapis.com.
     dataLabelingDataset: Output only. Represents one Dataset in
       datalabeling.googleapis.com.
-    lastMigrateTime: Output only. Timestamp when last migrate attempt on this
-      MigratableResource started. Will not be set if there's no migrate
+    lastMigrateTime: Output only. Timestamp when the last migration attempt on
+      this MigratableResource started. Will not be set if there's no migration
       attempt on this MigratableResource.
     lastUpdateTime: Output only. Timestamp when this MigratableResource was
       last updated.
@@ -5686,7 +6917,7 @@ class GoogleCloudAiplatformV1AutomaticResources(_messages.Message):
   Fields:
     maxReplicaCount: Immutable. The maximum number of replicas this
       DeployedModel may be deployed on when the traffic against it increases.
-      If requested value is too large, the deployment will error, but if
+      If the requested value is too large, the deployment will error, but if
       deployment succeeds then the ability to scale the model to that many
       replicas is guaranteed (barring service outages). If traffic against the
       DeployedModel increases beyond what its replicas at maximum may handle,
@@ -5697,8 +6928,8 @@ class GoogleCloudAiplatformV1AutomaticResources(_messages.Message):
       DeployedModel will be always deployed on. If traffic against it
       increases, it may dynamically be deployed onto more replicas up to
       max_replica_count, and as traffic decreases, some of these extra
-      replicas may be freed. If requested value is too large, the deployment
-      will error.
+      replicas may be freed. If the requested value is too large, the
+      deployment will error.
   """
 
   maxReplicaCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5711,7 +6942,7 @@ class GoogleCloudAiplatformV1BatchMigrateResourcesOperationMetadata(_messages.Me
 
   Fields:
     genericMetadata: The common part of the operation metadata.
-    partialResults: Partial results that reflects the latest migration
+    partialResults: Partial results that reflect the latest migration
       operation progress.
   """
 
@@ -5720,7 +6951,7 @@ class GoogleCloudAiplatformV1BatchMigrateResourcesOperationMetadata(_messages.Me
 
 
 class GoogleCloudAiplatformV1BatchMigrateResourcesOperationMetadataPartialResult(_messages.Message):
-  r"""Represents a partial result in batch migration opreation for one
+  r"""Represents a partial result in batch migration operation for one
   MigrateResourceRequest.
 
   Fields:
@@ -5787,7 +7018,7 @@ class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
       used by the prediction.
     maxReplicaCount: Immutable. The maximum number of replicas this
       DeployedModel may be deployed on when the traffic against it increases.
-      If requested value is too large, the deployment will error, but if
+      If the requested value is too large, the deployment will error, but if
       deployment succeeds then the ability to scale the model to that many
       replicas is guaranteed (barring service outages). If traffic against the
       DeployedModel increases beyond what its replicas at maximum may handle,
@@ -5860,9 +7091,9 @@ class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
       project receives prediction requests at a high queries per second rate
       (QPS). Estimate your costs before enabling this option.
     id: Output only. The ID of the DeployedModel.
-    model: Required. The name of the Model this is the deployment of. Note
-      that the Model may be in a different location than the DeployedModel's
-      Endpoint.
+    model: Required. The name of the Model that this is the deployment of.
+      Note that the Model may be in a different location than the
+      DeployedModel's Endpoint.
     serviceAccount: The service account that the DeployedModel's container
       runs as. Specify the email address of the service account. If this
       service account is not specified, the container runs as a service
@@ -6031,8 +7262,8 @@ class GoogleCloudAiplatformV1MigratableResource(_messages.Message):
     automlModel: Output only. Represents one Model in automl.googleapis.com.
     dataLabelingDataset: Output only. Represents one Dataset in
       datalabeling.googleapis.com.
-    lastMigrateTime: Output only. Timestamp when last migrate attempt on this
-      MigratableResource started. Will not be set if there's no migrate
+    lastMigrateTime: Output only. Timestamp when the last migration attempt on
+      this MigratableResource started. Will not be set if there's no migration
       attempt on this MigratableResource.
     lastUpdateTime: Output only. Timestamp when this MigratableResource was
       last updated.
@@ -7429,6 +8660,10 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       given input column. And the result will be used for training. When
       creating transformation for BigQuery Struct column, the column should be
       flattened using "." as the delimiter.
+    validationOptions: Validation options for the data validation component.
+      The available options are: "fail-pipeline" - default, will validate
+      against the validation and fail the pipeline if it fails. "ignore-
+      validation" - ignore the results of the validation and continue
     weightColumn: Column name that should be used as the weight column. Higher
       values in this column give more importance to the row during model
       training. The column must have numeric values between 0 and 10000
@@ -7451,7 +8686,8 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
   timeVariantPastOnlyColumns = _messages.StringField(13, repeated=True)
   trainBudgetMilliNodeHours = _messages.IntegerField(14)
   transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 15, repeated=True)
-  weightColumn = _messages.StringField(16)
+  validationOptions = _messages.StringField(16)
+  weightColumn = _messages.StringField(17)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod(_messages.Message):
@@ -8697,7 +9933,7 @@ class GoogleCloudAiplatformV1alpha1AutomaticResources(_messages.Message):
   Fields:
     maxReplicaCount: Immutable. The maximum number of replicas this
       DeployedModel may be deployed on when the traffic against it increases.
-      If requested value is too large, the deployment will error, but if
+      If the requested value is too large, the deployment will error, but if
       deployment succeeds then the ability to scale the model to that many
       replicas is guaranteed (barring service outages). If traffic against the
       DeployedModel increases beyond what its replicas at maximum may handle,
@@ -8708,8 +9944,8 @@ class GoogleCloudAiplatformV1alpha1AutomaticResources(_messages.Message):
       DeployedModel will be always deployed on. If traffic against it
       increases, it may dynamically be deployed onto more replicas up to
       max_replica_count, and as traffic decreases, some of these extra
-      replicas may be freed. If requested value is too large, the deployment
-      will error.
+      replicas may be freed. If the requested value is too large, the
+      deployment will error.
   """
 
   maxReplicaCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -8722,7 +9958,7 @@ class GoogleCloudAiplatformV1alpha1BatchMigrateResourcesOperationMetadata(_messa
 
   Fields:
     genericMetadata: The common part of the operation metadata.
-    partialResults: Partial results that reflects the latest migration
+    partialResults: Partial results that reflect the latest migration
       operation progress.
   """
 
@@ -8731,7 +9967,7 @@ class GoogleCloudAiplatformV1alpha1BatchMigrateResourcesOperationMetadata(_messa
 
 
 class GoogleCloudAiplatformV1alpha1BatchMigrateResourcesOperationMetadataPartialResult(_messages.Message):
-  r"""Represents a partial result in batch migration opreation for one
+  r"""Represents a partial result in batch migration operation for one
   MigrateResourceRequest.
 
   Fields:
@@ -8776,6 +10012,30 @@ class GoogleCloudAiplatformV1alpha1CreateEndpointOperationMetadata(_messages.Mes
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1alpha1CreateIndexEndpointOperationMetadata(_messages.Message):
+  r"""Runtime operation information for
+  IndexEndpointService.CreateIndexEndpoint.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1alpha1CreateIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexService.CreateIndex.
+
+  Fields:
+    genericMetadata: The operation generic information.
+    nearestNeighborSearchOperationMetadata: The operation metadata with regard
+      to ScaNN Index operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
+  nearestNeighborSearchOperationMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadata', 2)
 
 
 class GoogleCloudAiplatformV1alpha1CreateSpecialistPoolOperationMetadata(_messages.Message):
@@ -8828,6 +10088,27 @@ class GoogleCloudAiplatformV1alpha1DeleteOperationMetadata(_messages.Message):
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1alpha1DeployIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexEndpointService.DeployIndex.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1alpha1DeployIndexResponse(_messages.Message):
+  r"""Response message for IndexEndpointService.DeployIndex.
+
+  Fields:
+    deployedIndex: The DeployedIndex that had been deployed in the
+      IndexEndpoint.
+  """
+
+  deployedIndex = _messages.MessageField('GoogleCloudAiplatformV1alpha1DeployedIndex', 1)
+
+
 class GoogleCloudAiplatformV1alpha1DeployModelOperationMetadata(_messages.Message):
   r"""Runtime operation information for EndpointService.DeployModel.
 
@@ -8846,6 +10127,51 @@ class GoogleCloudAiplatformV1alpha1DeployModelResponse(_messages.Message):
   """
 
   deployedModel = _messages.MessageField('GoogleCloudAiplatformV1alpha1DeployedModel', 1)
+
+
+class GoogleCloudAiplatformV1alpha1DeployedIndex(_messages.Message):
+  r"""A deployment of an Index. IndexEndpoints contain one or more
+  DeployedIndexes.
+
+  Fields:
+    automaticResources: A description of resources that the DeployedIndex
+      uses, which to large degree are decided by AI Platform, and optionally
+      allows only a modest additional configuration. The user is billed for
+      the resources (at least their minimal amount) even if the DeployedIndex
+      receives no traffic.
+    createTime: Output only. Timestamp when the DeployedIndex was created.
+    displayName: The display name of the DeployedIndex. If not provided upon
+      creation, the Index's display_name is used.
+    id: Required. The user specified ID of the DeployedIndex. The ID can be up
+      to 128 characters long and must start with a letter and only contain
+      letters, numbers, and underscores. The ID must be unique within the
+      project it is created in.
+    index: Required. The name of the Index this is the deployment of. We may
+      refer to this Index as the DeployedIndex's "original" Index.
+    indexSyncTime: Output only. The DeployedIndex may depend on various data
+      on its original Index. Additionally when certain changes to the original
+      Index are being done (e.g. when what the Index contains is being
+      changed) the DeployedIndex may be asynchronously updated in the
+      background to reflect this changes. If this timestamp's value is at
+      least the Index.update_time of the original Index, it means that this
+      DeployedIndex and the original Index are in sync. If this timestamp is
+      older, then to see which updates this DeployedIndex already contains
+      (and which not), one must list Operations working on the original Index.
+      Only the successfully completed Operations with
+      Operations.metadata.generic_metadata.update_time equal or before this
+      sync time are contained in this DeployedIndex.
+    privateEndpoints: Output only. Provides paths for users to send requests
+      directly to the deployed index services running on Cloud via private
+      services access. This field is populated if network is configured.
+  """
+
+  automaticResources = _messages.MessageField('GoogleCloudAiplatformV1alpha1AutomaticResources', 1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  id = _messages.StringField(4)
+  index = _messages.StringField(5)
+  indexSyncTime = _messages.StringField(6)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1alpha1IndexPrivateEndpoints', 7)
 
 
 class GoogleCloudAiplatformV1alpha1DeployedModel(_messages.Message):
@@ -8869,9 +10195,9 @@ class GoogleCloudAiplatformV1alpha1DeployedModel(_messages.Message):
       Model.explanation_spec must be populated, otherwise explanation for this
       Model is not allowed.
     id: Output only. The ID of the DeployedModel.
-    model: Required. The name of the Model this is the deployment of. Note
-      that the Model may be in a different location than the DeployedModel's
-      Endpoint.
+    model: Required. The name of the Model that this is the deployment of.
+      Note that the Model may be in a different location than the
+      DeployedModel's Endpoint.
   """
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1alpha1AutomaticResources', 1)
@@ -9182,6 +10508,18 @@ class GoogleCloudAiplatformV1alpha1ImportDataResponse(_messages.Message):
   r"""Response message for DatasetService.ImportData."""
 
 
+class GoogleCloudAiplatformV1alpha1IndexPrivateEndpoints(_messages.Message):
+  r"""IndexPrivateEndpoints proto is used to provide paths for users to send
+  requests via private services access.
+
+  Fields:
+    matchGrpcAddress: Output only. The ip address used to send match gRPC
+      requests.
+  """
+
+  matchGrpcAddress = _messages.StringField(1)
+
+
 class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
   r"""Specification of a single machine.
 
@@ -9241,8 +10579,8 @@ class GoogleCloudAiplatformV1alpha1MigratableResource(_messages.Message):
     automlModel: Output only. Represents one Model in automl.googleapis.com.
     dataLabelingDataset: Output only. Represents one Dataset in
       datalabeling.googleapis.com.
-    lastMigrateTime: Output only. Timestamp when last migrate attempt on this
-      MigratableResource started. Will not be set if there's no migrate
+    lastMigrateTime: Output only. Timestamp when the last migration attempt on
+      this MigratableResource started. Will not be set if there's no migration
       attempt on this MigratableResource.
     lastUpdateTime: Output only. Timestamp when this MigratableResource was
       last updated.
@@ -9449,6 +10787,88 @@ class GoogleCloudAiplatformV1alpha1MigrateResourceResponse(_messages.Message):
   dataset = _messages.StringField(1)
   migratableResource = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigratableResource', 2)
   model = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadata(_messages.Message):
+  r"""Runtime operation metadata with regard to ScaNN Index.
+
+  Fields:
+    contentValidationStats: The validation stats of the content (per file) to
+      be inserted or updated on the ScaNN Index resource. Populated if
+      contentsDeltaUri is provided as part of Index.metadata. Please note
+      that, currently for those files that are broken or has unsupported file
+      format, we will not have the stats for those files.
+  """
+
+  contentValidationStats = _messages.MessageField('GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataContentValidationStats', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataContentValidationStats(_messages.Message):
+  r"""A GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataCon
+  tentValidationStats object.
+
+  Fields:
+    invalidRecordCount: Number of records in this file we skipped due to
+      validate errors.
+    partialErrors: The detail information of the partial failures encountered
+      for those invalid records that couldn't be parsed. Up to 50 partial
+      errors will be reported.
+    sourceGcsUri: GCS uri pointing to the original file in user's bucket.
+    validRecordCount: Number of records in this file that were successfully
+      processed.
+  """
+
+  invalidRecordCount = _messages.IntegerField(1)
+  partialErrors = _messages.MessageField('GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataRecordError', 2, repeated=True)
+  sourceGcsUri = _messages.StringField(3)
+  validRecordCount = _messages.IntegerField(4)
+
+
+class GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataRecordError(_messages.Message):
+  r"""A GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataRec
+  ordError object.
+
+  Enums:
+    ErrorTypeValueValuesEnum: The error type of this record.
+
+  Fields:
+    embeddingId: Empty if the embedding id is failed to parse.
+    errorMessage: A human-readable message that is shown to the user to help
+      them fix the error. Note that this message may change from time to time,
+      your code should check against error_type as the source of truth.
+    errorType: The error type of this record.
+    rawRecord: The original content of this record.
+    sourceGcsUri: GCS uri pointing to the original file in user's bucket.
+  """
+
+  class ErrorTypeValueValuesEnum(_messages.Enum):
+    r"""The error type of this record.
+
+    Values:
+      ERROR_TYPE_UNSPECIFIED: Default, shall not be used.
+      EMPTY_LINE: The record is empty.
+      INVALID_JSON_SYNTAX: Invalid json format.
+      INVALID_CSV_SYNTAX: Invalid csv format.
+      INVALID_AVRO_SYNTAX: Invalid avro format.
+      INVALID_EMBEDDING_ID: The embedding id is not valid.
+      EMBEDDING_SIZE_MISMATCH: The size of the embedding vectors does not
+        match with the specified dimension.
+      NAMESPACE_MISSING: The `namespace` field is missing.
+    """
+    ERROR_TYPE_UNSPECIFIED = 0
+    EMPTY_LINE = 1
+    INVALID_JSON_SYNTAX = 2
+    INVALID_CSV_SYNTAX = 3
+    INVALID_AVRO_SYNTAX = 4
+    INVALID_EMBEDDING_ID = 5
+    EMBEDDING_SIZE_MISMATCH = 6
+    NAMESPACE_MISSING = 7
+
+  embeddingId = _messages.StringField(1)
+  errorMessage = _messages.StringField(2)
+  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 3)
+  rawRecord = _messages.StringField(4)
+  sourceGcsUri = _messages.StringField(5)
 
 
 class GoogleCloudAiplatformV1alpha1SampledShapleyAttribution(_messages.Message):
@@ -10005,6 +11425,20 @@ class GoogleCloudAiplatformV1alpha1SpecialistPool(_messages.Message):
   specialistManagersCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformV1alpha1UndeployIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexEndpointService.UndeployIndex.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1alpha1UndeployIndexResponse(_messages.Message):
+  r"""Response message for IndexEndpointService.UndeployIndex."""
+
+
 class GoogleCloudAiplatformV1alpha1UndeployModelOperationMetadata(_messages.Message):
   r"""Runtime operation information for EndpointService.UndeployModel.
 
@@ -10017,6 +11451,19 @@ class GoogleCloudAiplatformV1alpha1UndeployModelOperationMetadata(_messages.Mess
 
 class GoogleCloudAiplatformV1alpha1UndeployModelResponse(_messages.Message):
   r"""Response message for EndpointService.UndeployModel."""
+
+
+class GoogleCloudAiplatformV1alpha1UpdateIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexService.UpdateIndex.
+
+  Fields:
+    genericMetadata: The operation generic information.
+    nearestNeighborSearchOperationMetadata: The operation metadata with regard
+      to ScaNN Index operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
+  nearestNeighborSearchOperationMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadata', 2)
 
 
 class GoogleCloudAiplatformV1alpha1UpdateSpecialistPoolOperationMetadata(_messages.Message):
@@ -10066,9 +11513,9 @@ class GoogleCloudAiplatformV1alpha1UploadModelResponse(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1ActiveLearningConfig(_messages.Message):
-  r"""Parameters that configure active learning pipeline. Active learning will
-  label the data incrementally by several iterations. For every iteration, it
-  will select a batch of data based on the sampling strategy.
+  r"""Parameters that configure the active learning pipeline. Active learning
+  will label the data incrementally by several iterations. For every
+  iteration, it will select a batch of data based on the sampling strategy.
 
   Fields:
     maxDataItemCount: Max number of human labeled DataItems.
@@ -10103,7 +11550,7 @@ class GoogleCloudAiplatformV1beta1Annotation(_messages.Message):
       prefixed with "aiplatform.googleapis.com/" and are immutable. Following
       system labels exist for each Annotation: *
       "aiplatform.googleapis.com/annotation_set_name": optional, name of the
-      UI's annotation set this Annotation belongs to. If not set the
+      UI's annotation set this Annotation belongs to. If not set, the
       Annotation is not visible in the UI. *
       "aiplatform.googleapis.com/payload_schema": output only, its value is
       the payload_schema's title.
@@ -10111,7 +11558,7 @@ class GoogleCloudAiplatformV1beta1Annotation(_messages.Message):
   Fields:
     annotationSource: Output only. The source of the Annotation.
     createTime: Output only. Timestamp when this Annotation was created.
-    etag: Optional. Used to perform a consistent read-modify-write updates. If
+    etag: Optional. Used to perform consistent read-modify-write updates. If
       not set, a blind "overwrite" update happens.
     labels: Optional. The labels with user-defined metadata to organize your
       Annotations. Label keys and values can be no longer than 64 characters
@@ -10123,7 +11570,7 @@ class GoogleCloudAiplatformV1beta1Annotation(_messages.Message):
       prefixed with "aiplatform.googleapis.com/" and are immutable. Following
       system labels exist for each Annotation: *
       "aiplatform.googleapis.com/annotation_set_name": optional, name of the
-      UI's annotation set this Annotation belongs to. If not set the
+      UI's annotation set this Annotation belongs to. If not set, the
       Annotation is not visible in the UI. *
       "aiplatform.googleapis.com/payload_schema": output only, its value is
       the payload_schema's title.
@@ -10151,7 +11598,7 @@ class GoogleCloudAiplatformV1beta1Annotation(_messages.Message):
     "aiplatform.googleapis.com/" and are immutable. Following system labels
     exist for each Annotation: *
     "aiplatform.googleapis.com/annotation_set_name": optional, name of the
-    UI's annotation set this Annotation belongs to. If not set the Annotation
+    UI's annotation set this Annotation belongs to. If not set, the Annotation
     is not visible in the UI. * "aiplatform.googleapis.com/payload_schema":
     output only, its value is the payload_schema's title.
 
@@ -10193,7 +11640,7 @@ class GoogleCloudAiplatformV1beta1AnnotationSpec(_messages.Message):
     displayName: Required. The user-defined name of the AnnotationSpec. The
       name can be up to 128 characters long and can be consist of any UTF-8
       characters.
-    etag: Optional. Used to perform a consistent read-modify-write updates. If
+    etag: Optional. Used to perform consistent read-modify-write updates. If
       not set, a blind "overwrite" update happens.
     name: Output only. Resource name of the AnnotationSpec.
     updateTime: Output only. Timestamp when AnnotationSpec was last updated.
@@ -10279,7 +11726,7 @@ class GoogleCloudAiplatformV1beta1AutomaticResources(_messages.Message):
   Fields:
     maxReplicaCount: Immutable. The maximum number of replicas this
       DeployedModel may be deployed on when the traffic against it increases.
-      If requested value is too large, the deployment will error, but if
+      If the requested value is too large, the deployment will error, but if
       deployment succeeds then the ability to scale the model to that many
       replicas is guaranteed (barring service outages). If traffic against the
       DeployedModel increases beyond what its replicas at maximum may handle,
@@ -10290,8 +11737,8 @@ class GoogleCloudAiplatformV1beta1AutomaticResources(_messages.Message):
       DeployedModel will be always deployed on. If traffic against it
       increases, it may dynamically be deployed onto more replicas up to
       max_replica_count, and as traffic decreases, some of these extra
-      replicas may be freed. If requested value is too large, the deployment
-      will error.
+      replicas may be freed. If the requested value is too large, the
+      deployment will error.
   """
 
   maxReplicaCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -10322,7 +11769,7 @@ class GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadata(_messag
 
   Fields:
     genericMetadata: The common part of the operation metadata.
-    partialResults: Partial results that reflects the latest migration
+    partialResults: Partial results that reflect the latest migration
       operation progress.
   """
 
@@ -10331,7 +11778,7 @@ class GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadata(_messag
 
 
 class GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadataPartialResult(_messages.Message):
-  r"""Represents a partial result in batch migration opreation for one
+  r"""Represents a partial result in batch migration operation for one
   MigrateResourceRequest.
 
   Fields:
@@ -10622,8 +12069,12 @@ class GoogleCloudAiplatformV1beta1BigQueryDestination(_messages.Message):
   r"""The BigQuery location for the output content.
 
   Fields:
-    outputUri: Required. BigQuery URI to a project, up to 2000 characters
-      long. Accepted forms: * BigQuery path. For example: `bq://projectId`.
+    outputUri: Required. BigQuery URI to a project or table, up to 2000
+      characters long. When only the project is specified, the Dataset and
+      Table is created. When the full table reference is specified, the
+      Dataset must exist and table must not exist. Accepted forms: * BigQuery
+      path. For example: `bq://projectId` or
+      `bq://projectId.bqDatasetId.bqTableId`.
   """
 
   outputUri = _messages.StringField(1)
@@ -10684,7 +12135,7 @@ class GoogleCloudAiplatformV1beta1CompletionStats(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1ContainerRegistryDestination(_messages.Message):
-  r"""The Container Regsitry location for the container image.
+  r"""The Container Registry location for the container image.
 
   Fields:
     outputUri: Required. Container Registry URI of a container image. Only
@@ -10732,6 +12183,30 @@ class GoogleCloudAiplatformV1beta1CreateEndpointOperationMetadata(_messages.Mess
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1CreateIndexEndpointOperationMetadata(_messages.Message):
+  r"""Runtime operation information for
+  IndexEndpointService.CreateIndexEndpoint.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1CreateIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexService.CreateIndex.
+
+  Fields:
+    genericMetadata: The operation generic information.
+    nearestNeighborSearchOperationMetadata: The operation metadata with regard
+      to ScaNN Index operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+  nearestNeighborSearchOperationMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadata', 2)
 
 
 class GoogleCloudAiplatformV1beta1CreateSpecialistPoolOperationMetadata(_messages.Message):
@@ -10921,7 +12396,7 @@ class GoogleCloudAiplatformV1beta1DataItem(_messages.Message):
 
   Fields:
     createTime: Output only. Timestamp when this DataItem was created.
-    etag: Optional. Used to perform a consistent read-modify-write updates. If
+    etag: Optional. Used to perform consistent read-modify-write updates. If
       not set, a blind "overwrite" update happens.
     labels: Optional. The labels with user-defined metadata to organize your
       DataItems. Label keys and values can be no longer than 64 characters
@@ -11003,8 +12478,8 @@ class GoogleCloudAiplatformV1beta1DataLabelingJob(_messages.Message):
       output only, its value is the inputs_schema's title.
 
   Fields:
-    activeLearningConfig: Parameters that configure active learning pipeline.
-      Active learning will label the data incrementally via several
+    activeLearningConfig: Parameters that configure the active learning
+      pipeline. Active learning will label the data incrementally via several
       iterations. For every iteration, it will select a batch of data based on
       the sampling strategy.
     annotationLabels: Labels to assign to annotations generated by this
@@ -11269,7 +12744,7 @@ class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
       used by the prediction.
     maxReplicaCount: Immutable. The maximum number of replicas this
       DeployedModel may be deployed on when the traffic against it increases.
-      If requested value is too large, the deployment will error, but if
+      If the requested value is too large, the deployment will error, but if
       deployment succeeds then the ability to scale the model to that many
       replicas is guaranteed (barring service outages). If traffic against the
       DeployedModel increases beyond what its replicas at maximum may handle,
@@ -11296,6 +12771,38 @@ class GoogleCloudAiplatformV1beta1DeleteOperationMetadata(_messages.Message):
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1DeployIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexEndpointService.DeployIndex.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1DeployIndexRequest(_messages.Message):
+  r"""Request message for IndexEndpointService.DeployIndex.
+
+  Fields:
+    deployedIndex: Required. The DeployedIndex to be created within the
+      IndexEndpoint.
+  """
+
+  deployedIndex = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedIndex', 1)
+
+
+class GoogleCloudAiplatformV1beta1DeployIndexResponse(_messages.Message):
+  r"""Response message for IndexEndpointService.DeployIndex.
+
+  Fields:
+    deployedIndex: The DeployedIndex that had been deployed in the
+      IndexEndpoint.
+  """
+
+  deployedIndex = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedIndex', 1)
 
 
 class GoogleCloudAiplatformV1beta1DeployModelOperationMetadata(_messages.Message):
@@ -11381,6 +12888,64 @@ class GoogleCloudAiplatformV1beta1DeployModelResponse(_messages.Message):
   deployedModel = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedModel', 1)
 
 
+class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
+  r"""A deployment of an Index. IndexEndpoints contain one or more
+  DeployedIndexes.
+
+  Fields:
+    automaticResources: A description of resources that the DeployedIndex
+      uses, which to large degree are decided by AI Platform, and optionally
+      allows only a modest additional configuration. The user is billed for
+      the resources (at least their minimal amount) even if the DeployedIndex
+      receives no traffic.
+    createTime: Output only. Timestamp when the DeployedIndex was created.
+    displayName: The display name of the DeployedIndex. If not provided upon
+      creation, the Index's display_name is used.
+    id: Required. The user specified ID of the DeployedIndex. The ID can be up
+      to 128 characters long and must start with a letter and only contain
+      letters, numbers, and underscores. The ID must be unique within the
+      project it is created in.
+    index: Required. The name of the Index this is the deployment of. We may
+      refer to this Index as the DeployedIndex's "original" Index.
+    indexSyncTime: Output only. The DeployedIndex may depend on various data
+      on its original Index. Additionally when certain changes to the original
+      Index are being done (e.g. when what the Index contains is being
+      changed) the DeployedIndex may be asynchronously updated in the
+      background to reflect this changes. If this timestamp's value is at
+      least the Index.update_time of the original Index, it means that this
+      DeployedIndex and the original Index are in sync. If this timestamp is
+      older, then to see which updates this DeployedIndex already contains
+      (and which not), one must list Operations working on the original Index.
+      Only the successfully completed Operations with
+      Operations.metadata.generic_metadata.update_time equal or before this
+      sync time are contained in this DeployedIndex.
+    privateEndpoints: Output only. Provides paths for users to send requests
+      directly to the deployed index services running on Cloud via private
+      services access. This field is populated if network is configured.
+  """
+
+  automaticResources = _messages.MessageField('GoogleCloudAiplatformV1beta1AutomaticResources', 1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  id = _messages.StringField(4)
+  index = _messages.StringField(5)
+  indexSyncTime = _messages.StringField(6)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexPrivateEndpoints', 7)
+
+
+class GoogleCloudAiplatformV1beta1DeployedIndexRef(_messages.Message):
+  r"""Points to a DeployedIndex.
+
+  Fields:
+    deployedIndexId: Immutable. The ID of the DeployedIndex in the above
+      IndexEndpoint.
+    indexEndpoint: Immutable. A resource name of the IndexEndpoint.
+  """
+
+  deployedIndexId = _messages.StringField(1)
+  indexEndpoint = _messages.StringField(2)
+
+
 class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
   r"""A deployment of a Model. Endpoints contain one or more DeployedModels.
 
@@ -11411,9 +12976,9 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
       Model.explanation_spec must be populated, otherwise explanation for this
       Model is not allowed.
     id: Output only. The ID of the DeployedModel.
-    model: Required. The name of the Model this is the deployment of. Note
-      that the Model may be in a different location than the DeployedModel's
-      Endpoint.
+    model: Required. The name of the Model that this is the deployment of.
+      Note that the Model may be in a different location than the
+      DeployedModel's Endpoint.
     serviceAccount: The service account that the DeployedModel's container
       runs as. Specify the email address of the service account. If this
       service account is not specified, the container runs as a service
@@ -12610,8 +14175,8 @@ class GoogleCloudAiplatformV1beta1ImportDataConfig(_messages.Message):
       and if key collision happens in this case, one of the values will be
       picked randomly. Two DataItems are considered identical if their content
       bytes are identical (e.g. image bytes or pdf bytes). These labels will
-      be overridden by Annotation labels specified inside index file refenced
-      by import_schema_uri, e.g. jsonl file.
+      be overridden by Annotation labels specified inside index file
+      referenced by import_schema_uri, e.g. jsonl file.
 
   Fields:
     dataItemLabels: Labels that will be applied to newly imported DataItems.
@@ -12623,8 +14188,8 @@ class GoogleCloudAiplatformV1beta1ImportDataConfig(_messages.Message):
       collision happens in this case, one of the values will be picked
       randomly. Two DataItems are considered identical if their content bytes
       are identical (e.g. image bytes or pdf bytes). These labels will be
-      overridden by Annotation labels specified inside index file refenced by
-      import_schema_uri, e.g. jsonl file.
+      overridden by Annotation labels specified inside index file referenced
+      by import_schema_uri, e.g. jsonl file.
     gcsSource: The Google Cloud Storage location for the input content.
     importSchemaUri: Required. Points to a YAML file stored on Google Cloud
       Storage describing the import format. Validation will be done against
@@ -12643,7 +14208,7 @@ class GoogleCloudAiplatformV1beta1ImportDataConfig(_messages.Message):
     in this case, one of the values will be picked randomly. Two DataItems are
     considered identical if their content bytes are identical (e.g. image
     bytes or pdf bytes). These labels will be overridden by Annotation labels
-    specified inside index file refenced by import_schema_uri, e.g. jsonl
+    specified inside index file referenced by import_schema_uri, e.g. jsonl
     file.
 
     Messages:
@@ -12695,6 +14260,186 @@ class GoogleCloudAiplatformV1beta1ImportDataRequest(_messages.Message):
 
 class GoogleCloudAiplatformV1beta1ImportDataResponse(_messages.Message):
   r"""Response message for DatasetService.ImportData."""
+
+
+class GoogleCloudAiplatformV1beta1Index(_messages.Message):
+  r"""A representation of a collection of database items organized in a way
+  that allows for approximate nearest neighbor (a.k.a ANN) algorithms search.
+
+  Messages:
+    LabelsValue: The labels with user-defined metadata to organize your
+      Indexes. Label keys and values can be no longer than 64 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels.
+
+  Fields:
+    createTime: Output only. Timestamp when this Index was created.
+    deployedIndexes: Output only. The pointers to DeployedIndexes created from
+      this Index. An Index can be only deleted if all its DeployedIndexes had
+      been undeployed first.
+    description: The description of the Index.
+    displayName: Required. The display name of the Index. The name can be up
+      to 128 characters long and can be consist of any UTF-8 characters.
+    etag: Used to perform consistent read-modify-write updates. If not set, a
+      blind "overwrite" update happens.
+    labels: The labels with user-defined metadata to organize your Indexes.
+      Label keys and values can be no longer than 64 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. See
+      https://goo.gl/xmQnxf for more information and examples of labels.
+    metadata: An additional information about the Index; the schema of the
+      metadata can be found in metadata_schema.
+    metadataSchemaUri: Immutable. Points to a YAML file stored on Google Cloud
+      Storage describing additional information about the Index, that is
+      specific to it. Unset if the Index does not have any additional
+      information. The schema is defined as an OpenAPI 3.0.2 [Schema
+      Object](https://tinyurl.com/y538mdwt#schema-object). Note: The URI given
+      on output will be immutable and probably different, including the URI
+      scheme, than the one given on input. The output URI will point to a
+      location where the user only has a read access.
+    name: Output only. The resource name of the Index.
+    updateTime: Output only. Timestamp when this Index was most recently
+      updated. This also includes any update to the contents of the Index.
+      Note that Operations working on this Index may have their
+      Operations.metadata.generic_metadata.update_time a little after the
+      value of this timestamp, yet that does not mean their results are not
+      already reflected in the Index. Result of any successfully completed
+      Operation on the Index is reflected in it.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels with user-defined metadata to organize your Indexes. Label
+    keys and values can be no longer than 64 characters (Unicode codepoints),
+    can only contain lowercase letters, numeric characters, underscores and
+    dashes. International characters are allowed. See https://goo.gl/xmQnxf
+    for more information and examples of labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  deployedIndexes = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedIndexRef', 2, repeated=True)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  metadata = _messages.MessageField('extra_types.JsonValue', 7)
+  metadataSchemaUri = _messages.StringField(8)
+  name = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class GoogleCloudAiplatformV1beta1IndexEndpoint(_messages.Message):
+  r"""Indexes are deployed into it. An IndexEndpoint can have multiple
+  DeployedIndexes.
+
+  Messages:
+    LabelsValue: The labels with user-defined metadata to organize your
+      IndexEndpoints. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels.
+
+  Fields:
+    createTime: Output only. Timestamp when this IndexEndpoint was created.
+    deployedIndexes: Output only. The indexes deployed in this endpoint.
+    description: The description of the IndexEndpoint.
+    displayName: Required. The display name of the IndexEndpoint. The name can
+      be up to 128 characters long and can consist of any UTF-8 characters.
+    etag: Used to perform consistent read-modify-write updates. If not set, a
+      blind "overwrite" update happens.
+    labels: The labels with user-defined metadata to organize your
+      IndexEndpoints. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels.
+    name: Output only. The resource name of the IndexEndpoint.
+    network: Required. Immutable. The full name of the Google Compute Engine
+      [network](https: //cloud.google.com/compute/docs/networks-and-
+      firewalls#networks) to which the IndexEndpoint should be peered. Private
+      services access must already be configured for the network. If left
+      unspecified, the Endpoint is not peered with any network.
+      [Format](https:
+      //cloud.google.com/compute/docs/reference/rest/v1/networks/insert):
+      projects/{project}/global/networks/{network}. Where {project} is a
+      project number, as in '12345', and {network} is network name.
+    updateTime: Output only. Timestamp when this IndexEndpoint was last
+      updated. This timestamp is not updated when the endpoint's
+      DeployedIndexes are updated, e.g. due to updates of the original Indexes
+      they are the deployments of.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels with user-defined metadata to organize your IndexEndpoints.
+    Label keys and values can be no longer than 64 characters (Unicode
+    codepoints), can only contain lowercase letters, numeric characters,
+    underscores and dashes. International characters are allowed. See
+    https://goo.gl/xmQnxf for more information and examples of labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  deployedIndexes = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedIndex', 2, repeated=True)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class GoogleCloudAiplatformV1beta1IndexPrivateEndpoints(_messages.Message):
+  r"""IndexPrivateEndpoints proto is used to provide paths for users to send
+  requests via private services access.
+
+  Fields:
+    matchGrpcAddress: Output only. The ip address used to send match gRPC
+      requests.
+  """
+
+  matchGrpcAddress = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1beta1InputDataConfig(_messages.Message):
@@ -12811,7 +14556,7 @@ class GoogleCloudAiplatformV1beta1ListBatchPredictionJobsResponse(_messages.Mess
 
   Fields:
     batchPredictionJobs: List of BatchPredictionJobs in the requested page.
-    nextPageToken: A token to retrieve next page of results. Pass to
+    nextPageToken: A token to retrieve the next page of results. Pass to
       ListBatchPredictionJobsRequest.page_token to obtain that page.
   """
 
@@ -12824,7 +14569,7 @@ class GoogleCloudAiplatformV1beta1ListCustomJobsResponse(_messages.Message):
 
   Fields:
     customJobs: List of CustomJobs in the requested page.
-    nextPageToken: A token to retrieve next page of results. Pass to
+    nextPageToken: A token to retrieve the next page of results. Pass to
       ListCustomJobsRequest.page_token to obtain that page.
   """
 
@@ -12876,7 +14621,7 @@ class GoogleCloudAiplatformV1beta1ListEndpointsResponse(_messages.Message):
 
   Fields:
     endpoints: List of Endpoints in the requested page.
-    nextPageToken: A token to retrieve next page of results. Pass to
+    nextPageToken: A token to retrieve the next page of results. Pass to
       ListEndpointsRequest.page_token to obtain that page.
   """
 
@@ -12891,11 +14636,37 @@ class GoogleCloudAiplatformV1beta1ListHyperparameterTuningJobsResponse(_messages
     hyperparameterTuningJobs: List of HyperparameterTuningJobs in the
       requested page. HyperparameterTuningJob.trials of the jobs will be not
       be returned.
-    nextPageToken: A token to retrieve next page of results. Pass to
+    nextPageToken: A token to retrieve the next page of results. Pass to
       ListHyperparameterTuningJobsRequest.page_token to obtain that page.
   """
 
   hyperparameterTuningJobs = _messages.MessageField('GoogleCloudAiplatformV1beta1HyperparameterTuningJob', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1ListIndexEndpointsResponse(_messages.Message):
+  r"""Response message for IndexEndpointService.ListIndexEndpoints.
+
+  Fields:
+    indexEndpoints: List of IndexEndpoints in the requested page.
+    nextPageToken: A token to retrieve next page of results. Pass to
+      ListIndexEndpointsRequest.page_token to obtain that page.
+  """
+
+  indexEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexEndpoint', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1ListIndexesResponse(_messages.Message):
+  r"""Response message for IndexService.ListIndexes.
+
+  Fields:
+    indexes: List of indexes in the requested page.
+    nextPageToken: A token to retrieve next page of results. Pass to
+      ListIndexesRequest.page_token to obtain that page.
+  """
+
+  indexes = _messages.MessageField('GoogleCloudAiplatformV1beta1Index', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -13011,7 +14782,7 @@ class GoogleCloudAiplatformV1beta1ListTrainingPipelinesResponse(_messages.Messag
   r"""Response message for PipelineService.ListTrainingPipelines
 
   Fields:
-    nextPageToken: A token to retrieve next page of results. Pass to
+    nextPageToken: A token to retrieve the next page of results. Pass to
       ListTrainingPipelinesRequest.page_token to obtain that page.
     trainingPipelines: List of TrainingPipelines in the requested page.
   """
@@ -13122,8 +14893,8 @@ class GoogleCloudAiplatformV1beta1MigratableResource(_messages.Message):
     automlModel: Output only. Represents one Model in automl.googleapis.com.
     dataLabelingDataset: Output only. Represents one Dataset in
       datalabeling.googleapis.com.
-    lastMigrateTime: Output only. Timestamp when last migrate attempt on this
-      MigratableResource started. Will not be set if there's no migrate
+    lastMigrateTime: Output only. Timestamp when the last migration attempt on
+      this MigratableResource started. Will not be set if there's no migration
       attempt on this MigratableResource.
     lastUpdateTime: Output only. Timestamp when this MigratableResource was
       last updated.
@@ -13386,7 +15157,7 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
       information. The schema is defined as an OpenAPI 3.0.2 [Schema
       Object](https://tinyurl.com/y538mdwt#schema-object). AutoML Models
       always have this field populated by AI Platform, if no additional
-      metadata is needed this field is set to an empty string. Note: The URI
+      metadata is needed, this field is set to an empty string. Note: The URI
       given on output will be immutable and probably different, including the
       URI scheme, than the one given on input. The output URI will point to a
       location where the user only has a read access.
@@ -13582,7 +15353,7 @@ class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
       expansion does not occur. This field corresponds to the `env` field of
       the Kubernetes Containers [v1 core API](https://tinyurl.com/k8s-io-
       api/v1.18/#container-v1-core).
-    healthRoute: Immutable. HTTP path on the container to send health checkss
+    healthRoute: Immutable. HTTP path on the container to send health checks
       to. AI Platform intermittently sends GET requests to this path on the
       container's IP address and port to check that the container is healthy.
       Read more about [health checks](https://tinyurl.com/cust-cont-
@@ -13764,7 +15535,7 @@ class GoogleCloudAiplatformV1beta1ModelExplanation(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1ModelExportFormat(_messages.Message):
-  r"""Represents a supported by the Model export format. All formats export to
+  r"""Represents export format supported by the Model. All formats export to
   Google Cloud Storage.
 
   Enums:
@@ -13801,6 +15572,88 @@ class GoogleCloudAiplatformV1beta1ModelExportFormat(_messages.Message):
 
   exportableContents = _messages.EnumField('ExportableContentsValueListEntryValuesEnum', 1, repeated=True)
   id = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadata(_messages.Message):
+  r"""Runtime operation metadata with regard to ScaNN Index.
+
+  Fields:
+    contentValidationStats: The validation stats of the content (per file) to
+      be inserted or updated on the ScaNN Index resource. Populated if
+      contentsDeltaUri is provided as part of Index.metadata. Please note
+      that, currently for those files that are broken or has unsupported file
+      format, we will not have the stats for those files.
+  """
+
+  contentValidationStats = _messages.MessageField('GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataContentValidationStats', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataContentValidationStats(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataCont
+  entValidationStats object.
+
+  Fields:
+    invalidRecordCount: Number of records in this file we skipped due to
+      validate errors.
+    partialErrors: The detail information of the partial failures encountered
+      for those invalid records that couldn't be parsed. Up to 50 partial
+      errors will be reported.
+    sourceGcsUri: GCS uri pointing to the original file in user's bucket.
+    validRecordCount: Number of records in this file that were successfully
+      processed.
+  """
+
+  invalidRecordCount = _messages.IntegerField(1)
+  partialErrors = _messages.MessageField('GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataRecordError', 2, repeated=True)
+  sourceGcsUri = _messages.StringField(3)
+  validRecordCount = _messages.IntegerField(4)
+
+
+class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataRecordError(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataReco
+  rdError object.
+
+  Enums:
+    ErrorTypeValueValuesEnum: The error type of this record.
+
+  Fields:
+    embeddingId: Empty if the embedding id is failed to parse.
+    errorMessage: A human-readable message that is shown to the user to help
+      them fix the error. Note that this message may change from time to time,
+      your code should check against error_type as the source of truth.
+    errorType: The error type of this record.
+    rawRecord: The original content of this record.
+    sourceGcsUri: GCS uri pointing to the original file in user's bucket.
+  """
+
+  class ErrorTypeValueValuesEnum(_messages.Enum):
+    r"""The error type of this record.
+
+    Values:
+      ERROR_TYPE_UNSPECIFIED: Default, shall not be used.
+      EMPTY_LINE: The record is empty.
+      INVALID_JSON_SYNTAX: Invalid json format.
+      INVALID_CSV_SYNTAX: Invalid csv format.
+      INVALID_AVRO_SYNTAX: Invalid avro format.
+      INVALID_EMBEDDING_ID: The embedding id is not valid.
+      EMBEDDING_SIZE_MISMATCH: The size of the embedding vectors does not
+        match with the specified dimension.
+      NAMESPACE_MISSING: The `namespace` field is missing.
+    """
+    ERROR_TYPE_UNSPECIFIED = 0
+    EMPTY_LINE = 1
+    INVALID_JSON_SYNTAX = 2
+    INVALID_CSV_SYNTAX = 3
+    INVALID_AVRO_SYNTAX = 4
+    INVALID_EMBEDDING_ID = 5
+    EMBEDDING_SIZE_MISMATCH = 6
+    NAMESPACE_MISSING = 7
+
+  embeddingId = _messages.StringField(1)
+  errorMessage = _messages.StringField(2)
+  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 3)
+  rawRecord = _messages.StringField(4)
+  sourceGcsUri = _messages.StringField(5)
 
 
 class GoogleCloudAiplatformV1beta1Port(_messages.Message):
@@ -13885,10 +15738,10 @@ class GoogleCloudAiplatformV1beta1PredictSchemata(_messages.Message):
       BatchPredictionJob.model_parameters. The schema is defined as an OpenAPI
       3.0.2 [Schema Object](https://tinyurl.com/y538mdwt#schema-object).
       AutoML Models always have this field populated by AI Platform, if no
-      parameters are supported it is set to an empty string. Note: The URI
-      given on output will be immutable and probably different, including the
-      URI scheme, than the one given on input. The output URI will point to a
-      location where the user only has a read access.
+      parameters are supported, then it is set to an empty string. Note: The
+      URI given on output will be immutable and probably different, including
+      the URI scheme, than the one given on input. The output URI will point
+      to a location where the user only has a read access.
     predictionSchemaUri: Immutable. Points to a YAML file stored on Google
       Cloud Storage describing the format of a single prediction produced by
       this Model, which are returned via PredictResponse.predictions,
@@ -13956,7 +15809,7 @@ class GoogleCloudAiplatformV1beta1SampleConfig(_messages.Message):
   iteration, it will select a batch of data based on the sampling strategy.
 
   Enums:
-    SampleStrategyValueValuesEnum: Field to chose sampling strategy. Sampling
+    SampleStrategyValueValuesEnum: Field to choose sampling strategy. Sampling
       strategy will decide which data should be selected for human labeling in
       every batch.
 
@@ -13965,12 +15818,12 @@ class GoogleCloudAiplatformV1beta1SampleConfig(_messages.Message):
       labeled in each following batch (except the first batch).
     initialBatchSamplePercentage: The percentage of data needed to be labeled
       in the first batch.
-    sampleStrategy: Field to chose sampling strategy. Sampling strategy will
+    sampleStrategy: Field to choose sampling strategy. Sampling strategy will
       decide which data should be selected for human labeling in every batch.
   """
 
   class SampleStrategyValueValuesEnum(_messages.Enum):
-    r"""Field to chose sampling strategy. Sampling strategy will decide which
+    r"""Field to choose sampling strategy. Sampling strategy will decide which
     data should be selected for human labeling in every batch.
 
     Values:
@@ -15214,6 +17067,10 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       given input column. And the result will be used for training. When
       creating transformation for BigQuery Struct column, the column should be
       flattened using "." as the delimiter.
+    validationOptions: Validation options for the data validation component.
+      The available options are: "fail-pipeline" - default, will validate
+      against the validation and fail the pipeline if it fails. "ignore-
+      validation" - ignore the results of the validation and continue
     weightColumn: Column name that should be used as the weight column. Higher
       values in this column give more importance to the row during model
       training. The column must have numeric values between 0 and 10000
@@ -15236,7 +17093,8 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
   timeVariantPastOnlyColumns = _messages.StringField(13, repeated=True)
   trainBudgetMilliNodeHours = _messages.IntegerField(14)
   transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 15, repeated=True)
-  weightColumn = _messages.StringField(16)
+  validationOptions = _messages.StringField(16)
+  weightColumn = _messages.StringField(17)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod(_messages.Message):
@@ -16448,7 +18306,7 @@ class GoogleCloudAiplatformV1beta1SearchMigratableResourcesRequest(_messages.Mes
       `automl_dataset:*` * `data_labeling_dataset:*`. * Migrated or not:
       Filter migrated resource or not by last_migrate_time. *
       `last_migrate_time:*` will filter migrated resources. * `NOT
-      last_migrate_time:*` will filter not yet migrated resource.
+      last_migrate_time:*` will filter not yet migrated resources.
     pageSize: The standard page size. The default and maximum value is 100.
     pageToken: The standard page token.
   """
@@ -16891,7 +18749,7 @@ class GoogleCloudAiplatformV1beta1TensorboardExperiment(_messages.Message):
     createTime: Output only. Timestamp when this TensorboardExperiment was
       created.
     description: Description of this TensorboardExperiment.
-    displayName: Required. User provided name of this TensorboardExperiment.
+    displayName: User provided name of this TensorboardExperiment.
     etag: Used to perform consistent read-modify-write updates. If not set, a
       blind "overwrite" update happens.
     labels: The labels with user-defined metadata to organize your Datasets.
@@ -17411,6 +19269,31 @@ class GoogleCloudAiplatformV1beta1TrialParameter(_messages.Message):
   value = _messages.MessageField('extra_types.JsonValue', 2)
 
 
+class GoogleCloudAiplatformV1beta1UndeployIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexEndpointService.UndeployIndex.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1UndeployIndexRequest(_messages.Message):
+  r"""Request message for IndexEndpointService.UndeployIndex.
+
+  Fields:
+    deployedIndexId: Required. The ID of the DeployedIndex to be undeployed
+      from the IndexEndpoint.
+  """
+
+  deployedIndexId = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1UndeployIndexResponse(_messages.Message):
+  r"""Response message for IndexEndpointService.UndeployIndex."""
+
+
 class GoogleCloudAiplatformV1beta1UndeployModelOperationMetadata(_messages.Message):
   r"""Runtime operation information for EndpointService.UndeployModel.
 
@@ -17480,6 +19363,19 @@ class GoogleCloudAiplatformV1beta1UndeployModelRequest(_messages.Message):
 
 class GoogleCloudAiplatformV1beta1UndeployModelResponse(_messages.Message):
   r"""Response message for EndpointService.UndeployModel."""
+
+
+class GoogleCloudAiplatformV1beta1UpdateIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexService.UpdateIndex.
+
+  Fields:
+    genericMetadata: The operation generic information.
+    nearestNeighborSearchOperationMetadata: The operation metadata with regard
+      to ScaNN Index operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+  nearestNeighborSearchOperationMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadata', 2)
 
 
 class GoogleCloudAiplatformV1beta1UpdateSpecialistPoolOperationMetadata(_messages.Message):

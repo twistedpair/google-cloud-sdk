@@ -83,7 +83,7 @@ class BackendService(object):
 
   def MakeSetSecurityPolicyRequestTuple(self, security_policy):
     region = getattr(self.ref, 'region', None)
-    if region is not None:
+    if region:
       raise calliope_exceptions.InvalidArgumentException(
           'region', 'Can only set security policy for global backend services.')
 
@@ -91,6 +91,23 @@ class BackendService(object):
         self._client.backendServices,
         'SetSecurityPolicy',
         self._messages.ComputeBackendServicesSetSecurityPolicyRequest(
+            securityPolicyReference=self._messages.SecurityPolicyReference(
+                securityPolicy=security_policy),
+            project=self.ref.project,
+            backendService=self.ref.Name()),
+    )
+
+  def MakeSetEdgeSecurityPolicyRequestTuple(self, security_policy):
+    region = getattr(self.ref, 'region', None)
+    if region:
+      raise calliope_exceptions.InvalidArgumentException(
+          'region',
+          'Can only set edge security policy for global backend services.')
+
+    return (
+        self._client.backendServices,
+        'SetEdgeSecurityPolicy',
+        self._messages.ComputeBackendServicesSetEdgeSecurityPolicyRequest(
             securityPolicyReference=self._messages.SecurityPolicyReference(
                 securityPolicy=security_policy),
             project=self.ref.project,

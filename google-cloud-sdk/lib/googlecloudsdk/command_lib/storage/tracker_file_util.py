@@ -25,6 +25,7 @@ import os
 import re
 
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
@@ -244,6 +245,60 @@ def delete_download_tracker_files(destination_url):
     delete_tracker_file(tracker_file)
 
 
+def hash_gcs_rewrite_parameters_for_tracker_file(
+    source_object_resource,
+    destination_object_resource,
+    request_config=None,
+    source_decyrption_key_sha256=None,
+    destination_encryption_key_sha256=None):
+  """Creates an MD5 hex digest of the parameters for GCS rewrite call.
+
+  Resuming rewrites requires that the input parameters are identical, so the
+  tracker file needs to represent the input parameters. This is done by hashing
+  the API call parameters. For example, if a user performs a rewrite with a
+  changed ACL, the hashes will not match, and we will restart the rewrite.
+
+  Args:
+    source_object_resource (ObjectResource): Must include
+      bucket, name, etag, and metadata.
+    destination_object_resource (ObjectResource|UnknownResource): Must include
+        bucket, name, and metadata.
+    request_config (gcs_api.GcsRequestConfig|None): Contains a variety of API
+      arguments.
+    source_decyrption_key_sha256 (str|None): Optional SHA256 hash string of
+      decryption key for source object.
+    destination_encryption_key_sha256 (str|None): Optional SHA256 hash string of
+      encryption key for destination object.
+
+  Returns:
+    MD5 hex digest (string) of the input parameters.
+
+  Raises:
+    ValueError if argument is missing required property.
+  """
+  mandatory_parameters = (source_object_resource.storage_url.bucket_name,
+                          source_object_resource.storage_url.object_name,
+                          destination_object_resource.storage_url.bucket_name,
+                          destination_object_resource.storage_url.object_name,
+                          destination_object_resource.metadata)
+  if not all(mandatory_parameters):
+    raise ValueError('Missing required parameter values.')
+
+  optional_parameters = (
+      getattr(request_config, 'max_bytes_per_call', None),
+      getattr(request_config, 'precondition_generation_match', None),
+      getattr(request_config, 'precondition_metageneration_match', None),
+      getattr(request_config, 'predefined_acl_string', None),
+      source_decyrption_key_sha256,
+      destination_encryption_key_sha256,
+  )
+  all_parameters = mandatory_parameters + optional_parameters
+  parameters_bytes = ''.join([str(parameter) for parameter in all_parameters
+                             ]).encode('UTF8')
+  parameters_hash = util.get_md5_hash(parameters_bytes)
+  return parameters_hash.hexdigest()
+
+
 def _write_tracker_file(tracker_file_path, data):
   """Creates a tracker file, storing the input data."""
   try:
@@ -284,6 +339,20 @@ def write_download_component_tracker_file(tracker_file_path,
   }
 
   write_json_to_tracker_file(tracker_file_path, component_data)
+
+
+def write_rewrite_tracker_file(tracker_file_name, rewrite_parameters_hash,
+                               rewrite_token):
+  """Writes rewrite operation information to a tracker file.
+
+  Args:
+    tracker_file_name (str): The path to the tracker file.
+    rewrite_parameters_hash (str): MD5 hex digest of rewrite call parameters.
+    rewrite_token (str): Returned by API, so rewrites can resume where they left
+      off.
+  """
+  _write_tracker_file(tracker_file_name,
+                      '{}\n{}'.format(rewrite_parameters_hash, rewrite_token))
 
 
 def read_or_create_download_tracker_file(source_object_resource,
@@ -375,6 +444,25 @@ def read_or_create_download_tracker_file(source_object_resource,
 
   # No matching tracker file, so the starting point is start_byte.
   return tracker_file_path, start_byte
+
+
+def read_rewrite_tracker_file(tracker_file_path, rewrite_parameters_hash):
+  """Attempts to read a rewrite tracker file.
+
+  Args:
+    tracker_file_path (str): The path to the tracker file.
+    rewrite_parameters_hash (str): MD5 hex digest of rewrite call parameters
+      constructed by hash_gcs_rewrite_parameters_for_tracker_file.
+
+  Returns:
+    String token for resuming rewrites if a matching tracker file exists.
+  """
+  with files.FileReader(tracker_file_path) as tracker_file:
+    existing_hash, rewrite_token = [
+        line.rstrip('\n') for line in tracker_file.readlines()
+    ]
+    if existing_hash == rewrite_parameters_hash:
+      return rewrite_token
 
 
 def get_download_start_byte(source_object_resource, destination_url, start_byte,

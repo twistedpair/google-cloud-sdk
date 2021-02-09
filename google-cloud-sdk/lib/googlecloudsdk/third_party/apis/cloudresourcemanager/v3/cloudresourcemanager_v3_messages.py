@@ -726,9 +726,8 @@ class CloudresourcemanagerTagKeysGetRequest(_messages.Message):
   r"""A CloudresourcemanagerTagKeysGetRequest object.
 
   Fields:
-    name: Required. Either a resource name in the format `tagKeys/{id}`, such
-      as `tagKeys/123`, or a namespaced name in the format
-      `{org_id}/{tag_key_short_name}`, such as `456/environment`.
+    name: Required. A resource name in the format `tagKeys/{id}`, such as
+      `tagKeys/123`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -854,8 +853,7 @@ class CloudresourcemanagerTagValuesGetRequest(_messages.Message):
 
   Fields:
     name: Required. Resource name for TagValue to be fetched in the format
-      `tagValues/456`, or namespaced name of the TagValue in the format
-      `1234567890/environment/development`.
+      `tagValues/456`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1998,10 +1996,10 @@ class TagBinding(_messages.Message):
   resource.
 
   Fields:
-    name: The name of the TagBinding. This is a String of the form:
-      `tagBindings/{full-resource-name}/{tag-value-name}` (e.g. `tagBindings/%
-      2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2F123/tagValues/456`
-      ).
+    name: Output only. The name of the TagBinding. This is a String of the
+      form: `tagBindings/{full-resource-name}/{tag-value-name}` (e.g. `tagBind
+      ings/%2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2F123/tagValue
+      s/456`).
     parent: The full resource name of the resource the TagValue is bound to.
       E.g. `//cloudresourcemanager.googleapis.com/projects/123`
     tagValue: The TagValue of the TagBinding. Must be of the form

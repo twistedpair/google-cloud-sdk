@@ -2365,81 +2365,6 @@ class GoogleCloudHealthcareV1beta1FhirImportResourcesResponse(_messages.Message)
 
 
 
-class GoogleCloudHealthcareV1beta1FhirRestExportResourcesErrorDetails(_messages.Message):
-  r""" Response when errors occur while exporting resources. This structure is
-  included in the error details to describe the detailed outcome. It is only
-  included when the operation finishes with errors.
-
-  Fields:
-    errorCount: The number of resources that had errors.
-    fhirStore: The name of the FHIR store where resources have been exported,
-      in the format `projects/{project_id}/locations/{location_id}/datasets/{d
-      ataset_id}/fhirStores/{fhir_store_id}`.
-    resourceCount: The total number of resources included in the export
-      operation. This is the sum of the success and error counts.
-    successCount: The number of resources that were exported.
-  """
-
-  errorCount = _messages.IntegerField(1)
-  fhirStore = _messages.StringField(2)
-  resourceCount = _messages.IntegerField(3)
-  successCount = _messages.IntegerField(4)
-
-
-class GoogleCloudHealthcareV1beta1FhirRestExportResourcesResponse(_messages.Message):
-  r""" Response when all resources export successfully. This structure is
-  included in the response to describe the detailed outcome after the
-  operation finishes successfully.
-
-  Fields:
-    fhirStore: The name of the FHIR store where resources have been exported,
-      in the format `projects/{project_id}/locations/{location_id}/datasets/{d
-      ataset_id}/fhirStores/{fhir_store_id}`.
-    resourceCount: The total number of resources exported from the requested
-      FHIR store.
-  """
-
-  fhirStore = _messages.StringField(1)
-  resourceCount = _messages.IntegerField(2)
-
-
-class GoogleCloudHealthcareV1beta1FhirRestImportResourcesErrorDetails(_messages.Message):
-  r""" Error response of importing resources. This structure is included in
-  the error details to describe the detailed error after the operation
-  finishes with some failure.
-
-  Fields:
-    errorCount: The number of resources that had errors.
-    fhirStore: The name of the FHIR store where resources have been imported,
-      in the format `projects/{project_id}/locations/{location_id}/datasets/{d
-      ataset_id}/fhirStores/{fhir_store_id}`.
-    inputSize: The total number of resources included in the source data. This
-      is the sum of the success and error counts.
-    successCount: The number of resources that have been imported.
-  """
-
-  errorCount = _messages.IntegerField(1)
-  fhirStore = _messages.StringField(2)
-  inputSize = _messages.IntegerField(3)
-  successCount = _messages.IntegerField(4)
-
-
-class GoogleCloudHealthcareV1beta1FhirRestImportResourcesResponse(_messages.Message):
-  r""" Final response of importing resources. This structure is included in
-  the response to describe the detailed outcome after the operation finishes
-  successfully.
-
-  Fields:
-    fhirStore: The name of the FHIR store where the resources have been
-      imported, in the format `projects/{project_id}/locations/{location_id}/d
-      atasets/{dataset_id}/fhirStores/{fhir_store_id}`.
-    inputSize: The total number of resources included in the source data.
-  """
-
-  fhirStore = _messages.StringField(1)
-  inputSize = _messages.IntegerField(2)
-
-
 class GroupOrSegment(_messages.Message):
   r"""Construct representing a logical group or a segment.
 
@@ -2670,9 +2595,30 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresListRequest(_messages.M
   r"""A HealthcareProjectsLocationsDatasetsAnnotationStoresListRequest object.
 
   Fields:
-    filter: Restricts stores returned to those matching a filter. Syntax: http
-      s://cloud.google.com/appengine/docs/standard/python/search/query_strings
-      Only filtering on labels is supported, for example `labels.key=value`.
+    filter: Restricts stores returned to those matching a filter. The
+      following syntax is available: * A string field value can be written as
+      text inside quotation marks, for example `"query text"`. The only valid
+      relational operation for text fields is equality (`=`), where text is
+      searched within the field, rather than having the field be equal to the
+      text. For example, `"Comment = great"` returns messages with `great` in
+      the comment field. * A number field value can be written as an integer,
+      a decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. Only filtering on labels is supported, for example
+      `labels.key=value`.
     pageSize: Limit on the number of Annotation stores to return in a single
       response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
@@ -2786,9 +2732,29 @@ class HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsListRe
   stRequest object.
 
   Fields:
-    filter: Restricts the attributes returned to those matching a filter.
-      Syntax: https://cloud.google.com/appengine/docs/standard/python/search/q
-      uery_strings. The only field available for filtering is `category`.
+    filter: Restricts the attributes returned to those matching a filter. The
+      following syntax is available: * A string field value can be written as
+      text inside quotation marks, for example `"query text"`. The only valid
+      relational operation for text fields is equality (`=`), where text is
+      searched within the field, rather than having the field be equal to the
+      text. For example, `"Comment = great"` returns messages with `great` in
+      the comment field. * A number field value can be written as an integer,
+      a decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. The only field available for filtering is `category`.
     pageSize: Limit on the number of attribute definitions to return in a
       single response. If not specified, 100 is used. May not be larger than
       1000.
@@ -2888,9 +2854,29 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsListReques
   object.
 
   Fields:
-    filter: Restricts the artifacts returned to those matching a filter.
-      Syntax: https://cloud.google.com/appengine/docs/standard/python/search/q
-      uery_strings The fields available for filtering are: - user_id -
+    filter: Restricts the artifacts returned to those matching a filter. The
+      following syntax is available: * A string field value can be written as
+      text inside quotation marks, for example `"query text"`. The only valid
+      relational operation for text fields is equality (`=`), where text is
+      searched within the field, rather than having the field be equal to the
+      text. For example, `"Comment = great"` returns messages with `great` in
+      the comment field. * A number field value can be written as an integer,
+      a decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. The fields available for filtering are: - user_id -
       consent_content_version - metadata. For example,
       `Metadata("key")="value"` or `HasMetadata("key")`.
     pageSize: Limit on the number of consent artifacts to return in a single
@@ -2988,9 +2974,29 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRequest(_messa
   object.
 
   Fields:
-    filter: Restricts the consents returned to those matching a filter.
-      Syntax: https://cloud.google.com/appengine/docs/standard/python/search/q
-      uery_strings The fields available for filtering are: - user_id -
+    filter: Restricts the consents returned to those matching a filter. The
+      following syntax is available: * A string field value can be written as
+      text inside quotation marks, for example `"query text"`. The only valid
+      relational operation for text fields is equality (`=`), where text is
+      searched within the field, rather than having the field be equal to the
+      text. For example, `"Comment = great"` returns messages with `great` in
+      the comment field. * A number field value can be written as an integer,
+      a decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. The fields available for filtering are: - user_id -
       consent_artifact - state - revision_create_time - metadata. For example,
       `Metadata("key")="value"` or `HasMetadata("key")`.
     pageSize: Limit on the number of consents to return in a single response.
@@ -3012,9 +3018,29 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRevisionsReque
   object.
 
   Fields:
-    filter: Restricts the revisions returned to those matching a filter.
-      Syntax: https://cloud.google.com/appengine/docs/standard/python/search/q
-      uery_strings. Fields/functions available for filtering are: - user_id -
+    filter: Restricts the revisions returned to those matching a filter. The
+      following syntax is available: * A string field value can be written as
+      text inside quotation marks, for example `"query text"`. The only valid
+      relational operation for text fields is equality (`=`), where text is
+      searched within the field, rather than having the field be equal to the
+      text. For example, `"Comment = great"` returns messages with `great` in
+      the comment field. * A number field value can be written as an integer,
+      a decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. Fields/functions available for filtering are: - user_id -
       consent_artifact - state - revision_create_time
     name: Required. The resource name of the consent to retrieve revisions
       for.
@@ -3161,9 +3187,29 @@ class HealthcareProjectsLocationsDatasetsConsentStoresListRequest(_messages.Mess
   r"""A HealthcareProjectsLocationsDatasetsConsentStoresListRequest object.
 
   Fields:
-    filter: Restricts the stores returned to those matching a filter. Syntax:
-      https://cloud.google.com/appengine/docs/standard/python/search/query_str
-      ings. Only filtering on labels is supported. For example,
+    filter: Restricts the stores returned to those matching a filter. The
+      following syntax is available: * A string field value can be written as
+      text inside quotation marks, for example `"query text"`. The only valid
+      relational operation for text fields is equality (`=`), where text is
+      searched within the field, rather than having the field be equal to the
+      text. For example, `"Comment = great"` returns messages with `great` in
+      the comment field. * A number field value can be written as an integer,
+      a decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. Only filtering on labels is supported. For example,
       `labels.key=value`.
     pageSize: Limit on the number of Consent stores to return in a single
       response. If not specified, 100 is used. May not be larger than 1000.
@@ -3304,9 +3350,29 @@ class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsListReques
 
   Fields:
     filter: Restricts the user data mappings returned to those matching a
-      filter. Syntax: https://cloud.google.com/appengine/docs/standard/python/
-      search/query_strings The fields available for filtering are: - data_id -
-      user_id - archived - archive_time
+      filter. The following syntax is available: * A string field value can be
+      written as text inside quotation marks, for example `"query text"`. The
+      only valid relational operation for text fields is equality (`=`), where
+      text is searched within the field, rather than having the field be equal
+      to the text. For example, `"Comment = great"` returns messages with
+      `great` in the comment field. * A number field value can be written as
+      an integer, a decimal, or an exponential. The valid relational operators
+      for number fields are the equality operator (`=`), along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * A date field value must be written in `yyyy-
+      mm-dd` form. Fields with date and time use the RFC3339 time format.
+      Leading zeros are required for one-digit months and days. The valid
+      relational operators for date fields are the equality operator (`=`) ,
+      along with the less than/greater than operators (`<`, `<=`, `>`, `>=`).
+      Note that there is no inequality (`!=`) operator. You can prepend the
+      `NOT` operator to an expression to negate it. * Multiple field query
+      expressions can be combined in one query by adding `AND` or `OR`
+      operators between the expressions. If a boolean operator appears within
+      a quoted string, it is not treated as special, it's just another part of
+      the character string to be matched. You can prepend the `NOT` operator
+      to an expression to negate it. The fields available for filtering are: -
+      data_id - user_id - archived - archive_time
     pageSize: Limit on the number of user data mappings to return in a single
       response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: Token to retrieve the next page of results or empty to get the
@@ -3490,9 +3556,30 @@ class HealthcareProjectsLocationsDatasetsDicomStoresListRequest(_messages.Messag
   r"""A HealthcareProjectsLocationsDatasetsDicomStoresListRequest object.
 
   Fields:
-    filter: Restricts stores returned to those matching a filter. Syntax: http
-      s://cloud.google.com/appengine/docs/standard/python/search/query_strings
-      Only filtering on labels is supported. For example, `labels.key=value`.
+    filter: Restricts stores returned to those matching a filter. The
+      following syntax is available: * A string field value can be written as
+      text inside quotation marks, for example `"query text"`. The only valid
+      relational operation for text fields is equality (`=`), where text is
+      searched within the field, rather than having the field be equal to the
+      text. For example, `"Comment = great"` returns messages with `great` in
+      the comment field. * A number field value can be written as an integer,
+      a decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. Only filtering on labels is supported. For example,
+      `labels.key=value`.
     pageSize: Limit on the number of DICOM stores to return in a single
       response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
@@ -4352,9 +4439,30 @@ class HealthcareProjectsLocationsDatasetsFhirStoresListRequest(_messages.Message
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresListRequest object.
 
   Fields:
-    filter: Restricts stores returned to those matching a filter. Syntax: http
-      s://cloud.google.com/appengine/docs/standard/python/search/query_strings
-      Only filtering on labels is supported, for example `labels.key=value`.
+    filter: Restricts stores returned to those matching a filter. The
+      following syntax is available: * A string field value can be written as
+      text inside quotation marks, for example `"query text"`. The only valid
+      relational operation for text fields is equality (`=`), where text is
+      searched within the field, rather than having the field be equal to the
+      text. For example, `"Comment = great"` returns messages with `great` in
+      the comment field. * A number field value can be written as an integer,
+      a decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. Only filtering on labels is supported, for example
+      `labels.key=value`.
     pageSize: Limit on the number of FHIR stores to return in a single
       response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
@@ -4541,9 +4649,30 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest(_messages.Messag
   r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest object.
 
   Fields:
-    filter: Restricts stores returned to those matching a filter. Syntax: http
-      s://cloud.google.com/appengine/docs/standard/python/search/query_strings
-      Only filtering on labels is supported. For example, `labels.key=value`.
+    filter: Restricts stores returned to those matching a filter. The
+      following syntax is available: * A string field value can be written as
+      text inside quotation marks, for example `"query text"`. The only valid
+      relational operation for text fields is equality (`=`), where text is
+      searched within the field, rather than having the field be equal to the
+      text. For example, `"Comment = great"` returns messages with `great` in
+      the comment field. * A number field value can be written as an integer,
+      a decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. Only filtering on labels is supported. For example,
+      `labels.key=value`.
     pageSize: Limit on the number of HL7v2 stores to return in a single
       response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
@@ -4696,9 +4825,29 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
       generate a large response, which impacts the performance of this method.
 
   Fields:
-    filter: Restricts messages returned to those matching a filter. Syntax: ht
-      tps://cloud.google.com/appengine/docs/standard/python/search/query_strin
-      gs The following fields and functions are available for filtering: *
+    filter: Restricts messages returned to those matching a filter. The
+      following syntax is available: * A string field value can be written as
+      text inside quotation marks, for example `"query text"`. The only valid
+      relational operation for text fields is equality (`=`), where text is
+      searched within the field, rather than having the field be equal to the
+      text. For example, `"Comment = great"` returns messages with `great` in
+      the comment field. * A number field value can be written as an integer,
+      a decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. Fields/functions available for filtering are: *
       `message_type`, from the MSH-9.1 field. For example, `NOT message_type =
       "ADT"`. * `send_date` or `sendDate`, the YYYY-MM-DD date the message was
       sent in the dataset's time_zone, from the MSH-7 segment. For example,
@@ -5040,23 +5189,44 @@ class Hl7V2NotificationConfig(_messages.Message):
 
   Fields:
     filter: Restricts notifications sent for messages matching a filter. If
-      this is empty, all messages are matched. Syntax: https://cloud.google.co
-      m/appengine/docs/standard/python/search/query_strings The following
-      fields and functions are available for filtering: * `message_type`, from
-      the MSH-9.1 field. For example, `NOT message_type = "ADT"`. *
-      `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in
-      the dataset's time_zone, from the MSH-7 segment. For example, `send_date
-      < "2017-01-02"`. * `send_time`, the timestamp when the message was sent,
-      using the RFC3339 time format for comparisons, from the MSH-7 segment.
-      For example, `send_time < "2017-01-02T00:00:00-05:00"`. *
-      `send_facility`, the care center that the message came from, from the
-      MSH-4 segment. For example, `send_facility = "ABC"`. * `PatientId(value,
-      type)`, which matches if the message lists a patient having an ID of the
-      given value and type in the PID-2, PID-3, or PID-4 segments. For
-      example, `PatientId("123456", "MRN")`. * `labels.x`, a string value of
-      the label with key `x` as set using the Message.labels map. For example,
-      `labels."priority"="high"`. The operator `:*` can be used to assert the
-      existence of a label. For example, `labels."priority":*`.
+      this is empty, all messages are matched. The following syntax is
+      available: * A string field value can be written as text inside
+      quotation marks, for example `"query text"`. The only valid relational
+      operation for text fields is equality (`=`), where text is searched
+      within the field, rather than having the field be equal to the text. For
+      example, `"Comment = great"` returns messages with `great` in the
+      comment field. * A number field value can be written as an integer, a
+      decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. Fields/functions available for filtering are: *
+      `message_type`, from the MSH-9.1 field. For example, `NOT message_type =
+      "ADT"`. * `send_date` or `sendDate`, the YYYY-MM-DD date the message was
+      sent in the dataset's time_zone, from the MSH-7 segment. For example,
+      `send_date < "2017-01-02"`. * `send_time`, the timestamp when the
+      message was sent, using the RFC3339 time format for comparisons, from
+      the MSH-7 segment. For example, `send_time <
+      "2017-01-02T00:00:00-05:00"`. * `send_facility`, the care center that
+      the message came from, from the MSH-4 segment. For example,
+      `send_facility = "ABC"`. * `PatientId(value, type)`, which matches if
+      the message lists a patient having an ID of the given value and type in
+      the PID-2, PID-3, or PID-4 segments. For example, `PatientId("123456",
+      "MRN")`. * `labels.x`, a string value of the label with key `x` as set
+      using the Message.labels map. For example, `labels."priority"="high"`.
+      The operator `:*` can be used to assert the existence of a label. For
+      example, `labels."priority":*`.
     pubsubTopic: The [Cloud Pub/Sub](https://cloud.google.com/pubsub/docs/)
       topic that notifications of changes are published on. Supplied by the
       client. The notification is a `PubsubMessage` with the following fields:

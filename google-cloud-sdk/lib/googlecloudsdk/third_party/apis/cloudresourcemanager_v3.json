@@ -834,7 +834,8 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the TagBinding. This is a String of the form: `tagBindings\/{full-resource-name}\/{tag-value-name}` (e.g. `tagBindings\/%2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2F123\/tagValues\/456`).",
+          "description": "Output only. The name of the TagBinding. This is a String of the form: `tagBindings\/{full-resource-name}\/{tag-value-name}` (e.g. `tagBindings\/%2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2F123\/tagValues\/456`).",
+          "readOnly": true,
           "type": "string"
         },
         "parent": {
@@ -1330,9 +1331,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name\/identifier of the Lien.",
+              "pattern": "^liens\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^liens\/.*$",
               "type": "string"
             }
           },
@@ -1377,9 +1378,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name\/identifier of the Lien to delete.",
+              "pattern": "^liens\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^liens\/.*$",
               "type": "string"
             }
           },
@@ -1407,9 +1408,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -1437,9 +1438,9 @@
           "parameters": {
             "name": {
               "description": "Required. The resource name of the Folder to retrieve. Must be of the form `folders\/{folder_id}`.",
+              "pattern": "^folders\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1553,9 +1554,9 @@
           "parameters": {
             "name": {
               "description": "Output only. The resource name of the Folder. Its format is `folders\/{folder_id}`, for example: \"folders\/1234\".",
+              "pattern": "^folders\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+$",
               "type": "string"
             },
             "updateMask": {
@@ -1592,9 +1593,9 @@
           "parameters": {
             "name": {
               "description": "Required. The resource name of the Folder to move. Must be of the form folders\/{folder_id}",
+              "pattern": "^folders\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1620,9 +1621,9 @@
           "parameters": {
             "name": {
               "description": "Required. The resource name of the Folder to be deleted. Must be of the form `folders\/{folder_id}`.",
+              "pattern": "^folders\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+$",
               "type": "string"
             },
             "validateOnly": {
@@ -1655,9 +1656,9 @@
           "parameters": {
             "name": {
               "description": "Required. The resource name of the Folder to undelete. Must be of the form `folders\/{folder_id}`.",
+              "pattern": "^folders\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1683,9 +1684,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^folders\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1712,9 +1713,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^folders\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1740,9 +1741,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^folders\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1772,9 +1773,9 @@
           "parameters": {
             "name": {
               "description": "Required. The resource name of the Organization to fetch. This is the organization's relative path in the API, formatted as \"organizations\/[organizationId]\". For example, \"organizations\/1234\".",
+              "pattern": "^organizations\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1819,9 +1820,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^organizations\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1848,9 +1849,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^organizations\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1876,9 +1877,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^organizations\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1909,9 +1910,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the project (for example, `projects\/415104041262`).",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2027,9 +2028,9 @@
           "parameters": {
             "name": {
               "description": "Output only. The unique resource name of the Project. It is an int64 generated number prefixed by \"projects\/\". Example: `projects\/415104041262`",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             },
             "updateMask": {
@@ -2066,9 +2067,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the project to move.",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2094,9 +2095,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the Project (for example, `projects\/415104041262`).",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             },
             "validateOnly": {
@@ -2129,9 +2130,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the Project (for example, `projects\/415104041262`). Required.",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2157,9 +2158,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2186,9 +2187,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2214,9 +2215,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2306,9 +2307,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the TagBinding. This is a String of the form: `tagBindings\/{id}` (e.g. `tagBindings\/%2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2F123\/tagValues\/456`).",
+              "pattern": "^tagBindings\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^tagBindings\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2368,10 +2369,10 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "Required. Either a resource name in the format `tagKeys\/{id}`, such as `tagKeys\/123`, or a namespaced name in the format `{org_id}\/{tag_key_short_name}`, such as `456\/environment`.",
+              "description": "Required. A resource name in the format `tagKeys\/{id}`, such as `tagKeys\/123`.",
+              "pattern": "^tagKeys\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^tagKeys\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2420,9 +2421,9 @@
           "parameters": {
             "name": {
               "description": "Immutable. The resource name for a TagKey. Must be in the format `tagKeys\/{tag_key_id}`, where `tag_key_id` is the generated numeric id for the TagKey.",
+              "pattern": "^tagKeys\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^tagKeys\/[^\/]+$",
               "type": "string"
             },
             "updateMask": {
@@ -2459,9 +2460,9 @@
           "parameters": {
             "name": {
               "description": "Required. The resource name of a TagKey to be deleted in the format `tagKeys\/123`. The TagKey cannot be a parent of any existing TagValues or it will not be deleted successfully.",
+              "pattern": "^tagKeys\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^tagKeys\/[^\/]+$",
               "type": "string"
             },
             "validateOnly": {
@@ -2494,9 +2495,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^tagKeys\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^tagKeys\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2523,9 +2524,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^tagKeys\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^tagKeys\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2551,9 +2552,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^tagKeys\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^tagKeys\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2616,10 +2617,10 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "Required. Resource name for TagValue to be fetched in the format `tagValues\/456`, or namespaced name of the TagValue in the format `1234567890\/environment\/development`.",
+              "description": "Required. Resource name for TagValue to be fetched in the format `tagValues\/456`.",
+              "pattern": "^tagValues\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^tagValues\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2668,9 +2669,9 @@
           "parameters": {
             "name": {
               "description": "Immutable. Resource name for TagValue in the format `tagValues\/456`.",
+              "pattern": "^tagValues\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^tagValues\/[^\/]+$",
               "type": "string"
             },
             "updateMask": {
@@ -2707,9 +2708,9 @@
           "parameters": {
             "name": {
               "description": "Required. Resource name for TagValue to be deleted in the format tagValues\/456.",
+              "pattern": "^tagValues\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^tagValues\/[^\/]+$",
               "type": "string"
             },
             "validateOnly": {
@@ -2742,9 +2743,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^tagValues\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^tagValues\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2771,9 +2772,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^tagValues\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^tagValues\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2799,9 +2800,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^tagValues\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^tagValues\/[^\/]+$",
               "type": "string"
             }
           },

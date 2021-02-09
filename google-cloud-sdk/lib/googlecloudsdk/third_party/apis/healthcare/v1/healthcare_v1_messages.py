@@ -18,23 +18,19 @@ class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
-  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditLogConfig are exempted.  Example Policy with
-  multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices"           "audit_log_configs": [             {
-  "log_type": "DATA_READ",               "exempted_members": [
-  "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE",             },             {
-  "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
-  {               "log_type": "DATA_READ",             },             {
-  "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:aliya@example.com"               ]             }           ]         }
-  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
-  and aliya@example.com from DATA_WRITE logging.
+  exempted_members in each AuditLogConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
+  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts jose@example.com from DATA_READ logging, and
+  aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -48,12 +44,11 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  r"""Provides the configuration for logging a type of permissions. Example:
-  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE",         }       ]     }
-  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  jose@example.com from DATA_READ logging.
+  r"""Provides the configuration for logging a type of permissions. Example: {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
+  DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -86,40 +81,45 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: An
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently.
+    condition: The condition that is associated with this binding. If the
+      condition evaluates to `true`, then this binding applies to the current
+      request. If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the members in this binding.
+      To learn which resources support conditions in their IAM policies, see
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
-      resource. `members` can have the following values:  * `allUsers`: A
-      special identifier that represents anyone who is    on the internet;
-      with or without a Google account.  * `allAuthenticatedUsers`: A special
-      identifier that represents anyone    who is authenticated with a Google
-      account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example,
-      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
-      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@example.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding.  *
+      retains the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
-      (plus    unique identifier) representing a service account that has been
-      recently    deleted. For example,    `my-other-
-      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
       service account is undeleted, this value reverts to
       `serviceAccount:{emailid}` and the undeleted service account retains the
-      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
-      email address (plus unique    identifier) representing a Google group
-      that has been recently    deleted. For example,
-      `admins@example.com?uid=123456789012345678901`. If    the group is
-      recovered, this value reverts to `group:{emailid}` and the    recovered
-      group retains the role in the binding.   * `domain:{domain}`: The G
-      Suite domain (primary) that represents all the    users of that domain.
-      For example, `google.com` or `example.com`.
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -169,13 +169,13 @@ class CryptoHashConfig(_messages.Message):
 
 
 class Dataset(_messages.Message):
-  r"""A message representing a health dataset.  A health dataset represents a
+  r"""A message representing a health dataset. A health dataset represents a
   collection of healthcare data pertaining to one or more patients. This may
   include multiple modalities of healthcare data, such as electronic medical
   records or medical imaging data.
 
   Fields:
-    name: Output only. Resource name of the dataset, of the form
+    name: Resource name of the dataset, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
     timeZone: The default timezone used by this dataset. Must be a either a
       valid IANA time zone name such as "America/New_York" or empty, which
@@ -227,10 +227,10 @@ class DeidentifyDatasetRequest(_messages.Message):
   Fields:
     config: Deidentify configuration.
     destinationDataset: The name of the dataset resource to create and write
-      the redacted data to.   * The destination dataset must not exist.  * The
+      the redacted data to. * The destination dataset must not exist. * The
       destination dataset must be in the same project and location as the
       source dataset. De-identifying data across multiple projects or
-      locations  is not supported.
+      locations is not supported.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
@@ -244,12 +244,12 @@ class DeidentifyDicomStoreRequest(_messages.Message):
     config: De-identify configuration.
     destinationStore: The name of the DICOM store to create and write the
       redacted data to. For example, `projects/{project_id}/locations/{locatio
-      n_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}`.   * The
-      destination dataset must exist.  * The source dataset and destination
-      dataset must both reside in the same    project. De-identifying data
-      across multiple projects is not supported.  * The destination DICOM
-      store must not exist.  * The caller must have the necessary permissions
-      to create the destination    DICOM store.
+      n_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}`. * The
+      destination dataset must exist. * The source dataset and destination
+      dataset must both reside in the same project. De-identifying data across
+      multiple projects is not supported. * The destination DICOM store must
+      not exist. * The caller must have the necessary permissions to create
+      the destination DICOM store.
     filterConfig: Filter configuration.
   """
 
@@ -265,12 +265,12 @@ class DeidentifyFhirStoreRequest(_messages.Message):
     config: Deidentify configuration.
     destinationStore: The name of the FHIR store to create and write the
       redacted data to. For example, `projects/{project_id}/locations/{locatio
-      n_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`.   * The
-      destination dataset must exist.  * The source dataset and destination
-      dataset must both reside in the same    project. De-identifying data
-      across multiple projects is not supported.  * The destination FHIR store
-      must exist.  * The caller must have the healthcare.fhirResources.update
-      permission to    write to the destination FHIR store.
+      n_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`. * The
+      destination dataset must exist. * The source dataset and destination
+      dataset must both reside in the same project. De-identifying data across
+      multiple projects is not supported. * The destination FHIR store must
+      exist. * The caller must have the healthcare.fhirResources.update
+      permission to write to the destination FHIR store.
     resourceFilter: A filter specifying the resources to include in the
       output. If not specified, all resources are included in the output.
   """
@@ -346,8 +346,8 @@ class DicomFilterConfig(_messages.Message):
       `gs://bucket/path/to/object`. The filter configuration file must contain
       a list of resource paths separated by newline characters (\n or \r\n).
       Each resource path must be in the format
-      "/studies/{studyUID}[/series/{seriesUID}[/instances/{instanceUID}]]"
-      The Cloud Healthcare API service account must have the
+      "/studies/{studyUID}[/series/{seriesUID}[/instances/{instanceUID}]]" The
+      Cloud Healthcare API service account must have the
       `roles/storage.objectViewer` Cloud IAM role for this Cloud Storage
       location.
   """
@@ -362,37 +362,37 @@ class DicomStore(_messages.Message):
     LabelsValue: User-supplied key-value pairs used to organize DICOM stores.
       Label keys must be between 1 and 63 characters long, have a UTF-8
       encoding of maximum 128 bytes, and must conform to the following PCRE
-      regular expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must
+      regular expression: \p{Ll}\p{Lo}{0,62} Label values are optional, must
       be between 1 and 63 characters long, have a UTF-8 encoding of maximum
       128 bytes, and must conform to the following PCRE regular expression:
-      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
 
   Fields:
-    labels: User-supplied key-value pairs used to organize DICOM stores.
-      Label keys must be between 1 and 63 characters long, have a UTF-8
-      encoding of maximum 128 bytes, and must conform to the following PCRE
-      regular expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must
-      be between 1 and 63 characters long, have a UTF-8 encoding of maximum
-      128 bytes, and must conform to the following PCRE regular expression:
-      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
+    labels: User-supplied key-value pairs used to organize DICOM stores. Label
+      keys must be between 1 and 63 characters long, have a UTF-8 encoding of
+      maximum 128 bytes, and must conform to the following PCRE regular
+      expression: \p{Ll}\p{Lo}{0,62} Label values are optional, must be
+      between 1 and 63 characters long, have a UTF-8 encoding of maximum 128
+      bytes, and must conform to the following PCRE regular expression:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
-    name: Output only. Resource name of the DICOM store, of the form `projects
-      /{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores/
-      {dicom_store_id}`.
+    name: Resource name of the DICOM store, of the form `projects/{project_id}
+      /locations/{location_id}/datasets/{dataset_id}/dicomStores/{dicom_store_
+      id}`.
     notificationConfig: Notification destination for new DICOM instances.
       Supplied by the client.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""User-supplied key-value pairs used to organize DICOM stores.  Label
+    r"""User-supplied key-value pairs used to organize DICOM stores. Label
     keys must be between 1 and 63 characters long, have a UTF-8 encoding of
     maximum 128 bytes, and must conform to the following PCRE regular
-    expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must be between
+    expression: \p{Ll}\p{Lo}{0,62} Label values are optional, must be between
     1 and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and
     must conform to the following PCRE regular expression:
-    [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated with
+    [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated with
     a given store.
 
     Messages:
@@ -423,9 +423,9 @@ class DicomStore(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -438,12 +438,14 @@ class ExportDicomDataRequest(_messages.Message):
   deleted.
 
   Fields:
-    bigqueryDestination: The BigQuery output destination.  You can only export
+    bigqueryDestination: The BigQuery output destination. You can only export
       to a BigQuery dataset that's in the same project as the DICOM store
-      you're exporting from.  The BigQuery location requires two IAM roles:
-      `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`.
-    gcsDestination: The Cloud Storage output destination.  The Cloud Storage
-      location requires the `roles/storage.objectAdmin` Cloud IAM role.
+      you're exporting from. The Cloud Healthcare Service Agent requires two
+      IAM roles on the BigQuery location: `roles/bigquery.dataEditor` and
+      `roles/bigquery.jobUser`.
+    gcsDestination: The Cloud Storage output destination. The Cloud Healthcare
+      Service Agent requires the `roles/storage.objectAdmin` Cloud IAM roles
+      on the Cloud Storage location.
   """
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1DicomBigQueryDestination', 1)
@@ -461,15 +463,16 @@ class ExportResourcesRequest(_messages.Message):
   r"""Request to export resources.
 
   Fields:
-    bigqueryDestination: The BigQuery output destination.  The BigQuery
-      location requires two IAM roles: `roles/bigquery.dataEditor` and
-      `roles/bigquery.jobUser`.  The output will be one BigQuery table per
-      resource type.
-    gcsDestination: The Cloud Storage output destination.  The Cloud Storage
-      location requires the `roles/storage.objectAdmin` Cloud IAM role.  The
-      exported outputs are organized by FHIR resource types. The server will
-      create one object per resource type. Each object contains newline
-      delimited JSON, and each line is a FHIR resource.
+    bigqueryDestination: The BigQuery output destination. The Cloud Healthcare
+      Service Agent requires two IAM roles on the BigQuery location:
+      `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. The output is
+      one BigQuery table per resource type.
+    gcsDestination: The Cloud Storage output destination. The Healthcare
+      Service Agent account requires the `roles/storage.objectAdmin` role on
+      the Cloud Storage location. The exported outputs are organized by FHIR
+      resource types. The server creates one object per resource type. Each
+      object contains newline delimited JSON, and each line is a FHIR
+      resource.
   """
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1FhirBigQueryDestination', 1)
@@ -477,9 +480,9 @@ class ExportResourcesRequest(_messages.Message):
 
 
 class ExportResourcesResponse(_messages.Message):
-  r"""Response when all resources export successfully. This structure will be
-  included in the response to describe the detailed outcome. It will only be
-  included when the operation finishes successfully.
+  r"""Response when all resources export successfully. This structure is
+  included in the response to describe the detailed outcome after the
+  operation finishes successfully.
   """
 
 
@@ -487,20 +490,20 @@ class ExportResourcesResponse(_messages.Message):
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec.  Example (Comparison):
-  title: "Summary size limit"     description: "Determines if a summary is
-  less than 100 chars"     expression: "document.summary.size() < 100"
-  Example (Equality):      title: "Requestor is owner"     description:
-  "Determines if requestor is the document owner"     expression:
-  "document.owner == request.auth.claims.email"  Example (Logic):      title:
-  "Public documents"     description: "Determine whether the document should
-  be publicly visible"     expression: "document.type != 'private' &&
-  document.type != 'internal'"  Example (Data Manipulation):      title:
-  "Notification string"     description: "Create a notification string with a
-  timestamp."     expression: "'New message received at ' +
-  string(document.create_time)"  The exact variables and functions that may be
-  referenced within an expression are determined by the service that evaluates
-  it. See the service documentation for additional information.
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
     description: Optional. Description of the expression. This is a longer
@@ -548,55 +551,56 @@ class FhirStore(_messages.Message):
   r"""Represents a FHIR store.
 
   Enums:
-    VersionValueValuesEnum: The FHIR specification version that this FHIR
-      store supports natively. This field is immutable after store creation.
-      Requests are rejected if they contain FHIR resources of a different
-      version. An empty value is treated as STU3.
+    VersionValueValuesEnum: Immutable. The FHIR specification version that
+      this FHIR store supports natively. This field is immutable after store
+      creation. Requests are rejected if they contain FHIR resources of a
+      different version. Version is required for every FHIR store.
 
   Messages:
     LabelsValue: User-supplied key-value pairs used to organize FHIR stores.
       Label keys must be between 1 and 63 characters long, have a UTF-8
       encoding of maximum 128 bytes, and must conform to the following PCRE
-      regular expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must
+      regular expression: \p{Ll}\p{Lo}{0,62} Label values are optional, must
       be between 1 and 63 characters long, have a UTF-8 encoding of maximum
       128 bytes, and must conform to the following PCRE regular expression:
-      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
 
   Fields:
-    disableReferentialIntegrity: Whether to disable referential integrity in
-      this FHIR store. This field is immutable after FHIR store creation. The
-      default value is false, meaning that the API enforces referential
-      integrity and fails the requests that result in inconsistent state in
-      the FHIR store. When this field is set to true, the API skips
+    disableReferentialIntegrity: Immutable. Whether to disable referential
+      integrity in this FHIR store. This field is immutable after FHIR store
+      creation. The default value is false, meaning that the API enforces
+      referential integrity and fails the requests that result in inconsistent
+      state in the FHIR store. When this field is set to true, the API skips
       referential integrity checks. Consequently, operations that rely on
       references, such as GetPatientEverything, do not return all the results
       if broken references exist.
-    disableResourceVersioning: Whether to disable resource versioning for this
-      FHIR store. This field can not be changed after the creation of FHIR
-      store. If set to false, which is the default behavior, all write
-      operations cause historical versions to be recorded automatically. The
-      historical versions can be fetched through the history APIs, but cannot
-      be updated. If set to true, no historical versions are kept. The server
-      sends errors for attempts to read the historical versions.
+    disableResourceVersioning: Immutable. Whether to disable resource
+      versioning for this FHIR store. This field can not be changed after the
+      creation of FHIR store. If set to false, which is the default behavior,
+      all write operations cause historical versions to be recorded
+      automatically. The historical versions can be fetched through the
+      history APIs, but cannot be updated. If set to true, no historical
+      versions are kept. The server sends errors for attempts to read the
+      historical versions.
     enableUpdateCreate: Whether this FHIR store has the [updateCreate
       capability](https://www.hl7.org/fhir/capabilitystatement-
       definitions.html#CapabilityStatement.rest.resource.updateCreate). This
       determines if the client can use an Update operation to create a new
       resource with a client-specified ID. If false, all IDs are server-
       assigned through the Create operation and attempts to update a non-
-      existent resource return errors. Please treat the audit logs with
-      appropriate levels of care if client-specified resource IDs contain
-      sensitive data such as patient identifiers, those IDs are part of the
-      FHIR resource path recorded in Cloud audit logs and Cloud Pub/Sub
-      notifications.
-    labels: User-supplied key-value pairs used to organize FHIR stores.  Label
+      existent resource return errors. It is strongly advised not to include
+      or encode any sensitive data such as patient identifiers in client-
+      specified resource IDs. Those IDs are part of the FHIR resource path
+      recorded in Cloud audit logs and Cloud Pub/Sub notifications. Those IDs
+      can also be contained in reference fields within other resources.
+    labels: User-supplied key-value pairs used to organize FHIR stores. Label
       keys must be between 1 and 63 characters long, have a UTF-8 encoding of
       maximum 128 bytes, and must conform to the following PCRE regular
-      expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must be
+      expression: \p{Ll}\p{Lo}{0,62} Label values are optional, must be
       between 1 and 63 characters long, have a UTF-8 encoding of maximum 128
       bytes, and must conform to the following PCRE regular expression:
-      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
     name: Output only. Resource name of the FHIR store, of the form
       `projects/{project_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`
@@ -618,21 +622,21 @@ class FhirStore(_messages.Message):
       account](https://cloud.google.com/iam/docs/service-accounts). Some lag
       (typically on the order of dozens of seconds) is expected before the
       results show up in the streaming destination.
-    version: The FHIR specification version that this FHIR store supports
-      natively. This field is immutable after store creation. Requests are
-      rejected if they contain FHIR resources of a different version. An empty
-      value is treated as STU3.
+    version: Immutable. The FHIR specification version that this FHIR store
+      supports natively. This field is immutable after store creation.
+      Requests are rejected if they contain FHIR resources of a different
+      version. Version is required for every FHIR store.
   """
 
   class VersionValueValuesEnum(_messages.Enum):
-    r"""The FHIR specification version that this FHIR store supports natively.
-    This field is immutable after store creation. Requests are rejected if
-    they contain FHIR resources of a different version. An empty value is
-    treated as STU3.
+    r"""Immutable. The FHIR specification version that this FHIR store
+    supports natively. This field is immutable after store creation. Requests
+    are rejected if they contain FHIR resources of a different version.
+    Version is required for every FHIR store.
 
     Values:
       VERSION_UNSPECIFIED: Users must specify a version on store creation or
-        an error will be returned.
+        an error is returned.
       DSTU2: Draft Standard for Trial Use, [Release
         2](https://www.hl7.org/fhir/DSTU2)
       STU3: Standard for Trial Use, [Release 3](https://www.hl7.org/fhir/STU3)
@@ -645,13 +649,13 @@ class FhirStore(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""User-supplied key-value pairs used to organize FHIR stores.  Label
-    keys must be between 1 and 63 characters long, have a UTF-8 encoding of
-    maximum 128 bytes, and must conform to the following PCRE regular
-    expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must be between
-    1 and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and
-    must conform to the following PCRE regular expression:
-    [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated with
+    r"""User-supplied key-value pairs used to organize FHIR stores. Label keys
+    must be between 1 and 63 characters long, have a UTF-8 encoding of maximum
+    128 bytes, and must conform to the following PCRE regular expression:
+    \p{Ll}\p{Lo}{0,62} Label values are optional, must be between 1 and 63
+    characters long, have a UTF-8 encoding of maximum 128 bytes, and must
+    conform to the following PCRE regular expression:
+    [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated with
     a given store.
 
     Messages:
@@ -700,7 +704,8 @@ class FieldMetadata(_messages.Message):
       components. For example, "deceasedAge.unit" is matched by
       "Deceased.Age.unit". Supported types are: AdministrativeGenderCode,
       Code, Date, DateTime, Decimal, HumanName, Id, LanguageCode, Markdown,
-      Oid, String, Uri, Uuid, Xhtml.
+      Oid, String, Uri, Uuid, Xhtml. Base64Binary is also supported, but may
+      only be kept as-is or have all the content removed.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
@@ -756,23 +761,23 @@ class GoogleCloudHealthcareV1DicomGcsDestination(_messages.Message):
       The frame_number component exists only for multi-frame instances.
       Supported MIME types are consistent with supported formats in DICOMweb:
       https://cloud.google.com/healthcare/docs/dicom#retrieve_transaction.
-      Specifically, the following are supported:    - application/dicom;
-      transfer-syntax=1.2.840.10008.1.2.1     (uncompressed DICOM)   -
-      application/dicom; transfer-syntax=1.2.840.10008.1.2.4.50     (DICOM
-      with embedded JPEG Baseline)   - application/dicom; transfer-
-      syntax=1.2.840.10008.1.2.4.90     (DICOM with embedded JPEG 2000
-      Lossless Only)   - application/dicom; transfer-
-      syntax=1.2.840.10008.1.2.4.91     (DICOM with embedded JPEG 2000)   -
-      application/dicom; transfer-syntax=*     (DICOM with no transcoding)   -
-      application/octet-stream; transfer-syntax=1.2.840.10008.1.2.1     (raw
-      uncompressed PixelData)   - application/octet-stream; transfer-syntax=*
-      (raw PixelData in whatever format it was uploaded in)   - image/jpeg;
-      transfer-syntax=1.2.840.10008.1.2.4.50     (Consumer JPEG)   - image/png
-      The following extensions are used for output files:   -
-      application/dicom -> .dcm  - image/jpeg -> .jpg  - image/png -> .png  -
-      application/octet-stream -> no extension  If unspecified, the instances
-      are exported in the original DICOM format they were uploaded in.
-    uriPrefix: The Cloud Storage destination to export to.  URI for a Cloud
+      Specifically, the following are supported: - application/dicom;
+      transfer-syntax=1.2.840.10008.1.2.1 (uncompressed DICOM) -
+      application/dicom; transfer-syntax=1.2.840.10008.1.2.4.50 (DICOM with
+      embedded JPEG Baseline) - application/dicom; transfer-
+      syntax=1.2.840.10008.1.2.4.90 (DICOM with embedded JPEG 2000 Lossless
+      Only) - application/dicom; transfer-syntax=1.2.840.10008.1.2.4.91 (DICOM
+      with embedded JPEG 2000) - application/dicom; transfer-syntax=* (DICOM
+      with no transcoding) - application/octet-stream; transfer-
+      syntax=1.2.840.10008.1.2.1 (raw uncompressed PixelData) -
+      application/octet-stream; transfer-syntax=* (raw PixelData in whatever
+      format it was uploaded in) - image/jpeg; transfer-
+      syntax=1.2.840.10008.1.2.4.50 (Consumer JPEG) - image/png The following
+      extensions are used for output files: - application/dicom -> .dcm -
+      image/jpeg -> .jpg - image/png -> .png - application/octet-stream -> no
+      extension If unspecified, the instances are exported in the original
+      DICOM format they were uploaded in.
+    uriPrefix: The Cloud Storage destination to export to. URI for a Cloud
       Storage directory where the server writes the result files, in the
       format `gs://{bucket-id}/{path/to/destination/dir}`). If there is no
       trailing slash, the service appends one when composing the object path.
@@ -791,16 +796,16 @@ class GoogleCloudHealthcareV1DicomGcsSource(_messages.Message):
     uri: Points to a Cloud Storage URI containing file(s) with content only.
       The URI must be in the following format: `gs://{bucket_id}/{object_id}`.
       The URI can include wildcards in `object_id` and thus identify multiple
-      files. Supported wildcards:  '*' to match 0 or more non-separator
-      characters  '**' to match 0 or more characters (including separators).
-      Must be used at       the end of a path and with no other wildcards in
-      the       path. Can also be used with a file extension (such as .dcm),
-      which       imports all files with the extension in the specified
-      directory and       its sub-directories. For example,       `gs://my-
-      bucket/my-directory/**.dcm` imports all files with .dcm       extensions
-      in `my-directory/` and its sub-directories.  '?' to match 1 character
-      All other URI formats are invalid. Files matching the wildcard are
-      expected to contain content only, no metadata.
+      files. Supported wildcards: '*' to match 0 or more non-separator
+      characters '**' to match 0 or more characters (including separators).
+      Must be used at the end of a path and with no other wildcards in the
+      path. Can also be used with a file extension (such as .dcm), which
+      imports all files with the extension in the specified directory and its
+      sub-directories. For example, `gs://my-bucket/my-directory/**.dcm`
+      imports all files with .dcm extensions in `my-directory/` and its sub-
+      directories. '?' to match 1 character All other URI formats are invalid.
+      Files matching the wildcard are expected to contain content only, no
+      metadata.
   """
 
   uri = _messages.StringField(1)
@@ -809,19 +814,48 @@ class GoogleCloudHealthcareV1DicomGcsSource(_messages.Message):
 class GoogleCloudHealthcareV1FhirBigQueryDestination(_messages.Message):
   r"""The configuration for exporting to BigQuery.
 
+  Enums:
+    WriteDispositionValueValuesEnum: Determines whether existing tables in the
+      destination dataset are overwritten or appended to. If a
+      write_disposition is specified, the `force` parameter is ignored.
+
   Fields:
-    datasetUri: BigQuery URI to a dataset, up to 2000 characters long, in the
-      format `bq://projectId.bqDatasetId`
-    force: If this flag is `TRUE`, all tables will be deleted from the dataset
+    datasetUri: BigQuery URI to an existing dataset, up to 2000 characters
+      long, in the format `bq://projectId.bqDatasetId`.
+    force: If this flag is `TRUE`, all tables are deleted from the dataset
       before the new exported tables are written. If the flag is not set and
       the destination dataset contains tables, the export call returns an
-      error.
+      error. If `write_disposition` is specified, this parameter is ignored.
+      force=false is equivalent to write_disposition=WRITE_EMPTY and
+      force=true is equivalent to write_disposition=WRITE_TRUNCATE.
     schemaConfig: The configuration for the exported BigQuery schema.
+    writeDisposition: Determines whether existing tables in the destination
+      dataset are overwritten or appended to. If a write_disposition is
+      specified, the `force` parameter is ignored.
   """
+
+  class WriteDispositionValueValuesEnum(_messages.Enum):
+    r"""Determines whether existing tables in the destination dataset are
+    overwritten or appended to. If a write_disposition is specified, the
+    `force` parameter is ignored.
+
+    Values:
+      WRITE_DISPOSITION_UNSPECIFIED: Default behavior is the same as
+        WRITE_EMPTY.
+      WRITE_EMPTY: Only export data if the destination tables are empty.
+      WRITE_TRUNCATE: Erase all existing data in the tables before writing the
+        instances.
+      WRITE_APPEND: Append data to the existing tables.
+    """
+    WRITE_DISPOSITION_UNSPECIFIED = 0
+    WRITE_EMPTY = 1
+    WRITE_TRUNCATE = 2
+    WRITE_APPEND = 3
 
   datasetUri = _messages.StringField(1)
   force = _messages.BooleanField(2)
   schemaConfig = _messages.MessageField('SchemaConfig', 3)
+  writeDisposition = _messages.EnumField('WriteDispositionValueValuesEnum', 4)
 
 
 class GoogleCloudHealthcareV1FhirGcsDestination(_messages.Message):
@@ -829,8 +863,8 @@ class GoogleCloudHealthcareV1FhirGcsDestination(_messages.Message):
 
   Fields:
     uriPrefix: URI for a Cloud Storage directory where result files should be
-      written (in the format `gs://{bucket-id}/{path/to/destination/dir}`). If
-      there is no trailing slash, the service will append one when composing
+      written, in the format of `gs://{bucket-id}/{path/to/destination/dir}`.
+      If there is no trailing slash, the service appends one when composing
       the object path. The user is responsible for creating the Cloud Storage
       bucket referenced in `uri_prefix`.
   """
@@ -842,21 +876,76 @@ class GoogleCloudHealthcareV1FhirGcsSource(_messages.Message):
   r"""Specifies the configuration for importing data from Cloud Storage.
 
   Fields:
-    uri: Points to a Cloud Storage URI containing file(s) to import.  The URI
+    uri: Points to a Cloud Storage URI containing file(s) to import. The URI
       must be in the following format: `gs://{bucket_id}/{object_id}`. The URI
       can include wildcards in `object_id` and thus identify multiple files.
-      Supported wildcards:  *  `*` to match 0 or more non-separator characters
-      *  `**` to match 0 or more characters (including separators). Must be
-      used at the end of a path and with no other wildcards in the path. Can
-      also be used with a file extension (such as .ndjson), which imports all
-      files with the extension in the specified directory and its sub-
-      directories. For example, `gs://my-bucket/my-directory/**.ndjson`
-      imports all files with `.ndjson` extensions in `my-directory/` and its
-      sub-directories. *  `?` to match 1 character  Files matching the
-      wildcard are expected to contain content only, no metadata.
+      Supported wildcards: * `*` to match 0 or more non-separator characters *
+      `**` to match 0 or more characters (including separators). Must be used
+      at the end of a path and with no other wildcards in the path. Can also
+      be used with a file extension (such as .ndjson), which imports all files
+      with the extension in the specified directory and its sub-directories.
+      For example, `gs://my-bucket/my-directory/**.ndjson` imports all files
+      with `.ndjson` extensions in `my-directory/` and its sub-directories. *
+      `?` to match 1 character Files matching the wildcard are expected to
+      contain content only, no metadata.
   """
 
   uri = _messages.StringField(1)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresGetIamPolicyRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresSetIamPolicyRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsConsentStoresTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class HealthcareProjectsLocationsDatasetsCreateRequest(_messages.Message):
@@ -962,10 +1051,13 @@ class HealthcareProjectsLocationsDatasetsDicomStoresGetIamPolicyRequest(_message
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1004,11 +1096,32 @@ class HealthcareProjectsLocationsDatasetsDicomStoresListRequest(_messages.Messag
   r"""A HealthcareProjectsLocationsDatasetsDicomStoresListRequest object.
 
   Fields:
-    filter: Restricts stores returned to those matching a filter. Syntax: http
-      s://cloud.google.com/appengine/docs/standard/python/search/query_strings
-      Only filtering on labels is supported. For example, `labels.key=value`.
+    filter: Restricts stores returned to those matching a filter. The
+      following syntax is available: * A string field value can be written as
+      text inside quotation marks, for example `"query text"`. The only valid
+      relational operation for text fields is equality (`=`), where text is
+      searched within the field, rather than having the field be equal to the
+      text. For example, `"Comment = great"` returns messages with `great` in
+      the comment field. * A number field value can be written as an integer,
+      a decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. Only filtering on labels is supported. For example,
+      `labels.key=value`.
     pageSize: Limit on the number of DICOM stores to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Name of the dataset.
@@ -1025,9 +1138,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresPatchRequest(_messages.Messa
 
   Fields:
     dicomStore: A DicomStore resource to be passed as the request body.
-    name: Output only. Resource name of the DICOM store, of the form `projects
-      /{project_id}/locations/{location_id}/datasets/{dataset_id}/dicomStores/
-      {dicom_store_id}`.
+    name: Resource name of the DICOM store, of the form `projects/{project_id}
+      /locations/{location_id}/datasets/{dataset_id}/dicomStores/{dicom_store_
+      id}`.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
@@ -1453,9 +1566,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresExportRequest(_messages.Messa
   Fields:
     exportResourcesRequest: A ExportResourcesRequest resource to be passed as
       the request body.
-    name: The name of the FHIR store to export resource from. The name should
-      be in the format of `projects/{project_id}/locations/{location_id}/datas
-      ets/{dataset_id}/fhirStores/{fhir_store_id}`.
+    name: The name of the FHIR store to export resource from, in the format of
+      `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/fhi
+      rStores/{fhir_store_id}`.
   """
 
   exportResourcesRequest = _messages.MessageField('ExportResourcesRequest', 1)
@@ -1522,16 +1635,17 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryRequest(_messages.
   Fields:
     _at: Only include resource versions that were current at some point during
       the time period specified in the date time value. The date parameter
-      format is yyyy-mm-ddThh:mm:ss[Z|(+|-)hh:mm]  Clients may specify any of
-      the following:  *  An entire year: `_at=2019` *  An entire month:
-      `_at=2019-01` *  A specific day: `_at=2019-01-20` *  A specific second:
+      format is yyyy-mm-ddThh:mm:ss[Z|(+|-)hh:mm] Clients may specify any of
+      the following: * An entire year: `_at=2019` * An entire month:
+      `_at=2019-01` * A specific day: `_at=2019-01-20` * A specific second:
       `_at=2018-12-31T23:59:58Z`
-    _count: The maximum number of search results on a page. Defaults to 1000.
+    _count: The maximum number of search results on a page. If not specified,
+      100 is used. May not be larger than 1000.
     _page_token: Used to retrieve the first, previous, next, or last page of
       resource versions when using pagination. Value should be set to the
       value of `_page_token` set in next or previous page links' URLs. Next
       and previous page are returned in the response bundle's links field,
-      where `link.relation` is "previous" or "next".  Omit `_page_token` if no
+      where `link.relation` is "previous" or "next". Omit `_page_token` if no
       previous request has been made.
     _since: Only include resource versions that were created at or after the
       given instant in time. The instant in time uses the format YYYY-MM-
@@ -1566,13 +1680,19 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest(
   object.
 
   Fields:
-    _count: Maximum number of resources in a page. Defaults to 100.
+    _count: Maximum number of resources in a page. If not specified, 100 is
+      used. May not be larger than 1000.
     _page_token: Used to retrieve the next or previous page of results when
-      using pagination. Value should be set to the value of page_token set in
-      next or previous page links' urls. Next and previous page are returned
-      in the response bundle's links field, where `link.relation` is
-      "previous" or "next".  Omit `page_token` if no previous request has been
-      made.
+      using pagination. Set `_page_token` to the value of _page_token set in
+      next or previous page links' url. Next and previous page are returned in
+      the response bundle's links field, where `link.relation` is "previous"
+      or "next". Omit `_page_token` if no previous request has been made.
+    _since: If provided, only resources updated after this time are returned.
+      The time uses the format YYYY-MM-DDThh:mm:ss.sss+zz:zz. For example,
+      `2015-02-07T13:28:17.239+02:00` or `2017-01-01T00:00:00Z`. The time must
+      be specified to the second and include a time zone.
+    _type: String of comma-delimited FHIR resource types. If provided, only
+      resources of the specified resource type(s) are returned.
     end: The response includes records prior to the end date. If no end date
       is provided, all records subsequent to the start date are in scope.
     name: Name of the `Patient` resource for which the information is
@@ -1583,9 +1703,11 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest(
 
   _count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   _page_token = _messages.StringField(2)
-  end = _messages.StringField(3)
-  name = _messages.StringField(4, required=True)
-  start = _messages.StringField(5)
+  _since = _messages.StringField(3)
+  _type = _messages.StringField(4)
+  end = _messages.StringField(5)
+  name = _messages.StringField(6, required=True)
+  start = _messages.StringField(7)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirReadRequest(_messages.Message):
@@ -1622,6 +1744,26 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchRequest(_messages.M
   searchResourcesRequest = _messages.MessageField('SearchResourcesRequest', 2)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchTypeRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchTypeRequest
+  object.
+
+  Fields:
+    parent: Name of the FHIR store to retrieve resources from.
+    resourceType: The FHIR resource type to search, such as Patient or
+      Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
+      ttp://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
+      [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
+    searchResourcesRequest: A SearchResourcesRequest resource to be passed as
+      the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  resourceType = _messages.StringField(2, required=True)
+  searchResourcesRequest = _messages.MessageField('SearchResourcesRequest', 3)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirUpdateRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirUpdateRequest object.
 
@@ -1650,10 +1792,13 @@ class HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest(_messages
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1679,9 +1824,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresImportRequest(_messages.Messa
   Fields:
     importResourcesRequest: A ImportResourcesRequest resource to be passed as
       the request body.
-    name: The name of the FHIR store to import FHIR resources to. The name
-      should be in the format of `projects/{project_id}/locations/{location_id
-      }/datasets/{dataset_id}/fhirStores/{fhir_store_id}`.
+    name: The name of the FHIR store to import FHIR resources to, in the
+      format of `projects/{project_id}/locations/{location_id}/datasets/{datas
+      et_id}/fhirStores/{fhir_store_id}`.
   """
 
   importResourcesRequest = _messages.MessageField('ImportResourcesRequest', 1)
@@ -1692,11 +1837,32 @@ class HealthcareProjectsLocationsDatasetsFhirStoresListRequest(_messages.Message
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresListRequest object.
 
   Fields:
-    filter: Restricts stores returned to those matching a filter. Syntax: http
-      s://cloud.google.com/appengine/docs/standard/python/search/query_strings
-      Only filtering on labels is supported, for example `labels.key=value`.
+    filter: Restricts stores returned to those matching a filter. The
+      following syntax is available: * A string field value can be written as
+      text inside quotation marks, for example `"query text"`. The only valid
+      relational operation for text fields is equality (`=`), where text is
+      searched within the field, rather than having the field be equal to the
+      text. For example, `"Comment = great"` returns messages with `great` in
+      the comment field. * A number field value can be written as an integer,
+      a decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. Only filtering on labels is supported, for example
+      `labels.key=value`.
     pageSize: Limit on the number of FHIR stores to return in a single
-      response.  If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Name of the dataset.
@@ -1724,22 +1890,6 @@ class HealthcareProjectsLocationsDatasetsFhirStoresPatchRequest(_messages.Messag
   fhirStore = _messages.MessageField('FhirStore', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class HealthcareProjectsLocationsDatasetsFhirStoresSearchRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsFhirStoresSearchRequest object.
-
-  Fields:
-    parent: Name of the FHIR store to retrieve resources from.
-    resourceType: The FHIR resource type to search, such as Patient or
-      Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
-      ttp://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
-      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
-      [R4](http://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
-  """
-
-  parent = _messages.StringField(1, required=True)
-  resourceType = _messages.StringField(2)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresSetIamPolicyRequest(_messages.Message):
@@ -1779,10 +1929,13 @@ class HealthcareProjectsLocationsDatasetsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1834,10 +1987,13 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest(_message
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1861,11 +2017,32 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest(_messages.Messag
   r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest object.
 
   Fields:
-    filter: Restricts stores returned to those matching a filter. Syntax: http
-      s://cloud.google.com/appengine/docs/standard/python/search/query_strings
-      Only filtering on labels is supported. For example, `labels.key=value`.
+    filter: Restricts stores returned to those matching a filter. The
+      following syntax is available: * A string field value can be written as
+      text inside quotation marks, for example `"query text"`. The only valid
+      relational operation for text fields is equality (`=`), where text is
+      searched within the field, rather than having the field be equal to the
+      text. For example, `"Comment = great"` returns messages with `great` in
+      the comment field. * A number field value can be written as an integer,
+      a decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. Only filtering on labels is supported. For example,
+      `labels.key=value`.
     pageSize: Limit on the number of HL7v2 stores to return in a single
-      response. If zero the default page size of 100 is used.
+      response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Name of the dataset.
@@ -1921,11 +2098,13 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesGetRequest(_messages
     response. When unspecified, equivalent to FULL.
 
     Values:
-      MESSAGE_VIEW_UNSPECIFIED: <no description>
-      RAW_ONLY: <no description>
-      PARSED_ONLY: <no description>
-      FULL: <no description>
-      BASIC: <no description>
+      MESSAGE_VIEW_UNSPECIFIED: Not specified, equivalent to FULL.
+      RAW_ONLY: Server responses include all the message fields except
+        parsed_data field.
+      PARSED_ONLY: Server responses include all the message fields except data
+        field.
+      FULL: Server responses include all the message fields.
+      BASIC: Server responses include only the name field.
     """
     MESSAGE_VIEW_UNSPECIFIED = 0
     RAW_ONLY = 1
@@ -1962,30 +2141,50 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
       generate a large response, which impacts the performance of this method.
 
   Fields:
-    filter: Restricts messages returned to those matching a filter. Syntax: ht
-      tps://cloud.google.com/appengine/docs/standard/python/search/query_strin
-      gs  Fields/functions available for filtering are:  *  `message_type`,
-      from the MSH-9.1 field. For example, `NOT message_type = "ADT"`. *
-      `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in
-      the dataset's time_zone, from the MSH-7 segment. For example, `send_date
-      < "2017-01-02"`. *  `send_time`, the timestamp when the message was
-      sent, using the RFC3339 time format for comparisons, from the MSH-7
-      segment. For example, `send_time < "2017-01-02T00:00:00-05:00"`. *
-      `send_facility`, the care center that the message came from, from the
-      MSH-4 segment. For example, `send_facility = "ABC"`. *
-      `PatientId(value, type)`, which matches if the message lists a patient
-      having an ID of the given value and type in the PID-2, PID-3, or PID-4
-      segments. For example, `PatientId("123456", "MRN")`. *  `labels.x`, a
-      string value of the label with key `x` as set using the Message.labels
-      map. For example, `labels."priority"="high"`. The operator `:*` can be
-      used to assert the existence of a label. For example,
-      `labels."priority":*`.
+    filter: Restricts messages returned to those matching a filter. The
+      following syntax is available: * A string field value can be written as
+      text inside quotation marks, for example `"query text"`. The only valid
+      relational operation for text fields is equality (`=`), where text is
+      searched within the field, rather than having the field be equal to the
+      text. For example, `"Comment = great"` returns messages with `great` in
+      the comment field. * A number field value can be written as an integer,
+      a decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. Fields/functions available for filtering are: *
+      `message_type`, from the MSH-9.1 field. For example, `NOT message_type =
+      "ADT"`. * `send_date` or `sendDate`, the YYYY-MM-DD date the message was
+      sent in the dataset's time_zone, from the MSH-7 segment. For example,
+      `send_date < "2017-01-02"`. * `send_time`, the timestamp when the
+      message was sent, using the RFC3339 time format for comparisons, from
+      the MSH-7 segment. For example, `send_time <
+      "2017-01-02T00:00:00-05:00"`. * `send_facility`, the care center that
+      the message came from, from the MSH-4 segment. For example,
+      `send_facility = "ABC"`. * `PatientId(value, type)`, which matches if
+      the message lists a patient having an ID of the given value and type in
+      the PID-2, PID-3, or PID-4 segments. For example, `PatientId("123456",
+      "MRN")`. * `labels.x`, a string value of the label with key `x` as set
+      using the Message.labels map. For example, `labels."priority"="high"`.
+      The operator `:*` can be used to assert the existence of a label. For
+      example, `labels."priority":*`.
     orderBy: Orders messages returned by the specified order_by clause.
       Syntax:
       https://cloud.google.com/apis/design/design_patterns#sorting_order
-      Fields available for ordering are:  *  `send_time`
+      Fields available for ordering are: * `send_time`
     pageSize: Limit on the number of messages to return in a single response.
-      If zero the default page size of 100 is used.
+      If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Name of the HL7v2 store to retrieve messages from.
@@ -2002,11 +2201,13 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
     response, which impacts the performance of this method.
 
     Values:
-      MESSAGE_VIEW_UNSPECIFIED: <no description>
-      RAW_ONLY: <no description>
-      PARSED_ONLY: <no description>
-      FULL: <no description>
-      BASIC: <no description>
+      MESSAGE_VIEW_UNSPECIFIED: Not specified, equivalent to FULL.
+      RAW_ONLY: Server responses include all the message fields except
+        parsed_data field.
+      PARSED_ONLY: Server responses include all the message fields except data
+        field.
+      FULL: Server responses include all the message fields.
+      BASIC: Server responses include only the name field.
     """
     MESSAGE_VIEW_UNSPECIFIED = 0
     RAW_ONLY = 1
@@ -2046,8 +2247,8 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresPatchRequest(_messages.Messa
 
   Fields:
     hl7V2Store: A Hl7V2Store resource to be passed as the request body.
-    name: Output only. Resource name of the HL7v2 store, of the form `projects
-      /{project_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
+    name: Resource name of the HL7v2 store, of the form `projects/{project_id}
+      /datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
@@ -2095,8 +2296,8 @@ class HealthcareProjectsLocationsDatasetsListRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsListRequest object.
 
   Fields:
-    pageSize: The maximum number of items to return. Capped to 100 if not
-      specified. May not be larger than 1000.
+    pageSize: The maximum number of items to return. If not specified, 100 is
+      used. May not be larger than 1000.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
     parent: The name of the project whose datasets should be listed. For
@@ -2152,7 +2353,7 @@ class HealthcareProjectsLocationsDatasetsPatchRequest(_messages.Message):
 
   Fields:
     dataset: A Dataset resource to be passed as the request body.
-    name: Output only. Resource name of the dataset, of the form
+    name: Resource name of the dataset, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
@@ -2194,44 +2395,92 @@ class HealthcareProjectsLocationsDatasetsTestIamPermissionsRequest(_messages.Mes
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class HealthcareProjectsLocationsGetRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsListRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class Hl7V2NotificationConfig(_messages.Message):
   r"""Specifies where and whether to send notifications upon changes to a data
   store.
 
   Fields:
     filter: Restricts notifications sent for messages matching a filter. If
-      this is empty, all messages are matched. Syntax: https://cloud.google.co
-      m/appengine/docs/standard/python/search/query_strings  Fields/functions
-      available for filtering are:  *  `message_type`, from the MSH-9.1 field.
-      For example, `NOT message_type = "ADT"`. *  `send_date` or `sendDate`,
-      the YYYY-MM-DD date the message was sent in the dataset's time_zone,
-      from the MSH-7 segment. For example, `send_date < "2017-01-02"`. *
-      `send_time`, the timestamp when the message was sent, using the RFC3339
-      time format for comparisons, from the MSH-7 segment. For example,
-      `send_time < "2017-01-02T00:00:00-05:00"`. *  `send_facility`, the care
-      center that the message came from, from the MSH-4 segment. For example,
-      `send_facility = "ABC"`. *  `PatientId(value, type)`, which matches if
+      this is empty, all messages are matched. The following syntax is
+      available: * A string field value can be written as text inside
+      quotation marks, for example `"query text"`. The only valid relational
+      operation for text fields is equality (`=`), where text is searched
+      within the field, rather than having the field be equal to the text. For
+      example, `"Comment = great"` returns messages with `great` in the
+      comment field. * A number field value can be written as an integer, a
+      decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in `yyyy-mm-dd` form.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, it's just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. The following fields and functions are available for
+      filtering: * `message_type`, from the MSH-9.1 field. For example, `NOT
+      message_type = "ADT"`. * `send_date` or `sendDate`, the YYYY-MM-DD date
+      the message was sent in the dataset's time_zone, from the MSH-7 segment.
+      For example, `send_date < "2017-01-02"`. * `send_time`, the timestamp
+      when the message was sent, using the RFC3339 time format for
+      comparisons, from the MSH-7 segment. For example, `send_time <
+      "2017-01-02T00:00:00-05:00"`. * `send_facility`, the care center that
+      the message came from, from the MSH-4 segment. For example,
+      `send_facility = "ABC"`. * `PatientId(value, type)`, which matches if
       the message lists a patient having an ID of the given value and type in
       the PID-2, PID-3, or PID-4 segments. For example, `PatientId("123456",
-      "MRN")`. *  `labels.x`, a string value of the label with key `x` as set
+      "MRN")`. * `labels.x`, a string value of the label with key `x` as set
       using the Message.labels map. For example, `labels."priority"="high"`.
       The operator `:*` can be used to assert the existence of a label. For
       example, `labels."priority":*`.
-    pubsubTopic: The [Cloud Pubsub](https://cloud.google.com/pubsub/docs/)
+    pubsubTopic: The [Cloud Pub/Sub](https://cloud.google.com/pubsub/docs/)
       topic that notifications of changes are published on. Supplied by the
       client. The notification is a `PubsubMessage` with the following fields:
-      *  `PubsubMessage.Data` contains the resource name. *
-      `PubsubMessage.MessageId` is the ID of this notification. It is
-      guaranteed to be unique within the topic. *  `PubsubMessage.PublishTime`
-      is the time at which the message was published.  Note that notifications
-      are only sent if the topic is non-empty. [Topic
+      * `PubsubMessage.Data` contains the resource name. *
+      `PubsubMessage.MessageId` is the ID of this notification. It's
+      guaranteed to be unique within the topic. * `PubsubMessage.PublishTime`
+      is the time when the message was published. Note that notifications are
+      only sent if the topic is non-empty. [Topic
       names](https://cloud.google.com/pubsub/docs/overview#names) must be
-      scoped to a project. cloud-healthcare@system.gserviceaccount.com must
-      have publisher permissions on the given Pubsub topic. Not having
-      adequate permissions causes the calls that send notifications to fail.
-      If a notification cannot be published to Cloud Pub/Sub, errors will be
-      logged to Stackdriver (see [Viewing logs](/healthcare/docs/how-
-      tos/stackdriver-logging)).
+      scoped to a project. The Cloud Healthcare API service account, service-
+      PROJECT_NUMBER@gcp-sa-healthcare.iam.gserviceaccount.com, must have
+      publisher permissions on the given Pub/Sub topic. Not having adequate
+      permissions causes the calls that send notifications to fail. If a
+      notification cannot be published to Cloud Pub/Sub, errors are logged to
+      Cloud Logging. For more information, see [Viewing error logs in Cloud
+      Logging](/healthcare/docs/how-tos/logging)).
   """
 
   filter = _messages.StringField(1)
@@ -2245,50 +2494,49 @@ class Hl7V2Store(_messages.Message):
     LabelsValue: User-supplied key-value pairs used to organize HL7v2 stores.
       Label keys must be between 1 and 63 characters long, have a UTF-8
       encoding of maximum 128 bytes, and must conform to the following PCRE
-      regular expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must
+      regular expression: \p{Ll}\p{Lo}{0,62} Label values are optional, must
       be between 1 and 63 characters long, have a UTF-8 encoding of maximum
       128 bytes, and must conform to the following PCRE regular expression:
-      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
 
   Fields:
-    labels: User-supplied key-value pairs used to organize HL7v2 stores.
-      Label keys must be between 1 and 63 characters long, have a UTF-8
-      encoding of maximum 128 bytes, and must conform to the following PCRE
-      regular expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must
-      be between 1 and 63 characters long, have a UTF-8 encoding of maximum
-      128 bytes, and must conform to the following PCRE regular expression:
-      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
+    labels: User-supplied key-value pairs used to organize HL7v2 stores. Label
+      keys must be between 1 and 63 characters long, have a UTF-8 encoding of
+      maximum 128 bytes, and must conform to the following PCRE regular
+      expression: \p{Ll}\p{Lo}{0,62} Label values are optional, must be
+      between 1 and 63 characters long, have a UTF-8 encoding of maximum 128
+      bytes, and must conform to the following PCRE regular expression:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
-    name: Output only. Resource name of the HL7v2 store, of the form `projects
-      /{project_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
+    name: Resource name of the HL7v2 store, of the form `projects/{project_id}
+      /datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
     notificationConfigs: A list of notification configs. Each configuration
       uses a filter to determine whether to publish a message (both Ingest &
       Create) on the corresponding notification destination. Only the message
       name is sent as part of the notification. Supplied by the client.
     parserConfig: The configuration for the parser. It determines how the
       server parses the messages.
-    rejectDuplicateMessage: Determines whether duplicate messages should be
-      rejected. A duplicate message is a message with the same raw bytes as a
-      message that has already been ingested/created in this HL7v2 store. The
-      default value is false, meaning that the store accepts the duplicate
-      messages and it also returns the same ACK message in the
-      IngestMessageResponse as has been returned previously. Note that only
-      one resource is created in the store. When this field is set to true,
-      CreateMessage/IngestMessage requests with a duplicate message will be
-      rejected by the store, and IngestMessageErrorDetail returns a NACK
-      message upon rejection.
+    rejectDuplicateMessage: Determines whether to reject duplicate messages. A
+      duplicate message is a message with the same raw bytes as a message that
+      has already been ingested/created in this HL7v2 store. The default value
+      is false, meaning that the store accepts the duplicate messages and it
+      also returns the same ACK message in the IngestMessageResponse as has
+      been returned previously. Note that only one resource is created in the
+      store. When this field is set to true, CreateMessage/IngestMessage
+      requests with a duplicate message will be rejected by the store, and
+      IngestMessageErrorDetail returns a NACK message upon rejection.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""User-supplied key-value pairs used to organize HL7v2 stores.  Label
+    r"""User-supplied key-value pairs used to organize HL7v2 stores. Label
     keys must be between 1 and 63 characters long, have a UTF-8 encoding of
     maximum 128 bytes, and must conform to the following PCRE regular
-    expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must be between
+    expression: \p{Ll}\p{Lo}{0,62} Label values are optional, must be between
     1 and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and
     must conform to the following PCRE regular expression:
-    [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated with
+    [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated with
     a given store.
 
     Messages:
@@ -2321,22 +2569,21 @@ class Hl7V2Store(_messages.Message):
 class HttpBody(_messages.Message):
   r"""Message that represents an arbitrary HTTP body. It should only be used
   for payload formats that can't be represented as JSON, such as raw binary or
-  an HTML page.   This message can be used both in streaming and non-streaming
-  API methods in the request as well as the response.  It can be used as a
-  top-level request field, which is convenient if one wants to extract
-  parameters from either the URL or HTTP template into the request fields and
-  also want access to the raw HTTP body.  Example:      message
-  GetResourceRequest {       // A unique request id.       string request_id =
-  1;        // The raw HTTP body is bound to this field.
-  google.api.HttpBody http_body = 2;     }      service ResourceService {
-  rpc GetResource(GetResourceRequest) returns (google.api.HttpBody);       rpc
-  UpdateResource(google.api.HttpBody) returns       (google.protobuf.Empty);
-  }  Example with streaming methods:      service CaldavService {       rpc
-  GetCalendar(stream google.api.HttpBody)         returns (stream
-  google.api.HttpBody);       rpc UpdateCalendar(stream google.api.HttpBody)
-  returns (stream google.api.HttpBody);     }  Use of this type only changes
-  how the request and response bodies are handled, all other features will
-  continue to work unchanged.
+  an HTML page. This message can be used both in streaming and non-streaming
+  API methods in the request as well as the response. It can be used as a top-
+  level request field, which is convenient if one wants to extract parameters
+  from either the URL or HTTP template into the request fields and also want
+  access to the raw HTTP body. Example: message GetResourceRequest { // A
+  unique request id. string request_id = 1; // The raw HTTP body is bound to
+  this field. google.api.HttpBody http_body = 2; } service ResourceService {
+  rpc GetResource(GetResourceRequest) returns (google.api.HttpBody); rpc
+  UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty); }
+  Example with streaming methods: service CaldavService { rpc
+  GetCalendar(stream google.api.HttpBody) returns (stream
+  google.api.HttpBody); rpc UpdateCalendar(stream google.api.HttpBody) returns
+  (stream google.api.HttpBody); } Use of this type only changes how the
+  request and response bodies are handled, all other features will continue to
+  work unchanged.
 
   Messages:
     ExtensionsValueListEntry: A ExtensionsValueListEntry object.
@@ -2416,8 +2663,9 @@ class ImportDicomDataRequest(_messages.Message):
 
   Fields:
     gcsSource: Cloud Storage source data location and import configuration.
-      The Cloud Storage location requires the `roles/storage.objectViewer`
-      Cloud IAM role.
+      The Cloud Healthcare Service Agent requires the
+      `roles/storage.objectViewer` Cloud IAM roles on the Cloud Storage
+      location.
   """
 
   gcsSource = _messages.MessageField('GoogleCloudHealthcareV1DicomGcsSource', 1)
@@ -2442,9 +2690,10 @@ class ImportResourcesRequest(_messages.Message):
     contentStructure: The content structure in the source location. If not
       specified, the server treats the input source files as BUNDLE.
     gcsSource: Cloud Storage source data location and import configuration.
-      The Cloud Storage location requires the `roles/storage.objectViewer`
-      Cloud IAM role.  Each Cloud Storage object should be a text file that
-      contains the format specified in ContentStructure.
+      The Healthcare Service Agent account requires the
+      `roles/storage.objectAdmin` role on the Cloud Storage location. Each
+      Cloud Storage object should be a text file that contains the format
+      specified in ContentStructure.
   """
 
   class ContentStructureValueValuesEnum(_messages.Enum):
@@ -2453,11 +2702,10 @@ class ImportResourcesRequest(_messages.Message):
 
     Values:
       CONTENT_STRUCTURE_UNSPECIFIED: If the content structure is not
-        specified, the default value `BUNDLE` will be used.
+        specified, the default value `BUNDLE` is used.
       BUNDLE: The source file contains one or more lines of newline-delimited
-        JSON (ndjson). Each line is a bundle, which contains one or more
-        resources. Set the bundle type to `history` to import resource
-        versions.
+        JSON (ndjson). Each line is a bundle that contains one or more
+        resources.
       RESOURCE: The source file contains one or more lines of newline-
         delimited JSON (ndjson). Each line is a single resource.
       BUNDLE_PRETTY: The entire file is one JSON bundle. The JSON can span
@@ -2476,9 +2724,9 @@ class ImportResourcesRequest(_messages.Message):
 
 
 class ImportResourcesResponse(_messages.Message):
-  r"""Final response of importing resources. This structure will be included
-  in the response to describe the detailed outcome. It will only be included
-  when the operation finishes successfully.
+  r"""Final response of importing resources. This structure is included in the
+  response to describe the detailed outcome after the operation finishes
+  successfully.
   """
 
 
@@ -2583,6 +2831,19 @@ class ListHl7V2StoresResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListLocationsResponse(_messages.Message):
+  r"""The response message for Locations.ListLocations.
+
+  Fields:
+    locations: A list of locations that matches the specified filter in the
+      request.
+    nextPageToken: The standard List next-page token.
+  """
+
+  locations = _messages.MessageField('Location', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListMessagesResponse(_messages.Message):
   r"""Lists the messages in the specified HL7v2 store.
 
@@ -2610,32 +2871,112 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class Location(_messages.Message):
+  r"""A resource that represents Google Cloud Platform location.
+
+  Messages:
+    LabelsValue: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    MetadataValue: Service-specific metadata. For example the available
+      capacity at the given location.
+
+  Fields:
+    displayName: The friendly name for this location, typically a nearby city
+      name. For example, "Tokyo".
+    labels: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    locationId: The canonical id for this location. For example: `"us-east1"`.
+    metadata: Service-specific metadata. For example the available capacity at
+      the given location.
+    name: Resource name for the location, which may vary between
+      implementations. For example: `"projects/example-project/locations/us-
+      east1"`
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Cross-service attributes for the location. For example
+    {"cloud.googleapis.com/region": "us-east1"}
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata. For example the available capacity at the
+    given location.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  displayName = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  locationId = _messages.StringField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
+
+
 class Message(_messages.Message):
-  r"""A complete HL7v2 message. See
-  http://www.hl7.org/implement/standards/index.cfm?ref=common for details on
-  the standard.
+  r"""A complete HL7v2 message. See [Introduction to HL7 Standards]
+  (https://www.hl7.org/implement/standards/index.cfm?ref=common) for details
+  on the standard.
 
   Messages:
     LabelsValue: User-supplied key-value pairs used to organize HL7v2 stores.
       Label keys must be between 1 and 63 characters long, have a UTF-8
       encoding of maximum 128 bytes, and must conform to the following PCRE
-      regular expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must
+      regular expression: \p{Ll}\p{Lo}{0,62} Label values are optional, must
       be between 1 and 63 characters long, have a UTF-8 encoding of maximum
       128 bytes, and must conform to the following PCRE regular expression:
-      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
 
   Fields:
     createTime: Output only. The datetime when the message was created. Set by
       the server.
     data: Raw message bytes.
-    labels: User-supplied key-value pairs used to organize HL7v2 stores.
-      Label keys must be between 1 and 63 characters long, have a UTF-8
-      encoding of maximum 128 bytes, and must conform to the following PCRE
-      regular expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must
-      be between 1 and 63 characters long, have a UTF-8 encoding of maximum
-      128 bytes, and must conform to the following PCRE regular expression:
-      [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
+    labels: User-supplied key-value pairs used to organize HL7v2 stores. Label
+      keys must be between 1 and 63 characters long, have a UTF-8 encoding of
+      maximum 128 bytes, and must conform to the following PCRE regular
+      expression: \p{Ll}\p{Lo}{0,62} Label values are optional, must be
+      between 1 and 63 characters long, have a UTF-8 encoding of maximum 128
+      bytes, and must conform to the following PCRE regular expression:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
     messageType: The message type for this message. MSH-9.1.
     name: Resource name of the Message, of the form `projects/{project_id}/dat
@@ -2650,13 +2991,13 @@ class Message(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""User-supplied key-value pairs used to organize HL7v2 stores.  Label
+    r"""User-supplied key-value pairs used to organize HL7v2 stores. Label
     keys must be between 1 and 63 characters long, have a UTF-8 encoding of
     maximum 128 bytes, and must conform to the following PCRE regular
-    expression: \p{Ll}\p{Lo}{0,62}  Label values are optional, must be between
+    expression: \p{Ll}\p{Lo}{0,62} Label values are optional, must be between
     1 and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and
     must conform to the following PCRE regular expression:
-    [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated with
+    [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated with
     a given store.
 
     Messages:
@@ -2702,13 +3043,15 @@ class NotificationConfig(_messages.Message):
       which the message was published. Notifications are only sent if the
       topic is non-empty. [Topic
       names](https://cloud.google.com/pubsub/docs/overview#names) must be
-      scoped to a project. cloud-healthcare@system.gserviceaccount.com must
-      have publisher permissions on the given Cloud Pub/Sub topic. Not having
+      scoped to a project. Cloud Healthcare API service account must have
+      publisher permissions on the given Cloud Pub/Sub topic. Not having
       adequate permissions causes the calls that send notifications to fail.
       If a notification can't be published to Cloud Pub/Sub, errors are logged
-      to Stackdriver (see [Viewing logs](/healthcare/docs/how-tos/stackdriver-
-      logging)). If the number of errors exceeds a certain rate, some aren't
-      submitted.
+      to Cloud Logging (see [Viewing logs](/healthcare/docs/how-tos/logging)).
+      If the number of errors exceeds a certain rate, some aren't submitted.
+      Note that not all operations trigger notifications, see [Configuring
+      Pub/Sub notifications](https://cloud.google.com/healthcare/docs/how-
+      tos/pubsub) for specific details.
   """
 
   pubsubTopic = _messages.StringField(1)
@@ -2719,17 +3062,17 @@ class Operation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -2738,29 +3081,29 @@ class Operation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -2786,12 +3129,12 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -2834,8 +3177,8 @@ class OperationMetadata(_messages.Message):
     createTime: The time at which the operation was created by the API.
     endTime: The time at which execution was completed.
     logsUrl: A link to audit and error logs in the log viewer. Error logs are
-      generated only by some operations, listed at
-      https://cloud.google.com/healthcare/docs/how-tos/stackdriver-logging.
+      generated only by some operations, listed at [Viewing
+      logs](/healthcare/docs/how-tos/logging).
   """
 
   apiMethodName = _messages.StringField(1)
@@ -2863,7 +3206,8 @@ class ParserConfig(_messages.Message):
   Fields:
     allowNullHeader: Determines whether messages with no header are allowed.
     segmentTerminator: Byte(s) to use as the segment terminator. If this is
-      unset, '\r' is used as segment terminator.
+      unset, '\r' is used as segment terminator, matching the HL7 version 2
+      specification.
   """
 
   allowNullHeader = _messages.BooleanField(1)
@@ -2884,34 +3228,33 @@ class PatientId(_messages.Message):
 
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
-  controls for Google Cloud resources.   A `Policy` is a collection of
+  controls for Google Cloud resources. A `Policy` is a collection of
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  Optionally, a
-  `binding` can specify a `condition`, which is a logical expression that
-  allows access to a resource only if the expression evaluates to `true`. A
-  condition can add constraints based on attributes of the request, the
-  resource, or both.  **JSON example:**      {       "bindings": [         {
-  "role": "roles/resourcemanager.organizationAdmin",           "members": [
-  "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-project-
-  id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members":
-  ["user:eve@example.com"],           "condition": {             "title":
-  "expirable access",             "description": "Does not grant access after
-  Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
-  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
-  bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
-  roles/resourcemanager.organizationAdmin     - members:       -
-  user:eve@example.com       role: roles/resourcemanager.organizationViewer
-  condition:         title: expirable access         description: Does not
-  grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
-  version: 3  For a description of IAM and its features, see the [IAM
+  be an IAM predefined role or a user-created custom role. For some types of
+  Google Cloud resources, a `binding` can also specify a `condition`, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to `true`. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
@@ -2926,24 +3269,27 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  **Important:** If you use IAM Conditions, you must include the
+      policy. **Important:** If you use IAM Conditions, you must include the
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    version: Specifies the format of the policy.  Valid values are `0`, `1`,
-      and `3`. Requests that specify an invalid value are rejected.  Any
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
-      `3`. This requirement applies to the following operations:  * Getting a
+      `3`. This requirement applies to the following operations: * Getting a
       policy that includes a conditional role binding * Adding a conditional
       role binding to a policy * Changing a conditional role binding in a
       policy * Removing any role binding, with or without a condition, from a
-      policy   that includes conditions  **Important:** If you use IAM
+      policy that includes conditions **Important:** If you use IAM
       Conditions, you must include the `etag` field whenever you call
       `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
       a version `3` policy with a version `1` policy, and all of the
-      conditions in the version `3` policy are lost.  If a policy does not
+      conditions in the version `3` policy are lost. If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.
+      version or leave the field unset. To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -2996,7 +3342,8 @@ class SchemaConfig(_messages.Message):
   generates the schema.
 
   Enums:
-    SchemaTypeValueValuesEnum: Specifies the output schema type.
+    SchemaTypeValueValuesEnum: Specifies the output schema type. Schema type
+      is required.
 
   Fields:
     recursiveStructureDepth: The depth for all recursive structures in the
@@ -3005,16 +3352,22 @@ class SchemaConfig(_messages.Message):
       table will have a column called `concept.concept` but not
       `concept.concept.concept`. If not specified or set to 0, the server will
       use the default value 2. The maximum depth allowed is 5.
-    schemaType: Specifies the output schema type.
+    schemaType: Specifies the output schema type. Schema type is required.
   """
 
   class SchemaTypeValueValuesEnum(_messages.Enum):
-    r"""Specifies the output schema type.
+    r"""Specifies the output schema type. Schema type is required.
 
     Values:
-      SCHEMA_TYPE_UNSPECIFIED: No schema type specified.
+      SCHEMA_TYPE_UNSPECIFIED: No schema type specified. This type is
+        unsupported.
       ANALYTICS: Analytics schema defined by the FHIR community. See
         https://github.com/FHIR/sql-on-fhir/blob/master/sql-on-fhir.md.
+        BigQuery only allows a maximum of 10,000 columns per table. Due to
+        this limitation, the server will not generate schemas for fields of
+        type `Resource`, which can hold any resource type. The affected fields
+        are `Parameters.parameter.resource`, `Bundle.entry.resource`, and
+        `Bundle.entry.response.outcome`.
     """
     SCHEMA_TYPE_UNSPECIFIED = 0
     ANALYTICS = 1
@@ -3045,24 +3398,24 @@ class Segment(_messages.Message):
       string uses zero-based indexes separated by dots to identify Fields,
       components and sub-components. A bracket notation is also used to
       identify different instances of a repeated field. Regex for key:
-      (\d+)(\[\d+\])?(.\d+)?(.\d+)?  Examples of (key, value) pairs:  * (0.1,
-      "hemoglobin") denotes that the first component of Field 0 has the
-      value "hemoglobin".  * (1.1.2, "CBC") denotes that the second sub-
-      component of the first   component of Field 1 has the value "CBC".  *
-      (1[0].1, "HbA1c") denotes that the first component of the   first
-      Instance of Field 1, which is repeated, has the value "HbA1c".
+      (\d+)(\[\d+\])?(.\d+)?(.\d+)? Examples of (key, value) pairs: * (0.1,
+      "hemoglobin") denotes that the first component of Field 0 has the value
+      "hemoglobin". * (1.1.2, "CBC") denotes that the second sub-component of
+      the first component of Field 1 has the value "CBC". * (1[0].1, "HbA1c")
+      denotes that the first component of the first Instance of Field 1, which
+      is repeated, has the value "HbA1c".
 
   Fields:
     fields: A mapping from the positional location to the value. The key
       string uses zero-based indexes separated by dots to identify Fields,
       components and sub-components. A bracket notation is also used to
       identify different instances of a repeated field. Regex for key:
-      (\d+)(\[\d+\])?(.\d+)?(.\d+)?  Examples of (key, value) pairs:  * (0.1,
-      "hemoglobin") denotes that the first component of Field 0 has the
-      value "hemoglobin".  * (1.1.2, "CBC") denotes that the second sub-
-      component of the first   component of Field 1 has the value "CBC".  *
-      (1[0].1, "HbA1c") denotes that the first component of the   first
-      Instance of Field 1, which is repeated, has the value "HbA1c".
+      (\d+)(\[\d+\])?(.\d+)?(.\d+)? Examples of (key, value) pairs: * (0.1,
+      "hemoglobin") denotes that the first component of Field 0 has the value
+      "hemoglobin". * (1.1.2, "CBC") denotes that the second sub-component of
+      the first component of Field 1 has the value "CBC". * (1[0].1, "HbA1c")
+      denotes that the first component of the first Instance of Field 1, which
+      is repeated, has the value "HbA1c".
     segmentId: A string that indicates the type of segment. For example, EVN
       or PID.
     setId: Set ID for segments that can be in a set. This can be empty if it's
@@ -3075,11 +3428,11 @@ class Segment(_messages.Message):
     uses zero-based indexes separated by dots to identify Fields, components
     and sub-components. A bracket notation is also used to identify different
     instances of a repeated field. Regex for key:
-    (\d+)(\[\d+\])?(.\d+)?(.\d+)?  Examples of (key, value) pairs:  * (0.1,
-    "hemoglobin") denotes that the first component of Field 0 has the   value
-    "hemoglobin".  * (1.1.2, "CBC") denotes that the second sub-component of
-    the first   component of Field 1 has the value "CBC".  * (1[0].1, "HbA1c")
-    denotes that the first component of the   first Instance of Field 1, which
+    (\d+)(\[\d+\])?(.\d+)?(.\d+)? Examples of (key, value) pairs: * (0.1,
+    "hemoglobin") denotes that the first component of Field 0 has the value
+    "hemoglobin". * (1.1.2, "CBC") denotes that the second sub-component of
+    the first component of Field 1 has the value "CBC". * (1[0].1, "HbA1c")
+    denotes that the first component of the first Instance of Field 1, which
     is repeated, has the value "HbA1c".
 
     Messages:
@@ -3117,8 +3470,7 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used: paths: "bindings, etag"
-      This field is only used by Cloud IAM.
+      provided, the following default mask is used: `paths: "bindings, etag"`
   """
 
   policy = _messages.MessageField('Policy', 1)
@@ -3192,7 +3544,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -3201,7 +3553,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -3240,32 +3592,39 @@ class Status(_messages.Message):
 
 
 class StreamConfig(_messages.Message):
-  r"""This structure contains configuration for streaming FHIR export.
+  r"""Contains configuration for streaming FHIR export.
 
   Fields:
     bigqueryDestination: The destination BigQuery structure that contains both
-      the dataset location and corresponding schema config.  The output is
+      the dataset location and corresponding schema config. The output is
       organized in one table per resource type. The server reuses the existing
-      tables (if any) that are named after the resource types, e.g. "Patient",
-      "Observation". When there is no existing table for a given resource
-      type, the server attempts to create one.  When a table schema doesn't
-      align with the schema config, either because of existing incompatible
-      schema or out of band incompatible modification, the server does not
-      stream in new data.  BigQuery imposes a 1 MB limit on streaming insert
-      row size, therefore any resource mutation that generates more than 1 MB
-      of BigQuery data will not be streamed.  One resolution in this case is
-      to delete the incompatible table and let the server recreate one, though
-      the newly created table only contains data after the table recreation.
-      Results are appended to the corresponding BigQuery tables. Different
-      versions of the same resource are distinguishable by the meta.versionId
-      and meta.lastUpdated columns. The operation (CREATE/UPDATE/DELETE) that
-      results in the new version is recorded in the meta.tag.  The tables
-      contain all historical resource versions since streaming was enabled.
-      For query convenience, the server also creates one view per table of the
-      same name containing only the current resource version.  If a resource
-      mutation cannot be streamed to BigQuery, errors will be logged to
-      Stackdriver (see [Viewing logs](/healthcare/docs/how- tos/stackdriver-
-      logging)).
+      tables (if any) that are named after the resource types. For example,
+      "Patient", "Observation". When there is no existing table for a given
+      resource type, the server attempts to create one. When a table schema
+      doesn't align with the schema config, either because of existing
+      incompatible schema or out of band incompatible modification, the server
+      does not stream in new data. BigQuery imposes a 1 MB limit on streaming
+      insert row size, therefore any resource mutation that generates more
+      than 1 MB of BigQuery data is not streamed. One resolution in this case
+      is to delete the incompatible table and let the server recreate one,
+      though the newly created table only contains data after the table
+      recreation. Results are appended to the corresponding BigQuery tables.
+      Different versions of the same resource are distinguishable by the
+      meta.versionId and meta.lastUpdated columns. The operation
+      (CREATE/UPDATE/DELETE) that results in the new version is recorded in
+      the meta.tag. The tables contain all historical resource versions since
+      streaming was enabled. For query convenience, the server also creates
+      one view per table of the same name containing only the current resource
+      version. The streamed data in the BigQuery dataset is not guaranteed to
+      be completely unique. The combination of the id and meta.versionId
+      columns should ideally identify a single unique row. But in rare cases,
+      duplicates may exist. At query time, users may use the SQL select
+      statement to keep only one of the duplicate rows given an id and
+      meta.versionId pair. Alternatively, the server created view mentioned
+      above also filters out duplicates. If a resource mutation cannot be
+      streamed to BigQuery, errors are logged to Cloud Logging. For more
+      information, see [Viewing error logs in Cloud
+      Logging](/healthcare/docs/how-tos/logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an

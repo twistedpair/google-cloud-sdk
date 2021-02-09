@@ -61,7 +61,7 @@ class _BaseOperations(object):
           poller times out.
 
     Returns:
-      True if the operation succeeded without error.
+      Operation: The polled operation.
 
     Raises:
       OperationError: If the operation has an error code, is in UNKNOWN state,
@@ -79,7 +79,8 @@ class _BaseOperations(object):
       if isinstance(result, Exception):
         raise result
       # Otherwise let the retryer do it's job until the Operation is done.
-      return not result
+      is_operation_done = result.status == sql_client.MESSAGES_MODULE.Operation.StatusValueValuesEnum.DONE
+      return not is_operation_done
 
     # Set the max wait time.
     max_wait_ms = None
@@ -93,8 +94,8 @@ class _BaseOperations(object):
           max_wait_ms=max_wait_ms,
           wait_ceiling_ms=_BaseOperations._WAIT_CEILING_MS)
       try:
-        retryer.RetryOnResult(
-            cls.GetOperationStatus, [sql_client, operation_ref],
+        return retryer.RetryOnResult(
+            cls.GetOperation, [sql_client, operation_ref],
             {'progress_tracker': pt},
             should_retry_if=ShouldRetryFunc,
             sleep_ms=_BaseOperations._INITIAL_SLEEP_MS)
@@ -109,7 +110,7 @@ class OperationsV1Beta4(_BaseOperations):
   """Common utility functions for sql operations V1Beta4."""
 
   @staticmethod
-  def GetOperationStatus(sql_client, operation_ref, progress_tracker=None):
+  def GetOperation(sql_client, operation_ref, progress_tracker=None):
     """Helper function for getting the status of an operation for V1Beta4 API.
 
     Args:
@@ -119,8 +120,7 @@ class OperationsV1Beta4(_BaseOperations):
           progress tracker to tick, in case this function is used in a Retryer.
 
     Returns:
-      True: if the operation succeeded without error.
-      False: if the operation is not yet done.
+      Operation: if the operation succeeded without error or  is not yet done.
       OperationError: If the operation has an error code or is in UNKNOWN state.
       Exception: Any other exception that can occur when calling Get
     """
@@ -145,9 +145,7 @@ class OperationsV1Beta4(_BaseOperations):
       return exceptions.OperationError(error)
     if op.status == sql_client.MESSAGES_MODULE.Operation.StatusValueValuesEnum.SQL_OPERATION_STATUS_UNSPECIFIED:
       return exceptions.OperationError(op.status)
-    if op.status == sql_client.MESSAGES_MODULE.Operation.StatusValueValuesEnum.DONE:
-      return True
-    return False
+    return op
 
   @staticmethod
   def GetOperationWaitCommand(operation_ref):

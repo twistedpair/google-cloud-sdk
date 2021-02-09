@@ -123,6 +123,13 @@ def AddServiceProxyConfigArgs(parser, hide_arguments=False):
       help="""\
       GCS bucket location of service-proxy-agent. Mainly used for testing and development.
       """)
+  service_proxy_group.add_argument(
+      '--service-proxy-xds-version',
+      type=int,
+      hidden=True,
+      help="""\
+      xDS version of the service proxy to be installed.
+      """)
 
 
 def ValidateServiceProxyFlags(args):

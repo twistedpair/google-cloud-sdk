@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import textwrap
 
 from googlecloudsdk.api_lib.kuberun import kubernetesobject
+from googlecloudsdk.command_lib.kuberun import kubernetes_consts
 from googlecloudsdk.core.console import console_attr
 
 
@@ -30,7 +31,7 @@ def OrderByKey(map_):
     yield k, map_[k]
 
 
-def GetReadyMessage(record):
+def FormatReadyMessage(record):
   if record.ready_condition and record.ready_condition.message:
     symbol, color = record.ReadySymbolAndColor()
     return console_attr.GetConsoleAttr().Colorize(
@@ -40,16 +41,16 @@ def GetReadyMessage(record):
     return ''
 
 
-def GetLastUpdated(record):
+def FormatLastUpdated(record):
   modifier = record.last_modifier or '?'
   last_transition_time = '?'
   for condition in record.status.conditions:
-    if condition.type == 'Ready' and condition.lastTransitionTime:
+    if condition.type == kubernetes_consts.VAL_READY and condition.lastTransitionTime:
       last_transition_time = condition.lastTransitionTime
   return 'Last updated on {} by {}'.format(last_transition_time, modifier)
 
 
-def GetLabels(labels):
+def FormatLabels(labels):
   """Returns a human readable description of user provided labels if any."""
   if not labels:
     return ''
@@ -61,7 +62,7 @@ def GetLabels(labels):
       ]))
 
 
-def GetHeader(record):
+def FormatHeader(record):
   con = console_attr.GetConsoleAttr()
   status = con.Colorize(*record.ReadySymbolAndColor())
   place = 'namespace ' + record.namespace
@@ -69,10 +70,11 @@ def GetHeader(record):
                                                record.name, place))
 
 
-def ReadyCondition(record):
+def ReadyConditionFromDict(record):
   ready_cond = [
-      x for x in record.get('status', {}).get('conditions', [])
-      if x['type'] == 'Ready'
+      x for x in record.get(kubernetes_consts.FIELD_STATUS, {}).get(
+          kubernetes_consts.FIELD_CONDITIONS, [])
+      if x[kubernetes_consts.FIELD_TYPE] == kubernetes_consts.VAL_READY
   ]
   if ready_cond:
     return ready_cond[0]

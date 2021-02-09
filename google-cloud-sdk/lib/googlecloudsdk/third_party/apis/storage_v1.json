@@ -442,6 +442,10 @@
      "items": {
       "type": "string"
      }
+    },
+    "satisfiesPZS": {
+     "type": "boolean",
+     "description": "Reserved for future use."
     }
    }
   },

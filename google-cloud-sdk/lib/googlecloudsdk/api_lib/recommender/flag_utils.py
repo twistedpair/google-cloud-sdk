@@ -19,43 +19,55 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.recommender import service as recommender_service
+from googlecloudsdk.calliope import base
 import six
 
+RECOMMENDER_API_ALPHA_VERSION = 'v1alpha2'
+RECOMMENDER_API_BETA_VERSION = 'v1beta1'
+RECOMMENDER_API_GA_VERSION = 'v1'
 
-def GetServiceFromArgs(args, is_insight_api):
+
+def GetServiceFromArgs(args, is_insight_api, api_version):
   """Returns the service from the user-specified arguments.
 
   Args:
     args: argparse.Namespace, An object that contains the values for the
       arguments specified in the Args method.
     is_insight_api: boolean value sepcify whether this is a insight api,
-      otherwise will return a recommendation service api
+      otherwise will return a recommendation service api.
+    api_version: API version string.
   """
   if is_insight_api:
     if args.project:
-      service = recommender_service.ProjectsInsightTypeInsightsService()
+      service = recommender_service.ProjectsInsightTypeInsightsService(
+          api_version)
     elif args.billing_account:
-      service = recommender_service.BillingAccountsInsightTypeInsightsService()
+      service = recommender_service.BillingAccountsInsightTypeInsightsService(
+          api_version)
     elif args.folder:
-      service = recommender_service.FoldersInsightTypeInsightsService()
+      service = recommender_service.FoldersInsightTypeInsightsService(
+          api_version)
     elif args.organization:
-      service = recommender_service.OrganizationsInsightTypeInsightsService()
+      service = recommender_service.OrganizationsInsightTypeInsightsService(
+          api_version)
   else:
     if args.project:
-      service = recommender_service.ProjectsRecommenderRecommendationsService()
+      service = recommender_service.ProjectsRecommenderRecommendationsService(
+          api_version)
     elif args.billing_account:
       service = recommender_service.BillingAccountsRecommenderRecommendationsService(
-      )
+          api_version)
     elif args.folder:
-      service = recommender_service.FoldersRecommenderRecommendationsService()
+      service = recommender_service.FoldersRecommenderRecommendationsService(
+          api_version)
     elif args.organization:
       service = recommender_service.OrganizationsRecommenderRecommendationsService(
-      )
+          api_version)
 
   return service
 
 
-def GetListRequestFromArgs(args, parent_resource, is_insight_api):
+def GetListRequestFromArgs(args, parent_resource, is_insight_api, api_version):
   """Returns the get_request from the user-specified arguments.
 
   Args:
@@ -67,9 +79,10 @@ def GetListRequestFromArgs(args, parent_resource, is_insight_api):
     is_insight_api: boolean value specifying whether this is a insight api,
       otherwise treat as a recommender service api and return related list
       request message.
+    api_version: API version string.
   """
 
-  messages = recommender_service.RecommenderMessages()
+  messages = recommender_service.RecommenderMessages(api_version)
   if is_insight_api:
     if args.project:
       get_request = messages.RecommenderProjectsLocationsInsightTypesInsightsListRequest(
@@ -100,7 +113,8 @@ def GetListRequestFromArgs(args, parent_resource, is_insight_api):
   return get_request
 
 
-def GetDescribeRequestFromArgs(args, parent_resource, is_insight_api):
+def GetDescribeRequestFromArgs(args, parent_resource, is_insight_api,
+                               api_version):
   """Returns the describe request from the user-specified arguments.
 
   Args:
@@ -112,9 +126,10 @@ def GetDescribeRequestFromArgs(args, parent_resource, is_insight_api):
     is_insight_api: boolean value specifying whether this is a insight api,
       otherwise treat as a recommender service api and return related list
       request message.
+    api_version: API version string.
   """
 
-  messages = recommender_service.RecommenderMessages()
+  messages = recommender_service.RecommenderMessages(api_version)
   if is_insight_api:
     if args.project:
       request = messages.RecommenderProjectsLocationsInsightTypesInsightsGetRequest(
@@ -145,7 +160,8 @@ def GetDescribeRequestFromArgs(args, parent_resource, is_insight_api):
   return request
 
 
-def GetMarkActiveRequestFromArgs(args, parent_resource, is_insight_api):
+def GetMarkActiveRequestFromArgs(args, parent_resource, is_insight_api,
+                                 api_version):
   """Returns the mark active request from the user-specified arguments.
 
   Args:
@@ -157,9 +173,10 @@ def GetMarkActiveRequestFromArgs(args, parent_resource, is_insight_api):
     is_insight_api: boolean value specifying whether this is a insight api,
       otherwise treat as a recommender service api and return related list
       request message.
+    api_version: API version string.
   """
 
-  messages = recommender_service.RecommenderMessages()
+  messages = recommender_service.RecommenderMessages(api_version)
   if is_insight_api:
     mark_insight_active_request = messages.GoogleCloudRecommenderV1alpha2MarkInsightActiveRequest(
         etag=args.etag)
@@ -202,77 +219,170 @@ def GetMarkActiveRequestFromArgs(args, parent_resource, is_insight_api):
   return request
 
 
-def GetMarkClaimedRequestFromArgs(args, parent_resource):
+# TODO(b/179288751) refractor the code to remove if statements
+def GetMarkClaimedRequestFromArgs(args, parent_resource, api_version):
   """Returns the mark_claimed_request from the user-specified arguments.
 
   Args:
     args: argparse.Namespace, An object that contains the values for the
       arguments specified in the Args method.
     parent_resource: resource location such as `organizations/123`
+    api_version: API version string.
   """
-
-  messages = recommender_service.RecommenderMessages()
-  message_request_field = messages.GoogleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest
-  mark_recommendation_claimed_request = messages.GoogleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest(
-      etag=args.etag,
-      stateMetadata=ParseStateMetadata(args.state_metadata,
-                                       message_request_field))
-  if args.project:
-    mark_request = messages.RecommenderProjectsLocationsRecommendersRecommendationsMarkClaimedRequest(
-        googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
-        name=parent_resource)
-  elif args.billing_account:
-    mark_request = messages.RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkClaimedRequest(
-        googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
-        name=parent_resource)
-  elif args.organization:
-    mark_request = messages.RecommenderOrganizationsLocationsRecommendersRecommendationsMarkClaimedRequest(
-        googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
-        name=parent_resource)
-  elif args.folder:
-    mark_request = messages.RecommenderFoldersLocationsRecommendersRecommendationsMarkClaimedRequest(
-        googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
-        name=parent_resource)
+  messages = recommender_service.RecommenderMessages(api_version)
+  if api_version == RECOMMENDER_API_ALPHA_VERSION:
+    message_request_field = messages.GoogleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest
+    mark_recommendation_claimed_request = messages.GoogleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest(
+        etag=args.etag,
+        stateMetadata=ParseStateMetadata(args.state_metadata,
+                                         message_request_field))
+    if args.project:
+      mark_request = messages.RecommenderProjectsLocationsRecommendersRecommendationsMarkClaimedRequest(
+          googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
+          name=parent_resource)
+    elif args.billing_account:
+      mark_request = messages.RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkClaimedRequest(
+          googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
+          name=parent_resource)
+    elif args.organization:
+      mark_request = messages.RecommenderOrganizationsLocationsRecommendersRecommendationsMarkClaimedRequest(
+          googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
+          name=parent_resource)
+    elif args.folder:
+      mark_request = messages.RecommenderFoldersLocationsRecommendersRecommendationsMarkClaimedRequest(
+          googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
+          name=parent_resource)
+  elif api_version == RECOMMENDER_API_BETA_VERSION:
+    message_request_field = messages.GoogleCloudRecommenderV1beta1MarkRecommendationClaimedRequest
+    mark_recommendation_claimed_request = messages.GoogleCloudRecommenderV1beta1MarkRecommendationClaimedRequest(
+        etag=args.etag,
+        stateMetadata=ParseStateMetadata(args.state_metadata,
+                                         message_request_field))
+    if args.project:
+      mark_request = messages.RecommenderProjectsLocationsRecommendersRecommendationsMarkClaimedRequest(
+          googleCloudRecommenderV1beta1MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
+          name=parent_resource)
+    elif args.billing_account:
+      mark_request = messages.RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkClaimedRequest(
+          googleCloudRecommenderV1beta1MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
+          name=parent_resource)
+    elif args.organization:
+      mark_request = messages.RecommenderOrganizationsLocationsRecommendersRecommendationsMarkClaimedRequest(
+          googleCloudRecommenderV1beta1MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
+          name=parent_resource)
+    elif args.folder:
+      mark_request = messages.RecommenderFoldersLocationsRecommendersRecommendationsMarkClaimedRequest(
+          googleCloudRecommenderV1beta1MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
+          name=parent_resource)
+  elif api_version == RECOMMENDER_API_GA_VERSION:
+    message_request_field = messages.GoogleCloudRecommenderV1MarkRecommendationClaimedRequest
+    mark_recommendation_claimed_request = messages.GoogleCloudRecommenderV1MarkRecommendationClaimedRequest(
+        etag=args.etag,
+        stateMetadata=ParseStateMetadata(args.state_metadata,
+                                         message_request_field))
+    if args.project:
+      mark_request = messages.RecommenderProjectsLocationsRecommendersRecommendationsMarkClaimedRequest(
+          googleCloudRecommenderV1MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
+          name=parent_resource)
+    elif args.billing_account:
+      mark_request = messages.RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkClaimedRequest(
+          googleCloudRecommenderV1MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
+          name=parent_resource)
+    elif args.organization:
+      mark_request = messages.RecommenderOrganizationsLocationsRecommendersRecommendationsMarkClaimedRequest(
+          googleCloudRecommenderV1MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
+          name=parent_resource)
+    elif args.folder:
+      mark_request = messages.RecommenderFoldersLocationsRecommendersRecommendationsMarkClaimedRequest(
+          googleCloudRecommenderV1MarkRecommendationClaimedRequest=mark_recommendation_claimed_request,
+          name=parent_resource)
 
   return mark_request
 
 
-def GetMarkFailedRequestFromArgs(args, parent_resource):
+def GetMarkFailedRequestFromArgs(args, parent_resource, api_version):
   """Returns the mark_failed_request from the user-specified arguments.
 
   Args:
     args: argparse.Namespace, An object that contains the values for the
       arguments specified in the Args method.
     parent_resource: resource location such as `organizations/123`
+    api_version: API version string.
   """
 
-  messages = recommender_service.RecommenderMessages()
-  message_request_field = messages.GoogleCloudRecommenderV1alpha2MarkRecommendationFailedRequest
-  mark_recommendation_failed_request = messages.GoogleCloudRecommenderV1alpha2MarkRecommendationFailedRequest(
-      etag=args.etag,
-      stateMetadata=ParseStateMetadata(args.state_metadata,
-                                       message_request_field))
-  if args.project:
-    mark_request = messages.RecommenderProjectsLocationsRecommendersRecommendationsMarkFailedRequest(
-        googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest=mark_recommendation_failed_request,
-        name=parent_resource)
-  elif args.billing_account:
-    mark_request = messages.RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkFailedRequest(
-        googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest=mark_recommendation_failed_request,
-        name=parent_resource)
-  elif args.organization:
-    mark_request = messages.RecommenderOrganizationsLocationsRecommendersRecommendationsMarkFailedRequest(
-        googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest=mark_recommendation_failed_request,
-        name=parent_resource)
-  elif args.folder:
-    mark_request = messages.RecommenderFoldersLocationsRecommendersRecommendationsMarkFailedRequest(
-        googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest=mark_recommendation_failed_request,
-        name=parent_resource)
+  messages = recommender_service.RecommenderMessages(api_version)
+  if api_version == RECOMMENDER_API_ALPHA_VERSION:
+    message_request_field = messages.GoogleCloudRecommenderV1alpha2MarkRecommendationFailedRequest
+    mark_recommendation_failed_request = messages.GoogleCloudRecommenderV1alpha2MarkRecommendationFailedRequest(
+        etag=args.etag,
+        stateMetadata=ParseStateMetadata(args.state_metadata,
+                                         message_request_field))
+    if args.project:
+      mark_request = messages.RecommenderProjectsLocationsRecommendersRecommendationsMarkFailedRequest(
+          googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest=mark_recommendation_failed_request,
+          name=parent_resource)
+    elif args.billing_account:
+      mark_request = messages.RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkFailedRequest(
+          googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest=mark_recommendation_failed_request,
+          name=parent_resource)
+    elif args.organization:
+      mark_request = messages.RecommenderOrganizationsLocationsRecommendersRecommendationsMarkFailedRequest(
+          googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest=mark_recommendation_failed_request,
+          name=parent_resource)
+    elif args.folder:
+      mark_request = messages.RecommenderFoldersLocationsRecommendersRecommendationsMarkFailedRequest(
+          googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest=mark_recommendation_failed_request,
+          name=parent_resource)
+  elif api_version == RECOMMENDER_API_BETA_VERSION:
+    message_request_field = messages.GoogleCloudRecommenderV1beta1MarkRecommendationFailedRequest
+    mark_recommendation_failed_request = messages.GoogleCloudRecommenderV1beta1MarkRecommendationFailedRequest(
+        etag=args.etag,
+        stateMetadata=ParseStateMetadata(args.state_metadata,
+                                         message_request_field))
+    if args.project:
+      mark_request = messages.RecommenderProjectsLocationsRecommendersRecommendationsMarkFailedRequest(
+          googleCloudRecommenderV1beta1MarkRecommendationFailedRequest=mark_recommendation_failed_request,
+          name=parent_resource)
+    elif args.billing_account:
+      mark_request = messages.RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkFailedRequest(
+          googleCloudRecommenderV1beta1MarkRecommendationFailedRequest=mark_recommendation_failed_request,
+          name=parent_resource)
+    elif args.organization:
+      mark_request = messages.RecommenderOrganizationsLocationsRecommendersRecommendationsMarkFailedRequest(
+          googleCloudRecommenderV1beta1MarkRecommendationFailedRequest=mark_recommendation_failed_request,
+          name=parent_resource)
+    elif args.folder:
+      mark_request = messages.RecommenderFoldersLocationsRecommendersRecommendationsMarkFailedRequest(
+          googleCloudRecommenderV1beta1MarkRecommendationFailedRequest=mark_recommendation_failed_request,
+          name=parent_resource)
+  elif api_version == RECOMMENDER_API_GA_VERSION:
+    message_request_field = messages.GoogleCloudRecommenderV1MarkRecommendationFailedRequest
+    mark_recommendation_failed_request = messages.GoogleCloudRecommenderV1MarkRecommendationFailedRequest(
+        etag=args.etag,
+        stateMetadata=ParseStateMetadata(args.state_metadata,
+                                         message_request_field))
+    if args.project:
+      mark_request = messages.RecommenderProjectsLocationsRecommendersRecommendationsMarkFailedRequest(
+          googleCloudRecommenderV1MarkRecommendationFailedRequest=mark_recommendation_failed_request,
+          name=parent_resource)
+    elif args.billing_account:
+      mark_request = messages.RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkFailedRequest(
+          googleCloudRecommenderV1MarkRecommendationFailedRequest=mark_recommendation_failed_request,
+          name=parent_resource)
+    elif args.organization:
+      mark_request = messages.RecommenderOrganizationsLocationsRecommendersRecommendationsMarkFailedRequest(
+          googleCloudRecommenderV1MarkRecommendationFailedRequest=mark_recommendation_failed_request,
+          name=parent_resource)
+    elif args.folder:
+      mark_request = messages.RecommenderFoldersLocationsRecommendersRecommendationsMarkFailedRequest(
+          googleCloudRecommenderV1MarkRecommendationFailedRequest=mark_recommendation_failed_request,
+          name=parent_resource)
 
   return mark_request
 
 
-def GetMarkDismissedRequestFromArgs(args, parent_resource, is_insight_api):
+def GetMarkDismissedRequestFromArgs(args, parent_resource, is_insight_api,
+                                    api_version):
   """Returns the mark dismissed request from the user-specified arguments.
 
   Args:
@@ -284,9 +394,10 @@ def GetMarkDismissedRequestFromArgs(args, parent_resource, is_insight_api):
     is_insight_api: boolean value specifying whether this is a insight api,
       otherwise treat as a recommender service api and return related list
       request message.
+     api_version: API version string.
   """
 
-  messages = recommender_service.RecommenderMessages()
+  messages = recommender_service.RecommenderMessages(api_version)
   if is_insight_api:
     mark_insight_dismissed_message = messages.GoogleCloudRecommenderV1alpha2MarkInsightDismissedRequest(
         etag=args.etag,
@@ -331,7 +442,8 @@ def GetMarkDismissedRequestFromArgs(args, parent_resource, is_insight_api):
   return request
 
 
-def GetMarkAcceptedRequestFromArgs(args, parent_resource, is_insight_api):
+def GetMarkAcceptedRequestFromArgs(args, parent_resource, is_insight_api,
+                                   api_version):
   """Returns the mark accepted request.
 
   Args:
@@ -343,66 +455,160 @@ def GetMarkAcceptedRequestFromArgs(args, parent_resource, is_insight_api):
     is_insight_api: boolean value specifying whether this is a insight api,
       otherwise treat as a recommender service api and return related list
       request message.
+    api_version: API version string.
   """
 
-  messages = recommender_service.RecommenderMessages()
-  if is_insight_api:
-    message_request_field = messages.GoogleCloudRecommenderV1alpha2MarkInsightAcceptedRequest
-    mark_insight_accepted_message = messages.GoogleCloudRecommenderV1alpha2MarkInsightAcceptedRequest(
-        etag=args.etag,
-        stateMetadata=ParseStateMetadata(args.state_metadata,
-                                         message_request_field))
-    if args.project:
-      request = messages.RecommenderProjectsLocationsInsightTypesInsightsMarkAcceptedRequest(
-          googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest=mark_insight_accepted_message,
-          name=parent_resource)
-    elif args.billing_account:
-      request = messages.RecommenderBillingAccountsLocationsInsightTypesInsightsMarkAcceptedRequest(
-          googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest=mark_insight_accepted_message,
-          name=parent_resource)
-    elif args.organization:
-      request = messages.RecommenderOrganizationsLocationsInsightTypesInsightsMarkAcceptedRequest(
-          googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest=mark_insight_accepted_message,
-          name=parent_resource)
-    elif args.folder:
-      request = messages.RecommenderFoldersLocationsInsightTypesInsightsMarkAcceptedRequest(
-          googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest=mark_insight_accepted_message,
-          name=parent_resource)
+  messages = recommender_service.RecommenderMessages(api_version)
+  if api_version == RECOMMENDER_API_ALPHA_VERSION:
+    if is_insight_api:
+      message_request_field = messages.GoogleCloudRecommenderV1alpha2MarkInsightAcceptedRequest
+      mark_insight_accepted_message = messages.GoogleCloudRecommenderV1alpha2MarkInsightAcceptedRequest(
+          etag=args.etag,
+          stateMetadata=ParseStateMetadata(args.state_metadata,
+                                           message_request_field))
+      if args.project:
+        request = messages.RecommenderProjectsLocationsInsightTypesInsightsMarkAcceptedRequest(
+            googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest=mark_insight_accepted_message,
+            name=parent_resource)
+      elif args.billing_account:
+        request = messages.RecommenderBillingAccountsLocationsInsightTypesInsightsMarkAcceptedRequest(
+            googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest=mark_insight_accepted_message,
+            name=parent_resource)
+      elif args.organization:
+        request = messages.RecommenderOrganizationsLocationsInsightTypesInsightsMarkAcceptedRequest(
+            googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest=mark_insight_accepted_message,
+            name=parent_resource)
+      elif args.folder:
+        request = messages.RecommenderFoldersLocationsInsightTypesInsightsMarkAcceptedRequest(
+            googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest=mark_insight_accepted_message,
+            name=parent_resource)
+  elif api_version == RECOMMENDER_API_BETA_VERSION:
+    if is_insight_api:
+      message_request_field = messages.GoogleCloudRecommenderV1beta1MarkInsightAcceptedRequest
+      mark_insight_accepted_message = messages.GoogleCloudRecommenderV1beta1MarkInsightAcceptedRequest(
+          etag=args.etag,
+          stateMetadata=ParseStateMetadata(args.state_metadata,
+                                           message_request_field))
+      if args.project:
+        request = messages.RecommenderProjectsLocationsInsightTypesInsightsMarkAcceptedRequest(
+            googleCloudRecommenderV1beta1MarkInsightAcceptedRequest=mark_insight_accepted_message,
+            name=parent_resource)
+      elif args.billing_account:
+        request = messages.RecommenderBillingAccountsLocationsInsightTypesInsightsMarkAcceptedRequest(
+            googleCloudRecommenderV1beta1MarkInsightAcceptedRequest=mark_insight_accepted_message,
+            name=parent_resource)
+      elif args.organization:
+        request = messages.RecommenderOrganizationsLocationsInsightTypesInsightsMarkAcceptedRequest(
+            googleCloudRecommenderV1beta1MarkInsightAcceptedRequest=mark_insight_accepted_message,
+            name=parent_resource)
+      elif args.folder:
+        request = messages.RecommenderFoldersLocationsInsightTypesInsightsMarkAcceptedRequest(
+            googleCloudRecommenderV1beta1MarkInsightAcceptedRequest=mark_insight_accepted_message,
+            name=parent_resource)
+  elif api_version == RECOMMENDER_API_GA_VERSION:
+    if is_insight_api:
+      message_request_field = messages.GoogleCloudRecommenderV1MarkInsightAcceptedRequest
+      mark_insight_accepted_message = messages.GoogleCloudRecommenderV1MarkInsightAcceptedRequest(
+          etag=args.etag,
+          stateMetadata=ParseStateMetadata(args.state_metadata,
+                                           message_request_field))
+      if args.project:
+        request = messages.RecommenderProjectsLocationsInsightTypesInsightsMarkAcceptedRequest(
+            googleCloudRecommenderV1MarkInsightAcceptedRequest=mark_insight_accepted_message,
+            name=parent_resource)
+      elif args.billing_account:
+        request = messages.RecommenderBillingAccountsLocationsInsightTypesInsightsMarkAcceptedRequest(
+            googleCloudRecommenderV1MarkInsightAcceptedRequest=mark_insight_accepted_message,
+            name=parent_resource)
+      elif args.organization:
+        request = messages.RecommenderOrganizationsLocationsInsightTypesInsightsMarkAcceptedRequest(
+            googleCloudRecommenderV1MarkInsightAcceptedRequest=mark_insight_accepted_message,
+            name=parent_resource)
+      elif args.folder:
+        request = messages.RecommenderFoldersLocationsInsightTypesInsightsMarkAcceptedRequest(
+            googleCloudRecommenderV1MarkInsightAcceptedRequest=mark_insight_accepted_message,
+            name=parent_resource)
 
   return request
 
 
-def GetMarkSucceededRequestFromArgs(args, parent_resource):
+def GetMarkSucceededRequestFromArgs(args, parent_resource, api_version):
   """Returns the mark_succeeded_request from the user-specified arguments.
 
   Args:
     args: argparse.Namespace, An object that contains the values for the
       arguments specified in the Args method.
     parent_resource: resource location such as `organizations/123`
+    api_version: API version string.
   """
 
-  messages = recommender_service.RecommenderMessages()
-  message_request_field = messages.GoogleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest
-  mark_recommendation_succeeded_request = messages.GoogleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest(
-      etag=args.etag,
-      stateMetadata=ParseStateMetadata(args.state_metadata,
-                                       message_request_field))
-  if args.project:
-    mark_request = messages.RecommenderProjectsLocationsRecommendersRecommendationsMarkSucceededRequest(
-        googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
-        name=parent_resource)
-  elif args.billing_account:
-    mark_request = messages.RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkSucceededRequest(
-        googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
-        name=parent_resource)
-  elif args.organization:
-    mark_request = messages.RecommenderOrganizationsLocationsRecommendersRecommendationsMarkSucceededRequest(
-        googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
-        name=parent_resource)
-  elif args.folder:
-    mark_request = messages.RecommenderFoldersLocationsRecommendersRecommendationsMarkSucceededRequest(
-        googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
-        name=parent_resource)
+  messages = recommender_service.RecommenderMessages(api_version)
+  if api_version == RECOMMENDER_API_ALPHA_VERSION:
+    message_request_field = messages.GoogleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest
+    mark_recommendation_succeeded_request = messages.GoogleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest(
+        etag=args.etag,
+        stateMetadata=ParseStateMetadata(args.state_metadata,
+                                         message_request_field))
+    if args.project:
+      mark_request = messages.RecommenderProjectsLocationsRecommendersRecommendationsMarkSucceededRequest(
+          googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
+          name=parent_resource)
+    elif args.billing_account:
+      mark_request = messages.RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkSucceededRequest(
+          googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
+          name=parent_resource)
+    elif args.organization:
+      mark_request = messages.RecommenderOrganizationsLocationsRecommendersRecommendationsMarkSucceededRequest(
+          googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
+          name=parent_resource)
+    elif args.folder:
+      mark_request = messages.RecommenderFoldersLocationsRecommendersRecommendationsMarkSucceededRequest(
+          googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
+          name=parent_resource)
+  elif api_version == RECOMMENDER_API_BETA_VERSION:
+    message_request_field = messages.GoogleCloudRecommenderV1beta1MarkRecommendationSucceededRequest
+    mark_recommendation_succeeded_request = messages.GoogleCloudRecommenderV1beta1MarkRecommendationSucceededRequest(
+        etag=args.etag,
+        stateMetadata=ParseStateMetadata(args.state_metadata,
+                                         message_request_field))
+    if args.project:
+      mark_request = messages.RecommenderProjectsLocationsRecommendersRecommendationsMarkSucceededRequest(
+          googleCloudRecommenderV1beta1MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
+          name=parent_resource)
+    elif args.billing_account:
+      mark_request = messages.RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkSucceededRequest(
+          googleCloudRecommenderV1beta1MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
+          name=parent_resource)
+    elif args.organization:
+      mark_request = messages.RecommenderOrganizationsLocationsRecommendersRecommendationsMarkSucceededRequest(
+          googleCloudRecommenderV1beta1MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
+          name=parent_resource)
+    elif args.folder:
+      mark_request = messages.RecommenderFoldersLocationsRecommendersRecommendationsMarkSucceededRequest(
+          googleCloudRecommenderV1beta1MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
+          name=parent_resource)
+  elif api_version == RECOMMENDER_API_GA_VERSION:
+    message_request_field = messages.GoogleCloudRecommenderV1MarkRecommendationSucceededRequest
+    mark_recommendation_succeeded_request = messages.GoogleCloudRecommenderV1MarkRecommendationSucceededRequest(
+        etag=args.etag,
+        stateMetadata=ParseStateMetadata(args.state_metadata,
+                                         message_request_field))
+    if args.project:
+      mark_request = messages.RecommenderProjectsLocationsRecommendersRecommendationsMarkSucceededRequest(
+          googleCloudRecommenderV1MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
+          name=parent_resource)
+    elif args.billing_account:
+      mark_request = messages.RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkSucceededRequest(
+          googleCloudRecommenderV1MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
+          name=parent_resource)
+    elif args.organization:
+      mark_request = messages.RecommenderOrganizationsLocationsRecommendersRecommendationsMarkSucceededRequest(
+          googleCloudRecommenderV1MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
+          name=parent_resource)
+    elif args.folder:
+      mark_request = messages.RecommenderFoldersLocationsRecommendersRecommendationsMarkSucceededRequest(
+          googleCloudRecommenderV1MarkRecommendationSucceededRequest=mark_recommendation_succeeded_request,
+          name=parent_resource)
 
   return mark_request
 
@@ -429,6 +635,25 @@ def ParseStateMetadata(metadata, message_request):
         metadata_value_msg.AdditionalProperty(key=key, value=value))
 
   return metadata_value_msg(additionalProperties=additional_properties) or None
+
+
+def GetApiVersion(release_track):
+  """Get API version string.
+
+  Converts API version string from release track value.
+
+  Args:
+    release_track: release_track value, can be ALPHA, BETA, GA
+
+  Returns:
+    API version string.
+  """
+  switcher = {
+      base.ReleaseTrack.ALPHA: RECOMMENDER_API_ALPHA_VERSION,
+      base.ReleaseTrack.BETA: RECOMMENDER_API_BETA_VERSION,
+      base.ReleaseTrack.GA: RECOMMENDER_API_GA_VERSION,
+  }
+  return switcher.get(release_track, RECOMMENDER_API_ALPHA_VERSION)
 
 
 def _GetRecommendationChangeType(recommendation_change_type):

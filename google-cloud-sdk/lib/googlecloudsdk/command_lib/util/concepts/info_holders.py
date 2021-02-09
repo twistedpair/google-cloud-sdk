@@ -225,7 +225,7 @@ class ResourceInfo(ConceptInfo):
           # This may be an error, but existence of fallthroughs should not be
           # enforced here.
           continue
-        hint = 'To set the [{}] attribute: {}.'.format(
+        hint = 'To set the `{}` attribute: {}.'.format(
             attr_name,
             '; '.join(hints))
         description.append(hint)
@@ -263,7 +263,7 @@ class ResourceInfo(ConceptInfo):
         plural=getattr(self.resource_spec, 'plural_name', None))
     hints = self.GetHints(attribute.name)
     if hints:
-      hint = ' To set the [{}] attribute: {}.'.format(attribute.name,
+      hint = ' To set the `{}` attribute: {}.'.format(attribute.name,
                                                       '; '.join(hints))
       help_text += hint
     return help_text.format(resource=expansion_name)

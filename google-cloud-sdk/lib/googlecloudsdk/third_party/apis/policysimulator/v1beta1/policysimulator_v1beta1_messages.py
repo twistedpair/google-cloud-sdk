@@ -469,19 +469,6 @@ class GoogleCloudPolicysimulatorV1beta1ListReplayResultsResponse(_messages.Messa
   replayResults = _messages.MessageField('GoogleCloudPolicysimulatorV1beta1ReplayResult', 2, repeated=True)
 
 
-class GoogleCloudPolicysimulatorV1beta1ListReplaysResponse(_messages.Message):
-  r"""Response containing list of `Replays`.
-
-  Fields:
-    nextPageToken: A token, which can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    replays: The list of `Replays`.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  replays = _messages.MessageField('GoogleCloudPolicysimulatorV1beta1Replay', 2, repeated=True)
-
-
 class GoogleCloudPolicysimulatorV1beta1Replay(_messages.Message):
   r"""A Replay of Accesses against a simulated state.
 
@@ -1104,30 +1091,6 @@ class PolicysimulatorFoldersLocationsReplaysGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class PolicysimulatorFoldersLocationsReplaysListRequest(_messages.Message):
-  r"""A PolicysimulatorFoldersLocationsReplaysListRequest object.
-
-  Fields:
-    pageSize: The maximum number of `Replays` to return. If unspecified, at
-      most 50 `Replays` will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
-    pageToken: A page token, received from a previous `ListReplays` call.
-      Provide this to retrieve the subsequent page. When paginating, all other
-      parameters provided to `ListReplays` must match the call that provided
-      the page token.
-    parent: Required. The parent resource. Parent must be a project, folder,
-      or organization and include location. Example: `projects/my-example-
-      project/locations/global` Only Replays that are direct children of the
-      provided parent are listed. In other words, Replays that are children of
-      a project will not be included when the parent is a folder of that
-      project.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
 class PolicysimulatorFoldersLocationsReplaysResultsListRequest(_messages.Message):
   r"""A PolicysimulatorFoldersLocationsReplaysResultsListRequest object.
 
@@ -1202,30 +1165,6 @@ class PolicysimulatorOrganizationsLocationsReplaysGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class PolicysimulatorOrganizationsLocationsReplaysListRequest(_messages.Message):
-  r"""A PolicysimulatorOrganizationsLocationsReplaysListRequest object.
-
-  Fields:
-    pageSize: The maximum number of `Replays` to return. If unspecified, at
-      most 50 `Replays` will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
-    pageToken: A page token, received from a previous `ListReplays` call.
-      Provide this to retrieve the subsequent page. When paginating, all other
-      parameters provided to `ListReplays` must match the call that provided
-      the page token.
-    parent: Required. The parent resource. Parent must be a project, folder,
-      or organization and include location. Example: `projects/my-example-
-      project/locations/global` Only Replays that are direct children of the
-      provided parent are listed. In other words, Replays that are children of
-      a project will not be included when the parent is a folder of that
-      project.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
 class PolicysimulatorOrganizationsLocationsReplaysResultsListRequest(_messages.Message):
   r"""A PolicysimulatorOrganizationsLocationsReplaysResultsListRequest object.
 
@@ -1272,30 +1211,6 @@ class PolicysimulatorProjectsLocationsReplaysGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class PolicysimulatorProjectsLocationsReplaysListRequest(_messages.Message):
-  r"""A PolicysimulatorProjectsLocationsReplaysListRequest object.
-
-  Fields:
-    pageSize: The maximum number of `Replays` to return. If unspecified, at
-      most 50 `Replays` will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
-    pageToken: A page token, received from a previous `ListReplays` call.
-      Provide this to retrieve the subsequent page. When paginating, all other
-      parameters provided to `ListReplays` must match the call that provided
-      the page token.
-    parent: Required. The parent resource. Parent must be a project, folder,
-      or organization and include location. Example: `projects/my-example-
-      project/locations/global` Only Replays that are direct children of the
-      provided parent are listed. In other words, Replays that are children of
-      a project will not be included when the parent is a folder of that
-      project.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
 
 
 class PolicysimulatorProjectsLocationsReplaysResultsListRequest(_messages.Message):

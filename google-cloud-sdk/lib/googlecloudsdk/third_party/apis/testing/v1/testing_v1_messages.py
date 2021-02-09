@@ -399,6 +399,7 @@ class ApkManifest(_messages.Message):
       "com.example.foo".
     targetSdkVersion: Specifies the API Level on which the application is
       designed to run.
+    usesPermission: Permissions declared to be used by the application
   """
 
   applicationLabel = _messages.StringField(1)
@@ -407,6 +408,7 @@ class ApkManifest(_messages.Message):
   minSdkVersion = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   packageName = _messages.StringField(5)
   targetSdkVersion = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  usesPermission = _messages.StringField(7, repeated=True)
 
 
 class AppBundle(_messages.Message):

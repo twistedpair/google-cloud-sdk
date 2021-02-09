@@ -192,7 +192,7 @@ class CDNPolicy(_messages.Message):
     defaultTtl: Optional. Specifies the default TTL for cached content served
       by this origin for responses that do not have an existing valid TTL
       (max-age or s-max-age). Defaults to 3600s (1 hour). - The TTL must be >=
-      0 and <= 2592000 (1 month) - Setting a TTL of "0" means "always
+      0 and <= 2592000s (1 month) - Setting a TTL of "0" means "always
       revalidate" (equivalent to must-revalidate) - The value of defaultTTL
       cannot be set to a value greater than that of maxTTL. - Fractions of a
       second are not allowed. - When the cacheMode is set to FORCE_CACHE_ALL,
@@ -206,7 +206,7 @@ class CDNPolicy(_messages.Message):
       attempt to set a max-age or s-maxage higher than this, or an Expires
       header more than maxTtl seconds in the future will be capped at the
       value of maxTTL, as if it were the value of an s-maxage Cache-Control
-      directive. - The TTL must be >= 0 and <= 2592000 (1 month) - Setting a
+      directive. - The TTL must be >= 0 and <= 2592000s (1 month) - Setting a
       TTL of "0" means "always revalidate" - The value of maxTtl must be equal
       to or greater than defaultTtl. - Fractions of a second are not allowed.
       When the cache mode is set to "USE_ORIGIN_HEADERS", "FORCE_CACHE_ALL",
@@ -357,17 +357,19 @@ class CORSPolicy(_messages.Message):
       credentials. This translates to the Access-Control-Allow-Credentials
       response header.
     allowHeaders: Optional. Specifies the content for the Access-Control-
-      Allow-Headers response header.
+      Allow-Headers response header. You may specify up to 5 headers to
+      include in the Access-Control-Allow-Headers header.
     allowMethods: Optional. Specifies the content for the Access-Control-
-      Allow-Methods response header.
+      Allow-Methods response header. You may specify up to 5 allowed methods.
     allowOrigins: Optional. Specifies the list of origins that will be allowed
       to do CORS requests. This translates to the Access-Control-Allow-Origin
-      response header.
+      response header. You may specify up to 5 allowed origins.
     disabled: Optional. If true, specifies the CORS policy is disabled. The
       default value is false, which indicates that the CORS policy is in
       effect.
     exposeHeaders: Optional. Specifies the content for the Access-Control-
-      Expose-Headers response header.
+      Expose-Headers response header. You may specify up to 5 headers to
+      expose in the Access-Control-Expose-Headers header.
     maxAge: Required. Specifies how long results of a preflight request can be
       cached by a client in seconds. Note that many browser clients enforce a
       maximum TTL of 600s (10 minutes). - Setting the value to -1 forces a
@@ -398,7 +400,8 @@ class CacheKeyPolicy(_messages.Message):
     excludedQueryParameters: Optional. Names of query string parameters to
       exclude from cache keys. All other parameters will be included. Either
       specify includedQueryParameters or excludedQueryParameters, not both.
-      '&' and '=' will be percent encoded and not treated as delimiters.
+      '&' and '=' will be percent encoded and not treated as delimiters. You
+      may exclude up to 10 query parameters.
     includeProtocol: Optional. If true, http and https requests will be cached
       separately.
     includeQueryString: Optional. If true, include query string parameters in
@@ -413,11 +416,13 @@ class CacheKeyPolicy(_messages.Message):
       to five header names. - To include the HTTP method, use ":method" Note
       that specifying several headers, and/or headers that have a large range
       of values (e.g. per-user) will dramatically impact the cache hit rate,
-      and may result in a higher eviction rate and reduced performance.
+      and may result in a higher eviction rate and reduced performance. You
+      may specify up to 5 header names.
     includedQueryParameters: Optional. Names of query string parameters to
       include in cache keys. All other parameters will be excluded. Either
       specify includedQueryParameters or excludedQueryParameters, not both.
-      '&' and '=' will be percent encoded and not treated as delimiters.
+      '&' and '=' will be percent encoded and not treated as delimiters. You
+      may include up to 10 query parameters.
   """
 
   excludeHost = _messages.BooleanField(1)
@@ -434,14 +439,14 @@ class CancelOperationRequest(_messages.Message):
 
 class EdgeCacheKeyset(_messages.Message):
   r"""EdgeCacheKeyset represents a collection of public keys used for
-  validating signed requests.
+  validating signed requests. Next ID: 8
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the EdgeCache
       resource.
 
   Fields:
-    creationTime: Output only. Creation timestamp in RFC3339 text format.
+    createTime: Output only. Creation timestamp in RFC3339 text format.
     description: Optional. A human-readable description of the resource.
     labels: Optional. Set of label tags associated with the EdgeCache
       resource.
@@ -485,7 +490,7 @@ class EdgeCacheKeyset(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  creationTime = _messages.StringField(1)
+  createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
@@ -495,7 +500,7 @@ class EdgeCacheKeyset(_messages.Message):
 
 class EdgeCacheOrigin(_messages.Message):
   r"""EdgeCacheOrigin represents a HTTP-reachable backend for an
-  EdgeCacheService.
+  EdgeCacheService. Next ID: 14
 
   Enums:
     ProtocolValueValuesEnum: Optional. The protocol to use to connect to the
@@ -510,7 +515,7 @@ class EdgeCacheOrigin(_messages.Message):
       resource.
 
   Fields:
-    creationTime: Output only. A human-readable description of the resource.
+    createTime: Output only. A human-readable description of the resource.
       Creation timestamp in RFC3339 text format.
     description: Optional. A human-readable description of the resource.
     failoverOrigin: Optional. The Origin resource to try when the current
@@ -561,17 +566,17 @@ class EdgeCacheOrigin(_messages.Message):
       the origin matches the configured retryCondition(s), the origin request
       will be retried up to maxAttempts times. The failoverOrigin, if
       configured, will then be used to satisfy the request. The default
-      retryCondition is "connect-failure". retryConditions apply to this
+      retryCondition is "CONNECT_FAILURE". retryConditions apply to this
       origin, and not subsequent failoverOrigin(s), which may specify their
-      own retryConditions and maxAttempts. Valid values are: - connect-
-      failure: Retry on failures connecting to origins, for example due to
-      connection timeouts. - http-5xx: Retry if the origin responds with any
-      5xx response code, or if the origin does not respond at all, example:
-      disconnects, reset, read timeout, connection failure, and refused
-      streams. - gateway-error: Similar to 5xx, but only applies to response
-      codes 502, 503 or 504. - retriable-4xx: Retry for retriable 4xx response
-      codes, which include HTTP 409 (Conflict) and HTTP 429 (Too Many
-      Requests) - not-found: Retry if the origin returns a HTTP 404 (Not
+      own retryConditions and maxAttempts. Valid values are: -
+      CONNECT_FAILURE: Retry on failures connecting to origins, for example
+      due to connection timeouts. - HTTP_5XX: Retry if the origin responds
+      with any 5xx response code, or if the origin does not respond at all,
+      example: disconnects, reset, read timeout, connection failure, and
+      refused streams. - GATEWAY_ERROR: Similar to 5xx, but only applies to
+      response codes 502, 503 or 504. - RETRIABLE_4XX: Retry for retriable 4xx
+      response codes, which include HTTP 409 (Conflict) and HTTP 429 (Too Many
+      Requests) - NOT_FOUND: Retry if the origin returns a HTTP 404 (Not
       Found). This can be useful when generating video content, and the
       segment is not available yet.
     timeout: Optional. The connection and HTTP timeout configuration for this
@@ -609,9 +614,7 @@ class EdgeCacheOrigin(_messages.Message):
       RETRY_CONDITIONS_UNSPECIFIED: Unspecified
       CONNECT_FAILURE: Retry on failures include routing, DNS and TLS
         handshake errors, as well as TCP/UDP timeouts.
-      HTTP_5XX: Retry on any 5xx response code, or if the backend service does
-        not respond at all, example: disconnects, reset, read timeout,
-        connection failure, and refused streams.
+      HTTP_5XX: Retry on any 5xx response code.
       GATEWAY_ERROR: Similar to 5xx, but only applies to response codes 502,
         503 or 504.
       RETRIABLE_4XX: Retry for retriable 4xx response codes, including 409 and
@@ -649,7 +652,7 @@ class EdgeCacheOrigin(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  creationTime = _messages.StringField(1)
+  createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   failoverOrigin = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
@@ -665,14 +668,14 @@ class EdgeCacheOrigin(_messages.Message):
 
 class EdgeCacheService(_messages.Message):
   r"""EdgeCacheService defines the IP addresses, protocols, security policies,
-  cache policies and routing configuration.
+  cache policies and routing configuration. Next ID: 16
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the EdgeCache
       resource.
 
   Fields:
-    creationTime: Output only. Creation timestamp in RFC3339 text format.
+    createTime: Output only. Creation timestamp in RFC3339 text format.
     description: Optional. A human-readable description of the resource.
     disableQuic: Optional. HTTP/3 (IETF QUIC) and Google QUIC are enabled by
       default.
@@ -742,7 +745,7 @@ class EdgeCacheService(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  creationTime = _messages.StringField(1)
+  createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   disableQuic = _messages.BooleanField(3)
   edgeSecurityPolicy = _messages.StringField(4)
@@ -927,17 +930,19 @@ class HeaderAction(_messages.Message):
   requests/responses.
 
   Fields:
-    requestHeadersToAdd: Optional. Describes a header to add.
+    requestHeadersToAdd: Optional. Describes a header to add. You may add a
+      maximum of 5 request headers.
     requestHeadersToRemove: Optional. A list of header names for headers that
       need to be removed from the request prior to forwarding the request to
-      the origin.
+      the origin. You may specify up to 10 request headers to remove.
     responseHeadersToAdd: Optional. Headers to add to the response prior to
-      sending it back to the client. Response headers are only sent to the
-      client, and do not have an effect on the cache serving the response.
+      sending it back to the client. You may add a maximum of 5 response
+      headers. Response headers are only sent to the client, and do not have
+      an effect on the cache serving the response.
     responseHeadersToRemove: Optional. Headers to remove from the response
       prior to sending it back to the client. Response headers are only sent
       to the client, and do not have an effect on the cache serving the
-      response.
+      response. You may specify up to 10 response headers to remove.
   """
 
   requestHeadersToAdd = _messages.MessageField('AddHeader', 1, repeated=True)
@@ -989,7 +994,8 @@ class HostRule(_messages.Message):
       valid hostnames with optional port numbers in the format host:port. *
       matches any string of ([a-z0-9-.]*). The only accepted ports are :80 and
       :443. Hosts are matched against the HTTP Host header, or for HTTP/2 and
-      HTTP/3, the ":authority" header, from the incoming request.
+      HTTP/3, the ":authority" header, from the incoming request. You may
+      specify up to 10 hosts.
     pathMatcher: Required. The name of the pathMatcher associated with this
       hostRule.
   """
@@ -1291,7 +1297,8 @@ class MatchRule(_messages.Message):
       original URL. fullPathMatch must be between 1 and 1024 characters. Only
       one of prefixMatch or fullPathMatch must be specified.
     headerMatches: Optional. Specifies a list of header match criteria, all of
-      which must match corresponding headers in the request.
+      which must match corresponding headers in the request. You may specify
+      up to 3 headers to match on.
     ignoreCase: Optional. Specifies that prefixMatch and fullPathMatch matches
       are case sensitive. The default value is false.
     prefixMatch: Optional. For satisfying the matchRule condition, the
@@ -1300,7 +1307,7 @@ class MatchRule(_messages.Message):
       Only one of prefixMatch or fullPathMatch must be specified.
     queryParameterMatches: Optional. Specifies a list of query parameter match
       criteria, all of which must match corresponding query parameters in the
-      request.
+      request. You may specify up to 5 query parameters to match on.
   """
 
   fullPathMatch = _messages.StringField(1)
@@ -2251,7 +2258,8 @@ class PathMatcher(_messages.Message):
       HostRule.
     routeRules: Required. The routeRules to match against. routeRules support
       advanced routing behaviour, and can match on paths, headers and query
-      parameters, as well as status codes and HTTP methods.
+      parameters, as well as status codes and HTTP methods. You must specify
+      at least one (1) rule, and can specify a maximum of 64 rules.
   """
 
   description = _messages.StringField(1)
@@ -2336,11 +2344,10 @@ class PublicKey(_messages.Message):
 
   Fields:
     id: Required. The ID of the public key. The ID must be 1-63 characters
-      long, and comply with RFC1035. Specifically, the ID must be 1-63
-      characters long and match the regular expression
-      [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a
-      lowercase letter, and all following characters must be a dash, lowercase
-      letter, or digit, except the last character, which cannot be a dash.
+      long, and comply with RFC1035. The name must be 1-64 characters long,
+      and match the regular expression a-zA-Z* which means the first character
+      must be a letter, and all following characters must be a dash,
+      underscore, letter or digit.
     value: Required. The base64-encoded value of the Ed25519 public key. The
       base64 encoding can be padded (44 bytes) or unpadded (43 bytes).
       Representations or encodings of the public key other than this will be
@@ -2452,10 +2459,11 @@ class Routing(_messages.Message):
   Fields:
     hostRules: Required. The list of hostRules to match against. These rules
       define which hostnames the EdgeCacheService will match against, and
-      which route configurations apply.
+      which route configurations apply. You may specify up to 5 host rules.
     pathMatchers: Required. The list of pathMatchers referenced via name by
       hostRules. PathMatcher is used to match the path portion of the URL when
-      a HostRule matches the URL's host portion.
+      a HostRule matches the URL's host portion. You may specify up to 10 path
+      matchers.
   """
 
   hostRules = _messages.MessageField('HostRule', 1, repeated=True)

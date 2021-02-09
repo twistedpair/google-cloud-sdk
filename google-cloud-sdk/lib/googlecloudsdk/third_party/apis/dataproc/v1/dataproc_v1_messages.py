@@ -1050,12 +1050,13 @@ class DataprocProjectsRegionsClustersCreateRequest(_messages.Message):
       cluster belongs to.
     region: Required. The Dataproc region in which to handle the request.
     requestId: Optional. A unique id used to identify the request. If the
-      server receives two CreateClusterRequest requests with the same id, then
-      the second request will be ignored and the first
-      google.longrunning.Operation created and stored in the backend is
-      returned.It is recommended to always set this value to a UUID
-      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
-      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      server receives two CreateClusterRequest (https://cloud.google.com/datap
+      roc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v1
+      .CreateClusterRequest)s with the same id, then the second request will
+      be ignored and the first google.longrunning.Operation created and stored
+      in the backend is returned.It is recommended to always set this value to
+      a UUID (https://en.wikipedia.org/wiki/Universally_unique_identifier).The
+      id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """
 
@@ -1077,12 +1078,13 @@ class DataprocProjectsRegionsClustersDeleteRequest(_messages.Message):
       cluster belongs to.
     region: Required. The Dataproc region in which to handle the request.
     requestId: Optional. A unique id used to identify the request. If the
-      server receives two DeleteClusterRequest requests with the same id, then
-      the second request will be ignored and the first
-      google.longrunning.Operation created and stored in the backend is
-      returned.It is recommended to always set this value to a UUID
-      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
-      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      server receives two DeleteClusterRequest (https://cloud.google.com/datap
+      roc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v1
+      .DeleteClusterRequest)s with the same id, then the second request will
+      be ignored and the first google.longrunning.Operation created and stored
+      in the backend is returned.It is recommended to always set this value to
+      a UUID (https://en.wikipedia.org/wiki/Universally_unique_identifier).The
+      id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """
 
@@ -1223,12 +1225,13 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
       cluster belongs to.
     region: Required. The Dataproc region in which to handle the request.
     requestId: Optional. A unique id used to identify the request. If the
-      server receives two UpdateClusterRequest requests with the same id, then
-      the second request will be ignored and the first
-      google.longrunning.Operation created and stored in the backend is
-      returned.It is recommended to always set this value to a UUID
-      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
-      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      server receives two UpdateClusterRequest (https://cloud.google.com/datap
+      roc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v1
+      .UpdateClusterRequest)s with the same id, then the second request will
+      be ignored and the first google.longrunning.Operation created and stored
+      in the backend is returned.It is recommended to always set this value to
+      a UUID (https://en.wikipedia.org/wiki/Universally_unique_identifier).The
+      id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
     updateMask: Required. Specifies the path, relative to Cluster, of the
       field to update. For example, to change the number of workers in a
@@ -1269,6 +1272,42 @@ class DataprocProjectsRegionsClustersSetIamPolicyRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DataprocProjectsRegionsClustersStartRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersStartRequest object.
+
+  Fields:
+    clusterName: Required. The cluster name.
+    projectId: Required. The ID of the Google Cloud Platform project the
+      cluster belongs to.
+    region: Required. The Dataproc region in which to handle the request.
+    startClusterRequest: A StartClusterRequest resource to be passed as the
+      request body.
+  """
+
+  clusterName = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  startClusterRequest = _messages.MessageField('StartClusterRequest', 4)
+
+
+class DataprocProjectsRegionsClustersStopRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersStopRequest object.
+
+  Fields:
+    clusterName: Required. The cluster name.
+    projectId: Required. The ID of the Google Cloud Platform project the
+      cluster belongs to.
+    region: Required. The Dataproc region in which to handle the request.
+    stopClusterRequest: A StopClusterRequest resource to be passed as the
+      request body.
+  """
+
+  clusterName = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  stopClusterRequest = _messages.MessageField('StopClusterRequest', 4)
 
 
 class DataprocProjectsRegionsClustersTestIamPermissionsRequest(_messages.Message):
@@ -3743,8 +3782,8 @@ class SoftwareConfig(_messages.Message):
       COMPONENT_UNSPECIFIED: Unspecified component. Specifying this will cause
         Cluster creation to fail.
       ANACONDA: The Anaconda python distribution. The Anaconda component is
-        not supported in the Dataproc preview 2.0 image. The 2.0 preview image
-        is pre-installed with Miniconda.
+        not supported in the Dataproc 2.0 image. The 2.0 image is pre-
+        installed with Miniconda.
       DOCKER: Docker
       DRUID: The Druid query engine.
       FLINK: Flink
@@ -4089,6 +4128,28 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StartClusterRequest(_messages.Message):
+  r"""A request to start a cluster.
+
+  Fields:
+    clusterUuid: Optional. Specifying the cluster_uuid means the RPC will fail
+      (with error NOT_FOUND) if a cluster with the specified UUID does not
+      exist.
+    requestId: Optional. A unique id used to identify the request. If the
+      server receives two StartClusterRequest (https://cloud.google.com/datapr
+      oc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v1.
+      StartClusterRequest)s with the same id, then the second request will be
+      ignored and the first google.longrunning.Operation created and stored in
+      the backend is returned.Recommendation: Set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  clusterUuid = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
 class Status(_messages.Message):
   r"""The Status type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -4140,17 +4201,41 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class StopClusterRequest(_messages.Message):
+  r"""A request to stop a cluster.
+
+  Fields:
+    clusterUuid: Optional. Specifying the cluster_uuid means the RPC will fail
+      (with error NOT_FOUND) if a cluster with the specified UUID does not
+      exist.
+    requestId: Optional. A unique id used to identify the request. If the
+      server receives two StopClusterRequest (https://cloud.google.com/datapro
+      c/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v1.S
+      topClusterRequest)s with the same id, then the second request will be
+      ignored and the first google.longrunning.Operation created and stored in
+      the backend is returned.Recommendation: Set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  clusterUuid = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
 class SubmitJobRequest(_messages.Message):
   r"""A request to submit a job.
 
   Fields:
     job: Required. The job resource.
     requestId: Optional. A unique id used to identify the request. If the
-      server receives two SubmitJobRequest requests with the same id, then the
-      second request will be ignored and the first Job created and stored in
-      the backend is returned.It is recommended to always set this value to a
-      UUID (https://en.wikipedia.org/wiki/Universally_unique_identifier).The
-      id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      server receives two SubmitJobRequest (https://cloud.google.com/dataproc/
+      docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v1.Sub
+      mitJobRequest)s with the same id, then the second request will be
+      ignored and the first Job created and stored in the backend is
+      returned.It is recommended to always set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """
 

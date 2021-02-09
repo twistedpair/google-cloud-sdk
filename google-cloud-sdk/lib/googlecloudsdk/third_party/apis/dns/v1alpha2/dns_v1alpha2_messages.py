@@ -790,6 +790,10 @@ class DnsProjectsManagedZonesRrsetsDeleteRequest(_messages.Message):
   type = _messages.StringField(5, required=True)
 
 
+class DnsProjectsManagedZonesRrsetsDeleteResponse(_messages.Message):
+  r"""An empty DnsProjectsManagedZonesRrsetsDelete response."""
+
+
 class DnsProjectsManagedZonesRrsetsGetRequest(_messages.Message):
   r"""A DnsProjectsManagedZonesRrsetsGetRequest object.
 
@@ -858,6 +862,245 @@ class DnsResourceRecordSetsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   type = _messages.StringField(6)
+
+
+class DnsResponsePoliciesCreateRequest(_messages.Message):
+  r"""A DnsResponsePoliciesCreateRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    project: Identifies the project addressed by this request.
+    responsePolicy: A ResponsePolicy resource to be passed as the request
+      body.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.MessageField('ResponsePolicy', 3)
+
+
+class DnsResponsePoliciesDeleteRequest(_messages.Message):
+  r"""A DnsResponsePoliciesDeleteRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    project: Identifies the project addressed by this request.
+    responsePolicy: User assigned name of the Response Policy addressed by
+      this request.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+
+
+class DnsResponsePoliciesDeleteResponse(_messages.Message):
+  r"""An empty DnsResponsePoliciesDelete response."""
+
+
+class DnsResponsePoliciesGetRequest(_messages.Message):
+  r"""A DnsResponsePoliciesGetRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    project: Identifies the project addressed by this request.
+    responsePolicy: User assigned name of the Response Policy addressed by
+      this request.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+
+
+class DnsResponsePoliciesListRequest(_messages.Message):
+  r"""A DnsResponsePoliciesListRequest object.
+
+  Fields:
+    maxResults: Optional. Maximum number of results to be returned. If
+      unspecified, the server will decide how many results to return.
+    pageToken: Optional. A tag returned by a previous list request that was
+      truncated. Use this parameter to continue a previous list request.
+    project: Identifies the project addressed by this request.
+  """
+
+  maxResults = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
+
+
+class DnsResponsePoliciesPatchRequest(_messages.Message):
+  r"""A DnsResponsePoliciesPatchRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    project: Identifies the project addressed by this request.
+    responsePolicy: User assigned name of the Respones Policy addressed by
+      this request.
+    responsePolicyResource: A ResponsePolicy resource to be passed as the
+      request body.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+  responsePolicyResource = _messages.MessageField('ResponsePolicy', 4)
+
+
+class DnsResponsePoliciesUpdateRequest(_messages.Message):
+  r"""A DnsResponsePoliciesUpdateRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    project: Identifies the project addressed by this request.
+    responsePolicy: User assigned name of the Response Policy addressed by
+      this request.
+    responsePolicyResource: A ResponsePolicy resource to be passed as the
+      request body.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+  responsePolicyResource = _messages.MessageField('ResponsePolicy', 4)
+
+
+class DnsResponsePolicyRulesCreateRequest(_messages.Message):
+  r"""A DnsResponsePolicyRulesCreateRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    project: Identifies the project addressed by this request.
+    responsePolicy: User assigned name of the Response Policy containing the
+      Response Policy Rule.
+    responsePolicyRule: A ResponsePolicyRule resource to be passed as the
+      request body.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+  responsePolicyRule = _messages.MessageField('ResponsePolicyRule', 4)
+
+
+class DnsResponsePolicyRulesDeleteRequest(_messages.Message):
+  r"""A DnsResponsePolicyRulesDeleteRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    project: Identifies the project addressed by this request.
+    responsePolicy: User assigned name of the Response Policy containing the
+      Response Policy Rule.
+    responsePolicyRule: User assigned name of the Response Policy Rule
+      addressed by this request.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+  responsePolicyRule = _messages.StringField(4, required=True)
+
+
+class DnsResponsePolicyRulesDeleteResponse(_messages.Message):
+  r"""An empty DnsResponsePolicyRulesDelete response."""
+
+
+class DnsResponsePolicyRulesGetRequest(_messages.Message):
+  r"""A DnsResponsePolicyRulesGetRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    project: Identifies the project addressed by this request.
+    responsePolicy: User assigned name of the Response Policy containing the
+      Response Policy Rule.
+    responsePolicyRule: User assigned name of the Response Policy Rule
+      addressed by this request.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+  responsePolicyRule = _messages.StringField(4, required=True)
+
+
+class DnsResponsePolicyRulesListRequest(_messages.Message):
+  r"""A DnsResponsePolicyRulesListRequest object.
+
+  Fields:
+    maxResults: Optional. Maximum number of results to be returned. If
+      unspecified, the server will decide how many results to return.
+    pageToken: Optional. A tag returned by a previous list request that was
+      truncated. Use this parameter to continue a previous list request.
+    project: Identifies the project addressed by this request.
+    responsePolicy: User assigned name of the Response Policy to list.
+  """
+
+  maxResults = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
+  responsePolicy = _messages.StringField(4, required=True)
+
+
+class DnsResponsePolicyRulesPatchRequest(_messages.Message):
+  r"""A DnsResponsePolicyRulesPatchRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    project: Identifies the project addressed by this request.
+    responsePolicy: User assigned name of the Response Policy containing the
+      Response Policy Rule.
+    responsePolicyRule: User assigned name of the Response Policy Rule
+      addressed by this request.
+    responsePolicyRuleResource: A ResponsePolicyRule resource to be passed as
+      the request body.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+  responsePolicyRule = _messages.StringField(4, required=True)
+  responsePolicyRuleResource = _messages.MessageField('ResponsePolicyRule', 5)
+
+
+class DnsResponsePolicyRulesUpdateRequest(_messages.Message):
+  r"""A DnsResponsePolicyRulesUpdateRequest object.
+
+  Fields:
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    project: Identifies the project addressed by this request.
+    responsePolicy: User assigned name of the Response Policy containing the
+      Response Policy Rule.
+    responsePolicyRule: User assigned name of the Response Policy Rule
+      addressed by this request.
+    responsePolicyRuleResource: A ResponsePolicyRule resource to be passed as
+      the request body.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+  responsePolicyRule = _messages.StringField(4, required=True)
+  responsePolicyRuleResource = _messages.MessageField('ResponsePolicyRule', 5)
 
 
 class ManagedZone(_messages.Message):
@@ -1046,6 +1289,8 @@ class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
       to the Internet. When set to PRIVATE, Cloud DNS will always send queries
       through VPC for this target.
     ipv4Address: IPv4 address of a target name server.
+    ipv6Address: IPv6 address of a target name server. Will not accept both
+      fields (ipv4 & ipv6) being populated.
     kind: A string attribute.
   """
 
@@ -1068,7 +1313,8 @@ class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
 
   forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 1)
   ipv4Address = _messages.StringField(2)
-  kind = _messages.StringField(3, default='dns#managedZoneForwardingConfigNameServerTarget')
+  ipv6Address = _messages.StringField(3)
+  kind = _messages.StringField(4, default='dns#managedZoneForwardingConfigNameServerTarget')
 
 
 class ManagedZoneOperationsListResponse(_messages.Message):
@@ -1475,6 +1721,8 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
       to the Internet. When set to PRIVATE, Cloud DNS will always send queries
       through VPC for this target.
     ipv4Address: IPv4 address to forward to.
+    ipv6Address: IPv6 address to forward to. Will not accept both fields (ipv4
+      & ipv6) being populated.
     kind: A string attribute.
   """
 
@@ -1497,7 +1745,8 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
 
   forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 1)
   ipv4Address = _messages.StringField(2)
-  kind = _messages.StringField(3, default='dns#policyAlternativeNameServerConfigTargetNameServer')
+  ipv6Address = _messages.StringField(3)
+  kind = _messages.StringField(4, default='dns#policyAlternativeNameServerConfigTargetNameServer')
 
 
 class PolicyNetwork(_messages.Message):
@@ -1700,10 +1949,6 @@ class ResourceRecordSet(_messages.Message):
   type = _messages.StringField(7)
 
 
-class ResourceRecordSetsDeleteResponse(_messages.Message):
-  r"""A ResourceRecordSetsDeleteResponse object."""
-
-
 class ResourceRecordSetsListResponse(_messages.Message):
   r"""A ResourceRecordSetsListResponse object.
 
@@ -1738,6 +1983,191 @@ class ResponseHeader(_messages.Message):
   """
 
   operationId = _messages.StringField(1)
+
+
+class ResponsePoliciesListResponse(_messages.Message):
+  r"""A ResponsePoliciesListResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    nextPageToken: The presence of this field indicates that there exist more
+      results following your last page of results in pagination order. To
+      fetch them, make another list request using this value as your page
+      token. In this way you can retrieve the complete contents of even very
+      large collections one page at a time. However, if the contents of the
+      collection change between the first and last paginated list request, the
+      set of all elements returned will be an inconsistent view of the
+      collection. There is no way to retrieve a consistent snapshot of a
+      collection larger than the maximum page size.
+    responsePolicies: The Response Policy resources.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  nextPageToken = _messages.StringField(2)
+  responsePolicies = _messages.MessageField('ResponsePolicy', 3, repeated=True)
+
+
+class ResponsePoliciesPatchResponse(_messages.Message):
+  r"""A ResponsePoliciesPatchResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    responsePolicy: A ResponsePolicy attribute.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  responsePolicy = _messages.MessageField('ResponsePolicy', 2)
+
+
+class ResponsePoliciesUpdateResponse(_messages.Message):
+  r"""A ResponsePoliciesUpdateResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    responsePolicy: A ResponsePolicy attribute.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  responsePolicy = _messages.MessageField('ResponsePolicy', 2)
+
+
+class ResponsePolicy(_messages.Message):
+  r"""A Response Policy is a collection of selectors that apply to queries
+  made against one or more Virtual Private Cloud networks.
+
+  Fields:
+    description: User-provided description for this Response Policy.
+    id: Unique identifier for the resource; defined by the server (output
+      only).
+    kind: A string attribute.
+    networks: List of network names specifying networks to which this policy
+      is applied.
+    responsePolicyName: User assigned name for this Response Policy.
+  """
+
+  description = _messages.StringField(1)
+  id = _messages.IntegerField(2)
+  kind = _messages.StringField(3, default='dns#responsePolicy')
+  networks = _messages.MessageField('ResponsePolicyNetwork', 4, repeated=True)
+  responsePolicyName = _messages.StringField(5)
+
+
+class ResponsePolicyNetwork(_messages.Message):
+  r"""A ResponsePolicyNetwork object.
+
+  Fields:
+    kind: A string attribute.
+    networkUrl: The fully qualified URL of the VPC network to bind to. This
+      should be formatted like https://www.googleapis.com/compute/v1/projects/
+      {project}/global/networks/{network}
+  """
+
+  kind = _messages.StringField(1, default='dns#responsePolicyNetwork')
+  networkUrl = _messages.StringField(2)
+
+
+class ResponsePolicyRule(_messages.Message):
+  r"""A Response Policy Rule is a selector that applies its behavior to
+  queries that match the selector. Selectors are DNS names, which may be
+  wildcards or exact matches. Each DNS query subject to a Response Policy
+  matches at most one ResponsePolicyRule, as identified by the dns_name field
+  with the longest matching suffix.
+
+  Enums:
+    BehaviorValueValuesEnum: Answer this query with a behavior rather than DNS
+      data.
+
+  Fields:
+    behavior: Answer this query with a behavior rather than DNS data.
+    dnsName: The DNS name (wildcard or exact) to apply this rule to. Must be
+      unique within the Response Policy Rule.
+    kind: A string attribute.
+    localData: Answer this query directly with DNS data. These
+      ResourceRecordSets override any other DNS behavior for the matched name;
+      in particular they override private zones, the public internet, and GCP
+      internal DNS. No SOA nor NS types are allowed.
+    ruleName: An identifier for this rule. Must be unique with the
+      ResponsePolicy.
+  """
+
+  class BehaviorValueValuesEnum(_messages.Enum):
+    r"""Answer this query with a behavior rather than DNS data.
+
+    Values:
+      behaviorUnspecified: <no description>
+      bypassResponsePolicy: Skip a less-specific ResponsePolicyRule and
+        continue normal query logic. This can be used in conjunction with a
+        wildcard to exempt a subset of the wildcard ResponsePolicyRule from
+        the ResponsePolicy behavior and e.g., query the public internet
+        instead. For instance, if these rules exist: *.example.com -> 1.2.3.4
+        foo.example.com -> PASSTHRU Then a query for 'foo.example.com' will
+        skip the wildcard.
+    """
+    behaviorUnspecified = 0
+    bypassResponsePolicy = 1
+
+  behavior = _messages.EnumField('BehaviorValueValuesEnum', 1)
+  dnsName = _messages.StringField(2)
+  kind = _messages.StringField(3, default='dns#responsePolicyRule')
+  localData = _messages.MessageField('ResponsePolicyRuleLocalData', 4)
+  ruleName = _messages.StringField(5)
+
+
+class ResponsePolicyRuleLocalData(_messages.Message):
+  r"""A ResponsePolicyRuleLocalData object.
+
+  Fields:
+    localDatas: All resource record sets for this selector, one per resource
+      record type. The name must match the dns_name.
+  """
+
+  localDatas = _messages.MessageField('ResourceRecordSet', 1, repeated=True)
+
+
+class ResponsePolicyRulesListResponse(_messages.Message):
+  r"""A ResponsePolicyRulesListResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    nextPageToken: The presence of this field indicates that there exist more
+      results following your last page of results in pagination order. To
+      fetch them, make another list request using this value as your page
+      token. In this way you can retrieve the complete contents of even very
+      large collections one page at a time. However, if the contents of the
+      collection change between the first and last paginated list request, the
+      set of all elements returned will be an inconsistent view of the
+      collection. There is no way to retrieve a consistent snapshot of a
+      collection larger than the maximum page size.
+    responsePolicyRules: The Response Policy Rule resources.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  nextPageToken = _messages.StringField(2)
+  responsePolicyRules = _messages.MessageField('ResponsePolicyRule', 3, repeated=True)
+
+
+class ResponsePolicyRulesPatchResponse(_messages.Message):
+  r"""A ResponsePolicyRulesPatchResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    responsePolicyRule: A ResponsePolicyRule attribute.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  responsePolicyRule = _messages.MessageField('ResponsePolicyRule', 2)
+
+
+class ResponsePolicyRulesUpdateResponse(_messages.Message):
+  r"""A ResponsePolicyRulesUpdateResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    responsePolicyRule: A ResponsePolicyRule attribute.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  responsePolicyRule = _messages.MessageField('ResponsePolicyRule', 2)
 
 
 class StandardQueryParameters(_messages.Message):

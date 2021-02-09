@@ -110,15 +110,6 @@ def CheckServiceAccountPermission(unused_repo_ref, repo_args, request):
   if repo_args.kms_key:
     project_num = project_util.GetProjectNumber(GetProject(repo_args))
     service_account = _AR_SERVICE_ACCOUNT.format(project_num=project_num)
-    try:
-      ar_requests.GetServiceAccount(service_account)
-    except apitools_exceptions.HttpNotFoundError:
-      msg = (
-          "The Artifact Registry service account does not exist, please create"
-          " the service account.\nLearn more: "
-          "https://cloud.google.com/artifact-registry/docs/cmek")
-      raise ar_exceptions.ArtifactRegistryError(msg)
-
     policy = ar_requests.GetCryptoKeyPolicy(repo_args.kms_key)
     has_permission = False
     for binding in policy.bindings:
@@ -139,8 +130,19 @@ def CheckServiceAccountPermission(unused_repo_ref, repo_args, request):
               "encrypt/decrypt on the selected key.\n"
               "Learn more: https://cloud.google.com/artifact-registry/docs/cmek"
           ))
-      ar_requests.AddCryptoKeyPermission(repo_args.kms_key,
-                                         "serviceAccount:" + service_account)
+      try:
+        ar_requests.AddCryptoKeyPermission(repo_args.kms_key,
+                                           "serviceAccount:" + service_account)
+      # We have checked the existence of the key when checking IAM bindings
+      # So all 400s should be because the service account is problematic.
+      # We are moving the permission check to the backend fairly soon anyway.
+      except apitools_exceptions.HttpBadRequestError:
+        msg = (
+            "The Artifact Registry service account may not exist, please "
+            "create the service account.\nLearn more: "
+            "https://cloud.google.com/artifact-registry/docs/cmek")
+        raise ar_exceptions.ArtifactRegistryError(msg)
+
       log.status.Print(
           "Added Cloud KMS CryptoKey Encrypter/Decrypter Role to [{key_name}]"
           .format(key_name=repo_args.kms_key))

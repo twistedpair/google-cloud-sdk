@@ -151,8 +151,10 @@ class Instance(_messages.Message):
     LabelsValue: Resource labels to represent user provided metadata
     RedisConfigsValue: Optional. Redis configuration parameters, according to
       http://redis.io/topics/config. Currently, the only supported parameters
-      are: Redis 3.2 and above: * maxmemory-policy * notify-keyspace-events
-      Redis 4.0 and above: * activedefrag * lfu-log-factor * lfu-decay-time
+      are: Redis version 3.2 and newer: * maxmemory-policy * notify-keyspace-
+      events Redis version 4.0 and newer: * activedefrag * lfu-decay-time *
+      lfu-log-factor * maxmemory-gb Redis version 5.0 and newer: * stream-
+      node-max-bytes * stream-node-max-entries
 
   Fields:
     alternativeLocationId: Optional. Only applicable to standard tier which
@@ -189,7 +191,7 @@ class Instance(_messages.Message):
       not provided, the maintenance event will be performed based on
       Memorystore internal rollout schedule.
     maintenanceSchedule: Output only. Published maintenance schedule.
-    memorySizeGb: Required. Redis memory size in GB, up to 200GB.
+    memorySizeGb: Required. Redis memory size in GB, up to 300GB.
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
@@ -206,13 +208,15 @@ class Instance(_messages.Message):
     port: Output only. The port number of the exposed redis endpoint.
     redisConfigs: Optional. Redis configuration parameters, according to
       http://redis.io/topics/config. Currently, the only supported parameters
-      are: Redis 3.2 and above: * maxmemory-policy * notify-keyspace-events
-      Redis 4.0 and above: * activedefrag * lfu-log-factor * lfu-decay-time
+      are: Redis version 3.2 and newer: * maxmemory-policy * notify-keyspace-
+      events Redis version 4.0 and newer: * activedefrag * lfu-decay-time *
+      lfu-log-factor * maxmemory-gb Redis version 5.0 and newer: * stream-
+      node-max-bytes * stream-node-max-entries
     redisVersion: Optional. The version of Redis software. If not provided,
       latest supported version will be used. Updating the version will perform
       an upgrade/downgrade to the new version. Currently, the supported values
       are: * `REDIS_4_0` for Redis 4.0 compatibility * `REDIS_3_2` for Redis
-      3.2 compatibility (default)
+      3.2 compatibility (default) * `REDIS_5_0` for Redis 5.0 compatibility
     reservedIpRange: Optional. The CIDR range of internal addresses that are
       reserved for this instance. If not provided, the service will choose an
       unused /29 block, for example, 10.0.0.0/29 or 192.168.0.0/29. Ranges
@@ -327,8 +331,10 @@ class Instance(_messages.Message):
   class RedisConfigsValue(_messages.Message):
     r"""Optional. Redis configuration parameters, according to
     http://redis.io/topics/config. Currently, the only supported parameters
-    are: Redis 3.2 and above: * maxmemory-policy * notify-keyspace-events
-    Redis 4.0 and above: * activedefrag * lfu-log-factor * lfu-decay-time
+    are: Redis version 3.2 and newer: * maxmemory-policy * notify-keyspace-
+    events Redis version 4.0 and newer: * activedefrag * lfu-decay-time * lfu-
+    log-factor * maxmemory-gb Redis version 5.0 and newer: * stream-node-max-
+    bytes * stream-node-max-entries
 
     Messages:
       AdditionalProperty: An additional property for a RedisConfigsValue

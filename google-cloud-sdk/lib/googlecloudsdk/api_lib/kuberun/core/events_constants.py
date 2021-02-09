@@ -31,6 +31,16 @@ KUBERUN_EVENTS_SOURCES_SERVICE_ACCOUNT = 'events-sources-gsa'
 CLOUDRUN_EVENTS_NAMESPACE = 'cloud-run-events'
 KUBERUN_EVENTS_NAMESPACE = 'events-system'
 
+# --authentication flag constants
+# Skip authentication and initialization.
+AUTH_SKIP = 'skip'
+# Secrets authentication through Google Service Accounts.
+AUTH_SECRETS = 'secrets'
+# Workload identity authentication binded to Google Service Accounts.
+AUTH_WI_GSA = 'workload-identity-gsa'
+# List[str] of authentication choices used by --authentication flag's
+AUTH_CHOICES = [AUTH_SECRETS, AUTH_WI_GSA, AUTH_SKIP]
+
 
 @enum.unique
 class Operator(enum.Enum):
@@ -40,14 +50,21 @@ class Operator(enum.Enum):
 
 
 @enum.unique
-class ClusterEventingType(enum.Enum):
-  CLOUDRUN_SECRETS = 'cloudrun-secrets'
-  KUBERUN_SECRETS = 'kuberun-secrets'
+class Product(enum.Enum):
+  """Product type of eventing cluster."""
+
+  # Eventing cluster type is Cloud Run
+  CLOUDRUN = 'cloudrun'
+
+  # Eventing cluster type is KubeRun
+  KUBERUN = 'kuberun'
 
 
-def ControlPlaneNamespaceFromEventingType(cluster_eventing_type):
-  if cluster_eventing_type == ClusterEventingType.CLOUDRUN_SECRETS:
+def ControlPlaneNamespaceFromProductType(product_type):
+  if product_type == Product.CLOUDRUN:
     return CLOUDRUN_EVENTS_NAMESPACE
-  elif cluster_eventing_type == ClusterEventingType.KUBERUN_SECRETS:
+  elif product_type == Product.KUBERUN:
     return KUBERUN_EVENTS_NAMESPACE
-  return None
+  else:
+    # product_type is not handled
+    raise ValueError('Invalid product_type found')

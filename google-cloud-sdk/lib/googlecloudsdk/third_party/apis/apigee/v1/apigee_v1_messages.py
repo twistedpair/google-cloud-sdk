@@ -4363,6 +4363,10 @@ class GoogleCloudApigeeV1EntityMetadata(_messages.Message):
 class GoogleCloudApigeeV1Environment(_messages.Message):
   r"""A GoogleCloudApigeeV1Environment object.
 
+  Enums:
+    StateValueValuesEnum: Output only. State of the environment. Values other
+      than ACTIVE means the resource is not ready to use.
+
   Fields:
     createdAt: Output only. Creation time of this environment as milliseconds
       since epoch.
@@ -4374,7 +4378,24 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
       expression `^[.\\p{Alnum}-_]{1,255}$`
     properties: Optional. Key-value pairs that may be used for customizing the
       environment.
+    state: Output only. State of the environment. Values other than ACTIVE
+      means the resource is not ready to use.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the environment. Values other than ACTIVE means
+    the resource is not ready to use.
+
+    Values:
+      STATE_UNSPECIFIED: Resource is in an unspecified state.
+      CREATING: Resource is being created.
+      ACTIVE: Resource is provisioned and ready to use.
+      DELETING: The resource is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
 
   createdAt = _messages.IntegerField(1)
   description = _messages.StringField(2)
@@ -4382,6 +4403,7 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
   lastModifiedAt = _messages.IntegerField(4)
   name = _messages.StringField(5)
   properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
@@ -4467,6 +4489,10 @@ class GoogleCloudApigeeV1EnvironmentGroup(_messages.Message):
   r"""EnvironmentGroup configuration. An environment group is used to group
   one or more Apigee environments under a single host name.
 
+  Enums:
+    StateValueValuesEnum: Output only. State of the environment group. Values
+      other than ACTIVE means the resource is not ready to use.
+
   Fields:
     createdAt: Output only. The time at which the environment group was
       created as milliseconds since epoch.
@@ -4474,12 +4500,30 @@ class GoogleCloudApigeeV1EnvironmentGroup(_messages.Message):
     lastModifiedAt: Output only. The time at which the environment group was
       last updated as milliseconds since epoch.
     name: ID of the environment group.
+    state: Output only. State of the environment group. Values other than
+      ACTIVE means the resource is not ready to use.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the environment group. Values other than ACTIVE
+    means the resource is not ready to use.
+
+    Values:
+      STATE_UNSPECIFIED: Resource is in an unspecified state.
+      CREATING: Resource is being created.
+      ACTIVE: Resource is provisioned and ready to use.
+      DELETING: The resource is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
 
   createdAt = _messages.IntegerField(1)
   hostnames = _messages.StringField(2, repeated=True)
   lastModifiedAt = _messages.IntegerField(3)
   name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class GoogleCloudApigeeV1EnvironmentGroupAttachment(_messages.Message):
@@ -5307,6 +5351,8 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   Enums:
     RuntimeTypeValueValuesEnum: Required. Runtime type of the Apigee
       organization based on the Apigee subscription purchased.
+    StateValueValuesEnum: Output only. State of the organization. Values other
+      than ACTIVE means the resource is not ready to use.
     SubscriptionTypeValueValuesEnum: Output only. Subscription type of the
       Apigee organization. Valid values include trial (free, limited, and for
       evaluation purposes only) or paid (full subscription has been
@@ -5350,6 +5396,8 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       supported for Apigee hybrid.
     runtimeType: Required. Runtime type of the Apigee organization based on
       the Apigee subscription purchased.
+    state: Output only. State of the organization. Values other than ACTIVE
+      means the resource is not ready to use.
     subscriptionType: Output only. Subscription type of the Apigee
       organization. Valid values include trial (free, limited, and for
       evaluation purposes only) or paid (full subscription has been
@@ -5370,6 +5418,21 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     RUNTIME_TYPE_UNSPECIFIED = 0
     CLOUD = 1
     HYBRID = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the organization. Values other than ACTIVE means
+    the resource is not ready to use.
+
+    Values:
+      STATE_UNSPECIFIED: Resource is in an unspecified state.
+      CREATING: Resource is being created.
+      ACTIVE: Resource is provisioned and ready to use.
+      DELETING: The resource is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
 
   class SubscriptionTypeValueValuesEnum(_messages.Enum):
     r"""Output only. Subscription type of the Apigee organization. Valid
@@ -5418,8 +5481,9 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 13)
   runtimeDatabaseEncryptionKeyName = _messages.StringField(14)
   runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 15)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
 
 
 class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):

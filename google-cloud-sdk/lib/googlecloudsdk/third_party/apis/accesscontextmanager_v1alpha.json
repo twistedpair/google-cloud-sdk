@@ -607,22 +607,6 @@
       "description": "Defines the conditions under which an IngressPolicy matches a request. Conditions are based on information about the source of the request.",
       "type": "object",
       "properties": {
-        "allowedIdentity": {
-          "description": "Specifies the identities that are allowed access from outside the perimeter. Can be one of `ANY_IDENTITY` (everything is allowed), `ANY_USER` (all human users), `ANY_SERVICE_ACCOUNT` (all service accounts), or `ALLOWED_IDENTITY_UNSPECIFIED` (only the specified emails in the `identities` field are able to access).",
-          "type": "string",
-          "enumDescriptions": [
-            "No blanket identity group specified.",
-            "Authorize access from all identities outside the perimeter.",
-            "Authorize access from all human users outside the perimeter.",
-            "Authorize access from all service accounts outside the perimeter."
-          ],
-          "enum": [
-            "ALLOWED_IDENTITY_UNSPECIFIED",
-            "ANY_IDENTITY",
-            "ANY_USER",
-            "ANY_SERVICE_ACCOUNT"
-          ]
-        },
         "sources": {
           "description": "Sources that this IngressPolicy authorizes access from.",
           "type": "array",
@@ -700,44 +684,12 @@
           "description": "The name of the API whose methods or permissions the IngressPolicy or EgressPolicy want to allow. A single ApiOperation with `service_name` field set to `*` will allow all methods AND permissions for all services.",
           "type": "string"
         },
-        "actions": {
-          "description": "API actions to allow for the service specified by service_name field. A single ApiAction entry with wildcard `*` for `ApiAction.action` field will allow all actions for service specified in `service_name`.",
-          "type": "array",
-          "items": {
-            "$ref": "ApiAction"
-          }
-        },
         "methodSelectors": {
           "description": "API methods or permissions to allow. Method or permission must belong to the service specified by `service_name` field. A single MethodSelector entry with `*` specified for the `method` field will allow all methods AND permissions for the service specified in `service_name`.",
           "type": "array",
           "items": {
             "$ref": "MethodSelector"
           }
-        }
-      }
-    },
-    "ApiAction": {
-      "id": "ApiAction",
-      "description": "An allowed action of a service specified in ApiOperation.",
-      "type": "object",
-      "properties": {
-        "actionType": {
-          "description": "The type of the action to allow for an API service. It can be one of `METHOD` (method of a service), `PERMISSION` (Cloud IAM Permission), or `ACTION_TYPE_UNSPECIFIED`. If action_type is not set or set to `ACTION_TYPE_UNSPECIFIED`, and action is `*`, then ALL actions are allowed.",
-          "type": "string",
-          "enumDescriptions": [
-            "No type for the action is specified.",
-            "Action is a method.",
-            "Action is an IAM Permission."
-          ],
-          "enum": [
-            "ACTION_TYPE_UNSPECIFIED",
-            "METHOD",
-            "PERMISSION"
-          ]
-        },
-        "action": {
-          "description": "The API method name or Cloud IAM permission name to allow. If `METHOD` is chosen for `action_type`, then a valid method name for the corresponding `service_name` in ApiOperation must be provided (e.g. method name `TableDataService.List` for the service `bigquery.googelapis.com`). If `PERMISSION` is chosen for `action_type`, then a valid Cloud IAM permission for the corresponding `service_name` in ApiOperation must be provided (e.g. `bigquery.jobs.update` for the service `bigquery.googleapis.com`). If `action_type` is not set or set to `ACTION_TYPE_UNSPECIFIED`, and action is `*`, then ALL actions are allowed.",
-          "type": "string"
         }
       }
     },
@@ -776,22 +728,6 @@
       "description": "Defines the conditions under which an EgressPolicy matches a request. Conditions based on information about the source of the request. Note that if the destination of the request is protected by a ServicePerimeter, then that ServicePerimeter must have an IngressPolicy which allows access in order for this request to succeed.",
       "type": "object",
       "properties": {
-        "allowedIdentity": {
-          "description": "Specifies the identities that are allowed through the EgressPolicy. Currently, only `ANY_IDENTITY` (everything is allowed) is supported.",
-          "type": "string",
-          "enumDescriptions": [
-            "No blanket identity group specified.",
-            "Authorize access from all identities outside the perimeter.",
-            "Authorize access from all human users outside the perimeter.",
-            "Authorize access from all service accounts outside the perimeter."
-          ],
-          "enum": [
-            "ALLOWED_IDENTITY_UNSPECIFIED",
-            "ANY_IDENTITY",
-            "ANY_USER",
-            "ANY_SERVICE_ACCOUNT"
-          ]
-        },
         "identities": {
           "description": "A list of identities that are allowed access through this [EgressPolicy]. Should be in the format of email address. The email address should represent individual user or service account only.",
           "type": "array",

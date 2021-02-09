@@ -114,13 +114,7 @@ def AddCreateRouterArgs(parser):
   parser.add_argument(
       '--description', help='An optional description of this router.')
 
-  parser.add_argument(
-      '--asn',
-      required=False,
-      type=int,
-      help='The optional BGP autonomous system number (ASN) for this router. '
-      'Must be a 16-bit or 32-bit private ASN as defined in '
-      'https://tools.ietf.org/html/rfc6996, for example `--asn=64512`.')
+  AddAsnArg(parser)
 
 
 def AddKeepaliveIntervalArg(parser):
@@ -144,6 +138,17 @@ def AddKeepaliveIntervalArg(parser):
       'peer. BGP will use the smaller of either the local hold time value or '
       'the peer\'s  hold time value as the hold time for the BGP connection '
       'between the two peers.')
+
+
+def AddAsnArg(parser):
+  """Adds Asn argument for routers."""
+  parser.add_argument(
+      '--asn',
+      required=False,
+      type=int,
+      help='The optional BGP autonomous system number (ASN) for this router. '
+      'Must be a 16-bit or 32-bit private ASN as defined in '
+      'https://tools.ietf.org/html/rfc6996, for example `--asn=64512`.')
 
 
 def AddInterfaceArgs(parser, for_update=False, support_router_appliance=False):

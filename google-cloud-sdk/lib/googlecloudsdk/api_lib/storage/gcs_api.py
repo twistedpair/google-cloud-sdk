@@ -191,9 +191,39 @@ class GcsRequestConfig(cloud_api.RequestConfig):
 class _StorageStreamResponseHandler(requests.ResponseHandler):
   """Handler for writing the streaming response to the download stream."""
 
-  def __init__(self, stream):
+  def __init__(self):
+    """Initializes response handler for requests downloads."""
     super(_StorageStreamResponseHandler, self).__init__(use_stream=True)
+    self._stream = None
+    self._digesters = {}
+    self._processed_bytes = 0,
+    self._progress_callback = None
+
+  def update_destination_info(self, stream,
+                              digesters=None,
+                              processed_bytes=0,
+                              progress_callback=None):
+    """Updates the stream handler with destination information.
+
+    The download_http_client object is stored on the gcs_api object. This allows
+    resusing the same http_client when the gcs_api is cached using
+    threading.local, which improves performance.
+    Since this same object gets used for mutliple downloads, we need to update
+    the stream handler with the current active download's destination.
+
+    Args:
+      stream (stream): Local stream to write downloaded data to.
+      digesters (dict<HashAlgorithm, hashlib object> | None): For updating hash
+        digests of downloaded objects on the fly.
+      processed_bytes (int): For keeping track of how much progress has been
+        made.
+      progress_callback (func<int>): Accepts processed_bytes and submits
+        progress info for aggregation.
+    """
     self._stream = stream
+    self._digesters = digesters if digesters is not None else {}
+    self._processed_bytes = processed_bytes
+    self._progress_callback = progress_callback
 
   def handle(self, source_stream):
     if self._stream is None:
@@ -204,8 +234,13 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
       data = source_stream.read(MAX_READ_SIZE)
       if data:
         self._stream.write(data)
+        self._processed_bytes += len(data)
+        if self._progress_callback:
+          self._progress_callback(self._processed_bytes)
       else:
         break
+      for hash_object in self._digesters.values():
+        hash_object.update(data)
 
 
 class GcsApi(cloud_api.CloudApi):
@@ -218,6 +253,9 @@ class GcsApi(cloud_api.CloudApi):
   def __init__(self):
     self.client = core_apis.GetClientInstance('storage', 'v1')
     self.messages = core_apis.GetMessagesModule('storage', 'v1')
+    self._stream_response_handler = _StorageStreamResponseHandler()
+    self._download_http_client = transports.GetApitoolsTransport(
+        response_encoding=None, response_handler=self._stream_response_handler)
 
   def _get_projection(self, fields_scope, message_class):
     """Generate query projection from fields_scope.
@@ -619,9 +657,6 @@ class GcsApi(cloud_api.CloudApi):
     generation = (
         int(cloud_resource.generation) if cloud_resource.generation else None)
 
-    download_stream_handler = _StorageStreamResponseHandler(download_stream)
-    apitools_requests_http_client = transports.GetApitoolsTransport(
-        response_encoding=None, response_handler=download_stream_handler)
     if not serialization_data:
       # New download.
       apitools_download = apitools_transfer.Download.FromStream(
@@ -635,7 +670,12 @@ class GcsApi(cloud_api.CloudApi):
           serialization_data,
           num_retries=properties.VALUES.storage.max_retries.GetInt())
 
-    apitools_download.bytes_http = apitools_requests_http_client
+    self._stream_response_handler.update_destination_info(
+        stream=download_stream,
+        digesters=digesters,
+        processed_bytes=start_byte,
+        progress_callback=progress_callback)
+    apitools_download.bytes_http = self._download_http_client
 
     # TODO(b/161460749) Handle download retries.
     request = self.messages.StorageObjectsGetRequest(
@@ -729,6 +769,7 @@ class GcsApi(cloud_api.CloudApi):
           chunksize=properties.VALUES.storage.chunk_size.GetInt(),
           gzip_encoded=request_config.gzip_encoded,
           num_retries=properties.VALUES.storage.max_retries.GetInt(),
+          progress_callback=progress_callback,
           total_size=request_config.size)
 
       result_object_metadata = self.client.objects.Insert(

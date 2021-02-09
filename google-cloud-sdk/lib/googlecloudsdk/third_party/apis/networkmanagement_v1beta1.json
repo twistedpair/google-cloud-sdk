@@ -1587,9 +1587,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1628,9 +1628,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1660,9 +1660,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation's parent resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "type": "string"
                         },
                         "filter": {
@@ -1701,9 +1701,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1726,9 +1726,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource to be deleted.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1751,9 +1751,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource to be cancelled.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1783,9 +1783,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The parent resource of the Connectivity Tests: `projects\/{project_id}\/locations\/global`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1829,9 +1829,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. `ConnectivityTest` resource name using the form: `projects\/{project_id}\/locations\/global\/connectivityTests\/{test_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1854,9 +1854,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The parent resource of the Connectivity Test to create: `projects\/{project_id}\/locations\/global`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "type": "string"
                         },
                         "testId": {
@@ -1887,9 +1887,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Unique name of the resource using the form: `projects\/{project_id}\/locations\/global\/connectivityTests\/{test}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -1921,9 +1921,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Connectivity Test resource name using the form: `projects\/{project_id}\/locations\/global\/connectivityTests\/{test_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1949,9 +1949,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Connectivity Test resource name using the form: `projects\/{project_id}\/locations\/global\/connectivityTests\/{test_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1974,9 +1974,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2002,9 +2002,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
@@ -2033,9 +2033,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/connectivityTests\/[^\/]+$",
                           "type": "string"
                         }
                       },

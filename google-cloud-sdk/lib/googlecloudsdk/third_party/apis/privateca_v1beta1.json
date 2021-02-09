@@ -2482,9 +2482,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -2523,9 +2523,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2553,9 +2553,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -2594,9 +2594,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2619,9 +2619,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2644,9 +2644,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2676,9 +2676,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name for this CertificateAuthority in the format `projects\/*\/locations\/*\/certificateAuthorities\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2704,9 +2704,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the location associated with the CertificateAuthorities, in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "certificateAuthorityId": {
@@ -2742,9 +2742,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name for this CertificateAuthority in the format `projects\/*\/locations\/*\/certificateAuthorities\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2770,9 +2770,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name for this CertificateAuthority in the format `projects\/*\/locations\/*\/certificateAuthorities\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2798,9 +2798,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name for this CertificateAuthority in the format `projects\/*\/locations\/*\/certificateAuthorities\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2823,9 +2823,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the CertificateAuthority to get.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2848,9 +2848,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the location associated with the CertificateAuthorities, in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -2894,9 +2894,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name for this CertificateAuthority in the format `projects\/*\/locations\/*\/certificateAuthorities\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2922,9 +2922,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name for this CertificateAuthority in the format `projects\/*\/locations\/*\/certificateAuthorities\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2950,9 +2950,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. The resource name for this CertificateAuthority in the format `projects\/*\/locations\/*\/certificateAuthorities\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -2989,9 +2989,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3017,9 +3017,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -3048,9 +3048,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3081,9 +3081,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The resource name of the location and CertificateAuthority associated with the Certificate, in the format `projects\/*\/locations\/*\/certificateAuthorities\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                           "type": "string"
                         },
                         "certificateId": {
@@ -3119,9 +3119,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the Certificate to get.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificates\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificates\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3144,9 +3144,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The resource name of the location associated with the Certificates, in the format `projects\/*\/locations\/*\/certificateauthorities\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -3190,9 +3190,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The resource name for this Certificate in the format `projects\/*\/locations\/*\/certificateAuthorities\/*\/certificates\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificates\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificates\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3218,9 +3218,9 @@
                       "parameters": {
                         "name": {
                           "description": "Output only. The resource path for this Certificate in the format `projects\/*\/locations\/*\/certificateAuthorities\/*\/certificates\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificates\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificates\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -3261,9 +3261,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the CertificateRevocationList to get.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificateRevocationLists\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificateRevocationLists\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3286,9 +3286,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The resource name of the location associated with the CertificateRevocationLists, in the format `projects\/*\/locations\/*\/certificateauthorities\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -3332,9 +3332,9 @@
                       "parameters": {
                         "name": {
                           "description": "Output only. The resource path for this CertificateRevocationList in the format `projects\/*\/locations\/*\/certificateAuthorities\/*\/ certificateRevocationLists\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificateRevocationLists\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificateRevocationLists\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -3371,9 +3371,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificateRevocationLists\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificateRevocationLists\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3399,9 +3399,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificateRevocationLists\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificateRevocationLists\/[^\/]+$",
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
@@ -3430,9 +3430,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificateRevocationLists\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+\/certificateRevocationLists\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3464,9 +3464,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the ReusableConfigs to get.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/reusableConfigs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/reusableConfigs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3489,9 +3489,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the location associated with the ReusableConfigs, in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -3535,9 +3535,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/reusableConfigs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/reusableConfigs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3563,9 +3563,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/reusableConfigs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/reusableConfigs\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -3594,9 +3594,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/reusableConfigs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/reusableConfigs\/[^\/]+$",
                       "type": "string"
                     }
                   },

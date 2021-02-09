@@ -90,6 +90,16 @@ def AddBrokerArg(parser):
       help='Name of the Broker to create.')
 
 
+def AddAuthenticationFlag(parser):
+  """Adds authentication flag."""
+  parser.add_argument(
+      '--authentication',
+      default='secrets',
+      required=False,
+      choices=events_constants.AUTH_CHOICES,
+      help='Authentication mode to initialize eventing.')
+
+
 def AddControlPlaneServiceAccountFlag(parser):
   """Adds service account flag."""
   parser.add_argument(
@@ -197,7 +207,7 @@ def AddCopyDefaultSecret(parser):
   parser.add_argument(
       '--{}'.format(_COPY_DEFAULT_SECRET),
       action='store_true',
-      required=True,
+      required=False,
       help='Copy default secret google-cloud-sources-key from cloud-run-events'
       ' namespace.')
 

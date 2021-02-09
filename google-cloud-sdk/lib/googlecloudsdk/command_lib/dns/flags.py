@@ -101,7 +101,7 @@ def GetZoneResourceArg(help_text, positional=True, plural=False):
 
 
 def GetZoneArg(help_text=(
-    'Name of the managed-zone whose record-sets you want to manage.'),
+    'Name of the managed zone whose record sets you want to manage.'),
                hide_short_zone_flag=False):
   if hide_short_zone_flag:
     zone_group = base.ArgumentGroup(required=True)
@@ -370,5 +370,20 @@ def GetResourceRecordSetsRrdatasArg(required=False):
       'on the type and class of the resource record.')
 
 
+# Response Policy Flags
+def GetResponsePolicyDescriptionArg(required=False):
+  return base.Argument(
+      '--description', required=required,
+      help='A description of the response policy.')
+
+
+def GetResponsePolicyNetworksArg(required=False):
+  return base.Argument(
+      '--networks',
+      type=arg_parsers.ArgList(),
+      required=required,
+      metavar='NETWORKS',
+      help='The comma-separated list of network names to associate with '
+            'the response policy.')
 CHANGES_FORMAT = 'table(id, startTime, status)'
 RESOURCERECORDSETS_FORMAT = 'table(name, type, ttl, rrdatas.list():label=DATA)'

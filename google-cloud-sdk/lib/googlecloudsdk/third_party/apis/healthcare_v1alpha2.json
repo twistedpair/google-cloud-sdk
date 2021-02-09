@@ -2456,90 +2456,6 @@
       "properties": {
       }
     },
-    "GoogleCloudHealthcareV1alpha2FhirRestImportResourcesResponse": {
-      "id": "GoogleCloudHealthcareV1alpha2FhirRestImportResourcesResponse",
-      "description": " Final response of importing resources. This structure is included in the response to describe the detailed outcome. It is only included when the operation finishes successfully.",
-      "type": "object",
-      "properties": {
-        "fhirStore": {
-          "description": "The name of the FHIR store where the resources have been imported, in the format `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
-          "type": "string"
-        },
-        "inputSize": {
-          "description": "The total number of resources included in the source data.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "GoogleCloudHealthcareV1alpha2FhirRestImportResourcesErrorDetails": {
-      "id": "GoogleCloudHealthcareV1alpha2FhirRestImportResourcesErrorDetails",
-      "description": " Error response of importing resources. This structure is included in the error details to describe the detailed error. It is only included when the operation finishes with some failure.",
-      "type": "object",
-      "properties": {
-        "fhirStore": {
-          "description": "The name of the FHIR store where resources have been imported, in the format `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
-          "type": "string"
-        },
-        "inputSize": {
-          "description": "The total number of resources included in the source data. This is the sum of the success and error counts.",
-          "type": "string",
-          "format": "int64"
-        },
-        "successCount": {
-          "description": "The number of resources that have been imported.",
-          "type": "string",
-          "format": "int64"
-        },
-        "errorCount": {
-          "description": "The number of resources that had errors.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "GoogleCloudHealthcareV1alpha2FhirRestExportResourcesResponse": {
-      "id": "GoogleCloudHealthcareV1alpha2FhirRestExportResourcesResponse",
-      "description": " Response when all resources export successfully. This structure is included in the response to describe the detailed outcome. It is only included when the operation finishes successfully.",
-      "type": "object",
-      "properties": {
-        "fhirStore": {
-          "description": "The name of the FHIR store where resources have been exported, in the format `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
-          "type": "string"
-        },
-        "resourceCount": {
-          "description": "The total number of resources exported from the requested FHIR store.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "GoogleCloudHealthcareV1alpha2FhirRestExportResourcesErrorDetails": {
-      "id": "GoogleCloudHealthcareV1alpha2FhirRestExportResourcesErrorDetails",
-      "description": " Response when errors occur while exporting resources. This structure is included in the error details to describe the detailed outcome. It is only included when the operation finishes with errors.",
-      "type": "object",
-      "properties": {
-        "fhirStore": {
-          "description": "The name of the FHIR store where resources have been exported, in the format `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
-          "type": "string"
-        },
-        "resourceCount": {
-          "description": "The total number of resources included in the export operation. This is the sum of the success and error counts.",
-          "type": "string",
-          "format": "int64"
-        },
-        "successCount": {
-          "description": "The number of resources that were exported.",
-          "type": "string",
-          "format": "int64"
-        },
-        "errorCount": {
-          "description": "The number of resources that had errors.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
     "GoogleCloudHealthcareV1alpha2FhirImportResourcesResponse": {
       "id": "GoogleCloudHealthcareV1alpha2FhirImportResourcesResponse",
       "description": "Final response of importing resources. This structure is included in the response to describe the detailed outcome. It is only included when the operation finishes successfully.",
@@ -3308,7 +3224,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Restricts stores returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings Only filtering on labels is supported, for example `labels.key=value`.",
+                          "description": "Restricts stores returned to those matching a filter. The following syntax is available: * A string field value can be written as text inside quotation marks, for example `\"query text\"`. The only valid relational operation for text fields is equality (`=`), where text is searched within the field, rather than having the field be equal to the text. For example, `\"Comment = great\"` returns messages with `great` in the comment field. * A number field value can be written as an integer, a decimal, or an exponential. The valid relational operators for number fields are the equality operator (`=`), along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * A date field value must be written in `yyyy-mm-dd` form. Fields with date and time use the RFC3339 time format. Leading zeros are required for one-digit months and days. The valid relational operators for date fields are the equality operator (`=`) , along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * Multiple field query expressions can be combined in one query by adding `AND` or `OR` operators between the expressions. If a boolean operator appears within a quoted string, it is not treated as special, it's just another part of the character string to be matched. You can prepend the `NOT` operator to an expression to negate it. Only filtering on labels is supported, for example `labels.key=value`.",
                           "location": "query",
                           "type": "string"
                         }
@@ -3651,7 +3567,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Restricts stores returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings Only filtering on labels is supported. For example, `labels.key=value`.",
+                          "description": "Restricts stores returned to those matching a filter. The following syntax is available: * A string field value can be written as text inside quotation marks, for example `\"query text\"`. The only valid relational operation for text fields is equality (`=`), where text is searched within the field, rather than having the field be equal to the text. For example, `\"Comment = great\"` returns messages with `great` in the comment field. * A number field value can be written as an integer, a decimal, or an exponential. The valid relational operators for number fields are the equality operator (`=`), along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * A date field value must be written in `yyyy-mm-dd` form. Fields with date and time use the RFC3339 time format. Leading zeros are required for one-digit months and days. The valid relational operators for date fields are the equality operator (`=`) , along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * Multiple field query expressions can be combined in one query by adding `AND` or `OR` operators between the expressions. If a boolean operator appears within a quoted string, it is not treated as special, it's just another part of the character string to be matched. You can prepend the `NOT` operator to an expression to negate it. Only filtering on labels is supported. For example, `labels.key=value`.",
                           "location": "query",
                           "type": "string"
                         }
@@ -4053,7 +3969,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Restricts stores returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings Only filtering on labels is supported, for example `labels.key=value`.",
+                          "description": "Restricts stores returned to those matching a filter. The following syntax is available: * A string field value can be written as text inside quotation marks, for example `\"query text\"`. The only valid relational operation for text fields is equality (`=`), where text is searched within the field, rather than having the field be equal to the text. For example, `\"Comment = great\"` returns messages with `great` in the comment field. * A number field value can be written as an integer, a decimal, or an exponential. The valid relational operators for number fields are the equality operator (`=`), along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * A date field value must be written in `yyyy-mm-dd` form. Fields with date and time use the RFC3339 time format. Leading zeros are required for one-digit months and days. The valid relational operators for date fields are the equality operator (`=`) , along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * Multiple field query expressions can be combined in one query by adding `AND` or `OR` operators between the expressions. If a boolean operator appears within a quoted string, it is not treated as special, it's just another part of the character string to be matched. You can prepend the `NOT` operator to an expression to negate it. Only filtering on labels is supported, for example `labels.key=value`.",
                           "location": "query",
                           "type": "string"
                         }
@@ -4358,7 +4274,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Restricts stores returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings Only filtering on labels is supported. For example, `labels.key=value`.",
+                          "description": "Restricts stores returned to those matching a filter. The following syntax is available: * A string field value can be written as text inside quotation marks, for example `\"query text\"`. The only valid relational operation for text fields is equality (`=`), where text is searched within the field, rather than having the field be equal to the text. For example, `\"Comment = great\"` returns messages with `great` in the comment field. * A number field value can be written as an integer, a decimal, or an exponential. The valid relational operators for number fields are the equality operator (`=`), along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * A date field value must be written in `yyyy-mm-dd` form. Fields with date and time use the RFC3339 time format. Leading zeros are required for one-digit months and days. The valid relational operators for date fields are the equality operator (`=`) , along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * Multiple field query expressions can be combined in one query by adding `AND` or `OR` operators between the expressions. If a boolean operator appears within a quoted string, it is not treated as special, it's just another part of the character string to be matched. You can prepend the `NOT` operator to an expression to negate it. Only filtering on labels is supported. For example, `labels.key=value`.",
                           "location": "query",
                           "type": "string"
                         }
@@ -4691,7 +4607,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Restricts the stores returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings. Only filtering on labels is supported. For example, `labels.key=value`.",
+                          "description": "Restricts the stores returned to those matching a filter. The following syntax is available: * A string field value can be written as text inside quotation marks, for example `\"query text\"`. The only valid relational operation for text fields is equality (`=`), where text is searched within the field, rather than having the field be equal to the text. For example, `\"Comment = great\"` returns messages with `great` in the comment field. * A number field value can be written as an integer, a decimal, or an exponential. The valid relational operators for number fields are the equality operator (`=`), along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * A date field value must be written in `yyyy-mm-dd` form. Fields with date and time use the RFC3339 time format. Leading zeros are required for one-digit months and days. The valid relational operators for date fields are the equality operator (`=`) , along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * Multiple field query expressions can be combined in one query by adding `AND` or `OR` operators between the expressions. If a boolean operator appears within a quoted string, it is not treated as special, it's just another part of the character string to be matched. You can prepend the `NOT` operator to an expression to negate it. Only filtering on labels is supported. For example, `labels.key=value`.",
                           "location": "query",
                           "type": "string"
                         }
@@ -4938,7 +4854,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Restricts the attributes returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings. The only field available for filtering is `category`.",
+                              "description": "Restricts the attributes returned to those matching a filter. The following syntax is available: * A string field value can be written as text inside quotation marks, for example `\"query text\"`. The only valid relational operation for text fields is equality (`=`), where text is searched within the field, rather than having the field be equal to the text. For example, `\"Comment = great\"` returns messages with `great` in the comment field. * A number field value can be written as an integer, a decimal, or an exponential. The valid relational operators for number fields are the equality operator (`=`), along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * A date field value must be written in `yyyy-mm-dd` form. Fields with date and time use the RFC3339 time format. Leading zeros are required for one-digit months and days. The valid relational operators for date fields are the equality operator (`=`) , along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * Multiple field query expressions can be combined in one query by adding `AND` or `OR` operators between the expressions. If a boolean operator appears within a quoted string, it is not treated as special, it's just another part of the character string to be matched. You can prepend the `NOT` operator to an expression to negate it. The only field available for filtering is `category`.",
                               "location": "query",
                               "type": "string"
                             }
@@ -5061,7 +4977,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Restricts the artifacts returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings The fields available for filtering are: - user_id - consent_content_version - metadata. For example, `Metadata(\"key\")=\"value\"` or `HasMetadata(\"key\")`.",
+                              "description": "Restricts the artifacts returned to those matching a filter. The following syntax is available: * A string field value can be written as text inside quotation marks, for example `\"query text\"`. The only valid relational operation for text fields is equality (`=`), where text is searched within the field, rather than having the field be equal to the text. For example, `\"Comment = great\"` returns messages with `great` in the comment field. * A number field value can be written as an integer, a decimal, or an exponential. The valid relational operators for number fields are the equality operator (`=`), along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * A date field value must be written in `yyyy-mm-dd` form. Fields with date and time use the RFC3339 time format. Leading zeros are required for one-digit months and days. The valid relational operators for date fields are the equality operator (`=`) , along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * Multiple field query expressions can be combined in one query by adding `AND` or `OR` operators between the expressions. If a boolean operator appears within a quoted string, it is not treated as special, it's just another part of the character string to be matched. You can prepend the `NOT` operator to an expression to negate it. The fields available for filtering are: - user_id - consent_content_version - metadata. For example, `Metadata(\"key\")=\"value\"` or `HasMetadata(\"key\")`.",
                               "location": "query",
                               "type": "string"
                             }
@@ -5218,7 +5134,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Restricts the consents returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings The fields available for filtering are: - user_id - consent_artifact - state - revision_create_time - expire_time - metadata. For example, `Metadata(\"key\")=\"value\"` or `HasMetadata(\"key\")`.",
+                              "description": "Restricts the consents returned to those matching a filter. The following syntax is available: * A string field value can be written as text inside quotation marks, for example `\"query text\"`. The only valid relational operation for text fields is equality (`=`), where text is searched within the field, rather than having the field be equal to the text. For example, `\"Comment = great\"` returns messages with `great` in the comment field. * A number field value can be written as an integer, a decimal, or an exponential. The valid relational operators for number fields are the equality operator (`=`), along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * A date field value must be written in `yyyy-mm-dd` form. Fields with date and time use the RFC3339 time format. Leading zeros are required for one-digit months and days. The valid relational operators for date fields are the equality operator (`=`) , along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * Multiple field query expressions can be combined in one query by adding `AND` or `OR` operators between the expressions. If a boolean operator appears within a quoted string, it is not treated as special, it's just another part of the character string to be matched. You can prepend the `NOT` operator to an expression to negate it. The fields available for filtering are: - user_id - consent_artifact - state - revision_create_time - expire_time - metadata. For example, `Metadata(\"key\")=\"value\"` or `HasMetadata(\"key\")`.",
                               "location": "query",
                               "type": "string"
                             }
@@ -5403,7 +5319,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Restricts the user data mappings returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings The fields available for filtering are: - data_id - user_id - archived - archive_time",
+                              "description": "Restricts the user data mappings returned to those matching a filter. The following syntax is available: * A string field value can be written as text inside quotation marks, for example `\"query text\"`. The only valid relational operation for text fields is equality (`=`), where text is searched within the field, rather than having the field be equal to the text. For example, `\"Comment = great\"` returns messages with `great` in the comment field. * A number field value can be written as an integer, a decimal, or an exponential. The valid relational operators for number fields are the equality operator (`=`), along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * A date field value must be written in `yyyy-mm-dd` form. Fields with date and time use the RFC3339 time format. Leading zeros are required for one-digit months and days. The valid relational operators for date fields are the equality operator (`=`) , along with the less than\/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You can prepend the `NOT` operator to an expression to negate it. * Multiple field query expressions can be combined in one query by adding `AND` or `OR` operators between the expressions. If a boolean operator appears within a quoted string, it is not treated as special, it's just another part of the character string to be matched. You can prepend the `NOT` operator to an expression to negate it. The fields available for filtering are: - data_id - user_id - archived - archive_time",
                               "location": "query",
                               "type": "string"
                             }

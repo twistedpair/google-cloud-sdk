@@ -308,8 +308,8 @@ class GoogleTypeExpr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class OrgpolicyConstraintsListRequest(_messages.Message):
-  r"""A OrgpolicyConstraintsListRequest object.
+class OrgpolicyFoldersConstraintsListRequest(_messages.Message):
+  r"""A OrgpolicyFoldersConstraintsListRequest object.
 
   Fields:
     pageSize: Size of the pages to be returned. This is currently unsupported
@@ -329,8 +329,8 @@ class OrgpolicyConstraintsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class OrgpolicyPoliciesCreateRequest(_messages.Message):
-  r"""A OrgpolicyPoliciesCreateRequest object.
+class OrgpolicyFoldersPoliciesCreateRequest(_messages.Message):
+  r"""A OrgpolicyFoldersPoliciesCreateRequest object.
 
   Fields:
     googleCloudOrgpolicyV2Policy: A GoogleCloudOrgpolicyV2Policy resource to
@@ -345,8 +345,8 @@ class OrgpolicyPoliciesCreateRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
-class OrgpolicyPoliciesDeleteRequest(_messages.Message):
-  r"""A OrgpolicyPoliciesDeleteRequest object.
+class OrgpolicyFoldersPoliciesDeleteRequest(_messages.Message):
+  r"""A OrgpolicyFoldersPoliciesDeleteRequest object.
 
   Fields:
     name: Required. Name of the policy to delete. See `Policy` for naming
@@ -356,8 +356,8 @@ class OrgpolicyPoliciesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class OrgpolicyPoliciesGetEffectivePolicyRequest(_messages.Message):
-  r"""A OrgpolicyPoliciesGetEffectivePolicyRequest object.
+class OrgpolicyFoldersPoliciesGetEffectivePolicyRequest(_messages.Message):
+  r"""A OrgpolicyFoldersPoliciesGetEffectivePolicyRequest object.
 
   Fields:
     name: Required. The effective policy to compute. See `Policy` for naming
@@ -367,8 +367,8 @@ class OrgpolicyPoliciesGetEffectivePolicyRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class OrgpolicyPoliciesGetRequest(_messages.Message):
-  r"""A OrgpolicyPoliciesGetRequest object.
+class OrgpolicyFoldersPoliciesGetRequest(_messages.Message):
+  r"""A OrgpolicyFoldersPoliciesGetRequest object.
 
   Fields:
     name: Required. Resource name of the policy. See `Policy` for naming
@@ -378,8 +378,192 @@ class OrgpolicyPoliciesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class OrgpolicyPoliciesListRequest(_messages.Message):
-  r"""A OrgpolicyPoliciesListRequest object.
+class OrgpolicyFoldersPoliciesListRequest(_messages.Message):
+  r"""A OrgpolicyFoldersPoliciesListRequest object.
+
+  Fields:
+    pageSize: Size of the pages to be returned. This is currently unsupported
+      and will be ignored. The server may at any point start using this field
+      to limit page size.
+    pageToken: Page token used to retrieve the next page. This is currently
+      unsupported and will be ignored. The server may at any point start using
+      this field.
+    parent: Required. The target Cloud resource that parents the set of
+      constraints and policies that will be returned from this call. Must be
+      in one of the following forms: * `projects/{project_number}` *
+      `projects/{project_id}` * `folders/{folder_id}` *
+      `organizations/{organization_id}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class OrgpolicyOrganizationsConstraintsListRequest(_messages.Message):
+  r"""A OrgpolicyOrganizationsConstraintsListRequest object.
+
+  Fields:
+    pageSize: Size of the pages to be returned. This is currently unsupported
+      and will be ignored. The server may at any point start using this field
+      to limit page size.
+    pageToken: Page token used to retrieve the next page. This is currently
+      unsupported and will be ignored. The server may at any point start using
+      this field.
+    parent: Required. The Cloud resource that parents the constraint. Must be
+      in one of the following forms: * `projects/{project_number}` *
+      `projects/{project_id}` * `folders/{folder_id}` *
+      `organizations/{organization_id}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class OrgpolicyOrganizationsPoliciesCreateRequest(_messages.Message):
+  r"""A OrgpolicyOrganizationsPoliciesCreateRequest object.
+
+  Fields:
+    googleCloudOrgpolicyV2Policy: A GoogleCloudOrgpolicyV2Policy resource to
+      be passed as the request body.
+    parent: Required. The Cloud resource that will parent the new Policy. Must
+      be in one of the following forms: * `projects/{project_number}` *
+      `projects/{project_id}` * `folders/{folder_id}` *
+      `organizations/{organization_id}`
+  """
+
+  googleCloudOrgpolicyV2Policy = _messages.MessageField('GoogleCloudOrgpolicyV2Policy', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class OrgpolicyOrganizationsPoliciesDeleteRequest(_messages.Message):
+  r"""A OrgpolicyOrganizationsPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the policy to delete. See `Policy` for naming
+      rules.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OrgpolicyOrganizationsPoliciesGetEffectivePolicyRequest(_messages.Message):
+  r"""A OrgpolicyOrganizationsPoliciesGetEffectivePolicyRequest object.
+
+  Fields:
+    name: Required. The effective policy to compute. See `Policy` for naming
+      rules.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OrgpolicyOrganizationsPoliciesGetRequest(_messages.Message):
+  r"""A OrgpolicyOrganizationsPoliciesGetRequest object.
+
+  Fields:
+    name: Required. Resource name of the policy. See `Policy` for naming
+      requirements.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OrgpolicyOrganizationsPoliciesListRequest(_messages.Message):
+  r"""A OrgpolicyOrganizationsPoliciesListRequest object.
+
+  Fields:
+    pageSize: Size of the pages to be returned. This is currently unsupported
+      and will be ignored. The server may at any point start using this field
+      to limit page size.
+    pageToken: Page token used to retrieve the next page. This is currently
+      unsupported and will be ignored. The server may at any point start using
+      this field.
+    parent: Required. The target Cloud resource that parents the set of
+      constraints and policies that will be returned from this call. Must be
+      in one of the following forms: * `projects/{project_number}` *
+      `projects/{project_id}` * `folders/{folder_id}` *
+      `organizations/{organization_id}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class OrgpolicyProjectsConstraintsListRequest(_messages.Message):
+  r"""A OrgpolicyProjectsConstraintsListRequest object.
+
+  Fields:
+    pageSize: Size of the pages to be returned. This is currently unsupported
+      and will be ignored. The server may at any point start using this field
+      to limit page size.
+    pageToken: Page token used to retrieve the next page. This is currently
+      unsupported and will be ignored. The server may at any point start using
+      this field.
+    parent: Required. The Cloud resource that parents the constraint. Must be
+      in one of the following forms: * `projects/{project_number}` *
+      `projects/{project_id}` * `folders/{folder_id}` *
+      `organizations/{organization_id}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class OrgpolicyProjectsPoliciesCreateRequest(_messages.Message):
+  r"""A OrgpolicyProjectsPoliciesCreateRequest object.
+
+  Fields:
+    googleCloudOrgpolicyV2Policy: A GoogleCloudOrgpolicyV2Policy resource to
+      be passed as the request body.
+    parent: Required. The Cloud resource that will parent the new Policy. Must
+      be in one of the following forms: * `projects/{project_number}` *
+      `projects/{project_id}` * `folders/{folder_id}` *
+      `organizations/{organization_id}`
+  """
+
+  googleCloudOrgpolicyV2Policy = _messages.MessageField('GoogleCloudOrgpolicyV2Policy', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class OrgpolicyProjectsPoliciesDeleteRequest(_messages.Message):
+  r"""A OrgpolicyProjectsPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the policy to delete. See `Policy` for naming
+      rules.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OrgpolicyProjectsPoliciesGetEffectivePolicyRequest(_messages.Message):
+  r"""A OrgpolicyProjectsPoliciesGetEffectivePolicyRequest object.
+
+  Fields:
+    name: Required. The effective policy to compute. See `Policy` for naming
+      rules.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OrgpolicyProjectsPoliciesGetRequest(_messages.Message):
+  r"""A OrgpolicyProjectsPoliciesGetRequest object.
+
+  Fields:
+    name: Required. Resource name of the policy. See `Policy` for naming
+      requirements.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OrgpolicyProjectsPoliciesListRequest(_messages.Message):
+  r"""A OrgpolicyProjectsPoliciesListRequest object.
 
   Fields:
     pageSize: Size of the pages to be returned. This is currently unsupported

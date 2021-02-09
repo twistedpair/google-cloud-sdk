@@ -154,6 +154,26 @@ def _GetCrossConnectSubnetworkEndpoint(cluster, cross_connect_subnetwork):
   return cross_connect_config_item.privateEndpoint
 
 
+def LocationalResourceToZonal(path):
+  """Converts a resource identifier (possibly a full URI) to the zonal format.
+
+  e.g., container.projects.locations.clusters (like
+  projects/foo/locations/us-moon1/clusters/my-cluster) ->
+  container.projects.zones.clusters (like
+  projects/foo/zones/us-moon1/clusters/my-cluster). While the locational format
+  is newer, we have to use a single one because the formats have different
+  fields. This allows either to be input, but the code will use entirely the
+  zonal format.
+
+  Args:
+    path: A string resource name, possibly a URI (i.e., self link).
+  Returns:
+    The string identifier converted to zonal format if applicable. Unchanged if
+    not applicable (i.e., not a full path or already in zonal format).
+  """
+  return path.replace('/locations/', '/zones/')
+
+
 def _GetClusterEndpoint(cluster, use_internal_ip, cross_connect_subnetwork):
   """Get the cluster endpoint suitable for writing to kubeconfig."""
   if use_internal_ip or cross_connect_subnetwork is not None:

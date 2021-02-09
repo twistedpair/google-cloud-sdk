@@ -26,9 +26,12 @@ import botocore
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage import util as hash_util
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import files
 
 
 # S3 does not allow upload of size > 5 GiB for put_object.
@@ -325,12 +328,38 @@ class S3Api(cloud_api.CloudApi):
     if cloud_resource.generation:
       extra_args['VersionId'] = cloud_resource.generation
 
-    # TODO(b/172480278) Conditionally call get_object for smaller object.
-    self.client.download_fileobj(
-        cloud_resource.bucket,
-        cloud_resource.name,
-        download_stream,
-        ExtraArgs=extra_args)
+    if download_strategy == cloud_api.DownloadStrategy.RESUMABLE:
+      response = self.client.get_object(
+          Bucket=cloud_resource.bucket,
+          Key=cloud_resource.name,
+          Range='bytes={}-'.format(start_byte),
+      )
+      processed_bytes = start_byte
+      for chunk in response['Body'].iter_chunks(
+          properties.VALUES.storage.chunk_size.GetInt()):
+        download_stream.write(chunk)
+        processed_bytes += len(chunk)
+        if progress_callback:
+          progress_callback(processed_bytes)
+    else:
+      # TODO(b/172480278) Conditionally call get_object for smaller object.
+      self.client.download_fileobj(
+          cloud_resource.bucket,
+          cloud_resource.name,
+          download_stream,
+          Callback=progress_callback,
+          ExtraArgs=extra_args)
+
+    # Download callback doesn't give us streaming data, so we have to
+    # read whole downloaded file to update digests.
+    if digesters:
+      with files.BinaryFileReader(
+          download_stream.name) as completed_download_stream:
+        completed_download_stream.seek(0)
+        for hash_algorithm in digesters:
+          digesters[hash_algorithm] = hash_util.get_hash_from_file_stream(
+              completed_download_stream, hash_algorithm)
+
     return self._get_content_encoding(cloud_resource)
 
     # TODO(b/161437901): Handle resumed download.

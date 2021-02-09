@@ -44,6 +44,12 @@ def PolicyAttributeConfig(api_version):
       help_text='The Cloud DNS policy name {resource}.')
 
 
+def ResponsePolicyAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='response_policy',
+      help_text='The Cloud DNS response policy name {resource}.')
+
+
 def ProjectAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='project',
@@ -57,6 +63,15 @@ def GetPolicyResourceSpec(api_version):
       api_version=api_version,
       resource_name='policy',
       policy=PolicyAttributeConfig(api_version=api_version),
+      project=ProjectAttributeConfig())
+
+
+def GetResponsePolicyResourceSpec(api_version):
+  return concepts.ResourceSpec(
+      'dns.responsePolicies',
+      api_version=api_version,
+      resource_name='response_policy',
+      responsePolicy=ResponsePolicyAttributeConfig(),
       project=ProjectAttributeConfig())
 
 
@@ -83,4 +98,30 @@ def AddPolicyResourceArg(parser,
       name,
       GetPolicyResourceSpec(api_version),
       'The policy {}.'.format(verb),
+      required=required).AddToParser(parser)
+
+
+def AddResponsePolicyResourceArg(parser,
+                                 verb,
+                                 api_version,
+                                 positional=True,
+                                 required=True):
+  """Add a resource argument for a Cloud DNS Policy.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    api_version: str, the version of the API to use.
+    positional: bool, if True, means that the policy name is a positional rather
+      than a flag.
+    required: bool, if True, means that the arg will be required.
+  """
+  if positional:
+    name = 'response_policies'
+  else:
+    name = '--response_policies'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetResponsePolicyResourceSpec(api_version),
+      'The response policy {}.'.format(verb),
       required=required).AddToParser(parser)

@@ -61,21 +61,19 @@ class RevisionPrinter(cp.CustomPrinterBase):
 
   def Transform(self, record):
     """Transform a revision into the output structure of marker classes."""
+    rev = revision.Revision(record)
     fmt = cp.Lines([
-        k8s_object_printer.GetHeader(record),
-        k8s_object_printer.GetLabels(record.labels), ' ',
-        self.TransformSpec(record),
-        k8s_object_printer.GetReadyMessage(record)
+        k8s_object_printer.FormatHeader(rev),
+        k8s_object_printer.FormatLabels(rev.labels), ' ',
+        self.TransformSpec(rev),
+        k8s_object_printer.FormatReadyMessage(rev)
     ])
     return fmt
 
-  def GetLimits(self, rev):
-    return collections.defaultdict(str, rev.resource_limits)
-
-  def GetUserEnvironmentVariables(self, record):
+  def _GetUserEnvironmentVariables(self, record):
     return cp.Mapped(k8s_object_printer.OrderByKey(record.env_vars.literals))
 
-  def GetSecrets(self, record):
+  def _GetSecrets(self, record):
     secrets = {}
     secrets.update(
         {k: FormatSecretKeyRef(v) for k, v in record.env_vars.secrets.items()})
@@ -85,7 +83,7 @@ class RevisionPrinter(cp.CustomPrinterBase):
     })
     return cp.Mapped(k8s_object_printer.OrderByKey(secrets))
 
-  def GetConfigMaps(self, record):
+  def _GetConfigMaps(self, record):
     config_maps = {}
     config_maps.update({
         k: FormatConfigMapKeyRef(v)
@@ -97,28 +95,28 @@ class RevisionPrinter(cp.CustomPrinterBase):
     })
     return cp.Mapped(k8s_object_printer.OrderByKey(config_maps))
 
-  def GetTimeout(self, record):
+  def _GetTimeout(self, record):
     if record.timeout is not None:
       return '{}s'.format(record.timeout)
     return None
 
-  def GetInitInstances(self, record):
+  def _GetInitInstances(self, record):
     if record.annotations:
       return record.annotations.get(revision.INITIAL_SCALE_ANNOTATION, '')
     return None
 
-  def GetMinInstances(self, record):
+  def _GetMinInstances(self, record):
     if record.annotations:
       return record.annotations.get(revision.MIN_SCALE_ANNOTATION, '')
     return None
 
-  def GetMaxInstances(self, record):
+  def _GetMaxInstances(self, record):
     if record.annotations:
       return record.annotations.get(revision.MAX_SCALE_ANNOTATION, '')
     return None
 
   def TransformSpec(self, record):
-    limits = self.GetLimits(record)
+    limits = collections.defaultdict(str, record.resource_limits)
     return cp.Labeled([
         ('Image', record.UserImage()),
         ('Command', ' '.join(record.container.command)),
@@ -129,19 +127,19 @@ class RevisionPrinter(cp.CustomPrinterBase):
         ('CPU', limits['cpu']),
         ('GPU', limits[revision.NVIDIA_GPU_RESOURCE]),
         ('Service account', record.spec.serviceAccountName),
-        ('Env vars', self.GetUserEnvironmentVariables(record)),
-        ('Secrets', self.GetSecrets(record)),
-        ('Config Maps', self.GetConfigMaps(record)),
+        ('Env vars', self._GetUserEnvironmentVariables(record)),
+        ('Secrets', self._GetSecrets(record)),
+        ('Config Maps', self._GetConfigMaps(record)),
         ('Concurrency', record.concurrency),
-        ('Initial Instances', self.GetInitInstances(record)),
-        ('Min Instances', self.GetMinInstances(record)),
-        ('Max Instances', self.GetMaxInstances(record)),
-        ('Timeout', self.GetTimeout(record)),
+        ('Initial Instances', self._GetInitInstances(record)),
+        ('Min Instances', self._GetMinInstances(record)),
+        ('Max Instances', self._GetMaxInstances(record)),
+        ('Timeout', self._GetTimeout(record)),
     ])
 
 
 def Active(record):
-  """Returns whether the given resource is active."""
+  """Returns True/False/None indicating the active status of the resource."""
   active_cond = [
       x for x in record.get(kubernetes_consts.FIELD_STATUS, {}).get(
           kubernetes_consts.FIELD_CONDITIONS, [])

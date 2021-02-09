@@ -37,7 +37,8 @@ properties:
       with optional port numbers in the format host:port. * matches any string
       of ([a-z0-9-.]*). The only accepted ports are :80 and :443. Hosts are
       matched against the HTTP Host header, or for HTTP/2 and HTTP/3, the
-      ":authority" header, from the incoming request.
+      ":authority" header, from the incoming request. You may specify up to 10
+      hosts.
     type: array
     items:
       type: string

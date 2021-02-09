@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import exceptions as c_exceptions
 
 _CREATE_FILE_DESC = ('A file that contains the configuration for the '
                      'WorkerPool to be created.')
@@ -113,6 +114,40 @@ def AddRepoEventArgs(flag_config):
   )
 
 
+def AddSubstitutions(argument_group):
+  """Adds a substituion flag to the given argument group.
+
+  Args:
+    argument_group: argparse argument group to which the substitution flag will
+      be added.
+  """
+
+  argument_group.add_argument(
+      '--substitutions',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help="""\
+Parameters to be substituted in the build specification.
+
+For example (using some nonsensical substitution keys; all keys must begin with
+an underscore):
+
+  $ gcloud builds triggers create ... --config config.yaml
+      --substitutions _FAVORITE_COLOR=blue,_NUM_CANDIES=10
+
+This will result in a build where every occurrence of ```${_FAVORITE_COLOR}```
+in certain fields is replaced by "blue", and similarly for ```${_NUM_CANDIES}```
+and "10".
+
+Only the following built-in variables can be specified with the
+`--substitutions` flag: REPO_NAME, BRANCH_NAME, TAG_NAME, REVISION_ID,
+COMMIT_SHA, SHORT_SHA.
+
+For more details, see:
+https://cloud.google.com/cloud-build/docs/api/build-requests#substitutions
+""")
+
+
 def AddBuildConfigArgs(flag_config):
   """Adds additional argparse flags to a group for build configuration options.
 
@@ -121,7 +156,20 @@ def AddBuildConfigArgs(flag_config):
       group to cover common build configuration settings.
   """
 
+  # Build config and inline config support substitutions whereas dockerfile
+  # does not. We can't have a flag with the same name in two separate
+  # groups so we have to have one flag outside of the config argument group.
+  AddSubstitutions(flag_config)
+
   build_config = AddBuildFileConfigArgs(flag_config)
+
+  inline = build_config.add_argument_group(help='Build configuration file')
+  inline.add_argument(
+      '--inline-config',
+      metavar='PATH',
+      help="""\
+      Local path to a YAML or JSON file containing a build configuration.
+    """)
 
   docker = build_config.add_argument_group(
       help='Dockerfile build configuration flags')
@@ -158,8 +206,8 @@ def AddBuildFileConfigArgs(flag_config):
   """Adds additional argparse flags to a group for build configuration options.
 
   Args:
-    flag_config: argparse argument group. Additional flags will be added to
-      this group to cover common build configuration settings.
+    flag_config: argparse argument group. Additional flags will be added to this
+      group to cover common build configuration settings.
 
   Returns:
     build_config: a build config.
@@ -175,30 +223,6 @@ def AddBuildFileConfigArgs(flag_config):
 Path to a YAML or JSON file containing the build configuration in the repository.
 
 For more details, see: https://cloud.google.com/cloud-build/docs/build-config
-""")
-  build_file_config.add_argument(
-      '--substitutions',
-      metavar='KEY=VALUE',
-      type=arg_parsers.ArgDict(),
-      help="""\
-Parameters to be substituted in the build specification.
-
-For example (using some nonsensical substitution keys; all keys must begin with
-an underscore):
-
-  $ gcloud builds triggers create ... --config config.yaml
-      --substitutions _FAVORITE_COLOR=blue,_NUM_CANDIES=10
-
-This will result in a build where every occurrence of ```${_FAVORITE_COLOR}```
-in certain fields is replaced by "blue", and similarly for ```${_NUM_CANDIES}```
-and "10".
-
-Only the following built-in variables can be specified with the
-`--substitutions` flag: REPO_NAME, BRANCH_NAME, TAG_NAME, REVISION_ID,
-COMMIT_SHA, SHORT_SHA.
-
-For more details, see:
-https://cloud.google.com/cloud-build/docs/api/build-requests#substitutions
 """)
 
   return build_config
@@ -217,7 +241,11 @@ def ParseRepoEventArgs(trigger, args):
     trigger.ignoredFiles = args.ignored_files
 
 
-def ParseBuildConfigArgs(trigger, args, messages, default_image):
+def ParseBuildConfigArgs(trigger,
+                         args,
+                         messages,
+                         default_image,
+                         need_repo=False):
   """Parses build-config flags.
 
   Args:
@@ -225,12 +253,19 @@ def ParseBuildConfigArgs(trigger, args, messages, default_image):
     args: An argparse arguments object.
     messages: A Cloud Build messages module.
     default_image: The docker image to use if args.dockerfile_image is empty.
+    need_repo: Whether or not a repo needs to be included explicitly in flags.
   """
   if args.build_config:
     trigger.filename = args.build_config
     trigger.substitutions = cloudbuild_util.EncodeTriggerSubstitutions(
         args.substitutions, messages)
   if args.dockerfile:
+
+    if args.substitutions:
+      raise c_exceptions.ConflictingArgumentsException(
+          'Dockerfile and substitutions',
+          'Substitutions are not supported with a Dockerfile configuration.')
+
     image = args.dockerfile_image or default_image
     trigger.build = messages.Build(steps=[
         messages.BuildStep(
@@ -239,6 +274,17 @@ def ParseBuildConfigArgs(trigger, args, messages, default_image):
             args=['build', '-t', image, '-f', args.dockerfile, '.'],
         )
     ])
+  if args.inline_config:
+    trigger.build = cloudbuild_util.LoadMessageFromPath(args.inline_config,
+                                                        messages.Build,
+                                                        'inline build config')
+    trigger.substitutions = cloudbuild_util.EncodeTriggerSubstitutions(
+        args.substitutions, messages)
+
+  if need_repo:
+    # Repo is required if a build config (filename) or dockerfile was provided.
+    required = args.build_config or args.dockerfile
+    ParseGitRepoSource(trigger, args, messages, required=required)
 
 
 def AddBranchPattern(parser):
@@ -280,26 +326,42 @@ def AddGitRepoSource(flag_config):
     flag_config: argparse argument group. Git repo source flags will be added to
       this group.
   """
-  flag_config.add_argument(
+  repo_config = flag_config.add_argument_group(
+      help='Flags for repository information')
+  repo_config.add_argument(
       '--repo',
       required=True,
       help='URI of the repository. Currently only HTTP URIs for GitHub and Cloud Source Repositories are supported.'
   )
 
-  ref_config = flag_config.add_mutually_exclusive_group(required=True)
+  ref_config = repo_config.add_mutually_exclusive_group(required=True)
   ref_config.add_argument('--branch', help='Branch to build.')
   ref_config.add_argument('--tag', help='Tag to build.')
 
 
-def ParseGitRepoSource(trigger, args, messages):
+def ParseGitRepoSource(trigger, args, messages, required=False):
   """Parses git repo source flags.
 
   Args:
     trigger: The trigger to populate.
     args: An argparse arguments object.
     messages: A Cloud Build messages module.
+    required: Whether or not the repository info is required.
   """
   repo_source = messages.GitRepoSource()
+
+  if required:
+    if not args.repo:
+      raise c_exceptions.RequiredArgumentException(
+          'REPO',
+          '--repo is required when specifying a --dockerfile or --build-config.'
+      )
+    if not args.branch and not args.tag:
+      raise c_exceptions.RequiredArgumentException(
+          'BRANCH or TAG',
+          'Either --branch or --tag is required when specifying a --dockerfile or --build-config.'
+      )
+
   repo_source.uri = args.repo
   if args.branch:
     repo_source.ref = 'refs/heads/' + args.branch

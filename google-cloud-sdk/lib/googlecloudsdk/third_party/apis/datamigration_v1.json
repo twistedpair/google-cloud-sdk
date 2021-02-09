@@ -1326,9 +1326,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1367,9 +1367,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1397,9 +1397,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1438,9 +1438,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1463,9 +1463,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1488,9 +1488,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1520,9 +1520,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent, which owns this collection of migrationJobs.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1566,9 +1566,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the migration job resource to get.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1591,9 +1591,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent, which owns this collection of migration jobs.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "migrationJobId": {
@@ -1629,9 +1629,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name (URI) of this migration job resource, in the form of: projects\/{project}\/locations\/{location}\/instances\/{instance}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1668,9 +1668,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the migration job resource to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "type": "string"
                     },
                     "requestId": {
@@ -1703,9 +1703,9 @@
                   "parameters": {
                     "name": {
                       "description": "Name of the migration job resource to start.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1731,9 +1731,9 @@
                   "parameters": {
                     "name": {
                       "description": "Name of the migration job resource to stop.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1759,9 +1759,9 @@
                   "parameters": {
                     "name": {
                       "description": "Name of the migration job resource to resume.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1787,9 +1787,9 @@
                   "parameters": {
                     "name": {
                       "description": "Name of the migration job resource to promote.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1815,9 +1815,9 @@
                   "parameters": {
                     "name": {
                       "description": "Name of the migration job resource to verify.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1843,9 +1843,9 @@
                   "parameters": {
                     "name": {
                       "description": "Name of the migration job resource to restart.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1871,9 +1871,9 @@
                   "parameters": {
                     "migrationJob": {
                       "description": "Name of the migration job resource to generate the SSH script.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1899,9 +1899,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1927,9 +1927,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -1958,9 +1958,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1990,9 +1990,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent, which owns this collection of connection profiles.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -2036,9 +2036,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the connection profile resource to get.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionProfiles\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionProfiles\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2061,9 +2061,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent, which owns this collection of connection profiles.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "connectionProfileId": {
@@ -2099,9 +2099,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of this connection profile resource in the form of projects\/{project}\/locations\/{location}\/instances\/{instance}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionProfiles\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionProfiles\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -2138,9 +2138,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the connection profile resource to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionProfiles\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionProfiles\/[^\/]+$",
                       "type": "string"
                     },
                     "requestId": {
@@ -2173,9 +2173,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionProfiles\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionProfiles\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2201,9 +2201,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionProfiles\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionProfiles\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -2232,9 +2232,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionProfiles\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionProfiles\/[^\/]+$",
                       "type": "string"
                     }
                   },

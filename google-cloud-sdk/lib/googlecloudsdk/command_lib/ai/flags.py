@@ -30,6 +30,7 @@ from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import errors
 from googlecloudsdk.command_lib.ai import region_util
+from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
@@ -202,6 +203,7 @@ def AddCreateCustomJobFlags(parser):
   PYTHON_PACKGE_URIS.AddToParser(parser)
   _CUSTOM_JOB_ARGS.AddToParser(parser)
   _CUSTOM_JOB_COMMAND.AddToParser(parser)
+  AddKmsKeyResourceArg(parser, 'custom job')
   worker_pool_spec_group = base.ArgumentGroup(
       help='Worker pool specification.', required=True)
   worker_pool_spec_group.AddArgument(CUSTOM_JOB_CONFIG)
@@ -635,6 +637,7 @@ def AddCreateHpTuningJobFlags(parser, algorithm_enum):
   HPTUNING_JOB_CONFIG.AddToParser(parser)
   HPTUNING_MAX_TRIAL_COUNT.AddToParser(parser)
   HPTUNING_PARALLEL_TRIAL_COUNT.AddToParser(parser)
+  AddKmsKeyResourceArg(parser, 'hyperparameter tuning job')
 
   arg_utils.ChoiceEnumMapper(
       '--algorithm',
@@ -691,3 +694,11 @@ def AddHptuningJobResourceArg(parser, verb):
       GetHptuningJobResourceSpec(),
       'The hyperparameter tuning job {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def AddKmsKeyResourceArg(parser, resource):
+  """Add the --kms-key resource arg to the given parser."""
+  permission_info = ("The 'AI Platform Service Agent' service account must hold"
+                     " permission 'Cloud KMS CryptoKey Encrypter/Decrypter'")
+  kms_resource_args.AddKmsKeyResourceArg(
+      parser, resource, permission_info=permission_info)

@@ -863,9 +863,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -904,9 +904,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -934,9 +934,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -975,9 +975,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1000,9 +1000,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1025,9 +1025,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1057,9 +1057,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource of the Gateway, of the form: `projects\/*\/locations\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1103,9 +1103,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the form: `projects\/*\/locations\/*\/gateways\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1128,9 +1128,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource of the Gateway, of the form: `projects\/*\/locations\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "gatewayId": {
@@ -1161,9 +1161,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. Resource name of the Gateway. Format: projects\/{project}\/locations\/{location}\/gateways\/{gateway}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1195,9 +1195,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the form: `projects\/*\/locations\/*\/gateways\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1220,9 +1220,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1248,9 +1248,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -1279,9 +1279,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1311,9 +1311,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource of the API, of the form: `projects\/*\/locations\/global`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1357,9 +1357,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the form: `projects\/*\/locations\/global\/apis\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1382,9 +1382,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource of the API, of the form: `projects\/*\/locations\/global`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "apiId": {
@@ -1415,9 +1415,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. Resource name of the API. Format: projects\/{project}\/locations\/global\/apis\/{api}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1449,9 +1449,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the form: `projects\/*\/locations\/global\/apis\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1474,9 +1474,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1502,9 +1502,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -1533,9 +1533,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1566,9 +1566,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. Parent resource of the API Config, of the form: `projects\/*\/locations\/global\/apis\/*`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1612,9 +1612,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Resource name of the form: `projects\/*\/locations\/global\/apis\/*\/configs\/*`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+\/configs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+\/configs\/[^\/]+$",
                           "type": "string"
                         },
                         "view": {
@@ -1652,9 +1652,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. Parent resource of the API Config, of the form: `projects\/*\/locations\/global\/apis\/*`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+$",
                           "type": "string"
                         },
                         "apiConfigId": {
@@ -1685,9 +1685,9 @@
                       "parameters": {
                         "name": {
                           "description": "Output only. Resource name of the API Config. Format: projects\/{project}\/locations\/global\/apis\/{api}\/configs\/{api_config}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+\/configs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+\/configs\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -1719,9 +1719,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Resource name of the form: `projects\/*\/locations\/global\/apis\/*\/configs\/*`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+\/configs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+\/configs\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1744,9 +1744,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+\/configs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+\/configs\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1772,9 +1772,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+\/configs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+\/configs\/[^\/]+$",
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
@@ -1803,9 +1803,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+\/configs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/apis\/[^\/]+\/configs\/[^\/]+$",
                           "type": "string"
                         }
                       },

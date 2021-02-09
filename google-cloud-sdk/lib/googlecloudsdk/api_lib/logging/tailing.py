@@ -52,6 +52,11 @@ def _HandleGrpcRendezvous(rendezvous, output_debug, output_warning):
           ('The maximum duration for tail has been met. '
            'The command may be repeated to continue.')
   }
+
+  # grpc calls cancelled by application should not warn
+  if rendezvous.code() == grpc.StatusCode.CANCELLED:
+    return
+
   output_debug(rendezvous)
   output_warning('{} ({})'.format(
       error_messages_by_code.get(rendezvous.code(),

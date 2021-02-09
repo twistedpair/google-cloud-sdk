@@ -165,6 +165,13 @@ class Collections(enum.Enum):
       ['project', 'httpsHealthCheck'],
       True
   )
+  IMAGEFAMILYVIEWS = (
+      'imageFamilyViews',
+      'projects/{project}/zones/{zone}/imageFamilyViews/{family}',
+      {},
+      ['project', 'zone', 'family'],
+      True
+  )
   IMAGES = (
       'images',
       'projects/{project}/global/images/{image}',

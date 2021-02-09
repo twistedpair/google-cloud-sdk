@@ -1361,6 +1361,13 @@
           "items": {
             "$ref": "IntentFilter"
           }
+        },
+        "usesPermission": {
+          "description": "Permissions declared to be used by the application",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

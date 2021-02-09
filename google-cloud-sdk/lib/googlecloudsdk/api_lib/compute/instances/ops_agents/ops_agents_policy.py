@@ -82,7 +82,7 @@ class OpsAgentPolicy(object):
       class OsShortName(str, enum.Enum):
         CENTOS = 'centos'
         DEBIAN = 'debian'
-
+        WINDOWS = 'windows'
         RHEL = 'rhel'
         SLES = 'sles'
         SLES_SAP = 'sles-sap'

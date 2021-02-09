@@ -23,7 +23,6 @@ import copy
 
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.orgpolicy import service as org_policy_service
-from googlecloudsdk.api_lib.orgpolicy import utils as org_policy_utils
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.org_policies import arguments
 from googlecloudsdk.command_lib.org_policies import exceptions
@@ -55,12 +54,7 @@ class OrgPolicyGetAndUpdateCommand(
     """
     super(OrgPolicyGetAndUpdateCommand, self).__init__(cli, context)
 
-    self.policy_service = org_policy_service.PolicyService(self.ReleaseTrack())
-    self.constraint_service = org_policy_service.ConstraintService(
-        self.ReleaseTrack())
-    self.org_policy_messages = org_policy_service.OrgPolicyMessages(
-        self.ReleaseTrack())
-
+    self.org_policy_api = org_policy_service.OrgPolicyApi(self.ReleaseTrack())
     self.disable_create = False
 
   def Run(self, args):
@@ -100,7 +94,7 @@ class OrgPolicyGetAndUpdateCommand(
     if not policy:
       return self._CreatePolicy(args)
     for rule in policy.spec.rules:
-      if rule.condition:
+      if rule.condition and args.command_path[-1] != 'reset':
         raise exceptions.OperationNotSupportedError(
             'Cannot be used to modify a conditional policy. Use set-policy instead.'
         )
@@ -133,11 +127,8 @@ class OrgPolicyGetAndUpdateCommand(
     """
     name = utils.GetPolicyNameFromArgs(args)
 
-    get_request = self.org_policy_messages.OrgpolicyPoliciesGetRequest(
-        name=name)
-
     try:
-      return self.policy_service.Get(get_request)
+      return self.org_policy_api.GetPolicy(name)
     except api_exceptions.HttpNotFoundError as e:
       if self.disable_create:
         raise e
@@ -154,16 +145,13 @@ class OrgPolicyGetAndUpdateCommand(
     """
     name = utils.GetPolicyNameFromArgs(args)
 
-    empty_policy = org_policy_utils.CreatePolicy(self.ReleaseTrack(), name=name)
+    empty_policy = self.org_policy_api.BuildPolicy(name)
     new_policy = self.UpdatePolicy(empty_policy, args)
 
     if not new_policy.spec.rules and not new_policy.spec.inheritFromParent and not new_policy.spec.reset:
-      # Return the response received after a successful DeletePolicy.
-      return self.org_policy_messages.GoogleProtobufEmpty()
+      return self.org_policy_api.messages.GoogleProtobufEmpty()
 
-    create_request = org_policy_utils.CreatePolicyCreateRequest(
-        self.ReleaseTrack(), new_policy=new_policy)
-    create_response = self.policy_service.Create(create_request)
+    create_response = self.org_policy_api.CreatePolicy(new_policy)
     log.CreatedResource(name, 'policy')
     return create_response
 
@@ -189,16 +177,10 @@ class OrgPolicyGetAndUpdateCommand(
     policy_name = utils.GetPolicyNameFromArgs(args)
 
     if not updated_policy.spec.rules and not updated_policy.spec.inheritFromParent and not updated_policy.spec.reset:
-      delete_request = self.org_policy_messages.OrgpolicyPoliciesDeleteRequest(
-          name=policy_name)
-      delete_response = self.policy_service.Delete(delete_request)
+      delete_response = self.org_policy_api.DeletePolicy(policy_name)
       log.DeletedResource(policy_name, 'policy')
       return delete_response
 
-    update_request = org_policy_utils.CreatePolicyPatchRequest(
-        self.ReleaseTrack(),
-        policy_name=policy_name,
-        updated_policy=updated_policy)
-    update_response = self.policy_service.Patch(update_request)
+    update_response = self.org_policy_api.UpdatePolicy(updated_policy)
     log.UpdatedResource(policy_name, 'policy')
     return update_response

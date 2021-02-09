@@ -1348,6 +1348,20 @@
           "type": "string"
         }
       }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsResponse": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsResponse",
+      "description": "Message stored in the response field of the Operation returned by ConsumerProcurementService.ReplaceOrderAllocations.",
+      "type": "object",
+      "properties": {
+        "orderAllocations": {
+          "description": "The entire list of OrderAllocations of the parent Order after the replacement.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation"
+          }
+        }
+      }
     }
   },
   "resources": {

@@ -93,6 +93,45 @@ class DockerImage(_messages.Message):
   uri = _messages.StringField(6)
 
 
+class GoogleDevtoolsArtifactregistryV1alpha1AptArtifact(_messages.Message):
+  r"""A detailed representation of an Apt artifact. Information in the record
+  is derived from the archive's control file. See
+  https://www.debian.org/doc/debian-policy/ch-controlfields.html
+
+  Enums:
+    PackageTypeValueValuesEnum: Output only. An artifact is a binary or source
+      package.
+
+  Fields:
+    architecture: Output only. Operating system architecture of the artifact.
+    component: Output only. Repository component of the artifact.
+    controlFile: Output only. Contents of the artifact's control metadata
+      file.
+    name: Output only. The Artifact Registry resource name of the artifact.
+    packageName: Output only. The Apt package name of the artifact.
+    packageType: Output only. An artifact is a binary or source package.
+  """
+
+  class PackageTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. An artifact is a binary or source package.
+
+    Values:
+      PACKAGE_TYPE_UNSPECIFIED: Package type is not specified.
+      BINARY: Binary package.
+      SOURCE: Source package.
+    """
+    PACKAGE_TYPE_UNSPECIFIED = 0
+    BINARY = 1
+    SOURCE = 2
+
+  architecture = _messages.StringField(1)
+  component = _messages.StringField(2)
+  controlFile = _messages.BytesField(3)
+  name = _messages.StringField(4)
+  packageName = _messages.StringField(5)
+  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 6)
+
+
 class GoogleDevtoolsArtifactregistryV1alpha1ErrorInfo(_messages.Message):
   r"""Error information explaining why a package was not imported.
 
@@ -118,6 +157,18 @@ class GoogleDevtoolsArtifactregistryV1alpha1GcsSource(_messages.Message):
   useWildcards = _messages.BooleanField(2)
 
 
+class GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsErrorInfo(_messages.Message):
+  r"""Error information explaining why a package was not imported.
+
+  Fields:
+    error: The detailed error status.
+    gcsSource: Google Cloud Storage location requested.
+  """
+
+  error = _messages.MessageField('Status', 1)
+  gcsSource = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsGcsSource', 2)
+
+
 class GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsGcsSource(_messages.Message):
   r"""Google Cloud Storage location where the artifacts currently reside.
 
@@ -141,6 +192,18 @@ class GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest(_messages.
   gcsSource = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsGcsSource', 1)
 
 
+class GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse(_messages.Message):
+  r"""The response message from importing artifacts.
+
+  Fields:
+    aptArtifacts: The Apt artifacts updated.
+    errors: Detailed error info for packages that were not imported.
+  """
+
+  aptArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1AptArtifact', 1, repeated=True)
+  errors = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsErrorInfo', 2, repeated=True)
+
+
 class GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsRequest(_messages.Message):
   r"""The request to import new artifacts.
 
@@ -161,6 +224,18 @@ class GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsResponse(_messages.Me
 
   errors = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ErrorInfo', 1, repeated=True)
   packages = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1Package', 2, repeated=True)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsErrorInfo(_messages.Message):
+  r"""Error information explaining why a package was not imported.
+
+  Fields:
+    error: The detailed error status.
+    gcsSource: Google Cloud Storage location requested.
+  """
+
+  error = _messages.MessageField('Status', 1)
+  gcsSource = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsGcsSource', 2)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsGcsSource(_messages.Message):
@@ -186,6 +261,18 @@ class GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest(_messages.
   gcsSource = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsGcsSource', 1)
 
 
+class GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsResponse(_messages.Message):
+  r"""The response message from importing artifacts.
+
+  Fields:
+    errors: Detailed error info for packages that were not imported.
+    yumArtifacts: The yum artifacts updated.
+  """
+
+  errors = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsErrorInfo', 1, repeated=True)
+  yumArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1YumArtifact', 2, repeated=True)
+
+
 class GoogleDevtoolsArtifactregistryV1alpha1Package(_messages.Message):
   r"""Packages are named collections of versions.
 
@@ -202,6 +289,38 @@ class GoogleDevtoolsArtifactregistryV1alpha1Package(_messages.Message):
   displayName = _messages.StringField(2)
   name = _messages.StringField(3)
   updateTime = _messages.StringField(4)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1YumArtifact(_messages.Message):
+  r"""A detailed representation of a Yum artifact.
+
+  Enums:
+    PackageTypeValueValuesEnum: Output only. An artifact is a binary or source
+      package.
+
+  Fields:
+    architecture: Output only. Operating system architecture of the artifact.
+    name: Output only. The Artifact Registry resource name of the artifact.
+    packageName: Output only. The yum package name of the artifact.
+    packageType: Output only. An artifact is a binary or source package.
+  """
+
+  class PackageTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. An artifact is a binary or source package.
+
+    Values:
+      PACKAGE_TYPE_UNSPECIFIED: Package type is not specified.
+      BINARY: Binary package (.rpm). .rpm
+      SOURCE: Source package (.srpm).
+    """
+    PACKAGE_TYPE_UNSPECIFIED = 0
+    BINARY = 1
+    SOURCE = 2
+
+  architecture = _messages.StringField(1)
+  name = _messages.StringField(2)
+  packageName = _messages.StringField(3)
+  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 4)
 
 
 class Operation(_messages.Message):

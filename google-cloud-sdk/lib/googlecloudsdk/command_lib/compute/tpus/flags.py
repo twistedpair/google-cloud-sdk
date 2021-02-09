@@ -221,7 +221,7 @@ def AddDiskSizeFlag(parser):
           suggested_binary_size_scales=['GB']),
       help="""\
       Configures the root volume size of your Compute Engine VM (in GB). The
-      minimum size is 20GB and the maximum is 500GB. Specified value must be an
+      minimum size is 20GB and the maximum is 2000GB. Specified value must be an
       integer multiple of Gigabytes.
       """)
 

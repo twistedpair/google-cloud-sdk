@@ -571,6 +571,21 @@
         "workerZone": {
           "description": "The Compute Engine zone (https:\/\/cloud.google.com\/compute\/docs\/regions-zones\/regions-zones) in which worker processing should occur, e.g. \"us-west1-a\". Mutually exclusive with worker_region. If neither worker_region nor worker_zone is specified, a zone in the control plane's region is chosen based on available capacity.",
           "type": "string"
+        },
+        "shuffleMode": {
+          "description": "Output only. The shuffle mode used for the job.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Shuffle mode information is not available.",
+            "Shuffle is done on the worker VMs.",
+            "Shuffle is done on the service side."
+          ],
+          "enum": [
+            "SHUFFLE_MODE_UNSPECIFIED",
+            "VM_BASED",
+            "SERVICE_BASED"
+          ]
         }
       }
     },

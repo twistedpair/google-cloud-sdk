@@ -1403,11 +1403,11 @@ class GoogleCloudDialogflowCxV3FormParameter(_messages.Message):
       types.
     fillBehavior: Required. Defines fill behavior for the parameter.
     isList: Indicates whether the parameter represents a list of values.
-    redact: Indicates whether the parameter content should be redacted in text
-      and audio. If the flag is set to true, the parameter content will be
-      replaced by parameter name in both request and response. Note: the
-      parameter content is subject to redaction if either parameter level
-      redaction or entity type level redaction is enabled.
+    redact: Indicates whether the parameter content should be redacted in log.
+      If redaction is enabled, the parameter content will be replaced by
+      parameter name during logging. Note: the parameter content is subject to
+      redaction if either parameter level redaction or entity type level
+      redaction is enabled.
     required: Indicates whether the parameter is required. Optional parameters
       will not trigger prompts; however, they are filled if the user specifies
       them. Required parameters must be filled before form filling concludes.
@@ -1845,11 +1845,11 @@ class GoogleCloudDialogflowCxV3IntentParameter(_messages.Message):
     id: Required. The unique identifier of the parameter. This field is used
       by training phrases to annotate their parts.
     isList: Indicates whether the parameter represents a list of values.
-    redact: Indicates whether the parameter content should be redacted in text
-      and audio. If the flag is set to true, the parameter content will be
-      replaced by parameter name in both request and response. Note: the
-      parameter content is subject to redaction if either parameter level
-      redaction or entity type level redaction is enabled.
+    redact: Indicates whether the parameter content should be redacted in log.
+      If redaction is enabled, the parameter content will be replaced by
+      parameter name during logging. Note: the parameter content is subject to
+      redaction if either parameter level redaction or entity type level
+      redaction is enabled.
   """
 
   entityType = _messages.StringField(1)
@@ -2459,8 +2459,8 @@ class GoogleCloudDialogflowCxV3TestCaseResult(_messages.Message):
   Fields:
     conversationTurns: The conversation turns uttered during the test case
       replay in chronological order.
-    environment: Optional. Environment where the test was run. If not set, it
-      indicates the draft environment.
+    environment: Environment where the test was run. If not set, it indicates
+      the draft environment.
     name: The resource name for the test case result. Format:
       `projects//locations//agents//testCases/ /results/`.
     testResult: Whether the test case passed in the agent environment.
@@ -2683,6 +2683,9 @@ class GoogleCloudDialogflowCxV3WebhookRequestIntentInfo(_messages.Message):
       defined in the matched intent that are identified will be surfaced here.
 
   Fields:
+    confidence: The confidence of the matched intent. Values range from 0.0
+      (completely uncertain) to 1.0 (completely certain).
+    displayName: Always present. The display name of the last matched intent.
     lastMatchedIntent: Always present. The unique identifier of the last
       matched intent. Format: `projects//locations//agents//intents/`.
     parameters: Parameters identified as a result of intent matching. This is
@@ -2720,8 +2723,10 @@ class GoogleCloudDialogflowCxV3WebhookRequestIntentInfo(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  lastMatchedIntent = _messages.StringField(1)
-  parameters = _messages.MessageField('ParametersValue', 2)
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  displayName = _messages.StringField(2)
+  lastMatchedIntent = _messages.StringField(3)
+  parameters = _messages.MessageField('ParametersValue', 4)
 
 
 class GoogleCloudDialogflowCxV3WebhookRequestIntentInfoIntentParameterValue(_messages.Message):
@@ -3150,11 +3155,11 @@ class GoogleCloudDialogflowCxV3beta1FormParameter(_messages.Message):
       types.
     fillBehavior: Required. Defines fill behavior for the parameter.
     isList: Indicates whether the parameter represents a list of values.
-    redact: Indicates whether the parameter content should be redacted in text
-      and audio. If the flag is set to true, the parameter content will be
-      replaced by parameter name in both request and response. Note: the
-      parameter content is subject to redaction if either parameter level
-      redaction or entity type level redaction is enabled.
+    redact: Indicates whether the parameter content should be redacted in log.
+      If redaction is enabled, the parameter content will be replaced by
+      parameter name during logging. Note: the parameter content is subject to
+      redaction if either parameter level redaction or entity type level
+      redaction is enabled.
     required: Indicates whether the parameter is required. Optional parameters
       will not trigger prompts; however, they are filled if the user specifies
       them. Required parameters must be filled before form filling concludes.
@@ -3592,11 +3597,11 @@ class GoogleCloudDialogflowCxV3beta1IntentParameter(_messages.Message):
     id: Required. The unique identifier of the parameter. This field is used
       by training phrases to annotate their parts.
     isList: Indicates whether the parameter represents a list of values.
-    redact: Indicates whether the parameter content should be redacted in text
-      and audio. If the flag is set to true, the parameter content will be
-      replaced by parameter name in both request and response. Note: the
-      parameter content is subject to redaction if either parameter level
-      redaction or entity type level redaction is enabled.
+    redact: Indicates whether the parameter content should be redacted in log.
+      If redaction is enabled, the parameter content will be replaced by
+      parameter name during logging. Note: the parameter content is subject to
+      redaction if either parameter level redaction or entity type level
+      redaction is enabled.
   """
 
   entityType = _messages.StringField(1)
@@ -4206,8 +4211,8 @@ class GoogleCloudDialogflowCxV3beta1TestCaseResult(_messages.Message):
   Fields:
     conversationTurns: The conversation turns uttered during the test case
       replay in chronological order.
-    environment: Optional. Environment where the test was run. If not set, it
-      indicates the draft environment.
+    environment: Environment where the test was run. If not set, it indicates
+      the draft environment.
     name: The resource name for the test case result. Format:
       `projects//locations//agents//testCases/ /results/`.
     testResult: Whether the test case passed in the agent environment.
@@ -4430,6 +4435,9 @@ class GoogleCloudDialogflowCxV3beta1WebhookRequestIntentInfo(_messages.Message):
       defined in the matched intent that are identified will be surfaced here.
 
   Fields:
+    confidence: The confidence of the matched intent. Values range from 0.0
+      (completely uncertain) to 1.0 (completely certain).
+    displayName: Always present. The display name of the last matched intent.
     lastMatchedIntent: Always present. The unique identifier of the last
       matched intent. Format: `projects//locations//agents//intents/`.
     parameters: Parameters identified as a result of intent matching. This is
@@ -4466,8 +4474,10 @@ class GoogleCloudDialogflowCxV3beta1WebhookRequestIntentInfo(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  lastMatchedIntent = _messages.StringField(1)
-  parameters = _messages.MessageField('ParametersValue', 2)
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  displayName = _messages.StringField(2)
+  lastMatchedIntent = _messages.StringField(3)
+  parameters = _messages.MessageField('ParametersValue', 4)
 
 
 class GoogleCloudDialogflowCxV3beta1WebhookRequestIntentInfoIntentParameterValue(_messages.Message):

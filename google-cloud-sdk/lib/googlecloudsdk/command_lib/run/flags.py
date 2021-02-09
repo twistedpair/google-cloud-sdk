@@ -432,6 +432,17 @@ def AddUpdateTrafficFlags(parser, release_track):
       '\'--to-revisions=LATEST=100\'.')
 
 
+def AddSetCloudSQLFlag(parser):
+  """Add only the --set-cloudsql-instances flag."""
+  parser.add_argument(
+      '--set-cloudsql-instances',
+      type=arg_parsers.ArgList(),
+      metavar='CLOUDSQL-INSTANCES',
+      help="""You can specify a name of a Cloud SQL instance if it's in the same
+      project and region as your Cloud Run resource; otherwise specify
+      <project>:<region>:<instance> for the instance.""")
+
+
 def AddCloudSQLFlags(parser):
   """Add flags for setting CloudSQL stuff."""
   repeated.AddPrimitiveArgs(
@@ -631,11 +642,15 @@ def AddSandboxArg(parser):
 
 def AddVpcConnectorArg(parser):
   parser.add_argument(
-      '--vpc-connector', help='Set a VPC connector for this Service.')
+      '--vpc-connector', help='Set a VPC connector for this resource.')
+
+
+def AddVpcConnectorArgs(parser):
+  AddVpcConnectorArg(parser)
   parser.add_argument(
       '--clear-vpc-connector',
       action='store_true',
-      help='Remove the VPC connector for this Service.')
+      help='Remove the VPC connector for this resource.')
 
 
 def AddEgressSettingsFlag(parser):
@@ -643,7 +658,7 @@ def AddEgressSettingsFlag(parser):
   parser.add_argument(
       '--vpc-egress',
       help='The outbound traffic to send through the VPC connector'
-      ' for this Service. This Service must have a VPC connector to set'
+      ' for this resource. This resource must have a VPC connector to set'
       ' VPC egress.',
       choices={
           container_resource.EGRESS_SETTINGS_PRIVATE_RANGES_ONLY:
@@ -699,8 +714,7 @@ def AddConfigMapsFlags(parser):
 def AddLabelsFlag(parser, extra_message=''):
   """Add only the --labels flag."""
   labels_util.GetCreateLabelsFlag(
-      extra_message=extra_message,
-      validate_keys=False,
+      extra_message=extra_message, validate_keys=False,
       validate_values=False).AddToParser(parser)
 
 
@@ -937,15 +951,16 @@ def _GetEnvChanges(args):
   """Return config_changes.EnvVarLiteralChanges for given args."""
   kwargs = {}
 
-  update = args.update_env_vars or args.set_env_vars
+  update = args.set_env_vars or (args.update_env_vars
+                                 if 'update_env_vars' in args else {})
   if update:
     kwargs['env_vars_to_update'] = update
 
-  remove = args.remove_env_vars
+  remove = args.remove_env_vars if 'remove_env_vars' in args else []
   if remove:
     kwargs['env_vars_to_remove'] = remove
 
-  if args.set_env_vars or args.clear_env_vars:
+  if args.set_env_vars or ('clear_env_vars' in args and args.clear_env_vars):
     kwargs['clear_others'] = True
 
   return config_changes.EnvVarLiteralChanges(**kwargs)
@@ -1044,13 +1059,14 @@ def _GetConfigMapsChanges(args):
     env_kwargs['clear_others'] = True
     volume_kwargs['clear_others'] = True
 
-  secret_changes = []
+  config_maps_changes = []
   if env_kwargs:
-    secret_changes.append(config_changes.ConfigMapEnvVarChanges(**env_kwargs))
+    config_maps_changes.append(
+        config_changes.ConfigMapEnvVarChanges(**env_kwargs))
   if volume_kwargs:
-    secret_changes.append(
+    config_maps_changes.append(
         config_changes.ConfigMapVolumeChanges(**volume_kwargs))
-  return secret_changes
+  return config_maps_changes
 
 
 def PromptToEnableApi(service_name):
@@ -1200,8 +1216,8 @@ def GetConfigurationChanges(args):
         if FlagIsExplicitlySet(args, 'labels') else args.update_labels)
     diff = labels_util.Diff(
         additions=additions,
-        subtractions=args.remove_labels,
-        clear=args.clear_labels)
+        subtractions=args.remove_labels if 'remove_labels' in args else [],
+        clear=args.clear_labels if 'clear_labels' in args else False)
     if diff.MayHaveUpdates():
       changes.append(config_changes.LabelChanges(diff))
   if 'revision_suffix' in args and args.revision_suffix:
@@ -1242,8 +1258,7 @@ def GetConfigurationChanges(args):
   if FlagIsExplicitlySet(args, 'completions'):
     changes.append(config_changes.SpecChange('completions', args.completions))
   if FlagIsExplicitlySet(args, 'max_attempts'):
-    changes.append(
-        config_changes.JobMaxAttemptsChange(args.max_attempts))
+    changes.append(config_changes.JobMaxAttemptsChange(args.max_attempts))
   return changes
 
 

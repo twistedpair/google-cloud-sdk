@@ -97,10 +97,10 @@ def ConstructPatch(env_ref=None,
                    update_web_server_access_control=None,
                    cloud_sql_machine_type=None,
                    web_server_machine_type=None,
-                   autoscaling_maximum_cpu=None,
-                   autoscaling_minimum_cpu=None,
-                   autoscaling_maximum_memory=None,
-                   autoscaling_minimum_memory=None,
+                   scheduler_cpu=None,
+                   worker_cpu=None,
+                   min_workers=None,
+                   max_workers=None,
                    maintenance_window_start=None,
                    maintenance_window_end=None,
                    maintenance_window_recurrence=None,
@@ -140,14 +140,14 @@ def ConstructPatch(env_ref=None,
         Airflow database.
     web_server_machine_type: str or None, machine type used by the Airflow web
         server
-    autoscaling_maximum_cpu: int or None, maximum number of CPU allowed
-        in the Environment. Cannot be specified unless autoscaling is enabled.
-    autoscaling_minimum_cpu: int or None, minimum number of CPU allowed
-        in the Environment. Cannot be specified unless autoscaling is enabled.
-    autoscaling_maximum_memory: int or None, maximum memory (in GB) allowed
-        in the Environment. Cannot be specified unless autoscaling is enabled.
-    autoscaling_minimum_memory: int or None, minimum memory (in GB) allowed
-        in the Environment. Cannot be specified unless autoscaling is enabled.
+    scheduler_cpu: float or None, CPU allocated to Airflow scheduler.
+        Can be specified only in Composer 2.0.0.
+    worker_cpu: float or None, CPU allocated to each Airflow worker.
+        Can be specified only in Composer 2.0.0.
+    min_workers: int or None, minimum number of workers
+        in the Environment. Can be specified only in Composer 2.0.0.
+    max_workers: int or None, maximumn number of workers
+        in the Environment. Can be specified only in Composer 2.0.0.
     maintenance_window_start: Datetime or None, a starting date of the
         maintenance window.
     maintenance_window_end: Datetime or None, an ending date of the maintenance
@@ -205,13 +205,13 @@ def ConstructPatch(env_ref=None,
   if web_server_machine_type:
     return _ConstructWebServerMachineTypePatch(
         web_server_machine_type, release_track=release_track)
-  if autoscaling_maximum_cpu or autoscaling_minimum_cpu or\
-    autoscaling_maximum_memory or autoscaling_minimum_memory:
+  if scheduler_cpu or worker_cpu or\
+      min_workers or max_workers:
     return _ConstructAutoscalingPatch(
-        autoscaling_maximum_cpu=autoscaling_maximum_cpu,
-        autoscaling_minimum_cpu=autoscaling_minimum_cpu,
-        autoscaling_maximum_memory=autoscaling_maximum_memory,
-        autoscaling_minimum_memory=autoscaling_minimum_memory,
+        scheduler_cpu=scheduler_cpu,
+        worker_cpu=worker_cpu,
+        worker_min_count=min_workers,
+        worker_max_count=max_workers,
         release_track=release_track)
   if maintenance_window_start and maintenance_window_end and maintenance_window_recurrence:
     return _ConstructMaintenanceWindowPatch(
@@ -473,20 +473,19 @@ def _ConstructWebServerMachineTypePatch(web_server_machine_type, release_track):
       config=config)
 
 
-def _ConstructAutoscalingPatch(autoscaling_maximum_cpu, autoscaling_minimum_cpu,
-                               autoscaling_maximum_memory,
-                               autoscaling_minimum_memory, release_track):
+def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, worker_min_count,
+                               worker_max_count, release_track):
   """Constructs an environment patch for Airflow web server machine type.
 
   Args:
-    autoscaling_maximum_cpu: int or None, maximum number of CPU allowed in the
-      Environment. Cannot be specified unless autoscaling is enabled.
-    autoscaling_minimum_cpu: int or None, minimum number of CPU allowed in the
-      Environment. Cannot be specified unless autoscaling is enabled.
-    autoscaling_maximum_memory: int or None, maximum memory (in GB) allowed in
-      the Environment. Cannot be specified unless autoscaling is enabled.
-    autoscaling_minimum_memory: int or None, minimum memory (in GB) allowed in
-      the Environment. Cannot be specified unless autoscaling is enabled.
+    scheduler_cpu: float or None, CPU allocated to Airflow scheduler.
+        Can be specified only in Composer 2.0.0.
+    worker_cpu: float or None, CPU allocated to each Airflow worker.
+        Can be specified only in Composer 2.0.0.
+    worker_min_count: int or None, minimum number of workers
+        in the Environment. Can be specified only in Composer 2.0.0.
+    worker_max_count: int or None, maximumn number of workers
+        in the Environment. Can be specified only in Composer 2.0.0.
     release_track: base.ReleaseTrack, the release track of command. It dictates
       which Composer client library is used.
 
@@ -495,12 +494,12 @@ def _ConstructAutoscalingPatch(autoscaling_maximum_cpu, autoscaling_minimum_cpu,
   """
   messages = api_util.GetMessagesModule(release_track=release_track)
   config = messages.EnvironmentConfig(
-      autoscalingConfig=messages.AutoscalingConfig(
-          maximumCpu=autoscaling_maximum_cpu,
-          maximumMemory=autoscaling_maximum_memory,
-          minimumCpu=autoscaling_minimum_cpu,
-          minimumMemory=autoscaling_minimum_memory))
-  return 'config.autoscaling_config', messages.Environment(config=config)
+      workloadsConfig=messages.WorkloadsConfig(
+          schedulerCpu=scheduler_cpu,
+          workerCpu=worker_cpu,
+          workerMinCount=worker_min_count,
+          workerMaxCount=worker_max_count))
+  return 'config.workloads_config', messages.Environment(config=config)
 
 
 def _ConstructMaintenanceWindowPatch(maintenance_window_start,

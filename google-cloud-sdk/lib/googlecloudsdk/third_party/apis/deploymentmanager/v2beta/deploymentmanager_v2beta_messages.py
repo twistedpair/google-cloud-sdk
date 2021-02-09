@@ -466,8 +466,7 @@ class DeploymentmanagerCompositeTypesListRequest(_messages.Message):
       of results.
     project: The project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -655,8 +654,7 @@ class DeploymentmanagerDeploymentsListRequest(_messages.Message):
       of results.
     project: The project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -882,8 +880,7 @@ class DeploymentmanagerManifestsListRequest(_messages.Message):
       of results.
     project: The project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   deployment = _messages.StringField(1, required=True)
@@ -946,8 +943,7 @@ class DeploymentmanagerOperationsListRequest(_messages.Message):
       of results.
     project: The project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -1012,8 +1008,7 @@ class DeploymentmanagerResourcesListRequest(_messages.Message):
       of results.
     project: The project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   deployment = _messages.StringField(1, required=True)
@@ -1114,8 +1109,7 @@ class DeploymentmanagerTypeProvidersListRequest(_messages.Message):
       of results.
     project: The project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -1165,8 +1159,7 @@ class DeploymentmanagerTypeProvidersListTypesRequest(_messages.Message):
       of results.
     project: The project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     typeProvider: The name of the type provider for this request.
   """
 
@@ -1248,8 +1241,7 @@ class DeploymentmanagerTypesListRequest(_messages.Message):
       of results.
     project: The project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)

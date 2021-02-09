@@ -76,12 +76,39 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         flat_path='v1/folders/{foldersId}/settings/{settingsId}/value',
         http_method='POST',
         method_id='resourcesettings.folders.settings.value.create',
+        ordered_params=['parent', 'settingsId'],
+        path_params=['parent', 'settingsId'],
+        query_params=[],
+        relative_path='v1/{+parent}/settings/{settingsId}/value',
+        request_field='googleCloudResourcesettingsV1SettingValue',
+        request_type_name='ResourcesettingsFoldersSettingsValueCreateRequest',
+        response_type_name='GoogleCloudResourcesettingsV1SettingValue',
+        supports_download=False,
+    )
+
+    def LookupEffectiveValue(self, request, global_params=None):
+      r"""Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist.
+
+      Args:
+        request: (ResourcesettingsFoldersSettingsValueLookupEffectiveValueRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudResourcesettingsV1SettingValue) The response message.
+      """
+      config = self.GetMethodConfig('LookupEffectiveValue')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LookupEffectiveValue.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/settings/{settingsId}/value:lookupEffectiveValue',
+        http_method='GET',
+        method_id='resourcesettings.folders.settings.value.lookupEffectiveValue',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
-        relative_path='v1/{+name}',
-        request_field='googleCloudResourcesettingsV1SettingValue',
-        request_type_name='ResourcesettingsFoldersSettingsValueCreateRequest',
+        relative_path='v1/{+name}:lookupEffectiveValue',
+        request_field='',
+        request_type_name='ResourcesettingsFoldersSettingsValueLookupEffectiveValueRequest',
         response_type_name='GoogleCloudResourcesettingsV1SettingValue',
         supports_download=False,
     )
@@ -177,33 +204,6 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def LookupEffectiveValue(self, request, global_params=None):
-      r"""Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist.
-
-      Args:
-        request: (ResourcesettingsFoldersSettingsLookupEffectiveValueRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudResourcesettingsV1SettingValue) The response message.
-      """
-      config = self.GetMethodConfig('LookupEffectiveValue')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    LookupEffectiveValue.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/folders/{foldersId}/settings/{settingsId}:lookupEffectiveValue',
-        http_method='GET',
-        method_id='resourcesettings.folders.settings.lookupEffectiveValue',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1/{+parent}:lookupEffectiveValue',
-        request_field='',
-        request_type_name='ResourcesettingsFoldersSettingsLookupEffectiveValueRequest',
-        response_type_name='GoogleCloudResourcesettingsV1SettingValue',
-        supports_download=False,
-    )
-
     def Search(self, request, global_params=None):
       r"""Searches for all setting values that exist on the resource `parent`. The setting values are not limited to those of a particular setting.
 
@@ -295,12 +295,39 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         flat_path='v1/organizations/{organizationsId}/settings/{settingsId}/value',
         http_method='POST',
         method_id='resourcesettings.organizations.settings.value.create',
+        ordered_params=['parent', 'settingsId'],
+        path_params=['parent', 'settingsId'],
+        query_params=[],
+        relative_path='v1/{+parent}/settings/{settingsId}/value',
+        request_field='googleCloudResourcesettingsV1SettingValue',
+        request_type_name='ResourcesettingsOrganizationsSettingsValueCreateRequest',
+        response_type_name='GoogleCloudResourcesettingsV1SettingValue',
+        supports_download=False,
+    )
+
+    def LookupEffectiveValue(self, request, global_params=None):
+      r"""Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist.
+
+      Args:
+        request: (ResourcesettingsOrganizationsSettingsValueLookupEffectiveValueRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudResourcesettingsV1SettingValue) The response message.
+      """
+      config = self.GetMethodConfig('LookupEffectiveValue')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LookupEffectiveValue.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/settings/{settingsId}/value:lookupEffectiveValue',
+        http_method='GET',
+        method_id='resourcesettings.organizations.settings.value.lookupEffectiveValue',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
-        relative_path='v1/{+name}',
-        request_field='googleCloudResourcesettingsV1SettingValue',
-        request_type_name='ResourcesettingsOrganizationsSettingsValueCreateRequest',
+        relative_path='v1/{+name}:lookupEffectiveValue',
+        request_field='',
+        request_type_name='ResourcesettingsOrganizationsSettingsValueLookupEffectiveValueRequest',
         response_type_name='GoogleCloudResourcesettingsV1SettingValue',
         supports_download=False,
     )
@@ -396,33 +423,6 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def LookupEffectiveValue(self, request, global_params=None):
-      r"""Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist.
-
-      Args:
-        request: (ResourcesettingsOrganizationsSettingsLookupEffectiveValueRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudResourcesettingsV1SettingValue) The response message.
-      """
-      config = self.GetMethodConfig('LookupEffectiveValue')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    LookupEffectiveValue.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/organizations/{organizationsId}/settings/{settingsId}:lookupEffectiveValue',
-        http_method='GET',
-        method_id='resourcesettings.organizations.settings.lookupEffectiveValue',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1/{+parent}:lookupEffectiveValue',
-        request_field='',
-        request_type_name='ResourcesettingsOrganizationsSettingsLookupEffectiveValueRequest',
-        response_type_name='GoogleCloudResourcesettingsV1SettingValue',
-        supports_download=False,
-    )
-
     def Search(self, request, global_params=None):
       r"""Searches for all setting values that exist on the resource `parent`. The setting values are not limited to those of a particular setting.
 
@@ -514,12 +514,39 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         flat_path='v1/projects/{projectsId}/settings/{settingsId}/value',
         http_method='POST',
         method_id='resourcesettings.projects.settings.value.create',
+        ordered_params=['parent', 'settingsId'],
+        path_params=['parent', 'settingsId'],
+        query_params=[],
+        relative_path='v1/{+parent}/settings/{settingsId}/value',
+        request_field='googleCloudResourcesettingsV1SettingValue',
+        request_type_name='ResourcesettingsProjectsSettingsValueCreateRequest',
+        response_type_name='GoogleCloudResourcesettingsV1SettingValue',
+        supports_download=False,
+    )
+
+    def LookupEffectiveValue(self, request, global_params=None):
+      r"""Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist.
+
+      Args:
+        request: (ResourcesettingsProjectsSettingsValueLookupEffectiveValueRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudResourcesettingsV1SettingValue) The response message.
+      """
+      config = self.GetMethodConfig('LookupEffectiveValue')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LookupEffectiveValue.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/settings/{settingsId}/value:lookupEffectiveValue',
+        http_method='GET',
+        method_id='resourcesettings.projects.settings.value.lookupEffectiveValue',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
-        relative_path='v1/{+name}',
-        request_field='googleCloudResourcesettingsV1SettingValue',
-        request_type_name='ResourcesettingsProjectsSettingsValueCreateRequest',
+        relative_path='v1/{+name}:lookupEffectiveValue',
+        request_field='',
+        request_type_name='ResourcesettingsProjectsSettingsValueLookupEffectiveValueRequest',
         response_type_name='GoogleCloudResourcesettingsV1SettingValue',
         supports_download=False,
     )
@@ -612,33 +639,6 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ResourcesettingsProjectsSettingsListRequest',
         response_type_name='GoogleCloudResourcesettingsV1ListSettingsResponse',
-        supports_download=False,
-    )
-
-    def LookupEffectiveValue(self, request, global_params=None):
-      r"""Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist.
-
-      Args:
-        request: (ResourcesettingsProjectsSettingsLookupEffectiveValueRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudResourcesettingsV1SettingValue) The response message.
-      """
-      config = self.GetMethodConfig('LookupEffectiveValue')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    LookupEffectiveValue.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/settings/{settingsId}:lookupEffectiveValue',
-        http_method='GET',
-        method_id='resourcesettings.projects.settings.lookupEffectiveValue',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1/{+parent}:lookupEffectiveValue',
-        request_field='',
-        request_type_name='ResourcesettingsProjectsSettingsLookupEffectiveValueRequest',
-        response_type_name='GoogleCloudResourcesettingsV1SettingValue',
         supports_download=False,
     )
 

@@ -154,33 +154,6 @@ class PolicysimulatorV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def List(self, request, global_params=None):
-      r"""List all Replays.
-
-      Args:
-        request: (PolicysimulatorFoldersLocationsReplaysListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudPolicysimulatorV1beta1ListReplaysResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/folders/{foldersId}/locations/{locationsId}/replays',
-        http_method='GET',
-        method_id='policysimulator.folders.locations.replays.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v1beta1/{+parent}/replays',
-        request_field='',
-        request_type_name='PolicysimulatorFoldersLocationsReplaysListRequest',
-        response_type_name='GoogleCloudPolicysimulatorV1beta1ListReplaysResponse',
-        supports_download=False,
-    )
-
   class FoldersLocationsService(base_api.BaseApiService):
     """Service class for the folders_locations resource."""
 
@@ -365,33 +338,6 @@ class PolicysimulatorV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def List(self, request, global_params=None):
-      r"""List all Replays.
-
-      Args:
-        request: (PolicysimulatorOrganizationsLocationsReplaysListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudPolicysimulatorV1beta1ListReplaysResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/replays',
-        http_method='GET',
-        method_id='policysimulator.organizations.locations.replays.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v1beta1/{+parent}/replays',
-        request_field='',
-        request_type_name='PolicysimulatorOrganizationsLocationsReplaysListRequest',
-        response_type_name='GoogleCloudPolicysimulatorV1beta1ListReplaysResponse',
-        supports_download=False,
-    )
-
   class OrganizationsLocationsService(base_api.BaseApiService):
     """Service class for the organizations_locations resource."""
 
@@ -510,33 +456,6 @@ class PolicysimulatorV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='PolicysimulatorProjectsLocationsReplaysGetRequest',
         response_type_name='GoogleCloudPolicysimulatorV1beta1Replay',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""List all Replays.
-
-      Args:
-        request: (PolicysimulatorProjectsLocationsReplaysListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudPolicysimulatorV1beta1ListReplaysResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/replays',
-        http_method='GET',
-        method_id='policysimulator.projects.locations.replays.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v1beta1/{+parent}/replays',
-        request_field='',
-        request_type_name='PolicysimulatorProjectsLocationsReplaysListRequest',
-        response_type_name='GoogleCloudPolicysimulatorV1beta1ListReplaysResponse',
         supports_download=False,
     )
 

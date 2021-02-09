@@ -166,7 +166,7 @@ class PropertyFallthrough(_FallthroughBase):
         False for everything except the "anchor" arguments in a case where a
         resource argument is plural (i.e. parses to a list).
     """
-    hint = 'set the property [{}]'.format(prop)
+    hint = 'set the property `{}`'.format(prop)
 
     super(PropertyFallthrough, self).__init__(hint, plural=plural)
     self.property = prop
@@ -200,7 +200,7 @@ class ArgFallthrough(_FallthroughBase):
         resource argument is plural (i.e. parses to a list).
     """
     super(ArgFallthrough, self).__init__(
-        'provide the argument [{}] on the command line'.format(arg_name),
+        'provide the argument `{}` on the command line'.format(arg_name),
         active=True, plural=plural)
     self.arg_name = arg_name
 

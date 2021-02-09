@@ -21,11 +21,13 @@ from __future__ import unicode_literals
 
 import collections
 import re
+import threading
 import time
 
 from apitools.base.py import exceptions as api_exceptions
 
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
+from googlecloudsdk.api_lib.logging import common
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -80,33 +82,194 @@ class RequestsLogTailer(object):
       raise api_exceptions.CommunicationError('Failed to connect: %s' % e)
 
 
-def GetLogTailerTransport():
+def GetGCSLogTailerTransport():
+  """Return a GCS LogTailer transport."""
   if base.UseRequests():
     return RequestsLogTailer()
   return Httplib2LogTailer()
 
 
-class LogTailer(object):
+def GetGCLLogTailerTransport():
+  """Return a GCL LogTailer transport."""
+  try:
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core import gapic_util
+    from googlecloudsdk.third_party.logging_v2.gapic.transports.logging_service_v2_grpc_transport import LoggingServiceV2GrpcTransport
+    # pylint: enable=g-import-not-at-top
+  # TODO(b/178405272): remove NameError exception handling
+  except (ImportError, NameError):
+    log.out.Print('To live stream log output for this build, please ensure the'
+                  ' grpc module is installed.  Run:\npip install grpcio\n')
+    return None
+
+  return LoggingServiceV2GrpcTransport(
+      credentials=gapic_util.StoredCredentials(),
+      address='logging.googleapis.com:443')
+
+
+class TailerBase(object):
+  """Base class for log tailer classes."""
+  LOG_OUTPUT_BEGIN = ' REMOTE BUILD OUTPUT '
+  OUTPUT_LINE_CHAR = '-'
+
+  def _ValidateScreenReader(self, text):
+    """Modify output for better screen reader experience."""
+    screen_reader = properties.VALUES.accessibility.screen_reader.GetBool()
+    if screen_reader:
+      return re.sub('---> ', '', text)
+    return text
+
+  def _PrintLogLine(self, text):
+    """Testing Hook: This method enables better verification of output."""
+    self.out.Print(text)
+
+  def _PrintFirstLine(self):
+    """Print a pretty starting line to identify start of build output logs."""
+    width, _ = console_attr_os.GetTermSize()
+    self._PrintLogLine(
+        self.LOG_OUTPUT_BEGIN.center(width, self.OUTPUT_LINE_CHAR))
+
+  def _PrintLastLine(self, msg=''):
+    """Print a pretty ending line to identify end of build output logs."""
+    width, _ = console_attr_os.GetTermSize()
+    # We print an extra blank visually separating the log from other output.
+    self._PrintLogLine(msg.center(width, self.OUTPUT_LINE_CHAR) + '\n')
+
+
+class GCLLogTailer(TailerBase):
+  """Helper class to tail logs from GCL, printing content as available."""
+
+  def __init__(self,
+               buildId,
+               projectId,
+               timestamp,
+               logUrl=None,
+               out=log.status):
+    self.transport = GetGCLLogTailerTransport()
+    self.build_id = buildId
+    self.project_id = projectId
+    self.timestamp = timestamp
+    self.out = out
+    self.buffer_window_seconds = 2
+    self.log_url = logUrl
+    self.tail_stub = None
+    self.stop = False
+
+  @classmethod
+  def FromBuild(cls, build, out=log.out):
+    """Build a GCLLogTailer from a build resource.
+
+    Args:
+      build: Build resource, The build whose logs shall be streamed.
+      out: The output stream to write the logs to.
+
+    Returns:
+      GCLLogTailer, the tailer of this build's logs.
+    """
+    return cls(
+        buildId=build.id,
+        projectId=build.projectId,
+        timestamp=build.createTime,
+        logUrl=build.logUrl,
+        out=out)
+
+  def Tail(self):
+    """Tail the GCL logs and print any new bytes to the console."""
+    parent = 'projects/{project_id}'.format(project_id=self.project_id)
+
+    log_filter = ('logName="projects/{project_id}/logs/cloudbuild" AND '
+                  'resource.type="build" AND '
+                  'resource.labels.build_id="{build_id}"').format(
+                      project_id=self.project_id, build_id=self.build_id)
+
+    if self.transport:
+      try:
+        # pylint: disable=g-import-not-at-top
+        from googlecloudsdk.api_lib.logging import tailing
+        from google.api_core import bidi
+        # pylint: enable=g-import-not-at-top
+      # TODO(b/178405272): remove NameError exception handling
+      except (ImportError, NameError):
+        self._PrintLogLine(
+            'To live stream log output for this build, please ensure the'
+            ' grpc module is installed.  Run:\npip install grpcio\n')
+        return
+
+      if not self.stop:
+        self.tail_stub = bidi.BidiRpc(self.transport.tail_log_entries)
+        output_logs = tailing.TailLogs(
+            self.tail_stub, [parent],
+            log_filter,
+            buffer_window_seconds=self.buffer_window_seconds)
+
+        self._PrintFirstLine()
+
+        for output in output_logs:
+          text = self._ValidateScreenReader(output.text_payload)
+          self._PrintLogLine(text)
+
+        self._PrintLastLine(' BUILD FINISHED; TRUNCATING OUTPUT LOGS ')
+        if self.log_url:
+          self._PrintLogLine(
+              'Logs are available at [{log_url}].'.format(log_url=self.log_url))
+
+    return
+
+  def Stop(self):
+    """Stop log tailing."""
+    self.stop = True
+    # Sleep to allow the Tailing API to send the last logs it buffered up
+    time.sleep(self.buffer_window_seconds)
+    if self.tail_stub:
+      self.tail_stub.close()
+
+  def Print(self):
+    """Print GCL logs to the console."""
+    parent = 'projects/{project_id}'.format(project_id=self.project_id)
+
+    log_filter = ('logName="projects/{project_id}/logs/cloudbuild" AND '
+                  'resource.type="build" AND '
+                  # timestamp needed for faster querying in GCL
+                  'timestamp>="{timestamp}" AND '
+                  'resource.labels.build_id="{build_id}"').format(
+                      project_id=self.project_id,
+                      timestamp=self.timestamp,
+                      build_id=self.build_id)
+
+    output_logs = common.FetchLogs(
+        log_filter=log_filter,
+        order_by='asc',
+        parent=parent)
+
+    self._PrintFirstLine()
+
+    for output in output_logs:
+      text = self._ValidateScreenReader(output.textPayload)
+      self._PrintLogLine(text)
+
+    self._PrintLastLine()
+
+
+class GCSLogTailer(TailerBase):
   """Helper class to tail a GCS logfile, printing content as available."""
 
-  LOG_OUTPUT_BEGIN = ' REMOTE BUILD OUTPUT '
   LOG_OUTPUT_INCOMPLETE = ' (possibly incomplete) '
-  OUTPUT_LINE_CHAR = '-'
   GCS_URL_PATTERN = (
       'https://www.googleapis.com/storage/v1/b/{bucket}/o/{obj}?alt=media')
 
   def __init__(self, bucket, obj, out=log.status, url_pattern=None):
-    self.transport = GetLogTailerTransport()
+    self.transport = GetGCSLogTailerTransport()
     url_pattern = url_pattern or self.GCS_URL_PATTERN
     self.url = url_pattern.format(bucket=bucket, obj=obj)
     log.debug('GCS logfile url is ' + self.url)
     # position in the file being read
     self.cursor = 0
     self.out = out
+    self.stop = False
 
   @classmethod
   def FromBuild(cls, build, out=log.out):
-    """Build a LogTailer from a build resource.
+    """Build a GCSLogTailer from a build resource.
 
     Args:
       build: Build resource, The build whose logs shall be streamed.
@@ -116,7 +279,7 @@ class LogTailer(object):
       NoLogsBucketException: If the build does not specify a logsBucket.
 
     Returns:
-      LogTailer, the tailer of this build's logs.
+      GCSLogTailer, the tailer of this build's logs.
     """
     if not build.logsBucket:
       raise NoLogsBucketException()
@@ -216,34 +379,34 @@ class LogTailer(object):
     headers['status'] = res.status
     raise api_exceptions.HttpError(headers, res.body, self.url)
 
-  def _ValidateScreenReader(self, text):
-    """Modify output for better screen reader experience."""
-    screen_reader = properties.VALUES.accessibility.screen_reader.GetBool()
-    if screen_reader:
-      return re.sub('---> ', '', text)
-    return text
+  def Tail(self):
+    """Tail the GCS object and print any new bytes to the console."""
+    while not self.stop:
+      self.Poll()
+      time.sleep(1)
 
-  def _PrintLogLine(self, text):
-    """Testing Hook: This method enables better verification of output."""
-    self.out.Print(text)
+    # Poll the logs one final time to ensure we have everything. We know this
+    # final poll will get the full log contents because GCS is strongly
+    # consistent and Cloud Build waits for logs to finish pushing before
+    # marking the build complete.
+    self.Poll(is_last=True)
 
-  def _PrintFirstLine(self):
-    width, _ = console_attr_os.GetTermSize()
-    self._PrintLogLine(
-        self.LOG_OUTPUT_BEGIN.center(width, self.OUTPUT_LINE_CHAR))
+  def Stop(self):
+    """Stop log tailing."""
+    self.stop = True
 
-  def _PrintLastLine(self, msg=''):
-    width, _ = console_attr_os.GetTermSize()
-    # We print an extra blank visually separating the log from other output.
-    self._PrintLogLine(msg.center(width, self.OUTPUT_LINE_CHAR) + '\n')
+  def Print(self):
+    """Print GCS logs to the console."""
+    self.Poll(is_last=True)
 
 
 class CloudBuildClient(object):
   """Client for interacting with the Cloud Build API (and Cloud Build logs)."""
 
-  def __init__(self, client=None, messages=None):
+  def __init__(self, client=None, messages=None, support_gcl=False):
     self.client = client or cloudbuild_util.GetClientInstance()
     self.messages = messages or cloudbuild_util.GetMessagesModule()
+    self.support_gcl = support_gcl
 
   def GetBuild(self, build_ref):
     """Get a Build message.
@@ -268,6 +431,28 @@ class CloudBuildClient(object):
         self.messages.CloudbuildProjectsLocationsBuildsGetRequest(
             name=build_ref.RelativeName()))
 
+  def ShouldStopTailer(self, build, build_ref, log_tailer, working_statuses):
+    """Checks whether a log tailer should be stopped.
+
+    Args:
+      build: Build object, containing build status
+      build_ref: Build reference, The build whose logs shall be streamed.
+      log_tailer: Specific log tailer object
+      working_statuses: Valid working statuses that define we should continue
+        tailing
+
+    Returns:
+      Build message, the completed or terminated build.
+    """
+    while build.status in working_statuses:
+      build = self.GetBuild(build_ref)
+      time.sleep(1)
+
+    if log_tailer:
+      log_tailer.Stop()
+
+    return build
+
   def Stream(self, build_ref, out=log.out):
     """Streams the logs for a build if available.
 
@@ -283,8 +468,7 @@ class CloudBuildClient(object):
       but does not.
 
     Returns:
-      Build message, The completed or terminated build as read for the final
-      poll.
+      Build message, the completed or terminated build.
     """
     build = self.GetBuild(build_ref)
     if not build.options or build.options.logging not in [
@@ -292,7 +476,14 @@ class CloudBuildClient(object):
         self.messages.BuildOptions.LoggingValueValuesEnum.STACKDRIVER_ONLY,
         self.messages.BuildOptions.LoggingValueValuesEnum.CLOUD_LOGGING_ONLY,
     ]:
-      log_tailer = LogTailer.FromBuild(build, out=out)
+      log_tailer = GCSLogTailer.FromBuild(build, out=out)
+    elif build.options.logging in [
+        self.messages.BuildOptions.LoggingValueValuesEnum.STACKDRIVER_ONLY,
+        self.messages.BuildOptions.LoggingValueValuesEnum.CLOUD_LOGGING_ONLY,
+    ] and self.support_gcl:
+      log.info('Streaming logs from GCL: requested logging mode is {0}.'.format(
+          build.options.logging))
+      log_tailer = GCLLogTailer.FromBuild(build, out=out)
     else:
       log.info('Not streaming logs: requested logging mode is {0}.'.format(
           build.options.logging))
@@ -304,18 +495,14 @@ class CloudBuildClient(object):
         statuses.WORKING,
     ]
 
-    while build.status in working_statuses:
-      if log_tailer:
-        log_tailer.Poll()
-      time.sleep(1)
-      build = self.GetBuild(build_ref)
-
-    # Poll the logs one final time to ensure we have everything. We know this
-    # final poll will get the full log contents because GCS is strongly
-    # consistent and Cloud Build waits for logs to finish pushing before
-    # marking the build complete.
+    t = None
     if log_tailer:
-      log_tailer.Poll(is_last=True)
+      t = threading.Thread(target=log_tailer.Tail)
+      t.start()
+    build = self.ShouldStopTailer(build, build_ref, log_tailer,
+                                  working_statuses)
+    if t:
+      t.join()
 
     return build
 
@@ -329,14 +516,24 @@ class CloudBuildClient(object):
       NoLogsBucketException: If the build does not specify a logsBucket.
     """
     build = self.GetBuild(build_ref)
-    if build.options and build.options.logging in [
+
+    if not build.options or build.options.logging not in [
         self.messages.BuildOptions.LoggingValueValuesEnum.NONE,
         self.messages.BuildOptions.LoggingValueValuesEnum.STACKDRIVER_ONLY,
         self.messages.BuildOptions.LoggingValueValuesEnum.CLOUD_LOGGING_ONLY,
     ]:
-      log.info('GCS logs not available: build logging mode is {0}.'.format(
+      log_tailer = GCSLogTailer.FromBuild(build)
+    elif build.options.logging in [
+        self.messages.BuildOptions.LoggingValueValuesEnum.STACKDRIVER_ONLY,
+        self.messages.BuildOptions.LoggingValueValuesEnum.CLOUD_LOGGING_ONLY,
+    ]:
+      log.info('Printing logs from GCL: requested logging mode is {0}.'.format(
           build.options.logging))
-      return
+      log_tailer = GCLLogTailer.FromBuild(build)
+    else:
+      log.info('Logs not available: build logging mode is {0}.'.format(
+          build.options.logging))
+      log_tailer = None
 
-    log_tailer = LogTailer.FromBuild(build)
-    log_tailer.Poll(is_last=True)
+    if log_tailer:
+      log_tailer.Print()

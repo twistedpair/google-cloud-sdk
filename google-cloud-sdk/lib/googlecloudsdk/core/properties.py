@@ -287,6 +287,8 @@ class _Sections(object):
       SDK.
     datafusion: Section, The section containing datafusion properties for the
       Cloud SDK.
+    declarative: Section, The section containing properties for declarative
+      workflows in the Cloud SDK.
     default_section: Section, The main section of the properties file (core).
     deployment_manager: Section, The section containing deployment_manager
       properties for the Cloud SDK.
@@ -379,6 +381,7 @@ class _Sections(object):
     self.dataproc = _SectionDataproc()
     self.dataflow = _SectionDataflow()
     self.datafusion = _SectionDatafusion()
+    self.declarative = _SectionDeclarative()
     self.deployment_manager = _SectionDeploymentManager()
     self.devshell = _SectionDevshell()
     self.diagnostics = _SectionDiagnostics()
@@ -1493,9 +1496,9 @@ class _SectionDeclarative(_Section):
         default='kcc')
     self.format = self._Add(
         'format',
-        choices=['kcc', 'hcl'],
+        choices=['krm', 'terraform'],
         help_text='Declarative format to use for declarative commands.',
-        default='kcc')
+        default='krm')
 
 
 class _SectionScc(_Section):

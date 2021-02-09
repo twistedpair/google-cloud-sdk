@@ -19,13 +19,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+import contextlib
+from distutils import dir_util
 import os
 import re
 import shutil
+import time
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import text
 import six
@@ -71,6 +76,16 @@ def GetDirFilesRecursive(directory):
     for name in files:
       dirfiles.add(os.path.normpath(os.path.join(dirpath, name)))
   return dirfiles
+
+
+@contextlib.contextmanager
+def TimeIt(message):
+  """Context manager to track progress and time blocks of code."""
+  with progress_tracker.ProgressTracker(message, autotick=True):
+    start = time.time()
+    yield
+    elapsed_time = time.time() - start
+    log.info('{} took {}'.format(message, elapsed_time))
 
 
 class DiffAccumulator(object):
@@ -291,13 +306,22 @@ class HelpUpdater(object):
     """Update() helper method. Returns the number of changed help doc files."""
     with file_utils.TemporaryDirectory() as temp_dir:
       pb = console_io.ProgressBar(label='Generating Help Document Files')
-      walker = self._generator(
-          self._cli, temp_dir, pb.SetProgress, restrict=restrict)
+      with TimeIt('Creating walker'):
+        walker = self._generator(
+            self._cli, temp_dir, pb.SetProgress, restrict=restrict)
+      start = time.time()
       pb.Start()
       walker.Walk(hidden=True)
       pb.Finish()
-      diff = HelpAccumulator(restrict=restrict)
-      DirDiff(self._directory, temp_dir, diff)
+      elapsed_time = time.time() - start
+      log.info('Generating Help Document Files took {}'.format(elapsed_time))
+
+      with file_utils.TemporaryDirectory() as old_files_dir:
+        with TimeIt('Copying destination files to temp dir'):
+          dir_util.copy_tree(self._directory, old_files_dir)
+        diff = HelpAccumulator(restrict=restrict)
+        with TimeIt('Diffing'):
+          DirDiff(old_files_dir, temp_dir, diff)
       if diff.invalid_file_count:
         # Bail out early on invalid content errors. These must be corrected
         # before proceeding.
@@ -306,16 +330,15 @@ class HelpUpdater(object):
                 diff.invalid_file_count,
                 text.Pluralize(diff.invalid_file_count, 'file')))
 
-      ops = {}
-      for op in ['add', 'delete', 'edit']:
-        ops[op] = []
+      ops = collections.defaultdict(list)
 
       changes = 0
-      for op, path in sorted(diff.GetChanges()):
-        changes += 1
-        if not self._test or changes < TEST_CHANGES_DISPLAY_MAX:
-          log.status.Print('{0} {1}'.format(op, path))
-        ops[op].append(path)
+      with TimeIt('Getting diffs'):
+        for op, path in sorted(diff.GetChanges()):
+          changes += 1
+          if not self._test or changes < TEST_CHANGES_DISPLAY_MAX:
+            log.status.Print('{0} {1}'.format(op, path))
+          ops[op].append(path)
 
       if self._test:
         if changes:
@@ -325,31 +348,22 @@ class HelpUpdater(object):
               changes, text.Pluralize(changes, 'file')))
         return changes
 
-      op = 'add'
-      if ops[op]:
-        for path in ops[op]:
-          dest_path = os.path.join(self._directory, path)
-          subdir = os.path.dirname(dest_path)
-          if subdir:
-            file_utils.MakeDir(subdir)
-          temp_path = os.path.join(temp_dir, path)
-          shutil.copyfile(temp_path, dest_path)
-
-      op = 'edit'
-      if ops[op]:
-        for path in ops[op]:
-          dest_path = os.path.join(self._directory, path)
-          temp_path = os.path.join(temp_dir, path)
-          shutil.copyfile(temp_path, dest_path)
-
-      op = 'delete'
-      if ops[op]:
-        for path in ops[op]:
-          dest_path = os.path.join(self._directory, path)
-          try:
-            os.remove(dest_path)
-          except OSError:
-            pass
+      with TimeIt('Updating destination files'):
+        for op in ('add', 'edit', 'delete'):
+          for path in ops[op]:
+            dest_path = os.path.join(self._directory, path)
+            if op in ('add', 'edit'):
+              if op == 'add':
+                subdir = os.path.dirname(dest_path)
+                if subdir:
+                  file_utils.MakeDir(subdir)
+              temp_path = os.path.join(temp_dir, path)
+              shutil.copyfile(temp_path, dest_path)
+            elif op == 'delete':
+              try:
+                os.remove(dest_path)
+              except OSError:
+                pass
 
       return changes
 

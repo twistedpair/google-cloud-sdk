@@ -4411,6 +4411,41 @@ class UpdateNodePoolRequest(_messages.Message):
   zone = _messages.StringField(18)
 
 
+class UpgradeAvailableEvent(_messages.Message):
+  r"""UpgradeAvailableEvent is a notification sent to customers when a new
+  available version is released.
+
+  Enums:
+    ResourceTypeValueValuesEnum: The resource type of the release version.
+
+  Fields:
+    releaseChannel: The release channel of the version. If empty, it means a
+      non-channel release.
+    resource: Optional. Optional relative path to the resource. For example,
+      the relative path of the node pool.
+    resourceType: The resource type of the release version.
+    version: The release version available for upgrade.
+  """
+
+  class ResourceTypeValueValuesEnum(_messages.Enum):
+    r"""The resource type of the release version.
+
+    Values:
+      UPGRADE_RESOURCE_TYPE_UNSPECIFIED: Default value. This shouldn't be
+        used.
+      MASTER: Master / control plane
+      NODE_POOL: Node pool
+    """
+    UPGRADE_RESOURCE_TYPE_UNSPECIFIED = 0
+    MASTER = 1
+    NODE_POOL = 2
+
+  releaseChannel = _messages.MessageField('ReleaseChannel', 1)
+  resource = _messages.StringField(2)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 3)
+  version = _messages.StringField(4)
+
+
 class UpgradeEvent(_messages.Message):
   r"""UpgradeEvent is a notification sent to customers by the cluster server
   when a resource is upgrading.

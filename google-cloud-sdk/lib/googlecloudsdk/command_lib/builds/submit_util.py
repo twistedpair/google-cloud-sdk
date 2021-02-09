@@ -453,7 +453,7 @@ def DetermineBuildRegion(build_config, desired_region=None):
 
 
 def Build(messages, async_, build_config, hide_logs=False,
-          build_region=cloudbuild_util.DEFAULT_REGION):
+          build_region=cloudbuild_util.DEFAULT_REGION, support_gcl=False):
   """Starts the build."""
   log.debug('submitting build: ' + repr(build_config))
   client = cloudbuild_util.GetClientInstance()
@@ -493,12 +493,22 @@ def Build(messages, async_, build_config, hide_logs=False,
   if async_:
     return build, op
 
+  if not support_gcl and build.options and build.options.logging in [
+      messages.BuildOptions.LoggingValueValuesEnum.STACKDRIVER_ONLY,
+      messages.BuildOptions.LoggingValueValuesEnum.CLOUD_LOGGING_ONLY,
+  ]:
+    log.status.Print('\nOpt in: to tail live logs from Cloud Logging use the'
+                     ' alpha or beta versions\n$ gcloud alpha builds submit'
+                     ' \n$ gcloud beta builds submit\n')
+
   mash_handler = execution.MashHandler(
       execution.GetCancelBuildHandler(client, messages, build_ref))
 
-  # Otherwise, logs are streamed from GCS.
+  # Otherwise, logs are streamed from the chosen logging service
+  # (defaulted to GCS).
   with execution_utils.CtrlCSection(mash_handler):
-    build = cb_logs.CloudBuildClient(client, messages).Stream(build_ref)
+    build = cb_logs.CloudBuildClient(client, messages,
+                                     support_gcl).Stream(build_ref)
 
   if build.status == messages.Build.StatusValueValuesEnum.TIMEOUT:
     log.status.Print(

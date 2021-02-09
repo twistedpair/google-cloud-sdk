@@ -58,7 +58,7 @@ properties:
     description: |-
       Specifies the default TTL for cached content served by this origin for
       responses that do not have an existing valid TTL (max-age or s-max-age).
-      Defaults to 3600s (1 hour). - The TTL must be >= 0 and <= 2592000 (1
+      Defaults to 3600s (1 hour). - The TTL must be >= 0 and <= 2592000s (1
       month) - Setting a TTL of "0" means "always revalidate" (equivalent to
       must-revalidate) - The value of defaultTTL cannot be set to a value
       greater than that of maxTTL. - Fractions of a second are not allowed. -
@@ -75,7 +75,7 @@ properties:
       max-age or s-maxage higher than this, or an Expires header more than
       maxTtl seconds in the future will be capped at the value of maxTTL, as if
       it were the value of an s-maxage Cache-Control directive. - The TTL must
-      be >= 0 and <= 2592000 (1 month) - Setting a TTL of "0" means "always
+      be >= 0 and <= 2592000s (1 month) - Setting a TTL of "0" means "always
       revalidate" - The value of maxTtl must be equal to or greater than
       defaultTtl. - Fractions of a second are not allowed. When the cache mode
       is set to "USE_ORIGIN_HEADERS", "FORCE_CACHE_ALL", or "BYPASS_CACHE", you

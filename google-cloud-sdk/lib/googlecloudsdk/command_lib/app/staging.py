@@ -236,7 +236,7 @@ class NoopCommand(_Command):
 
 
 class CreateJava11ProjectCommand(_Command):
-  """A command that creates a java11 runtime app.yaml from a build.gradle file."""
+  """A command that creates a java11 runtime app.yaml."""
 
   def EnsureInstalled(self):
     pass

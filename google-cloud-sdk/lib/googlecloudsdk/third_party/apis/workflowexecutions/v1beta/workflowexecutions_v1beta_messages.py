@@ -98,6 +98,25 @@ class ListExecutionsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class Position(_messages.Message):
+  r"""Position contains source position information about the stack trace
+  element such as line number, column number and length of the code block in
+  bytes.
+
+  Fields:
+    column: The source code column position (of the line) the current
+      instruction was generated from.
+    length: The length in bytes of text in this character group, e.g. digits
+      of a number, string length, or AST (abstract syntax tree) node.
+    line: The source code line number the current instruction was generated
+      from.
+  """
+
+  column = _messages.IntegerField(1)
+  length = _messages.IntegerField(2)
+  line = _messages.IntegerField(3)
+
+
 class StackTrace(_messages.Message):
   r"""A collection of stack elements (frames) where an error occurred.
 
@@ -109,21 +128,19 @@ class StackTrace(_messages.Message):
 
 
 class StackTraceElement(_messages.Message):
-  r"""A single stack element (frame) where an error occurred.
+  r"""A single stack element (frame) where an error occurred. This field
+  currently only exists in v1Beta. We will need to roll this change out to V1
+  after the feature is thoroughly tested. TODO(b/178540475)
 
   Fields:
-    column: The source code column position (of the line) the current
-      instruction was generated from.
-    line: The source code line number the current instruction was generated
-      from.
+    position: The source position information of the stacktrace element.
     routine: The routine where the error occurred.
     step: The step the error occurred at.
   """
 
-  column = _messages.IntegerField(1)
-  line = _messages.IntegerField(2)
-  routine = _messages.StringField(3)
-  step = _messages.StringField(4)
+  position = _messages.MessageField('Position', 1)
+  routine = _messages.StringField(2)
+  step = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):

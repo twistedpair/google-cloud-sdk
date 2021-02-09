@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager V2Beta",
  "version": "v2beta",
- "revision": "20210122",
+ "revision": "20210129",
  "title": "Google Cloud Deployment Manager API V2Beta Methods",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1775,7 +1775,7 @@
       },
       "returnPartialSuccess": {
        "type": "boolean",
-       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false.",
        "location": "query"
       }
      },
@@ -2111,7 +2111,7 @@
       },
       "returnPartialSuccess": {
        "type": "boolean",
-       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false.",
        "location": "query"
       }
      },
@@ -2472,7 +2472,7 @@
       },
       "returnPartialSuccess": {
        "type": "boolean",
-       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false.",
        "location": "query"
       }
      },
@@ -2566,7 +2566,7 @@
       },
       "returnPartialSuccess": {
        "type": "boolean",
-       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false.",
        "location": "query"
       }
      },
@@ -2674,7 +2674,7 @@
       },
       "returnPartialSuccess": {
        "type": "boolean",
-       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false.",
        "location": "query"
       }
      },
@@ -2872,7 +2872,7 @@
       },
       "returnPartialSuccess": {
        "type": "boolean",
-       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false.",
        "location": "query"
       }
      },
@@ -2927,7 +2927,7 @@
       },
       "returnPartialSuccess": {
        "type": "boolean",
-       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false.",
        "location": "query"
       },
       "typeProvider": {
@@ -3066,7 +3066,7 @@
       },
       "returnPartialSuccess": {
        "type": "boolean",
-       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false.",
        "location": "query"
       }
      },

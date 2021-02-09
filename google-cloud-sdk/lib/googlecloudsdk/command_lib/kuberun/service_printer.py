@@ -44,19 +44,19 @@ class ServicePrinter(cp.CustomPrinterBase):
     """Adds printers for the revision."""
     return cp.Lines([
         self._GetRevisionHeader(record),
-        k8s_object_printer.GetLabels(record.template.labels),
+        k8s_object_printer.FormatLabels(record.template.labels),
         revision_printer.RevisionPrinter().TransformSpec(record.template),
     ])
 
   def Transform(self, record):
     """Transform a service into the output structure of marker classes."""
     fmt = cp.Lines([
-        k8s_object_printer.GetHeader(record),
-        k8s_object_printer.GetLabels(record.labels), ' ',
+        k8s_object_printer.FormatHeader(record),
+        k8s_object_printer.FormatLabels(record.labels), ' ',
         traffic_printer.TransformRouteFields(record),
         ' ',
-        cp.Labeled([(k8s_object_printer.GetLastUpdated(record),
+        cp.Labeled([(k8s_object_printer.FormatLastUpdated(record),
                      self._RevisionPrinters(record))]),
-        k8s_object_printer.GetReadyMessage(record)
+        k8s_object_printer.FormatReadyMessage(record)
     ])
     return fmt

@@ -218,17 +218,6 @@ class ResourcesettingsFoldersSettingsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class ResourcesettingsFoldersSettingsLookupEffectiveValueRequest(_messages.Message):
-  r"""A ResourcesettingsFoldersSettingsLookupEffectiveValueRequest object.
-
-  Fields:
-    parent: The setting for which an effective value will be evaluated. See
-      Setting for naming requirements.
-  """
-
-  parent = _messages.StringField(1, required=True)
-
-
 class ResourcesettingsFoldersSettingsSearchRequest(_messages.Message):
   r"""A ResourcesettingsFoldersSettingsSearchRequest object.
 
@@ -271,16 +260,26 @@ class ResourcesettingsFoldersSettingsValueCreateRequest(_messages.Message):
     googleCloudResourcesettingsV1SettingValue: A
       GoogleCloudResourcesettingsV1SettingValue resource to be passed as the
       request body.
-    name: The resource name of the setting value. Must be in one of the
-      following forms: *
-      `projects/{project_number}/settings/{setting_name}/value` *
-      `folders/{folder_id}/settings/{setting_name}/value` *
-      `organizations/{organization_id}/settings/{setting_name}/value` For
-      example, "/projects/123/settings/gcp-enableMyFeature/value"
+    parent: The name of the setting for which a value should be created. See
+      Setting for naming requirements.
+    settingsId: A string attribute.
   """
 
   googleCloudResourcesettingsV1SettingValue = _messages.MessageField('GoogleCloudResourcesettingsV1SettingValue', 1)
-  name = _messages.StringField(2, required=True)
+  parent = _messages.StringField(2, required=True)
+  settingsId = _messages.StringField(3, required=True)
+
+
+class ResourcesettingsFoldersSettingsValueLookupEffectiveValueRequest(_messages.Message):
+  r"""A ResourcesettingsFoldersSettingsValueLookupEffectiveValueRequest
+  object.
+
+  Fields:
+    name: The setting value for which an effective value will be evaluated.
+      See SettingValue for naming requirements.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class ResourcesettingsOrganizationsSettingsDeleteValueRequest(_messages.Message):
@@ -326,18 +325,6 @@ class ResourcesettingsOrganizationsSettingsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class ResourcesettingsOrganizationsSettingsLookupEffectiveValueRequest(_messages.Message):
-  r"""A ResourcesettingsOrganizationsSettingsLookupEffectiveValueRequest
-  object.
-
-  Fields:
-    parent: The setting for which an effective value will be evaluated. See
-      Setting for naming requirements.
-  """
-
-  parent = _messages.StringField(1, required=True)
-
-
 class ResourcesettingsOrganizationsSettingsSearchRequest(_messages.Message):
   r"""A ResourcesettingsOrganizationsSettingsSearchRequest object.
 
@@ -380,16 +367,26 @@ class ResourcesettingsOrganizationsSettingsValueCreateRequest(_messages.Message)
     googleCloudResourcesettingsV1SettingValue: A
       GoogleCloudResourcesettingsV1SettingValue resource to be passed as the
       request body.
-    name: The resource name of the setting value. Must be in one of the
-      following forms: *
-      `projects/{project_number}/settings/{setting_name}/value` *
-      `folders/{folder_id}/settings/{setting_name}/value` *
-      `organizations/{organization_id}/settings/{setting_name}/value` For
-      example, "/projects/123/settings/gcp-enableMyFeature/value"
+    parent: The name of the setting for which a value should be created. See
+      Setting for naming requirements.
+    settingsId: A string attribute.
   """
 
   googleCloudResourcesettingsV1SettingValue = _messages.MessageField('GoogleCloudResourcesettingsV1SettingValue', 1)
-  name = _messages.StringField(2, required=True)
+  parent = _messages.StringField(2, required=True)
+  settingsId = _messages.StringField(3, required=True)
+
+
+class ResourcesettingsOrganizationsSettingsValueLookupEffectiveValueRequest(_messages.Message):
+  r"""A ResourcesettingsOrganizationsSettingsValueLookupEffectiveValueRequest
+  object.
+
+  Fields:
+    name: The setting value for which an effective value will be evaluated.
+      See SettingValue for naming requirements.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class ResourcesettingsProjectsSettingsDeleteValueRequest(_messages.Message):
@@ -435,17 +432,6 @@ class ResourcesettingsProjectsSettingsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class ResourcesettingsProjectsSettingsLookupEffectiveValueRequest(_messages.Message):
-  r"""A ResourcesettingsProjectsSettingsLookupEffectiveValueRequest object.
-
-  Fields:
-    parent: The setting for which an effective value will be evaluated. See
-      Setting for naming requirements.
-  """
-
-  parent = _messages.StringField(1, required=True)
-
-
 class ResourcesettingsProjectsSettingsSearchRequest(_messages.Message):
   r"""A ResourcesettingsProjectsSettingsSearchRequest object.
 
@@ -488,16 +474,26 @@ class ResourcesettingsProjectsSettingsValueCreateRequest(_messages.Message):
     googleCloudResourcesettingsV1SettingValue: A
       GoogleCloudResourcesettingsV1SettingValue resource to be passed as the
       request body.
-    name: The resource name of the setting value. Must be in one of the
-      following forms: *
-      `projects/{project_number}/settings/{setting_name}/value` *
-      `folders/{folder_id}/settings/{setting_name}/value` *
-      `organizations/{organization_id}/settings/{setting_name}/value` For
-      example, "/projects/123/settings/gcp-enableMyFeature/value"
+    parent: The name of the setting for which a value should be created. See
+      Setting for naming requirements.
+    settingsId: A string attribute.
   """
 
   googleCloudResourcesettingsV1SettingValue = _messages.MessageField('GoogleCloudResourcesettingsV1SettingValue', 1)
-  name = _messages.StringField(2, required=True)
+  parent = _messages.StringField(2, required=True)
+  settingsId = _messages.StringField(3, required=True)
+
+
+class ResourcesettingsProjectsSettingsValueLookupEffectiveValueRequest(_messages.Message):
+  r"""A ResourcesettingsProjectsSettingsValueLookupEffectiveValueRequest
+  object.
+
+  Fields:
+    name: The setting value for which an effective value will be evaluated.
+      See SettingValue for naming requirements.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class StandardQueryParameters(_messages.Message):

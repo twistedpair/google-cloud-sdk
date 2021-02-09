@@ -444,11 +444,10 @@ class Endpoint(_messages.Message):
     name: Immutable. The resource name for the endpoint in the format
       'projects/*/locations/*/namespaces/*/services/*/endpoints/*'.
     network: Immutable. Specifies the Google Compute Engine Network (VPC) of
-      the Endpoint. Network must be in the same project as the Service
-      Directory Endpoint. Invalid network (bad format, different project, non-
-      existent) will be rejected. Project may be specified by project-id or
-      project-number. Service Directory will return project-number. Example:
-      `projects/project-number/global/networks/my-network`
+      the Endpoint. Project MUST be specified by project-number, project-id
+      will be rejected. Invalid network (bad format) will be rejected. Network
+      and Project existence is not checked. Example: `projects/project-
+      number/locations/global/networks/my-network`
     port: Optional. Service Directory will reject values outside of [0,
       65535].
   """
@@ -843,16 +842,17 @@ class ResolveServiceRequest(_messages.Message):
 
   Fields:
     endpointFilter: Optional. The filter applied to the endpoints of the
-      resolved service. General filter string syntax: () can be "name" or
-      "metadata." for map field. can be "<, >, <=, >=, !=, =, :". Of which ":"
-      means HAS and is roughly the same as "=". must be the same data type as
-      the field. can be "AND, OR, NOT". Examples of valid filters: *
-      "metadata.owner" returns Endpoints that have a label with the key
-      "owner", this is the same as "metadata:owner" * "metadata.protocol=gRPC"
-      returns Endpoints that have key/value "protocol=gRPC" *
-      "metadata.owner!=sd AND metadata.foo=bar" returns Endpoints that have
-      "owner" field in metadata with a value that is not "sd" AND have the
-      key/value foo=bar.
+      resolved service. General filter string syntax: *`field operator value`*
+      (*`logical connector`*) *`field`* can be `name` or `metadata.`*`key`*
+      for map field. *`operator`* can be `\<`, `>`, `\<=`, `>=`, `!=`, `=`,
+      `:`. Of which `:` means `HAS` and is roughly the same as `=`. *`value`*
+      must be the same data type as the field. *`logical connector*` can be
+      `AND`, `OR`, `NOT`. Examples of valid filters: * `metadata.owner`
+      returns endpoints that have a label with the key `owner`, this is the
+      same as `metadata:owner` * `metadata.protocol=gRPC` returns endpoints
+      that have key/value `protocol=gRPC` * `metadata.owner!=sd AND
+      metadata.foo=bar` returns endpoints that have `owner` field in metadata
+      with a value that is not `sd` and have the key/value `foo=bar`.
     maxEndpoints: Optional. The maximum number of endpoints to return.
       Defaults to 25. Maximum is 100. If a value less than one is specified,
       the Default is used. If a value greater than the Maximum is specified,

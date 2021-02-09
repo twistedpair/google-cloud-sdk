@@ -18,6 +18,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.kuberun import kubernetesobject
 from googlecloudsdk.api_lib.kuberun import structuredout
 
@@ -28,6 +30,8 @@ MAX_SCALE_ANNOTATION = 'autoscaling.knative.dev/maxScale'
 NVIDIA_GPU_RESOURCE = 'nvidia.com/gpu'
 SERVICE_LABEL = 'serving.knative.dev/service'
 USER_IMAGE_ANNOTATION = kubernetesobject.CLIENT_GROUP + '/user-image'
+
+USER_IMAGE_PATTERN = re.compile('([^@]+)@sha256:([0-9A-Fa-f]+)')
 
 
 class Revision(kubernetesobject.KubernetesObject):
@@ -96,7 +100,7 @@ class Revision(kubernetesobject.KubernetesObject):
         annotation on the service.
 
     Returns:
-      a string representing the user deployment intent.
+      A string representing the user deployment intent.
     """
     if not self.image:
       return None
@@ -107,9 +111,10 @@ class Revision(kubernetesobject.KubernetesObject):
     if not user_image:
       return self.image
     # The image should  be in the format base@sha256:hashhashhash
-    base, h = self.image.split('@')
-    if ':' in h:
-      _, h = h.split(':')
+    match = USER_IMAGE_PATTERN.match(self.image)
+    if not match:
+      return self.image
+    (base, h) = match.group(1, 2)
     if not user_image.startswith(base):
       # The user-image is out of date.
       return self.image

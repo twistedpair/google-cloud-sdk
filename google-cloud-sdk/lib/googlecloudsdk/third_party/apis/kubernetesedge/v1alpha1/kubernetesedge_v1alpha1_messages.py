@@ -128,6 +128,29 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class BootstrapKubeconfig(_messages.Message):
+  r"""Kubeconfig data which may be used to bootstrap this node into its parent
+  cluster using a TLS bootstrap token. The machine consuming this data should
+  format it to a kubeconfig file, and then start the kubelet with --bootstrap-
+  kubeconfig=. See https://kubernetes.io/docs/reference/command-line-tools-
+  reference/kubelet-tls-bootstrapping/#kubelet-configuration for bootstrapping
+  and https://godoc.org/k8s.io/client-go/tools/clientcmd/api/v1#Cluster for
+  field descriptions.
+
+  Fields:
+    certificateAuthorityData: PEM-encoded certificate authority for the
+      cluster.
+    server: Address of the kubernetes cluster control plane
+      (https://hostname:port).
+    token: Bearer token for authentication and TLS bootstrapping into the
+      Kubernetes cluster.
+  """
+
+  certificateAuthorityData = _messages.StringField(1)
+  server = _messages.StringField(2)
+  token = _messages.StringField(3)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -406,6 +429,17 @@ class KubernetesedgeProjectsLocationsClustersNodePoolsListRequest(_messages.Mess
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class KubernetesedgeProjectsLocationsClustersNodePoolsNodesGetRequest(_messages.Message):
+  r"""A KubernetesedgeProjectsLocationsClustersNodePoolsNodesGetRequest
+  object.
+
+  Fields:
+    name: A string attribute.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class KubernetesedgeProjectsLocationsClustersNodePoolsPatchRequest(_messages.Message):
@@ -955,6 +989,10 @@ class Machine(_messages.Message):
 
   Fields:
     createTime: A string attribute.
+    hostedNode: Canonical resource name of the node that this machine is
+      responsible for hosting e.g. projects/{project}/locations/{location}/clu
+      sters/{cluster_id}/nodePools/{pool_id}/{node}, Or empty if the machine
+      is not assigned to assume the role of a node.
     labels: A LabelsValue attribute.
     name: A string attribute.
     updateTime: A string attribute.
@@ -985,9 +1023,56 @@ class Machine(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  hostedNode = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+
+
+class Node(_messages.Message):
+  r"""A Node object.
+
+  Messages:
+    LabelsValue: A LabelsValue object.
+
+  Fields:
+    bootstrapKubeconfig: Kubeconfig data which may be used to bootstrap this
+      node into its parent cluster using a TLS bootstrap token.
+    createTime: A string attribute.
+    labels: A LabelsValue attribute.
+    name: A string attribute.
+    updateTime: A string attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""A LabelsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  bootstrapKubeconfig = _messages.MessageField('BootstrapKubeconfig', 1)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class NodePool(_messages.Message):

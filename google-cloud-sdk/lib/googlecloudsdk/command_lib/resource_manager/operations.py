@@ -43,7 +43,17 @@ def WaitForOperation(operation, message, service):
   Returns:
     The TagKey or TagValue resource.
   """
+  poller = waiter.CloudOperationPoller(service, tags.OperationsService())
+  if poller.IsDone(operation):
+    # Use the poller to get the result so it prints the same regardless if the
+    # Operation is immediately done or not. Currently the poller will raise a
+    # KeyError because it assumes a 'name' field  which is not present when
+    # the Operation response is of type Empty.
+    try:
+      return poller.GetResult(operation)
+    except KeyError:
+      return operation
+
   operation_ref = resources.REGISTRY.Parse(
       operation.name, collection='cloudresourcemanager.operations')
-  poller = waiter.CloudOperationPoller(service, tags.OperationsService())
   return waiter.WaitFor(poller, operation_ref, message)

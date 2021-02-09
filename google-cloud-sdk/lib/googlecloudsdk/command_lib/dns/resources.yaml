@@ -17,3 +17,13 @@ policy:
     parameter_name: policy
     attribute_name: policy
     help: The policy name.
+
+response_policy:
+  name: response_policy
+  collection: dns.responsePolicies
+  request_id_field: response_policy.response_policy_name
+  attributes:
+  - &responsePolicy
+    parameter_name: responsePolicy
+    attribute_name: response_policy
+    help: The response policy name.

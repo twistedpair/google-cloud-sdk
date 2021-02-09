@@ -744,7 +744,7 @@
             "type": "string",
             "enumDescriptions": [
               "Unspecified component. Specifying this will cause Cluster creation to fail.",
-              "The Anaconda python distribution. The Anaconda component is not supported in the Dataproc preview 2.0 image. The 2.0 preview image is pre-installed with Miniconda.",
+              "The Anaconda python distribution. The Anaconda component is not supported in the Dataproc 2.0 image. The 2.0 image is pre-installed with Miniconda.",
               "Docker",
               "The Druid query engine.",
               "Flink",
@@ -1068,11 +1068,11 @@
       "type": "object",
       "properties": {
         "clusterUuid": {
-          "description": "Optional. Specifying the cluster_uuid means the RPC should fail (with error NOT_FOUND) if cluster with specified UUID does not exist.",
+          "description": "Optional. Specifying the cluster_uuid means the RPC will fail (with error NOT_FOUND) if a cluster with the specified UUID does not exist.",
           "type": "string"
         },
         "requestId": {
-          "description": "Optional. A unique id used to identify the request. If the server receives two StopClusterRequest requests with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+          "description": "Optional. A unique id used to identify the request. If the server receives two StopClusterRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1beta2#google.cloud.dataproc.v1beta2.StopClusterRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.Recommendation: Set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
           "type": "string"
         }
       }
@@ -1083,11 +1083,11 @@
       "type": "object",
       "properties": {
         "clusterUuid": {
-          "description": "Optional. Specifying the cluster_uuid means the RPC should fail (with error NOT_FOUND) if cluster with specified UUID does not exist.",
+          "description": "Optional. Specifying the cluster_uuid means the RPC will fail (with error NOT_FOUND) if a cluster with the specified UUID does not exist.",
           "type": "string"
         },
         "requestId": {
-          "description": "Optional. A unique id used to identify the request. If the server receives two StartClusterRequest requests with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+          "description": "Optional. A unique id used to identify the request. If the server receives two StartClusterRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1beta2#google.cloud.dataproc.v1beta2.StartClusterRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.Recommendation: Set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
           "type": "string"
         }
       }
@@ -1144,7 +1144,7 @@
           "$ref": "Job"
         },
         "requestId": {
-          "description": "Optional. A unique id used to identify the request. If the server receives two SubmitJobRequest requests with the same id, then the second request will be ignored and the first Job created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+          "description": "Optional. A unique id used to identify the request. If the server receives two SubmitJobRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1beta2#google.cloud.dataproc.v1.SubmitJobRequest)s with the same id, then the second request will be ignored and the first Job created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
           "type": "string"
         }
       }
@@ -2665,9 +2665,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations$",
                       "type": "string"
                     },
                     "filter": {
@@ -2706,9 +2706,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2731,9 +2731,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2756,9 +2756,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2781,9 +2781,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2809,9 +2809,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2837,9 +2837,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -2868,9 +2868,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2900,9 +2900,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The \"resource name\" of the region or location, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.autoscalingPolicies.create, the resource name has the following format: projects\/{project_id}\/regions\/{region} For projects.locations.autoscalingPolicies.create, the resource name has the following format: projects\/{project_id}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2928,9 +2928,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. The \"resource name\" of the autoscaling policy, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.autoscalingPolicies, the resource name of the policy has the following format: projects\/{project_id}\/regions\/{region}\/autoscalingPolicies\/{policy_id} For projects.locations.autoscalingPolicies, the resource name of the policy has the following format: projects\/{project_id}\/locations\/{location}\/autoscalingPolicies\/{policy_id}",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2956,9 +2956,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The \"resource name\" of the autoscaling policy, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.autoscalingPolicies.get, the resource name of the policy has the following format: projects\/{project_id}\/regions\/{region}\/autoscalingPolicies\/{policy_id} For projects.locations.autoscalingPolicies.get, the resource name of the policy has the following format: projects\/{project_id}\/locations\/{location}\/autoscalingPolicies\/{policy_id}",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2981,9 +2981,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The \"resource name\" of the region or location, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.autoscalingPolicies.list, the resource name of the region has the following format: projects\/{project_id}\/regions\/{region} For projects.locations.autoscalingPolicies.list, the resource name of the location has the following format: projects\/{project_id}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -3017,9 +3017,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The \"resource name\" of the autoscaling policy, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.autoscalingPolicies.delete, the resource name of the policy has the following format: projects\/{project_id}\/regions\/{region}\/autoscalingPolicies\/{policy_id} For projects.locations.autoscalingPolicies.delete, the resource name of the policy has the following format: projects\/{project_id}\/locations\/{location}\/autoscalingPolicies\/{policy_id}",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3042,9 +3042,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3070,9 +3070,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3098,9 +3098,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -3129,9 +3129,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3172,7 +3172,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "Optional. A unique id used to identify the request. If the server receives two CreateClusterRequest requests with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "Optional. A unique id used to identify the request. If the server receives two CreateClusterRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1beta2#google.cloud.dataproc.v1beta2.CreateClusterRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     },
@@ -3261,7 +3261,7 @@
                       "format": "google-fieldmask"
                     },
                     "requestId": {
-                      "description": "Optional. A unique id used to identify the request. If the server receives two UpdateClusterRequest requests with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "Optional. A unique id used to identify the request. If the server receives two UpdateClusterRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1beta2#google.cloud.dataproc.v1beta2.UpdateClusterRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -3394,7 +3394,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "Optional. A unique id used to identify the request. If the server receives two DeleteClusterRequest requests with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "Optional. A unique id used to identify the request. If the server receives two DeleteClusterRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1beta2#google.cloud.dataproc.v1beta2.DeleteClusterRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -3584,23 +3584,23 @@
                   "parameters": {
                     "project": {
                       "description": "Required. The ID of the Google Cloud Platform project the cluster belongs to, of the form projects\/.",
+                      "pattern": "^projects\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
                       "type": "string"
                     },
                     "region": {
                       "description": "Required. The region containing the cluster, of the form regions\/.",
+                      "pattern": "^regions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^regions\/[^\/]+$",
                       "type": "string"
                     },
                     "cluster": {
                       "description": "Required. The cluster, in the form clusters\/.",
+                      "pattern": "^clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^clusters\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3628,9 +3628,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3656,9 +3656,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3684,9 +3684,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -3715,9 +3715,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4084,9 +4084,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/jobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/jobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4112,9 +4112,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/jobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/jobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4140,9 +4140,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/jobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/jobs\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -4171,9 +4171,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/jobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/jobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4203,9 +4203,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the region or location, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates,create, the resource name of the region has the following format: projects\/{project_id}\/regions\/{region} For projects.locations.workflowTemplates.create, the resource name of the location has the following format: projects\/{project_id}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4231,9 +4231,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates.get, the resource name of the template has the following format: projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id} For projects.locations.workflowTemplates.get, the resource name of the template has the following format: projects\/{project_id}\/locations\/{location}\/workflowTemplates\/{template_id}",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     },
                     "version": {
@@ -4262,9 +4262,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates.instantiate, the resource name of the template has the following format: projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id} For projects.locations.workflowTemplates.instantiate, the resource name of the template has the following format: projects\/{project_id}\/locations\/{location}\/workflowTemplates\/{template_id}",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4290,9 +4290,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the region or location, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates,instantiateinline, the resource name of the region has the following format: projects\/{project_id}\/regions\/{region} For projects.locations.workflowTemplates.instantiateinline, the resource name of the location has the following format: projects\/{project_id}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+$",
                       "type": "string"
                     },
                     "instanceId": {
@@ -4328,9 +4328,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. The resource name of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates, the resource name of the template has the following format: projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id} For projects.locations.workflowTemplates, the resource name of the template has the following format: projects\/{project_id}\/locations\/{location}\/workflowTemplates\/{template_id}",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4356,9 +4356,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the region or location, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates,list, the resource name of the region has the following format: projects\/{project_id}\/regions\/{region} For projects.locations.workflowTemplates.list, the resource name of the location has the following format: projects\/{project_id}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -4392,9 +4392,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates.delete, the resource name of the template has the following format: projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id} For projects.locations.workflowTemplates.instantiate, the resource name of the template has the following format: projects\/{project_id}\/locations\/{location}\/workflowTemplates\/{template_id}",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     },
                     "version": {
@@ -4423,9 +4423,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4451,9 +4451,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4479,9 +4479,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -4510,9 +4510,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4546,9 +4546,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The \"resource name\" of the region or location, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.autoscalingPolicies.create, the resource name has the following format: projects\/{project_id}\/regions\/{region} For projects.locations.autoscalingPolicies.create, the resource name has the following format: projects\/{project_id}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4574,9 +4574,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. The \"resource name\" of the autoscaling policy, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.autoscalingPolicies, the resource name of the policy has the following format: projects\/{project_id}\/regions\/{region}\/autoscalingPolicies\/{policy_id} For projects.locations.autoscalingPolicies, the resource name of the policy has the following format: projects\/{project_id}\/locations\/{location}\/autoscalingPolicies\/{policy_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4602,9 +4602,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The \"resource name\" of the autoscaling policy, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.autoscalingPolicies.get, the resource name of the policy has the following format: projects\/{project_id}\/regions\/{region}\/autoscalingPolicies\/{policy_id} For projects.locations.autoscalingPolicies.get, the resource name of the policy has the following format: projects\/{project_id}\/locations\/{location}\/autoscalingPolicies\/{policy_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4627,9 +4627,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The \"resource name\" of the region or location, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.autoscalingPolicies.list, the resource name of the region has the following format: projects\/{project_id}\/regions\/{region} For projects.locations.autoscalingPolicies.list, the resource name of the location has the following format: projects\/{project_id}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -4663,9 +4663,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The \"resource name\" of the autoscaling policy, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.autoscalingPolicies.delete, the resource name of the policy has the following format: projects\/{project_id}\/regions\/{region}\/autoscalingPolicies\/{policy_id} For projects.locations.autoscalingPolicies.delete, the resource name of the policy has the following format: projects\/{project_id}\/locations\/{location}\/autoscalingPolicies\/{policy_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4688,9 +4688,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4716,9 +4716,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4744,9 +4744,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -4775,9 +4775,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4807,9 +4807,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the region or location, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates,create, the resource name of the region has the following format: projects\/{project_id}\/regions\/{region} For projects.locations.workflowTemplates.create, the resource name of the location has the following format: projects\/{project_id}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4835,9 +4835,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates.get, the resource name of the template has the following format: projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id} For projects.locations.workflowTemplates.get, the resource name of the template has the following format: projects\/{project_id}\/locations\/{location}\/workflowTemplates\/{template_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     },
                     "version": {
@@ -4866,9 +4866,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates.instantiate, the resource name of the template has the following format: projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id} For projects.locations.workflowTemplates.instantiate, the resource name of the template has the following format: projects\/{project_id}\/locations\/{location}\/workflowTemplates\/{template_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4894,9 +4894,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the region or location, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates,instantiateinline, the resource name of the region has the following format: projects\/{project_id}\/regions\/{region} For projects.locations.workflowTemplates.instantiateinline, the resource name of the location has the following format: projects\/{project_id}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "instanceId": {
@@ -4932,9 +4932,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. The resource name of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates, the resource name of the template has the following format: projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id} For projects.locations.workflowTemplates, the resource name of the template has the following format: projects\/{project_id}\/locations\/{location}\/workflowTemplates\/{template_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4960,9 +4960,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the region or location, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates,list, the resource name of the region has the following format: projects\/{project_id}\/regions\/{region} For projects.locations.workflowTemplates.list, the resource name of the location has the following format: projects\/{project_id}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -4996,9 +4996,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates.delete, the resource name of the template has the following format: projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id} For projects.locations.workflowTemplates.instantiate, the resource name of the template has the following format: projects\/{project_id}\/locations\/{location}\/workflowTemplates\/{template_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     },
                     "version": {
@@ -5027,9 +5027,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -5055,9 +5055,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -5083,9 +5083,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -5114,9 +5114,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },

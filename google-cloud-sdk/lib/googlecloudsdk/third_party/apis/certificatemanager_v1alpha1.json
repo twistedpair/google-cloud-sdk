@@ -1189,9 +1189,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1235,9 +1235,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1265,9 +1265,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1306,9 +1306,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1331,9 +1331,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1356,9 +1356,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1388,9 +1388,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location from which the certificate should be listed, specified in the format `projects\/*\/locations\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1434,9 +1434,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. A name of the certificate to describe. Must be in the format `projects\/*\/locations\/*\/certificates\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1459,9 +1459,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource of the certificate. Must be in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "certificateId": {
@@ -1492,9 +1492,9 @@
                   "parameters": {
                     "name": {
                       "description": "A user-defined name of the certificate. Certificate names must be unique globally and match pattern `projects\/*\/locations\/*\/certificates\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificates\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1526,9 +1526,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. A name of the certificate to delete. Must be in the format `projects\/*\/locations\/*\/certificates\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1551,9 +1551,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1579,9 +1579,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificates\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -1610,9 +1610,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1642,9 +1642,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location from which the certificate maps should be listed, specified in the format `projects\/*\/locations\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1688,9 +1688,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. A name of the certificate map to describe. Must be in the format `projects\/*\/locations\/*\/certificateMaps\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1713,9 +1713,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource of the certificate map. Must be in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "certificateMapId": {
@@ -1746,9 +1746,9 @@
                   "parameters": {
                     "name": {
                       "description": "A user-defined name of the Certificate Map. Certificate Map names must be unique globally and match pattern `projects\/*\/locations\/*\/certificateMaps\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1780,9 +1780,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. A name of the certificate map to delete. Must be in the format `projects\/*\/locations\/*\/certificateMaps\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1810,9 +1810,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The project, location and certificate map from which the certificate map entries should be listed, specified in the format `projects\/*\/locations\/*\/certificateMaps\/*`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1856,9 +1856,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. A name of the certificate map entry to describe. Must be in the format `projects\/*\/locations\/*\/certificateMaps\/*\/certificateMapEntries\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+\/certificateMapEntries\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+\/certificateMapEntries\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1881,9 +1881,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The parent resource of the certificate map entry. Must be in the format `projects\/*\/locations\/*\/certificateMaps\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+$",
                           "type": "string"
                         },
                         "certificateMapEntryId": {
@@ -1914,9 +1914,9 @@
                       "parameters": {
                         "name": {
                           "description": "A user-defined name of the Certificate Map Entry. Certificate Map Entry names must be unique globally and match pattern `projects\/*\/locations\/*\/certificateMaps\/*\/certificateMapEntries\/*`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+\/certificateMapEntries\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+\/certificateMapEntries\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -1948,9 +1948,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. A name of the certificate map entry to delete. Must be in the format `projects\/*\/locations\/*\/certificateMaps\/*\/certificateMapEntries\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+\/certificateMapEntries\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+\/certificateMapEntries\/[^\/]+$",
                           "type": "string"
                         }
                       },

@@ -2166,9 +2166,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -2212,9 +2212,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2242,9 +2242,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -2283,9 +2283,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2308,9 +2308,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2333,9 +2333,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2365,9 +2365,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The location and project that is queried for data centers. For example, projects\/PROJECT-NUMBER\/locations\/us-central1",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -2406,9 +2406,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the `ClusterGroupBackup` to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroupBackups\/MY_BACKUP",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroupBackups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroupBackups\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2431,9 +2431,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The location (region) and project where the new `ClusterGroupBackup` is created. For example, projects\/PROJECT-NUMBER \/locations\/us-central1",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "clusterGroupBackupId": {
@@ -2469,9 +2469,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the `ClusterGroupBackup` to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroupBackups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroupBackups\/[^\/]+$",
                       "type": "string"
                     },
                     "requestId": {
@@ -2503,9 +2503,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The location and project which will be queried for data centers. For example, projects\/PROJECT-NUMBER\/locations\/us-central1",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -2544,9 +2544,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the PrivateCloudBackup to retrieve. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroupBackups\/MY-BACKUP",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateCloudBackups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateCloudBackups\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2569,9 +2569,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The location (region) and project where the new `PrivateCloudBackup` will be created. For example, projects\/PROJECT-NUMBER \/locations\/us-central1",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "privateCloudBackupId": {
@@ -2607,9 +2607,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the `PrivateCloudBackup` to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateCloudBackups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateCloudBackups\/[^\/]+$",
                       "type": "string"
                     },
                     "requestId": {
@@ -2641,9 +2641,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The location and project which will be queried for data centers. For example, projects\/PROJECT-NUMBER\/locations\/us-central1",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -2682,9 +2682,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the `PrivateCloud` to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/privateClouds\/MY_CLOUD",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2707,9 +2707,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The location (region) and project where the new `PrivateCloud` is created. For example, projects\/PROJECT-NUMBER\/locations\/us-central1",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "privateCloudId": {
@@ -2740,9 +2740,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. The resource name of this `PrivateCloud`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/privateClouds\/MY-CLOUD",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -2774,9 +2774,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the `PrivateCloud` to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2804,9 +2804,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The project, location, and cluster group that is queried for clusters. For example, projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY_GROUP",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -2845,9 +2845,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The resource name of the Cluster to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/clusters\/ MY_CLUSTER",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2870,9 +2870,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The `ClusterGroup` in where the new Cluster will be created. For example, projects\/PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/ MY_GROUP",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "type": "string"
                         },
                         "clusterId": {
@@ -2908,9 +2908,9 @@
                       "parameters": {
                         "name": {
                           "description": "Output only. The resource name of this `Cluster`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/REGION\/clusterGroups\/MY-GROUP\/clusters\/MY-CLUSTER",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -2942,9 +2942,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The resource name of the `Cluster` to delete.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2967,9 +2967,9 @@
                       "parameters": {
                         "cluster": {
                           "description": "Required. The resource name of the `Cluster` to perform add nodes. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/clusters\/ MY_CLUSTER",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2995,9 +2995,9 @@
                       "parameters": {
                         "cluster": {
                           "description": "Required. The resource name of the `Cluster` to perform remove nodes. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/clusters\/ MY_CLUSTER",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3027,9 +3027,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The parent ClusterGroup or PrivateCloud of which the IpAddresses belong to. For example: projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY-GROUP",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -3068,9 +3068,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The resource name of the `IpAddress` to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/ipAddresses\/ MY_IP",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/ipAddresses\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/ipAddresses\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3093,9 +3093,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The ClusterGroup or private cloud in which the `IpAddress` will be created. For example, projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY-GROUP",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "type": "string"
                         },
                         "ipAddressId": {
@@ -3126,9 +3126,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The resource name of the `ClusterGroupBackup` to be deleted.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/ipAddresses\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/ipAddresses\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3157,9 +3157,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The location and project which will be queried for data centers. For example, projects\/PROJECT-NUMBER\/locations\/us-central1",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -3198,9 +3198,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the `ClusterGroup` to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3223,9 +3223,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The location (region) and project where the new `ClusterGroup` is created. For example, projects\/PROJECT-NUMBER\/locations\/us-central1",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "clusterGroupId": {
@@ -3256,9 +3256,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. The resource name of this `ClusterGroup`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY-GROUP",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -3290,9 +3290,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the `ClusterGroup` to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3315,9 +3315,9 @@
                   "parameters": {
                     "clusterGroup": {
                       "description": "Required. The resource name of the cluster group on which to reset the **CloudAdmin** password. For example, projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY_GROUP",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3343,9 +3343,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3371,9 +3371,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -3402,9 +3402,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3435,9 +3435,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The project, location, and cluster group that is queried for clusters. For example, projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY_GROUP",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -3476,9 +3476,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The resource name of the Cluster to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/clusters\/ MY_CLUSTER",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/clusters\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3501,9 +3501,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The `ClusterGroup` in where the new Cluster will be created. For example, projects\/PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/ MY_GROUP",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                           "type": "string"
                         },
                         "clusterId": {
@@ -3539,9 +3539,9 @@
                       "parameters": {
                         "name": {
                           "description": "Output only. The resource name of this `Cluster`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/REGION\/clusterGroups\/MY-GROUP\/clusters\/MY-CLUSTER",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/clusters\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -3573,9 +3573,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The resource name of the `Cluster` to delete.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/clusters\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3598,9 +3598,9 @@
                       "parameters": {
                         "cluster": {
                           "description": "Required. The resource name of the `Cluster` to perform add nodes. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/clusters\/ MY_CLUSTER",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/clusters\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3626,9 +3626,9 @@
                       "parameters": {
                         "cluster": {
                           "description": "Required. The resource name of the `Cluster` to perform remove nodes. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/clusters\/ MY_CLUSTER",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/clusters\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3658,9 +3658,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The parent ClusterGroup or PrivateCloud of which the IpAddresses belong to. For example: projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY-GROUP",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -3699,9 +3699,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The resource name of the `IpAddress` to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/ipAddresses\/ MY_IP",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/ipAddresses\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/ipAddresses\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3724,9 +3724,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The ClusterGroup or private cloud in which the `IpAddress` will be created. For example, projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY-GROUP",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                           "type": "string"
                         },
                         "ipAddressId": {
@@ -3757,9 +3757,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The resource name of the `ClusterGroupBackup` to be deleted.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/ipAddresses\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/ipAddresses\/[^\/]+$",
                           "type": "string"
                         }
                       },

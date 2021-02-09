@@ -349,14 +349,12 @@
           "enumDescriptions": [
             "Default unknown system.",
             "BigQuery.",
-            "Cloud Pub\/Sub.",
-            "Dataproc Metastore - Managed Hive Metastore."
+            "Cloud Pub\/Sub."
           ],
           "enum": [
             "INTEGRATED_SYSTEM_UNSPECIFIED",
             "BIGQUERY",
-            "CLOUD_PUBSUB",
-            "DPMS"
+            "CLOUD_PUBSUB"
           ]
         },
         "userSpecifiedSystem": {

@@ -6,7 +6,7 @@
   "canonicalName": "Policy Simulator",
   "version": "v1beta1",
   "revision": "0",
-  "title": "PolicySimulator API",
+  "title": "Policy Simulator API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -187,24 +187,6 @@
               "description": "Properties of the object. Contains field @type with type URL."
             }
           }
-        }
-      }
-    },
-    "GoogleCloudPolicysimulatorV1beta1ListReplaysResponse": {
-      "id": "GoogleCloudPolicysimulatorV1beta1ListReplaysResponse",
-      "description": "Response containing list of `Replays`.",
-      "type": "object",
-      "properties": {
-        "replays": {
-          "description": "The list of `Replays`.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudPolicysimulatorV1beta1Replay"
-          }
-        },
-        "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
-          "type": "string"
         }
       }
     },
@@ -873,42 +855,6 @@
           "resources": {
             "replays": {
               "methods": {
-                "list": {
-                  "id": "policysimulator.projects.locations.replays.list",
-                  "path": "v1beta1/{+parent}/replays",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/replays",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent resource. Parent must be a project, folder, or organization and include location. Example: `projects\/my-example-project\/locations\/global` Only Replays that are direct children of the provided parent are listed. In other words, Replays that are children of a project will not be included when the parent is a folder of that project.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "The maximum number of `Replays` to return. If unspecified, at most 50 `Replays` will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "A page token, received from a previous `ListReplays` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListReplays` must match the call that provided the page token.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "GoogleCloudPolicysimulatorV1beta1ListReplaysResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "List all Replays."
-                },
                 "get": {
                   "id": "policysimulator.projects.locations.replays.get",
                   "path": "v1beta1/{+name}",
@@ -1017,42 +963,6 @@
           "resources": {
             "replays": {
               "methods": {
-                "list": {
-                  "id": "policysimulator.folders.locations.replays.list",
-                  "path": "v1beta1/{+parent}/replays",
-                  "flatPath": "v1beta1/folders/{foldersId}/locations/{locationsId}/replays",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent resource. Parent must be a project, folder, or organization and include location. Example: `projects\/my-example-project\/locations\/global` Only Replays that are direct children of the provided parent are listed. In other words, Replays that are children of a project will not be included when the parent is a folder of that project.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^folders\/[^\/]+\/locations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "The maximum number of `Replays` to return. If unspecified, at most 50 `Replays` will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "A page token, received from a previous `ListReplays` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListReplays` must match the call that provided the page token.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "GoogleCloudPolicysimulatorV1beta1ListReplaysResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "List all Replays."
-                },
                 "get": {
                   "id": "policysimulator.folders.locations.replays.get",
                   "path": "v1beta1/{+name}",
@@ -1161,42 +1071,6 @@
           "resources": {
             "replays": {
               "methods": {
-                "list": {
-                  "id": "policysimulator.organizations.locations.replays.list",
-                  "path": "v1beta1/{+parent}/replays",
-                  "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/replays",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent resource. Parent must be a project, folder, or organization and include location. Example: `projects\/my-example-project\/locations\/global` Only Replays that are direct children of the provided parent are listed. In other words, Replays that are children of a project will not be included when the parent is a folder of that project.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "The maximum number of `Replays` to return. If unspecified, at most 50 `Replays` will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "A page token, received from a previous `ListReplays` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListReplays` must match the call that provided the page token.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "GoogleCloudPolicysimulatorV1beta1ListReplaysResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "List all Replays."
-                },
                 "get": {
                   "id": "policysimulator.organizations.locations.replays.get",
                   "path": "v1beta1/{+name}",

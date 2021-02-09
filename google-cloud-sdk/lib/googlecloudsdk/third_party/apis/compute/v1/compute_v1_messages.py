@@ -715,14 +715,16 @@ class Address(_messages.Message):
       DNS_RESOLVER: <no description>
       GCE_ENDPOINT: <no description>
       NAT_AUTO: <no description>
+      PRIVATE_SERVICE_CONNECT: <no description>
       SHARED_LOADBALANCER_VIP: <no description>
       VPC_PEERING: <no description>
     """
     DNS_RESOLVER = 0
     GCE_ENDPOINT = 1
     NAT_AUTO = 2
-    SHARED_LOADBALANCER_VIP = 3
-    VPC_PEERING = 4
+    PRIVATE_SERVICE_CONNECT = 3
+    SHARED_LOADBALANCER_VIP = 4
+    VPC_PEERING = 5
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the address, which can be one of
@@ -4580,8 +4582,7 @@ class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -4646,8 +4647,7 @@ class ComputeAcceleratorTypesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone for this request.
   """
 
@@ -4706,8 +4706,7 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -4823,8 +4822,7 @@ class ComputeAddressesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -4882,8 +4880,7 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -4998,8 +4995,7 @@ class ComputeAutoscalersListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: Name of the zone for this request.
   """
 
@@ -5217,8 +5213,7 @@ class ComputeBackendBucketsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -5353,8 +5348,7 @@ class ComputeBackendServicesAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -5506,8 +5500,7 @@ class ComputeBackendServicesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -5643,8 +5636,7 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -5709,8 +5701,7 @@ class ComputeDiskTypesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone for this request.
   """
 
@@ -5797,8 +5788,7 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -5963,8 +5953,7 @@ class ComputeDisksListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone for this request.
   """
 
@@ -6193,8 +6182,7 @@ class ComputeExternalVpnGatewaysListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -6456,8 +6444,7 @@ class ComputeFirewallPoliciesListRequest(_messages.Message):
       of results.
     parentId: Parent ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -6710,8 +6697,7 @@ class ComputeFirewallsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -6818,8 +6804,7 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -6936,8 +6921,7 @@ class ComputeForwardingRulesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -7131,8 +7115,7 @@ class ComputeGlobalAddressesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -7241,8 +7224,7 @@ class ComputeGlobalForwardingRulesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -7482,8 +7464,7 @@ class ComputeGlobalNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Me
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -7534,8 +7515,7 @@ class ComputeGlobalNetworkEndpointGroupsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -7592,8 +7572,7 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -7672,8 +7651,7 @@ class ComputeGlobalOperationsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -7763,8 +7741,7 @@ class ComputeGlobalOrganizationOperationsListRequest(_messages.Message):
       of results.
     parentId: Parent ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -7821,8 +7798,7 @@ class ComputeHealthChecksAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -7931,8 +7907,7 @@ class ComputeHealthChecksListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -8093,8 +8068,7 @@ class ComputeHttpHealthChecksListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -8255,8 +8229,7 @@ class ComputeHttpsHealthChecksListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -8470,8 +8443,7 @@ class ComputeImagesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -8627,8 +8599,7 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -8848,8 +8819,7 @@ class ComputeInstanceGroupManagersListErrorsRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone where the managed instance group is located. It
       should conform to RFC1035.
   """
@@ -8904,8 +8874,7 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -8960,8 +8929,7 @@ class ComputeInstanceGroupManagersListPerInstanceConfigsRequest(_messages.Messag
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone where the managed instance group is located. It
       should conform to RFC1035.
   """
@@ -9015,8 +8983,7 @@ class ComputeInstanceGroupManagersListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -9312,8 +9279,7 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -9432,8 +9398,7 @@ class ComputeInstanceGroupsListInstancesRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -9487,8 +9452,7 @@ class ComputeInstanceGroupsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -9672,8 +9636,7 @@ class ComputeInstanceTemplatesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -9818,8 +9781,7 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -10140,8 +10102,7 @@ class ComputeInstancesListReferrersRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone for this request.
   """
 
@@ -10194,8 +10155,7 @@ class ComputeInstancesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone for this request.
   """
 
@@ -10941,8 +10901,7 @@ class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -11061,8 +11020,7 @@ class ComputeInterconnectAttachmentsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -11153,8 +11111,7 @@ class ComputeInterconnectLocationsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -11274,8 +11231,7 @@ class ComputeInterconnectsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -11450,8 +11406,7 @@ class ComputeLicensesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -11538,8 +11493,7 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -11604,8 +11558,7 @@ class ComputeMachineTypesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone for this request.
   """
 
@@ -11664,8 +11617,7 @@ class ComputeNetworkEndpointGroupsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -11854,8 +11806,7 @@ class ComputeNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Message)
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone where the network endpoint group is located. It
       should comply with RFC1035.
   """
@@ -11910,8 +11861,7 @@ class ComputeNetworkEndpointGroupsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone where the network endpoint group is located. It
       should comply with RFC1035.
   """
@@ -12086,8 +12036,7 @@ class ComputeNetworksListPeeringRoutesRequest(_messages.Message):
     region: The region of the request. The response will include all subnet
       routes, static routes and dynamic routes in the region.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   class DirectionValueValuesEnum(_messages.Enum):
@@ -12151,8 +12100,7 @@ class ComputeNetworksListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -12338,8 +12286,7 @@ class ComputeNodeGroupsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -12501,8 +12448,7 @@ class ComputeNodeGroupsListNodesRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone for this request.
   """
 
@@ -12555,8 +12501,7 @@ class ComputeNodeGroupsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone for this request.
   """
 
@@ -12704,8 +12649,7 @@ class ComputeNodeTemplatesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -12837,8 +12781,7 @@ class ComputeNodeTemplatesListRequest(_messages.Message):
     project: Project ID for this request.
     region: The name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -12930,8 +12873,7 @@ class ComputeNodeTypesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -12996,8 +12938,7 @@ class ComputeNodeTypesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: The name of the zone for this request.
   """
 
@@ -13056,8 +12997,7 @@ class ComputePacketMirroringsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -13174,8 +13114,7 @@ class ComputePacketMirroringsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -13381,8 +13320,7 @@ class ComputeProjectsGetXpnResourcesRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -13434,8 +13372,7 @@ class ComputeProjectsListXpnHostsRequest(_messages.Message):
     projectsListXpnHostsRequest: A ProjectsListXpnHostsRequest resource to be
       passed as the request body.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -13671,8 +13608,7 @@ class ComputeRegionAutoscalersListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -13863,8 +13799,7 @@ class ComputeRegionBackendServicesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -13978,8 +13913,7 @@ class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -14070,8 +14004,7 @@ class ComputeRegionCommitmentsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -14137,8 +14070,7 @@ class ComputeRegionDiskTypesListRequest(_messages.Message):
     project: Project ID for this request.
     region: The name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -14328,8 +14260,7 @@ class ComputeRegionDisksListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -14567,8 +14498,7 @@ class ComputeRegionHealthCheckServicesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -14713,8 +14643,7 @@ class ComputeRegionHealthChecksListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -15022,8 +14951,7 @@ class ComputeRegionInstanceGroupManagersListErrorsRequest(_messages.Message):
     region: Name of the region scoping this request. This should conform to
       RFC1035.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -15077,8 +15005,7 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -15135,8 +15062,7 @@ class ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest(_messages.
     region: Name of the region scoping this request, should conform to
       RFC1035.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -15189,8 +15115,7 @@ class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -15468,8 +15393,7 @@ class ComputeRegionInstanceGroupsListInstancesRequest(_messages.Message):
       RegionInstanceGroupsListInstancesRequest resource to be passed as the
       request body.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -15523,8 +15447,7 @@ class ComputeRegionInstanceGroupsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -15677,8 +15600,7 @@ class ComputeRegionNetworkEndpointGroupsListRequest(_messages.Message):
     region: The name of the region where the network endpoint group is
       located. It should comply with RFC1035.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -15795,8 +15717,7 @@ class ComputeRegionNotificationEndpointsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -15880,8 +15801,7 @@ class ComputeRegionOperationsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -16012,8 +15932,7 @@ class ComputeRegionSslCertificatesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -16130,8 +16049,7 @@ class ComputeRegionTargetHttpProxiesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -16276,8 +16194,7 @@ class ComputeRegionTargetHttpsProxiesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -16435,8 +16352,7 @@ class ComputeRegionUrlMapsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -16554,8 +16470,7 @@ class ComputeRegionsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -16612,8 +16527,7 @@ class ComputeReservationsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -16744,8 +16658,7 @@ class ComputeReservationsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: Name of the zone for this request.
   """
 
@@ -16866,8 +16779,7 @@ class ComputeResourcePoliciesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -17000,8 +16912,7 @@ class ComputeResourcePoliciesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -17093,8 +17004,7 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -17171,8 +17081,7 @@ class ComputeRoutersGetNatMappingInfoRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     router: Name of the Router resource to query for Nat Mapping information
       of VM endpoints.
   """
@@ -17280,8 +17189,7 @@ class ComputeRoutersListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -17460,8 +17368,7 @@ class ComputeRoutesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -17600,8 +17507,7 @@ class ComputeSecurityPoliciesListPreconfiguredExpressionSetsRequest(_messages.Me
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -17651,8 +17557,7 @@ class ComputeSecurityPoliciesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -17808,8 +17713,7 @@ class ComputeSnapshotsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -17911,8 +17815,7 @@ class ComputeSslCertificatesAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -18022,8 +17925,7 @@ class ComputeSslCertificatesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -18133,8 +18035,7 @@ class ComputeSslPoliciesListAvailableFeaturesRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -18184,8 +18085,7 @@ class ComputeSslPoliciesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -18268,8 +18168,7 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -18429,8 +18328,7 @@ class ComputeSubnetworksListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -18481,8 +18379,7 @@ class ComputeSubnetworksListUsableRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -18691,8 +18588,7 @@ class ComputeTargetGrpcProxiesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -18775,8 +18671,7 @@ class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -18886,8 +18781,7 @@ class ComputeTargetHttpProxiesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -18996,8 +18890,7 @@ class ComputeTargetHttpsProxiesAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -19107,8 +19000,7 @@ class ComputeTargetHttpsProxiesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -19302,8 +19194,7 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -19419,8 +19310,7 @@ class ComputeTargetInstancesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: Name of the zone scoping this request.
   """
 
@@ -19535,8 +19425,7 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -19670,8 +19559,7 @@ class ComputeTargetPoolsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -19867,8 +19755,7 @@ class ComputeTargetSslProxiesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -20088,8 +19975,7 @@ class ComputeTargetTcpProxiesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -20202,8 +20088,7 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -20320,8 +20205,7 @@ class ComputeTargetVpnGatewaysListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -20379,8 +20263,7 @@ class ComputeUrlMapsAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -20515,8 +20398,7 @@ class ComputeUrlMapsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -20638,8 +20520,7 @@ class ComputeVpnGatewaysAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -20769,8 +20650,7 @@ class ComputeVpnGatewaysListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -20873,8 +20753,7 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -20990,8 +20869,7 @@ class ComputeVpnTunnelsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -21074,8 +20952,7 @@ class ComputeZoneOperationsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
     zone: Name of the zone for request.
   """
 
@@ -21153,8 +21030,7 @@ class ComputeZonesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false and the
-      logic is the same as today.
+      partial results in case of failure. The default value is false.
   """
 
   filter = _messages.StringField(1)
@@ -24091,11 +23967,17 @@ class ForwardingRule(_messages.Message):
       Balancing, if you specify allPorts, you should not specify ports.  For
       more information, see [Port specifications](/load-
       balancing/docs/forwarding-rule-concepts#port_specifications).
+    pscConnectionId: [Output Only] The PSC connection id of the PSC Forwarding
+      Rule.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules. You
       must specify this field as part of the HTTP request URL. It is not
       settable as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
+    serviceDirectoryRegistrations: Service Directory resources to register
+      this forwarding rule with. Currently, only supports a single Service
+      Directory resource.  It is only supported for Internal TCP/UDP Load
+      Balancing and Internal HTTP(S) Load Balancing.
     serviceLabel: An optional prefix to the service name for this Forwarding
       Rule. If specified, the prefix is the first label of the fully qualified
       service name.  The label must be 1-63 characters long, and comply with
@@ -24250,12 +24132,14 @@ class ForwardingRule(_messages.Message):
   networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 19)
   portRange = _messages.StringField(20)
   ports = _messages.StringField(21, repeated=True)
-  region = _messages.StringField(22)
-  selfLink = _messages.StringField(23)
-  serviceLabel = _messages.StringField(24)
-  serviceName = _messages.StringField(25)
-  subnetwork = _messages.StringField(26)
-  target = _messages.StringField(27)
+  pscConnectionId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
+  region = _messages.StringField(23)
+  selfLink = _messages.StringField(24)
+  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 25, repeated=True)
+  serviceLabel = _messages.StringField(26)
+  serviceName = _messages.StringField(27)
+  subnetwork = _messages.StringField(28)
+  target = _messages.StringField(29)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -24551,6 +24435,26 @@ class ForwardingRuleReference(_messages.Message):
   """
 
   forwardingRule = _messages.StringField(1)
+
+
+class ForwardingRuleServiceDirectoryRegistration(_messages.Message):
+  r"""Describes the auto-registration of the Forwarding Rule to Service
+  Directory. The region and project of the Service Directory resource
+  generated from this registration will be the same as this Forwarding Rule.
+
+  Fields:
+    namespace: Service Directory namespace to register the forwarding rule
+      under.
+    service: Service Directory service to register the forwarding rule under.
+    serviceDirectoryRegion: [Optional] Service Directory region to register
+      this global forwarding rule under. Default to "us-central1". Only used
+      for PSC for Google APIs. All PSC for Google APIs Forwarding Rules on the
+      same network should use the same Service Directory region.
+  """
+
+  namespace = _messages.StringField(1)
+  service = _messages.StringField(2)
+  serviceDirectoryRegion = _messages.StringField(3)
 
 
 class ForwardingRulesScopedList(_messages.Message):
@@ -40883,6 +40787,8 @@ class ResourcePolicy(_messages.Message):
       configuration.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    instanceSchedulePolicy: Resource policy for scheduling instance
+      operations.
     kind: [Output Only] Type of the resource. Always compute#resource_policies
       for resource policies.
     name: The name of the resource, provided by the client when initially
@@ -40893,6 +40799,7 @@ class ResourcePolicy(_messages.Message):
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
     region: A string attribute.
+    resourceStatus: [Output Only] The system status of the resource policy.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
     snapshotSchedulePolicy: Resource policy for persistent disks for creating
@@ -40906,24 +40813,28 @@ class ResourcePolicy(_messages.Message):
     Values:
       CREATING: <no description>
       DELETING: <no description>
+      EXPIRED: <no description>
       INVALID: <no description>
       READY: <no description>
     """
     CREATING = 0
     DELETING = 1
-    INVALID = 2
-    READY = 3
+    EXPIRED = 2
+    INVALID = 3
+    READY = 4
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   groupPlacementPolicy = _messages.MessageField('ResourcePolicyGroupPlacementPolicy', 3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default='compute#resourcePolicy')
-  name = _messages.StringField(6)
-  region = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  snapshotSchedulePolicy = _messages.MessageField('ResourcePolicySnapshotSchedulePolicy', 9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  instanceSchedulePolicy = _messages.MessageField('ResourcePolicyInstanceSchedulePolicy', 5)
+  kind = _messages.StringField(6, default='compute#resourcePolicy')
+  name = _messages.StringField(7)
+  region = _messages.StringField(8)
+  resourceStatus = _messages.MessageField('ResourcePolicyResourceStatus', 9)
+  selfLink = _messages.StringField(10)
+  snapshotSchedulePolicy = _messages.MessageField('ResourcePolicySnapshotSchedulePolicy', 11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
 
 
 class ResourcePolicyAggregatedList(_messages.Message):
@@ -41149,6 +41060,40 @@ class ResourcePolicyHourlyCycle(_messages.Message):
   startTime = _messages.StringField(3)
 
 
+class ResourcePolicyInstanceSchedulePolicy(_messages.Message):
+  r"""An InstanceSchedulePolicy specifies when and how frequent certain
+  operations are performed on the instance.
+
+  Fields:
+    expirationTime: The expiration time of the schedule. The timestamp is an
+      RFC3339 string.
+    startTime: The start time of the schedule. The timestamp is an RFC3339
+      string.
+    timeZone: Specifies the time zone to be used in interpreting
+      Schedule.schedule. The value of this field must be a time zone name from
+      the tz database: http://en.wikipedia.org/wiki/Tz_database.
+    vmStartSchedule: Specifies the schedule for starting instances.
+    vmStopSchedule: Specifies the schedule for stopping instances.
+  """
+
+  expirationTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+  timeZone = _messages.StringField(3)
+  vmStartSchedule = _messages.MessageField('ResourcePolicyInstanceSchedulePolicySchedule', 4)
+  vmStopSchedule = _messages.MessageField('ResourcePolicyInstanceSchedulePolicySchedule', 5)
+
+
+class ResourcePolicyInstanceSchedulePolicySchedule(_messages.Message):
+  r"""Schedule for an instance operation.
+
+  Fields:
+    schedule: Specifies the frequency for the operation, using the unix-cron
+      format.
+  """
+
+  schedule = _messages.StringField(1)
+
+
 class ResourcePolicyList(_messages.Message):
   r"""A ResourcePolicyList object.
 
@@ -41278,6 +41223,35 @@ class ResourcePolicyList(_messages.Message):
   nextPageToken = _messages.StringField(5)
   selfLink = _messages.StringField(6)
   warning = _messages.MessageField('WarningValue', 7)
+
+
+class ResourcePolicyResourceStatus(_messages.Message):
+  r"""Contains output only fields. Use this sub-message for all output fields
+  set on ResourcePolicy. The internal structure of this "status" field should
+  mimic the structure of ResourcePolicy proto specification.
+
+  Fields:
+    instanceSchedulePolicy: [Output Only] Specifies a set of output values
+      reffering to the instance_schedule_policy system status. This field
+      should have the same name as corresponding policy field.
+  """
+
+  instanceSchedulePolicy = _messages.MessageField('ResourcePolicyResourceStatusInstanceSchedulePolicyStatus', 1)
+
+
+class ResourcePolicyResourceStatusInstanceSchedulePolicyStatus(_messages.Message):
+  r"""A ResourcePolicyResourceStatusInstanceSchedulePolicyStatus object.
+
+  Fields:
+    lastRunStartTime: [Output Only] The last time the schedule successfully
+      ran. The timestamp is an RFC3339 string.
+    nextRunStartTime: [Output Only] The next time the schedule is planned to
+      run. The actual time might be slightly different. The timestamp is an
+      RFC3339 string.
+  """
+
+  lastRunStartTime = _messages.StringField(1)
+  nextRunStartTime = _messages.StringField(2)
 
 
 class ResourcePolicySnapshotSchedulePolicy(_messages.Message):
@@ -42885,7 +42859,7 @@ class SSLHealthCheck(_messages.Message):
 
 
 class Scheduling(_messages.Message):
-  r"""Sets the scheduling options for an Instance. NextID: 13
+  r"""Sets the scheduling options for an Instance. NextID: 17
 
   Enums:
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for

@@ -102,10 +102,10 @@ properties:
       failure mode during a connection attempt to the origin matches the
       configured retryCondition(s), the origin request will be retried up to
       maxAttempts times. The failoverOrigin, if configured, will then be used to
-      satisfy the request. The default retryCondition is "connect-failure".
+      satisfy the request. The default retryCondition is "CONNECT_FAILURE".
       retryConditions apply to this origin, and not subsequent
       failoverOrigin(s), which may specify their own retryConditions and
-      maxAttempts. Valid values are: - connect-
+      maxAttempts. Valid values are: -
     type: array
     items:
       type: string

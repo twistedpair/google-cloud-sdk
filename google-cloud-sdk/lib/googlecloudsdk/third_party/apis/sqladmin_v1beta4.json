@@ -114,7 +114,7 @@
   "schemas": {
     "Operation": {
       "id": "Operation",
-      "description": "An Operation resource. For successful operations that return an Operation resource, only the fields relevant to the operation are populated in the resource. Next field: 18",
+      "description": "An Operation resource. For successful operations that return an Operation resource, only the fields relevant to the operation are populated in the resource.",
       "type": "object",
       "properties": {
         "kind": {
@@ -397,7 +397,7 @@
           "type": "string"
         },
         "databases": {
-          "description": "Databases to be exported. *MySQL instances:* If *fileType* is *SQL* and no database is specified, all databases are exported, except for the *mysql* system database. If *fileType* is *CSV*, you can specify one database, either by using this property or by using the *csvExportOptions.selectQuery* property, which takes precedence over this property. *PostgreSQL instances:* You must specify one database to be exported. If *fileType* is *CSV*, this database must match the one specified in the *csvExportOptions.selectQuery* property.",
+          "description": "Databases to be exported. *MySQL instances:* If *fileType* is *SQL* and no database is specified, all databases are exported, except for the *mysql* system database. If *fileType* is *CSV*, you can specify one database, either by using this property or by using the *csvExportOptions.selectQuery* property, which takes precedence over this property. *PostgreSQL instances:* You must specify one database to be exported. If *fileType* is *CSV*, this database must match the one specified in the *csvExportOptions.selectQuery* property. *SQL Server instances:* You must specify one database to be exported, and the *fileType* must be *BAK*.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1042,7 +1042,7 @@
     },
     "DatabaseInstance": {
       "id": "DatabaseInstance",
-      "description": "A Cloud SQL instance resource. Next field: 36",
+      "description": "A Cloud SQL instance resource.",
       "type": "object",
       "properties": {
         "kind": {
@@ -1284,7 +1284,7 @@
     },
     "Settings": {
       "id": "Settings",
-      "description": "Database instance settings. Next field: 27",
+      "description": "Database instance settings.",
       "type": "object",
       "properties": {
         "settingsVersion": {

@@ -24,12 +24,53 @@ DOCS_URL = 'https://cloud.google.com/resource-manager/docs/organization-policy/u
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  POLICIES = (
-      'policies',
+  FOLDERS = (
+      'folders',
+      'folders/{foldersId}',
+      {},
+      ['foldersId'],
+      True
+  )
+  FOLDERS_POLICIES = (
+      'folders.policies',
       '{+name}',
       {
           '':
-              '{v2Id}/{v2Id1}/policies/{policiesId}',
+              'folders/{foldersId}/policies/{policiesId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS = (
+      'organizations',
+      'organizations/{organizationsId}',
+      {},
+      ['organizationsId'],
+      True
+  )
+  ORGANIZATIONS_POLICIES = (
+      'organizations.policies',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/policies/{policiesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      ['projectsId'],
+      True
+  )
+  PROJECTS_POLICIES = (
+      'projects.policies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/policies/{policiesId}',
       },
       ['name'],
       True

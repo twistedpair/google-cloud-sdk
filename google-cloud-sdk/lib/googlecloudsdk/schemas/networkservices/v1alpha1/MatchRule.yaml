@@ -36,7 +36,8 @@ properties:
   headerMatches:
     description: |-
       Specifies a list of header match criteria, all of which must match
-      corresponding headers in the request.
+      corresponding headers in the request. You may specify up to 3 headers to
+      match on.
     type: array
     items:
       $ref: HeaderMatch.yaml
@@ -55,7 +56,8 @@ properties:
   queryParameterMatches:
     description: |-
       Specifies a list of query parameter match criteria, all of which must
-      match corresponding query parameters in the request.
+      match corresponding query parameters in the request. You may specify
+      up to 5 query parameters to match on.
     type: array
     items:
       $ref: QueryParameterMatcher.yaml

@@ -870,9 +870,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -911,9 +911,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -941,9 +941,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -982,9 +982,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1007,9 +1007,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1036,9 +1036,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The relative resource name of the location of metastore services to list, in the following form:\"projects\/{project_number}\/locations\/{location_id}\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1082,9 +1082,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The relative resource name of the metastore service to retrieve, in the following form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1107,9 +1107,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The relative resource name of the location in which to create a metastore service, in the following form:\"projects\/{project_number}\/locations\/{location_id}\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "serviceId": {
@@ -1145,9 +1145,9 @@
                   "parameters": {
                     "name": {
                       "description": "Immutable. The relative resource name of the metastore service, of the form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1184,9 +1184,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The relative resource name of the metastore service to delete, in the following form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     },
                     "requestId": {
@@ -1214,9 +1214,9 @@
                   "parameters": {
                     "service": {
                       "description": "Required. The relative resource name of the metastore service to run export, in the following form:\"projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1242,9 +1242,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1270,9 +1270,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -1301,9 +1301,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1334,9 +1334,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The relative resource name of the service whose metadata imports to list, in the following form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\/metadataImports\".",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1380,9 +1380,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The relative resource name of the metadata import to retrieve, in the following form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\/metadataImports\/{import_id}\".",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+\/metadataImports\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+\/metadataImports\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1405,9 +1405,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The relative resource name of the service in which to create a metastore import, in the following form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\"",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                           "type": "string"
                         },
                         "metadataImportId": {
@@ -1443,9 +1443,9 @@
                       "parameters": {
                         "name": {
                           "description": "Immutable. The relative resource name of the metadata import, of the form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\/metadataImports\/{metadata_import_id}\".",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+\/metadataImports\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+\/metadataImports\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {

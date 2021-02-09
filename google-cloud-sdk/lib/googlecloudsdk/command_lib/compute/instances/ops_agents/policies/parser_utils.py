@@ -315,7 +315,7 @@ def AddMutationArgs(parser, required=True):
 
       To inspect the exact OS short name of an instance, run:
 
-        $ gcloud beta compute instances os-inventory describe INSTANCE_NAME
+        $ gcloud beta compute instances os-inventory describe INSTANCE_NAME | grep "^ShortName: "
 
       *version*::: Version of the OS.
 
@@ -324,7 +324,7 @@ def AddMutationArgs(parser, required=True):
 
       To inspect the exact OS version of an instance, run:
 
-        $ gcloud beta compute instances os-inventory describe INSTANCE_NAME
+        $ gcloud beta compute instances os-inventory describe INSTANCE_NAME | grep "^Version: "
 
       Sample values:
 
@@ -343,6 +343,8 @@ def AddMutationArgs(parser, required=True):
         ubuntu             18.04
         ubuntu             19.10
         ubuntu             20.04
+        windows            10.*
+        windows            6.*
 
       ```*``` can be used to match a prefix of the version:
       ```<VERSION_PREFIX>*``` matches any version that starts with

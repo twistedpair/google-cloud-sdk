@@ -225,7 +225,7 @@
     },
     "StackTraceElement": {
       "id": "StackTraceElement",
-      "description": "A single stack element (frame) where an error occurred.",
+      "description": "A single stack element (frame) where an error occurred. This field currently only exists in v1Beta. We will need to roll this change out to V1 after the feature is thoroughly tested. TODO(b\/178540475)",
       "type": "object",
       "properties": {
         "step": {
@@ -236,6 +236,17 @@
           "description": "The routine where the error occurred.",
           "type": "string"
         },
+        "position": {
+          "description": "The source position information of the stacktrace element.",
+          "$ref": "Position"
+        }
+      }
+    },
+    "Position": {
+      "id": "Position",
+      "description": "Position contains source position information about the stack trace element such as line number, column number and length of the code block in bytes.",
+      "type": "object",
+      "properties": {
         "line": {
           "description": "The source code line number the current instruction was generated from.",
           "type": "string",
@@ -243,6 +254,11 @@
         },
         "column": {
           "description": "The source code column position (of the line) the current instruction was generated from.",
+          "type": "string",
+          "format": "int64"
+        },
+        "length": {
+          "description": "The length in bytes of text in this character group, e.g. digits of a number, string length, or AST (abstract syntax tree) node.",
           "type": "string",
           "format": "int64"
         }
@@ -273,9 +289,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. Name of the workflow for which the executions should be listed. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -324,9 +340,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. Name of the workflow for which an execution should be created. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow} The latest revision of the workflow will be used.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -352,9 +368,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the execution to be retrieved. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}\/executions\/{execution}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
                           "type": "string"
                         },
                         "view": {
@@ -392,9 +408,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the execution to be cancelled. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}\/executions\/{execution}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
                           "type": "string"
                         }
                       },

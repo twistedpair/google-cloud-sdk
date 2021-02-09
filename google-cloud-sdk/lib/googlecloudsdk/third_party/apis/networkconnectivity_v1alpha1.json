@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/",
+  "documentationLink": "https://cloud.google.com/network-connectivity/docs",
   "protocol": "rest",
   "rootUrl": "https://networkconnectivity.googleapis.com/",
   "mtlsRootUrl": "https://networkconnectivity.mtls.googleapis.com/",
@@ -635,11 +635,11 @@
     },
     "PrivateRange": {
       "id": "PrivateRange",
-      "description": "The PrivateRange resource for IPAM operations within a VPC network. Used to represent a private address range along with behavioral characterstics of that range (it's usage and peering behavior). Networking resources can link to this range if they are created as belonging to it.",
+      "description": "The PrivateRange resource for IPAM operations within a VPC network. Used to represent a private address range along with behavioral characterstics of that range (it's usage and peering behavior). Networking resources can link to this range if they are created as belonging to it. Next id: 10",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. Full resource name (i.e. '[...]\/projects\/p\/locations\/l\/privateRanges\/foo') See https:\/\/google.aip.dev\/122#full-resource-names",
+          "description": "Immutable. The name of a PrivateRange. Format: projects\/{project}\/locations\/{location}\/privateRanges\/{private_range} See: https:\/\/google.aip.dev\/122#fields-representing-resource-names",
           "type": "string"
         },
         "createTime": {
@@ -658,6 +658,48 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "description": {
+          "description": "A description of this resource.",
+          "type": "string"
+        },
+        "ipCidrRange": {
+          "description": "IP range that this PrivateRange defines.",
+          "type": "string"
+        },
+        "network": {
+          "description": "The URL or resource ID of the network in which to reserve the Private Range. The network cannot be deleted if there are any reserved Private Ranges referring to it. Legacy network is not supported. This can only be specified for a global internal address. Example: - URL: \/compute\/v1\/projects\/{project}\/global\/networks\/{resourceId} - ID: network123",
+          "type": "string"
+        },
+        "usage": {
+          "description": "The type of usage set for this PrivateRange.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified usage is allowed in calls which identify the resource by other fields and do not need Usage set to complete. These are i.e.: GetPrivateRange and DeletePrivateRange. Usage needs to be specified explicitly in CreatePrivateRange or UpdatePrivateRange calls.",
+            "A GCP resource can use the reserved CIDR block by associating it with the Private Range resource if usage is set to FOR_VPC.",
+            "Ranges created with EXTERNAL_TO_VPC cannot be associated with GCP resources and are meant to block out address ranges for various use cases, like for example, usage on-prem, with dynamic route announcements via interconnect."
+          ],
+          "enum": [
+            "USAGE_UNSPECIFIED",
+            "FOR_VPC",
+            "EXTERNAL_TO_VPC"
+          ]
+        },
+        "peering": {
+          "description": "The type of peering set for this PrivateRange.",
+          "type": "string",
+          "enumDescriptions": [
+            "If Peering is left unspecified in CreatePrivateRange or UpdatePrivateRange, it will be defaulted to FOR_SELF.",
+            "This is the default behavior and represents the case that this PrivateRange is intended to be used in the VPC on which it is created and is accessible from it\u2019s peers. This implies that peers or peer-of-peer\u2019s cannot use this range.",
+            "This behavior can be set when the Private Range is being reserved for usage by the peers. This means that no resource within the VPC in which it is being created can use this to associate with a GCP resource, but one of the peer\u2019s can. This represents \"donating\" a range for peers to use.",
+            "This behavior can be set when the Private Range is being reserved for usage by the VPC on which it is created but not shared with the peers. In a sense it is local to the VPC. This can be used to create Private Ranges for various purposes like HTTP_INTERNAL_LOAD_BALANCER or for interconnect routes that are not shared with peers. This also implies that peer\u2019s cannot use this range in a way that is visible to this VPC, but can re-use this range as long as it is NOT_SHARED from the peer VPC too."
+          ],
+          "enum": [
+            "PEERING_UNSPECIFIED",
+            "FOR_SELF",
+            "FOR_PEER",
+            "NOT_SHARED"
+          ]
         }
       }
     },
@@ -1629,9 +1671,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1670,9 +1712,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1700,9 +1742,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1741,9 +1783,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1766,9 +1808,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1791,9 +1833,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1825,9 +1867,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The parent resource's name.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1871,9 +1913,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the Hub resource to get.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1896,9 +1938,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The parent resource's name of the Hub.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "type": "string"
                         },
                         "hubId": {
@@ -1934,9 +1976,9 @@
                       "parameters": {
                         "name": {
                           "description": "Immutable. The name of a Hub resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -1973,9 +2015,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the Hub to delete.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+$",
                           "type": "string"
                         },
                         "requestId": {
@@ -2003,9 +2045,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2031,9 +2073,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+$",
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
@@ -2062,9 +2104,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2096,9 +2138,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent's resource name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -2142,9 +2184,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of Spoke resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/spokes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/spokes\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2167,9 +2209,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent's resource name of the Spoke.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "spokeId": {
@@ -2205,9 +2247,9 @@
                   "parameters": {
                     "name": {
                       "description": "Immutable. The name of a Spoke resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/spokes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/spokes\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -2244,9 +2286,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the Spoke to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/spokes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/spokes\/[^\/]+$",
                       "type": "string"
                     },
                     "requestId": {
@@ -2274,9 +2316,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/spokes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/spokes\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2302,9 +2344,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/spokes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/spokes\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -2333,9 +2375,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/spokes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/spokes\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2365,9 +2407,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource's name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -2411,9 +2453,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the PolicyBasedRoute resource to get.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2436,9 +2478,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource's name of the PolicyBasedRoute.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "policyBasedRouteId": {
@@ -2474,9 +2516,9 @@
                   "parameters": {
                     "name": {
                       "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must be a lowercase letter, and all following characters (except for the last character) must be a dash, lowercase letter, or digit. The last character must be a lowercase letter or digit.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -2513,9 +2555,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the PolicyBasedRoute resource to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
                       "type": "string"
                     },
                     "requestId": {
@@ -2543,9 +2585,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2571,9 +2613,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -2602,9 +2644,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/policyBasedRoutes\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2634,9 +2676,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource's name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -2680,9 +2722,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the PrivateRange to get.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateRanges\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateRanges\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2705,9 +2747,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource's name of the PrivateRange.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "privateRangeId": {
@@ -2742,10 +2784,10 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Immutable. Full resource name (i.e. '[...]\/projects\/p\/locations\/l\/privateRanges\/foo') See https:\/\/google.aip.dev\/122#full-resource-names",
+                      "description": "Immutable. The name of a PrivateRange. Format: projects\/{project}\/locations\/{location}\/privateRanges\/{private_range} See: https:\/\/google.aip.dev\/122#fields-representing-resource-names",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateRanges\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateRanges\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -2782,9 +2824,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the PrivateRange to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateRanges\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateRanges\/[^\/]+$",
                       "type": "string"
                     },
                     "requestId": {
@@ -2812,9 +2854,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateRanges\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateRanges\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2840,9 +2882,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateRanges\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateRanges\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -2871,9 +2913,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateRanges\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateRanges\/[^\/]+$",
                       "type": "string"
                     }
                   },

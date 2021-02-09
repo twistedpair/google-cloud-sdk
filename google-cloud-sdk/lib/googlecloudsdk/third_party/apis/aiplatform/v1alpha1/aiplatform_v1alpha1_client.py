@@ -64,6 +64,8 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     self.projects_locations_featurestores = self.ProjectsLocationsFeaturestoresService(self)
     self.projects_locations_hyperparameterTuningJobs_operations = self.ProjectsLocationsHyperparameterTuningJobsOperationsService(self)
     self.projects_locations_hyperparameterTuningJobs = self.ProjectsLocationsHyperparameterTuningJobsService(self)
+    self.projects_locations_indexEndpoints = self.ProjectsLocationsIndexEndpointsService(self)
+    self.projects_locations_indexes = self.ProjectsLocationsIndexesService(self)
     self.projects_locations_migratableResources_operations = self.ProjectsLocationsMigratableResourcesOperationsService(self)
     self.projects_locations_migratableResources = self.ProjectsLocationsMigratableResourcesService(self)
     self.projects_locations_modelDeploymentMonitoringJobs_operations = self.ProjectsLocationsModelDeploymentMonitoringJobsOperationsService(self)
@@ -3014,6 +3016,350 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsHyperparameterTuningJobsListRequest',
         response_type_name='GoogleCloudAiplatformV1alpha1ListHyperparameterTuningJobsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsIndexEndpointsService(base_api.BaseApiService):
+    """Service class for the projects_locations_indexEndpoints resource."""
+
+    _NAME = 'projects_locations_indexEndpoints'
+
+    def __init__(self, client):
+      super(AiplatformV1alpha1.ProjectsLocationsIndexEndpointsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an IndexEndpoint.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexEndpointsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/indexEndpoints',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.indexEndpoints.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha1/{+parent}/indexEndpoints',
+        request_field='googleCloudAiplatformV1alpha1IndexEndpoint',
+        request_type_name='AiplatformProjectsLocationsIndexEndpointsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an IndexEndpoint.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexEndpointsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.indexEndpoints.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsIndexEndpointsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def DeployIndex(self, request, global_params=None):
+      r"""Deploys an Index into this IndexEndpoint, creating a DeployedIndex within it. Only non-empty Indexes can be deployed.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexEndpointsDeployIndexRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('DeployIndex')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeployIndex.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}:deployIndex',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.indexEndpoints.deployIndex',
+        ordered_params=['indexEndpoint'],
+        path_params=['indexEndpoint'],
+        query_params=[],
+        relative_path='v1alpha1/{+indexEndpoint}:deployIndex',
+        request_field='googleCloudAiplatformV1alpha1DeployIndexRequest',
+        request_type_name='AiplatformProjectsLocationsIndexEndpointsDeployIndexRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an IndexEndpoint.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexEndpointsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1IndexEndpoint) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.indexEndpoints.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsIndexEndpointsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1IndexEndpoint',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists IndexEndpoints in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexEndpointsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1ListIndexEndpointsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/indexEndpoints',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.indexEndpoints.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'readMask'],
+        relative_path='v1alpha1/{+parent}/indexEndpoints',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsIndexEndpointsListRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1ListIndexEndpointsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an IndexEndpoint.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexEndpointsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1IndexEndpoint) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.indexEndpoints.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='googleCloudAiplatformV1alpha1IndexEndpoint',
+        request_type_name='AiplatformProjectsLocationsIndexEndpointsPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1IndexEndpoint',
+        supports_download=False,
+    )
+
+    def UndeployIndex(self, request, global_params=None):
+      r"""Undeploys an Index from an IndexEndpoint, removing a DeployedIndex from it, and freeing all resources it's using.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexEndpointsUndeployIndexRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('UndeployIndex')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UndeployIndex.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}:undeployIndex',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.indexEndpoints.undeployIndex',
+        ordered_params=['indexEndpoint'],
+        path_params=['indexEndpoint'],
+        query_params=[],
+        relative_path='v1alpha1/{+indexEndpoint}:undeployIndex',
+        request_field='googleCloudAiplatformV1alpha1UndeployIndexRequest',
+        request_type_name='AiplatformProjectsLocationsIndexEndpointsUndeployIndexRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsIndexesService(base_api.BaseApiService):
+    """Service class for the projects_locations_indexes resource."""
+
+    _NAME = 'projects_locations_indexes'
+
+    def __init__(self, client):
+      super(AiplatformV1alpha1.ProjectsLocationsIndexesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an Index.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/indexes',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.indexes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha1/{+parent}/indexes',
+        request_field='googleCloudAiplatformV1alpha1Index',
+        request_type_name='AiplatformProjectsLocationsIndexesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an Index. An Index can only be deleted when all its DeployedIndexes had been undeployed.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.indexes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsIndexesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an Index.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1Index) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.indexes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsIndexesGetRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1Index',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Indexes in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1ListIndexesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/indexes',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.indexes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'readMask'],
+        relative_path='v1alpha1/{+parent}/indexes',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsIndexesListRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1ListIndexesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an Index.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.indexes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='googleCloudAiplatformV1alpha1Index',
+        request_type_name='AiplatformProjectsLocationsIndexesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

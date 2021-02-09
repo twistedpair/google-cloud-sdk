@@ -115,6 +115,11 @@ def _ProjectAndAccountNameToEmail(project, account_name):
   return '{}@{}.iam.gserviceaccount.com'.format(account_name, project)
 
 
+def ServiceAccountEmail(account_name):
+  project_ref = projects_util.ParseProject(properties.VALUES.core.project.Get())
+  return _ProjectAndAccountNameToEmail(project_ref, account_name)
+
+
 def GetOrCreateServiceAccountWithPrompt(account_name, display_name,
                                         description):
   """Returns or creates specified service account.
@@ -182,3 +187,28 @@ def PrintOrBindMissingRolesWithPrompt(service_account_ref, recommended_roles,
     log.status.Print('Roles successfully bound.')
   else:
     log.warning('Manual binding of above roles may be necessary.')
+
+
+def AddIamPolicyBindingServiceAccount(service_account_name, role, member):
+  """Add an IAM policy binding to a service account.
+
+  Args:
+    service_account_name: The google service account to add the iam policy
+      binding to.
+    role: The role the member is granted.
+    member: The gsa/ksa allowed to act as the defined service account.
+
+  Returns:
+    Policy: The updated policy.
+  """
+  iam_client, iam_messages = iam_api_util.GetClientAndMessages()
+  policy = iam_client.projects_serviceAccounts.GetIamPolicy(
+      iam_messages.IamProjectsServiceAccountsGetIamPolicyRequest(
+          resource=iam_util.EmailToAccountResourceName(service_account_name)))
+
+  iam_util.AddBindingToIamPolicy(iam_messages.Binding, policy, member, role)
+
+  return iam_client.projects_serviceAccounts.SetIamPolicy(
+      iam_messages.IamProjectsServiceAccountsSetIamPolicyRequest(
+          resource=iam_util.EmailToAccountResourceName(service_account_name),
+          setIamPolicyRequest=iam_messages.SetIamPolicyRequest(policy=policy)))

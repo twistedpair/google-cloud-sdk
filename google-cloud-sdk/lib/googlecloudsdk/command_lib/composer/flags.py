@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import argparse
+import ipaddress
 import re
 
 from googlecloudsdk.calliope import actions
@@ -30,7 +31,6 @@ from googlecloudsdk.command_lib.composer import util as command_util
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import properties
 
-import ipaddress
 import six
 
 
@@ -374,57 +374,40 @@ WEB_SERVER_MACHINE_TYPE = base.Argument(
     types is available here: https://cloud.google.com/composer/pricing.
     """)
 
-ENABLE_AUTOSCALING = base.Argument(
-    '--enable-autoscaling',
+SCHEDULER_CPU = base.Argument(
+    '--scheduler-cpu',
     hidden=True,
-    default=None,
-    required=True,
-    action='store_true',
-    help="""\
-     Enable GKE autoscaling. Can only be enabled when creating an environment.
-     Can not be disabled.
-     """)
-
-AUTOSCALING_MINIMUM_CPU = base.Argument(
-    '--autoscaling-minimum-cpu',
-    hidden=True,
-    type=int,
+    type=float,
     default=None,
     help="""\
-    Minimum number of CPU allowed in the Environment. Cannot be specified
-    unless autoscaling is enabled. If not specified, will be set to 1.
+    CPU allocated to Airflow scheduler.
     """)
 
-AUTOSCALING_MAXIMUM_CPU = base.Argument(
-    '--autoscaling-maximum-cpu',
+WORKER_CPU = base.Argument(
+    '--worker-cpu',
     hidden=True,
-    type=int,
+    type=float,
     default=None,
     help="""\
-    Maximum number of CPU allowed in the Environment. Cannot be specified
-    unless autoscaling is enabled. If not specified, will be set to a maximum
-    capacity GKE nodes provide.
+    CPU allocated to each Airflow worker
     """)
 
-AUTOSCALING_MINIMUM_MEMORY = base.Argument(
-    '--autoscaling-minimum-memory',
+MIN_WORKERS = base.Argument(
+    '--min-workers',
     hidden=True,
     type=int,
     default=None,
     help="""\
-    Minimum memory (in GB) allowed in the Environment. Cannot be specified
-    unless autoscaling is enabled. If not specified, will be set to 1.
+    Minimum number of workers in the Environment.
     """)
 
-AUTOSCALING_MAXIMUM_MEMORY = base.Argument(
-    '--autoscaling-maximum-memory',
+MAX_WORKERS = base.Argument(
+    '--max-workers',
     hidden=True,
     type=int,
     default=None,
     help="""\
-    Maximum memory (in GB) allowed in the Environment. Cannot be specified
-    unless autoscaling is enabled. If not specified, will be set to a maximum
-    capacity GKE nodes provide.
+    Maximum number of workers in the Environment.
     """)
 
 
@@ -951,10 +934,10 @@ def AddAutoscalingUpdateFlagsToGroup(update_type_group):
   """
   update_group = update_type_group.add_argument_group(
       AUTOSCALING_FLAG_GROUP_DESCRIPTION, hidden=True)
-  AUTOSCALING_MAXIMUM_MEMORY.AddToParser(update_group)
-  AUTOSCALING_MINIMUM_MEMORY.AddToParser(update_group)
-  AUTOSCALING_MAXIMUM_CPU.AddToParser(update_group)
-  AUTOSCALING_MINIMUM_CPU.AddToParser(update_group)
+  SCHEDULER_CPU.AddToParser(update_group)
+  WORKER_CPU.AddToParser(update_group)
+  MIN_WORKERS.AddToParser(update_group)
+  MAX_WORKERS.AddToParser(update_group)
 
 
 def AddMaintenanceWindowFlagsGroup(update_type_group):

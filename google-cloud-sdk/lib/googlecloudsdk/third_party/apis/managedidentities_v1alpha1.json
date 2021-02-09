@@ -1452,9 +1452,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1493,9 +1493,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1525,9 +1525,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation's parent resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "type": "string"
                         },
                         "filter": {
@@ -1566,9 +1566,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1591,9 +1591,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource to be deleted.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1616,9 +1616,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource to be cancelled.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1648,9 +1648,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Resource project name and location using the form: `projects\/{project_id}\/locations\/global`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "type": "string"
                         },
                         "domainName": {
@@ -1681,9 +1681,9 @@
                       "parameters": {
                         "name": {
                           "description": "The domain resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1709,9 +1709,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The resource name of the domain location using the form: `projects\/{project_id}\/locations\/global`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1755,9 +1755,9 @@
                       "parameters": {
                         "name": {
                           "description": "Domain resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1780,9 +1780,9 @@
                       "parameters": {
                         "name": {
                           "description": "Output only. Unique name of the domain in this scope including projects and location using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -1814,9 +1814,9 @@
                       "parameters": {
                         "name": {
                           "description": "Domain resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1839,9 +1839,9 @@
                       "parameters": {
                         "name": {
                           "description": "The resource domain name, project name and location using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1867,9 +1867,9 @@
                       "parameters": {
                         "name": {
                           "description": "The resource domain name, project name and location using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1895,9 +1895,9 @@
                       "parameters": {
                         "name": {
                           "description": "The resource domain name, project name, and location using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1923,9 +1923,9 @@
                       "parameters": {
                         "name": {
                           "description": "The resource domain name, project name, and location using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1951,9 +1951,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The domain resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1976,9 +1976,9 @@
                       "parameters": {
                         "name": {
                           "description": "The resource name of the LDAPS settings. Uses the form: `projects\/{project}\/locations\/{location}\/domains\/{domain}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -2010,9 +2010,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2038,9 +2038,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
@@ -2069,9 +2069,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2102,9 +2102,9 @@
                           "parameters": {
                             "parent": {
                               "description": "Required. The resource name of the SqlIntegrations using the form: `projects\/{project_id}\/locations\/global\/domains\/*`",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                               "type": "string"
                             },
                             "pageSize": {
@@ -2148,9 +2148,9 @@
                           "parameters": {
                             "name": {
                               "description": "Required. MangedOU resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/*\/sqlIntegrations\/{name}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+\/sqlIntegrations\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+\/sqlIntegrations\/[^\/]+$",
                               "type": "string"
                             }
                           },

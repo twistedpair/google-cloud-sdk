@@ -654,9 +654,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -695,9 +695,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -725,9 +725,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -766,9 +766,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -791,9 +791,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -816,9 +816,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -845,9 +845,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the instance location using the form: `projects\/{project_id}\/locations\/{location_id}` where `location_id` refers to a GCP region.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -881,9 +881,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Redis instance resource name using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` where `location_id` refers to a GCP region.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -906,9 +906,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Redis instance resource name using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` where `location_id` refers to a GCP region.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -931,9 +931,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the instance location using the form: `projects\/{project_id}\/locations\/{location_id}` where `location_id` refers to a GCP region.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "instanceId": {
@@ -964,9 +964,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Unique name of the resource in this scope including project and location using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` Note: Redis instances are managed and addressed at regional level so location_id here refers to a GCP region; however, users may choose which specific zone (or collection of zones for cross-zone instances) an instance should be provisioned in. Refer to location_id and alternative_location_id fields for more details.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -998,9 +998,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Redis instance resource name using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` where `location_id` refers to a GCP region.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1026,9 +1026,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Redis instance resource name using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` where `location_id` refers to a GCP region.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1054,9 +1054,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Redis instance resource name using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` where `location_id` refers to a GCP region.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1082,9 +1082,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Redis instance resource name using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` where `location_id` refers to a GCP region.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1110,9 +1110,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Redis instance resource name using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` where `location_id` refers to a GCP region.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },

@@ -23,6 +23,7 @@ from __future__ import unicode_literals
 
 import contextlib
 import json
+import select
 import socket
 import webbrowser
 import wsgiref
@@ -291,6 +292,86 @@ def RunGoogleAuthFlow(flow, launch_browser=False):
   return _RunGoogleAuthFlowNoLaunchBrowser(flow)
 
 
+class WSGIServer(wsgiref.simple_server.WSGIServer):
+  """WSGI server to handle more than one connections.
+
+  A normal WSGI server will handle connections one-by-one. When running a local
+  server to handle auth redirects, browser opens two connections. One connection
+  is used to send the authorization code. The other one is opened but not used.
+  Some browsers (i.e. Chrome) send data in the first connection. Other browsers
+  (i.e. Safari) send data in the second connection. To make the server working
+  for all these browsers, the server should be able to handle two connections
+  and smartly read data from the correct connection.
+  """
+
+  # pylint: disable=invalid-name, follow the style of the base class.
+  def _conn_closed(self, conn):
+    """Check if conn is closed at the client side."""
+    return not conn.recv(1024, socket.MSG_PEEK)
+
+  def _handle_closed_conn(self, closed_socket, sockets_to_read,
+                          client_connections):
+    sockets_to_read.remove(closed_socket)
+    client_connections[:] = [
+        conn for conn in client_connections if conn[0] is not closed_socket
+    ]
+    self.shutdown_request(closed_socket)
+
+  def _handle_new_client(self, listening_socket, socket_to_read,
+                         client_connections):
+    request, client_address = listening_socket.accept()
+    client_connections.append((request, client_address))
+    socket_to_read.append(request)
+
+  def _handle_non_data_conn(self, data_conn, client_connections):
+    for request, _ in client_connections:
+      if request is not data_conn:
+        self.shutdown_request(request)
+
+  def _find_data_conn_with_client_address(self, data_conn, client_connections):
+    for request, client_address in client_connections:
+      if request is data_conn:
+        return request, client_address
+
+  def _find_data_conn(self):
+    """Finds the connection which will be used to send data."""
+    sockets_to_read = [self.socket]
+    client_connections = []
+    while True:
+      sockets_ready_to_read, _, _ = select.select(sockets_to_read, [], [])
+      for s in sockets_ready_to_read:
+        # Listening socket is ready to accept client.
+        if s is self.socket:
+          self._handle_new_client(s, sockets_to_read, client_connections)
+        else:
+          if self._conn_closed(s):
+            self._handle_closed_conn(s, sockets_to_read, client_connections)
+          # Found the connection which will be used to send data.
+          else:
+            self._handle_non_data_conn(s, client_connections)
+            return self._find_data_conn_with_client_address(
+                s, client_connections)
+
+  # pylint: enable=invalid-name
+
+  def handle_request(self):
+    """Handle one request."""
+    request, client_address = self._find_data_conn()
+    # The following section largely copies the
+    # socketserver.BaseSever._handle_request_noblock.
+    if self.verify_request(request, client_address):
+      try:
+        self.process_request(request, client_address)
+      except Exception:  # pylint: disable=broad-except
+        self.handle_error(request, client_address)
+        self.shutdown_request(request)
+      except:
+        self.shutdown_request(request)
+        raise
+    else:
+      self.shutdown_request(request)
+
+
 class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
   """Installed app flow.
 
@@ -334,12 +415,19 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
         session, client_type, client_config,
         redirect_uri, code_verifier,
         autogenerate_code_verifier)
+    self.app = None
+    self.server = None
+
+  def initialize_server(self):
+    if not self.app or not self.server:
+      self.app = _RedirectWSGIApp()
+      self.server = CreateLocalServer(self.app, _PORT_SEARCH_START,
+                                      _PORT_SEARCH_END)
 
   def run_local_server(self,
                        host='localhost',
                        authorization_prompt_message=google_auth_flow
                        .InstalledAppFlow._DEFAULT_AUTH_PROMPT_MESSAGE,
-                       open_browser=True,
                        **kwargs):
     """Run the flow using the server strategy.
 
@@ -356,8 +444,6 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
           be served over http, not https.
         authorization_prompt_message: str, The message to display to tell
           the user to navigate to the authorization URL.
-        open_browser: bool, Whether or not to open the authorization URL
-          in the user's browser.
         **kwargs: Additional keyword arguments passed through to
           authorization_url`.
 
@@ -369,27 +455,23 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
       LocalServerTimeoutError: If the local server handling redirection timeout
         before receiving the request.
     """
+    self.initialize_server()
 
-    wsgi_app = _RedirectWSGIApp()
-    local_server = CreateLocalServer(wsgi_app, _PORT_SEARCH_START,
-                                     _PORT_SEARCH_END)
-
-    self.redirect_uri = 'http://{}:{}/'.format(host, local_server.server_port)
+    self.redirect_uri = 'http://{}:{}/'.format(host, self.server.server_port)
     auth_url, _ = self.authorization_url(**kwargs)
 
-    if open_browser:
-      webbrowser.open(auth_url, new=1, autoraise=True)
+    webbrowser.open(auth_url, new=1, autoraise=True)
 
     log.err.Print(authorization_prompt_message.format(url=auth_url))
+    self.server.handle_request()
+    self.server.server_close()
 
-    local_server.handle_request()
-
-    if not wsgi_app.last_request_uri:
+    if not self.app.last_request_uri:
       raise LocalServerTimeoutError(
           'Local server timed out before receiving the redirection request.')
     # Note: using https here because oauthlib requires that
     # OAuth 2.0 should only occur over https.
-    authorization_response = wsgi_app.last_request_uri.replace(
+    authorization_response = self.app.last_request_uri.replace(
         'http:', 'https:')
     self.fetch_token(
         authorization_response=authorization_response, include_client_id=True)
@@ -446,7 +528,7 @@ def CreateLocalServer(wsgi_app, search_start_port, search_end_port):
       the local server.
 
   Returns:
-    wsgiref.simple_server.WSGISever, a wsgi server.
+    WSGISever, a wsgi server.
   """
   port = search_start_port
   local_server = None
@@ -456,6 +538,7 @@ def CreateLocalServer(wsgi_app, search_start_port, search_end_port):
           'localhost',
           port,
           wsgi_app,
+          server_class=WSGIServer,
           handler_class=google_auth_flow._WSGIRequestHandler)  # pylint:disable=protected-access
     except (socket.error, OSError):
       port += 1

@@ -2026,6 +2026,8 @@ class Environment(_messages.Message):
   Enums:
     FlexResourceSchedulingGoalValueValuesEnum: Which Flexible Resource
       Scheduling mode to run in.
+    ShuffleModeValueValuesEnum: Output only. The shuffle mode used for the
+      job.
 
   Messages:
     InternalExperimentsValue: Experimental settings.
@@ -2059,6 +2061,7 @@ class Environment(_messages.Message):
       encrypt data at rest, AKA a Customer Managed Encryption Key (CMEK).
       Format:
       projects/PROJECT_ID/locations/LOCATION/keyRings/KEY_RING/cryptoKeys/KEY
+    shuffleMode: Output only. The shuffle mode used for the job.
     tempStoragePrefix: The prefix of the resources the system should use for
       temporary storage. The system will append the suffix "/temp-{JOBNAME} to
       this resource prefix, where {JOBNAME} is the value of the job_name
@@ -2097,6 +2100,18 @@ class Environment(_messages.Message):
     FLEXRS_UNSPECIFIED = 0
     FLEXRS_SPEED_OPTIMIZED = 1
     FLEXRS_COST_OPTIMIZED = 2
+
+  class ShuffleModeValueValuesEnum(_messages.Enum):
+    r"""Output only. The shuffle mode used for the job.
+
+    Values:
+      SHUFFLE_MODE_UNSPECIFIED: Shuffle mode information is not available.
+      VM_BASED: Shuffle is done on the worker VMs.
+      SERVICE_BASED: Shuffle is done on the service side.
+    """
+    SHUFFLE_MODE_UNSPECIFIED = 0
+    VM_BASED = 1
+    SERVICE_BASED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class InternalExperimentsValue(_messages.Message):
@@ -2209,12 +2224,13 @@ class Environment(_messages.Message):
   sdkPipelineOptions = _messages.MessageField('SdkPipelineOptionsValue', 6)
   serviceAccountEmail = _messages.StringField(7)
   serviceKmsKeyName = _messages.StringField(8)
-  tempStoragePrefix = _messages.StringField(9)
-  userAgent = _messages.MessageField('UserAgentValue', 10)
-  version = _messages.MessageField('VersionValue', 11)
-  workerPools = _messages.MessageField('WorkerPool', 12, repeated=True)
-  workerRegion = _messages.StringField(13)
-  workerZone = _messages.StringField(14)
+  shuffleMode = _messages.EnumField('ShuffleModeValueValuesEnum', 9)
+  tempStoragePrefix = _messages.StringField(10)
+  userAgent = _messages.MessageField('UserAgentValue', 11)
+  version = _messages.MessageField('VersionValue', 12)
+  workerPools = _messages.MessageField('WorkerPool', 13, repeated=True)
+  workerRegion = _messages.StringField(14)
+  workerZone = _messages.StringField(15)
 
 
 class ExecutionStageState(_messages.Message):

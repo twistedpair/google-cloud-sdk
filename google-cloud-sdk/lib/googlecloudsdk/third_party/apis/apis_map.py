@@ -364,7 +364,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.certificatemanager.v1alpha1',
                 client_classpath='certificatemanager_v1alpha1_client.CertificatemanagerV1alpha1',
                 messages_modulepath='certificatemanager_v1alpha1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
         'v1alpha2':
@@ -372,7 +372,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.certificatemanager.v1alpha2',
                 client_classpath='certificatemanager_v1alpha2_client.CertificatemanagerV1alpha2',
                 messages_modulepath='certificatemanager_v1alpha2_messages',
-                default_version=False,
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

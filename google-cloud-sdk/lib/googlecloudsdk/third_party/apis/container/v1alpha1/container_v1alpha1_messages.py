@@ -1856,6 +1856,9 @@ class ILBSubsettingConfig(_messages.Message):
 class IPAllocationPolicy(_messages.Message):
   r"""Configuration for controlling how IPs are allocated in the cluster.
 
+  Enums:
+    StackTypeValueValuesEnum: IP stack type
+
   Fields:
     allowRouteOverlap: If true, allow allocation of cluster CIDR ranges that
       overlap with certain kinds of network routes. By default we do not allow
@@ -1909,6 +1912,7 @@ class IPAllocationPolicy(_messages.Message):
       service ClusterIPs. This must be an existing secondary range associated
       with the cluster subnetwork. This field is only applicable with
       use_ip_aliases is true and create_subnetwork is false.
+    stackType: IP stack type
     subnetworkName: A custom subnetwork name to be used if `create_subnetwork`
       is true. If this field is empty, then an automatic name will be chosen
       for the new subnetwork.
@@ -1938,6 +1942,18 @@ class IPAllocationPolicy(_messages.Message):
       then the server picks the default IP allocation mode
   """
 
+  class StackTypeValueValuesEnum(_messages.Enum):
+    r"""IP stack type
+
+    Values:
+      STACK_TYPE_UNSPECIFIED: By default, the clusters will be IPV4 only
+      IPV4: The value used if the cluster is a IPV4 only
+      IPV4_IPV6: The value used if the cluster is a dual stack cluster
+    """
+    STACK_TYPE_UNSPECIFIED = 0
+    IPV4 = 1
+    IPV4_IPV6 = 2
+
   allowRouteOverlap = _messages.BooleanField(1)
   clusterIpv4Cidr = _messages.StringField(2)
   clusterIpv4CidrBlock = _messages.StringField(3)
@@ -1948,11 +1964,12 @@ class IPAllocationPolicy(_messages.Message):
   servicesIpv4Cidr = _messages.StringField(8)
   servicesIpv4CidrBlock = _messages.StringField(9)
   servicesSecondaryRangeName = _messages.StringField(10)
-  subnetworkName = _messages.StringField(11)
-  tpuIpv4CidrBlock = _messages.StringField(12)
-  tpuUseServiceNetworking = _messages.BooleanField(13)
-  useIpAliases = _messages.BooleanField(14)
-  useRoutes = _messages.BooleanField(15)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 11)
+  subnetworkName = _messages.StringField(12)
+  tpuIpv4CidrBlock = _messages.StringField(13)
+  tpuUseServiceNetworking = _messages.BooleanField(14)
+  useIpAliases = _messages.BooleanField(15)
+  useRoutes = _messages.BooleanField(16)
 
 
 class IntraNodeVisibilityConfig(_messages.Message):

@@ -1001,6 +1001,23 @@
           "readOnly": true,
           "type": "string",
           "format": "int64"
+        },
+        "state": {
+          "description": "Output only. State of the environment group. Values other than ACTIVE means the resource is not ready to use.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Resource is in an unspecified state.",
+            "Resource is being created.",
+            "Resource is provisioned and ready to use.",
+            "The resource is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "DELETING"
+          ]
         }
       }
     },
@@ -1210,6 +1227,23 @@
         "displayName": {
           "description": "Optional. Display name for this environment.",
           "type": "string"
+        },
+        "state": {
+          "description": "Output only. State of the environment. Values other than ACTIVE means the resource is not ready to use.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Resource is in an unspecified state.",
+            "Resource is being created.",
+            "Resource is provisioned and ready to use.",
+            "The resource is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "DELETING"
+          ]
         }
       }
     },
@@ -2027,6 +2061,23 @@
         "projectId": {
           "description": "The project ID associated with the Apigee organization.",
           "type": "string"
+        },
+        "state": {
+          "description": "Output only. State of the organization. Values other than ACTIVE means the resource is not ready to use.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Resource is in an unspecified state.",
+            "Resource is being created.",
+            "Resource is provisioned and ready to use.",
+            "The resource is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "DELETING"
+          ]
         }
       }
     },

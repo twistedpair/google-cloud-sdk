@@ -54,9 +54,25 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
   if 'fingerprint' in parsed_security_policy:
     security_policy.fingerprint = base64.urlsafe_b64decode(
         parsed_security_policy['fingerprint'].encode('ascii'))
+  if 'type' in parsed_security_policy:
+    security_policy.type = (
+        messages.SecurityPolicy.TypeValueValuesEnum(
+            parsed_security_policy['type']))
   if 'cloudArmorConfig' in parsed_security_policy:
     security_policy.cloudArmorConfig = messages.SecurityPolicyCloudArmorConfig(
         enableMl=parsed_security_policy['cloudArmorConfig']['enableMl'])
+  if 'adaptiveProtectionConfig' in parsed_security_policy:
+    security_policy.adaptiveProtectionConfig = (
+        messages.SecurityPolicyAdaptiveProtectionConfig(
+            layer7DdosDefenseConfig=messages
+            .SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(
+                enable=parsed_security_policy['adaptiveProtectionConfig']
+                ['layer7DdosDefenseConfig']['enable'],
+                ruleVisibility=messages
+                .SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig
+                .RuleVisibilityValueValuesEnum(
+                    parsed_security_policy['adaptiveProtectionConfig']
+                    ['layer7DdosDefenseConfig']['ruleVisibility']))))
 
   rules = []
   for rule in parsed_security_policy['rules']:
@@ -77,10 +93,14 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
         match.config = messages.SecurityPolicyRuleMatcherConfig(
             srcIpRanges=rule['match']['config']['srcIpRanges'])
     security_policy_rule.match = match
-    security_policy_rule.priority = rule['priority']
+    security_policy_rule.priority = int(rule['priority'])
     if 'preview' in rule:
       security_policy_rule.preview = rule['preview']
     rules.append(security_policy_rule)
+    if 'redirectTarget' in rule:
+      security_policy_rule.redirectTarget = rule['redirectTarget']
+    if 'ruleNumber' in rule:
+      security_policy_rule.ruleNumber = int(rule['ruleNumber'])
 
   security_policy.rules = rules
 
@@ -114,7 +134,7 @@ def WriteToFile(output_file, security_policy, file_format):
 
 
 def CreateCloudArmorConfig(client, args):
-  """Returns a SecurityPolicyCloudArmorConfig message if args are valid."""
+  """Returns a SecurityPolicyCloudArmorConfig message."""
 
   messages = client.messages
   cloud_armor_config = None
@@ -122,3 +142,33 @@ def CreateCloudArmorConfig(client, args):
     cloud_armor_config = messages.SecurityPolicyCloudArmorConfig(
         enableMl=args.enable_ml)
   return cloud_armor_config
+
+
+def CreateAdaptiveProtectionConfig(client, args,
+                                   existing_adaptive_protection_config):
+  """Returns a SecurityPolicyAdaptiveProtectionConfig message."""
+
+  messages = client.messages
+  adaptive_protection_config = (
+      existing_adaptive_protection_config
+      if existing_adaptive_protection_config is not None else
+      messages.SecurityPolicyAdaptiveProtectionConfig())
+
+  if (args.IsSpecified('enable_layer7_ddos_defense') or
+      args.IsSpecified('layer7_ddos_defense_rule_visibility')):
+    layer7_ddos_defense_config = (
+        adaptive_protection_config.layer7DdosDefenseConfig
+        if adaptive_protection_config.layer7DdosDefenseConfig is not None else
+        messages.SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(
+        ))
+    if args.IsSpecified('enable_layer7_ddos_defense'):
+      layer7_ddos_defense_config.enable = args.enable_layer7_ddos_defense
+    if args.IsSpecified('layer7_ddos_defense_rule_visibility'):
+      layer7_ddos_defense_config.ruleVisibility = (
+          messages.SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig
+          .RuleVisibilityValueValuesEnum(
+              args.layer7_ddos_defense_rule_visibility))
+    adaptive_protection_config.layer7DdosDefenseConfig = (
+        layer7_ddos_defense_config)
+
+  return adaptive_protection_config

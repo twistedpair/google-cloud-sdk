@@ -36,10 +36,10 @@ def AddPathFlag(parser):
 def AddFormatFlag(parser):
   parser.add_argument(
       '--resource-format',
-      choices=['krm', 'hcl'],
+      choices=['krm', 'terraform'],
       help=('Format of the configuration to export. Available configuration '
             'formats are Kubernetes Resource Model (krm) or Terraform '
-            'HCL (hcl). Command defaults to "krm".'))
+            'HCL (terraform). Command defaults to "krm".'))
 
 
 def AddAllFlag(parser, collection='collection'):

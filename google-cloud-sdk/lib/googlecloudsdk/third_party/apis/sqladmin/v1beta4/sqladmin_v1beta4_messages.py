@@ -345,7 +345,7 @@ class DatabaseFlags(_messages.Message):
 
 
 class DatabaseInstance(_messages.Message):
-  r"""A Cloud SQL instance resource. Next field: 36
+  r"""A Cloud SQL instance resource.
 
   Enums:
     BackendTypeValueValuesEnum:  *SECOND_GEN*: Cloud SQL database instance.
@@ -791,7 +791,9 @@ class ExportContext(_messages.Message):
       *csvExportOptions.selectQuery* property, which takes precedence over
       this property. *PostgreSQL instances:* You must specify one database to
       be exported. If *fileType* is *CSV*, this database must match the one
-      specified in the *csvExportOptions.selectQuery* property.
+      specified in the *csvExportOptions.selectQuery* property. *SQL Server
+      instances:* You must specify one database to be exported, and the
+      *fileType* must be *BAK*.
     fileType: The file type for the specified uri. *SQL*: The file contains
       SQL statements. *CSV*: The file contains CSV data. *BAK*: The file
       contains backup data for a SQL Server instance.
@@ -1439,7 +1441,7 @@ class OnPremisesConfiguration(_messages.Message):
 class Operation(_messages.Message):
   r"""An Operation resource. For successful operations that return an
   Operation resource, only the fields relevant to the operation are populated
-  in the resource. Next field: 18
+  in the resource.
 
   Enums:
     OperationTypeValueValuesEnum: The type of the operation. Valid values are:
@@ -1727,7 +1729,7 @@ class RotateServerCaContext(_messages.Message):
 
 
 class Settings(_messages.Message):
-  r"""Database instance settings. Next field: 27
+  r"""Database instance settings.
 
   Enums:
     ActivationPolicyValueValuesEnum: The activation policy specifies when the

@@ -1714,9 +1714,9 @@ class NetworkconnectivityProjectsLocationsPrivateRangesPatchRequest(_messages.Me
   r"""A NetworkconnectivityProjectsLocationsPrivateRangesPatchRequest object.
 
   Fields:
-    name: Immutable. Full resource name (i.e.
-      '[...]/projects/p/locations/l/privateRanges/foo') See
-      https://google.aip.dev/122#full-resource-names
+    name: Immutable. The name of a PrivateRange. Format:
+      projects/{project}/locations/{location}/privateRanges/{private_range}
+      See: https://google.aip.dev/122#fields-representing-resource-names
     privateRange: A PrivateRange resource to be passed as the request body.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -2335,19 +2335,83 @@ class PrivateRange(_messages.Message):
   r"""The PrivateRange resource for IPAM operations within a VPC network. Used
   to represent a private address range along with behavioral characterstics of
   that range (it's usage and peering behavior). Networking resources can link
-  to this range if they are created as belonging to it.
+  to this range if they are created as belonging to it. Next id: 10
+
+  Enums:
+    PeeringValueValuesEnum: The type of peering set for this PrivateRange.
+    UsageValueValuesEnum: The type of usage set for this PrivateRange.
 
   Messages:
     LabelsValue: User-defined labels.
 
   Fields:
     createTime: Time when the PrivateRange was created.
+    description: A description of this resource.
+    ipCidrRange: IP range that this PrivateRange defines.
     labels: User-defined labels.
-    name: Immutable. Full resource name (i.e.
-      '[...]/projects/p/locations/l/privateRanges/foo') See
-      https://google.aip.dev/122#full-resource-names
+    name: Immutable. The name of a PrivateRange. Format:
+      projects/{project}/locations/{location}/privateRanges/{private_range}
+      See: https://google.aip.dev/122#fields-representing-resource-names
+    network: The URL or resource ID of the network in which to reserve the
+      Private Range. The network cannot be deleted if there are any reserved
+      Private Ranges referring to it. Legacy network is not supported. This
+      can only be specified for a global internal address. Example: - URL:
+      /compute/v1/projects/{project}/global/networks/{resourceId} - ID:
+      network123
+    peering: The type of peering set for this PrivateRange.
     updateTime: Time when the PrivateRange was updated.
+    usage: The type of usage set for this PrivateRange.
   """
+
+  class PeeringValueValuesEnum(_messages.Enum):
+    r"""The type of peering set for this PrivateRange.
+
+    Values:
+      PEERING_UNSPECIFIED: If Peering is left unspecified in
+        CreatePrivateRange or UpdatePrivateRange, it will be defaulted to
+        FOR_SELF.
+      FOR_SELF: This is the default behavior and represents the case that this
+        PrivateRange is intended to be used in the VPC on which it is created
+        and is accessible from it's peers. This implies that peers or peer-of-
+        peer's cannot use this range.
+      FOR_PEER: This behavior can be set when the Private Range is being
+        reserved for usage by the peers. This means that no resource within
+        the VPC in which it is being created can use this to associate with a
+        GCP resource, but one of the peer's can. This represents "donating" a
+        range for peers to use.
+      NOT_SHARED: This behavior can be set when the Private Range is being
+        reserved for usage by the VPC on which it is created but not shared
+        with the peers. In a sense it is local to the VPC. This can be used to
+        create Private Ranges for various purposes like
+        HTTP_INTERNAL_LOAD_BALANCER or for interconnect routes that are not
+        shared with peers. This also implies that peer's cannot use this range
+        in a way that is visible to this VPC, but can re-use this range as
+        long as it is NOT_SHARED from the peer VPC too.
+    """
+    PEERING_UNSPECIFIED = 0
+    FOR_SELF = 1
+    FOR_PEER = 2
+    NOT_SHARED = 3
+
+  class UsageValueValuesEnum(_messages.Enum):
+    r"""The type of usage set for this PrivateRange.
+
+    Values:
+      USAGE_UNSPECIFIED: Unspecified usage is allowed in calls which identify
+        the resource by other fields and do not need Usage set to complete.
+        These are i.e.: GetPrivateRange and DeletePrivateRange. Usage needs to
+        be specified explicitly in CreatePrivateRange or UpdatePrivateRange
+        calls.
+      FOR_VPC: A GCP resource can use the reserved CIDR block by associating
+        it with the Private Range resource if usage is set to FOR_VPC.
+      EXTERNAL_TO_VPC: Ranges created with EXTERNAL_TO_VPC cannot be
+        associated with GCP resources and are meant to block out address
+        ranges for various use cases, like for example, usage on-prem, with
+        dynamic route announcements via interconnect.
+    """
+    USAGE_UNSPECIFIED = 0
+    FOR_VPC = 1
+    EXTERNAL_TO_VPC = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2374,9 +2438,14 @@ class PrivateRange(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  description = _messages.StringField(2)
+  ipCidrRange = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  peering = _messages.EnumField('PeeringValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
+  usage = _messages.EnumField('UsageValueValuesEnum', 9)
 
 
 class QuotaProperties(_messages.Message):

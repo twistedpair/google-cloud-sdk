@@ -34,8 +34,9 @@ class _PackageTemplates(
 class _AgentRuleTemplates(
     collections.namedtuple(
         '_AgentRuleTemplates',
-        ('yum_package', 'apt_package', 'zypper_package', 'run_agent', 'repo_id',
-         'display_name', 'recipe_name', 'current_major_version'))):
+        ('yum_package', 'apt_package', 'zypper_package', 'goo_package',
+         'run_agent', 'win_run_agent', 'repo_id', 'display_name', 'recipe_name',
+         'current_major_version'))):
   pass
 
 _EMPTY_SOFTWARE_RECIPE_SCRIPT = textwrap.dedent("""\
@@ -78,6 +79,7 @@ _AGENT_RULE_TEMPLATES = {
                     "sudo apt-get install -y 'google-fluentd%s'; "
                     "sudo apt-get install -y google-fluentd-catch-all-config"),
             ),
+            goo_package=None,
             repo_id='google-cloud-logging',
             display_name='Google Cloud Logging Agent Repository',
             run_agent=textwrap.dedent("""\
@@ -89,6 +91,7 @@ _AGENT_RULE_TEMPLATES = {
                       fi
                       sleep 1m
                     done"""),
+            win_run_agent=None,
             recipe_name='set-google-fluentd-version',
             current_major_version='1.*.*',
         ),
@@ -126,6 +129,7 @@ _AGENT_RULE_TEMPLATES = {
                     "sudo apt-get update; "
                     "sudo apt-get install -y 'stackdriver-agent%s'"),
             ),
+            goo_package=None,
             repo_id='google-cloud-monitoring',
             display_name='Google Cloud Monitoring Agent Repository',
             run_agent=textwrap.dedent("""\
@@ -137,6 +141,7 @@ _AGENT_RULE_TEMPLATES = {
                       fi
                       sleep 1m
                     done"""),
+            win_run_agent=None,
             recipe_name='set-stackdriver-agent-version',
             current_major_version='6.*.*',
         ),
@@ -174,6 +179,11 @@ _AGENT_RULE_TEMPLATES = {
                     "sudo apt-get update; "
                     "sudo apt-get install -y 'google-cloud-ops-agent%s'"),
             ),
+            goo_package=_PackageTemplates(
+                repo='google-cloud-ops-agent-%s-%s',
+                clear_prev_repo=None,
+                install_with_version=None,
+            ),
             repo_id='google-cloud-ops-agent',
             display_name='Google Cloud Ops Agent Repository',
             run_agent=textwrap.dedent("""\
@@ -185,6 +195,29 @@ _AGENT_RULE_TEMPLATES = {
                       fi
                       sleep 1m
                     done"""),
+            win_run_agent=textwrap.dedent("""\
+            $Stoploop = $false
+            [int]$Retrycount = "0"
+
+            do {
+                googet --noconfirm remove google-cloud-ops-agent
+                googet --noconfirm install google-cloud-ops-agent%s
+                if ( $? ) {
+                    $Stoploop = $true
+                }
+                else {
+                    Write-Output "Installing ops-agent failes, retrying..."
+                    if ($Retrycount -gt 3) {
+                        Write-Output "Retried 3 times already, failing..."
+                        $Stoploop = $true
+                    }
+                    else {
+                        Start-Sleep -Seconds 3
+                        $Retrycount = $Retrycount + 1
+                    }
+                }
+            }
+            while ($Stoploop -eq $false)"""),
             recipe_name='set-ops-agent-version',
             current_major_version='1.*.*',
         ),
@@ -203,6 +236,8 @@ _APT_CODENAMES = {
 _SUSE_OS = ('sles-sap', 'sles')
 
 _APT_OS = ('debian', 'ubuntu')
+
+_WINDOWS_OS = ('windows')
 
 
 def _CreatePackages(messages, agent_rules, os_type):
@@ -294,11 +329,39 @@ def _CreatePackageRepositories(messages, os_type, agent_rules):
     version = os_type.version.split('.')[0]
     version = version.split('*')[0]
     package_repos = _CreateZypperPkgRepos(messages, version, agent_rules)
+  elif os_type.short_name in _WINDOWS_OS:
+    package_repos = _CreateGooPkgRepos(messages, 'windows', agent_rules)
   return package_repos
 
 
 def _GetRepoSuffix(version):
   return version.replace('.*.*', '') if '.*.*' in version else 'all'
+
+
+def _CreateGooPkgRepos(messages, repo_distro, agent_rules):
+  goo_pkg_repos = []
+  for agent_rule in agent_rules:
+    template = _AGENT_RULE_TEMPLATES[agent_rule.type]
+    repo_name = template.goo_package.repo % (repo_distro,
+                                             _GetRepoSuffix(agent_rule.version))
+    goo_pkg_repos.append(_CreateGooPkgRepo(messages, repo_name))
+  return goo_pkg_repos
+
+
+def _CreateGooPkgRepo(messages, repo_id):
+  """Create a goo repo in guest policy.
+
+  Args:
+    messages: os config guest policy api messages.
+    repo_id: 'google-cloud-ops-agent-windows-[all|1]'.
+
+  Returns:
+    zoo repos in guest policy.
+  """
+  return messages.PackageRepository(
+      goo=messages.GooRepository(
+          name=repo_id,
+          url='https://packages.cloud.google.com/yuck/repos/%s' % repo_id))
 
 
 def _CreateZypperPkgRepos(messages, repo_distro, agent_rules):
@@ -548,9 +611,22 @@ def _CreateStepInScript(messages, agent_rule, os_type):
         agent_rule.type].zypper_package.clear_prev_repo
     install_with_version = _AGENT_RULE_TEMPLATES[
         agent_rule.type].zypper_package.install_with_version % agent_version
+  if os_type.short_name in _WINDOWS_OS:
+    if agent_rule.version == 'latest' or '*.*' in agent_rule.version:
+      agent_version = ''
+    else:
+      agent_version = '.x86_64.%s' % agent_rule.version
+
+  # PackageState is REMOVED.
   if (agent_rule.package_state
       == agent_policy.OpsAgentPolicy.AgentRule.PackageState.REMOVED):
     step.scriptRun.script = _EMPTY_SOFTWARE_RECIPE_SCRIPT
+  # PackageState is INSTALLED or UPDATED for Windows.
+  elif os_type.short_name in _WINDOWS_OS:
+    step.scriptRun.interpreter = messages.SoftwareRecipeStepRunScript.InterpreterValueValuesEnum.POWERSHELL
+    step.scriptRun.script = _AGENT_RULE_TEMPLATES[
+        agent_rule.type].win_run_agent % agent_version
+  # PackageState is INSTALLED or UPDATED for Linux.
   else:
     step.scriptRun.script = _AGENT_RULE_TEMPLATES[agent_rule.type].run_agent % {
         'install': install_with_version,

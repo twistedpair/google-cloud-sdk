@@ -35,25 +35,6 @@ def GetEnvArgsForCommand(extra_vars=None, exclude_vars=None):
   return env
 
 
-class KubeRunCli(binary_operations.BinaryBackedOperation):
-  """Binary operation wrapper for kuberun commands."""
-
-  def __init__(self, **kwargs):
-    custom_errors = {
-        'MISSING_EXEC': messages.MISSING_BINARY.format(binary='kuberun')
-    }
-    super(KubeRunCli, self).__init__(
-        binary='kuberun',
-        check_hidden=True,
-        custom_errors=custom_errors,
-        **kwargs)
-
-  def _ParseArgsForCommand(self, command, **kwargs):
-    # TODO(b/168745545) this should return only arguments, however by the time
-    # the execution gets here, arguments are parsed and added to 'command' list.
-    return command
-
-
 class KubeRunStreamingCli(binary_operations.StreamingBinaryBackedOperation):
   """Binary operation wrapper for kuberun commands that require streaming output."""
 

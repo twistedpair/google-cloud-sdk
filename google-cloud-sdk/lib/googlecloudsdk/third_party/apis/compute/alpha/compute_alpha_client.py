@@ -59,6 +59,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.healthChecks = self.HealthChecksService(self)
     self.httpHealthChecks = self.HttpHealthChecksService(self)
     self.httpsHealthChecks = self.HttpsHealthChecksService(self)
+    self.imageFamilyViews = self.ImageFamilyViewsService(self)
     self.images = self.ImagesService(self)
     self.instanceGroupManagers = self.InstanceGroupManagersService(self)
     self.instanceGroups = self.InstanceGroupsService(self)
@@ -4418,6 +4419,42 @@ This method is called on a best-effort basis. Specifically:
         supports_download=False,
     )
 
+  class ImageFamilyViewsService(base_api.BaseApiService):
+    """Service class for the imageFamilyViews resource."""
+
+    _NAME = 'imageFamilyViews'
+
+    def __init__(self, client):
+      super(ComputeAlpha.ImageFamilyViewsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns the latest image that is part of an image family, is not deprecated and is rolled out in the specified zone.
+
+      Args:
+        request: (ComputeImageFamilyViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ImageFamilyView) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.imageFamilyViews.get',
+        ordered_params=['project', 'zone', 'family'],
+        path_params=['family', 'project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/imageFamilyViews/{family}',
+        request_field='',
+        request_type_name='ComputeImageFamilyViewsGetRequest',
+        response_type_name='ImageFamilyView',
+        supports_download=False,
+    )
+
   class ImagesService(base_api.BaseApiService):
     """Service class for the images resource."""
 
@@ -4604,7 +4641,7 @@ If an empty request body is given, clears the deprecation status instead.
         method_id='compute.images.list',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'zone'],
         relative_path='projects/{project}/global/images',
         request_field='',
         request_type_name='ComputeImagesListRequest',
@@ -16337,6 +16374,32 @@ For more information, see [Invalidating cached content](/cdn/docs/invalidating-c
       super(ComputeAlpha.ServiceAttachmentsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project.
+
+      Args:
+        request: (ComputeServiceAttachmentsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAttachmentAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.serviceAttachments.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/aggregated/serviceAttachments',
+        request_field='',
+        request_type_name='ComputeServiceAttachmentsAggregatedListRequest',
+        response_type_name='ServiceAttachmentAggregatedList',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       r"""Deletes the specified ServiceAttachment in the given scope.

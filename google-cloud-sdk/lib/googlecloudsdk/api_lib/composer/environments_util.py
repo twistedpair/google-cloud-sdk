@@ -60,11 +60,10 @@ def Create(environment_ref,
            cloud_sql_machine_type=None,
            web_server_machine_type=None,
            kms_key=None,
-           enable_autoscaling=None,
-           autoscaling_maximum_cpu=None,
-           autoscaling_minimum_cpu=None,
-           autoscaling_maximum_memory=None,
-           autoscaling_minimum_memory=None,
+           scheduler_cpu=None,
+           worker_cpu=None,
+           min_workers=None,
+           max_workers=None,
            maintenance_window_start=None,
            maintenance_window_end=None,
            maintenance_window_recurrence=None,
@@ -126,15 +125,14 @@ def Create(environment_ref,
         server
     kms_key: str or None, the user-provided customer-managed
         encryption key resource name
-    enable_autoscaling: bool or None, enable GKE autoscaling.
-    autoscaling_maximum_cpu: int or None, maximum number of CPU allowed
-        in the Environment. Cannot be specified unless autoscaling is enabled.
-    autoscaling_minimum_cpu: int or None, minimum number of CPU allowed
-        in the Environment. Cannot be specified unless autoscaling is enabled.
-    autoscaling_maximum_memory: int or None, maximum memory (in GB) allowed
-        in the Environment. Cannot be specified unless autoscaling is enabled.
-    autoscaling_minimum_memory: int or None, minimum memory (in GB) allowed
-        in the Environment. Cannot be specified unless autoscaling is enabled.
+    scheduler_cpu: float or None, CPU allocated to Airflow scheduler.
+        Can be specified only in Composer 2.0.0.
+    worker_cpu: float or None, CPU allocated to each Airflow worker.
+        Can be specified only in Composer 2.0.0.
+    min_workers: int or None, minimum number of workers
+        in the Environment. Can be specified only in Composer 2.0.0.
+    max_workers: int or None, maximumn number of workers
+        in the Environment. Can be specified only in Composer 2.0.0.
     maintenance_window_start: Datetime or None, the starting time of the
         maintenance window
     maintenance_window_end: Datetime or None, the ending time of the maintenance
@@ -248,13 +246,13 @@ def Create(environment_ref,
   if web_server_machine_type:
     config.webServerConfig = messages.WebServerConfig(
         machineType=web_server_machine_type)
-  if enable_autoscaling:
-    config.autoscalingConfig = messages.AutoscalingConfig(
-        mode=messages.AutoscalingConfig.ModeValueValuesEnum.ENABLED,
-        maximumCpu=autoscaling_maximum_cpu,
-        maximumMemory=autoscaling_maximum_memory,
-        minimumCpu=autoscaling_minimum_cpu,
-        minimumMemory=autoscaling_minimum_memory)
+  if scheduler_cpu or worker_cpu or\
+      min_workers or max_workers:
+    config.workloadsConfig = messages.WorkloadsConfig(
+        schedulerCpu=scheduler_cpu,
+        workerCpu=worker_cpu,
+        workerMinCount=min_workers,
+        workerMaxCount=max_workers)
 
   # Builds environment message and attaches the configuration
   environment = messages.Environment(name=environment_ref.RelativeName())

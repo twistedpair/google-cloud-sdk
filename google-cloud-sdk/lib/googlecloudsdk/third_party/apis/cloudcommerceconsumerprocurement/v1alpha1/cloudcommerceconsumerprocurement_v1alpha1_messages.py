@@ -1654,6 +1654,18 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceQuoteOrderRequest(_mess
   quoteExternalName = _messages.StringField(1)
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsResponse(_messages.Message):
+  r"""Message stored in the response field of the Operation returned by
+  ConsumerProcurementService.ReplaceOrderAllocations.
+
+  Fields:
+    orderAllocations: The entire list of OrderAllocations of the parent Order
+      after the replacement.
+  """
+
+  orderAllocations = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation', 1, repeated=True)
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1Subscription(_messages.Message):
   r"""Subscription information.
 

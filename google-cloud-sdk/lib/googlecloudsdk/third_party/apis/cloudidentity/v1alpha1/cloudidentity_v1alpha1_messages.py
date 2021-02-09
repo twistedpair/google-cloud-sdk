@@ -1978,8 +1978,6 @@ class Membership(_messages.Message):
       `Membership`. Shall be of the form
       `groups/{group_id}/memberships/{membership_id}`.
     preferredMemberKey: Required. Immutable. The `EntityKey` of the member.
-    restrictionEvaluations: Evaluations of restrictions applied to parent
-      group on this membership.
     roles: The `MembershipRole`s that apply to the `Membership`. If
       unspecified, defaults to a single `MembershipRole` with `name` `MEMBER`
       and no `expiry_detail`. Must not contain duplicate `MembershipRole`s
@@ -2008,10 +2006,9 @@ class Membership(_messages.Message):
   expiryDetail = _messages.MessageField('ExpiryDetail', 2)
   name = _messages.StringField(3)
   preferredMemberKey = _messages.MessageField('EntityKey', 4)
-  restrictionEvaluations = _messages.MessageField('RestrictionEvaluations', 5)
-  roles = _messages.MessageField('MembershipRole', 6, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  roles = _messages.MessageField('MembershipRole', 5, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
 
 
 class MembershipAdjacencyList(_messages.Message):
@@ -2208,50 +2205,6 @@ class PosixGroup(_messages.Message):
   gid = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
   name = _messages.StringField(2)
   systemId = _messages.StringField(3)
-
-
-class RestrictionEvaluation(_messages.Message):
-  r"""The evaluated state of this restriction.
-
-  Enums:
-    StateValueValuesEnum: Output only. The current state of the restriction
-
-  Fields:
-    state: Output only. The current state of the restriction
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The current state of the restriction
-
-    Values:
-      STATE_UNSPECIFIED: Default. Should not be used.
-      EVALUATING: The restriction state is currently being evaluated.
-      COMPLIANT: All transitive members are adhering to restriction.
-      FORWARD_COMPLIANT: Some transitive members violate the restriction. No
-        new violating members can be added.
-      NON_COMPLIANT: Some transitive members violate the restriction. New
-        violating direct members will be denied while indirect members may be
-        added.
-    """
-    STATE_UNSPECIFIED = 0
-    EVALUATING = 1
-    COMPLIANT = 2
-    FORWARD_COMPLIANT = 3
-    NON_COMPLIANT = 4
-
-  state = _messages.EnumField('StateValueValuesEnum', 1)
-
-
-class RestrictionEvaluations(_messages.Message):
-  r"""Evaluations of restrictions applied to parent group on this membership.
-
-  Fields:
-    memberRestrictionEvaluation: Evaluation of the member restriction applied
-      to this membership. Empty if the user lacks permission to view the
-      restriction evaluation.
-  """
-
-  memberRestrictionEvaluation = _messages.MessageField('RestrictionEvaluation', 1)
 
 
 class RsaPublicKeyInfo(_messages.Message):

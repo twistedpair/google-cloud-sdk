@@ -80,12 +80,16 @@ def get_md5_hash(byte_string=b''):
     # pylint:enable=unexpected-keyword-arg
 
 
-def get_hash_digest_from_file_stream(file_stream, hash_algorithm):
-  """Reads file and returns its base64-encoded hash digest.
+def get_base64_hash_digest_string(hash_object):
+  """Takes hashlib object and returns base64-encoded digest as string."""
+  return base64.b64encode(hash_object.digest()).decode(encoding='utf-8')
+
+
+def get_hash_from_file_stream(file_stream, hash_algorithm):
+  """Reads file and returns its hash object.
 
   core.util.files.Checksum does similar things but is different enough to merit
   this function. The primary differences are that this function:
-  -Base64 encodes a normal digest instead of returning a raw hex digest.
   -Uses a FIPS-safe MD5 object.
   -Resets stream after consuming.
 
@@ -117,8 +121,7 @@ def get_hash_digest_from_file_stream(file_stream, hash_algorithm):
   # caller of this function any confusing bugs.
   file_stream.seek(0)
 
-  # GCS and S3 base64 encode digests and return strings from the API.
-  return base64.b64encode(hash_object.digest()).decode(encoding='utf-8')
+  return hash_object
 
 
 def validate_object_hashes_match(object_url, source_hash, destination_hash):

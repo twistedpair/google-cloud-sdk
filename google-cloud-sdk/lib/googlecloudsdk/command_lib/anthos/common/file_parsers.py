@@ -88,7 +88,8 @@ def FindOrSetItemInDict(item, item_path, item_sep='.', set_value=None):
         context[part] = set_value
       context = context.get(part)  # continue down the path
     else:  # part not found
-      if set_value:  # Upsert New Value if provided, otherwise, Error
+      if set_value and yaml.dict_like(context):  # Upsert New Value if possible,
+                                                 # otherwise, Error
         if parts:  # more of the path remains, so insert empty containers
           context[part] = collections.OrderedDict()
           context = context.get(part)

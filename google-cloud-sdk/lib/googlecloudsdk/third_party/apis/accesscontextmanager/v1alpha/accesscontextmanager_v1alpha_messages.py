@@ -457,61 +457,10 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
   updateMask = _messages.StringField(3)
 
 
-class ApiAction(_messages.Message):
-  r"""An allowed action of a service specified in ApiOperation.
-
-  Enums:
-    ActionTypeValueValuesEnum: The type of the action to allow for an API
-      service. It can be one of `METHOD` (method of a service), `PERMISSION`
-      (Cloud IAM Permission), or `ACTION_TYPE_UNSPECIFIED`. If action_type is
-      not set or set to `ACTION_TYPE_UNSPECIFIED`, and action is `*`, then ALL
-      actions are allowed.
-
-  Fields:
-    action: The API method name or Cloud IAM permission name to allow. If
-      `METHOD` is chosen for `action_type`, then a valid method name for the
-      corresponding `service_name` in ApiOperation must be provided (e.g.
-      method name `TableDataService.List` for the service
-      `bigquery.googelapis.com`). If `PERMISSION` is chosen for `action_type`,
-      then a valid Cloud IAM permission for the corresponding `service_name`
-      in ApiOperation must be provided (e.g. `bigquery.jobs.update` for the
-      service `bigquery.googleapis.com`). If `action_type` is not set or set
-      to `ACTION_TYPE_UNSPECIFIED`, and action is `*`, then ALL actions are
-      allowed.
-    actionType: The type of the action to allow for an API service. It can be
-      one of `METHOD` (method of a service), `PERMISSION` (Cloud IAM
-      Permission), or `ACTION_TYPE_UNSPECIFIED`. If action_type is not set or
-      set to `ACTION_TYPE_UNSPECIFIED`, and action is `*`, then ALL actions
-      are allowed.
-  """
-
-  class ActionTypeValueValuesEnum(_messages.Enum):
-    r"""The type of the action to allow for an API service. It can be one of
-    `METHOD` (method of a service), `PERMISSION` (Cloud IAM Permission), or
-    `ACTION_TYPE_UNSPECIFIED`. If action_type is not set or set to
-    `ACTION_TYPE_UNSPECIFIED`, and action is `*`, then ALL actions are
-    allowed.
-
-    Values:
-      ACTION_TYPE_UNSPECIFIED: No type for the action is specified.
-      METHOD: Action is a method.
-      PERMISSION: Action is an IAM Permission.
-    """
-    ACTION_TYPE_UNSPECIFIED = 0
-    METHOD = 1
-    PERMISSION = 2
-
-  action = _messages.StringField(1)
-  actionType = _messages.EnumField('ActionTypeValueValuesEnum', 2)
-
-
 class ApiOperation(_messages.Message):
   r"""Identification for an API Operation.
 
   Fields:
-    actions: API actions to allow for the service specified by service_name
-      field. A single ApiAction entry with wildcard `*` for `ApiAction.action`
-      field will allow all actions for service specified in `service_name`.
     methodSelectors: API methods or permissions to allow. Method or permission
       must belong to the service specified by `service_name` field. A single
       MethodSelector entry with `*` specified for the `method` field will
@@ -523,9 +472,8 @@ class ApiOperation(_messages.Message):
       for all services.
   """
 
-  actions = _messages.MessageField('ApiAction', 1, repeated=True)
-  methodSelectors = _messages.MessageField('MethodSelector', 2, repeated=True)
-  serviceName = _messages.StringField(3)
+  methodSelectors = _messages.MessageField('MethodSelector', 1, repeated=True)
+  serviceName = _messages.StringField(2)
 
 
 class BasicLevel(_messages.Message):
@@ -731,17 +679,11 @@ class EgressFrom(_messages.Message):
   order for this request to succeed.
 
   Enums:
-    AllowedIdentityValueValuesEnum: Specifies the identities that are allowed
-      through the EgressPolicy. Currently, only `ANY_IDENTITY` (everything is
-      allowed) is supported.
     IdentityTypeValueValuesEnum: Specifies the type of identities that are
       allowed access to outside the perimeter. If left unspecified, then
       members of `identities` field will be allowed access.
 
   Fields:
-    allowedIdentity: Specifies the identities that are allowed through the
-      EgressPolicy. Currently, only `ANY_IDENTITY` (everything is allowed) is
-      supported.
     identities: A list of identities that are allowed access through this
       [EgressPolicy]. Should be in the format of email address. The email
       address should represent individual user or service account only.
@@ -749,23 +691,6 @@ class EgressFrom(_messages.Message):
       outside the perimeter. If left unspecified, then members of `identities`
       field will be allowed access.
   """
-
-  class AllowedIdentityValueValuesEnum(_messages.Enum):
-    r"""Specifies the identities that are allowed through the EgressPolicy.
-    Currently, only `ANY_IDENTITY` (everything is allowed) is supported.
-
-    Values:
-      ALLOWED_IDENTITY_UNSPECIFIED: No blanket identity group specified.
-      ANY_IDENTITY: Authorize access from all identities outside the
-        perimeter.
-      ANY_USER: Authorize access from all human users outside the perimeter.
-      ANY_SERVICE_ACCOUNT: Authorize access from all service accounts outside
-        the perimeter.
-    """
-    ALLOWED_IDENTITY_UNSPECIFIED = 0
-    ANY_IDENTITY = 1
-    ANY_USER = 2
-    ANY_SERVICE_ACCOUNT = 3
 
   class IdentityTypeValueValuesEnum(_messages.Enum):
     r"""Specifies the type of identities that are allowed access to outside
@@ -786,9 +711,8 @@ class EgressFrom(_messages.Message):
     ANY_USER_ACCOUNT = 2
     ANY_SERVICE_ACCOUNT = 3
 
-  allowedIdentity = _messages.EnumField('AllowedIdentityValueValuesEnum', 1)
-  identities = _messages.StringField(2, repeated=True)
-  identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 3)
+  identities = _messages.StringField(1, repeated=True)
+  identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 2)
 
 
 class EgressPolicy(_messages.Message):
@@ -908,22 +832,11 @@ class IngressFrom(_messages.Message):
   Conditions are based on information about the source of the request.
 
   Enums:
-    AllowedIdentityValueValuesEnum: Specifies the identities that are allowed
-      access from outside the perimeter. Can be one of `ANY_IDENTITY`
-      (everything is allowed), `ANY_USER` (all human users),
-      `ANY_SERVICE_ACCOUNT` (all service accounts), or
-      `ALLOWED_IDENTITY_UNSPECIFIED` (only the specified emails in the
-      `identities` field are able to access).
     IdentityTypeValueValuesEnum: Specifies the type of identities that are
       allowed access from outside the perimeter. If left unspecified, then
       members of `identities` field will be allowed access.
 
   Fields:
-    allowedIdentity: Specifies the identities that are allowed access from
-      outside the perimeter. Can be one of `ANY_IDENTITY` (everything is
-      allowed), `ANY_USER` (all human users), `ANY_SERVICE_ACCOUNT` (all
-      service accounts), or `ALLOWED_IDENTITY_UNSPECIFIED` (only the specified
-      emails in the `identities` field are able to access).
     identities: A list of identities that are allowed access through this
       ingress policy. Should be in the format of email address. The email
       address should represent individual user or service account only.
@@ -932,26 +845,6 @@ class IngressFrom(_messages.Message):
       `identities` field will be allowed access.
     sources: Sources that this IngressPolicy authorizes access from.
   """
-
-  class AllowedIdentityValueValuesEnum(_messages.Enum):
-    r"""Specifies the identities that are allowed access from outside the
-    perimeter. Can be one of `ANY_IDENTITY` (everything is allowed),
-    `ANY_USER` (all human users), `ANY_SERVICE_ACCOUNT` (all service
-    accounts), or `ALLOWED_IDENTITY_UNSPECIFIED` (only the specified emails in
-    the `identities` field are able to access).
-
-    Values:
-      ALLOWED_IDENTITY_UNSPECIFIED: No blanket identity group specified.
-      ANY_IDENTITY: Authorize access from all identities outside the
-        perimeter.
-      ANY_USER: Authorize access from all human users outside the perimeter.
-      ANY_SERVICE_ACCOUNT: Authorize access from all service accounts outside
-        the perimeter.
-    """
-    ALLOWED_IDENTITY_UNSPECIFIED = 0
-    ANY_IDENTITY = 1
-    ANY_USER = 2
-    ANY_SERVICE_ACCOUNT = 3
 
   class IdentityTypeValueValuesEnum(_messages.Enum):
     r"""Specifies the type of identities that are allowed access from outside
@@ -972,10 +865,9 @@ class IngressFrom(_messages.Message):
     ANY_USER_ACCOUNT = 2
     ANY_SERVICE_ACCOUNT = 3
 
-  allowedIdentity = _messages.EnumField('AllowedIdentityValueValuesEnum', 1)
-  identities = _messages.StringField(2, repeated=True)
-  identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 3)
-  sources = _messages.MessageField('IngressSource', 4, repeated=True)
+  identities = _messages.StringField(1, repeated=True)
+  identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 2)
+  sources = _messages.MessageField('IngressSource', 3, repeated=True)
 
 
 class IngressPolicy(_messages.Message):

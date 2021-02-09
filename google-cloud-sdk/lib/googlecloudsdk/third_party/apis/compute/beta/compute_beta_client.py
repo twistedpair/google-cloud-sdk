@@ -14592,6 +14592,32 @@ For more information, see [Invalidating cached content](/cdn/docs/invalidating-c
       self._upload_configs = {
           }
 
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project.
+
+      Args:
+        request: (ComputeServiceAttachmentsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAttachmentAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.serviceAttachments.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/aggregated/serviceAttachments',
+        request_field='',
+        request_type_name='ComputeServiceAttachmentsAggregatedListRequest',
+        response_type_name='ServiceAttachmentAggregatedList',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified ServiceAttachment in the given scope.
 

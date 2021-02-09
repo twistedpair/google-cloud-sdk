@@ -558,6 +558,7 @@ class AutoArgumentGenerator(object):
     if not field_names:
       return
     r = getattr(namespace, AutoArgumentGenerator.FLAT_RESOURCE_ARG_NAME)
+    enforce_collection = getattr(namespace, 'enforce_collection', True)
 
     params = {}
     defaults = {}
@@ -578,6 +579,7 @@ class AutoArgumentGenerator(object):
     defaults.update(params)
     return resources.REGISTRY.Parse(
         r, collection=self.method.request_collection.full_name,
+        enforce_collection=enforce_collection,
         api_version=self.method.request_collection.api_version,
         params=defaults)
 

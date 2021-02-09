@@ -568,7 +568,7 @@ class Feature(_messages.Message):
     name: Output only. The full, unique name of this Feature resource in the
       format `projects/*/locations/global/features/*`.
     servicedirectoryFeatureSpec: The specification for Service Directory.
-    servicemeshFeatureSpec: A ServiceMeshFeatureSpec attribute.
+    servicemeshFeatureSpec: The specification for the Service Mesh Feature.
     updateTime: Output only. When the Feature was last updated.
   """
 

@@ -305,6 +305,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_INDEXENDPOINTS = (
+      'projects.locations.indexEndpoints',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/indexEndpoints/'
+              '{indexEndpointsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_INDEXES = (
+      'projects.locations.indexes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/indexes/'
+              '{indexesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MIGRATABLERESOURCES = (
       'projects.locations.migratableResources',
       'projects/{projectsId}/locations/{locationsId}/migratableResources/'

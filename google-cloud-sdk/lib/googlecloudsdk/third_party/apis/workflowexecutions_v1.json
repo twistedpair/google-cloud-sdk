@@ -230,9 +230,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. Name of the workflow for which the executions should be listed. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -281,9 +281,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. Name of the workflow for which an execution should be created. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow} The latest revision of the workflow will be used.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -309,9 +309,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the execution to be retrieved. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}\/executions\/{execution}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
                           "type": "string"
                         },
                         "view": {
@@ -349,9 +349,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the execution to be cancelled. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}\/executions\/{execution}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
                           "type": "string"
                         }
                       },

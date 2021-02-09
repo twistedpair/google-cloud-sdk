@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """A library that is used to support Functions commands."""
 
 from __future__ import absolute_import
@@ -22,7 +21,6 @@ from __future__ import unicode_literals
 import itertools
 
 import enum
-
 
 UNADVERTISED_PROVIDER_LABEL = 'unadvertised'
 
@@ -35,6 +33,7 @@ class Resources(enum.Enum):
     def __init__(self, name, collection_id):
       self.name = name
       self.collection_id = collection_id
+
   TOPIC = Resource('topic', 'pubsub.projects.topics')
   BUCKET = Resource('bucket', 'cloudfunctions.projects.buckets')
   FIREBASE_DB = Resource('firebase database', 'google.firebase.database.ref')
@@ -78,10 +77,11 @@ class TriggerEvent(object):
   def resource_is_optional(self):
     return self.resource_type in TriggerEvent.OPTIONAL_RESOURCE_TYPES
 
+
 # TODO (b/73062780): Event types should not be hard-coded.
 # Don't use those structures directly. Use registry object instead.
 # By convention, first event type is default.
-_BETA_PROVIDERS = [
+_PROVIDERS = [
     TriggerProvider('cloud.pubsub', [
         TriggerEvent('google.pubsub.topic.publish', Resources.TOPIC),
         TriggerEvent('providers/cloud.pubsub/eventTypes/topic.publish',
@@ -119,17 +119,13 @@ _BETA_PROVIDERS = [
         TriggerEvent('providers/google.firebase.analytics/eventTypes/event.log',
                      Resources.FIREBASE_ANALYTICS_EVENT),
     ]),
-]
-
-_ALPHA_PROVIDERS = [
+    TriggerProvider('google.firebase.remoteConfig', [
+        TriggerEvent('google.firebase.remoteconfig.update', Resources.PROJECT),
+    ]),
     TriggerProvider('firebase.auth', [
         TriggerEvent('providers/firebase.auth/eventTypes/user.create',
                      Resources.PROJECT),
         TriggerEvent('providers/firebase.auth/eventTypes/user.delete',
-                     Resources.PROJECT),
-    ]),
-    TriggerProvider('firebase.database', [
-        TriggerEvent('providers/firebase.auth/eventTypes/data.write',
                      Resources.PROJECT),
     ])
 ]
@@ -140,8 +136,8 @@ class _TriggerProviderRegistry(object):
 
   def __init__(self, all_providers):
     self.providers = all_providers
-    self._unadvertised_provider = TriggerProvider(
-        UNADVERTISED_PROVIDER_LABEL, [])
+    self._unadvertised_provider = TriggerProvider(UNADVERTISED_PROVIDER_LABEL,
+                                                  [])
 
   def ProvidersLabels(self):
     return (p.label for p in self.providers)
@@ -166,6 +162,4 @@ class _TriggerProviderRegistry(object):
     return self._unadvertised_provider
 
 
-OUTPUT_TRIGGER_PROVIDER_REGISTRY = _TriggerProviderRegistry(_BETA_PROVIDERS)
-INPUT_TRIGGER_PROVIDER_REGISTRY = _TriggerProviderRegistry(
-    _BETA_PROVIDERS + _ALPHA_PROVIDERS)
+TRIGGER_PROVIDER_REGISTRY = _TriggerProviderRegistry(_PROVIDERS)

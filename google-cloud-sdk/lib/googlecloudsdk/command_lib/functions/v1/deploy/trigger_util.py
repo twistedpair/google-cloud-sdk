@@ -54,26 +54,23 @@ PUBSUB_COMPATIBILITY_ERROR = (
     'providers/cloud.pubsub/eventTypes/topic.publish '
     '--trigger-resource [your_topic_name]`.')
 
-
 # Old style trigger events as of 02/2018.
 LEGACY_TRIGGER_EVENTS = {
-    'providers/cloud.storage/eventTypes/object.change': GCS_COMPATIBILITY_ERROR,
-    'providers/cloud.pubsub/eventTypes/topic.publish': (
-        PUBSUB_COMPATIBILITY_ERROR
-    )
+    'providers/cloud.storage/eventTypes/object.change':
+        GCS_COMPATIBILITY_ERROR,
+    'providers/cloud.pubsub/eventTypes/topic.publish':
+        (PUBSUB_COMPATIBILITY_ERROR)
 }
 
 
 def CheckTriggerSpecified(args):
-  if not (args.IsSpecified('trigger_topic')
-          or args.IsSpecified('trigger_bucket')
-          or args.IsSpecified('trigger_http')
+  if not (args.IsSpecified('trigger_topic') or
+          args.IsSpecified('trigger_bucket') or args.IsSpecified('trigger_http')
           or args.IsSpecified('trigger_event')):
-    raise calliope_exceptions.OneOfArgumentsRequiredException(
-        ['--trigger-topic', '--trigger-bucket', '--trigger-http',
-         '--trigger-event'],
-        'You must specify a trigger when deploying a new function.'
-    )
+    raise calliope_exceptions.OneOfArgumentsRequiredException([
+        '--trigger-topic', '--trigger-bucket', '--trigger-http',
+        '--trigger-event'
+    ], 'You must specify a trigger when deploying a new function.')
 
 
 def ValidateTriggerArgs(trigger_event, trigger_resource, retry_specified,
@@ -85,15 +82,16 @@ def ValidateTriggerArgs(trigger_event, trigger_resource, retry_specified,
     trigger_resource: The trigger resource
     retry_specified: Whether or not `--retry` was specified
     trigger_http_specified: Whether or not `--trigger-http` was specified
+
   Raises:
     FunctionsError.
   """
   # Check that Event Type is valid
-  trigger_provider = triggers.INPUT_TRIGGER_PROVIDER_REGISTRY.ProviderForEvent(
+  trigger_provider = triggers.TRIGGER_PROVIDER_REGISTRY.ProviderForEvent(
       trigger_event)
   trigger_provider_label = trigger_provider.label
   if trigger_provider_label != triggers.UNADVERTISED_PROVIDER_LABEL:
-    resource_type = triggers.INPUT_TRIGGER_PROVIDER_REGISTRY.Event(
+    resource_type = triggers.TRIGGER_PROVIDER_REGISTRY.Event(
         trigger_provider_label, trigger_event).resource_type
     if trigger_resource is None and resource_type != triggers.Resources.PROJECT:
       raise exceptions.FunctionsError(
@@ -127,11 +125,12 @@ def _GetEventTriggerEventParams(trigger_event, trigger_resource):
   Args:
     trigger_event: The trigger event
     trigger_resource: The trigger resource
+
   Returns:
     A dictionary containing trigger_provider, trigger_event, and
     trigger_resource.
   """
-  trigger_provider = triggers.INPUT_TRIGGER_PROVIDER_REGISTRY.ProviderForEvent(
+  trigger_provider = triggers.TRIGGER_PROVIDER_REGISTRY.ProviderForEvent(
       trigger_event)
 
   trigger_provider_label = trigger_provider.label
@@ -143,18 +142,17 @@ def _GetEventTriggerEventParams(trigger_event, trigger_resource):
   if trigger_provider_label == triggers.UNADVERTISED_PROVIDER_LABEL:
     return result
 
-  resource_type = triggers.INPUT_TRIGGER_PROVIDER_REGISTRY.Event(
+  resource_type = triggers.TRIGGER_PROVIDER_REGISTRY.Event(
       trigger_provider_label, trigger_event).resource_type
   if resource_type == triggers.Resources.TOPIC:
-    trigger_resource = api_util.ValidatePubsubTopicNameOrRaise(
-        trigger_resource)
+    trigger_resource = api_util.ValidatePubsubTopicNameOrRaise(trigger_resource)
   elif resource_type == triggers.Resources.BUCKET:
     trigger_resource = storage_util.BucketReference.FromUrl(
         trigger_resource).bucket
   elif resource_type in [
-      triggers.Resources.FIREBASE_DB,
-      triggers.Resources.FIRESTORE_DOC,
-      triggers.Resources.FIREBASE_ANALYTICS_EVENT]:
+      triggers.Resources.FIREBASE_ANALYTICS_EVENT,
+      triggers.Resources.FIREBASE_DB, triggers.Resources.FIRESTORE_DOC
+  ]:
     pass
   elif resource_type == triggers.Resources.PROJECT:
     if trigger_resource:
@@ -217,16 +215,17 @@ def ConvertTriggerArgsToRelativeName(trigger_provider, trigger_event,
     trigger_provider: The --trigger-provider flag value.
     trigger_event: The --trigger-event flag value.
     trigger_resource: The --trigger-resource flag value.
+
   Returns:
     Relative resource name to use in EventTrigger field.
   """
-  resource_type = triggers.INPUT_TRIGGER_PROVIDER_REGISTRY.Event(
+  resource_type = triggers.TRIGGER_PROVIDER_REGISTRY.Event(
       trigger_provider, trigger_event).resource_type
   params = {}
   if resource_type.value.collection_id in {
-      'google.firebase.database.ref',
-      'google.firestore.document',
-      'google.firebase.analytics.event'}:
+      'google.firebase.analytics.event', 'google.firebase.database.ref',
+      'google.firestore.document'
+  }:
     return trigger_resource
   elif resource_type.value.collection_id == 'cloudresourcemanager.projects':
     params['projectId'] = properties.VALUES.core.project.GetOrFail
@@ -261,10 +260,8 @@ def CreateEventTrigger(trigger_provider, trigger_event, trigger_resource):
     event_trigger.resource = trigger_resource
   else:
     event_trigger.resource = (
-        ConvertTriggerArgsToRelativeName(
-            trigger_provider,
-            trigger_event,
-            trigger_resource))
+        ConvertTriggerArgsToRelativeName(trigger_provider, trigger_event,
+                                         trigger_resource))
   return event_trigger
 
 

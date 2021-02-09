@@ -280,6 +280,7 @@
             "Docker package format.",
             "Maven package format.",
             "NPM package format.",
+            "PyPI package format.",
             "APT package format.",
             "YUM package format."
           ],
@@ -288,6 +289,7 @@
             "DOCKER",
             "MAVEN",
             "NPM",
+            "PYPI",
             "APT",
             "YUM"
           ]

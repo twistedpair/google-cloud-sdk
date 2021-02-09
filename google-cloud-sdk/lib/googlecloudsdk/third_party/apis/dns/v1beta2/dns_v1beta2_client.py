@@ -46,6 +46,8 @@ class DnsV1beta2(base_api.BaseApiClient):
     self.policies = self.PoliciesService(self)
     self.projects = self.ProjectsService(self)
     self.resourceRecordSets = self.ResourceRecordSetsService(self)
+    self.responsePolicies = self.ResponsePoliciesService(self)
+    self.responsePolicyRules = self.ResponsePolicyRulesService(self)
 
   class ChangesService(base_api.BaseApiService):
     """Service class for the changes resource."""
@@ -764,5 +766,337 @@ class DnsV1beta2(base_api.BaseApiClient):
         request_field='resourceRecordSet',
         request_type_name='DnsResourceRecordSetsPatchRequest',
         response_type_name='ResourceRecordSet',
+        supports_download=False,
+    )
+
+  class ResponsePoliciesService(base_api.BaseApiService):
+    """Service class for the responsePolicies resource."""
+
+    _NAME = 'responsePolicies'
+
+    def __init__(self, client):
+      super(DnsV1beta2.ResponsePoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create method for the responsePolicies service.
+
+      Args:
+        request: (DnsResponsePoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResponsePolicy) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='dns.responsePolicies.create',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/responsePolicies',
+        request_field='responsePolicy',
+        request_type_name='DnsResponsePoliciesCreateRequest',
+        response_type_name='ResponsePolicy',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete method for the responsePolicies service.
+
+      Args:
+        request: (DnsResponsePoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DnsResponsePoliciesDeleteResponse) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='dns.responsePolicies.delete',
+        ordered_params=['project', 'responsePolicy'],
+        path_params=['project', 'responsePolicy'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/responsePolicies/{responsePolicy}',
+        request_field='',
+        request_type_name='DnsResponsePoliciesDeleteRequest',
+        response_type_name='DnsResponsePoliciesDeleteResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get method for the responsePolicies service.
+
+      Args:
+        request: (DnsResponsePoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResponsePolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='dns.responsePolicies.get',
+        ordered_params=['project', 'responsePolicy'],
+        path_params=['project', 'responsePolicy'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/responsePolicies/{responsePolicy}',
+        request_field='',
+        request_type_name='DnsResponsePoliciesGetRequest',
+        response_type_name='ResponsePolicy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List method for the responsePolicies service.
+
+      Args:
+        request: (DnsResponsePoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResponsePoliciesListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='dns.responsePolicies.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['maxResults', 'pageToken'],
+        relative_path='projects/{project}/responsePolicies',
+        request_field='',
+        request_type_name='DnsResponsePoliciesListRequest',
+        response_type_name='ResponsePoliciesListResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patch method for the responsePolicies service.
+
+      Args:
+        request: (DnsResponsePoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResponsePoliciesPatchResponse) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='dns.responsePolicies.patch',
+        ordered_params=['project', 'responsePolicy'],
+        path_params=['project', 'responsePolicy'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/responsePolicies/{responsePolicy}',
+        request_field='responsePolicyResource',
+        request_type_name='DnsResponsePoliciesPatchRequest',
+        response_type_name='ResponsePoliciesPatchResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update method for the responsePolicies service.
+
+      Args:
+        request: (DnsResponsePoliciesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResponsePoliciesUpdateResponse) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PUT',
+        method_id='dns.responsePolicies.update',
+        ordered_params=['project', 'responsePolicy'],
+        path_params=['project', 'responsePolicy'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/responsePolicies/{responsePolicy}',
+        request_field='responsePolicyResource',
+        request_type_name='DnsResponsePoliciesUpdateRequest',
+        response_type_name='ResponsePoliciesUpdateResponse',
+        supports_download=False,
+    )
+
+  class ResponsePolicyRulesService(base_api.BaseApiService):
+    """Service class for the responsePolicyRules resource."""
+
+    _NAME = 'responsePolicyRules'
+
+    def __init__(self, client):
+      super(DnsV1beta2.ResponsePolicyRulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create method for the responsePolicyRules service.
+
+      Args:
+        request: (DnsResponsePolicyRulesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResponsePolicyRule) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='dns.responsePolicyRules.create',
+        ordered_params=['project', 'responsePolicy'],
+        path_params=['project', 'responsePolicy'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/responsePolicies/{responsePolicy}/rules',
+        request_field='responsePolicyRule',
+        request_type_name='DnsResponsePolicyRulesCreateRequest',
+        response_type_name='ResponsePolicyRule',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete method for the responsePolicyRules service.
+
+      Args:
+        request: (DnsResponsePolicyRulesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DnsResponsePolicyRulesDeleteResponse) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='dns.responsePolicyRules.delete',
+        ordered_params=['project', 'responsePolicy', 'responsePolicyRule'],
+        path_params=['project', 'responsePolicy', 'responsePolicyRule'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}',
+        request_field='',
+        request_type_name='DnsResponsePolicyRulesDeleteRequest',
+        response_type_name='DnsResponsePolicyRulesDeleteResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get method for the responsePolicyRules service.
+
+      Args:
+        request: (DnsResponsePolicyRulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResponsePolicyRule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='dns.responsePolicyRules.get',
+        ordered_params=['project', 'responsePolicy', 'responsePolicyRule'],
+        path_params=['project', 'responsePolicy', 'responsePolicyRule'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}',
+        request_field='',
+        request_type_name='DnsResponsePolicyRulesGetRequest',
+        response_type_name='ResponsePolicyRule',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List method for the responsePolicyRules service.
+
+      Args:
+        request: (DnsResponsePolicyRulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResponsePolicyRulesListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='dns.responsePolicyRules.list',
+        ordered_params=['project', 'responsePolicy'],
+        path_params=['project', 'responsePolicy'],
+        query_params=['maxResults', 'pageToken'],
+        relative_path='projects/{project}/responsePolicies/{responsePolicy}/rules',
+        request_field='',
+        request_type_name='DnsResponsePolicyRulesListRequest',
+        response_type_name='ResponsePolicyRulesListResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patch method for the responsePolicyRules service.
+
+      Args:
+        request: (DnsResponsePolicyRulesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResponsePolicyRulesPatchResponse) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='dns.responsePolicyRules.patch',
+        ordered_params=['project', 'responsePolicy', 'responsePolicyRule'],
+        path_params=['project', 'responsePolicy', 'responsePolicyRule'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}',
+        request_field='responsePolicyRuleResource',
+        request_type_name='DnsResponsePolicyRulesPatchRequest',
+        response_type_name='ResponsePolicyRulesPatchResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update method for the responsePolicyRules service.
+
+      Args:
+        request: (DnsResponsePolicyRulesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResponsePolicyRulesUpdateResponse) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PUT',
+        method_id='dns.responsePolicyRules.update',
+        ordered_params=['project', 'responsePolicy', 'responsePolicyRule'],
+        path_params=['project', 'responsePolicy', 'responsePolicyRule'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}',
+        request_field='responsePolicyRuleResource',
+        request_type_name='DnsResponsePolicyRulesUpdateRequest',
+        response_type_name='ResponsePolicyRulesUpdateResponse',
         supports_download=False,
     )

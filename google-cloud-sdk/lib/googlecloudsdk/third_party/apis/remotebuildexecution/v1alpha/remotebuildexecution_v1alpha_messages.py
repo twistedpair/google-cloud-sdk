@@ -890,6 +890,8 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         DOCKER_CREATE_COMPUTE_SYSTEM_ERROR that is user-caused).
       DOCKER_TOO_MANY_SYMBOLIC_LINK_LEVELS: Docker failed to create an overlay
         mount because of too many levels of symbolic links.
+      LOCAL_CONTAINER_MANAGER_NOT_RUNNING: The local Container Manager is not
+        running.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -930,6 +932,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_CREATE_PROCESS_FILE_NOT_FOUND = 36
     DOCKER_CREATE_COMPUTE_SYSTEM_INCORRECT_PARAMETER_ERROR = 37
     DOCKER_TOO_MANY_SYMBOLIC_LINK_LEVELS = 38
+    LOCAL_CONTAINER_MANAGER_NOT_RUNNING = 39
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
@@ -1254,8 +1257,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListWorkerPoolsRequest(_mess
       specified, `AND` is assumed. Examples: Include only pools with more than
       100 reserved workers: `(worker_count > 100) (worker_config.reserved =
       true)` Include only pools with a certain label or machines of the
-      n1-standard family: `worker_config.labels.key1 : * OR
-      worker_config.machine_type: n1-standard`
+      e2-standard family: `worker_config.labels.key1 : * OR
+      worker_config.machine_type: e2-standard`
     parent: Resource name of the instance. Format:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """
@@ -1341,7 +1344,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
       permitted. Label keys must start with a letter. Label values are
       optional. There can not be more than 64 labels per resource.
     machineType: Required. Machine type of the worker, such as
-      `n1-standard-2`. See https://cloud.google.com/compute/docs/machine-types
+      `e2-standard-2`. See https://cloud.google.com/compute/docs/machine-types
       for a list of supported machine types. Note that `f1-micro` and
       `g1-small` are not yet supported.
     maxConcurrentActions: The maximum number of actions a worker can execute
@@ -2062,8 +2065,8 @@ class RemotebuildexecutionProjectsInstancesWorkerpoolsListRequest(_messages.Mess
       specified, `AND` is assumed. Examples: Include only pools with more than
       100 reserved workers: `(worker_count > 100) (worker_config.reserved =
       true)` Include only pools with a certain label or machines of the
-      n1-standard family: `worker_config.labels.key1 : * OR
-      worker_config.machine_type: n1-standard`
+      e2-standard family: `worker_config.labels.key1 : * OR
+      worker_config.machine_type: e2-standard`
     parent: Resource name of the instance. Format:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """

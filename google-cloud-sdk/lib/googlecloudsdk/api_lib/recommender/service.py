@@ -22,61 +22,59 @@ from googlecloudsdk.api_lib.util import apis
 
 RECOMMENDER_API_NAME = 'recommender'
 
-RECOMMENDER_API_VERSION = 'v1alpha2'
+
+def RecommenderClient(api_version):
+  return apis.GetClientInstance(RECOMMENDER_API_NAME, api_version)
 
 
-def RecommenderClient():
-  return apis.GetClientInstance(RECOMMENDER_API_NAME, RECOMMENDER_API_VERSION)
-
-
-def RecommenderMessages():
+def RecommenderMessages(api_version):
   """Returns the messages module for the Resource Settings service."""
-  return apis.GetMessagesModule(RECOMMENDER_API_NAME, RECOMMENDER_API_VERSION)
+  return apis.GetMessagesModule(RECOMMENDER_API_NAME, api_version)
 
 
-def BillingAccountsRecommenderRecommendationsService():
+def BillingAccountsRecommenderRecommendationsService(api_version):
   """Returns the service class for the Billing Account recommendations."""
-  client = RecommenderClient()
+  client = RecommenderClient(api_version)
   return client.billingAccounts_locations_recommenders_recommendations
 
 
-def ProjectsRecommenderRecommendationsService():
+def ProjectsRecommenderRecommendationsService(api_version):
   """Returns the service class for the Project recommendations."""
-  client = RecommenderClient()
+  client = RecommenderClient(api_version)
   return client.projects_locations_recommenders_recommendations
 
 
-def FoldersRecommenderRecommendationsService():
+def FoldersRecommenderRecommendationsService(api_version):
   """Returns the service class for the Folders recommendations."""
-  client = RecommenderClient()
+  client = RecommenderClient(api_version)
   return client.folders_locations_recommenders_recommendations
 
 
-def OrganizationsRecommenderRecommendationsService():
+def OrganizationsRecommenderRecommendationsService(api_version):
   """Returns the service class for the Organization recommendations."""
-  client = RecommenderClient()
+  client = RecommenderClient(api_version)
   return client.organizations_locations_recommenders_recommendations
 
 
-def BillingAccountsInsightTypeInsightsService():
+def BillingAccountsInsightTypeInsightsService(api_version):
   """Returns the service class for the Billing Account insights."""
-  client = RecommenderClient()
+  client = RecommenderClient(api_version)
   return client.billingAccounts_locations_insightTypes_insights
 
 
-def ProjectsInsightTypeInsightsService():
+def ProjectsInsightTypeInsightsService(api_version):
   """Returns the service class for the Project insights."""
-  client = RecommenderClient()
+  client = RecommenderClient(api_version)
   return client.projects_locations_insightTypes_insights
 
 
-def FoldersInsightTypeInsightsService():
+def FoldersInsightTypeInsightsService(api_version):
   """Returns the service class for the Folders insights."""
-  client = RecommenderClient()
+  client = RecommenderClient(api_version)
   return client.folders_locations_insightTypes_insights
 
 
-def OrganizationsInsightTypeInsightsService():
+def OrganizationsInsightTypeInsightsService(api_version):
   """Returns the service class for the Organization insights."""
-  client = RecommenderClient()
+  client = RecommenderClient(api_version)
   return client.organizations_locations_insightTypes_insights

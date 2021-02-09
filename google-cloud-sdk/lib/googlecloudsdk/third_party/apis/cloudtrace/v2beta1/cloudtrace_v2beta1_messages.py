@@ -17,6 +17,52 @@ from apitools.base.py import encoding
 package = 'cloudtrace'
 
 
+class BigQueryOutputConfig(_messages.Message):
+  r"""Configuration for the output that is specific to BigQuery when choosing
+  a BigQuery dataset as the output destination.
+
+  Enums:
+    VariantValueValuesEnum: Schema variant that should be used when exporting
+      data to BigQuery.
+
+  Fields:
+    variant: Schema variant that should be used when exporting data to
+      BigQuery.
+  """
+
+  class VariantValueValuesEnum(_messages.Enum):
+    r"""Schema variant that should be used when exporting data to BigQuery.
+
+    Values:
+      SCHEMA_VARIANT_UNSPECIFIED: (Input only) sentinel indicating that the
+        API should choose automatically. On create, a value will be selected
+        and persisted. Subsequent reads from the API will return a non-default
+        value indicating what was selected.
+      FIELDS_EXPANDED_AS_COLUMNS: In this mode, all attributes and label keys
+        of the span define columns dynamically, with each span as a row with
+        the attribute/label columns assigned their associated values in that
+        row. We recommend this mode of operation when unique label keys are
+        relatively small and stable, as this mode works well with small
+        numbers of unique label keys and provides a simpler, more convenient
+        query experience when operating in this mode.
+      CONDENSED_STATIC_JSON: Export data as condensed, json-formatted columns.
+        Choose this mode when unique label keys have high cardinality and/or
+        change frequently. This schema variant is more scalable and lacks the
+        potential issue of reaching the maximum column limit in BigQuery. At
+        the same time, this variant is more difficult to query compared with
+        "FIELDS_EXPANDED_AS_COLUMNS" mode, often requiring the use of BigQuery
+        JSON functions
+        (https://cloud.google.com/bigquery/docs/reference/standard-
+        sql/json_functions) in order to extract particular labels and use them
+        in queries.
+    """
+    SCHEMA_VARIANT_UNSPECIFIED = 0
+    FIELDS_EXPANDED_AS_COLUMNS = 1
+    CONDENSED_STATIC_JSON = 2
+
+  variant = _messages.EnumField('VariantValueValuesEnum', 1)
+
+
 class CloudtraceProjectsTraceSinksCreateRequest(_messages.Message):
   r"""A CloudtraceProjectsTraceSinksCreateRequest object.
 
@@ -130,12 +176,15 @@ class OutputConfig(_messages.Message):
   r"""OutputConfig contains a destination for writing trace data.
 
   Fields:
+    bigqueryConfig: Optional. Additional options governing the export behavior
+      when the selected destination is a BigQuery dataset.
     destination: The destination for writing trace data. Currently only
       BigQuery is supported. E.g.:
       "bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]"
   """
 
-  destination = _messages.StringField(1)
+  bigqueryConfig = _messages.MessageField('BigQueryOutputConfig', 1)
+  destination = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

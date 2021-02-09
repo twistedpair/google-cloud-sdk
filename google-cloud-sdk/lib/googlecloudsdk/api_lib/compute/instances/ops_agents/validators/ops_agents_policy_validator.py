@@ -37,9 +37,7 @@ _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS = {
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.DEBIAN: [
         '9', '10'
     ],
-    agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.RHEL: [
-        '7', '8'
-    ],
+    agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.RHEL: ['7', '8'],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES: [
         '12', '15'
     ],
@@ -49,11 +47,44 @@ _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS = {
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.UBUNTU: [
         '16.04', '18.04', '19.10', '20.04'
     ],
+    agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.WINDOWS: [
+        '10', '6'
+    ],
 }
+
+_SUPPORTED_OS_SHORT_NAMES_AND_AGENT_TYPES = {
+    agent_policy.OpsAgentPolicy.AgentRule.Type.LOGGING: [
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.CENTOS,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.DEBIAN,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.RHEL,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES_SAP,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.UBUNTU
+    ],
+    agent_policy.OpsAgentPolicy.AgentRule.Type.METRICS: [
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.CENTOS,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.DEBIAN,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.RHEL,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES_SAP,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.UBUNTU
+    ],
+    agent_policy.OpsAgentPolicy.AgentRule.Type.OPS_AGENT: [
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.CENTOS,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.DEBIAN,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.RHEL,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES_SAP,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.UBUNTU,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.WINDOWS
+    ],
+}
+
 _OS_SHORT_NAMES_WITH_OS_AGENT_PREINSTALLED = (
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.CENTOS,
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.DEBIAN,
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.RHEL,
+    agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.WINDOWS,
 )
 
 
@@ -133,6 +164,17 @@ class OsTypeNotSupportedError(exceptions.PolicyValidationError):
                 _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS)))
 
 
+class OSTypeNotSupportedByAgentTypeError(exceptions.PolicyValidationError):
+  """Raised when the OS short name and agent type combination is not supported."""
+
+  def __init__(self, short_name, agent_type):
+    super(OSTypeNotSupportedByAgentTypeError, self).__init__(
+        'The combination of short name [{}] and agent type [{}] is not supported'
+        '. The supported combinations are: {}.'.format(
+            short_name, agent_type,
+            json.dumps(_SUPPORTED_OS_SHORT_NAMES_AND_AGENT_TYPES)))
+
+
 def ValidateOpsAgentsPolicy(policy):
   """Validates semantics of an Ops agents policy.
 
@@ -158,12 +200,71 @@ def ValidateOpsAgentsPolicy(policy):
       More than one OS types are specified.
     * OsTypeNotSupportedError:
       The combination of the OS short name and version is not supported.
+    * OSTypeNotSupportedByAgentTypeError:
+      The combination of the OS short name and agent type is not supported.
   """
-  errors = (_ValidateAgentRules(policy.agent_rules) +
-            _ValidateOsTypes(policy.assignment.os_types))
+  errors = (
+      _ValidateAgentRules(policy.agent_rules) +
+      _ValidateOsTypes(policy.assignment.os_types) +
+      _ValidateAgentRulesAndOsTypes(policy.agent_rules,
+                                    policy.assignment.os_types))
   if errors:
     raise exceptions.PolicyValidationMultiError(errors)
   log.debug('Ops Agents policy validation passed.')
+
+
+def _ValidateAgentRulesAndOsTypes(agent_rules, os_types):
+  """Validates semantics of the ops-agents-policy.os-types field and the ops-agents-policy.agent-rules field.
+
+  This validation happens after the arg parsing stage. At this point, we can
+  assume that the field is a list of OpsAgentPolicy.Assignment.OsType objects.
+  The other field is a list of OpsAgentPolicy.AgentRule object. Each
+  OpsAgentPolicy object's 'type' field already complies with the allowed values.
+
+  Args:
+    agent_rules: list of OpsAgentPolicy.AgentRule. The list of agent rules to be
+      managed by the Ops Agents policy.
+    os_types: list of OpsAgentPolicy.Assignment.OsType. The list of OS types as
+      part of the instance filters that the Ops Agent policy applies to the Ops
+      Agents policy.
+
+  Returns:
+    An empty list if the validation passes. A list of errors from the following
+    list if the validation fails.
+    * OSTypeNotSupportedByAgentTypeError:
+      The combination of the OS short name and agent type is not supported.
+  """
+  errors = []
+  for os_type in os_types:
+    for agent_rule in agent_rules:
+      errors.extend(
+          _ValidateAgentTypeAndOsShortName(os_type.short_name, agent_rule.type))
+  return errors
+
+
+def _ValidateAgentTypeAndOsShortName(os_short_name, agent_type):
+  """Validates the combination of the OS short name and agent type is supported.
+
+  This validation happens after the arg parsing stage. At this point, we can
+  assume that the field OS short name has been already validated at the arg
+  parsing stage. Also the
+  other field is OpsAgentPolicy object's 'type' field already complies with the
+  allowed values.
+
+  Args:
+    os_short_name: str. The OS short name to filter instances by.
+    agent_type: str. The AgentRule type.
+
+  Returns:
+    An empty list if the validation passes. A singleton list with the following
+    error if the validation fails.
+    * OSTypeNotSupportedByAgentTypeError:
+      The combination of the OS short name and agent type is not supported.
+  """
+  supported_os_list = _SUPPORTED_OS_SHORT_NAMES_AND_AGENT_TYPES.get(agent_type)
+  if os_short_name not in supported_os_list:
+    return [OSTypeNotSupportedByAgentTypeError(os_short_name, agent_type)]
+  return []
 
 
 def _ValidateAgentRules(agent_rules):

@@ -5,6 +5,109 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 327.0.0 (2021-02-09)
+
+### AI
+
+* Added KMS args (`--kms-project`, `--kms-location`, `--kms-keyring`,
+  `--kms-key`) to `gcloud <alpha|beta> ai custom-jobs create` and `gcloud
+  <alpha|beta> ai hp-tuning-jobs create` to allow specifying a customer-managed
+  encryption key.
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.85.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### Artifact Registry
+
+*   Fixed a bug that prevented users from creating an encrypted repository with
+    a custom kms key.
+
+### Cloud DNS
+
+* Added `gcloud beta dns response-policies create` to create a new Cloud DNS response policy.
+* Added `gcloud beta dns response-policies update` to update a Cloud DNS response policy.
+* Added `gcloud beta dns response-policies list` to list all Cloud DNS response policies in a given project.
+* Added `gcloud beta dns response-policies describe` to describe details of a Cloud DNS response policy.
+* Added `gcloud beta dns response-policies delete` to delete a Cloud DNS response policy.
+
+### Cloud Functions
+
+* Promoted `--security-level` flag of `gcloud functions deploy` to beta.
+* Added support for `google.firebase.remoteconfig.update` as an event type. The full set of supported event types can be listed using `gcloud functions event-types list`.
+
+### Cloud Healthcare
+
+* Added `--write-disposition` flag to the following commands:
+  * `gcloud healthcare fhir-stores export bq`
+  * `gcloud beta healthcare fhir-stores export bq`
+  * `gcloud beta healthcare dicom-stores export bq`
+  * `gcloud beta healthcare annotation-stores export bq`
+  * `gcloud beta healthcare annotation-stores evaluate bq `
+
+### Cloud Logging
+
+* Promoted the following commands that support Logs Buckets to GA:
+   * `gcloud logging buckets`
+   * `gcloud logging read`
+   * `gcloud logging locations describe`
+   * `gcloud logging locations list`
+   * `gcloud logging sinks`
+   * `gcloud logging cmek-settings`
+* Promoted `--location`, `--bucket`, and `--view` of `gcloud logging read` to GA.
+* Promoted `--description` and `--log-filter` of `gcloud logging metrics` to GA.
+* Promoted `--use-partitioned-tables` of `gcloud logging sinks` to GA.
+
+### Compute Engine
+
+* Added support for `short-name=windows` for `--os-type` flag for `gcloud beta compute instances ops-agents policies`. This is only valid when `--agent-rules=type=ops-agent`.
+* Promoted `--cpu-utilization-predictive-method` flag of
+  `gcloud compute instance-groups managed <set-autoscaling|update-autoscaling>` to beta.
+* Added support for `--asn` flag for `gcloud compute routers update`.
+* Promoted `gcloud compute security-policies update` to beta.
+* Added `--enable-layer7-ddos-defense` flag and `--layer7-ddos-defense-rule-visibility` flag to `gcloud beta compute security-policies update`.
+
+### Events
+
+* Added `--authentication` flag to `gcloud events init` command.
+* Added `--authentication` flag to `gcloud events namespaces init` command.
+* Added `workload-identity-gsa` support to `--authentication` flag for `gcloud events init` command.
+* Modifed `gcloud events namespaces init` command to create namespace if it is missing.
+
+### Identity Groups
+
+* Added `--labels` flag to `gcloud identity groups update` to allow updating the labels for a group.
+
+### Identity Groups Memberships
+
+*   Promoted `--expiration` flag of  `gcloud identity groups memberships add` to GA.
+*   Promoted `--update-roles-param` flag of `gcloud identity groups memberships modify-membership-roles` to GA.
+
+### Kubernetes Engine
+
+* Adds new kubectl delegate version 1.19.7 for rapid channel
+* Updated default kubectl version from 1.17.14 to 1.17.17
+* Additional kubectl delegate versions:
+  * kubectl.1.15 (1.15.12)
+  * kubectl.1.16 (1.16.15)
+  * kubectl.1.17 (1.17.17)
+  * kubectl.1.18 (1.18.15)
+*   Corrected passing URIs and full resource names to work with paths in the
+    form `projects/<project>/locations/<location>` (in addition to the
+    deprecated form `projects/<project>/zones/<location>`).
+
+### Pubsub Emulator
+
+* Added retry policy feature to the emulator.
+* Updated emulator to deliver dead lettered messages to original subscription in case of publishing failure to dead letter topic.
+* Added subscription name, project name, and publish time properties to dead lettered messages.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 326.0.0 (2021-02-02)
 
 ### App Engine
@@ -29,6 +132,9 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Dataflow
 
+* Added streaming update and flexrs support to flex-template run command `gcloud dataflow flex-template run`.
+* Updated `gcloud dataflow sql query` command to use [Dataflow Flex
+  Templates](https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates).
 * Added `--additional-experiments` flag to `gcloud beta dataflow jobs run`.
 * Added `--additional-experiments` flag to `gcloud dataflow jobs run`.
 

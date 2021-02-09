@@ -59,17 +59,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_DATASETS = (
-      'projects.locations.datasets',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/datasets/'
-              '{datasetsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

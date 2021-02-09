@@ -1169,9 +1169,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1210,9 +1210,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1240,9 +1240,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1281,9 +1281,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1310,9 +1310,9 @@
                   "parameters": {
                     "location": {
                       "description": "Required. The location. Must be in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "query": {
@@ -1340,9 +1340,9 @@
                   "parameters": {
                     "location": {
                       "description": "Required. The location. Must be in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "domainName": {
@@ -1370,9 +1370,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource of the `Registration`. Must be in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1398,9 +1398,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location from which to list `Registration`s, specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1439,9 +1439,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the `Registration` to get, in the format `projects\/*\/locations\/*\/registrations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1464,9 +1464,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. Name of the `Registration` resource, in the format `projects\/*\/locations\/*\/registrations\/`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1498,9 +1498,9 @@
                   "parameters": {
                     "registration": {
                       "description": "Required. The name of the `Registration` whose management settings are being updated, in the format `projects\/*\/locations\/*\/registrations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1526,9 +1526,9 @@
                   "parameters": {
                     "registration": {
                       "description": "Required. The name of the `Registration` whose DNS settings are being updated, in the format `projects\/*\/locations\/*\/registrations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1554,9 +1554,9 @@
                   "parameters": {
                     "registration": {
                       "description": "Required. The name of the `Registration` whose contact settings are being updated, in the format `projects\/*\/locations\/*\/registrations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1582,9 +1582,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the `Registration` to export, in the format `projects\/*\/locations\/*\/registrations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1610,9 +1610,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the `Registration` to delete, in the format `projects\/*\/locations\/*\/registrations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1635,9 +1635,9 @@
                   "parameters": {
                     "registration": {
                       "description": "Required. The name of the `Registration` whose authorization code is being retrieved, in the format `projects\/*\/locations\/*\/registrations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1660,9 +1660,9 @@
                   "parameters": {
                     "registration": {
                       "description": "Required. The name of the `Registration` whose authorization code is being reset, in the format `projects\/*\/locations\/*\/registrations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1688,9 +1688,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1716,9 +1716,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -1747,9 +1747,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "type": "string"
                     }
                   },

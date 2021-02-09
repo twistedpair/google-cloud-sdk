@@ -38,25 +38,53 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_transform
 
-# TODO(b/175729243) remove this once all commands use dictionary objects for
-# output
-READY_COLUMN = ('ready_symbol.color(red="[xX]",'
-                'green="[\N{CHECK MARK}\N{HEAVY CHECK MARK}]",'
-                'yellow="[!\N{HORIZONTAL ELLIPSIS}]"):label=""')
-
 READY_COLUMN_ALIAS_KEY = 'status'
 
-READY_COLUMN_DICT = ('aliases.%s.enum(status).color(red="X",'
-                     'green="\N{HEAVY CHECK MARK}",'
-                     'yellow="\N{HORIZONTAL ELLIPSIS}"):alias=STATUS:label=""' %
-                     READY_COLUMN_ALIAS_KEY)
+
+def GetReadyColumn():
+  return ('aliases.%s.enum(status).color(red="%s",'
+          'green="%s",'
+          'yellow="%s"):alias=STATUS:label=""' %
+          (READY_COLUMN_ALIAS_KEY, GetReadySymbol(kubernetes_consts.VAL_FALSE),
+           GetReadySymbol(kubernetes_consts.VAL_TRUE),
+           GetReadySymbol(kubernetes_consts.VAL_UNKNOWN)))
 
 
-def AddPrettyPrintTransform(parser):
+def GetReadySymbol(ready):
+  encoding = console_attr.GetConsoleAttr().GetEncoding()
+  if ready == kubernetes_consts.VAL_UNKNOWN:
+    return _PickSymbol('\N{HORIZONTAL ELLIPSIS}', '.', encoding)
+  elif ready == kubernetes_consts.VAL_TRUE:
+    return _PickSymbol('\N{HEAVY CHECK MARK}', '+', encoding)
+  else:
+    return 'X'
+
+
+def _PickSymbol(best, alt, encoding):
+  """Chooses the best symbol (if it's in this encoding) or an alternate."""
+  try:
+    best.encode(encoding)
+    return best
+  except UnicodeEncodeError:
+    return alt
+
+
+def AddReadyColumnTransform(parser):
+  """Adds the transformation to correctly display the 'Ready'column.
+
+  The transformation converts the status values of True/False/Unknown into
+  corresponding symbols.
+
+  Args:
+    parser: parser object to add the transformation to.
+  """
   status = {
-      kubernetes_consts.VAL_TRUE: '\N{HEAVY CHECK MARK}',
-      kubernetes_consts.VAL_FALSE: 'X',
-      kubernetes_consts.VAL_UNKNOWN: '\N{HORIZONTAL ELLIPSIS}'
+      kubernetes_consts.VAL_TRUE:
+          GetReadySymbol(kubernetes_consts.VAL_TRUE),
+      kubernetes_consts.VAL_FALSE:
+          GetReadySymbol(kubernetes_consts.VAL_FALSE),
+      kubernetes_consts.VAL_UNKNOWN:
+          GetReadySymbol(kubernetes_consts.VAL_UNKNOWN)
   }
   transforms = {resource_transform.GetTypeDataName('status', 'enum'): status}
   parser.display_info.AddTransforms(transforms)

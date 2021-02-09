@@ -149,7 +149,7 @@ class KccClient(client_base.DeclarativeClient):
       cmd.extend(['--resource-format', args.resource_format])
 
       # Terraform does not support iam currently.
-      if args.resource_format == 'hcl':
+      if args.resource_format == 'terraform':
         cmd.extend(['--iam-format', 'none'])
 
     # If a file or directory path is specified, add path to command.

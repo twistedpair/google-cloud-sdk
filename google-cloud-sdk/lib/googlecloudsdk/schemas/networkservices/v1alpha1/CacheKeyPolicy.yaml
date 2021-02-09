@@ -38,7 +38,7 @@ properties:
       Names of query string parameters to exclude from cache keys. All other
       parameters will be included. Either specify includedQueryParameters or
       excludedQueryParameters, not both. '&' and '=' will be percent encoded and
-      not treated as delimiters.
+      not treated as delimiters. You may exclude up to 10 query parameters.
     type: array
     items:
       type: string
@@ -61,7 +61,8 @@ properties:
       include the HTTP method, use ":method" Note that specifying several
       headers, and/or headers that have a large range of values (e.g. per-
       user) will dramatically impact the cache hit rate, and may result in a
-      higher eviction rate and reduced performance.
+      higher eviction rate and reduced performance. You may specify up to 5
+      header names.
     type: array
     items:
       type: string
@@ -70,7 +71,8 @@ properties:
       Names of query string parameters to include in cache keys. All
       other parameters will be excluded. Either specify
       includedQueryParameters or excludedQueryParameters, not both. '&'
-      and '=' will be percent encoded and not treated as delimiters.
+      and '=' will be percent encoded and not treated as delimiters. You
+      may include up to 10 query parameters.
     type: array
     items:
       type: string

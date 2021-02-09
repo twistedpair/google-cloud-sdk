@@ -162,9 +162,9 @@ apis:
   certificatemanager:
     v1alpha1:
       discovery_doc: certificatemanager_v1alpha1.json
-      default: true
     v1alpha2:
       discovery_doc: certificatemanager_v1alpha2.json
+      default: true
   cloudasset:
     v1:
       default: true

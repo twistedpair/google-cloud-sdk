@@ -34,10 +34,18 @@ from googlecloudsdk.core.console import console_io
 
 
 class KubeRunCommand(base.BinaryBackedCommand):
-  """Base class to inherit kuberun command classes from.
+  """Base class for kuberun commands.
 
-    Child classes must implement the Command method and define a 'flags'
-    attribute.
+    By default, following the principles of go/gcloud-go-binary-commands,
+    - stderr is used to stream user messages, status and errors.
+    - stdout is captured and processed via FormatOutput.
+
+    Non-compliant commands should override should_stream_stdout() and/or
+    OperationResponseHandler().
+
+    All child classes must implement Command(), and define a 'flags' attribute.
+    Classes formatting command output (e.g. JSON) should override
+    FormatOutput(), which will be called when the binary exits successfully.
   """
 
   @classmethod
@@ -66,14 +74,40 @@ class KubeRunCommand(base.BinaryBackedCommand):
     """Returns the supported kuberun command including all command groups."""
     pass
 
-  @abc.abstractmethod
   def OperationResponseHandler(self, response, args):
     """Process the result of the operation."""
-    pass
+    if response.failed:
+      # TODO(b/178490662): use error output via stdout for failed commands.
+      raise exceptions.Error('Command execution failed')
+
+    return self.FormatOutput(response.stdout, args)
+
+  def FormatOutput(self, out, args):
+    """Processes and formats the output of the kuberun command execution.
+
+    Child classes typically override this method to parse a JSON object.
+
+    Args:
+      out: str, the output of the kuberun command
+      args: the arguments passed to the gcloud command
+
+    Returns:
+      A resource object dispatched by display.Displayer().
+    """
+    return out
+
+  @property
+  def should_stream_stdout(self):
+    """Whether stdout should be streamed."""
+    # TODO(b/170872460): Clean this up once all commands stream stderr only.
+    return False
 
   @property
   def command_executor(self):
-    return kuberuncli.KubeRunCli()
+    if self.should_stream_stdout:
+      return kuberuncli.KubeRunStreamingCli()
+
+    return kuberuncli.KubeRunStreamingCli(std_out_func=_CaptureStreamOutHandler)
 
   def Run(self, args):
     enable_experimental = (
@@ -124,50 +158,6 @@ class KubeRunCommand(base.BinaryBackedCommand):
     log.debug('Response: %s' % response.stdout)
     log.debug('ErrResponse: %s' % response.stderr)
     return self.OperationResponseHandler(response, args)
-
-
-class KubeRunStreamingCommand(KubeRunCommand):
-  """Base class for kuberun command with streaming binary executor.
-
-    Child classes must implement BuildArgs and Command methods.
-  """
-
-  @property
-  def command_executor(self):
-    return kuberuncli.KubeRunStreamingCli()
-
-  def OperationResponseHandler(self, response, args):
-    if response.failed:
-      raise exceptions.Error('Command execution failed')
-
-
-class KubeRunCommandWithOutput(KubeRunCommand):
-  """Base class for commands that return a result (on their stdout)."""
-
-  def OperationResponseHandler(self, response, args):
-    if response.stderr:
-      log.status.Print(response.stderr)
-
-    if response.failed:
-      err_msg = 'Command execution failed'
-      if response.stderr:
-        err_msg += ': ' + response.stderr
-      raise exceptions.Error(err_msg)
-
-    return self.FormatOutput(response.stdout, args)
-
-  @abc.abstractmethod
-  def FormatOutput(self, out, args):
-    """Formats the output of the kuberun command execution, typically convert to json."""
-    pass
-
-
-class KubeRunStreamingCommandWithResult(KubeRunCommandWithOutput):
-  """Base class for streaming commands that return a result on their stdout."""
-
-  @property
-  def command_executor(self):
-    return kuberuncli.KubeRunStreamingCli(std_out_func=_CaptureStreamOutHandler)
 
 
 def _CaptureStreamOutHandler(result_holder, **kwargs):

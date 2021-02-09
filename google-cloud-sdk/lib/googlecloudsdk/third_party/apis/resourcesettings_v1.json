@@ -376,31 +376,6 @@
               ],
               "description": "Gets a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting value does not exist."
             },
-            "lookupEffectiveValue": {
-              "id": "resourcesettings.organizations.settings.lookupEffectiveValue",
-              "path": "v1/{+parent}:lookupEffectiveValue",
-              "flatPath": "v1/organizations/{organizationsId}/settings/{settingsId}:lookupEffectiveValue",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "The setting for which an effective value will be evaluated. See Setting for naming requirements.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "GoogleCloudResourcesettingsV1SettingValue"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
-            },
             "updateValue": {
               "id": "resourcesettings.organizations.settings.updateValue",
               "path": "v1/{+name}",
@@ -464,14 +439,14 @@
           "resources": {
             "value": {
               "methods": {
-                "create": {
-                  "id": "resourcesettings.organizations.settings.value.create",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/organizations/{organizationsId}/settings/{settingsId}/value",
-                  "httpMethod": "POST",
+                "lookupEffectiveValue": {
+                  "id": "resourcesettings.organizations.settings.value.lookupEffectiveValue",
+                  "path": "v1/{+name}:lookupEffectiveValue",
+                  "flatPath": "v1/organizations/{organizationsId}/settings/{settingsId}/value:lookupEffectiveValue",
+                  "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                      "description": "The setting value for which an effective value will be evaluated. See SettingValue for naming requirements.",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
@@ -480,6 +455,37 @@
                   },
                   "parameterOrder": [
                     "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudResourcesettingsV1SettingValue"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
+                },
+                "create": {
+                  "id": "resourcesettings.organizations.settings.value.create",
+                  "path": "v1/{+parent}/settings/{settingsId}/value",
+                  "flatPath": "v1/organizations/{organizationsId}/settings/{settingsId}/value",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "The name of the setting for which a value should be created. See Setting for naming requirements.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^organizations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "settingsId": {
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent",
+                    "settingsId"
                   ],
                   "request": {
                     "$ref": "GoogleCloudResourcesettingsV1SettingValue"
@@ -599,31 +605,6 @@
               ],
               "description": "Gets a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting value does not exist."
             },
-            "lookupEffectiveValue": {
-              "id": "resourcesettings.folders.settings.lookupEffectiveValue",
-              "path": "v1/{+parent}:lookupEffectiveValue",
-              "flatPath": "v1/folders/{foldersId}/settings/{settingsId}:lookupEffectiveValue",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "The setting for which an effective value will be evaluated. See Setting for naming requirements.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "GoogleCloudResourcesettingsV1SettingValue"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
-            },
             "updateValue": {
               "id": "resourcesettings.folders.settings.updateValue",
               "path": "v1/{+name}",
@@ -687,14 +668,14 @@
           "resources": {
             "value": {
               "methods": {
-                "create": {
-                  "id": "resourcesettings.folders.settings.value.create",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/folders/{foldersId}/settings/{settingsId}/value",
-                  "httpMethod": "POST",
+                "lookupEffectiveValue": {
+                  "id": "resourcesettings.folders.settings.value.lookupEffectiveValue",
+                  "path": "v1/{+name}:lookupEffectiveValue",
+                  "flatPath": "v1/folders/{foldersId}/settings/{settingsId}/value:lookupEffectiveValue",
+                  "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                      "description": "The setting value for which an effective value will be evaluated. See SettingValue for naming requirements.",
                       "location": "path",
                       "required": true,
                       "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
@@ -703,6 +684,37 @@
                   },
                   "parameterOrder": [
                     "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudResourcesettingsV1SettingValue"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
+                },
+                "create": {
+                  "id": "resourcesettings.folders.settings.value.create",
+                  "path": "v1/{+parent}/settings/{settingsId}/value",
+                  "flatPath": "v1/folders/{foldersId}/settings/{settingsId}/value",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "The name of the setting for which a value should be created. See Setting for naming requirements.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^folders\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "settingsId": {
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent",
+                    "settingsId"
                   ],
                   "request": {
                     "$ref": "GoogleCloudResourcesettingsV1SettingValue"
@@ -822,31 +834,6 @@
               ],
               "description": "Gets a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting value does not exist."
             },
-            "lookupEffectiveValue": {
-              "id": "resourcesettings.projects.settings.lookupEffectiveValue",
-              "path": "v1/{+parent}:lookupEffectiveValue",
-              "flatPath": "v1/projects/{projectsId}/settings/{settingsId}:lookupEffectiveValue",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "The setting for which an effective value will be evaluated. See Setting for naming requirements.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "GoogleCloudResourcesettingsV1SettingValue"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
-            },
             "updateValue": {
               "id": "resourcesettings.projects.settings.updateValue",
               "path": "v1/{+name}",
@@ -910,14 +897,14 @@
           "resources": {
             "value": {
               "methods": {
-                "create": {
-                  "id": "resourcesettings.projects.settings.value.create",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/projects/{projectsId}/settings/{settingsId}/value",
-                  "httpMethod": "POST",
+                "lookupEffectiveValue": {
+                  "id": "resourcesettings.projects.settings.value.lookupEffectiveValue",
+                  "path": "v1/{+name}:lookupEffectiveValue",
+                  "flatPath": "v1/projects/{projectsId}/settings/{settingsId}/value:lookupEffectiveValue",
+                  "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                      "description": "The setting value for which an effective value will be evaluated. See SettingValue for naming requirements.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
@@ -926,6 +913,37 @@
                   },
                   "parameterOrder": [
                     "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudResourcesettingsV1SettingValue"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
+                },
+                "create": {
+                  "id": "resourcesettings.projects.settings.value.create",
+                  "path": "v1/{+parent}/settings/{settingsId}/value",
+                  "flatPath": "v1/projects/{projectsId}/settings/{settingsId}/value",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "The name of the setting for which a value should be created. See Setting for naming requirements.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "settingsId": {
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent",
+                    "settingsId"
                   ],
                   "request": {
                     "$ref": "GoogleCloudResourcesettingsV1SettingValue"

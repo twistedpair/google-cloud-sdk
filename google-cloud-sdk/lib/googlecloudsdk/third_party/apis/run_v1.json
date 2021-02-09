@@ -1884,9 +1884,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1930,9 +1930,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Name of the parent Project resource. Example: `projects\/myproject`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1970,9 +1970,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The namespace from which the revisions should be listed. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "limit": {
@@ -2031,9 +2031,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the revision to retrieve. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/revisions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/revisions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2056,9 +2056,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the revision to delete. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/revisions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/revisions\/[^\/]+$",
                       "type": "string"
                     },
                     "propagationPolicy": {
@@ -2100,9 +2100,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The namespace from which the configurations should be listed. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "limit": {
@@ -2161,9 +2161,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the configuration to retrieve. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/configurations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/configurations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2190,9 +2190,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The namespace in which the domain mapping should be created. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2218,9 +2218,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The namespace from which the domain mappings should be listed. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "limit": {
@@ -2279,9 +2279,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the domain mapping to retrieve. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/domainmappings\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/domainmappings\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2304,9 +2304,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the domain mapping to delete. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/domainmappings\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/domainmappings\/[^\/]+$",
                       "type": "string"
                     },
                     "propagationPolicy": {
@@ -2348,9 +2348,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the namespace being retrieved. If needed, replace {namespace_id} with the project ID.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2373,9 +2373,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the namespace being retrieved. If needed, replace {namespace_id} with the project ID.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -2411,9 +2411,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The namespace from which the routes should be listed. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "limit": {
@@ -2472,9 +2472,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the route to retrieve. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/routes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/routes\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2501,9 +2501,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project ID or project number in which this secret should be created.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2529,9 +2529,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the secret being retrieved. If needed, replace {namespace_id} with the project ID.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/secrets\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/secrets\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2554,9 +2554,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the secret being retrieved. If needed, replace {namespace_id} with the project ID.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/secrets\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/secrets\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2586,9 +2586,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The namespace from which the services should be listed. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "limit": {
@@ -2647,9 +2647,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the service to retrieve. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2672,9 +2672,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The namespace in which the service should be created. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2700,9 +2700,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the service being replaced. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2728,9 +2728,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the service to delete. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     },
                     "propagationPolicy": {
@@ -2768,9 +2768,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -2799,9 +2799,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2827,9 +2827,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2861,9 +2861,9 @@
               "parameters": {
                 "parent": {
                   "description": "Name of the parent Project resource. Example: `projects\/myproject`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -2905,9 +2905,9 @@
               "parameters": {
                 "parent": {
                   "description": "Name of the parent Project resource. Example: `projects\/myproject`.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -2945,9 +2945,9 @@
               "parameters": {
                 "parent": {
                   "description": "The namespace from which the revisions should be listed. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 },
                 "limit": {
@@ -3006,9 +3006,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the revision to retrieve. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+\/revisions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/revisions\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3031,9 +3031,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the revision to delete. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+\/revisions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/revisions\/[^\/]+$",
                   "type": "string"
                 },
                 "propagationPolicy": {
@@ -3075,9 +3075,9 @@
               "parameters": {
                 "parent": {
                   "description": "The namespace from which the configurations should be listed. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 },
                 "limit": {
@@ -3136,9 +3136,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the configuration to retrieve. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+\/configurations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/configurations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3165,9 +3165,9 @@
               "parameters": {
                 "parent": {
                   "description": "The namespace in which the domain mapping should be created. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3193,9 +3193,9 @@
               "parameters": {
                 "parent": {
                   "description": "The namespace from which the domain mappings should be listed. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 },
                 "limit": {
@@ -3254,9 +3254,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the domain mapping to retrieve. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+\/domainmappings\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/domainmappings\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3279,9 +3279,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the domain mapping to delete. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+\/domainmappings\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/domainmappings\/[^\/]+$",
                   "type": "string"
                 },
                 "propagationPolicy": {
@@ -3323,9 +3323,9 @@
               "parameters": {
                 "parent": {
                   "description": "The namespace from which the routes should be listed. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 },
                 "limit": {
@@ -3384,9 +3384,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the route to retrieve. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+\/routes\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/routes\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3413,9 +3413,9 @@
               "parameters": {
                 "parent": {
                   "description": "The namespace from which the services should be listed. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 },
                 "limit": {
@@ -3474,9 +3474,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the service to retrieve. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+\/services\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/services\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3499,9 +3499,9 @@
               "parameters": {
                 "parent": {
                   "description": "The namespace in which the service should be created. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3527,9 +3527,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the service being replaced. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+\/services\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/services\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3555,9 +3555,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the service to delete. For Cloud Run (fully managed), replace {namespace_id} with the project ID or number.",
+                  "pattern": "^namespaces\/[^\/]+\/services\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/services\/[^\/]+$",
                   "type": "string"
                 },
                 "propagationPolicy": {
@@ -3605,9 +3605,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the namespace being retrieved. If needed, replace {namespace_id} with the project ID.",
+                      "pattern": "^namespaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^namespaces\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3630,9 +3630,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the namespace being retrieved. If needed, replace {namespace_id} with the project ID.",
+                      "pattern": "^namespaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^namespaces\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -3669,9 +3669,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The project ID or project number in which this secret should be created.",
+                          "pattern": "^namespaces\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^namespaces\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3697,9 +3697,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the secret being retrieved. If needed, replace {namespace_id} with the project ID.",
+                          "pattern": "^namespaces\/[^\/]+\/secrets\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^namespaces\/[^\/]+\/secrets\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3722,9 +3722,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the secret being retrieved. If needed, replace {namespace_id} with the project ID.",
+                          "pattern": "^namespaces\/[^\/]+\/secrets\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^namespaces\/[^\/]+\/secrets\/[^\/]+$",
                           "type": "string"
                         }
                       },

@@ -4,7 +4,7 @@
  "id": "dns:v1beta2",
  "name": "dns",
  "version": "v1beta2",
- "revision": "20210122",
+ "revision": "20210201",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -453,6 +453,9 @@
     "ipv4Address": {
      "type": "string"
     },
+    "ipv6Address": {
+     "type": "string"
+    },
     "kind": {
      "type": "string",
      "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZoneForwardingConfigNameServerTarget\".",
@@ -792,6 +795,9 @@
     "ipv4Address": {
      "type": "string"
     },
+    "ipv6Address": {
+     "type": "string"
+    },
     "kind": {
      "type": "string",
      "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#policyAlternativeNameServerConfigTargetNameServer\".",
@@ -1085,6 +1091,174 @@
    "properties": {
     "operationId": {
      "type": "string"
+    }
+   }
+  },
+  "ResponsePoliciesListResponse": {
+   "id": "ResponsePoliciesListResponse",
+   "type": "object",
+   "properties": {
+    "header": {
+     "$ref": "ResponseHeader"
+    },
+    "nextPageToken": {
+     "type": "string"
+    },
+    "responsePolicies": {
+     "type": "array",
+     "items": {
+      "$ref": "ResponsePolicy"
+     }
+    }
+   }
+  },
+  "ResponsePoliciesPatchResponse": {
+   "id": "ResponsePoliciesPatchResponse",
+   "type": "object",
+   "properties": {
+    "header": {
+     "$ref": "ResponseHeader"
+    },
+    "responsePolicy": {
+     "$ref": "ResponsePolicy"
+    }
+   }
+  },
+  "ResponsePoliciesUpdateResponse": {
+   "id": "ResponsePoliciesUpdateResponse",
+   "type": "object",
+   "properties": {
+    "header": {
+     "$ref": "ResponseHeader"
+    },
+    "responsePolicy": {
+     "$ref": "ResponsePolicy"
+    }
+   }
+  },
+  "ResponsePolicy": {
+   "id": "ResponsePolicy",
+   "type": "object",
+   "properties": {
+    "description": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string",
+     "format": "int64"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#responsePolicy\".",
+     "default": "dns#responsePolicy"
+    },
+    "networks": {
+     "type": "array",
+     "items": {
+      "$ref": "ResponsePolicyNetwork"
+     }
+    },
+    "responsePolicyName": {
+     "type": "string"
+    }
+   }
+  },
+  "ResponsePolicyNetwork": {
+   "id": "ResponsePolicyNetwork",
+   "type": "object",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#responsePolicyNetwork\".",
+     "default": "dns#responsePolicyNetwork"
+    },
+    "networkUrl": {
+     "type": "string"
+    }
+   }
+  },
+  "ResponsePolicyRule": {
+   "id": "ResponsePolicyRule",
+   "type": "object",
+   "properties": {
+    "behavior": {
+     "type": "string",
+     "enum": [
+      "behaviorUnspecified",
+      "bypassResponsePolicy"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "dnsName": {
+     "type": "string"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#responsePolicyRule\".",
+     "default": "dns#responsePolicyRule"
+    },
+    "localData": {
+     "$ref": "ResponsePolicyRuleLocalData"
+    },
+    "ruleName": {
+     "type": "string"
+    }
+   }
+  },
+  "ResponsePolicyRuleLocalData": {
+   "id": "ResponsePolicyRuleLocalData",
+   "type": "object",
+   "properties": {
+    "localDatas": {
+     "type": "array",
+     "items": {
+      "$ref": "ResourceRecordSet"
+     }
+    }
+   }
+  },
+  "ResponsePolicyRulesListResponse": {
+   "id": "ResponsePolicyRulesListResponse",
+   "type": "object",
+   "properties": {
+    "header": {
+     "$ref": "ResponseHeader"
+    },
+    "nextPageToken": {
+     "type": "string"
+    },
+    "responsePolicyRules": {
+     "type": "array",
+     "items": {
+      "$ref": "ResponsePolicyRule"
+     }
+    }
+   }
+  },
+  "ResponsePolicyRulesPatchResponse": {
+   "id": "ResponsePolicyRulesPatchResponse",
+   "type": "object",
+   "properties": {
+    "header": {
+     "$ref": "ResponseHeader"
+    },
+    "responsePolicyRule": {
+     "$ref": "ResponsePolicyRule"
+    }
+   }
+  },
+  "ResponsePolicyRulesUpdateResponse": {
+   "id": "ResponsePolicyRulesUpdateResponse",
+   "type": "object",
+   "properties": {
+    "header": {
+     "$ref": "ResponseHeader"
+    },
+    "responsePolicyRule": {
+     "$ref": "ResponsePolicyRule"
     }
    }
   }
@@ -2092,6 +2266,452 @@
      },
      "response": {
       "$ref": "ResourceRecordSet"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    }
+   }
+  },
+  "responsePolicies": {
+   "methods": {
+    "create": {
+     "id": "dns.responsePolicies.create",
+     "path": "{project}/responsePolicies",
+     "httpMethod": "POST",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "ResponsePolicy"
+     },
+     "response": {
+      "$ref": "ResponsePolicy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "delete": {
+     "id": "dns.responsePolicies.delete",
+     "path": "{project}/responsePolicies/{responsePolicy}",
+     "httpMethod": "DELETE",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "responsePolicy": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "responsePolicy"
+     ],
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "get": {
+     "id": "dns.responsePolicies.get",
+     "path": "{project}/responsePolicies/{responsePolicy}",
+     "httpMethod": "GET",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "responsePolicy": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "responsePolicy"
+     ],
+     "response": {
+      "$ref": "ResponsePolicy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "list": {
+     "id": "dns.responsePolicies.list",
+     "path": "{project}/responsePolicies",
+     "httpMethod": "GET",
+     "description": "",
+     "parameters": {
+      "maxResults": {
+       "type": "integer",
+       "format": "int32",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "ResponsePoliciesListResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "patch": {
+     "id": "dns.responsePolicies.patch",
+     "path": "{project}/responsePolicies/{responsePolicy}",
+     "httpMethod": "PATCH",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "responsePolicy": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "responsePolicy"
+     ],
+     "request": {
+      "$ref": "ResponsePolicy"
+     },
+     "response": {
+      "$ref": "ResponsePoliciesPatchResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "update": {
+     "id": "dns.responsePolicies.update",
+     "path": "{project}/responsePolicies/{responsePolicy}",
+     "httpMethod": "PUT",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "responsePolicy": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "responsePolicy"
+     ],
+     "request": {
+      "$ref": "ResponsePolicy"
+     },
+     "response": {
+      "$ref": "ResponsePoliciesUpdateResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    }
+   }
+  },
+  "responsePolicyRules": {
+   "methods": {
+    "create": {
+     "id": "dns.responsePolicyRules.create",
+     "path": "{project}/responsePolicies/{responsePolicy}/rules",
+     "httpMethod": "POST",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "responsePolicy": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "responsePolicy"
+     ],
+     "request": {
+      "$ref": "ResponsePolicyRule"
+     },
+     "response": {
+      "$ref": "ResponsePolicyRule"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "delete": {
+     "id": "dns.responsePolicyRules.delete",
+     "path": "{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+     "httpMethod": "DELETE",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "responsePolicy": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "responsePolicyRule": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "responsePolicy",
+      "responsePolicyRule"
+     ],
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "get": {
+     "id": "dns.responsePolicyRules.get",
+     "path": "{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+     "httpMethod": "GET",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "responsePolicy": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "responsePolicyRule": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "responsePolicy",
+      "responsePolicyRule"
+     ],
+     "response": {
+      "$ref": "ResponsePolicyRule"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "list": {
+     "id": "dns.responsePolicyRules.list",
+     "path": "{project}/responsePolicies/{responsePolicy}/rules",
+     "httpMethod": "GET",
+     "description": "",
+     "parameters": {
+      "maxResults": {
+       "type": "integer",
+       "format": "int32",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "responsePolicy": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "responsePolicy"
+     ],
+     "response": {
+      "$ref": "ResponsePolicyRulesListResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "patch": {
+     "id": "dns.responsePolicyRules.patch",
+     "path": "{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+     "httpMethod": "PATCH",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "responsePolicy": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "responsePolicyRule": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "responsePolicy",
+      "responsePolicyRule"
+     ],
+     "request": {
+      "$ref": "ResponsePolicyRule"
+     },
+     "response": {
+      "$ref": "ResponsePolicyRulesPatchResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "update": {
+     "id": "dns.responsePolicyRules.update",
+     "path": "{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+     "httpMethod": "PUT",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "responsePolicy": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "responsePolicyRule": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "responsePolicy",
+      "responsePolicyRule"
+     ],
+     "request": {
+      "$ref": "ResponsePolicyRule"
+     },
+     "response": {
+      "$ref": "ResponsePolicyRulesUpdateResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",

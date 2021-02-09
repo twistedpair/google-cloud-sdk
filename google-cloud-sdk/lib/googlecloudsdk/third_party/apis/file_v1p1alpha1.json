@@ -286,7 +286,8 @@
             "PREMIUM tier. BASIC_SSD is the preferred term for this tier.",
             "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_HDD is an alias for STANDARD Tier, offering economical performance backed by HDD.",
             "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_SSD is an alias for PREMIUM Tier, and offers improved performance backed by SSD.",
-            "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities."
+            "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities.",
+            "ENTERPRISE instances offer the features and availability needed for mission-critical workloads."
           ],
           "enum": [
             "TIER_UNSPECIFIED",
@@ -294,7 +295,8 @@
             "PREMIUM",
             "BASIC_HDD",
             "BASIC_SSD",
-            "HIGH_SCALE_SSD"
+            "HIGH_SCALE_SSD",
+            "ENTERPRISE"
           ]
         },
         "labels": {
@@ -586,7 +588,8 @@
             "PREMIUM tier. BASIC_SSD is the preferred term for this tier.",
             "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_HDD is an alias for STANDARD Tier, offering economical performance backed by HDD.",
             "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_SSD is an alias for PREMIUM Tier, and offers improved performance backed by SSD.",
-            "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities."
+            "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities.",
+            "ENTERPRISE instances offer the features and availability needed for mission-critical workloads."
           ],
           "enum": [
             "TIER_UNSPECIFIED",
@@ -594,7 +597,8 @@
             "PREMIUM",
             "BASIC_HDD",
             "BASIC_SSD",
-            "HIGH_SCALE_SSD"
+            "HIGH_SCALE_SSD",
+            "ENTERPRISE"
           ]
         },
         "type": {
@@ -716,7 +720,8 @@
             "PREMIUM tier. BASIC_SSD is the preferred term for this tier.",
             "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_HDD is an alias for STANDARD Tier, offering economical performance backed by HDD.",
             "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_SSD is an alias for PREMIUM Tier, and offers improved performance backed by SSD.",
-            "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities."
+            "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities.",
+            "ENTERPRISE instances offer the features and availability needed for mission-critical workloads."
           ],
           "enum": [
             "TIER_UNSPECIFIED",
@@ -724,7 +729,8 @@
             "PREMIUM",
             "BASIC_HDD",
             "BASIC_SSD",
-            "HIGH_SCALE_SSD"
+            "HIGH_SCALE_SSD",
+            "ENTERPRISE"
           ]
         },
         "downloadBytes": {
@@ -1342,9 +1348,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1388,9 +1394,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1418,9 +1424,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1459,9 +1465,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1484,9 +1490,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1509,9 +1515,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1541,9 +1547,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location for which to retrieve instance information, in the format projects\/{project_number}\/locations\/{location}. In Cloud Filestore, locations map to GCP zones, for example **us-west1-b**. To retrieve instance information for all locations, use \"-\" for the {location} value.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1587,9 +1593,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The instance resource name, in the format projects\/{project_number}\/locations\/{location}\/instances\/{instance_id}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1612,9 +1618,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The instance's project and location, in the format projects\/{project_number}\/locations\/{location}. In Cloud Filestore, locations map to GCP zones, for example **us-west1-b**.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "instanceId": {
@@ -1645,9 +1651,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. The resource name of the instance, in the format projects\/{project_number}\/locations\/{location_id}\/instances\/{instance_id}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1679,9 +1685,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the instance, in the format projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1707,9 +1713,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The instance resource name, in the format projects\/{project_number}\/locations\/{location}\/instances\/{instance_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1736,9 +1742,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location for which to retrieve snapshot information, in the format projects\/{project_number}\/locations\/{location}. In Cloud Filestore, snapshot locations map to GCP zones, for example **us-west1-b**, for local snapshots and to GCP regions, for example **us-west1**, otherwise. To retrieve snapshot information for all locations, use \"-\" for the {location} value.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1782,9 +1788,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The snapshot resource name, in the format projects\/{project_number}\/locations\/{location}\/snapshots\/{snapshot_id}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/snapshots\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/snapshots\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1807,9 +1813,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The snapshot's project and location, in the format projects\/{project_number}\/locations\/{location}. In Cloud Filestore, snapshot locations map to GCP zones, for example **us-west1-b**, for local snapshots and to GCP regions, for example **us-west1**, otherwise.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "snapshotId": {
@@ -1840,9 +1846,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The snapshot resource name, in the format projects\/{project_number}\/locations\/{location}\/snapshots\/{snapshot_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/snapshots\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/snapshots\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1865,9 +1871,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. The resource name of the snapshot, in the format projects\/{project_id}\/locations\/{location_id}\/snapshots\/{snapshot_id}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/snapshots\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/snapshots\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1903,9 +1909,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location for which to retrieve backup information, in the format projects\/{project_number}\/locations\/{location}. In Cloud Filestore, backup locations map to GCP regions, for example **us-west1**. To retrieve backup information for all locations, use \"-\" for the {location} value.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1949,9 +1955,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The backup resource name, in the format projects\/{project_number}\/locations\/{location}\/backups\/{backup_id}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backups\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1974,9 +1980,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The backup's project and location, in the format projects\/{project_number}\/locations\/{location}. In Cloud Filestore, backup locations map to GCP regions, for example **us-west1**.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "backupId": {
@@ -2007,9 +2013,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The backup resource name, in the format projects\/{project_number}\/locations\/{location}\/backups\/{backup_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backups\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2032,9 +2038,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. The resource name of the backup, in the format projects\/{project_id}\/locations\/{location_id}\/backups\/{backup_id}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backups\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {

@@ -66,6 +66,8 @@ class Backup(_messages.Message):
         performance backed by SSD.
       HIGH_SCALE_SSD: HIGH_SCALE instances offer expanded capacity and
         performance scaling capabilities.
+      ENTERPRISE: ENTERPRISE instances offer the features and availability
+        needed for mission-critical workloads.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
@@ -73,6 +75,7 @@ class Backup(_messages.Message):
     BASIC_HDD = 3
     BASIC_SSD = 4
     HIGH_SCALE_SSD = 5
+    ENTERPRISE = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The backup state.
@@ -1112,6 +1115,8 @@ class Instance(_messages.Message):
         performance backed by SSD.
       HIGH_SCALE_SSD: HIGH_SCALE instances offer expanded capacity and
         performance scaling capabilities.
+      ENTERPRISE: ENTERPRISE instances offer the features and availability
+        needed for mission-critical workloads.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
@@ -1119,6 +1124,7 @@ class Instance(_messages.Message):
     BASIC_HDD = 3
     BASIC_SSD = 4
     HIGH_SCALE_SSD = 5
+    ENTERPRISE = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1769,6 +1775,8 @@ class Snapshot(_messages.Message):
         performance backed by SSD.
       HIGH_SCALE_SSD: HIGH_SCALE instances offer expanded capacity and
         performance scaling capabilities.
+      ENTERPRISE: ENTERPRISE instances offer the features and availability
+        needed for mission-critical workloads.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
@@ -1776,6 +1784,7 @@ class Snapshot(_messages.Message):
     BASIC_HDD = 3
     BASIC_SSD = 4
     HIGH_SCALE_SSD = 5
+    ENTERPRISE = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The snapshot state.

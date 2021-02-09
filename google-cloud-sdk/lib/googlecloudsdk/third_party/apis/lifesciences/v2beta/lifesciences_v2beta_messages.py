@@ -808,6 +808,8 @@ class Metadata(_messages.Message):
       of this operation.
     labels: The user-defined labels associated with this operation.
     pipeline: The pipeline this operation represents.
+    pubSubTopic: The name of the Cloud Pub/Sub topic where notifications of
+      operation status changes are sent.
     startTime: The first time at which resources were allocated to execute the
       pipeline.
   """
@@ -841,7 +843,8 @@ class Metadata(_messages.Message):
   events = _messages.MessageField('Event', 3, repeated=True)
   labels = _messages.MessageField('LabelsValue', 4)
   pipeline = _messages.MessageField('Pipeline', 5)
-  startTime = _messages.StringField(6)
+  pubSubTopic = _messages.StringField(6)
+  startTime = _messages.StringField(7)
 
 
 class Mount(_messages.Message):
@@ -1110,6 +1113,10 @@ class RunPipelineRequest(_messages.Message):
       labels with resources created while executing the operation, see the
       appropriate resource message (for example, `VirtualMachine`).
     pipeline: Required. The description of the pipeline to run.
+    pubSubTopic: The name of an existing Pub/Sub topic. The server will
+      publish messages to this topic whenever the status of the operation
+      changes. The Life Sciences Service Agent account must have publisher
+      permissions to the specified topic or notifications will not be sent.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1142,6 +1149,7 @@ class RunPipelineRequest(_messages.Message):
 
   labels = _messages.MessageField('LabelsValue', 1)
   pipeline = _messages.MessageField('Pipeline', 2)
+  pubSubTopic = _messages.StringField(3)
 
 
 class RunPipelineResponse(_messages.Message):

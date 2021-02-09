@@ -23,7 +23,6 @@ import json
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.orgpolicy import service as org_policy_service
-from googlecloudsdk.api_lib.orgpolicy import utils as org_policy_utils
 from googlecloudsdk.command_lib.org_policies import exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
@@ -103,6 +102,12 @@ def GetPolicyNameFromArgs(args):
   return '{}/policies/{}'.format(resource, constraint_name)
 
 
+def _GetPolicyMessageName(release_track):
+  """Returns the organization policy message name based on the release_track."""
+  api_version = org_policy_service.GetApiVersion(release_track).capitalize()
+  return 'GoogleCloudOrgpolicy' + api_version + 'Policy'
+
+
 def GetMessageFromFile(filepath, release_track):
   """Returns a message populated from the JSON or YAML file on the specified filepath.
 
@@ -120,8 +125,7 @@ def GetMessageFromFile(filepath, release_track):
     json_str = file_contents
 
   org_policy_messages = org_policy_service.OrgPolicyMessages(release_track)
-  message = getattr(org_policy_messages,
-                    org_policy_utils.GetPolicyMessageName(release_track))
+  message = getattr(org_policy_messages, _GetPolicyMessageName(release_track))
   try:
     return encoding.JsonToMessage(message, json_str)
   except Exception as e:
@@ -207,14 +211,45 @@ def _DeleteRulesWithEmptyValues(policy, release_track):
     The updated policy.
   """
   new_policy = copy.deepcopy(policy)
+  org_policy_api = org_policy_service.OrgPolicyApi(release_track)
 
-  values = org_policy_utils.CreatePolicySpecPolicyRuleStringValues(
-      release_track)
-  matching_empty_rule = org_policy_utils.CreatePolicySpecPolicyRule(
-      release_track, values=values)
+  values = org_policy_api.BuildPolicySpecPolicyRuleStringValues()
+  matching_empty_rule = org_policy_api.BuildPolicySpecPolicyRule(values=values)
 
   new_policy.spec.rules = [
       rule for rule in new_policy.spec.rules if rule != matching_empty_rule
   ]
 
   return new_policy
+
+
+def CreateRuleOnPolicy(policy, release_track, condition_expression=None):
+  """Creates a rule on the policy that contains the specified condition expression.
+
+  In the case that condition_expression is None, a rule without a condition is
+  created.
+
+  Args:
+    policy: messages.GoogleCloudOrgpolicy{api_version}Policy, The policy object
+      to be updated.
+    release_track: release track of the command
+    condition_expression: str, The condition expression to create a new rule
+      with.
+
+  Returns:
+    The rule that was created as well as the new policy that includes this
+    rule.
+  """
+  org_policy_api = org_policy_service.OrgPolicyApi(release_track)
+
+  new_policy = copy.deepcopy(policy)
+
+  condition = None
+  if condition_expression is not None:
+    condition = org_policy_api.messages.GoogleTypeExpr(
+        expression=condition_expression)
+
+  new_rule = org_policy_api.BuildPolicySpecPolicyRule(condition=condition)
+  new_policy.spec.rules.append(new_rule)
+
+  return new_rule, new_policy

@@ -59,12 +59,6 @@ class EnableCommand(base.CreateCommand):
         log.status.Print(
             '{} Feature for project [{}] is already enabled'.format(
                 self.FEATURE_DISPLAY_NAME, project))
-    except apitools_exceptions.HttpBadRequestError as e:
-      error = core_api_exceptions.HttpErrorPayload(e)
-      if error.status_description != 'FAILED_PRECONDITION':
-        raise
-      else:
-        log.status.Print(error.status_message)
 
 
 class DisableCommand(base.DeleteCommand):

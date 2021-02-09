@@ -36,14 +36,15 @@ properties:
   allowHeaders:
     description: |-
       Specifies the content for the Access-Control- Allow-Headers response
-      header.
+      header. You may specify up to 5 headers to include in the Access-Control-
+      Allow-Headers header.
     type: array
     items:
       type: string
   allowMethods:
     description: |-
       Specifies the content for the Access-Control- Allow-Methods response
-      header.
+      header. You may specify up to 5 allowed methods.
     type: array
     items:
       type: string
@@ -51,7 +52,7 @@ properties:
     description: |-
       Specifies the list of origins that will be allowed to do CORS
       requests. This translates to the Access-Control-Allow-Origin
-      response header.
+      response header. You may specify up to 5 allowed origins.
     type: array
     items:
       type: string
@@ -64,7 +65,8 @@ properties:
   exposeHeaders:
     description: |-
       Specifies the content for the Access-Control- Expose-Headers
-      response header.
+      response header. You may specify up to 5 headers to expose in
+      the Access-Control-Expose-Headers header.
     type: array
     items:
       type: string

@@ -95,7 +95,6 @@ class ResourceCannotBeResolvedException(Error):
 def AddAutoscalerArgs(
     parser,
     autoscaling_file_enabled=False,
-    predictive=False,
     scheduled=False,
     patch_args=False):
   """Adds commandline arguments to parser."""
@@ -214,9 +213,6 @@ Mutually exclusive with `--update-stackdriver-metric`.
 
   AddScaleInControlFlag(parser)
 
-  if predictive:
-    AddPredictiveAutoscaling(parser)
-
   if scheduled:
     AddScheduledAutoscaling(parser, patch_args)
 
@@ -307,22 +303,24 @@ def AddScaleInControlFlag(parser, include_clear=False):
         """)
 
 
-def AddPredictiveAutoscaling(parser):
+def AddPredictiveAutoscaling(parser, standard=True):
+  """Add Predictive autoscaling arguments to the parser."""
+  choices = {
+      'none': """
+      (Default) No predictions are made based on the scaling metric
+       when calculating the number of VM instances.""",
+      'optimize-availability': """
+      Predictive autoscaling predicts the future values of the
+      scaling metric and scales a MIG in advance to ensure that new
+      VM instances are ready in time to cover the predicted peak."""}
+  if standard:
+    choices['standard'] = """
+    Standard predictive autoscaling  predicts the future values of
+    the scaling metric and then scales a MIG to ensure that new VM
+    instances are ready in time to cover the predicted peak."""
   parser.add_argument(
       '--cpu-utilization-predictive-method',
-      choices={
-          'none':
-              ('(Default) No predictions are made based on the scaling metric '
-               'when calculating the number of VM instances.'),
-          'standard':
-              ('Standard predictive autoscaling  predicts the future values of '
-               'the scaling metric and then scales a MIG to ensure that new VM '
-               'instances are ready in time to cover the predicted peak.'),
-          'optimize-availability':
-              ('Predictive autoscaling predicts the future values of the '
-               'scaling metric and scales a MIG in advance to ensure that new '
-               'VM instances are ready in time to cover the predicted peak.')
-      },
+      choices=choices,
       help='Indicates which method of prediction is used for CPU utilization metric, if any.'
   )
 

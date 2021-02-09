@@ -648,8 +648,8 @@ def TimeoutFlag():
       help='Maximum request execution time (timeout). It is specified '
       'as a duration; for example, "10m5s" is ten minutes and five seconds. '
       'If you don\'t specify a unit, seconds is assumed. For example, "10" is '
-      '10 seconds.',
-      type=arg_parsers.Duration(lower_bound='1s', parsed_unit='s'))
+      '10 seconds. Specify "0" to set the timeout to the default value.',
+      type=arg_parsers.Duration(lower_bound='0s', parsed_unit='s'))
 
 
 def RevisionSuffixFlag():

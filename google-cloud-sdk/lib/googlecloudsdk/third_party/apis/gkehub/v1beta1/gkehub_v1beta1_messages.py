@@ -92,6 +92,10 @@ class Authority(_messages.Message):
       `issuer` disables Workload Identity. `issuer` cannot be directly
       modified; it must be cleared (and Workload Identity disabled) before
       using a new issuer (and re-enabling Workload Identity).
+    oidcJwks: Optional. OIDC verification keys for this Membership in JWKS
+      format (RFC 7517). When this field is set, OIDC discovery will NOT be
+      performed on `issuer`, and instead OIDC tokens will be validated using
+      this field.
     workloadIdentityPool: Output only. The name of the workload identity pool
       in which `issuer` will be recognized. There is a single Workload
       Identity Pool per Hub that is shared between all Memberships that belong
@@ -102,7 +106,8 @@ class Authority(_messages.Message):
 
   identityProvider = _messages.StringField(1)
   issuer = _messages.StringField(2)
-  workloadIdentityPool = _messages.StringField(3)
+  oidcJwks = _messages.BytesField(3)
+  workloadIdentityPool = _messages.StringField(4)
 
 
 class Binding(_messages.Message):

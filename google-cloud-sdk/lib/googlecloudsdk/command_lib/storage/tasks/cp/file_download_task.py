@@ -50,21 +50,24 @@ class FileDownloadTask(task.Task):
         self._destination_resource.storage_url.url_string)
 
   def execute(self, callback=None):
+    if self._source_resource.md5_hash:
+      digesters = {util.HashAlgorithms.MD5: util.get_md5_hash()}
+    else:
+      digesters = {}
+
     with files.BinaryFileWriter(
         self._destination_resource.storage_url.object_name,
         create_path=True) as download_stream:
       provider = self._source_resource.storage_url.scheme
 
       # TODO(b/162264437): Support all of download_object's parameters.
-      api_factory.get_api(provider).download_object(self._source_resource,
-                                                    download_stream)
+      api_factory.get_api(provider).download_object(
+          self._source_resource, download_stream, digesters=digesters)
 
-    if self._source_resource.md5_hash:
-      # S3 object might not have MD5 hashes.
-      with files.BinaryFileReader(self._destination_resource.storage_url
-                                  .object_name) as completed_download_stream:
-        downloaded_file_hash = util.get_hash_digest_from_file_stream(
-            completed_download_stream, util.HashAlgorithms.MD5)
-        util.validate_object_hashes_match(self._source_resource.storage_url,
-                                          self._source_resource.md5_hash,
-                                          downloaded_file_hash)
+    # TODO(b/172048376): Add crc32c, and make this a loop.
+    if util.HashAlgorithms.MD5 in digesters:
+      calculated_digest = util.get_base64_hash_digest_string(
+          digesters[util.HashAlgorithms.MD5])
+      util.validate_object_hashes_match(self._source_resource.storage_url,
+                                        self._source_resource.md5_hash,
+                                        calculated_digest)

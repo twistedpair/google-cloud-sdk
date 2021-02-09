@@ -106,8 +106,8 @@ OS_UPGRADE_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT = (
 bucket_random_suffix_override = None
 
 
-class FilteredLogTailer(cb_logs.LogTailer):
-  """Subclass of LogTailer that allows for filtering."""
+class FilteredLogTailer(cb_logs.GCSLogTailer):
+  """Subclass of GCSLogTailer that allows for filtering."""
 
   def _PrintLogLine(self, text):
     """Override PrintLogLine method to use self.filter."""
@@ -219,11 +219,18 @@ def _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
       prompt_message = (
           'The "{0}" service is not enabled for this project. '
           'It is required for this operation.\n').format(service_name)
-      console_io.PromptContinue(
+      enable_service = console_io.PromptContinue(
           prompt_message,
           'Would you like to enable this service?',
-          throw_if_unattended=True,
-          cancel_on_no=True)
+          throw_if_unattended=True)
+      if enable_service:
+        services_api.EnableService(project.projectId, service_name)
+      else:
+        log.warning(
+            'If import fails, manually enable {0} before retrying. For '
+            'instructions on enabling services, see '
+            'https://cloud.google.com/service-usage/docs/enable-disable.'
+            .format(service_name))
 
   build_account = 'serviceAccount:{0}@cloudbuild.gserviceaccount.com'.format(
       project.projectNumber)
@@ -291,8 +298,7 @@ def _VerifyRolesAndPromptIfMissing(project_id, account, applied_roles,
   add_roles = console_io.PromptContinue(
       message=prompt_message,
       prompt_string='Would you like to add the permissions',
-      throw_if_unattended=True,
-      cancel_on_no=False)
+      throw_if_unattended=True)
 
   if not add_roles:
     return

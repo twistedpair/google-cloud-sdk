@@ -32,47 +32,6 @@ class AllowedIpRange(_messages.Message):
   value = _messages.StringField(2)
 
 
-class AutoscalingConfig(_messages.Message):
-  r"""The configuration settings for autoscaling for GKE cluster within
-  Composer environment. GKE cluster handles Airflow scheduler and workers
-  workload.
-
-  Enums:
-    ModeValueValuesEnum: Optional. Represents information on whether
-      autoscaling is enabled.
-
-  Fields:
-    currentCpu: Optional. Current number of CPU used in the environment.
-    currentMemory: Optional. Current memory in GB used in the environment.
-    maximumCpu: Optional. Maximum number of CPU in the environment.
-    maximumMemory: Optional. Memory limit in GB in the environment.
-    minimumCpu: Optional. Minimum number of CPU in the environment.
-    minimumMemory: Optional. Minimum memory limit in GB in the environment.
-    mode: Optional. Represents information on whether autoscaling is enabled.
-  """
-
-  class ModeValueValuesEnum(_messages.Enum):
-    r"""Optional. Represents information on whether autoscaling is enabled.
-
-    Values:
-      DEFAULT: The mode of autoscaling is set to the default value by
-        Composer.
-      DISABLED: Autoscaling is disabled.
-      ENABLED: Autoscaling is enabled.
-    """
-    DEFAULT = 0
-    DISABLED = 1
-    ENABLED = 2
-
-  currentCpu = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  currentMemory = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  maximumCpu = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  maximumMemory = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  minimumCpu = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  minimumMemory = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  mode = _messages.EnumField('ModeValueValuesEnum', 7)
-
-
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -322,30 +281,6 @@ class DatabaseConfig(_messages.Message):
   machineType = _messages.StringField(1)
 
 
-class DatabaseDataRetentionConfig(_messages.Message):
-  r"""The configuration setting for Airflow database data retention mechanism.
-
-  Fields:
-    enabled: Optional. Whether database data retention mechanism should be
-      enabled.
-    executionTime: Optional. The execution time of the data retention job. The
-      job is executed daily at this time in UTC timezone. Values for seconds
-      and nanos are disregarded. If not provided, the job will be executed at
-      0:00.
-    retentionDays: Optional. The number of days describing for how long to
-      store data in the database. Infinite retention period is represented by
-      0. If not specified the data will be retained forever.
-    storeArchives: Optional. Whether to store archives of deleted data in the
-      Customer bucket. If set to true, then the data will be stored in the
-      Customer bucket under archives/ directory.
-  """
-
-  enabled = _messages.BooleanField(1)
-  executionTime = _messages.MessageField('TimeOfDay', 2)
-  retentionDays = _messages.IntegerField(3)
-  storeArchives = _messages.BooleanField(4)
-
-
 class Date(_messages.Message):
   r"""Represents a whole or partial calendar date, such as a birthday. The
   time of day and time zone are either specified elsewhere or are
@@ -494,9 +429,6 @@ class EnvironmentConfig(_messages.Message):
     airflowUri: Output only. The URI of the Apache Airflow Web UI hosted
       within this environment (see [Airflow web interface](/composer/docs/how-
       to/accessing/airflow-web-interface)).
-    autoscalingConfig: Optional. The Autoscaling settings for GKE cluster
-      within Composer environment. GKE cluster handles Airflow scheduler and
-      workers workload.
     dagGcsPrefix: Output only. The Cloud Storage prefix of the DAGs for this
       environment. Although Cloud Storage objects reside in a flat namespace,
       a hierarchical file tree can be simulated using "/"-delimited object
@@ -504,8 +436,6 @@ class EnvironmentConfig(_messages.Message):
       directory with the given prefix.
     databaseConfig: Optional. The configuration settings for Cloud SQL
       instance used internally by Apache Airflow software.
-    databaseDataRetentionConfig: Optional. The configuration setting for
-      Airflow database data retention mechanism.
     encryptionConfig: Optional. The encryption options for the Composer
       environment and its dependencies. Cannot be updated.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
@@ -531,22 +461,24 @@ class EnvironmentConfig(_messages.Message):
     webServerNetworkAccessControl: Optional. The network-level access control
       policy for the Airflow web server. If unspecified, no network-level
       access restrictions will be applied.
+    workloadsConfig: Optional. The Workloads Config settings for GKE cluster
+      within Composer environment. GKE cluster handles Airflow scheduler and
+      workers workload.
   """
 
   airflowUri = _messages.StringField(1)
-  autoscalingConfig = _messages.MessageField('AutoscalingConfig', 2)
-  dagGcsPrefix = _messages.StringField(3)
-  databaseConfig = _messages.MessageField('DatabaseConfig', 4)
-  databaseDataRetentionConfig = _messages.MessageField('DatabaseDataRetentionConfig', 5)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 6)
-  gkeCluster = _messages.StringField(7)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 8)
-  nodeConfig = _messages.MessageField('NodeConfig', 9)
-  nodeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 11)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 12)
-  webServerConfig = _messages.MessageField('WebServerConfig', 13)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 14)
+  dagGcsPrefix = _messages.StringField(2)
+  databaseConfig = _messages.MessageField('DatabaseConfig', 3)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
+  gkeCluster = _messages.StringField(5)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 6)
+  nodeConfig = _messages.MessageField('NodeConfig', 7)
+  nodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 9)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 10)
+  webServerConfig = _messages.MessageField('WebServerConfig', 11)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 12)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 13)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -1322,27 +1254,6 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
-class TimeOfDay(_messages.Message):
-  r"""Represents a time of day. The date and time zone are either not
-  significant or are specified elsewhere. An API may choose to allow leap
-  seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
-
-  Fields:
-    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
-      choose to allow the value "24:00:00" for scenarios like business closing
-      time.
-    minutes: Minutes of hour of day. Must be from 0 to 59.
-    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
-    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
-      API may allow the value 60 if it allows leap-seconds.
-  """
-
-  hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-
-
 class WebServerConfig(_messages.Message):
   r"""The configuration settings for the Airflow web server App Engine
   instance.
@@ -1367,6 +1278,23 @@ class WebServerNetworkAccessControl(_messages.Message):
   """
 
   allowedIpRanges = _messages.MessageField('AllowedIpRange', 1, repeated=True)
+
+
+class WorkloadsConfig(_messages.Message):
+  r"""The Kubernetes workloads configuration for GKE cluster within Composer
+  environment.
+
+  Fields:
+    schedulerCpu: Optional. CPU request and limit for Airflow scheduler.
+    workerCpu: Optional. CPU request and limit for Airflow worker.
+    workerMaxCount: Optional. Maximum number of workers for autoscaling.
+    workerMinCount: Optional. Minimum number of workers for autoscaling.
+  """
+
+  schedulerCpu = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  workerCpu = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  workerMaxCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  workerMinCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 encoding.AddCustomJsonFieldMapping(

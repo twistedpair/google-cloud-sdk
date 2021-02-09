@@ -102,9 +102,17 @@ _cloudsdk_root_dir() {
 CLOUDSDK_ROOT_DIR=$(_cloudsdk_root_dir "$0")
 
 setup_cloudsdk_python() {
-  # if $CLOUDSDK_PYTHON is not set, prefer python3 over python2
+  # if $CLOUDSDK_PYTHON is not set, look for bundled python else
+  # prefer python3 over python2
   if [ -z "$CLOUDSDK_PYTHON" ]; then
-    CLOUDSDK_PYTHON=$(order_python python3 python2 python2.7 python)
+    # Is bundled python present?
+    if [ -x "$CLOUDSDK_ROOT_DIR/platform/bundledpythonunix/bin/python3" ];
+    then
+      CLOUDSDK_PYTHON="$CLOUDSDK_ROOT_DIR/platform/bundledpythonunix/bin/python3"
+      CLOUDSDK_PYTHON_SITEPACKAGES=1
+    else
+      CLOUDSDK_PYTHON=$(order_python python3 python2 python2.7 python)
+    fi
   fi
 }
 

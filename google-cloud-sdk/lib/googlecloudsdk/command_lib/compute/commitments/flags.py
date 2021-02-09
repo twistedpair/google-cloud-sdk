@@ -130,8 +130,9 @@ def AddResourcesArgGroup(parser):
       'Manage the commitment for particular resources.', required=True)
 
   resources_help = """\
-Resources to be included in the commitment. The ratio between the number of vCPU cores and memory must conform to limits described at:
-https://cloud.google.com/compute/docs/instances/creating-instance-with-custom-machine-type#specifications.
+Resources to be included in the commitment. For details and examples of valid
+specifications, refer to the
+[custom machine type guide](https://cloud.google.com/compute/docs/instances/creating-instance-with-custom-machine-type#specifications).
 *memory*::: The size of the memory, should include units (e.g. 3072MB or 9GB). If no units are specified, GB is assumed.
 *vcpu*::: The number of the vCPU cores.
 *local-ssd*::: The size of local SSD.

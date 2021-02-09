@@ -42,3 +42,16 @@ def ValidateDisplayName(display_name):
     raise exceptions.InvalidArgumentException(
         '--display-name',
         'Display name can not be empty.')
+
+
+def GetAndValidateKmsKey(args):
+  """Parse CMEK resource arg, and check if the arg was partially specified."""
+  if hasattr(args.CONCEPTS, 'kms_key'):
+    kms_ref = args.CONCEPTS.kms_key.Parse()
+    if kms_ref:
+      return kms_ref.RelativeName()
+    else:
+      for keyword in ['kms_key', 'kms_keyring', 'kms_location', 'kms_project']:
+        if getattr(args, keyword, None):
+          raise exceptions.InvalidArgumentException(
+              '--kms-key', 'Encryption key not fully specified.')

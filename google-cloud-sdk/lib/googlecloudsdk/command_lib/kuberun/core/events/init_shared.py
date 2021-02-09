@@ -12,7 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Provides shared classes for 'kuberun core events' init commands and 'events init' surface."""
+"""Provides shared classes for 'kuberun core events' init commands and 'events init' surface.
+
+Shared classes and functions for installing the KubeRun/CloudRun eventing
+cluster through the corresponding operator. Additionally, initializing the
+KubeRun/CloudRun eventing cluster by granting the controller, broker, and
+sources gsa with the appropriate permissions.
+"""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -23,9 +29,11 @@ import collections
 
 from googlecloudsdk.api_lib.events import iam_util
 from googlecloudsdk.api_lib.kuberun.core import events_constants
+
 from googlecloudsdk.command_lib.events import exceptions
 from googlecloudsdk.command_lib.iam import iam_util as core_iam_util
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 
@@ -41,9 +49,17 @@ CONTROL_PLANE_REQUIRED_SERVICES = (
     'storage-component.googleapis.com',
 )
 
+_WI_BIND_ROLE = 'roles/iam.workloadIdentityUser'
+
 ServiceAccountConfig = collections.namedtuple('ServiceAccountConfig', [
-    'arg_name', 'display_name', 'description', 'default_service_account',
-    'kuberun_google_service_account', 'recommended_roles', 'secret_name'
+    'arg_name',
+    'display_name',
+    'description',
+    'default_service_account',
+    'kuberun_google_service_account',
+    'recommended_roles',
+    'secret_name',
+    'k8s_service_account',
 ])
 
 CONTROL_PLANE_SERVICE_ACCOUNT_CONFIG = ServiceAccountConfig(
@@ -67,6 +83,7 @@ CONTROL_PLANE_SERVICE_ACCOUNT_CONFIG = ServiceAccountConfig(
         'roles/storage.admin',
     ),
     secret_name='google-cloud-key',
+    k8s_service_account='controller',
 )
 
 BROKER_SERVICE_ACCOUNT_CONFIG = ServiceAccountConfig(
@@ -82,6 +99,7 @@ BROKER_SERVICE_ACCOUNT_CONFIG = ServiceAccountConfig(
         'roles/cloudtrace.agent',
     ),
     secret_name='google-broker-key',
+    k8s_service_account='broker',
 )
 
 SOURCES_SERVICE_ACCOUNT_CONFIG = ServiceAccountConfig(
@@ -97,6 +115,7 @@ SOURCES_SERVICE_ACCOUNT_CONFIG = ServiceAccountConfig(
         'roles/cloudtrace.agent',
     ),
     secret_name='google-cloud-sources-key',
+    k8s_service_account='sources',
 )
 
 SERVICE_ACCOUNT_CONFIGS = (
@@ -109,38 +128,70 @@ SERVICE_ACCOUNT_CONFIGS = (
 GsaEmail = collections.namedtuple('GsaEmail', ['email', 'is_default'])
 
 
-def determine_cluster_eventing_type(client):
-  """Determine cluster eventing type inferred by namespaces."""
+def determine_product_type(client, authentication):
+  """Determine eventing product type inferred by namespaces."""
+  product_type = _fetch_product_type(client)
+
+  if (product_type == events_constants.Product.CLOUDRUN and
+      authentication == events_constants.AUTH_WI_GSA):
+    raise exceptions.UnsupportedArgumentError(
+        'This cluster version does not support using Cloud Run events '
+        'with workload identity.')
+
+  return product_type
+
+
+def _fetch_product_type(client):
+  """Fetch eventing product type inferred by namespaces."""
   namespaces_list = client.ListNamespaces()
-
-  if 'events-system' in namespaces_list:
+  if events_constants.KUBERUN_EVENTS_NAMESPACE in namespaces_list:
     # KubeRun events installed
-    return events_constants.ClusterEventingType.KUBERUN_SECRETS
-  elif 'cloud-run-events' in namespaces_list:
+    return events_constants.Product.KUBERUN
+  elif events_constants.CLOUDRUN_EVENTS_NAMESPACE in namespaces_list:
     # CloudRun events installed
-    return events_constants.ClusterEventingType.CLOUDRUN_SECRETS
+    return events_constants.Product.CLOUDRUN
   else:
-    raise exceptions.EventingInitializationError('Neither CloudRun nor KubeRun '
-                                                 'events installed')
+    raise exceptions.EventingInstallError('Neither CloudRun nor KubeRun '
+                                          'events installed')
 
 
-def _default_gsa(sa_config, cluster_eventing_type):
-  if cluster_eventing_type == events_constants.ClusterEventingType.CLOUDRUN_SECRETS:
+def _default_gsa(sa_config, product_type):
+  if product_type == events_constants.Product.CLOUDRUN:
     return sa_config.default_service_account
-  elif cluster_eventing_type == events_constants.ClusterEventingType.KUBERUN_SECRETS:
+  elif product_type == events_constants.Product.KUBERUN:
     return sa_config.kuberun_google_service_account
   else:
     raise exceptions.EventingInitializationError(
-        'Unexpected cluster eventing type')
+        'Unexpected eventing product type')
 
 
-def construct_service_account_email(sa_config, args, cluster_eventing_type):
+def construct_service_accounts(args, product_type):
+  """Creates the three required Google service accounts or use provided.
+
+  Args:
+    args: Command line arguments.
+    product_type: events_constants.Product enum.
+
+  Returns:
+    Dict[ServiceAccountConfig, GsaEmail].
+  """
+  gsa_emails = {}
+
+  # Create services accounts if missing
+  for sa_config in SERVICE_ACCOUNT_CONFIGS:
+    gsa_emails[sa_config] = _construct_service_account_email(
+        sa_config, args, product_type)
+
+  return gsa_emails
+
+
+def _construct_service_account_email(sa_config, args, product_type):
   """Creates default service account email or use provided if specified.
 
   Args:
     sa_config: A ServiceAccountConfig.
     args: Command line arguments.
-    cluster_eventing_type: An enum denoting the eventing cluster type.
+    product_type: events_constants.Product enum.
 
   Returns:
     GsaEmail
@@ -148,7 +199,7 @@ def construct_service_account_email(sa_config, args, cluster_eventing_type):
   log.status.Print('Creating service account for {}.'.format(
       sa_config.description))
   if not args.IsSpecified(sa_config.arg_name):
-    default_gsa_name = _default_gsa(sa_config, cluster_eventing_type)
+    default_gsa_name = _default_gsa(sa_config, product_type)
     sa_email = iam_util.GetOrCreateServiceAccountWithPrompt(
         default_gsa_name, sa_config.display_name, sa_config.description)
     return GsaEmail(email=sa_email, is_default=True)
@@ -157,22 +208,58 @@ def construct_service_account_email(sa_config, args, cluster_eventing_type):
     return GsaEmail(email=sa_email, is_default=False)
 
 
-def initialize_eventing_secrets(client, gsa_emails, cluster_eventing_type):
+def initialize_eventing_secrets(client, gsa_emails, product_type):
   """Initializes eventing cluster binding three gsa's with roles and secrets.
 
   Args:
     client: An api_tools client.
     gsa_emails: A Dict[ServiceAccountConfig, GsaEmail] holds the gsa email and
       if the email was user provided.
-    cluster_eventing_type: An enum denoting the eventing cluster type.
+    product_type: events_constants.Product enum.
   """
   for sa_config in SERVICE_ACCOUNT_CONFIGS:
     _configure_service_account_roles(sa_config, gsa_emails)
-    _add_secret_to_service_account(client, sa_config, cluster_eventing_type,
+    _add_secret_to_service_account(client, sa_config, product_type,
                                    gsa_emails[sa_config].email)
     log.status.Print('Finished configuring service account for {}.\n'.format(
         sa_config.description))
-  client.MarkClusterInitialized(cluster_eventing_type)
+  cluster_defaults = {
+      'secret': {
+          'key': 'key.json',
+          'name': 'google-cloud-key',
+      }
+  }
+  client.MarkClusterInitialized(cluster_defaults, product_type)
+
+
+def initialize_workload_identity_gsa(client, gsa_emails):
+  """Binds GSA to KSA and allow the source GSA to assume the controller GSA."""
+  for sa_config in SERVICE_ACCOUNT_CONFIGS:
+    _configure_service_account_roles(sa_config, gsa_emails)
+
+  for sa_config in [
+      CONTROL_PLANE_SERVICE_ACCOUNT_CONFIG, BROKER_SERVICE_ACCOUNT_CONFIG
+  ]:
+    _bind_eventing_gsa_to_ksa(sa_config, client, gsa_emails[sa_config].email)
+
+  controller_sa_email = gsa_emails[CONTROL_PLANE_SERVICE_ACCOUNT_CONFIG].email
+  sources_sa_email = gsa_emails[SOURCES_SERVICE_ACCOUNT_CONFIG].email
+
+  controller_ksa = 'serviceAccount:{}'.format(controller_sa_email)
+
+  iam_util.AddIamPolicyBindingServiceAccount(sources_sa_email,
+                                             'roles/iam.serviceAccountAdmin',
+                                             controller_ksa)
+
+  client.MarkClusterInitialized(
+      {
+          'serviceAccountName':
+              SOURCES_SERVICE_ACCOUNT_CONFIG.k8s_service_account,
+          'workloadIdentityMapping': {
+              SOURCES_SERVICE_ACCOUNT_CONFIG.k8s_service_account:
+                  sources_sa_email,
+          }
+      }, events_constants.Product.KUBERUN)
 
 
 def _configure_service_account_roles(sa_config, gsa_emails):
@@ -200,19 +287,17 @@ def _configure_service_account_roles(sa_config, gsa_emails):
                                              should_bind_roles)
 
 
-def _add_secret_to_service_account(client, sa_config, cluster_eventing_type,
-                                   sa_email):
+def _add_secret_to_service_account(client, sa_config, product_type, sa_email):
   """Adds new secret to service account.
 
   Args:
     client: An api_tools client.
     sa_config: A ServiceAccountConfig.
-    cluster_eventing_type: An enum denoting the eventing type.
+    product_type: events_constants.Product enum.
     sa_email: String of the targeted service account email.
   """
   control_plane_namespace = (
-      events_constants.ControlPlaneNamespaceFromEventingType(
-          cluster_eventing_type))
+      events_constants.ControlPlaneNamespaceFromProductType(product_type))
 
   secret_ref = resources.REGISTRY.Parse(
       sa_config.secret_name,
@@ -232,6 +317,43 @@ def _add_secret_to_service_account(client, sa_config, cluster_eventing_type,
       secret_ref, service_account_ref)
   log.status.Print('Added key [{}] to cluster for [{}].'.format(
       key_ref.Name(), sa_email))
+
+
+def _bind_eventing_gsa_to_ksa(sa_config, client, sa_email):
+  """Binds Google service account to the target eventing KSA.
+
+  Adds the IAM policy binding roles/iam.workloadIdentityUser
+
+  Args:
+    sa_config: A ServiceAccountConfig holding the desired target kubernetes
+      service account.
+    client: An events/kuberun apitools.client.
+    sa_email: A string of the Google service account to be bound.
+  Returns: None
+  """
+  log.status.Print('Binding service account for {}.'.format(
+      sa_config.description))
+
+  control_plane_namespace = events_constants.KUBERUN_EVENTS_NAMESPACE
+  project = properties.VALUES.core.project.Get(required=True)
+  member = 'serviceAccount:{}.svc.id.goog[{}/{}]'.format(
+      project, control_plane_namespace, sa_config.k8s_service_account)
+
+  iam_util.AddIamPolicyBindingServiceAccount(sa_email, _WI_BIND_ROLE, member)
+
+  k8s_service_account_ref = resources.REGISTRY.Parse(
+      None,
+      params={
+          'namespacesId': control_plane_namespace,
+          'serviceaccountsId': sa_config.k8s_service_account
+      },
+      collection='anthosevents.api.v1.namespaces.serviceaccounts',
+      api_version='v1')
+
+  client.AnnotateServiceAccount(k8s_service_account_ref,
+                                'iam.gke.io/gcp-service-account', sa_email)
+  log.status.Print('Bound service account {} to {} with {}.\n'.format(
+      sa_email, member, _WI_BIND_ROLE))
 
 
 def prompt_if_can_prompt(message):

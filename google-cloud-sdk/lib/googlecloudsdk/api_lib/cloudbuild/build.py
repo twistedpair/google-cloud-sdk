@@ -160,7 +160,7 @@ class CloudBuildClient(object):
     log_tailer = None
     if logs_bucket:
       log_object = self.CLOUDBUILD_LOGFILE_FMT_STRING.format(build_id=build_id)
-      log_tailer = cloudbuild_logs.LogTailer(
+      log_tailer = cloudbuild_logs.GCSLogTailer(
           bucket=logs_bucket,
           obj=log_object)
       if logs_uri:

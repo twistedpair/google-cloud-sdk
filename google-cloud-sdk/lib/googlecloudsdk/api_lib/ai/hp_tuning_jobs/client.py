@@ -48,7 +48,8 @@ class HpTuningJobsClient(object):
              parent=None,
              max_trial_count=None,
              parallel_trial_count=None,
-             algorithm=None):
+             algorithm=None,
+             kms_key_name=None):
     """Creates a hyperparameter tuning job with given parameters.
 
     Args:
@@ -64,6 +65,8 @@ class HpTuningJobsClient(object):
         parallel. The default value is 1.
       algorithm: AlgorithmValueValuesEnum, the search algorithm specified for
         the Study.
+      kms_key_name: A customer-managed encryption key to use for the
+        hyperparameter tuning job.
 
     Returns:
       Created hyperparameter tuning job.
@@ -86,6 +89,10 @@ class HpTuningJobsClient(object):
 
     if algorithm and job_spec.studySpec:
       job_spec.studySpec.algorithm = algorithm
+
+    if kms_key_name is not None:
+      job_spec.encryptionSpec = self.messages.GoogleCloudAiplatformV1beta1EncryptionSpec(
+          kmsKeyName=kms_key_name)
 
     return self._service.Create(
         self.messages

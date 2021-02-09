@@ -219,6 +219,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "pubSubTopic": {
+          "description": "The name of an existing Pub\/Sub topic. The server will publish messages to this topic whenever the status of the operation changes. The Life Sciences Service Agent account must have publisher permissions to the specified topic or notifications will not be sent.",
+          "type": "string"
         }
       }
     },
@@ -978,6 +982,10 @@
           "description": "The time at which execution was completed and resources were cleaned up.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "pubSubTopic": {
+          "description": "The name of the Cloud Pub\/Sub topic where notifications of operation status changes are sent.",
+          "type": "string"
         }
       }
     },

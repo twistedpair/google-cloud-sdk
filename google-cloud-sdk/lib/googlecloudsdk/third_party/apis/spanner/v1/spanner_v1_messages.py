@@ -22,10 +22,9 @@ class Backup(_messages.Message):
     StateValueValuesEnum: Output only. The current state of the backup.
 
   Fields:
-    createTime: Output only. The backup will contain an externally consistent
-      copy of the database at the timestamp specified by `create_time`.
-      `create_time` is approximately the time the CreateBackup request is
-      received.
+    createTime: Output only. The time the CreateBackup request is received. If
+      the request does not specify `version_time`, the `version_time` of the
+      backup will be equivalent to the `create_time`.
     database: Required for the CreateBackup operation. Name of the database
       from which this backup was created. This needs to be in the same
       instance as the backup. Values are of the form
@@ -55,6 +54,10 @@ class Backup(_messages.Message):
       enters the `READY` state, the reference to the backup is removed.
     sizeBytes: Output only. Size of the backup in bytes.
     state: Output only. The current state of the backup.
+    versionTime: The backup will contain an externally consistent copy of the
+      database at the timestamp specified by `version_time`. If `version_time`
+      is not specified, the system will set `version_time` to the
+      `create_time` of the backup.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -78,6 +81,7 @@ class Backup(_messages.Message):
   referencingDatabases = _messages.StringField(6, repeated=True)
   sizeBytes = _messages.IntegerField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
+  versionTime = _messages.StringField(9)
 
 
 class BackupInfo(_messages.Message):
@@ -85,14 +89,18 @@ class BackupInfo(_messages.Message):
 
   Fields:
     backup: Name of the backup.
-    createTime: The backup contains an externally consistent copy of
-      `source_database` at the timestamp specified by `create_time`.
+    createTime: The time the CreateBackup request was received.
     sourceDatabase: Name of the database the backup was created from.
+    versionTime: The backup contains an externally consistent copy of
+      `source_database` at the timestamp specified by `version_time`. If the
+      CreateBackup request did not specify `version_time`, the `version_time`
+      of the backup is equivalent to the `create_time`.
   """
 
   backup = _messages.StringField(1)
   createTime = _messages.StringField(2)
   sourceDatabase = _messages.StringField(3)
+  versionTime = _messages.StringField(4)
 
 
 class BatchCreateSessionsRequest(_messages.Message):
@@ -371,6 +379,8 @@ class Database(_messages.Message):
   Fields:
     createTime: Output only. If exists, the time at which the database
       creation started.
+    earliestVersionTime: Output only. Earliest timestamp at which older
+      versions of the data can be read.
     encryptionConfig: Output only. Custom encryption configuration (Cloud KMS
       keys). Applicable only for databases using the Customer Managed
       Encryption Keys (CMEK) feature. This is the encryption configuration
@@ -386,6 +396,10 @@ class Database(_messages.Message):
     restoreInfo: Output only. Applicable only for restored databases. Contains
       information about the restore source.
     state: Output only. The current database state.
+    versionRetentionPeriod: Output only. The period in which Cloud Spanner
+      retains all versions of data for the database. This is same as the value
+      of version_retention_period database option set using UpdateDatabaseDdl.
+      Defaults to 1 hour, if not set.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -409,11 +423,13 @@ class Database(_messages.Message):
     READY_OPTIMIZING = 3
 
   createTime = _messages.StringField(1)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 3, repeated=True)
-  name = _messages.StringField(4)
-  restoreInfo = _messages.MessageField('RestoreInfo', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  earliestVersionTime = _messages.StringField(2)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 3)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 4, repeated=True)
+  name = _messages.StringField(5)
+  restoreInfo = _messages.MessageField('RestoreInfo', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  versionRetentionPeriod = _messages.StringField(8)
 
 
 class Delete(_messages.Message):
@@ -3577,7 +3593,7 @@ class TransactionOptions(_messages.Message):
   inactivity at the client may cause Cloud Spanner to release a transaction's
   locks and abort it. Conceptually, a read-write transaction consists of zero
   or more reads or SQL statements followed by Commit. At any time before
-  Commit, the client can send a Rollback request to abort the transaction. ###
+  Commit, the client can send a Rollback request to abort the transaction. ##
   Semantics Cloud Spanner can commit the transaction if all read locks it
   acquired are still valid at commit time, and it is able to acquire write
   locks for all writes. Cloud Spanner can abort the transaction for any
@@ -3586,65 +3602,64 @@ class TransactionOptions(_messages.Message):
   transaction commits, Cloud Spanner makes no guarantees about how long the
   transaction's locks were held for. It is an error to use Cloud Spanner locks
   for any sort of mutual exclusion other than between Cloud Spanner
-  transactions themselves. ### Retrying Aborted Transactions When a
-  transaction aborts, the application can choose to retry the whole
-  transaction again. To maximize the chances of successfully committing the
-  retry, the client should execute the retry in the same session as the
-  original attempt. The original session's lock priority increases with each
-  consecutive abort, meaning that each attempt has a slightly better chance of
-  success than the previous. Under some circumstances (e.g., many transactions
-  attempting to modify the same row(s)), a transaction can abort many times in
-  a short period before successfully committing. Thus, it is not a good idea
-  to cap the number of retries a transaction can attempt; instead, it is
-  better to limit the total amount of wall time spent retrying. ### Idle
-  Transactions A transaction is considered idle if it has no outstanding reads
-  or SQL queries and has not started a read or SQL query within the last 10
-  seconds. Idle transactions can be aborted by Cloud Spanner so that they
-  don't hold on to locks indefinitely. In that case, the commit will fail with
-  error `ABORTED`. If this behavior is undesirable, periodically executing a
-  simple SQL query in the transaction (e.g., `SELECT 1`) prevents the
-  transaction from becoming idle. ## Snapshot Read-Only Transactions Snapshot
-  read-only transactions provides a simpler method than locking read-write
-  transactions for doing several consistent reads. However, this type of
-  transaction does not support writes. Snapshot transactions do not take
-  locks. Instead, they work by choosing a Cloud Spanner timestamp, then
-  executing all reads at that timestamp. Since they do not acquire locks, they
-  do not block concurrent read-write transactions. Unlike locking read-write
-  transactions, snapshot read-only transactions never abort. They can fail if
-  the chosen read timestamp is garbage collected; however, the default garbage
-  collection policy is generous enough that most applications do not need to
-  worry about this in practice. Snapshot read-only transactions do not need to
-  call Commit or Rollback (and in fact are not permitted to do so). To execute
-  a snapshot transaction, the client specifies a timestamp bound, which tells
-  Cloud Spanner how to choose a read timestamp. The types of timestamp bound
-  are: - Strong (the default). - Bounded staleness. - Exact staleness. If the
-  Cloud Spanner database to be read is geographically distributed, stale read-
-  only transactions can execute more quickly than strong or read-write
-  transaction, because they are able to execute far from the leader replica.
-  Each type of timestamp bound is discussed in detail below. ### Strong Strong
-  reads are guaranteed to see the effects of all transactions that have
-  committed before the start of the read. Furthermore, all rows yielded by a
-  single read are consistent with each other -- if any part of the read
-  observes a transaction, all parts of the read see the transaction. Strong
-  reads are not repeatable: two consecutive strong read-only transactions
-  might return inconsistent results if there are concurrent writes. If
-  consistency across reads is required, the reads should be executed within a
-  transaction or at an exact read timestamp. See
-  TransactionOptions.ReadOnly.strong. ### Exact Staleness These timestamp
-  bounds execute reads at a user-specified timestamp. Reads at a timestamp are
-  guaranteed to see a consistent prefix of the global transaction history:
-  they observe modifications done by all transactions with a commit timestamp
-  <= the read timestamp, and observe none of the modifications done by
-  transactions with a larger commit timestamp. They will block until all
-  conflicting transactions that may be assigned commit timestamps <= the read
-  timestamp have finished. The timestamp can either be expressed as an
-  absolute Cloud Spanner commit timestamp or a staleness relative to the
-  current time. These modes do not require a "negotiation phase" to pick a
-  timestamp. As a result, they execute slightly faster than the equivalent
-  boundedly stale concurrency modes. On the other hand, boundedly stale reads
-  usually return fresher results. See
+  transactions themselves. ## Retrying Aborted Transactions When a transaction
+  aborts, the application can choose to retry the whole transaction again. To
+  maximize the chances of successfully committing the retry, the client should
+  execute the retry in the same session as the original attempt. The original
+  session's lock priority increases with each consecutive abort, meaning that
+  each attempt has a slightly better chance of success than the previous.
+  Under some circumstances (e.g., many transactions attempting to modify the
+  same row(s)), a transaction can abort many times in a short period before
+  successfully committing. Thus, it is not a good idea to cap the number of
+  retries a transaction can attempt; instead, it is better to limit the total
+  amount of wall time spent retrying. ## Idle Transactions A transaction is
+  considered idle if it has no outstanding reads or SQL queries and has not
+  started a read or SQL query within the last 10 seconds. Idle transactions
+  can be aborted by Cloud Spanner so that they don't hold on to locks
+  indefinitely. In that case, the commit will fail with error `ABORTED`. If
+  this behavior is undesirable, periodically executing a simple SQL query in
+  the transaction (e.g., `SELECT 1`) prevents the transaction from becoming
+  idle. ## Snapshot Read-Only Transactions Snapshot read-only transactions
+  provides a simpler method than locking read-write transactions for doing
+  several consistent reads. However, this type of transaction does not support
+  writes. Snapshot transactions do not take locks. Instead, they work by
+  choosing a Cloud Spanner timestamp, then executing all reads at that
+  timestamp. Since they do not acquire locks, they do not block concurrent
+  read-write transactions. Unlike locking read-write transactions, snapshot
+  read-only transactions never abort. They can fail if the chosen read
+  timestamp is garbage collected; however, the default garbage collection
+  policy is generous enough that most applications do not need to worry about
+  this in practice. Snapshot read-only transactions do not need to call Commit
+  or Rollback (and in fact are not permitted to do so). To execute a snapshot
+  transaction, the client specifies a timestamp bound, which tells Cloud
+  Spanner how to choose a read timestamp. The types of timestamp bound are: -
+  Strong (the default). - Bounded staleness. - Exact staleness. If the Cloud
+  Spanner database to be read is geographically distributed, stale read-only
+  transactions can execute more quickly than strong or read-write transaction,
+  because they are able to execute far from the leader replica. Each type of
+  timestamp bound is discussed in detail below. ## Strong Strong reads are
+  guaranteed to see the effects of all transactions that have committed before
+  the start of the read. Furthermore, all rows yielded by a single read are
+  consistent with each other -- if any part of the read observes a
+  transaction, all parts of the read see the transaction. Strong reads are not
+  repeatable: two consecutive strong read-only transactions might return
+  inconsistent results if there are concurrent writes. If consistency across
+  reads is required, the reads should be executed within a transaction or at
+  an exact read timestamp. See TransactionOptions.ReadOnly.strong. ## Exact
+  Staleness These timestamp bounds execute reads at a user-specified
+  timestamp. Reads at a timestamp are guaranteed to see a consistent prefix of
+  the global transaction history: they observe modifications done by all
+  transactions with a commit timestamp <= the read timestamp, and observe none
+  of the modifications done by transactions with a larger commit timestamp.
+  They will block until all conflicting transactions that may be assigned
+  commit timestamps <= the read timestamp have finished. The timestamp can
+  either be expressed as an absolute Cloud Spanner commit timestamp or a
+  staleness relative to the current time. These modes do not require a
+  "negotiation phase" to pick a timestamp. As a result, they execute slightly
+  faster than the equivalent boundedly stale concurrency modes. On the other
+  hand, boundedly stale reads usually return fresher results. See
   TransactionOptions.ReadOnly.read_timestamp and
-  TransactionOptions.ReadOnly.exact_staleness. ### Bounded Staleness Bounded
+  TransactionOptions.ReadOnly.exact_staleness. ## Bounded Staleness Bounded
   staleness modes allow Cloud Spanner to pick the read timestamp, subject to a
   user-provided staleness bound. Cloud Spanner chooses the newest timestamp
   within the staleness bound that allows execution of the reads at the closest
@@ -3662,7 +3677,7 @@ class TransactionOptions(_messages.Message):
   Because the timestamp negotiation requires up-front knowledge of which rows
   will be read, it can only be used with single-use read-only transactions.
   See TransactionOptions.ReadOnly.max_staleness and
-  TransactionOptions.ReadOnly.min_read_timestamp. ### Old Read Timestamps and
+  TransactionOptions.ReadOnly.min_read_timestamp. ## Old Read Timestamps and
   Garbage Collection Cloud Spanner continuously garbage collects deleted and
   overwritten data in the background to reclaim storage space. This process is
   known as "version GC". By default, version GC reclaims versions after they

@@ -32,6 +32,7 @@ class Connector(_messages.Message):
       `projects/*/locations/*/connectors/*`.
     network: Name of a VPC network.
     state: Output only. State of the VPC access connector.
+    subnet: The subnet in which to house the VPC Access Connector.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -59,6 +60,7 @@ class Connector(_messages.Message):
   name = _messages.StringField(5)
   network = _messages.StringField(6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
+  subnet = _messages.MessageField('Subnet', 8)
 
 
 class ListConnectorsResponse(_messages.Message):
@@ -453,6 +455,23 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class Subnet(_messages.Message):
+  r"""The subnet in which to house the connector
+
+  Fields:
+    name: Subnet name (relative, not fully qualified). E.g. if the full subnet
+      selfLink is https://compute.googleapis.com/compute/v1/projects/{project}
+      /regions/{region}/subnetworks/{subnetName} the correct input for this
+      field would be {subnetName}
+    projectId: Project in which the subnet exists. If not set, this project is
+      assumed to be the project for which the connector create request was
+      issued.
+  """
+
+  name = _messages.StringField(1)
+  projectId = _messages.StringField(2)
 
 
 class VpcaccessProjectsLocationsConnectorsCreateRequest(_messages.Message):

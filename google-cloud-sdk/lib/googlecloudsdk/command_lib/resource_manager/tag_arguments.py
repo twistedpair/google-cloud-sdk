@@ -125,9 +125,7 @@ def AddForceArgToParser(parser):
     parser: ArgumentInterceptor, An argparse parser.
   """
   parser.add_argument(
-      "--force",
-      action="store_true",
-      help=("Force argument to bypass checks."))
+      "--force", action="store_true", help=("Force argument to bypass checks."))
 
 
 def AddPolicyFileArgToParser(parser):
@@ -147,7 +145,7 @@ def AddPolicyFileArgToParser(parser):
 
 
 def AddTagValueArgToParser(parser):
-  """Adds the TagValue arugument to the parser.
+  """Adds the TagValue argument to the parser.
 
   Args:
     parser: ArgumentInterceptor, An argparse parser.
@@ -163,3 +161,13 @@ def AddTagValueArgToParser(parser):
             "with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), "
             "underscores (_), dots (.), and alphanumerics between."))
 
+
+def AddLocationArgToParser(parser, message):
+  """Adds argument for the location.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+    message: String, help text for flag.
+  """
+  parser.add_argument(
+      "--location", metavar="LOCATION", required=False, help=message)

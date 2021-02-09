@@ -828,9 +828,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -869,9 +869,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -899,9 +899,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -940,9 +940,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -965,9 +965,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -990,9 +990,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1022,9 +1022,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location from which the AuthorizationPolicies should be listed, specified in the format `projects\/*\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1058,9 +1058,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. A name of the AuthorizationPolicy to get. Must be in the format `projects\/*\/locations\/{location}\/authorizationPolicies\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1083,9 +1083,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource of the AuthorizationPolicy. Must be in the format `projects\/*\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "authorizationPolicyId": {
@@ -1116,9 +1116,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the AuthorizationPolicy resource. It matches pattern `projects\/*\/locations\/{location}\/authorizationPolicies\/`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1150,9 +1150,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. A name of the AuthorizationPolicy to delete. Must be in the format `projects\/*\/locations\/{location}\/authorizationPolicies\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1175,9 +1175,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1203,9 +1203,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -1234,9 +1234,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1266,9 +1266,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location from which the ServerTlsPolicies should be listed, specified in the format `projects\/*\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1302,9 +1302,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. A name of the ServerTlsPolicy to get. Must be in the format `projects\/*\/locations\/{location}\/serverTlsPolicies\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serverTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serverTlsPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1327,9 +1327,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource of the ServerTlsPolicy. Must be in the format `projects\/*\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "serverTlsPolicyId": {
@@ -1360,9 +1360,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the ServerTlsPolicy resource. It matches the pattern `projects\/*\/locations\/{location}\/serverTlsPolicies\/{server_tls_policy}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serverTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serverTlsPolicies\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1394,9 +1394,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. A name of the ServerTlsPolicy to delete. Must be in the format `projects\/*\/locations\/{location}\/serverTlsPolicies\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serverTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serverTlsPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1419,9 +1419,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serverTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serverTlsPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1447,9 +1447,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serverTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serverTlsPolicies\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -1478,9 +1478,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serverTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serverTlsPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1510,9 +1510,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location from which the ClientTlsPolicies should be listed, specified in the format `projects\/*\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1546,9 +1546,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. A name of the ClientTlsPolicy to get. Must be in the format `projects\/*\/locations\/{location}\/clientTlsPolicies\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1571,9 +1571,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource of the ClientTlsPolicy. Must be in the format `projects\/*\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "clientTlsPolicyId": {
@@ -1604,9 +1604,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the ClientTlsPolicy resource. It matches the pattern `projects\/*\/locations\/{location}\/clientTlsPolicies\/{client_tls_policy}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1638,9 +1638,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. A name of the ClientTlsPolicy to delete. Must be in the format `projects\/*\/locations\/{location}\/clientTlsPolicies\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1663,9 +1663,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1691,9 +1691,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -1722,9 +1722,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
                       "type": "string"
                     }
                   },
