@@ -699,4 +699,20 @@ def GetReservationAffinity(args, client):
   return None
 
 
+def GetNetworkPerformanceConfig(args, client):
+  """Get NetworkPerformanceConfig message for the instance."""
+
+  network_perf_args = getattr(args, 'network_performance_configs', [])
+  network_perf_configs = client.messages.NetworkPerformanceConfig()
+
+  for config in network_perf_args:
+    total_tier = config.get('total-egress-bandwidth-tier', '').upper()
+    if total_tier:
+      network_perf_configs.totalEgressBandwidthTier = \
+        client.messages.NetworkPerformanceConfig.\
+          TotalEgressBandwidthTierValueValuesEnum(total_tier)
+
+  return network_perf_configs
+
+
 _RESERVATION_AFFINITY_KEY = 'compute.googleapis.com/reservation-name'

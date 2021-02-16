@@ -88,7 +88,9 @@ def ParseProject(project_id, api_version=PROJECTS_API_VERSION):
 
 
 def ProjectsUriFunc(resource, api_version=PROJECTS_API_VERSION):
-  ref = ParseProject(resource.projectId, api_version)
+  project_id = (resource.get('projectId', None) if isinstance(resource, dict)
+                else resource.projectId)
+  ref = ParseProject(project_id, api_version)
   return ref.SelfLink()
 
 

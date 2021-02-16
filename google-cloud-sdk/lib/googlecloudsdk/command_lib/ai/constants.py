@@ -51,6 +51,9 @@ You may view the status of your job with the command
 CUSTOM_JOB_COLLECTION = 'aiplatform.projects.locations.customJobs'
 
 ENDPOINTS_COLLECTION = 'aiplatform.projects.locations.endpoints'
+
+TENSORBOARDS_COLLECTION = 'aiplatform.projects.locations.tensorboards'
+
 HPTUNING_JOB_CREATION_DISPLAY_MESSAGE = """\
 Hyperparameter tuning job [{id}] submitted successfully.
 

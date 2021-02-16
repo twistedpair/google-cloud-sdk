@@ -1790,7 +1790,6 @@ class Quota(_messages.Message):
 
   Fields:
     dnsKeysPerManagedZone: Maximum allowed number of DnsKeys per ManagedZone.
-    gkeClustersPerPolicy: Maximum allowed number of GKE clusters per policy.
     kind: A string attribute.
     managedZones: Maximum allowed number of managed zones in the project.
     managedZonesPerNetwork: Maximum allowed number of managed zones which can
@@ -1801,6 +1800,8 @@ class Quota(_messages.Message):
     policies: Maximum allowed number of policies per project.
     resourceRecordsPerRrset: Maximum allowed number of ResourceRecords per
       ResourceRecordSet.
+    responsePolicyRulesPerResponsePolicy: Maximum allowed number of rules per
+      response policy.
     rrsetAdditionsPerChange: Maximum allowed number of ResourceRecordSets to
       add per ChangesCreateRequest.
     rrsetDeletionsPerChange: Maximum allowed number of ResourceRecordSets to
@@ -1818,14 +1819,14 @@ class Quota(_messages.Message):
   """
 
   dnsKeysPerManagedZone = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  gkeClustersPerPolicy = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  kind = _messages.StringField(3, default='dns#quota')
-  managedZones = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  managedZonesPerNetwork = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  networksPerManagedZone = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  networksPerPolicy = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  policies = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  resourceRecordsPerRrset = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  kind = _messages.StringField(2, default='dns#quota')
+  managedZones = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  managedZonesPerNetwork = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  networksPerManagedZone = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  networksPerPolicy = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  policies = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  resourceRecordsPerRrset = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  responsePolicyRulesPerResponsePolicy = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   rrsetAdditionsPerChange = _messages.IntegerField(10, variant=_messages.Variant.INT32)
   rrsetDeletionsPerChange = _messages.IntegerField(11, variant=_messages.Variant.INT32)
   rrsetsPerManagedZone = _messages.IntegerField(12, variant=_messages.Variant.INT32)
@@ -1835,102 +1836,12 @@ class Quota(_messages.Message):
   whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 16, repeated=True)
 
 
-class RRSetRoutingPolicy(_messages.Message):
-  r"""A RRSetRoutingPolicy represents ResourceRecordSet data that will be
-  returned dynamically with the response varying based on configured
-  properties such as geolocation or by weighted random selection.
-
-  Fields:
-    geoPolicy: A RRSetRoutingPolicyGeoPolicy attribute.
-    kind: A string attribute.
-    wrrPolicy: A RRSetRoutingPolicyWrrPolicy attribute.
-  """
-
-  geoPolicy = _messages.MessageField('RRSetRoutingPolicyGeoPolicy', 1)
-  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicy')
-  wrrPolicy = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 3)
-
-
-class RRSetRoutingPolicyGeoPolicy(_messages.Message):
-  r"""A RRSetRoutingPolicyGeoPolicy object.
-
-  Fields:
-    failovers: If the health check for the primary target for a geo location
-      returns an unhealthy status, the failover target is returned instead.
-      This failover configuration is not mandatory. If a failover is not
-      provided, the primary target won't be healthchecked - we'll return the
-      primarily configured rrdata irrespective of whether it is healthy or
-      not.
-    items: The primary geo routing configuration. If there are multiple items
-      with the same location, an error is returned instead.
-    kind: A string attribute.
-  """
-
-  failovers = _messages.MessageField('RRSetRoutingPolicyGeoPolicyGeoPolicyItem', 1, repeated=True)
-  items = _messages.MessageField('RRSetRoutingPolicyGeoPolicyGeoPolicyItem', 2, repeated=True)
-  kind = _messages.StringField(3, default='dns#rRSetRoutingPolicyGeoPolicy')
-
-
-class RRSetRoutingPolicyGeoPolicyGeoPolicyItem(_messages.Message):
-  r"""A RRSetRoutingPolicyGeoPolicyGeoPolicyItem object.
-
-  Fields:
-    kind: A string attribute.
-    location: The geo-location granularity is a GCP region. This location
-      string should correspond to a GCP region. e.g "us-east1", "southamerica-
-      east1", "asia-east1", etc.
-    rrdatas: A string attribute.
-    signatureRrdatas: DNSSEC generated signatures for the above geo_rrdata.
-  """
-
-  kind = _messages.StringField(1, default='dns#rRSetRoutingPolicyGeoPolicyGeoPolicyItem')
-  location = _messages.StringField(2)
-  rrdatas = _messages.StringField(3, repeated=True)
-  signatureRrdatas = _messages.StringField(4, repeated=True)
-
-
-class RRSetRoutingPolicyWrrPolicy(_messages.Message):
-  r"""A RRSetRoutingPolicyWrrPolicy object.
-
-  Fields:
-    items: A RRSetRoutingPolicyWrrPolicyWrrPolicyItem attribute.
-    kind: A string attribute.
-  """
-
-  items = _messages.MessageField('RRSetRoutingPolicyWrrPolicyWrrPolicyItem', 1, repeated=True)
-  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicyWrrPolicy')
-
-
-class RRSetRoutingPolicyWrrPolicyWrrPolicyItem(_messages.Message):
-  r"""A RRSetRoutingPolicyWrrPolicyWrrPolicyItem object.
-
-  Fields:
-    kind: A string attribute.
-    rrdatas: A string attribute.
-    signatureRrdatas: DNSSEC generated signatures for the above wrr_rrdata.
-    weight: The weight corresponding to this subset of rrdata. When multiple
-      WeightedRoundRobinPolicyItems are configured, the probability of
-      returning an rrset is proportional to its weight relative to the sum of
-      weights configured for all items. This weight should be a decimal in the
-      range [0,1].
-  """
-
-  kind = _messages.StringField(1, default='dns#rRSetRoutingPolicyWrrPolicyWrrPolicyItem')
-  rrdatas = _messages.StringField(2, repeated=True)
-  signatureRrdatas = _messages.StringField(3, repeated=True)
-  weight = _messages.FloatField(4)
-
-
 class ResourceRecordSet(_messages.Message):
   r"""A unit of data that will be returned by the DNS servers.
 
   Fields:
     kind: A string attribute.
     name: For example, www.example.com.
-    routingPolicy: Configures dynamic query responses based on geo location of
-      querying user or a weighted round robin based routing policy. A
-      ResourceRecordSet should only have either rrdata (static) or
-      routing_policy(dynamic). An error is returned otherwise.
     rrdatas: As defined in RFC 1035 (section 5) and RFC 1034 (section 3.6.1)
       -- see examples.
     signatureRrdatas: As defined in RFC 4034 (section 3.2).
@@ -1942,11 +1853,10 @@ class ResourceRecordSet(_messages.Message):
 
   kind = _messages.StringField(1, default='dns#resourceRecordSet')
   name = _messages.StringField(2)
-  routingPolicy = _messages.MessageField('RRSetRoutingPolicy', 3)
-  rrdatas = _messages.StringField(4, repeated=True)
-  signatureRrdatas = _messages.StringField(5, repeated=True)
-  ttl = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  type = _messages.StringField(7)
+  rrdatas = _messages.StringField(3, repeated=True)
+  signatureRrdatas = _messages.StringField(4, repeated=True)
+  ttl = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  type = _messages.StringField(6)
 
 
 class ResourceRecordSetsListResponse(_messages.Message):
@@ -1954,7 +1864,7 @@ class ResourceRecordSetsListResponse(_messages.Message):
 
   Fields:
     header: A ResponseHeader attribute.
-    kind: A string attribute.
+    kind: Type of resource.
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your

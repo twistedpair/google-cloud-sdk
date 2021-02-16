@@ -531,8 +531,16 @@ class AnthosEventsOperations(object):
                                    event_type_obj.crd, True)
     source_getter = functools.partial(self.GetSource, source_ref,
                                       event_type_obj.crd)
-    poller = SourceConditionPoller(source_getter, tracker,
-                                   stages.TriggerSourceDependencies())
+
+    # b/179156386 Increase grace period from default of 15 to 45 seconds for
+    # sources, because asia-southeast1 and asia-east1's sources are unable to
+    # resolve within the default grace period.
+    sources_grace_period = datetime.timedelta(seconds=45)
+    poller = SourceConditionPoller(
+        source_getter,
+        tracker,
+        dependencies=stages.TriggerSourceDependencies(),
+        grace_period=sources_grace_period)
     util.WaitForCondition(poller, exceptions.SourceCreationError)
     # Manually complete the stage indicating source readiness because we can't
     # track the Ready condition in the ConditionPoller.

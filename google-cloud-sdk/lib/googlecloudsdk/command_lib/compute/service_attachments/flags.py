@@ -59,6 +59,18 @@ def AddConnectionPreference(parser):
       help="This defines the service attachment's connection preference.")
 
 
+def AddEnableProxyProtocol(parser):
+  parser.add_argument(
+      '--enable-proxy-protocol',
+      action='store_true',
+      default=None,
+      help="""\
+      If True, then enable the proxy protocol which is for supplying client
+      TCP/IP address data in TCP connections that traverse proxies on their way
+      to destination servers.
+      """)
+
+
 def ServiceAttachmentArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='service attachment',

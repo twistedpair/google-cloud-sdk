@@ -411,6 +411,14 @@
           "items": {
             "$ref": "EventFilter"
           }
+        },
+        "pubsubTopic": {
+          "description": "Optional. The name of a Pub\/Sub topic in the same project that will be used as the transport topic for the event delivery. Format: `projects\/{project}\/topics\/{topic}`. This is only valid for events of type `google.cloud.pubsub.topic.v1.messagePublished`. The topic provided here will not be deleted at function deletion.",
+          "type": "string"
+        },
+        "serviceAccountEmail": {
+          "description": "Optional. The email of the trigger's service account. The service account must have permission to invoke Cloud Run services, the permission is `run.routes.invoke`. If empty, defaults to the Compute Engine default service account: `{project_number}-compute@developer.gserviceaccount.com`.",
+          "type": "string"
         }
       }
     },

@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis
 
 RESOURCE_SETTINGS_API_NAME = 'resourcesettings'
-RESOURCE_SETTINGS_API_VERSION = 'v1alpha1'
+RESOURCE_SETTINGS_API_VERSION = 'v1'
 
 
 def ResourceSettingsClient():

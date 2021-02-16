@@ -525,8 +525,7 @@ def AddInsightsConfigQueryInsightsEnabled(parser, show_negated_in_help=False):
       '--insights-config-query-insights-enabled',
       required=False,
       help="""Enable query insights feature to provide query and query plan
-        analytics. To disable this feature, use
-        `--no-insights-config-query-insights-enabled` instead.""",
+        analytics.""",
       **kwargs)
 
 
@@ -546,8 +545,7 @@ def AddInsightsConfigRecordApplicationTags(parser, show_negated_in_help=False):
       '--insights-config-record-application-tags',
       required=False,
       help="""Allow application tags to be recorded by the query insights
-        feature. To disable application tag recording, use
-        `--no-insights-record-application-tags` flag instead.""",
+        feature.""",
       **kwargs)
 
 
@@ -557,8 +555,7 @@ def AddInsightsConfigRecordClientAddress(parser, show_negated_in_help=False):
       '--insights-config-record-client-address',
       required=False,
       help="""Allow the client address to be recorded by the query insights
-        feature. To disable client address recording, use
-        `--no-insights-config-record-client-address` instead.""",
+        feature.""",
       **kwargs)
 
 
@@ -637,7 +634,7 @@ def AddTier(parser, is_patch=False):
   parser.add_argument('--tier', '-t', required=False, help=help_text)
 
 
-def AddZone(parser, help_text, enable_secondary_zone=False):
+def AddZone(parser, help_text):
   """Adds the mutually exclusive `--gce-zone` and `--zone` to the parser."""
   zone_group = parser.add_mutually_exclusive_group()
   zone_group.add_argument(
@@ -649,10 +646,8 @@ def AddZone(parser, help_text, enable_secondary_zone=False):
           warn=('Flag `{flag_name}` is deprecated and will be removed by '
                 'release 255.0.0. Use `--zone` instead.')),
       help=help_text)
-  if enable_secondary_zone:
-    AddZonesPrimarySecondary(zone_group, help_text)
-  else:
-    zone_group.add_argument('--zone', required=False, help=help_text)
+
+  AddZonesPrimarySecondary(zone_group, help_text)
 
 
 def AddZonesPrimarySecondary(parser, help_text):
@@ -660,7 +655,9 @@ def AddZonesPrimarySecondary(parser, help_text):
 
   zone_group = parser.add_group(required=False)
   zone_group.add_argument('--zone', required=False, help=help_text)
-  zone_group.add_argument('--secondary-zone', required=False, help=help_text)
+  zone_group.add_argument('--secondary-zone', required=False,
+                          help=('Preferred secondary Compute Engine zone '
+                                '(e.g. us-central1-a, us-central1-b, etc.).'))
 
 
 def AddRegion(parser):
@@ -675,14 +672,13 @@ def AddRegion(parser):
 
 # TODO(b/31989340): add remote completion
 # TODO(b/73362371): Make specifying a location required.
-def AddLocationGroup(parser, enable_secondary_zone):
+def AddLocationGroup(parser):
   location_group = parser.add_mutually_exclusive_group()
   AddRegion(location_group)
   AddZone(
       location_group,
       help_text=('Preferred Compute Engine zone (e.g. us-central1-a, '
-                 'us-central1-b, etc.).'),
-      enable_secondary_zone=enable_secondary_zone)
+                 'us-central1-b, etc.).'))
 
 
 # Database specific flags
@@ -701,12 +697,12 @@ def AddCharset(parser):
       'Each database version may support a different set of charsets.')
 
 
-def AddCollation(parser):
+def AddCollation(parser, custom_help=None):
   parser.add_argument(
       '--collation',
-      help='Cloud SQL database collation setting, which specifies '
-      'the set of rules for comparing characters in a character set. Each'
-      ' database version may support a different set of collations. For '
+      help=custom_help or 'Cloud SQL database collation setting, which '
+      'specifies the set of rules for comparing characters in a character set. '
+      'Each database version may support a different set of collations. For '
       'PostgreSQL database versions, this may only be set to the collation of '
       'the template database.')
 

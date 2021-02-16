@@ -4782,6 +4782,8 @@ class SdkHarnessContainerImage(_messages.Message):
   Fields:
     containerImage: A docker container image that resides in Google Container
       Registry.
+    environmentId: Environment ID for the Beam runner API proto Environment
+      that corresponds to the current SDK Harness.
     useSingleCorePerContainer: If true, recommends the Dataflow service to use
       only one core per SDK container instance with this image. If false (or
       unset) recommends using more than one core per SDK container instance
@@ -4790,7 +4792,8 @@ class SdkHarnessContainerImage(_messages.Message):
   """
 
   containerImage = _messages.StringField(1)
-  useSingleCorePerContainer = _messages.BooleanField(2)
+  environmentId = _messages.StringField(2)
+  useSingleCorePerContainer = _messages.BooleanField(3)
 
 
 class SdkVersion(_messages.Message):

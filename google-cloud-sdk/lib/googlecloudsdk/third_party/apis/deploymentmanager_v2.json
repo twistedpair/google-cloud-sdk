@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20210129",
+ "revision": "20210205",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -643,6 +643,10 @@
     "name": {
      "type": "string",
      "description": "[Output Only] Name of the operation."
+    },
+    "operationGroupId": {
+     "type": "string",
+     "description": "[Output Only] An ID that represents a group of operations, such as when a group of operations results from a `bulkInsert` API request."
     },
     "operationType": {
      "type": "string",

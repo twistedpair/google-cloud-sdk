@@ -251,6 +251,10 @@
         "secondaryColor": {
           "description": "The secondary color of the add-on. It sets the color of buttons. If primary color is set but no secondary color is set, the secondary color is the same as the primary color. If neither primary color nor secondary color is set, the default value provided by the framework is used.",
           "type": "string"
+        },
+        "useNewMaterialDesign": {
+          "description": "Enable material design for cards.",
+          "type": "boolean"
         }
       }
     },

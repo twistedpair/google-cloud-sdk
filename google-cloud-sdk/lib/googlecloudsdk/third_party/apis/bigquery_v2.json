@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20210129",
+ "revision": "20210205",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -354,6 +354,10 @@
      "items": {
       "type": "object",
       "properties": {
+       "dataset": {
+        "$ref": "DatasetAccessEntry",
+        "description": "[Pick one] A grant authorizing all resources of a particular type in a particular dataset access to this dataset. Only views are supported for now. The role field is not required when this field is set. If that dataset is deleted and re-created, its access needs to be granted again via an update operation."
+       },
        "domain": {
         "type": "string",
         "description": "[Pick one] A domain to grant access to. Any users signed in with the domain specified will be granted the specified access. Example: \"example.com\". Maps to IAM policy member \"domain:DOMAIN\"."
@@ -455,6 +459,28 @@
     "selfLink": {
      "type": "string",
      "description": "[Output-only] A URL that can be used to access the resource again. You can use this URL in Get or Update requests to the resource."
+    }
+   }
+  },
+  "DatasetAccessEntry": {
+   "id": "DatasetAccessEntry",
+   "type": "object",
+   "properties": {
+    "dataset": {
+     "$ref": "DatasetReference",
+     "description": "[Required] The dataset this entry applies to."
+    },
+    "target_types": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "targetType": {
+        "type": "string",
+        "description": "[Required] Which resources in the dataset this entry applies to. Currently, only views are supported, but additional target types may be added in the future. Possible values: VIEWS: This entry applies to all views in the dataset."
+       }
+      }
+     }
     }
    }
   },

@@ -27,6 +27,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.container import kubeconfig
 from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import global_methods
+from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.api_lib.run import traffic
@@ -881,6 +882,36 @@ def AddWaitForCompletionFlag(parser):
       'If not set, polling completes when the job has started.')
 
 
+def AddBinAuthzPolicyFlags(parser, with_clear=True):
+  """Add flags for BinAuthz."""
+  policy_group = parser
+  if with_clear:
+    policy_group = parser.add_mutually_exclusive_group()
+    policy_group.add_argument(
+        '--clear-binary-authorization',
+        default=False,
+        action='store_true',
+        help='Remove any previously set Binary Authorization policy.')
+  policy_group.add_argument(
+      '--binary-authorization',
+      metavar='POLICY',
+      # Don't actually validate the value here, let that happen server-side
+      # so the future change to support named policies will be backwards
+      # compatible with older gcloud versions.
+      help='Binary Authorization policy to check against. This must be set to '
+      '"default".')
+
+
+def AddBinAuthzBreakglassFlag(parser):
+  parser.add_argument(
+      '--breakglass',
+      metavar='JUSTIFICATION',
+      help='Justification to bypass Binary Authorization policy constraints '
+      'and allow the operation. See '
+      'https://cloud.google.com/binary-authorization/docs/using-breakglass '
+      'for more information.')
+
+
 def _HasChanges(args, flags):
   """True iff any of the passed flags are set."""
   return any(FlagIsExplicitlySet(args, flag) for flag in flags)
@@ -1259,6 +1290,20 @@ def GetConfigurationChanges(args):
     changes.append(config_changes.SpecChange('completions', args.completions))
   if FlagIsExplicitlySet(args, 'max_attempts'):
     changes.append(config_changes.JobMaxAttemptsChange(args.max_attempts))
+  if FlagIsExplicitlySet(args, 'binary_authorization'):
+    changes.append(
+        config_changes.SetAnnotationChange(
+            k8s_object.BINAUTHZ_POLICY_ANNOTATION,
+            args.binary_authorization))
+  if FlagIsExplicitlySet(args, 'clear_binary_authorization'):
+    changes.append(
+        config_changes.DeleteAnnotationChange(
+            k8s_object.BINAUTHZ_POLICY_ANNOTATION))
+  if FlagIsExplicitlySet(args, 'breakglass'):
+    changes.append(
+        config_changes.SetAnnotationChange(
+            k8s_object.BINAUTHZ_BREAKGLASS_ANNOTATION,
+            args.breakglass))
   return changes
 
 
@@ -1596,6 +1641,30 @@ def VerifyGKEFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
 
+  if FlagIsExplicitlySet(args, 'binary_authorization'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--binary-authorization',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'clear_binary_authorization'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--clear-binary-authorization',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'breakglass'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--breakglass',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
   if FlagIsExplicitlySet(args, 'kubeconfig'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -1669,6 +1738,30 @@ def VerifyKubernetesFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--vpc-egress',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'binary_authorization'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--binary-authorization',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'clear_binary_authorization'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--clear-binary-authorization',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'breakglass'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--breakglass',
             platform=platforms.PLATFORM_MANAGED,
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))

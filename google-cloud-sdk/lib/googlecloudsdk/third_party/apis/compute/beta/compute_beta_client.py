@@ -90,6 +90,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.regionHealthChecks = self.RegionHealthChecksService(self)
     self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
+    self.regionInstances = self.RegionInstancesService(self)
     self.regionNetworkEndpointGroups = self.RegionNetworkEndpointGroupsService(self)
     self.regionNotificationEndpoints = self.RegionNotificationEndpointsService(self)
     self.regionOperations = self.RegionOperationsService(self)
@@ -5766,6 +5767,32 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path='projects/{project}/zones/{zone}/instances/{instance}/attachDisk',
         request_field='attachedDisk',
         request_type_name='ComputeInstancesAttachDiskRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def BulkInsert(self, request, global_params=None):
+      r"""Creates multiple instances. Count specifies the number of instances to create.
+
+      Args:
+        request: (ComputeInstancesBulkInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BulkInsert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BulkInsert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.bulkInsert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/bulkInsert',
+        request_field='bulkInsertInstanceResource',
+        request_type_name='ComputeInstancesBulkInsertRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -12311,6 +12338,42 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='testPermissionsRequest',
         request_type_name='ComputeRegionInstanceGroupsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class RegionInstancesService(base_api.BaseApiService):
+    """Service class for the regionInstances resource."""
+
+    _NAME = 'regionInstances'
+
+    def __init__(self, client):
+      super(ComputeBeta.RegionInstancesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BulkInsert(self, request, global_params=None):
+      r"""Creates multiple instances in a given region. Count specifies the number of instances to create.
+
+      Args:
+        request: (ComputeRegionInstancesBulkInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BulkInsert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BulkInsert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstances.bulkInsert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instances/bulkInsert',
+        request_field='bulkInsertInstanceResource',
+        request_type_name='ComputeRegionInstancesBulkInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

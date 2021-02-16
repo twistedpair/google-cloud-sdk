@@ -45,8 +45,8 @@ except ImportError:
   # Do nothing if we can't import the lib.
   sys.exit(0)
 
-# If outgoing packets are getting dropped, httplib2 will hang forever waiting
-# for a response.
+# If outgoing packets are getting dropped, httplib2 will not respond
+# indefinitely while waiting for a response.
 TIMEOUT_IN_SEC = 10
 
 

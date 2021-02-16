@@ -11601,6 +11601,89 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionCustomTask": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionCustomTask",
+      "description": "A TrainingJob that trains a custom code Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this CustomTask.",
+          "$ref": "GoogleCloudAiplatformV1beta1CustomJobSpec"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionCustomJobMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionCustomJobMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionCustomJobMetadata",
+      "type": "object",
+      "properties": {
+        "backingCustomJob": {
+          "description": "The resource name of the CustomJob that has been created to carry out this custom task.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningTask": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningTask",
+      "description": "A TrainingJob that tunes Hypererparameters of a custom code Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this HyperparameterTuningTask.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningJobSpec"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningJobSpec": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningJobSpec",
+      "type": "object",
+      "properties": {
+        "studySpec": {
+          "description": "Study configuration of the HyperparameterTuningJob.",
+          "$ref": "GoogleCloudAiplatformV1beta1StudySpec"
+        },
+        "trialJobSpec": {
+          "description": "The spec of a trial job. The same spec applies to the CustomJobs created in all the trials.",
+          "$ref": "GoogleCloudAiplatformV1beta1CustomJobSpec"
+        },
+        "maxTrialCount": {
+          "description": "The desired total number of Trials.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "parallelTrialCount": {
+          "description": "The desired number of Trials to run in parallel.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxFailedTrialCount": {
+          "description": "The number of failed Trials that need to be seen before failing the HyperparameterTuningJob. If set to 0, AI Platform decides how many Trials must fail before the whole job fails.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata",
+      "type": "object",
+      "properties": {
+        "backingHyperparameterTuningJob": {
+          "description": "The resource name of the HyperparameterTuningJob that has been created to carry out this HyperparameterTuning task.",
+          "type": "string"
+        },
+        "bestTrialBackingCustomJob": {
+          "description": "The resource name of the CustomJob that has been created to run the best Trial of this HyperparameterTuning task.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1SchemaPredictionResult": {
       "id": "GoogleCloudAiplatformV1beta1SchemaPredictionResult",
       "description": "Represents a line of JSONL in the batch prediction output file.",
@@ -14429,6 +14512,541 @@
             "MOBILE_JETSON_VERSATILE_1",
             "MOBILE_JETSON_LOW_LATENCY_1"
           ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionCustomTask": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionCustomTask",
+      "description": "A TrainingJob that trains a custom code Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this CustomTask.",
+          "$ref": "GoogleCloudAiplatformV1CustomJobSpec"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionCustomJobMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1CustomJobSpec": {
+      "id": "GoogleCloudAiplatformV1CustomJobSpec",
+      "description": "Represents the spec of a CustomJob.",
+      "type": "object",
+      "properties": {
+        "workerPoolSpecs": {
+          "description": "Required. The spec of the worker pools including machine type and Docker image.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1WorkerPoolSpec"
+          }
+        },
+        "scheduling": {
+          "description": "Scheduling options for a CustomJob.",
+          "$ref": "GoogleCloudAiplatformV1Scheduling"
+        },
+        "serviceAccount": {
+          "description": "Specifies the service account for workload run-as account. Users submitting jobs must have act-as permission on this run-as account. If unspecified, the AI Platform Custom Code Service Agent for the CustomJob's project is used.",
+          "type": "string"
+        },
+        "network": {
+          "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. Private services access must already be configured for the network. If left unspecified, the job is not peered with any network.",
+          "type": "string"
+        },
+        "baseOutputDirectory": {
+          "description": "The Cloud Storage location to store the output of this CustomJob or HyperparameterTuningJob. For HyperparameterTuningJob, the baseOutputDirectory of each child CustomJob backing a Trial is set to a subdirectory of name id under its parent HyperparameterTuningJob's baseOutputDirectory. The following AI Platform environment variables will be passed to containers or python modules when this field is set: For CustomJob: * AIP_MODEL_DIR = `\/model\/` * AIP_CHECKPOINT_DIR = `\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/logs\/` For CustomJob backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `\/\/model\/` * AIP_CHECKPOINT_DIR = `\/\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/\/logs\/`",
+          "$ref": "GoogleCloudAiplatformV1GcsDestination"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1WorkerPoolSpec": {
+      "id": "GoogleCloudAiplatformV1WorkerPoolSpec",
+      "description": "Represents the spec of a worker pool in a job.",
+      "type": "object",
+      "properties": {
+        "containerSpec": {
+          "description": "The custom container task.",
+          "$ref": "GoogleCloudAiplatformV1ContainerSpec"
+        },
+        "pythonPackageSpec": {
+          "description": "The Python packaged task.",
+          "$ref": "GoogleCloudAiplatformV1PythonPackageSpec"
+        },
+        "machineSpec": {
+          "description": "Optional. Immutable. The specification of a single machine.",
+          "$ref": "GoogleCloudAiplatformV1MachineSpec"
+        },
+        "replicaCount": {
+          "description": "Optional. The number of worker replicas to use for this worker pool.",
+          "type": "string",
+          "format": "int64"
+        },
+        "diskSpec": {
+          "description": "Disk spec.",
+          "$ref": "GoogleCloudAiplatformV1DiskSpec"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ContainerSpec": {
+      "id": "GoogleCloudAiplatformV1ContainerSpec",
+      "description": "The spec of a Container.",
+      "type": "object",
+      "properties": {
+        "imageUri": {
+          "description": "Required. The URI of a container image in the Container Registry that is to be run on each worker replica.",
+          "type": "string"
+        },
+        "command": {
+          "description": "The command to be invoked when the container is started. It overrides the entrypoint instruction in Dockerfile when provided.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "args": {
+          "description": "The arguments to be passed when starting the container.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "env": {
+          "description": "Environment variables to be passed to the container.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1EnvVar"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1EnvVar": {
+      "id": "GoogleCloudAiplatformV1EnvVar",
+      "description": "Represents an environment variable present in a Container or Python Module.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Name of the environment variable. Must be a valid C identifier.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Required. Variables that reference a $(VAR_NAME) are expanded using the previous defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1PythonPackageSpec": {
+      "id": "GoogleCloudAiplatformV1PythonPackageSpec",
+      "description": "The spec of a Python packaged code.",
+      "type": "object",
+      "properties": {
+        "executorImageUri": {
+          "description": "Required. The URI of a container image in the Container Registry that will run the provided python package. AI Platform provides wide range of executor images with pre-installed packages to meet users' various use cases. Only one of the provided images can be set here.",
+          "type": "string"
+        },
+        "packageUris": {
+          "description": "Required. The Google Cloud Storage location of the Python package files which are the training program and its dependent packages. The maximum number of package URIs is 100.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pythonModule": {
+          "description": "Required. The Python module name to run after installing the packages.",
+          "type": "string"
+        },
+        "args": {
+          "description": "Command line arguments to be passed to the Python task.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "env": {
+          "description": "Environment variables to be passed to the python module.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1EnvVar"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1DiskSpec": {
+      "id": "GoogleCloudAiplatformV1DiskSpec",
+      "description": "Represents the spec of disk options.",
+      "type": "object",
+      "properties": {
+        "bootDiskType": {
+          "description": "Type of the boot disk (default is \"pd-ssd\"). Valid values: \"pd-ssd\" (Persistent Disk Solid State Drive) or \"pd-standard\" (Persistent Disk Hard Disk Drive).",
+          "type": "string"
+        },
+        "bootDiskSizeGb": {
+          "description": "Size in GB of the boot disk (default is 100GB).",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1Scheduling": {
+      "id": "GoogleCloudAiplatformV1Scheduling",
+      "description": "All parameters related to queuing and scheduling of custom jobs.",
+      "type": "object",
+      "properties": {
+        "timeout": {
+          "description": "The maximum job running time. The default is 7 days.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "restartJobOnWorkerRestart": {
+          "description": "Restarts the entire CustomJob if a worker gets restarted. This feature can be used by distributed training jobs that are not resilient to workers leaving and joining a job.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1GcsDestination": {
+      "id": "GoogleCloudAiplatformV1GcsDestination",
+      "description": "The Google Cloud Storage location where the output is to be written to.",
+      "type": "object",
+      "properties": {
+        "outputUriPrefix": {
+          "description": "Required. Google Cloud Storage URI to output directory. If the uri doesn't end with '\/', a '\/' will be automatically appended. The directory is created if it doesn't exist.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionCustomJobMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionCustomJobMetadata",
+      "type": "object",
+      "properties": {
+        "backingCustomJob": {
+          "description": "The resource name of the CustomJob that has been created to carry out this custom task.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningTask": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningTask",
+      "description": "A TrainingJob that tunes Hypererparameters of a custom code Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this HyperparameterTuningTask.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningJobSpec"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningJobSpec": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningJobSpec",
+      "type": "object",
+      "properties": {
+        "studySpec": {
+          "description": "Study configuration of the HyperparameterTuningJob.",
+          "$ref": "GoogleCloudAiplatformV1StudySpec"
+        },
+        "trialJobSpec": {
+          "description": "The spec of a trial job. The same spec applies to the CustomJobs created in all the trials.",
+          "$ref": "GoogleCloudAiplatformV1CustomJobSpec"
+        },
+        "maxTrialCount": {
+          "description": "The desired total number of Trials.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "parallelTrialCount": {
+          "description": "The desired number of Trials to run in parallel.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxFailedTrialCount": {
+          "description": "The number of failed Trials that need to be seen before failing the HyperparameterTuningJob. If set to 0, AI Platform decides how many Trials must fail before the whole job fails.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpec": {
+      "id": "GoogleCloudAiplatformV1StudySpec",
+      "description": "Represents specification of a Study.",
+      "type": "object",
+      "properties": {
+        "metrics": {
+          "description": "Required. Metric specs for the Study.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1StudySpecMetricSpec"
+          }
+        },
+        "parameters": {
+          "description": "Required. The set of parameters to tune.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1StudySpecParameterSpec"
+          }
+        },
+        "algorithm": {
+          "description": "The search algorithm specified for the Study.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default algorithm used by AI Platform Optimization service.",
+            "Simple grid search within the feasible space. To use grid search, all parameters must be `INTEGER`, `CATEGORICAL`, or `DISCRETE`.",
+            "Simple random search within the feasible space."
+          ],
+          "enum": [
+            "ALGORITHM_UNSPECIFIED",
+            "GRID_SEARCH",
+            "RANDOM_SEARCH"
+          ]
+        },
+        "observationNoise": {
+          "description": "The observation noise level of the study. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default noise level chosen by the AI Platform service.",
+            "AI Platform Vizier assumes that the objective function is (nearly) perfectly reproducible, and will never repeat the same Trial parameters.",
+            "AI Platform Vizier will estimate the amount of noise in metric evaluations, it may repeat the same Trial parameters more than once."
+          ],
+          "enum": [
+            "OBSERVATION_NOISE_UNSPECIFIED",
+            "LOW",
+            "HIGH"
+          ]
+        },
+        "measurementSelectionType": {
+          "description": "Describe which measurement selection type will be used",
+          "type": "string",
+          "enumDescriptions": [
+            "Will be treated as LAST_MEASUREMENT.",
+            "Use the last measurement reported.",
+            "Use the best measurement reported."
+          ],
+          "enum": [
+            "MEASUREMENT_SELECTION_TYPE_UNSPECIFIED",
+            "LAST_MEASUREMENT",
+            "BEST_MEASUREMENT"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpecMetricSpec": {
+      "id": "GoogleCloudAiplatformV1StudySpecMetricSpec",
+      "description": "Represents a metric to optimize.",
+      "type": "object",
+      "properties": {
+        "metricId": {
+          "description": "Required. The ID of the metric. Must not contain whitespaces and must be unique amongst all MetricSpecs.",
+          "type": "string"
+        },
+        "goal": {
+          "description": "Required. The optimization goal of the metric.",
+          "type": "string",
+          "enumDescriptions": [
+            "Goal Type will default to maximize.",
+            "Maximize the goal metric.",
+            "Minimize the goal metric."
+          ],
+          "enum": [
+            "GOAL_TYPE_UNSPECIFIED",
+            "MAXIMIZE",
+            "MINIMIZE"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpecParameterSpec": {
+      "id": "GoogleCloudAiplatformV1StudySpecParameterSpec",
+      "description": "Represents a single parameter to optimize.",
+      "type": "object",
+      "properties": {
+        "doubleValueSpec": {
+          "description": "The value spec for a 'DOUBLE' parameter.",
+          "$ref": "GoogleCloudAiplatformV1StudySpecParameterSpecDoubleValueSpec"
+        },
+        "integerValueSpec": {
+          "description": "The value spec for an 'INTEGER' parameter.",
+          "$ref": "GoogleCloudAiplatformV1StudySpecParameterSpecIntegerValueSpec"
+        },
+        "categoricalValueSpec": {
+          "description": "The value spec for a 'CATEGORICAL' parameter.",
+          "$ref": "GoogleCloudAiplatformV1StudySpecParameterSpecCategoricalValueSpec"
+        },
+        "discreteValueSpec": {
+          "description": "The value spec for a 'DISCRETE' parameter.",
+          "$ref": "GoogleCloudAiplatformV1StudySpecParameterSpecDiscreteValueSpec"
+        },
+        "parameterId": {
+          "description": "Required. The ID of the parameter. Must not contain whitespaces and must be unique amongst all ParameterSpecs.",
+          "type": "string"
+        },
+        "scaleType": {
+          "description": "How the parameter should be scaled. Leave unset for `CATEGORICAL` parameters.",
+          "type": "string",
+          "enumDescriptions": [
+            "By default, no scaling is applied.",
+            "Scales the feasible space to (0, 1) linearly.",
+            "Scales the feasible space logarithmically to (0, 1). The entire feasible space must be strictly positive.",
+            "Scales the feasible space \"reverse\" logarithmically to (0, 1). The result is that values close to the top of the feasible space are spread out more than points near the bottom. The entire feasible space must be strictly positive."
+          ],
+          "enum": [
+            "SCALE_TYPE_UNSPECIFIED",
+            "UNIT_LINEAR_SCALE",
+            "UNIT_LOG_SCALE",
+            "UNIT_REVERSE_LOG_SCALE"
+          ]
+        },
+        "conditionalParameterSpecs": {
+          "description": "A conditional parameter node is active if the parameter's value matches the conditional node's parent_value_condition. If two items in conditional_parameter_specs have the same name, they must have disjoint parent_value_condition.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpec"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpecParameterSpecDoubleValueSpec": {
+      "id": "GoogleCloudAiplatformV1StudySpecParameterSpecDoubleValueSpec",
+      "description": "Value specification for a parameter in `DOUBLE` type.",
+      "type": "object",
+      "properties": {
+        "minValue": {
+          "description": "Required. Inclusive minimum value of the parameter.",
+          "type": "number",
+          "format": "double"
+        },
+        "maxValue": {
+          "description": "Required. Inclusive maximum value of the parameter.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpecParameterSpecIntegerValueSpec": {
+      "id": "GoogleCloudAiplatformV1StudySpecParameterSpecIntegerValueSpec",
+      "description": "Value specification for a parameter in `INTEGER` type.",
+      "type": "object",
+      "properties": {
+        "minValue": {
+          "description": "Required. Inclusive minimum value of the parameter.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxValue": {
+          "description": "Required. Inclusive maximum value of the parameter.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpecParameterSpecCategoricalValueSpec": {
+      "id": "GoogleCloudAiplatformV1StudySpecParameterSpecCategoricalValueSpec",
+      "description": "Value specification for a parameter in `CATEGORICAL` type.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Required. The list of possible categories.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpecParameterSpecDiscreteValueSpec": {
+      "id": "GoogleCloudAiplatformV1StudySpecParameterSpecDiscreteValueSpec",
+      "description": "Value specification for a parameter in `DISCRETE` type.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Required. A list of possible values. The list should be in increasing order and at least 1e-10 apart. For instance, this parameter might have possible settings of 1.5, 2.5, and 4.0. This list should not contain more than 1,000 values.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpec": {
+      "id": "GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpec",
+      "description": "Represents a parameter spec with condition from its parent parameter.",
+      "type": "object",
+      "properties": {
+        "parentDiscreteValues": {
+          "description": "The spec for matching values from a parent parameter of `DISCRETE` type.",
+          "$ref": "GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpecDiscreteValueCondition"
+        },
+        "parentIntValues": {
+          "description": "The spec for matching values from a parent parameter of `INTEGER` type.",
+          "$ref": "GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpecIntValueCondition"
+        },
+        "parentCategoricalValues": {
+          "description": "The spec for matching values from a parent parameter of `CATEGORICAL` type.",
+          "$ref": "GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpecCategoricalValueCondition"
+        },
+        "parameterSpec": {
+          "description": "Required. The spec for a conditional parameter.",
+          "$ref": "GoogleCloudAiplatformV1StudySpecParameterSpec"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpecDiscreteValueCondition": {
+      "id": "GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpecDiscreteValueCondition",
+      "description": "Represents the spec to match discrete values from parent parameter.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Required. Matches values of the parent parameter of 'DISCRETE' type. All values must exist in `discrete_value_spec` of parent parameter. The Epsilon of the value matching is 1e-10.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpecIntValueCondition": {
+      "id": "GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpecIntValueCondition",
+      "description": "Represents the spec to match integer values from parent parameter.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Required. Matches values of the parent parameter of 'INTEGER' type. All values must lie in `integer_value_spec` of parent parameter.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpecCategoricalValueCondition": {
+      "id": "GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpecCategoricalValueCondition",
+      "description": "Represents the spec to match categorical values from parent parameter.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Required. Matches values of the parent parameter of 'CATEGORICAL' type. All values must exist in `categorical_value_spec` of parent parameter.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata",
+      "type": "object",
+      "properties": {
+        "backingHyperparameterTuningJob": {
+          "description": "The resource name of the HyperparameterTuningJob that has been created to carry out this HyperparameterTuning task.",
+          "type": "string"
+        },
+        "bestTrialBackingCustomJob": {
+          "description": "The resource name of the CustomJob that has been created to run the best Trial of this HyperparameterTuning task.",
+          "type": "string"
         }
       }
     },

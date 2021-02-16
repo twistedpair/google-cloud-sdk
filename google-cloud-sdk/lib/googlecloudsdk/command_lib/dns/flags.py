@@ -335,8 +335,6 @@ def GetPolicyPrivateAltNameServersArg():
 
 
 ## ResourceRecordSets flags.
-
-
 def GetResourceRecordSetsNameArg():
   return base.Argument(
       'name',
@@ -387,3 +385,52 @@ def GetResponsePolicyNetworksArg(required=False):
             'the response policy.')
 CHANGES_FORMAT = 'table(id, startTime, status)'
 RESOURCERECORDSETS_FORMAT = 'table(name, type, ttl, rrdatas.list():label=DATA)'
+
+
+# Response Policy Rule Flags
+def GetResponsePolicyRulesBehaviorFlagMapper(messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--behavior',
+      messages.ResponsePolicyRule.BehaviorValueValuesEnum,
+      include_filter=lambda x: x != 'behaviorUnspecified',
+      help_str='The response policy rule query behavior.')
+
+
+def AddResponsePolicyRulesBehaviorFlagArgs(parser, messages):
+  GetResponsePolicyRulesBehaviorFlagMapper(messages).choice_arg.AddToParser(
+      parser)
+
+
+def GetLocalDataResourceRecordSets():
+  return base.Argument(
+      '--local-data',
+      type=arg_parsers.ArgDict(spec={
+          'name': str,
+          'type': str,
+          'ttl': int,
+          'rrdatas': str
+      }),
+      metavar='LOCAL_DATA',
+      action='append',
+      help="""\
+    All resource record sets for this selector, one per resource record
+    type. The name must match the dns_name.
+
+    This is a repeated argument that can be specified multiple times to specify
+    multiple local data rrsets.
+    (e.g. --local-data=name="zone.com.",type="A",ttl=21600,rrdata="1.2.3.4 "
+    --local-data=name="www.zone.com.",type="CNAME",ttl=21600,rrdata="1.2.3.4|5.6.7.8")
+
+    *name*::: The DnsName of a resource record set.
+
+    *type*::: Type of all resource records in this set. For example, A, AAAA, SOA, MX,
+    NS, TXT ...
+
+    *ttl*::: Number of seconds that this ResourceRecordSet can be cached by resolvers.
+
+    *rrdatas*::: The list of datas for this record, split by "|".
+    """)
+
+
+def GetResponsePolicyRuleBehavior():
+  return base.Argument('--behavior', type=enumerate)

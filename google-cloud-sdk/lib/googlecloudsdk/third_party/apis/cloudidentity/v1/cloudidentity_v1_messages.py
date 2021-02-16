@@ -2327,7 +2327,11 @@ class UpdateMembershipRolesParams(_messages.Message):
 
 
 class UserInvitation(_messages.Message):
-  r"""UserInvitation to join a Google Workspace organization.
+  r"""The `UserInvitation` resource represents an email sent to an unmanaged
+  user account (an email address that shares the domain of the Google
+  Workspace customer but is not managed by it yet), inviting them to join the
+  customer's domain. If the user accepts the `UserInvitation`, the account
+  will become a managed account.
 
   Enums:
     StateValueValuesEnum: State of the `UserInvitation`.
@@ -2335,7 +2339,7 @@ class UserInvitation(_messages.Message):
   Fields:
     mailsSentCount: Number of invitation emails sent to the user.
     name: Shall be of the form
-      `customers/{customer}/userinvitations/{user_email_address}`
+      `customers/{customer}/userinvitations/{user_email_address}`.
     state: State of the `UserInvitation`.
     updateTime: Time when the `UserInvitation` was last updated.
   """

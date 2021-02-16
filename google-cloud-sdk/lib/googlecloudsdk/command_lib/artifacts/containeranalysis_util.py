@@ -94,7 +94,7 @@ class PackageVulnerabilitySummary:
     self.counts = []
 
   def AddOccurrence(self, occ):
-    sev = six.text_type(occ.vulnerability.severity)
+    sev = six.text_type(occ.vulnerability.effectiveSeverity)
     self.vulnerabilities.setdefault(sev, []).append(occ)
 
   def AddSummary(self, summary):

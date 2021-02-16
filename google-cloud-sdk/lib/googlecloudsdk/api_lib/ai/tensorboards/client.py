@@ -46,3 +46,8 @@ class TensorboardsClient(object):
             description=args.description,
             labels=labels))
     return self._service.Create(request)
+
+  def Get(self, tensorboard_ref):
+    request = self.messages.AiplatformProjectsLocationsTensorboardsGetRequest(
+        name=tensorboard_ref.RelativeName())
+    return self._service.Get(request)

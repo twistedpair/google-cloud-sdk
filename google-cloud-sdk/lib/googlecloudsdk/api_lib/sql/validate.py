@@ -36,12 +36,11 @@ project for [{instance}], use only '{instance}' for the argument, and either add
 """.format(project=possible_project, instance=possible_instance))
 
 
-def ValidateInstanceLocation(args, enable_secondary_zone):
+def ValidateInstanceLocation(args):
   """Construct a Cloud SQL instance from command line args.
 
   Args:
     args: argparse.Namespace, The CLI arg namespace.
-    enable_secondary_zone: boolean, to use secondary zone or not.
 
   Raises:
     RequiredArgumentException: Zone is required.
@@ -49,17 +48,20 @@ def ValidateInstanceLocation(args, enable_secondary_zone):
     regions.
   """
 
-  if enable_secondary_zone:
-    if args.IsSpecified('secondary_zone') and not args.IsSpecified('zone'):
-      raise exceptions.RequiredArgumentException(
-          '--zone', '`--zone` is required if --secondary-zone is used '
-          'while creating an instance.')
+  if args.IsSpecified('secondary_zone') and not args.IsSpecified('zone'):
+    raise exceptions.RequiredArgumentException(
+        '--zone', '`--zone` is required if --secondary-zone is used '
+        'while creating an instance.')
 
-    if args.IsSpecified('secondary_zone') and args.IsSpecified('zone'):
-      region_from_zone = api_util.GetRegionFromZone(args.zone)
-      region_from_secondary_zone = api_util.GetRegionFromZone(
-          args.secondary_zone)
-      if region_from_zone != region_from_secondary_zone:
-        raise exceptions.ConflictingArgumentsException(
-            'Zones in arguments --zone and --secondary-zone '
-            'belong to different regions.')
+  if args.IsSpecified('secondary_zone') and args.IsSpecified('zone'):
+    if args.zone == args.secondary_zone:
+      raise exceptions.ConflictingArgumentsException(
+          'Zones in arguments --zone and --secondary-zone are identical.')
+
+    region_from_zone = api_util.GetRegionFromZone(args.zone)
+    region_from_secondary_zone = api_util.GetRegionFromZone(
+        args.secondary_zone)
+    if region_from_zone != region_from_secondary_zone:
+      raise exceptions.ConflictingArgumentsException(
+          'Zones in arguments --zone and --secondary-zone '
+          'belong to different regions.')

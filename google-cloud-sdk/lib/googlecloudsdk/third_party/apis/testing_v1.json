@@ -1939,7 +1939,11 @@
       "type": "object",
       "properties": {
         "orchestratorVersion": {
-          "description": "A string representing the current version of Android Test Orchestrator that is provided by TestExecutionService. Example: \"1.0.2 beta\".",
+          "description": "A string representing the current version of Android Test Orchestrator that is used in the environment. The package is available at https:\/\/maven.google.com\/web\/index.html#com.android.support.test:orchestrator.",
+          "type": "string"
+        },
+        "androidxOrchestratorVersion": {
+          "description": "A string representing the current version of AndroidX Test Orchestrator that is used in the environment. The package is available at https:\/\/maven.google.com\/web\/index.html#androidx.test:orchestrator.",
           "type": "string"
         }
       }

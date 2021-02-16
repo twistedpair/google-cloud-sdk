@@ -45,6 +45,7 @@ class AnthoseventsV1(base_api.BaseApiClient):
     self.api_v1_namespaces = self.ApiV1NamespacesService(self)
     self.api_v1 = self.ApiV1Service(self)
     self.api = self.ApiService(self)
+    self.brokers = self.BrokersService(self)
     self.customresourcedefinitions = self.CustomresourcedefinitionsService(self)
     self.namespaces_brokers = self.NamespacesBrokersService(self)
     self.namespaces_cloudauditlogssources = self.NamespacesCloudauditlogssourcesService(self)
@@ -63,6 +64,7 @@ class AnthoseventsV1(base_api.BaseApiClient):
     self.projects_locations_serviceaccounts = self.ProjectsLocationsServiceaccountsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+    self.triggers = self.TriggersService(self)
 
   class ApiV1NamespacesConfigmapsService(base_api.BaseApiService):
     """Service class for the api_v1_namespaces_configmaps resource."""
@@ -661,6 +663,42 @@ class AnthoseventsV1(base_api.BaseApiClient):
       super(AnthoseventsV1.ApiService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class BrokersService(base_api.BaseApiService):
+    """Service class for the brokers resource."""
+
+    _NAME = 'brokers'
+
+    def __init__(self, client):
+      super(AnthoseventsV1.BrokersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list brokers in all namespaces.
+
+      Args:
+        request: (AnthoseventsBrokersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBrokersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='anthosevents.brokers.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'parent', 'resourceVersion', 'watch'],
+        relative_path='apis/eventing.knative.dev/v1/brokers',
+        request_field='',
+        request_type_name='AnthoseventsBrokersListRequest',
+        response_type_name='ListBrokersResponse',
+        supports_download=False,
+    )
 
   class CustomresourcedefinitionsService(base_api.BaseApiService):
     """Service class for the customresourcedefinitions resource."""
@@ -2217,3 +2255,39 @@ class AnthoseventsV1(base_api.BaseApiClient):
       super(AnthoseventsV1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class TriggersService(base_api.BaseApiService):
+    """Service class for the triggers resource."""
+
+    _NAME = 'triggers'
+
+    def __init__(self, client):
+      super(AnthoseventsV1.TriggersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list triggers in all namespaces.
+
+      Args:
+        request: (AnthoseventsTriggersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTriggersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='anthosevents.triggers.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'pageSize', 'parent', 'resourceVersion', 'watch'],
+        relative_path='apis/eventing.knative.dev/v1/triggers',
+        request_field='',
+        request_type_name='AnthoseventsTriggersListRequest',
+        response_type_name='ListTriggersResponse',
+        supports_download=False,
+    )

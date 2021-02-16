@@ -365,6 +365,34 @@ def AddPublishMessageFlags(parser, add_deprecated=False):
           Pub/Sub receives them.""")
 
 
+def AddSchemaSettingsFlags(parser):
+  """Adds the flags for filling the SchemaSettings message.
+
+  Args:
+    parser: The argparse parser.
+  """
+  current_group = parser
+  set_schema_settings_group = current_group.add_argument_group(
+      help="""Schema settings. The schema that messages published to this topic must conform to and the expected message encoding."""
+  )
+
+  schema_help_text = ('that messages published to this topic must conform to.')
+  schema = resource_args.CreateSchemaResourceArg(
+      schema_help_text, positional=False, plural=False, required=True)
+  resource_args.AddResourceArgs(set_schema_settings_group, [schema])
+
+  set_schema_settings_group.add_argument(
+      '--message-encoding',
+      type=arg_parsers.ArgList(
+          element_type=str,
+          min_length=1,
+          max_length=1,
+          choices=['JSON', 'BINARY']),
+      metavar='ENCODING',
+      help="""The encoding of messages validated against the schema.""",
+      required=True)
+
+
 def ParseMessageBody(args):
   """Gets the message body from args.
 

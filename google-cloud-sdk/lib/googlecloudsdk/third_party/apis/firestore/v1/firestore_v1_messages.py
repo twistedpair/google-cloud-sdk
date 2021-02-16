@@ -651,16 +651,16 @@ class FirestoreProjectsDatabasesCollectionGroupsFieldsPatchRequest(_messages.Mes
   Fields:
     googleFirestoreAdminV1Field: A GoogleFirestoreAdminV1Field resource to be
       passed as the request body.
-    name: A field name of the form `projects/{project_id}/databases/{database_
-      id}/collectionGroups/{collection_id}/fields/{field_path}` A field path
-      may be a simple field name, e.g. `address` or a path to fields within
-      map_value , e.g. `address.city`, or a special field path. The only valid
-      special field is `*`, which represents any field. Field paths may be
-      quoted using ` (backtick). The only character that needs to be escaped
-      within a quoted field path is the backtick character itself, escaped
-      using a backslash. Special characters in field paths that must be quoted
-      include: `*`, `.`, ``` (backtick), `[`, `]`, as well as any ascii
-      symbolic characters. Examples: (Note: Comments here are written in
+    name: Required. A field name of the form `projects/{project_id}/databases/
+      {database_id}/collectionGroups/{collection_id}/fields/{field_path}` A
+      field path may be a simple field name, e.g. `address` or a path to
+      fields within map_value , e.g. `address.city`, or a special field path.
+      The only valid special field is `*`, which represents any field. Field
+      paths may be quoted using ` (backtick). The only character that needs to
+      be escaped within a quoted field path is the backtick character itself,
+      escaped using a backslash. Special characters in field paths that must
+      be quoted include: `*`, `.`, ``` (backtick), `[`, `]`, as well as any
+      ascii symbolic characters. Examples: (Note: Comments here are written in
       markdown syntax, so there is an additional layer of backticks to
       represent a code block) `\`address.city\`` represents a field named
       `address.city`, not the map key `city` in the field `address`. `\`*\``
@@ -1204,16 +1204,16 @@ class GoogleFirestoreAdminV1Field(_messages.Message):
       indexing will revert to the configuration defined by the
       `ancestor_field`. To explicitly remove all indexes for this field,
       specify an index config with an empty list of indexes.
-    name: A field name of the form `projects/{project_id}/databases/{database_
-      id}/collectionGroups/{collection_id}/fields/{field_path}` A field path
-      may be a simple field name, e.g. `address` or a path to fields within
-      map_value , e.g. `address.city`, or a special field path. The only valid
-      special field is `*`, which represents any field. Field paths may be
-      quoted using ` (backtick). The only character that needs to be escaped
-      within a quoted field path is the backtick character itself, escaped
-      using a backslash. Special characters in field paths that must be quoted
-      include: `*`, `.`, ``` (backtick), `[`, `]`, as well as any ascii
-      symbolic characters. Examples: (Note: Comments here are written in
+    name: Required. A field name of the form `projects/{project_id}/databases/
+      {database_id}/collectionGroups/{collection_id}/fields/{field_path}` A
+      field path may be a simple field name, e.g. `address` or a path to
+      fields within map_value , e.g. `address.city`, or a special field path.
+      The only valid special field is `*`, which represents any field. Field
+      paths may be quoted using ` (backtick). The only character that needs to
+      be escaped within a quoted field path is the backtick character itself,
+      escaped using a backslash. Special characters in field paths that must
+      be quoted include: `*`, `.`, ``` (backtick), `[`, `]`, as well as any
+      ascii symbolic characters. Examples: (Note: Comments here are written in
       markdown syntax, so there is an additional layer of backticks to
       represent a code block) `\`address.city\`` represents a field named
       `address.city`, not the map key `city` in the field `address`. `\`*\``

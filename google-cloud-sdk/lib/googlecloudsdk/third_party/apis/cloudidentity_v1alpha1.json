@@ -2153,9 +2153,9 @@
           "parameters": {
             "name": {
               "description": "Required. The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the `Group` to retrieve. Must be of the form `groups\/{group_id}`.",
+              "pattern": "^groups\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^groups\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2180,9 +2180,9 @@
           "parameters": {
             "name": {
               "description": "Output only. The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the `Group`. Shall be of the form `groups\/{group_id}`.",
+              "pattern": "^groups\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^groups\/[^\/]+$",
               "type": "string"
             },
             "updateMask": {
@@ -2215,9 +2215,9 @@
           "parameters": {
             "name": {
               "description": "Required. The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the `Group` to retrieve. Must be of the form `groups\/{group_id}`.",
+              "pattern": "^groups\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^groups\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2375,9 +2375,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent `Group` resource under which to create the `Membership`. Must be of the form `groups\/{group_id}`.",
+                  "pattern": "^groups\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^groups\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2404,9 +2404,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the `Membership` to retrieve. Must be of the form `groups\/{group_id}\/memberships\/{membership_id}`.",
+                  "pattern": "^groups\/[^\/]+\/memberships\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^groups\/[^\/]+\/memberships\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2431,9 +2431,9 @@
               "parameters": {
                 "name": {
                   "description": "Output only. The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the `Membership`. Shall be of the form `groups\/{group_id}\/memberships\/{membership_id}`.",
+                  "pattern": "^groups\/[^\/]+\/memberships\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^groups\/[^\/]+\/memberships\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -2466,9 +2466,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the `Membership` to delete. Must be of the form `groups\/{group_id}\/memberships\/{membership_id}`.",
+                  "pattern": "^groups\/[^\/]+\/memberships\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^groups\/[^\/]+\/memberships\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2492,9 +2492,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent `Group` resource under which to lookup the `Membership` name. Must be of the form `groups\/{group_id}`.",
+                  "pattern": "^groups\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^groups\/[^\/]+$",
                   "type": "string"
                 },
                 "memberKey.id": {
@@ -2529,9 +2529,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent `Group` resource under which to lookup the `Membership` name. Must be of the form `groups\/{group_id}`.",
+                  "pattern": "^groups\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^groups\/[^\/]+$",
                   "type": "string"
                 },
                 "view": {
@@ -2582,9 +2582,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the `Membership` whose roles are to be modified. Must be of the form `groups\/{group_id}\/memberships\/{membership_id}`.",
+                  "pattern": "^groups\/[^\/]+\/memberships\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^groups\/[^\/]+\/memberships\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2611,9 +2611,9 @@
               "parameters": {
                 "parent": {
                   "description": "[Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the group to search transitive memberships in. Format: `groups\/{group_id}`, where `group_id` is the unique ID assigned to the Group.",
+                  "pattern": "^groups\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^groups\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -2649,9 +2649,9 @@
               "parameters": {
                 "parent": {
                   "description": "[Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the group to search transitive memberships in. Format: `groups\/{group_id}`, where `group_id` is always '-' as this API will search across all groups for a given member.",
+                  "pattern": "^groups\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^groups\/[^\/]+$",
                   "type": "string"
                 },
                 "query": {
@@ -2692,9 +2692,9 @@
               "parameters": {
                 "parent": {
                   "description": "[Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the group to check the transitive membership in. Format: `groups\/{group_id}`, where `group_id` is the unique id assigned to the Group to which the Membership belongs to.",
+                  "pattern": "^groups\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^groups\/[^\/]+$",
                   "type": "string"
                 },
                 "query": {
@@ -2724,9 +2724,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the group to search transitive memberships in. Format: `groups\/{group_id}`, where `group_id` is the unique ID assigned to the Group to which the Membership belongs to. group_id can be a wildcard collection id \"-\". When a group_id is specified, the membership graph will be constrained to paths between the member (defined in the query) and the parent. If a wildcard collection is provided, all membership paths connected to the member will be returned.",
+                  "pattern": "^groups\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^groups\/[^\/]+$",
                   "type": "string"
                 },
                 "query": {

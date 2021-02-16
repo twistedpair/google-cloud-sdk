@@ -6971,6 +6971,24 @@ class GoogleCloudAiplatformV1BatchMigrateResourcesResponse(_messages.Message):
   migrateResourceResponses = _messages.MessageField('GoogleCloudAiplatformV1MigrateResourceResponse', 1, repeated=True)
 
 
+class GoogleCloudAiplatformV1ContainerSpec(_messages.Message):
+  r"""The spec of a Container.
+
+  Fields:
+    args: The arguments to be passed when starting the container.
+    command: The command to be invoked when the container is started. It
+      overrides the entrypoint instruction in Dockerfile when provided.
+    env: Environment variables to be passed to the container.
+    imageUri: Required. The URI of a container image in the Container Registry
+      that is to be run on each worker replica.
+  """
+
+  args = _messages.StringField(1, repeated=True)
+  command = _messages.StringField(2, repeated=True)
+  env = _messages.MessageField('GoogleCloudAiplatformV1EnvVar', 3, repeated=True)
+  imageUri = _messages.StringField(4)
+
+
 class GoogleCloudAiplatformV1CreateDatasetOperationMetadata(_messages.Message):
   r"""Runtime operation information for DatasetService.CreateDataset.
 
@@ -7000,6 +7018,46 @@ class GoogleCloudAiplatformV1CreateSpecialistPoolOperationMetadata(_messages.Mes
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
+  r"""Represents the spec of a CustomJob.
+
+  Fields:
+    baseOutputDirectory: The Cloud Storage location to store the output of
+      this CustomJob or HyperparameterTuningJob. For HyperparameterTuningJob,
+      the baseOutputDirectory of each child CustomJob backing a Trial is set
+      to a subdirectory of name id under its parent HyperparameterTuningJob's
+      baseOutputDirectory. The following AI Platform environment variables
+      will be passed to containers or python modules when this field is set:
+      For CustomJob: * AIP_MODEL_DIR = `/model/` * AIP_CHECKPOINT_DIR =
+      `/checkpoints/` * AIP_TENSORBOARD_LOG_DIR = `/logs/` For CustomJob
+      backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `//model/`
+      * AIP_CHECKPOINT_DIR = `//checkpoints/` * AIP_TENSORBOARD_LOG_DIR =
+      `//logs/`
+    network: The full name of the Compute Engine
+      [network](/compute/docs/networks-and-firewalls#networks) to which the
+      Job should be peered. For example,
+      `projects/12345/global/networks/myVPC`.
+      [Format](/compute/docs/reference/rest/v1/networks/insert) is of the form
+      `projects/{project}/global/networks/{network}`. Where {project} is a
+      project number, as in `12345`, and {network} is a network name. Private
+      services access must already be configured for the network. If left
+      unspecified, the job is not peered with any network.
+    scheduling: Scheduling options for a CustomJob.
+    serviceAccount: Specifies the service account for workload run-as account.
+      Users submitting jobs must have act-as permission on this run-as
+      account. If unspecified, the AI Platform Custom Code Service Agent for
+      the CustomJob's project is used.
+    workerPoolSpecs: Required. The spec of the worker pools including machine
+      type and Docker image.
+  """
+
+  baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformV1GcsDestination', 1)
+  network = _messages.StringField(2)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 3)
+  serviceAccount = _messages.StringField(4)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 5, repeated=True)
 
 
 class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
@@ -7106,6 +7164,40 @@ class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
   serviceAccount = _messages.StringField(9)
 
 
+class GoogleCloudAiplatformV1DiskSpec(_messages.Message):
+  r"""Represents the spec of disk options.
+
+  Fields:
+    bootDiskSizeGb: Size in GB of the boot disk (default is 100GB).
+    bootDiskType: Type of the boot disk (default is "pd-ssd"). Valid values:
+      "pd-ssd" (Persistent Disk Solid State Drive) or "pd-standard"
+      (Persistent Disk Hard Disk Drive).
+  """
+
+  bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  bootDiskType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1EnvVar(_messages.Message):
+  r"""Represents an environment variable present in a Container or Python
+  Module.
+
+  Fields:
+    name: Required. Name of the environment variable. Must be a valid C
+      identifier.
+    value: Required. Variables that reference a $(VAR_NAME) are expanded using
+      the previous defined environment variables in the container and any
+      service environment variables. If a variable cannot be resolved, the
+      reference in the input string will be unchanged. The $(VAR_NAME) syntax
+      can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references
+      will never be expanded, regardless of whether the variable exists or
+      not.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
 class GoogleCloudAiplatformV1ExportDataOperationMetadata(_messages.Message):
   r"""Runtime operation information for DatasetService.ExportData.
 
@@ -7162,6 +7254,18 @@ class GoogleCloudAiplatformV1ExportModelOperationMetadataOutputInfo(_messages.Me
 
 class GoogleCloudAiplatformV1ExportModelResponse(_messages.Message):
   r"""Response message of ModelService.ExportModel operation."""
+
+
+class GoogleCloudAiplatformV1GcsDestination(_messages.Message):
+  r"""The Google Cloud Storage location where the output is to be written to.
+
+  Fields:
+    outputUriPrefix: Required. Google Cloud Storage URI to output directory.
+      If the uri doesn't end with '/', a '/' will be automatically appended.
+      The directory is created if it doesn't exist.
+  """
+
+  outputUriPrefix = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1GenericOperationMetadata(_messages.Message):
@@ -7463,6 +7567,44 @@ class GoogleCloudAiplatformV1MigrateResourceResponse(_messages.Message):
   dataset = _messages.StringField(1)
   migratableResource = _messages.MessageField('GoogleCloudAiplatformV1MigratableResource', 2)
   model = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1PythonPackageSpec(_messages.Message):
+  r"""The spec of a Python packaged code.
+
+  Fields:
+    args: Command line arguments to be passed to the Python task.
+    env: Environment variables to be passed to the python module.
+    executorImageUri: Required. The URI of a container image in the Container
+      Registry that will run the provided python package. AI Platform provides
+      wide range of executor images with pre-installed packages to meet users'
+      various use cases. Only one of the provided images can be set here.
+    packageUris: Required. The Google Cloud Storage location of the Python
+      package files which are the training program and its dependent packages.
+      The maximum number of package URIs is 100.
+    pythonModule: Required. The Python module name to run after installing the
+      packages.
+  """
+
+  args = _messages.StringField(1, repeated=True)
+  env = _messages.MessageField('GoogleCloudAiplatformV1EnvVar', 2, repeated=True)
+  executorImageUri = _messages.StringField(3)
+  packageUris = _messages.StringField(4, repeated=True)
+  pythonModule = _messages.StringField(5)
+
+
+class GoogleCloudAiplatformV1Scheduling(_messages.Message):
+  r"""All parameters related to queuing and scheduling of custom jobs.
+
+  Fields:
+    restartJobOnWorkerRestart: Restarts the entire CustomJob if a worker gets
+      restarted. This feature can be used by distributed training jobs that
+      are not resilient to workers leaving and joining a job.
+    timeout: The maximum job running time. The default is 7 days.
+  """
+
+  restartJobOnWorkerRestart = _messages.BooleanField(1)
+  timeout = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1SchemaAnnotationSpecColor(_messages.Message):
@@ -9695,6 +9837,30 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoObjectTrackin
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 1)
 
 
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionCustomJobMetadata(_messages.Message):
+  r"""A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionCustomJobMetadata
+  object.
+
+  Fields:
+    backingCustomJob: The resource name of the CustomJob that has been created
+      to carry out this custom task.
+  """
+
+  backingCustomJob = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionCustomTask(_messages.Message):
+  r"""A TrainingJob that trains a custom code Model.
+
+  Fields:
+    inputs: The input parameters of this CustomTask.
+    metadata: The metadata information.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1CustomJobSpec', 1)
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionCustomJobMetadata', 2)
+
+
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig(_messages.Message):
   r"""Configuration for exporting test set predictions to a BigQuery table.
 
@@ -9710,6 +9876,56 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItems
 
   destinationBigqueryUri = _messages.StringField(1)
   overrideExistingTable = _messages.BooleanField(2)
+
+
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata(_messages.Message):
+  r"""A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuning
+  JobMetadata object.
+
+  Fields:
+    backingHyperparameterTuningJob: The resource name of the
+      HyperparameterTuningJob that has been created to carry out this
+      HyperparameterTuning task.
+    bestTrialBackingCustomJob: The resource name of the CustomJob that has
+      been created to run the best Trial of this HyperparameterTuning task.
+  """
+
+  backingHyperparameterTuningJob = _messages.StringField(1)
+  bestTrialBackingCustomJob = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningJobSpec(_messages.Message):
+  r"""A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuning
+  JobSpec object.
+
+  Fields:
+    maxFailedTrialCount: The number of failed Trials that need to be seen
+      before failing the HyperparameterTuningJob. If set to 0, AI Platform
+      decides how many Trials must fail before the whole job fails.
+    maxTrialCount: The desired total number of Trials.
+    parallelTrialCount: The desired number of Trials to run in parallel.
+    studySpec: Study configuration of the HyperparameterTuningJob.
+    trialJobSpec: The spec of a trial job. The same spec applies to the
+      CustomJobs created in all the trials.
+  """
+
+  maxFailedTrialCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxTrialCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  parallelTrialCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  studySpec = _messages.MessageField('GoogleCloudAiplatformV1StudySpec', 4)
+  trialJobSpec = _messages.MessageField('GoogleCloudAiplatformV1CustomJobSpec', 5)
+
+
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningTask(_messages.Message):
+  r"""A TrainingJob that tunes Hypererparameters of a custom code Model.
+
+  Fields:
+    inputs: The input parameters of this HyperparameterTuningTask.
+    metadata: The metadata information.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningJobSpec', 1)
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata', 2)
 
 
 class GoogleCloudAiplatformV1SchemaVertex(_messages.Message):
@@ -9868,6 +10084,260 @@ class GoogleCloudAiplatformV1SpecialistPool(_messages.Message):
   specialistManagersCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformV1StudySpec(_messages.Message):
+  r"""Represents specification of a Study.
+
+  Enums:
+    AlgorithmValueValuesEnum: The search algorithm specified for the Study.
+    MeasurementSelectionTypeValueValuesEnum: Describe which measurement
+      selection type will be used
+    ObservationNoiseValueValuesEnum: The observation noise level of the study.
+      Currently only supported by the Vizier service. Not supported by
+      HyperparamterTuningJob or TrainingPipeline.
+
+  Fields:
+    algorithm: The search algorithm specified for the Study.
+    measurementSelectionType: Describe which measurement selection type will
+      be used
+    metrics: Required. Metric specs for the Study.
+    observationNoise: The observation noise level of the study. Currently only
+      supported by the Vizier service. Not supported by HyperparamterTuningJob
+      or TrainingPipeline.
+    parameters: Required. The set of parameters to tune.
+  """
+
+  class AlgorithmValueValuesEnum(_messages.Enum):
+    r"""The search algorithm specified for the Study.
+
+    Values:
+      ALGORITHM_UNSPECIFIED: The default algorithm used by AI Platform
+        Optimization service.
+      GRID_SEARCH: Simple grid search within the feasible space. To use grid
+        search, all parameters must be `INTEGER`, `CATEGORICAL`, or
+        `DISCRETE`.
+      RANDOM_SEARCH: Simple random search within the feasible space.
+    """
+    ALGORITHM_UNSPECIFIED = 0
+    GRID_SEARCH = 1
+    RANDOM_SEARCH = 2
+
+  class MeasurementSelectionTypeValueValuesEnum(_messages.Enum):
+    r"""Describe which measurement selection type will be used
+
+    Values:
+      MEASUREMENT_SELECTION_TYPE_UNSPECIFIED: Will be treated as
+        LAST_MEASUREMENT.
+      LAST_MEASUREMENT: Use the last measurement reported.
+      BEST_MEASUREMENT: Use the best measurement reported.
+    """
+    MEASUREMENT_SELECTION_TYPE_UNSPECIFIED = 0
+    LAST_MEASUREMENT = 1
+    BEST_MEASUREMENT = 2
+
+  class ObservationNoiseValueValuesEnum(_messages.Enum):
+    r"""The observation noise level of the study. Currently only supported by
+    the Vizier service. Not supported by HyperparamterTuningJob or
+    TrainingPipeline.
+
+    Values:
+      OBSERVATION_NOISE_UNSPECIFIED: The default noise level chosen by the AI
+        Platform service.
+      LOW: AI Platform Vizier assumes that the objective function is (nearly)
+        perfectly reproducible, and will never repeat the same Trial
+        parameters.
+      HIGH: AI Platform Vizier will estimate the amount of noise in metric
+        evaluations, it may repeat the same Trial parameters more than once.
+    """
+    OBSERVATION_NOISE_UNSPECIFIED = 0
+    LOW = 1
+    HIGH = 2
+
+  algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
+  measurementSelectionType = _messages.EnumField('MeasurementSelectionTypeValueValuesEnum', 2)
+  metrics = _messages.MessageField('GoogleCloudAiplatformV1StudySpecMetricSpec', 3, repeated=True)
+  observationNoise = _messages.EnumField('ObservationNoiseValueValuesEnum', 4)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1StudySpecParameterSpec', 5, repeated=True)
+
+
+class GoogleCloudAiplatformV1StudySpecMetricSpec(_messages.Message):
+  r"""Represents a metric to optimize.
+
+  Enums:
+    GoalValueValuesEnum: Required. The optimization goal of the metric.
+
+  Fields:
+    goal: Required. The optimization goal of the metric.
+    metricId: Required. The ID of the metric. Must not contain whitespaces and
+      must be unique amongst all MetricSpecs.
+  """
+
+  class GoalValueValuesEnum(_messages.Enum):
+    r"""Required. The optimization goal of the metric.
+
+    Values:
+      GOAL_TYPE_UNSPECIFIED: Goal Type will default to maximize.
+      MAXIMIZE: Maximize the goal metric.
+      MINIMIZE: Minimize the goal metric.
+    """
+    GOAL_TYPE_UNSPECIFIED = 0
+    MAXIMIZE = 1
+    MINIMIZE = 2
+
+  goal = _messages.EnumField('GoalValueValuesEnum', 1)
+  metricId = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1StudySpecParameterSpec(_messages.Message):
+  r"""Represents a single parameter to optimize.
+
+  Enums:
+    ScaleTypeValueValuesEnum: How the parameter should be scaled. Leave unset
+      for `CATEGORICAL` parameters.
+
+  Fields:
+    categoricalValueSpec: The value spec for a 'CATEGORICAL' parameter.
+    conditionalParameterSpecs: A conditional parameter node is active if the
+      parameter's value matches the conditional node's parent_value_condition.
+      If two items in conditional_parameter_specs have the same name, they
+      must have disjoint parent_value_condition.
+    discreteValueSpec: The value spec for a 'DISCRETE' parameter.
+    doubleValueSpec: The value spec for a 'DOUBLE' parameter.
+    integerValueSpec: The value spec for an 'INTEGER' parameter.
+    parameterId: Required. The ID of the parameter. Must not contain
+      whitespaces and must be unique amongst all ParameterSpecs.
+    scaleType: How the parameter should be scaled. Leave unset for
+      `CATEGORICAL` parameters.
+  """
+
+  class ScaleTypeValueValuesEnum(_messages.Enum):
+    r"""How the parameter should be scaled. Leave unset for `CATEGORICAL`
+    parameters.
+
+    Values:
+      SCALE_TYPE_UNSPECIFIED: By default, no scaling is applied.
+      UNIT_LINEAR_SCALE: Scales the feasible space to (0, 1) linearly.
+      UNIT_LOG_SCALE: Scales the feasible space logarithmically to (0, 1). The
+        entire feasible space must be strictly positive.
+      UNIT_REVERSE_LOG_SCALE: Scales the feasible space "reverse"
+        logarithmically to (0, 1). The result is that values close to the top
+        of the feasible space are spread out more than points near the bottom.
+        The entire feasible space must be strictly positive.
+    """
+    SCALE_TYPE_UNSPECIFIED = 0
+    UNIT_LINEAR_SCALE = 1
+    UNIT_LOG_SCALE = 2
+    UNIT_REVERSE_LOG_SCALE = 3
+
+  categoricalValueSpec = _messages.MessageField('GoogleCloudAiplatformV1StudySpecParameterSpecCategoricalValueSpec', 1)
+  conditionalParameterSpecs = _messages.MessageField('GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpec', 2, repeated=True)
+  discreteValueSpec = _messages.MessageField('GoogleCloudAiplatformV1StudySpecParameterSpecDiscreteValueSpec', 3)
+  doubleValueSpec = _messages.MessageField('GoogleCloudAiplatformV1StudySpecParameterSpecDoubleValueSpec', 4)
+  integerValueSpec = _messages.MessageField('GoogleCloudAiplatformV1StudySpecParameterSpecIntegerValueSpec', 5)
+  parameterId = _messages.StringField(6)
+  scaleType = _messages.EnumField('ScaleTypeValueValuesEnum', 7)
+
+
+class GoogleCloudAiplatformV1StudySpecParameterSpecCategoricalValueSpec(_messages.Message):
+  r"""Value specification for a parameter in `CATEGORICAL` type.
+
+  Fields:
+    values: Required. The list of possible categories.
+  """
+
+  values = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpec(_messages.Message):
+  r"""Represents a parameter spec with condition from its parent parameter.
+
+  Fields:
+    parameterSpec: Required. The spec for a conditional parameter.
+    parentCategoricalValues: The spec for matching values from a parent
+      parameter of `CATEGORICAL` type.
+    parentDiscreteValues: The spec for matching values from a parent parameter
+      of `DISCRETE` type.
+    parentIntValues: The spec for matching values from a parent parameter of
+      `INTEGER` type.
+  """
+
+  parameterSpec = _messages.MessageField('GoogleCloudAiplatformV1StudySpecParameterSpec', 1)
+  parentCategoricalValues = _messages.MessageField('GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpecCategoricalValueCondition', 2)
+  parentDiscreteValues = _messages.MessageField('GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpecDiscreteValueCondition', 3)
+  parentIntValues = _messages.MessageField('GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpecIntValueCondition', 4)
+
+
+class GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpecCategoricalValueCondition(_messages.Message):
+  r"""Represents the spec to match categorical values from parent parameter.
+
+  Fields:
+    values: Required. Matches values of the parent parameter of 'CATEGORICAL'
+      type. All values must exist in `categorical_value_spec` of parent
+      parameter.
+  """
+
+  values = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpecDiscreteValueCondition(_messages.Message):
+  r"""Represents the spec to match discrete values from parent parameter.
+
+  Fields:
+    values: Required. Matches values of the parent parameter of 'DISCRETE'
+      type. All values must exist in `discrete_value_spec` of parent
+      parameter. The Epsilon of the value matching is 1e-10.
+  """
+
+  values = _messages.FloatField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpecIntValueCondition(_messages.Message):
+  r"""Represents the spec to match integer values from parent parameter.
+
+  Fields:
+    values: Required. Matches values of the parent parameter of 'INTEGER'
+      type. All values must lie in `integer_value_spec` of parent parameter.
+  """
+
+  values = _messages.IntegerField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1StudySpecParameterSpecDiscreteValueSpec(_messages.Message):
+  r"""Value specification for a parameter in `DISCRETE` type.
+
+  Fields:
+    values: Required. A list of possible values. The list should be in
+      increasing order and at least 1e-10 apart. For instance, this parameter
+      might have possible settings of 1.5, 2.5, and 4.0. This list should not
+      contain more than 1,000 values.
+  """
+
+  values = _messages.FloatField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1StudySpecParameterSpecDoubleValueSpec(_messages.Message):
+  r"""Value specification for a parameter in `DOUBLE` type.
+
+  Fields:
+    maxValue: Required. Inclusive maximum value of the parameter.
+    minValue: Required. Inclusive minimum value of the parameter.
+  """
+
+  maxValue = _messages.FloatField(1)
+  minValue = _messages.FloatField(2)
+
+
+class GoogleCloudAiplatformV1StudySpecParameterSpecIntegerValueSpec(_messages.Message):
+  r"""Value specification for a parameter in `INTEGER` type.
+
+  Fields:
+    maxValue: Required. Inclusive maximum value of the parameter.
+    minValue: Required. Inclusive minimum value of the parameter.
+  """
+
+  maxValue = _messages.IntegerField(1)
+  minValue = _messages.IntegerField(2)
+
+
 class GoogleCloudAiplatformV1UndeployModelOperationMetadata(_messages.Message):
   r"""Runtime operation information for EndpointService.UndeployModel.
 
@@ -9916,6 +10386,25 @@ class GoogleCloudAiplatformV1UploadModelResponse(_messages.Message):
   """
 
   model = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1WorkerPoolSpec(_messages.Message):
+  r"""Represents the spec of a worker pool in a job.
+
+  Fields:
+    containerSpec: The custom container task.
+    diskSpec: Disk spec.
+    machineSpec: Optional. Immutable. The specification of a single machine.
+    pythonPackageSpec: The Python packaged task.
+    replicaCount: Optional. The number of worker replicas to use for this
+      worker pool.
+  """
+
+  containerSpec = _messages.MessageField('GoogleCloudAiplatformV1ContainerSpec', 1)
+  diskSpec = _messages.MessageField('GoogleCloudAiplatformV1DiskSpec', 2)
+  machineSpec = _messages.MessageField('GoogleCloudAiplatformV1MachineSpec', 3)
+  pythonPackageSpec = _messages.MessageField('GoogleCloudAiplatformV1PythonPackageSpec', 4)
+  replicaCount = _messages.IntegerField(5)
 
 
 class GoogleCloudAiplatformV1alpha1ActiveLearningConfig(_messages.Message):
@@ -15436,6 +15925,22 @@ class GoogleCloudAiplatformV1beta1BatchMigrateResourcesResponse(_messages.Messag
   migrateResourceResponses = _messages.MessageField('GoogleCloudAiplatformV1beta1MigrateResourceResponse', 1, repeated=True)
 
 
+class GoogleCloudAiplatformV1beta1ContainerSpec(_messages.Message):
+  r"""The spec of a Container.
+
+  Fields:
+    args: The arguments to be passed when starting the container.
+    command: The command to be invoked when the container is started. It
+      overrides the entrypoint instruction in Dockerfile when provided.
+    imageUri: Required. The URI of a container image in the Container Registry
+      that is to be run on each worker replica.
+  """
+
+  args = _messages.StringField(1, repeated=True)
+  command = _messages.StringField(2, repeated=True)
+  imageUri = _messages.StringField(3)
+
+
 class GoogleCloudAiplatformV1beta1CreateDatasetOperationMetadata(_messages.Message):
   r"""Runtime operation information for DatasetService.CreateDataset.
 
@@ -15499,6 +16004,46 @@ class GoogleCloudAiplatformV1beta1CreateTensorboardOperationMetadata(_messages.M
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
+  r"""Represents the spec of a CustomJob.
+
+  Fields:
+    baseOutputDirectory: The Cloud Storage location to store the output of
+      this CustomJob or HyperparameterTuningJob. For HyperparameterTuningJob,
+      the baseOutputDirectory of each child CustomJob backing a Trial is set
+      to a subdirectory of name id under its parent HyperparameterTuningJob's
+      baseOutputDirectory. The following AI Platform environment variables
+      will be passed to containers or python modules when this field is set:
+      For CustomJob: * AIP_MODEL_DIR = `/model/` * AIP_CHECKPOINT_DIR =
+      `/checkpoints/` * AIP_TENSORBOARD_LOG_DIR = `/logs/` For CustomJob
+      backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `//model/`
+      * AIP_CHECKPOINT_DIR = `//checkpoints/` * AIP_TENSORBOARD_LOG_DIR =
+      `//logs/`
+    network: The full name of the Compute Engine
+      [network](/compute/docs/networks-and-firewalls#networks) to which the
+      Job should be peered. For example,
+      `projects/12345/global/networks/myVPC`.
+      [Format](/compute/docs/reference/rest/v1/networks/insert) is of the form
+      `projects/{project}/global/networks/{network}`. Where {project} is a
+      project number, as in `12345`, and {network} is a network name. Private
+      services access must already be configured for the network. If left
+      unspecified, the job is not peered with any network.
+    scheduling: Scheduling options for a CustomJob.
+    serviceAccount: Specifies the service account for workload run-as account.
+      Users submitting jobs must have act-as permission on this run-as
+      account. If unspecified, the AI Platform Custom Code Service Agent for
+      the CustomJob's project is used.
+    workerPoolSpecs: Required. The spec of the worker pools including machine
+      type and Docker image.
+  """
+
+  baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 1)
+  network = _messages.StringField(2)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformV1beta1Scheduling', 3)
+  serviceAccount = _messages.StringField(4)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1WorkerPoolSpec', 5, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
@@ -15676,6 +16221,20 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
   id = _messages.StringField(8)
   model = _messages.StringField(9)
   serviceAccount = _messages.StringField(10)
+
+
+class GoogleCloudAiplatformV1beta1DiskSpec(_messages.Message):
+  r"""Represents the spec of disk options.
+
+  Fields:
+    bootDiskSizeGb: Size in GB of the boot disk (default is 100GB).
+    bootDiskType: Type of the boot disk (default is "pd-ssd"). Valid values:
+      "pd-ssd" (Persistent Disk Solid State Drive) or "pd-standard"
+      (Persistent Disk Hard Disk Drive).
+  """
+
+  bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  bootDiskType = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
@@ -16222,6 +16781,18 @@ class GoogleCloudAiplatformV1beta1FeatureNoiseSigmaNoiseSigmaForFeature(_message
   sigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
+class GoogleCloudAiplatformV1beta1GcsDestination(_messages.Message):
+  r"""The Google Cloud Storage location where the output is to be written to.
+
+  Fields:
+    outputUriPrefix: Required. Google Cloud Storage URI to output directory.
+      If the uri doesn't end with '/', a '/' will be automatically appended.
+      The directory is created if it doesn't exist.
+  """
+
+  outputUriPrefix = _messages.StringField(1)
+
+
 class GoogleCloudAiplatformV1beta1GenericOperationMetadata(_messages.Message):
   r"""Generic Metadata shared by all operations.
 
@@ -16638,6 +17209,28 @@ class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataRecordEr
   sourceGcsUri = _messages.StringField(5)
 
 
+class GoogleCloudAiplatformV1beta1PythonPackageSpec(_messages.Message):
+  r"""The spec of a Python packaged code.
+
+  Fields:
+    args: Command line arguments to be passed to the Python task.
+    executorImageUri: Required. The URI of a container image in the Container
+      Registry that will run the provided python package. AI Platform provides
+      wide range of executor images with pre-installed packages to meet users'
+      various use cases. Only one of the provided images can be set here.
+    packageUris: Required. The Google Cloud Storage location of the Python
+      package files which are the training program and its dependent packages.
+      The maximum number of package URIs is 100.
+    pythonModule: Required. The Python module name to run after installing the
+      packages.
+  """
+
+  args = _messages.StringField(1, repeated=True)
+  executorImageUri = _messages.StringField(2)
+  packageUris = _messages.StringField(3, repeated=True)
+  pythonModule = _messages.StringField(4)
+
+
 class GoogleCloudAiplatformV1beta1SampledShapleyAttribution(_messages.Message):
   r"""An attribution method that approximates Shapley values for features that
   contribute to the label being predicted. A sampling strategy is used to
@@ -16650,6 +17243,20 @@ class GoogleCloudAiplatformV1beta1SampledShapleyAttribution(_messages.Message):
   """
 
   pathCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1Scheduling(_messages.Message):
+  r"""All parameters related to queuing and scheduling of custom jobs.
+
+  Fields:
+    restartJobOnWorkerRestart: Restarts the entire CustomJob if a worker gets
+      restarted. This feature can be used by distributed training jobs that
+      are not resilient to workers leaving and joining a job.
+    timeout: The maximum job running time. The default is 7 days.
+  """
+
+  restartJobOnWorkerRestart = _messages.BooleanField(1)
+  timeout = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1SchemaAnnotationSpecColor(_messages.Message):
@@ -18927,6 +19534,31 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoObjectTr
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 1)
 
 
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionCustomJobMetadata(_messages.Message):
+  r"""A
+  GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionCustomJobMetadata
+  object.
+
+  Fields:
+    backingCustomJob: The resource name of the CustomJob that has been created
+      to carry out this custom task.
+  """
+
+  backingCustomJob = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionCustomTask(_messages.Message):
+  r"""A TrainingJob that trains a custom code Model.
+
+  Fields:
+    inputs: The input parameters of this CustomTask.
+    metadata: The metadata information.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1CustomJobSpec', 1)
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionCustomJobMetadata', 2)
+
+
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig(_messages.Message):
   r"""Configuration for exporting test set predictions to a BigQuery table.
 
@@ -18942,6 +19574,56 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedData
 
   destinationBigqueryUri = _messages.StringField(1)
   overrideExistingTable = _messages.BooleanField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterT
+  uningJobMetadata object.
+
+  Fields:
+    backingHyperparameterTuningJob: The resource name of the
+      HyperparameterTuningJob that has been created to carry out this
+      HyperparameterTuning task.
+    bestTrialBackingCustomJob: The resource name of the CustomJob that has
+      been created to run the best Trial of this HyperparameterTuning task.
+  """
+
+  backingHyperparameterTuningJob = _messages.StringField(1)
+  bestTrialBackingCustomJob = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningJobSpec(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterT
+  uningJobSpec object.
+
+  Fields:
+    maxFailedTrialCount: The number of failed Trials that need to be seen
+      before failing the HyperparameterTuningJob. If set to 0, AI Platform
+      decides how many Trials must fail before the whole job fails.
+    maxTrialCount: The desired total number of Trials.
+    parallelTrialCount: The desired number of Trials to run in parallel.
+    studySpec: Study configuration of the HyperparameterTuningJob.
+    trialJobSpec: The spec of a trial job. The same spec applies to the
+      CustomJobs created in all the trials.
+  """
+
+  maxFailedTrialCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxTrialCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  parallelTrialCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  studySpec = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpec', 4)
+  trialJobSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1CustomJobSpec', 5)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningTask(_messages.Message):
+  r"""A TrainingJob that tunes Hypererparameters of a custom code Model.
+
+  Fields:
+    inputs: The input parameters of this HyperparameterTuningTask.
+    metadata: The metadata information.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningJobSpec', 1)
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata', 2)
 
 
 class GoogleCloudAiplatformV1beta1SchemaVertex(_messages.Message):
@@ -19135,6 +19817,260 @@ class GoogleCloudAiplatformV1beta1SpecialistPool(_messages.Message):
   specialistManagersCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
+  r"""Represents specification of a Study.
+
+  Enums:
+    AlgorithmValueValuesEnum: The search algorithm specified for the Study.
+    MeasurementSelectionTypeValueValuesEnum: Describe which measurement
+      selection type will be used
+    ObservationNoiseValueValuesEnum: The observation noise level of the study.
+      Currently only supported by the Vizier service. Not supported by
+      HyperparamterTuningJob or TrainingPipeline.
+
+  Fields:
+    algorithm: The search algorithm specified for the Study.
+    measurementSelectionType: Describe which measurement selection type will
+      be used
+    metrics: Required. Metric specs for the Study.
+    observationNoise: The observation noise level of the study. Currently only
+      supported by the Vizier service. Not supported by HyperparamterTuningJob
+      or TrainingPipeline.
+    parameters: Required. The set of parameters to tune.
+  """
+
+  class AlgorithmValueValuesEnum(_messages.Enum):
+    r"""The search algorithm specified for the Study.
+
+    Values:
+      ALGORITHM_UNSPECIFIED: The default algorithm used by AI Platform
+        Optimization service.
+      GRID_SEARCH: Simple grid search within the feasible space. To use grid
+        search, all parameters must be `INTEGER`, `CATEGORICAL`, or
+        `DISCRETE`.
+      RANDOM_SEARCH: Simple random search within the feasible space.
+    """
+    ALGORITHM_UNSPECIFIED = 0
+    GRID_SEARCH = 1
+    RANDOM_SEARCH = 2
+
+  class MeasurementSelectionTypeValueValuesEnum(_messages.Enum):
+    r"""Describe which measurement selection type will be used
+
+    Values:
+      MEASUREMENT_SELECTION_TYPE_UNSPECIFIED: Will be treated as
+        LAST_MEASUREMENT.
+      LAST_MEASUREMENT: Use the last measurement reported.
+      BEST_MEASUREMENT: Use the best measurement reported.
+    """
+    MEASUREMENT_SELECTION_TYPE_UNSPECIFIED = 0
+    LAST_MEASUREMENT = 1
+    BEST_MEASUREMENT = 2
+
+  class ObservationNoiseValueValuesEnum(_messages.Enum):
+    r"""The observation noise level of the study. Currently only supported by
+    the Vizier service. Not supported by HyperparamterTuningJob or
+    TrainingPipeline.
+
+    Values:
+      OBSERVATION_NOISE_UNSPECIFIED: The default noise level chosen by the AI
+        Platform service.
+      LOW: AI Platform Vizier assumes that the objective function is (nearly)
+        perfectly reproducible, and will never repeat the same Trial
+        parameters.
+      HIGH: AI Platform Vizier will estimate the amount of noise in metric
+        evaluations, it may repeat the same Trial parameters more than once.
+    """
+    OBSERVATION_NOISE_UNSPECIFIED = 0
+    LOW = 1
+    HIGH = 2
+
+  algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
+  measurementSelectionType = _messages.EnumField('MeasurementSelectionTypeValueValuesEnum', 2)
+  metrics = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecMetricSpec', 3, repeated=True)
+  observationNoise = _messages.EnumField('ObservationNoiseValueValuesEnum', 4)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpec', 5, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecMetricSpec(_messages.Message):
+  r"""Represents a metric to optimize.
+
+  Enums:
+    GoalValueValuesEnum: Required. The optimization goal of the metric.
+
+  Fields:
+    goal: Required. The optimization goal of the metric.
+    metricId: Required. The ID of the metric. Must not contain whitespaces and
+      must be unique amongst all MetricSpecs.
+  """
+
+  class GoalValueValuesEnum(_messages.Enum):
+    r"""Required. The optimization goal of the metric.
+
+    Values:
+      GOAL_TYPE_UNSPECIFIED: Goal Type will default to maximize.
+      MAXIMIZE: Maximize the goal metric.
+      MINIMIZE: Minimize the goal metric.
+    """
+    GOAL_TYPE_UNSPECIFIED = 0
+    MAXIMIZE = 1
+    MINIMIZE = 2
+
+  goal = _messages.EnumField('GoalValueValuesEnum', 1)
+  metricId = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecParameterSpec(_messages.Message):
+  r"""Represents a single parameter to optimize.
+
+  Enums:
+    ScaleTypeValueValuesEnum: How the parameter should be scaled. Leave unset
+      for `CATEGORICAL` parameters.
+
+  Fields:
+    categoricalValueSpec: The value spec for a 'CATEGORICAL' parameter.
+    conditionalParameterSpecs: A conditional parameter node is active if the
+      parameter's value matches the conditional node's parent_value_condition.
+      If two items in conditional_parameter_specs have the same name, they
+      must have disjoint parent_value_condition.
+    discreteValueSpec: The value spec for a 'DISCRETE' parameter.
+    doubleValueSpec: The value spec for a 'DOUBLE' parameter.
+    integerValueSpec: The value spec for an 'INTEGER' parameter.
+    parameterId: Required. The ID of the parameter. Must not contain
+      whitespaces and must be unique amongst all ParameterSpecs.
+    scaleType: How the parameter should be scaled. Leave unset for
+      `CATEGORICAL` parameters.
+  """
+
+  class ScaleTypeValueValuesEnum(_messages.Enum):
+    r"""How the parameter should be scaled. Leave unset for `CATEGORICAL`
+    parameters.
+
+    Values:
+      SCALE_TYPE_UNSPECIFIED: By default, no scaling is applied.
+      UNIT_LINEAR_SCALE: Scales the feasible space to (0, 1) linearly.
+      UNIT_LOG_SCALE: Scales the feasible space logarithmically to (0, 1). The
+        entire feasible space must be strictly positive.
+      UNIT_REVERSE_LOG_SCALE: Scales the feasible space "reverse"
+        logarithmically to (0, 1). The result is that values close to the top
+        of the feasible space are spread out more than points near the bottom.
+        The entire feasible space must be strictly positive.
+    """
+    SCALE_TYPE_UNSPECIFIED = 0
+    UNIT_LINEAR_SCALE = 1
+    UNIT_LOG_SCALE = 2
+    UNIT_REVERSE_LOG_SCALE = 3
+
+  categoricalValueSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpecCategoricalValueSpec', 1)
+  conditionalParameterSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpec', 2, repeated=True)
+  discreteValueSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpecDiscreteValueSpec', 3)
+  doubleValueSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpecDoubleValueSpec', 4)
+  integerValueSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpecIntegerValueSpec', 5)
+  parameterId = _messages.StringField(6)
+  scaleType = _messages.EnumField('ScaleTypeValueValuesEnum', 7)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecParameterSpecCategoricalValueSpec(_messages.Message):
+  r"""Value specification for a parameter in `CATEGORICAL` type.
+
+  Fields:
+    values: Required. The list of possible categories.
+  """
+
+  values = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpec(_messages.Message):
+  r"""Represents a parameter spec with condition from its parent parameter.
+
+  Fields:
+    parameterSpec: Required. The spec for a conditional parameter.
+    parentCategoricalValues: The spec for matching values from a parent
+      parameter of `CATEGORICAL` type.
+    parentDiscreteValues: The spec for matching values from a parent parameter
+      of `DISCRETE` type.
+    parentIntValues: The spec for matching values from a parent parameter of
+      `INTEGER` type.
+  """
+
+  parameterSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpec', 1)
+  parentCategoricalValues = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpecCategoricalValueCondition', 2)
+  parentDiscreteValues = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpecDiscreteValueCondition', 3)
+  parentIntValues = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpecIntValueCondition', 4)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpecCategoricalValueCondition(_messages.Message):
+  r"""Represents the spec to match categorical values from parent parameter.
+
+  Fields:
+    values: Required. Matches values of the parent parameter of 'CATEGORICAL'
+      type. All values must exist in `categorical_value_spec` of parent
+      parameter.
+  """
+
+  values = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpecDiscreteValueCondition(_messages.Message):
+  r"""Represents the spec to match discrete values from parent parameter.
+
+  Fields:
+    values: Required. Matches values of the parent parameter of 'DISCRETE'
+      type. All values must exist in `discrete_value_spec` of parent
+      parameter. The Epsilon of the value matching is 1e-10.
+  """
+
+  values = _messages.FloatField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpecIntValueCondition(_messages.Message):
+  r"""Represents the spec to match integer values from parent parameter.
+
+  Fields:
+    values: Required. Matches values of the parent parameter of 'INTEGER'
+      type. All values must lie in `integer_value_spec` of parent parameter.
+  """
+
+  values = _messages.IntegerField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecParameterSpecDiscreteValueSpec(_messages.Message):
+  r"""Value specification for a parameter in `DISCRETE` type.
+
+  Fields:
+    values: Required. A list of possible values. The list should be in
+      increasing order and at least 1e-10 apart. For instance, this parameter
+      might have possible settings of 1.5, 2.5, and 4.0. This list should not
+      contain more than 1,000 values.
+  """
+
+  values = _messages.FloatField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecParameterSpecDoubleValueSpec(_messages.Message):
+  r"""Value specification for a parameter in `DOUBLE` type.
+
+  Fields:
+    maxValue: Required. Inclusive maximum value of the parameter.
+    minValue: Required. Inclusive minimum value of the parameter.
+  """
+
+  maxValue = _messages.FloatField(1)
+  minValue = _messages.FloatField(2)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecParameterSpecIntegerValueSpec(_messages.Message):
+  r"""Value specification for a parameter in `INTEGER` type.
+
+  Fields:
+    maxValue: Required. Inclusive maximum value of the parameter.
+    minValue: Required. Inclusive minimum value of the parameter.
+  """
+
+  maxValue = _messages.IntegerField(1)
+  minValue = _messages.IntegerField(2)
+
+
 class GoogleCloudAiplatformV1beta1UndeployIndexOperationMetadata(_messages.Message):
   r"""Runtime operation information for IndexEndpointService.UndeployIndex.
 
@@ -19220,6 +20156,25 @@ class GoogleCloudAiplatformV1beta1UploadModelResponse(_messages.Message):
   """
 
   model = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1WorkerPoolSpec(_messages.Message):
+  r"""Represents the spec of a worker pool in a job.
+
+  Fields:
+    containerSpec: The custom container task.
+    diskSpec: Disk spec.
+    machineSpec: Optional. Immutable. The specification of a single machine.
+    pythonPackageSpec: The Python packaged task.
+    replicaCount: Optional. The number of worker replicas to use for this
+      worker pool.
+  """
+
+  containerSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ContainerSpec', 1)
+  diskSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1DiskSpec', 2)
+  machineSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1MachineSpec', 3)
+  pythonPackageSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1PythonPackageSpec', 4)
+  replicaCount = _messages.IntegerField(5)
 
 
 class GoogleCloudAiplatformV1beta1XraiAttribution(_messages.Message):

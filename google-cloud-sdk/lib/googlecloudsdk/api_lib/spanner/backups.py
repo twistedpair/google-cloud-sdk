@@ -87,6 +87,8 @@ def CreateBackup(backup_ref, args, encryption_type=None, kms_key=None):
   backup = msgs.Backup(
       database=parent + '/databases/' + args.database,
       expireTime=CheckAndGetExpireTime(args))
+  if args.IsSpecified('version_time'):
+    backup.versionTime = args.version_time
 
   # Workaround since gcloud cannot handle HttpBody properly (b/31403673).
   response_encoding = None if six.PY2 else 'utf-8'

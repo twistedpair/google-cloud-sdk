@@ -20,7 +20,7 @@ from googlecloudsdk.third_party.appengine.proto import ProtocolBuffer
 __pychecker__ = """maxreturns=0 maxbranches=0 no-callinit
                    unusednames=printElemNumber,debug_strs no-special"""
 
-# Dummy action definition.
+# Placeholder action definition.
 # TODO(user): remove once the executor support is finalized.
 class Action(ProtocolBuffer.ProtocolMessage):
   pass

@@ -459,5 +459,12 @@ def BetaParseAltNameServers(version,
       targetNameServers=result_list)
 
 
+def ParseResponsePolicyRulesBehavior(args, version='v1'):
+  """Parses response policy rule behavior."""
+  messages = GetMessages(version)
+  return flags.GetResponsePolicyRulesBehaviorFlagMapper(
+      messages).GetEnumForChoice(args.behavior)
+
+
 def GetMessages(version='v1'):
   return apis.GetMessagesModule('dns', version)

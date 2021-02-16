@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console.style import mappings
 from googlecloudsdk.core.console.style import text
-from googlecloudsdk.core.util import platforms
 
 import six
 
@@ -161,8 +160,6 @@ def _ColorsEnabled():
   """Returns true if colors should be enabled."""
   style = properties.VALUES.core.interactive_ux_style.Get()
   if any([
-      # TODO(b/115571491): Enable color on windows.
-      platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS,
       style == properties.VALUES.core.InteractiveUXStyles.OFF.name,
       properties.VALUES.core.show_structured_logs.Get() != 'never',
       properties.VALUES.core.disable_color.GetBool()]):

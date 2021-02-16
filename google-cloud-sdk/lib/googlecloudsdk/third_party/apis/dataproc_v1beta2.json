@@ -869,8 +869,12 @@
       "type": "object",
       "properties": {
         "kerberosConfig": {
-          "description": "Kerberos related configuration.",
+          "description": "Optional. Kerberos related configuration.",
           "$ref": "KerberosConfig"
+        },
+        "identityConfig": {
+          "description": "Optional. Identity related configuration, including service account based secure multi-tenancy user mappings.",
+          "$ref": "IdentityConfig"
         }
       }
     },
@@ -939,6 +943,20 @@
         "realm": {
           "description": "Optional. The name of the on-cluster Kerberos realm. If not specified, the uppercased domain of hostnames will be the realm.",
           "type": "string"
+        }
+      }
+    },
+    "IdentityConfig": {
+      "id": "IdentityConfig",
+      "description": "Identity related configuration, including service account based secure multi-tenancy user mappings.",
+      "type": "object",
+      "properties": {
+        "userServiceAccountMapping": {
+          "description": "Required. Map of user to service account.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

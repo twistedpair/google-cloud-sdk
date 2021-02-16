@@ -19,6 +19,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.kuberun import structuredout
+from googlecloudsdk.command_lib.kuberun import kubernetes_consts as k8s
 
 
 class Status(structuredout.MapObject):
@@ -26,15 +27,15 @@ class Status(structuredout.MapObject):
 
   @property
   def conditions(self):
-    return [Condition(x) for x in self._props['conditions']]
+    return [Condition(x) for x in self._props[k8s.FIELD_CONDITIONS]]
 
   @property
   def latestReadyRevisionName(self):
-    return self._props.get('latestReadyRevisionName')
+    return self._props.get(k8s.FIELD_LATEST_READY_REVISION_NAME)
 
   @property
   def latestCreatedRevisionName(self):
-    return self._props.get('latestCreatedRevisionName')
+    return self._props.get(k8s.FIELD_LATEST_CREATED_REVISION_NAME)
 
   @property
   def url(self):
@@ -46,21 +47,21 @@ class Condition(structuredout.MapObject):
 
   @property
   def status(self):
-    if self._props['status'].lower() == 'true':
+    if self._props[k8s.FIELD_STATUS].lower() == 'true':
       return True
-    elif self._props['status'].lower() == 'false':
+    elif self._props[k8s.FIELD_STATUS].lower() == 'false':
       return False
     else:
       return None
 
   @property
   def type(self):
-    return self._props['type']
+    return self._props[k8s.FIELD_TYPE]
 
   @property
   def message(self):
-    return self._props.get('message')
+    return self._props.get(k8s.FIELD_MESSAGE)
 
   @property
   def lastTransitionTime(self):
-    return self._props.get('lastTransitionTime')
+    return self._props.get(k8s.FIELD_LAST_TRANSITION_TIME)

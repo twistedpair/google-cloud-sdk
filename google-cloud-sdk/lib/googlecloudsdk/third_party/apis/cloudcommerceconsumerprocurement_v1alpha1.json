@@ -513,6 +513,11 @@
       "description": "Subscription information.",
       "type": "object",
       "properties": {
+        "startTime": {
+          "description": "The timestamp when the subscription begins, if applicable.",
+          "type": "string",
+          "format": "google-datetime"
+        },
         "endTime": {
           "description": "The timestamp when the subscription ends, if applicable.",
           "type": "string",

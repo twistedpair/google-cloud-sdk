@@ -226,8 +226,8 @@ def _MultiTenantProjectIds(project):
 
   messages = resourcesettings_service.ResourceSettingsMessages()
 
-  get_request = messages.ResourcesettingsProjectsSettingsLookupEffectiveValueRequest(
-      parent=setting_name)
+  get_request = messages.ResourcesettingsProjectsSettingsValueLookupEffectiveValueRequest(
+      name=setting_name)
   settings_service = resourcesettings_service.ProjectsSettingsService()
   service_value = settings_service.LookupEffectiveValue(get_request)
   return [

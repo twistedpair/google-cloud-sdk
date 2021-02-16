@@ -526,6 +526,33 @@ class PubsubliteV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def ComputeHeadCursor(self, request, global_params=None):
+      r"""Compute the head cursor for the partition. The head cursor's offset is guaranteed to be before or equal to all messages which have not yet been acknowledged to be published, and greater than the offset of any message whose publish has already been acknowledged. It is 0 if there have never been messages on the partition.
+
+      Args:
+        request: (PubsubliteTopicStatsProjectsLocationsTopicsComputeHeadCursorRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ComputeHeadCursorResponse) The response message.
+      """
+      config = self.GetMethodConfig('ComputeHeadCursor')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ComputeHeadCursor.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/topicStats/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}:computeHeadCursor',
+        http_method='POST',
+        method_id='pubsublite.topicStats.projects.locations.topics.computeHeadCursor',
+        ordered_params=['topic'],
+        path_params=['topic'],
+        query_params=[],
+        relative_path='v1/topicStats/{+topic}:computeHeadCursor',
+        request_field='computeHeadCursorRequest',
+        request_type_name='PubsubliteTopicStatsProjectsLocationsTopicsComputeHeadCursorRequest',
+        response_type_name='ComputeHeadCursorResponse',
+        supports_download=False,
+    )
+
     def ComputeMessageStats(self, request, global_params=None):
       r"""Compute statistics about a range of messages in a given topic and partition.
 

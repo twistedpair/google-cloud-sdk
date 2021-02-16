@@ -178,6 +178,8 @@ class CloudiotProjectsLocationsRegistriesDevicesGetRequest(_messages.Message):
   Fields:
     fieldMask: The fields of the `Device` resource to be returned in the
       response. If the field mask is unset or empty, all fields are returned.
+      Fields have to be provided in snake_case format, for example:
+      `last_heartbeat_time`.
     name: Required. The name of the device. For example,
       `projects/p0/locations/us-central1/registries/registry0/devices/device0`
       or `projects/p0/locations/us-
@@ -204,7 +206,8 @@ class CloudiotProjectsLocationsRegistriesDevicesListRequest(_messages.Message):
       ignored. Maximum IDs: 10,000.
     fieldMask: The fields of the `Device` resource to be returned in the
       response. The fields `id` and `num_id` are always returned, along with
-      any other fields specified.
+      any other fields specified in snake_case format, for example:
+      `last_heartbeat_time`.
     gatewayListOptions_associationsDeviceId: If set, returns only the gateways
       with which the specified device is associated. The device ID can be
       numeric (`num_id`) or the user-defined string (`id`). For example, if
@@ -372,7 +375,8 @@ class CloudiotProjectsLocationsRegistriesGroupsDevicesListRequest(_messages.Mess
       ignored. Maximum IDs: 10,000.
     fieldMask: The fields of the `Device` resource to be returned in the
       response. The fields `id` and `num_id` are always returned, along with
-      any other fields specified.
+      any other fields specified in snake_case format, for example:
+      `last_heartbeat_time`.
     gatewayListOptions_associationsDeviceId: If set, returns only the gateways
       with which the specified device is associated. The device ID can be
       numeric (`num_id`) or the user-defined string (`id`). For example, if

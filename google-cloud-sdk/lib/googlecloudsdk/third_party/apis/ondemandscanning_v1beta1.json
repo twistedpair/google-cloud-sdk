@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/container-analysis/docs/apis/",
+  "documentationLink": "https://cloud.google.com/container-analysis/docs/on-demand-scanning/",
   "protocol": "rest",
   "rootUrl": "https://ondemandscanning.googleapis.com/",
   "mtlsRootUrl": "https://ondemandscanning.mtls.googleapis.com/",
@@ -1297,9 +1297,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1338,9 +1338,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1363,9 +1363,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1388,9 +1388,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1413,9 +1413,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to wait on.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     },
                     "timeout": {
@@ -1448,9 +1448,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent of the resource for which analysis is requested. Format: projects\/[project_name]\/locations\/[location]",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1481,9 +1481,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The parent of the collection of Vulnerabilities being requested. Format: projects\/[project_name]\/locations\/[location]\/scans\/[scan_id]",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/scans\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/scans\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {

@@ -746,3 +746,30 @@ class IamPolicyAnalysisLongrunningClient(object):
       operation = self.service.AnalyzeIamPolicyLongrunning(request_message)
 
     return operation
+
+
+class AnalyzeMoveClient(object):
+  """Client for analyzing resource move."""
+
+  def __init__(self, api_version=DEFAULT_API_VERSION):
+    self.api_version = api_version
+    self.message_module = GetMessages(api_version)
+    self.service = GetClient(api_version).v1
+
+  def AnalyzeMove(self, args):
+    """Analyze resource move."""
+    project = 'projects/' + args.project
+
+    if args.IsSpecified('destination_folder'):
+      destination = 'folders/' + args.destination_folder
+    else:
+      destination = 'organizations/' + args.destination_organization
+
+    scope = self.message_module.CloudassetAnalyzeMoveRequest.ViewValueValuesEnum.FULL
+    if args.blockers_only:
+      scope = self.message_module.CloudassetAnalyzeMoveRequest.ViewValueValuesEnum.BASIC
+
+    request_message = self.message_module.CloudassetAnalyzeMoveRequest(
+        destinationParent=destination, resource=project, view=scope)
+
+    return self.service.AnalyzeMove(request_message)

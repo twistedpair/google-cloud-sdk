@@ -425,6 +425,14 @@ MAP = {
                 default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
+        'v1p7beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.cloudasset.v1p7beta1',
+                client_classpath='cloudasset_v1p7beta1_client.CloudassetV1p7beta1',
+                messages_modulepath='cloudasset_v1p7beta1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
     },
     'cloudbilling': {
         'v1':
@@ -1535,6 +1543,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'ondemandscanning': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.ondemandscanning.v1',
+                client_classpath='ondemandscanning_v1_client.OndemandscanningV1',
+                messages_modulepath='ondemandscanning_v1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.ondemandscanning.v1beta1',

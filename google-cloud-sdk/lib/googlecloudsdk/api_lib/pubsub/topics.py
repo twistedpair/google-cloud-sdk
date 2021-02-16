@@ -36,6 +36,10 @@ class NoFieldsSpecifiedError(exceptions.Error):
   """Error when no fields were specified for a Patch operation."""
 
 
+class InvalidSchemaSettingsException(exceptions.Error):
+  """Error when the schema settings are invalid."""
+
+
 class _TopicUpdateSetting(object):
   """Data container class for updating a topic."""
 
@@ -53,6 +57,17 @@ def GetMessagesModule(client=None):
   return client.MESSAGES_MODULE
 
 
+def ParseMessageEncoding(messages, message_encoding):
+  enc = message_encoding.lower()
+  if enc == 'json':
+    return messages.SchemaSettings.EncodingValueValuesEnum.JSON
+  elif enc == 'binary':
+    return messages.SchemaSettings.EncodingValueValuesEnum.BINARY
+  else:
+    raise InvalidSchemaSettingsException('Unknown message encoding. '
+                                         'Options are JSON or BINARY.')
+
+
 class TopicsClient(object):
   """Client for topics service in the Cloud Pub/Sub API."""
 
@@ -66,7 +81,9 @@ class TopicsClient(object):
              topic_ref,
              labels=None,
              kms_key=None,
-             message_storage_policy_allowed_regions=None):
+             message_storage_policy_allowed_regions=None,
+             schema=None,
+             message_encoding=None):
     """Creates a Topic.
 
     Args:
@@ -75,9 +92,17 @@ class TopicsClient(object):
       kms_key (str): Full resource name of kms_key to set on Topic or None.
       message_storage_policy_allowed_regions (list[str]): List of Cloud regions
         in which messages are allowed to be stored at rest.
+      schema (Resource): Full resource name of schema used to validate
+        messages published on Topic.
+      message_encoding (str): If a schema is set, the message encoding of
+        incoming messages to be validated against the schema.
 
     Returns:
       Topic: The created topic.
+
+    Raises:
+      InvalidSchemaSettingsException: If an invalid --schema or
+          --message-encoding flag comnbination is specified.
     """
     topic = self.messages.Topic(name=topic_ref.RelativeName(), labels=labels)
     if kms_key:
@@ -85,6 +110,10 @@ class TopicsClient(object):
     if message_storage_policy_allowed_regions:
       topic.messageStoragePolicy = self.messages.MessageStoragePolicy(
           allowedPersistenceRegions=message_storage_policy_allowed_regions)
+    if schema and message_encoding:
+      encoding_enum = ParseMessageEncoding(self.messages, message_encoding)
+      topic.schemaSettings = self.messages.SchemaSettings(
+          schema=schema, encoding=encoding_enum)
     return self._service.Create(topic)
 
   def Get(self, topic_ref):

@@ -186,6 +186,7 @@ class CloudSqlSettings(_messages.Message):
       storage capacity. If the available storage repeatedly falls below the
       threshold size, Cloud SQL continues to add storage until it reaches the
       maximum of 30 TB.
+    collation: The Cloud SQL default instance level collation.
     dataDiskSizeGb: The storage capacity available to the database, in GB. The
       minimum (and default) size is 10GB.
     dataDiskType: The type of storage: `PD_SSD` (default) or `PD_HDD`.
@@ -325,18 +326,19 @@ class CloudSqlSettings(_messages.Message):
 
   activationPolicy = _messages.EnumField('ActivationPolicyValueValuesEnum', 1)
   autoStorageIncrease = _messages.BooleanField(2)
-  dataDiskSizeGb = _messages.IntegerField(3)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 4)
-  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 5)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 6)
-  ipConfig = _messages.MessageField('SqlIpConfig', 7)
-  rootPassword = _messages.StringField(8)
-  rootPasswordSet = _messages.BooleanField(9)
-  sourceId = _messages.StringField(10)
-  storageAutoResizeLimit = _messages.IntegerField(11)
-  tier = _messages.StringField(12)
-  userLabels = _messages.MessageField('UserLabelsValue', 13)
-  zone = _messages.StringField(14)
+  collation = _messages.StringField(3)
+  dataDiskSizeGb = _messages.IntegerField(4)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 5)
+  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 6)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 7)
+  ipConfig = _messages.MessageField('SqlIpConfig', 8)
+  rootPassword = _messages.StringField(9)
+  rootPasswordSet = _messages.BooleanField(10)
+  sourceId = _messages.StringField(11)
+  storageAutoResizeLimit = _messages.IntegerField(12)
+  tier = _messages.StringField(13)
+  userLabels = _messages.MessageField('UserLabelsValue', 14)
+  zone = _messages.StringField(15)
 
 
 class ConnectionProfile(_messages.Message):

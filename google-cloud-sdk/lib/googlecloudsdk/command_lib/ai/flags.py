@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import argparse
 import sys
 
 from googlecloudsdk.api_lib.util import apis
@@ -34,7 +35,6 @@ from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
-
 
 CUSTOM_JOB_NAME = base.Argument('name', help=('Custom job\'s name to query.'))
 CUSTOM_JOB_DISPLAY_NAME = base.Argument(
@@ -219,9 +219,7 @@ def AddStreamLogsFlags(parser):
 
 def GetModelIdArg(required=True):
   return base.Argument(
-      '--model',
-      help='Id of the uploaded model.',
-      required=required)
+      '--model', help='Id of the uploaded model.', required=required)
 
 
 def GetDeployedModelId(required=True):
@@ -307,15 +305,13 @@ on. If specified, the value must be equal to or larger than 1.
 
 If not specified and the uploaded models use dedicated resources, the default
 value is 1.
-""")
-  ).AddToParser(parser)
+""")).AddToParser(parser)
 
   base.Argument(
       '--max-replica-count',
       type=int,
       help=('Maximum number of machine replicas the deployed model will be '
-            'always deployed on.')
-  ).AddToParser(parser)
+            'always deployed on.')).AddToParser(parser)
 
   # TODO(b/168930155): add the link for available machine types after the docs
   #   are out.
@@ -576,6 +572,31 @@ def AddEndpointResourceArg(parser, verb):
       required=True).AddToParser(parser)
 
 
+def GetTensorboardResourceSpec(resource_name='tensorboard'):
+  return concepts.ResourceSpec(
+      constants.TENSORBOARDS_COLLECTION,
+      resource_name=resource_name,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=RegionAttributeConfig(),
+      disable_auto_completers=False)
+
+
+def AddTensorboardResourceArg(parser, verb):
+  """Add a resource argument for a Cloud AI Platform Tensorboard.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'tensorboard',
+      GetTensorboardResourceSpec(),
+      'The tensorboard {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
 def ParseAcceleratorFlag(accelerator, version):
   """Validates and returns a accelerator config message object."""
   if accelerator is None:
@@ -593,21 +614,18 @@ The count of the accelerator must be greater than 0.
 """)
   if version == constants.ALPHA_VERSION:
     accelerator_msg = (
-        apis.GetMessagesModule(
-            constants.AI_PLATFORM_API_NAME,
-            constants.AI_PLATFORM_API_VERSION[version])
+        apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
+                               constants.AI_PLATFORM_API_VERSION[version])
         .GoogleCloudAiplatformV1alpha1MachineSpec)
   else:
     accelerator_msg = (
-        apis.GetMessagesModule(
-            constants.AI_PLATFORM_API_NAME,
-            constants.AI_PLATFORM_API_VERSION[version])
+        apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
+                               constants.AI_PLATFORM_API_VERSION[version])
         .GoogleCloudAiplatformV1beta1MachineSpec)
   accelerator_type = arg_utils.ChoiceToEnum(
       raw_type, accelerator_msg.AcceleratorTypeValueValuesEnum)
   return accelerator_msg(
-      acceleratorCount=accelerator_count,
-      acceleratorType=accelerator_type)
+      acceleratorCount=accelerator_count, acceleratorType=accelerator_type)
 
 
 def GetAcceleratorTypeMapper(version):
@@ -702,3 +720,101 @@ def AddKmsKeyResourceArg(parser, resource):
                      " permission 'Cloud KMS CryptoKey Encrypter/Decrypter'")
   kms_resource_args.AddKmsKeyResourceArg(
       parser, resource, permission_info=permission_info)
+
+
+def AddLocalRunCustomJobFlags(parser):
+  """Add local-run related flags to the parser."""
+
+  # Flags for entry point of the training application
+  application_group = parser.add_mutually_exclusive_group(required=True)
+  application_group.add_argument(
+      '--python-module',
+      metavar='PYTHON_MODULE',
+      help="""
+      Name of the python module to execute, in 'trainer.train' or 'train' format.
+      """)
+  application_group.add_argument(
+      '--script',
+      metavar='SCRIPT',
+      help="""
+      The relative path of the file to execute. Accepets a Python file, IPYNB file, or arbitrary bash script. The specified path should be relative to the `work_dir`.
+      """)
+
+  # Flags for working directory
+  parser.add_argument(
+      '--work-dir',
+      metavar='WORK_DIR',
+      help="""
+      Path of the working directory where the python-module or script exists.
+      If not specified, it use the directory where you run the this command.
+
+      All the the contents of this directory will be copied into the built container image.
+      """)
+
+  # Flags for extra directory
+  parser.add_argument(
+      '--extra-dir',
+      metavar='EXTRA_DIR',
+      type=arg_parsers.ArgList(),
+      help="""
+      Extra directories other than the working directory to include.
+      Don't include the directories inside the working directory, as they will always be copied by default.
+      All directories must exist relative to the working directory.
+      """)
+
+  # Flags for base container image
+  parser.add_argument(
+      '--base-image',
+      metavar='BASE_IMAGE',
+      required=True,
+      help="""
+      URI or ID of the container image in either the Container Registry or local that will run the application.
+      See https://cloud.google.com/ai-platform-unified/docs/training/pre-built-containers for available pre-built container images provided by AI Platform for training.
+      """)
+
+  # Flags for extra directory
+  parser.add_argument(
+      '--requirements',
+      metavar='REQUIREMENTS',
+      type=arg_parsers.ArgList(),
+      help="""
+      Python dependencies to be used when running the application.
+      If this is not specified, and there is no "setup.py" or "requirements.txt" in the working directory, your application will only have access to what exists in the base image with on other dependencies.
+
+      Example:
+      'tensorflow-cpu, pandas==1.2.0, matplotlib>=3.0.2'
+      """)
+
+  # Flags for the output image
+  parser.add_argument(
+      '--output-image-uri',
+      metavar='OUTPUT_IMAGE',
+      help="""
+      Uri of the custom container image to be built with the your application packed in.
+      """)
+
+  # Flaga for GPU support
+  parser.add_argument(
+      '--gpu', action='store_true', default=False, help='Enable to use GPU.')
+
+  # Flags for docker run
+  parser.add_argument(
+      '--docker-run-options',
+      metavar='DOCKER_RUN_OPTIONS',
+      type=arg_parsers.ArgList(),
+      help="""
+      Custom Docker run options to pass to image during execution.
+      For example, '--no-healthcheck, -a stdin'.
+
+      See https://docs.docker.com/engine/reference/commandline/run/#options for more details.
+      """)
+
+  # User custom flags.
+  parser.add_argument(
+      'args',
+      nargs=argparse.REMAINDER,
+      default=[],
+      help="""Additional user arguments to be forwarded to your application.""",
+      example="""\
+        $ {command} --script=my_run.sh --base-image=gcr.io/my/image -- --my-arg bar --enable_foo
+      """)

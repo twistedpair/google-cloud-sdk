@@ -192,6 +192,17 @@ class Namespace(argparse.Namespace):
           'No registered arg for destination [{}].'.format(dest))
     return dest in self._specified_args
 
+  def IsKnownAndSpecified(self, dest):
+    """Returns True if dest is a known and args.dest was specified.
+
+    Args:
+      dest: str, The dest name for the arg to check.
+
+    Returns:
+      True if args.dest is a known argument was specified on the command line.
+    """
+    return hasattr(self, dest) and (dest in self._specified_args)
+
   def GetFlagArgument(self, name):
     """Returns the flag argument object for name.
 
@@ -1358,4 +1369,3 @@ class DynamicPositionalAction(six.with_metaclass(abc.ABCMeta,
       # argument lookup down the road.
       # for _, arg in args.iteritems():
       #   arg.RemoveFromParser(ai)
-

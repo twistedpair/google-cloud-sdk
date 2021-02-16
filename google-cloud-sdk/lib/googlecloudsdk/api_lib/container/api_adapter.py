@@ -278,7 +278,7 @@ APISERVER = 'APISERVER'
 SCHEDULER = 'SCHEDULER'
 CONTROLLER_MANAGER = 'CONTROLLER_MANAGER'
 ADDON_MANAGER = 'ADDON_MANAGER'
-MASTER_LOGS_OPTIONS = [
+PRIMARY_LOGS_OPTIONS = [
     APISERVER,
     SCHEDULER,
     CONTROLLER_MANAGER,
@@ -969,7 +969,10 @@ class UpdateNodePoolOptions(object):
                node_locations=None,
                max_surge_upgrade=None,
                max_unavailable_upgrade=None,
-               system_config_from_file=None):
+               system_config_from_file=None,
+               node_labels=None,
+               node_taints=None,
+               tags=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -982,6 +985,9 @@ class UpdateNodePoolOptions(object):
     self.max_surge_upgrade = max_surge_upgrade
     self.max_unavailable_upgrade = max_unavailable_upgrade
     self.system_config_from_file = system_config_from_file
+    self.node_labels = node_labels
+    self.node_taints = node_taints
+    self.tags = tags
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -998,7 +1004,10 @@ class UpdateNodePoolOptions(object):
             self.node_locations is not None or
             self.max_surge_upgrade is not None or
             self.max_unavailable_upgrade is not None or
-            self.system_config_from_file is not None)
+            self.system_config_from_file is not None or
+            self.node_labels is not None or
+            self.node_taints is not None or
+            self.tags is not None)
 
 
 class APIAdapter(object):
@@ -1411,6 +1420,8 @@ class APIAdapter(object):
       cluster.networkConfig.privateIpv6GoogleAccess = util.GetPrivateIpv6GoogleAccessTypeMapper(
           self.messages, hidden=False).GetEnumForChoice(
               options.private_ipv6_google_access_type)
+
+    _AddNotificationConfigToCluster(cluster, options, self.messages)
 
     return cluster
 
@@ -2198,6 +2209,11 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredDnsConfig=dns_config)
 
+    if options.notification_config is not None:
+      update = self.messages.ClusterUpdate(
+          desiredNotificationConfig=_GetNotificationConfigForClusterUpdate(
+              options, self.messages))
+
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -2768,6 +2784,44 @@ class APIAdapter(object):
                                     self.messages)
       update_request.linuxNodeConfig = node_config.linuxNodeConfig
       update_request.kubeletConfig = node_config.kubeletConfig
+    elif options.node_labels is not None:
+      node_labels = self.messages.NodeLabels()
+      labels = node_labels.LabelsValue()
+      props = []
+      for key, value in six.iteritems(options.node_labels):
+        props.append(labels.AdditionalProperty(key=key, value=value))
+      labels.additionalProperties = props
+      node_labels.labels = labels
+      update_request.labels = node_labels
+    elif options.node_taints is not None:
+      taints = []
+      effect_enum = self.messages.NodeTaint.EffectValueValuesEnum
+      for key, value in sorted(six.iteritems(options.node_taints)):
+        strs = value.split(':')
+        if len(strs) != 2:
+          raise util.Error(
+              NODE_TAINT_INCORRECT_FORMAT_ERROR_MSG.format(
+                  key=key, value=value))
+        value = strs[0]
+        taint_effect = strs[1]
+        if taint_effect == 'NoSchedule':
+          effect = effect_enum.NO_SCHEDULE
+        elif taint_effect == 'PreferNoSchedule':
+          effect = effect_enum.PREFER_NO_SCHEDULE
+        elif taint_effect == 'NoExecute':
+          effect = effect_enum.NO_EXECUTE
+        else:
+          raise util.Error(
+              NODE_TAINT_INCORRECT_EFFECT_ERROR_MSG.format(effect=strs[1]))
+        taints.append(
+            self.messages.NodeTaint(key=key, value=value, effect=effect))
+      node_taints = self.messages.NodeTaints()
+      node_taints.taints = taints
+      update_request.taints = node_taints
+    elif options.tags is not None:
+      node_tags = self.messages.NetworkTags()
+      node_tags.tags = options.tags
+      update_request.tags = node_tags
     return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):
@@ -3246,8 +3300,6 @@ class V1Beta1Adapter(V1Adapter):
     _AddPSCPrivateClustersOptionsToClusterForCreateCluster(
         cluster, options, self.messages)
 
-    _AddNotificationConfigToCluster(cluster, options, self.messages)
-
     cluster_telemetry_type = self._GetClusterTelemetryType(
         options, cluster.loggingService, cluster.monitoringService)
     if cluster_telemetry_type is not None:
@@ -3321,11 +3373,6 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredGkeOidcConfig=self.messages.GkeOidcConfig(
               enabled=options.enable_gke_oidc))
-
-    if options.notification_config is not None:
-      update = self.messages.ClusterUpdate(
-          desiredNotificationConfig=_GetNotificationConfigForClusterUpdate(
-              options, self.messages))
 
     if options.disable_autopilot is not None:
       update = self.messages.ClusterUpdate(
@@ -3699,7 +3746,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         cluster, options, self.messages)
 
     cluster.releaseChannel = _GetReleaseChannel(options, self.messages)
-    _AddNotificationConfigToCluster(cluster, options, self.messages)
     if options.enable_cost_management:
       cluster.costManagementConfig = self.messages.CostManagementConfig(
           enabled=True)
@@ -3786,11 +3832,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.release_channel is not None:
       update = self.messages.ClusterUpdate(
           desiredReleaseChannel=_GetReleaseChannel(
-              options, self.messages))
-
-    if options.notification_config is not None:
-      update = self.messages.ClusterUpdate(
-          desiredNotificationConfig=_GetNotificationConfigForClusterUpdate(
               options, self.messages))
 
     if options.disable_autopilot is not None:

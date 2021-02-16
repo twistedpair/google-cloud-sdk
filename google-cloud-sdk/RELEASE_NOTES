@@ -5,6 +5,131 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 328.0.0 (2021-02-16)
+
+### Breaking Changes
+
+*   **(App Engine)** Changed error message for `Permissions error fetching application` to indicate
+  which account might be missing `roles/appengine.deployer`.
+*   **(Miscellaneous)** Added support for colored output using ANSI escape sequences on modern
+    versions of Windows. Use `gcloud config set disable_color true` to disable
+    this behavior.
+
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.86.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### Artifact Registry
+
+* Modified `gcloud artifacts docker images describe` to group vulnerability occurrences by effective severity instead of severity.
+
+### BigQuery
+
+* Expose json_extension flag in CLI which can be used to load newline-delimited
+GeoJSON files (in combination with source_format=NEWLINE_DELIMITED_JSON).
+
+### Cloud Composer
+
+*   Modified `--image-version` and `--airflow-version` flags of
+    `gcloud beta composer environments update` to be mutually exclusive.
+* Added the following flags to `gcloud composer environments create` and `gcloud composer environments update` to manage machine types for web server and Cloud SQL:
+  * `--cloud-sql-machine-type`
+  * `--web-server-machine-type`
+
+### Cloud Logging
+
+* Promoted the `gcloud alpha logging tail` command to beta.
+
+### Cloud Memorystore
+
+* Promoted `gcloud memcache` to GA.
+* Added `apply-software-update` command to apply latest available software
+  update to Memcached instance and nodes.
+
+### Cloud Pub/Sub
+
+* Added `gcloud pubsub schemas` to beta which allows creating and managing schemas. Schemas can be used to validate messages published to Cloud Pub/Sub topics.
+* Added `--schema` and `--message-encoding` flags to `gcloud beta pubsub topics create`. Messages published to the topic with the given message encoding will be validated against the specified schema.
+* Added `--partitions` flag to `gcloud beta pubsub lite_topics update` to allow increasing partitions in a Pub/Sub Lite topic.
+
+### Cloud SQL
+
+* Added `--secondary-zone` flag to `gcloud sql instances <create|patch>` that allows users to choose the secondary zone during create|patch of High Availability instances.
+
+### Cloud Spanner
+
+* Added `--version-time` flag to `gcloud spanner backups create` to allow
+  specifying the timestamp of the data contained in the backup.
+* Added version time to the output of `gcloud spanner backups list`.
+* Added version retention period and earliest version time to the output of
+  `gcloud spanner databases list`.
+
+### Cloud Spanner Emulator
+
+* Promoted `gcloud emulators spanner` to GA.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.59.
+
+### Cloud TPU
+
+* Promoted `gcloud compute tpus execution-groups` to GA. Commands in this group
+ allow convenient orchestration of TPU nodes and Compute VMs. This replaces the
+ standalone tool [ctpu](https://cloud.google.com/tpu/docs/ctpu-reference).
+
+### Compute Engine
+
+* Promoted `--provisioned-iops` flag of `gcloud compute disks create` to beta.
+* Promoted `gcloud compute url-maps validate` to GA.
+* Promoted labels-related flags for `gcloud compute forwarding-rules update` to GA.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.38.1.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Container Analysis
+
+* Modified `gcloud container images describe` to group vulnerability occurrences by effective severity instead of severity.
+
+### Identity Groups
+
+*   Promoted `--dynamic-user-query` flag of `gcloud identity create` to GA.
+
+### Kubernetes Engine
+
+* Promoted `--notification-config` of `gcloud container clusters
+  <create|update>` to GA. This flag is used to enable notifications on a
+  cluster. Currently Pub/Sub notifications are supported.
+* Node System Config is now GA. Added `--system-config-from-file` flag to
+  `gcloud container clusters create`, `gcloud container node-pools create`, and
+  `gcloud node-pools update` to configure kubelet and Linux configuration
+  settings on nodes.
+
+### Pubsub Emulator
+
+* Added schema support to the Pub/Sub emulator, which allows the association of
+  topics with schemas and the validation of published messages against them.
+
+### Secret Manager
+
+* Added `--topics` flag to `gcloud beta secrets create` command to specify
+  a list of Pub/Sub topics to configure on the secret.
+* Added `--add-topics` flag to `gcloud beta secrets update` command to specify
+  a list of Pub/Sub topics to add to the secret.
+* Added `--remove-topics` flag to `gcloud beta secrets update` command to
+  specify a list of Pub/Sub topics to remove from the secret.
+* Added `--clear-topics` flag to `gcloud beta secrets update` command to remove
+  all Pub/Sub topics from the secret.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 327.0.0 (2021-02-09)
 
 ### AI
@@ -11382,7 +11507,7 @@ disabled on existing clusters via the
 
       $ gcloud beta firebase test android run --type game-loop ...
 
-    To learn more, see https://firebase.google.com/docs/test-lab/game-loop.
+    To learn more, see https://firebase.google.com/docs/test-lab/android/game-loop.
 
 *   Added support for network shaping to alpha and beta release tracks
     for Firebase Test Lab. You can add a network profile to your tests with

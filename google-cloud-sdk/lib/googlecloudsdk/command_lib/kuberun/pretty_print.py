@@ -42,11 +42,15 @@ READY_COLUMN_ALIAS_KEY = 'status'
 
 
 def GetReadyColumn():
-  return ('aliases.%s.enum(status).color(red="%s",'
-          'green="%s",'
-          'yellow="%s"):alias=STATUS:label=""' %
-          (READY_COLUMN_ALIAS_KEY, GetReadySymbol(kubernetes_consts.VAL_FALSE),
+  return ('aliases.%s.enum(status).color(%s="%s",'
+          '%s="%s",'
+          '%s="%s"):alias=STATUS:label=""' %
+          (READY_COLUMN_ALIAS_KEY,
+           GetReadyColor(kubernetes_consts.VAL_FALSE),
+           GetReadySymbol(kubernetes_consts.VAL_FALSE),
+           GetReadyColor(kubernetes_consts.VAL_TRUE),
            GetReadySymbol(kubernetes_consts.VAL_TRUE),
+           GetReadyColor(kubernetes_consts.VAL_UNKNOWN),
            GetReadySymbol(kubernetes_consts.VAL_UNKNOWN)))
 
 
@@ -54,10 +58,21 @@ def GetReadySymbol(ready):
   encoding = console_attr.GetConsoleAttr().GetEncoding()
   if ready == kubernetes_consts.VAL_UNKNOWN:
     return _PickSymbol('\N{HORIZONTAL ELLIPSIS}', '.', encoding)
-  elif ready == kubernetes_consts.VAL_TRUE:
+  elif (ready == kubernetes_consts.VAL_TRUE or
+        ready == kubernetes_consts.VAL_READY):
     return _PickSymbol('\N{HEAVY CHECK MARK}', '+', encoding)
   else:
     return 'X'
+
+
+def GetReadyColor(ready):
+  if ready == kubernetes_consts.VAL_UNKNOWN:
+    return 'yellow'
+  elif (ready == kubernetes_consts.VAL_TRUE
+        or ready == kubernetes_consts.VAL_READY):
+    return 'green'
+  else:
+    return 'red'
 
 
 def _PickSymbol(best, alt, encoding):

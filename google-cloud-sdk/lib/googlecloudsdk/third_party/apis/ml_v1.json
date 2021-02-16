@@ -424,7 +424,7 @@
       "type": "object",
       "properties": {
         "bootDiskType": {
-          "description": "Type of the boot disk (default is \"pd-standard\"). Valid values: \"pd-ssd\" (Persistent Disk Solid State Drive) or \"pd-standard\" (Persistent Disk Hard Disk Drive).",
+          "description": "Type of the boot disk (default is \"pd-ssd\"). Valid values: \"pd-ssd\" (Persistent Disk Solid State Drive) or \"pd-standard\" (Persistent Disk Hard Disk Drive).",
           "type": "string"
         },
         "bootDiskSizeGb": {
@@ -633,6 +633,11 @@
         },
         "maxFailedNasTrials": {
           "description": "Optional. It decides when a Neural Architecture Search (NAS) job should fail. Defaults to zero.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "initialIgnoredModelCount": {
+          "description": "If non-zero, it specifies the number of first models whose rewards will be ignored.",
           "type": "integer",
           "format": "int32"
         }

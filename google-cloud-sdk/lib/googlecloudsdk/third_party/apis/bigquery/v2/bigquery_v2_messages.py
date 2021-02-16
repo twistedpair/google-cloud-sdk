@@ -775,6 +775,11 @@ class Dataset(_messages.Message):
     r"""A AccessValueListEntry object.
 
     Fields:
+      dataset: [Pick one] A grant authorizing all resources of a particular
+        type in a particular dataset access to this dataset. Only views are
+        supported for now. The role field is not required when this field is
+        set. If that dataset is deleted and re-created, its access needs to be
+        granted again via an update operation.
       domain: [Pick one] A domain to grant access to. Any users signed in with
         the domain specified will be granted the specified access. Example:
         "example.com". Maps to IAM policy member "domain:DOMAIN".
@@ -810,14 +815,15 @@ class Dataset(_messages.Message):
         granted again via an update operation.
     """
 
-    domain = _messages.StringField(1)
-    groupByEmail = _messages.StringField(2)
-    iamMember = _messages.StringField(3)
-    role = _messages.StringField(4)
-    routine = _messages.MessageField('RoutineReference', 5)
-    specialGroup = _messages.StringField(6)
-    userByEmail = _messages.StringField(7)
-    view = _messages.MessageField('TableReference', 8)
+    dataset = _messages.MessageField('DatasetAccessEntry', 1)
+    domain = _messages.StringField(2)
+    groupByEmail = _messages.StringField(3)
+    iamMember = _messages.StringField(4)
+    role = _messages.StringField(5)
+    routine = _messages.MessageField('RoutineReference', 6)
+    specialGroup = _messages.StringField(7)
+    userByEmail = _messages.StringField(8)
+    view = _messages.MessageField('TableReference', 9)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -862,6 +868,33 @@ class Dataset(_messages.Message):
   location = _messages.StringField(14)
   satisfiesPZS = _messages.BooleanField(15)
   selfLink = _messages.StringField(16)
+
+
+class DatasetAccessEntry(_messages.Message):
+  r"""A DatasetAccessEntry object.
+
+  Messages:
+    TargetTypesValueListEntry: A TargetTypesValueListEntry object.
+
+  Fields:
+    dataset: [Required] The dataset this entry applies to.
+    target_types: A TargetTypesValueListEntry attribute.
+  """
+
+  class TargetTypesValueListEntry(_messages.Message):
+    r"""A TargetTypesValueListEntry object.
+
+    Fields:
+      targetType: [Required] Which resources in the dataset this entry applies
+        to. Currently, only views are supported, but additional target types
+        may be added in the future. Possible values: VIEWS: This entry applies
+        to all views in the dataset.
+    """
+
+    targetType = _messages.StringField(1)
+
+  dataset = _messages.MessageField('DatasetReference', 1)
+  target_types = _messages.MessageField('TargetTypesValueListEntry', 2, repeated=True)
 
 
 class DatasetList(_messages.Message):

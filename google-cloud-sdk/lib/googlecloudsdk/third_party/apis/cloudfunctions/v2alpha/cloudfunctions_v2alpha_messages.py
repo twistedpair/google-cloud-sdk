@@ -228,6 +228,16 @@ class EventTrigger(_messages.Message):
     eventType: Required. The type of event to observe. For example:
       `google.cloud.audit.log.v1.written` or
       `google.cloud.pubsub.topic.v1.messagePublished`.
+    pubsubTopic: Optional. The name of a Pub/Sub topic in the same project
+      that will be used as the transport topic for the event delivery. Format:
+      `projects/{project}/topics/{topic}`. This is only valid for events of
+      type `google.cloud.pubsub.topic.v1.messagePublished`. The topic provided
+      here will not be deleted at function deletion.
+    serviceAccountEmail: Optional. The email of the trigger's service account.
+      The service account must have permission to invoke Cloud Run services,
+      the permission is `run.routes.invoke`. If empty, defaults to the Compute
+      Engine default service account:
+      `{project_number}-compute@developer.gserviceaccount.com`.
     trigger: Output only. The resource name of the Eventarc trigger. The
       format of this field is
       `projects/{project}/locations/{region}/triggers/{trigger}`.
@@ -241,8 +251,10 @@ class EventTrigger(_messages.Message):
 
   eventFilters = _messages.MessageField('EventFilter', 1, repeated=True)
   eventType = _messages.StringField(2)
-  trigger = _messages.StringField(3)
-  triggerRegion = _messages.StringField(4)
+  pubsubTopic = _messages.StringField(3)
+  serviceAccountEmail = _messages.StringField(4)
+  trigger = _messages.StringField(5)
+  triggerRegion = _messages.StringField(6)
 
 
 class Function(_messages.Message):

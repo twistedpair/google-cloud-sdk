@@ -740,10 +740,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messag
       reschedule should be against this given policy.
     scheduleDeadlineTime: schedule_deadline_time is the time deadline any
       schedule start time cannot go beyond, including reschedule. It's
-      normally the initial schedule start time plus a week. If the reschedule
-      type is next window, simply take this value as start time. If reschedule
-      type is IMMEDIATELY or BY_TIME, current or selected time cannot go
-      beyond this deadline.
+      normally the initial schedule start time plus maintenance window length
+      (1 day or 1 week). Maintenance cannot be scheduled to start beyond this
+      deadline.
     startTime: The scheduled start time for the maintenance.
   """
 

@@ -34,7 +34,6 @@ from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console.style import parser as style_parser
 from googlecloudsdk.core.console.style import text
 from googlecloudsdk.core.util import files
-from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import times
 
 import six
@@ -359,8 +358,7 @@ class _ConsoleFormatter(logging.Formatter):
     super(_ConsoleFormatter, self).__init__()
     use_color = not properties.VALUES.core.disable_color.GetBool(validate=False)
     use_color &= out_stream.isatty()
-    use_color &= (platforms.OperatingSystem.Current() !=
-                  platforms.OperatingSystem.WINDOWS)
+    use_color &= console_attr.GetConsoleAttr().SupportsAnsi()
     self._formats = (_ConsoleFormatter.COLOR_FORMATS
                      if use_color else _ConsoleFormatter.FORMATS)
 

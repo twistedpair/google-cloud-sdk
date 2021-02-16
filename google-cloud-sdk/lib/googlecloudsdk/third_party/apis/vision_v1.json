@@ -665,6 +665,10 @@
         "webDetectionParams": {
           "description": "Parameters for web detection.",
           "$ref": "WebDetectionParams"
+        },
+        "textDetectionParams": {
+          "description": "Parameters for text detection and document text detection.",
+          "$ref": "TextDetectionParams"
         }
       }
     },
@@ -748,6 +752,17 @@
       "properties": {
         "includeGeoResults": {
           "description": "Whether to include results derived from the geo information in the image.",
+          "type": "boolean"
+        }
+      }
+    },
+    "TextDetectionParams": {
+      "id": "TextDetectionParams",
+      "description": "Parameters for text detections. This is used to control TEXT_DETECTION and DOCUMENT_TEXT_DETECTION features.",
+      "type": "object",
+      "properties": {
+        "enableTextDetectionConfidenceScore": {
+          "description": "By default, Cloud Vision API only includes confidence score for DOCUMENT_TEXT_DETECTION result. Set the flag to true to include confidence score for TEXT_DETECTION as well.",
           "type": "boolean"
         }
       }

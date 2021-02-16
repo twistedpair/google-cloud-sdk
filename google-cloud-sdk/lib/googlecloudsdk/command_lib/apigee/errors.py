@@ -70,7 +70,7 @@ def _GetErrorDetailsSummary(error_info):
             "type.googleapis.com/google.rpc.QuotaFailure",
             "type.googleapis.com/google.rpc.PreconditionFailure",
             "type.googleapis.com/edge.configstore.bundle.BadBundle",
-            )
+        )
         if item["@type"] in detail_types and "violations" in item:
           violations += item["violations"]
       descriptions = [violation["description"] for violation in violations]
@@ -105,7 +105,8 @@ class RequestError(exceptions.Error):
                method=None,
                reason=None,
                body=None,
-               message=None):
+               message=None,
+               user_help=None):
     self.details = None
     if body:
       try:
@@ -121,6 +122,7 @@ class RequestError(exceptions.Error):
     self.reason = reason
     self.resource_type = resource_type
     self.resource_identifier = resource_identifier
+    self.user_help = user_help
 
     if not message:
       if not method:
@@ -135,6 +137,8 @@ class RequestError(exceptions.Error):
                                                         resource_identifier)
       if self.details:
         message += "\nDetails: " + _GetErrorDetailsSummary(self.details)
+      if user_help:
+        message += "\n" + user_help
 
     super(RequestError, self).__init__(message)
 
@@ -142,8 +146,12 @@ class RequestError(exceptions.Error):
     """Returns a copy of the error with a new resource type and method."""
     body = json.dumps(self.details) if self.details else None
     return type(self)(
-        resource_type, self.resource_identifier, method=method,
-        reason=self.reason, body=body)
+        resource_type,
+        self.resource_identifier,
+        method=method,
+        reason=self.reason,
+        body=body,
+        user_help=self.user_help)
 
 
 class ResponseNotJSONError(RequestError):
@@ -153,21 +161,30 @@ class ResponseNotJSONError(RequestError):
                error,
                resource_type=None,
                resource_identifier=None,
-               body=None):
+               body=None,
+               user_help=None):
     if all(hasattr(error, attr) for attr in ["msg", "lineno", "colno"]):
       reason = "%s at %d:%d" % (error.msg, error.lineno, error.colno)
     else:
       reason = six.text_type(error)
-    super(ResponseNotJSONError,
-          self).__init__(resource_type, resource_identifier, "parse", reason,
-                         json.dumps({"response": body}))
+    super(ResponseNotJSONError, self).__init__(
+        resource_type,
+        resource_identifier,
+        "parse",
+        reason,
+        json.dumps({"response": body}),
+        user_help=user_help)
     self.base_error = error
 
   def RewrittenError(self, resource_type, method):
     """Returns a copy of the error with a new resource type."""
     body = self.details["response"] if self.details else None
     return type(self)(
-        self.base_error, resource_type, self.resource_identifier, body=body)
+        self.base_error,
+        resource_type,
+        self.resource_identifier,
+        body=body,
+        user_help=self.user_help)
 
 
 class UnauthorizedRequestError(RequestError):
@@ -179,7 +196,8 @@ class UnauthorizedRequestError(RequestError):
                method=None,
                reason=None,
                body=None,
-               message=None):
+               message=None,
+               user_help=None):
     resource_type = resource_type or "resource"
     method = method or "access"
     if not message:
@@ -190,11 +208,11 @@ class UnauthorizedRequestError(RequestError):
       if resource_identifier:
         message += "\nRequested: " + _GetResourceIdentifierString(
             resource_type, resource_identifier)
+      if user_help:
+        message += "\n" + user_help
     super(UnauthorizedRequestError,
           self).__init__(resource_type, resource_identifier, method, reason,
-                         body, message)
-
-  pass
+                         body, message, user_help)
 
 
 class EntityNotFoundError(RequestError):
@@ -206,16 +224,32 @@ class EntityNotFoundError(RequestError):
                method=None,
                reason=None,
                body=None,
-               message=None):
+               message=None,
+               user_help=None):
     resource_type = resource_type or "resource"
     if not message:
       message = "Requested %s does not exist" % (resource_type)
       if resource_identifier:
         message += ": " + _GetResourceIdentifierString(resource_type,
                                                        resource_identifier)
+      if user_help:
+        message += "\n" + user_help
     super(EntityNotFoundError,
           self).__init__(resource_type, resource_identifier, method, reason,
-                         body, message)
+                         body, message, user_help)
+
+
+class HttpRequestError(RequestError):
+  """Raised for generic HTTP errors.
+
+  Used for HTTP requests sent to an endpoint other than the Apigee Management
+  API.
+  """
+
+  def __init__(self, status_code, reason, url, method):
+    err_tmpl = "HTTP status: {} for request: {} {}\nReason: {}"
+    self.message = err_tmpl.format(status_code, method, url, reason)
+    super(HttpRequestError, self).__init__(message=self.message)
 
 
 class MissingIdentifierError(exceptions.Error):

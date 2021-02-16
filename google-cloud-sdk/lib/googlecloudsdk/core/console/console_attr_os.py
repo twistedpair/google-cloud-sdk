@@ -23,6 +23,7 @@ import os
 import sys
 
 from googlecloudsdk.core.util import encoding
+from googlecloudsdk.core.util import platforms
 
 
 def GetTermSize():
@@ -255,3 +256,28 @@ def _GetRawKeyFunctionWindows():
     return None if c in (_CONTROL_D, _CONTROL_Z) else c
 
   return _GetRawKeyWindows
+
+
+def ForceEnableAnsi():
+  """Attempts to enable virtual terminal processing on Windows.
+
+  Returns:
+    bool: True if ANSI support is now active; False otherwise.
+  """
+  if platforms.OperatingSystem.Current() != platforms.OperatingSystem.WINDOWS:
+    return False
+
+  try:
+    import ctypes  # pylint:disable=g-import-not-at-top
+
+    enable_virtual_terminal_processing = 0x0004
+    h = ctypes.windll.kernel32.GetStdHandle(-11)  # stdout handle is -11
+    old_mode = ctypes.wintypes.DWORD()
+
+    if ctypes.windll.kernel32.GetConsoleMode(h, ctypes.byref(old_mode)):
+      if ctypes.windll.kernel32.SetConsoleMode(
+          h, old_mode.value | enable_virtual_terminal_processing):
+        return True
+  except (OSError, AttributeError):
+    pass  # If we cannot force ANSI, we should simply return False
+  return False

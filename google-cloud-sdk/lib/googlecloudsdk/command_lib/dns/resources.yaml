@@ -19,7 +19,7 @@ policy:
     help: The policy name.
 
 response_policy:
-  name: response_policy
+  name: response policy
   collection: dns.responsePolicies
   request_id_field: response_policy.response_policy_name
   attributes:
@@ -27,3 +27,16 @@ response_policy:
     parameter_name: responsePolicy
     attribute_name: response_policy
     help: The response policy name.
+
+response_policy_rule:
+  name: response policy rule
+  collection: dns.responsePolicyRules
+  request_id_field: response_policy_rule.rule_name
+  attributes:
+  - parameter_name: responsePolicy
+    attribute_name: response-policy
+    help: The response policy name.
+  - &responsePolicyRule
+    parameter_name: responsePolicyRule
+    attribute_name: response_policy_rule
+    help: The response policy rule name.

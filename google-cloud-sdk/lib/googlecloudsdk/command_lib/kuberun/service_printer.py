@@ -19,12 +19,12 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.kuberun import service
 from googlecloudsdk.command_lib.kuberun import k8s_object_printer
 from googlecloudsdk.command_lib.kuberun import revision_printer
 from googlecloudsdk.command_lib.kuberun import traffic_printer
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
-
 
 SERVICE_PRINTER_FORMAT = 'service'
 
@@ -48,13 +48,21 @@ class ServicePrinter(cp.CustomPrinterBase):
         revision_printer.RevisionPrinter().TransformSpec(record.template),
     ])
 
-  def Transform(self, record):
-    """Transform a service into the output structure of marker classes."""
+  def Transform(self, service_dict):
+    """Transform a service into the output structure of marker classes.
+
+    Args:
+      service_dict: dictionary object representing a service unmarshalled from
+        json
+
+    Returns:
+      marker class of the formatted service object.
+    """
+    record = service.Service(service_dict)
     fmt = cp.Lines([
         k8s_object_printer.FormatHeader(record),
         k8s_object_printer.FormatLabels(record.labels), ' ',
-        traffic_printer.TransformRouteFields(record),
-        ' ',
+        traffic_printer.TransformRouteFields(record), ' ',
         cp.Labeled([(k8s_object_printer.FormatLastUpdated(record),
                      self._RevisionPrinters(record))]),
         k8s_object_printer.FormatReadyMessage(record)

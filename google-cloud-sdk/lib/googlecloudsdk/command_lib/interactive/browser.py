@@ -152,7 +152,6 @@ class UnknownReferenceMapper(CommandReferenceMapper):
     return '/'.join(ref)
 
 
-# TODO(b/35420203): get reference page for flag, not just command/group.
 def _GetReferenceURL(cli, line, pos=None, man_page=False):
   """Determine the reference url of the command/group preceding the pos.
 

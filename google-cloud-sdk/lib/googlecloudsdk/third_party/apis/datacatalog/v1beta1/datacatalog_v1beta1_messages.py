@@ -210,10 +210,10 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Messa
   Fields:
     googleCloudDatacatalogV1beta1Entry: A GoogleCloudDatacatalogV1beta1Entry
       resource to be passed as the request body.
-    name: The Data Catalog resource name of the entry in URL format. Example:
-      * projects/{project_id}/locations/{location}/entryGroups/{entry_group_id
-      }/entries/{entry_id} Note that this Entry and its child resources may
-      not actually be stored in the location in this name.
+    name: Output only. The Data Catalog resource name of the entry in URL
+      format. Example: * projects/{project_id}/locations/{location}/entryGroup
+      s/{entry_group_id}/entries/{entry_id} Note that this Entry and its child
+      resources may not actually be stored in the location in this name.
     updateMask: The fields to update on the entry. If absent or empty, all
       modifiable fields are updated. The following fields are modifiable: *
       For entries with type `DATA_STREAM`: * `schema` * For entries with type
@@ -1163,10 +1163,10 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
       asetId/tables/tableId Output only when Entry is of type in the EntryType
       enum. For entries with user_specified_type, this field is optional and
       defaults to an empty string.
-    name: The Data Catalog resource name of the entry in URL format. Example:
-      * projects/{project_id}/locations/{location}/entryGroups/{entry_group_id
-      }/entries/{entry_id} Note that this Entry and its child resources may
-      not actually be stored in the location in this name.
+    name: Output only. The Data Catalog resource name of the entry in URL
+      format. Example: * projects/{project_id}/locations/{location}/entryGroup
+      s/{entry_group_id}/entries/{entry_id} Note that this Entry and its child
+      resources may not actually be stored in the location in this name.
     schema: Schema of the entry. An entry might not have any schema attached
       to it.
     sourceSystemTimestamps: Output only. Timestamps about the underlying

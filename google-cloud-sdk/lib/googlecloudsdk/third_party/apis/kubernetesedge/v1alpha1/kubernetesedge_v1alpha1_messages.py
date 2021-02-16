@@ -163,6 +163,7 @@ class Cluster(_messages.Message):
 
   Fields:
     createTime: A string attribute.
+    endpoint: The IP address of the Kubernetes API server.
     hub: GKE Hub configuration.
     labels: A LabelsValue attribute.
     name: A string attribute.
@@ -194,10 +195,11 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  hub = _messages.MessageField('Hub', 2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  endpoint = _messages.StringField(2)
+  hub = _messages.MessageField('Hub', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class Empty(_messages.Message):

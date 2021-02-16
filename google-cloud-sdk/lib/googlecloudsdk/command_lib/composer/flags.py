@@ -910,7 +910,7 @@ def AddEnvUpgradeFlagsToGroup(update_type_group):
     update_type_group: argument group, the group to which flags should be added.
   """
   upgrade_group = update_type_group.add_argument_group(
-      ENV_UPGRADE_GROUP_DESCRIPTION)
+      ENV_UPGRADE_GROUP_DESCRIPTION, mutex=True)
   UPDATE_AIRFLOW_VERSION_FLAG.AddToParser(upgrade_group)
   UPDATE_IMAGE_VERSION_FLAG.AddToParser(upgrade_group)
 

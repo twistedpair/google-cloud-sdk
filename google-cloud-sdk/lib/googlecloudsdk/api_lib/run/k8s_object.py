@@ -52,7 +52,10 @@ REGION_LABEL = GOOGLE_GROUP + '/location'
 CLIENT_NAME_ANNOTATION = RUN_GROUP + '/client-name'
 CLIENT_VERSION_ANNOTATION = RUN_GROUP + '/client-version'
 
-LAUNCH_STAGE_ANNOTATION = 'run.googleapis.com/launch-stage'
+LAUNCH_STAGE_ANNOTATION = RUN_GROUP + '/launch-stage'
+
+BINAUTHZ_POLICY_ANNOTATION = RUN_GROUP + '/binary-authorization'
+BINAUTHZ_BREAKGLASS_ANNOTATION = RUN_GROUP + '/binary-authorization-breakglass'
 
 
 def Meta(m):

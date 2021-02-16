@@ -1582,6 +1582,10 @@
         "pubsubTopic": {
           "description": "The [Cloud Pub\/Sub](https:\/\/cloud.google.com\/pubsub\/docs\/) topic that notifications of changes are published on. Supplied by the client. PubsubMessage.Data contains the resource name. PubsubMessage.MessageId is the ID of this message. It is guaranteed to be unique within the topic. PubsubMessage.PublishTime is the time at which the message was published. Notifications are only sent if the topic is non-empty. [Topic names](https:\/\/cloud.google.com\/pubsub\/docs\/overview#names) must be scoped to a project. Cloud Healthcare API service account must have publisher permissions on the given Cloud Pub\/Sub topic. Not having adequate permissions causes the calls that send notifications to fail. If a notification can't be published to Cloud Pub\/Sub, errors are logged to Cloud Logging (see [Viewing logs](\/healthcare\/docs\/how-tos\/logging)). If the number of errors exceeds a certain rate, some aren't submitted. Note that not all operations trigger notifications, see [Configuring Pub\/Sub notifications](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/pubsub) for specific details.",
           "type": "string"
+        },
+        "sendForBulkImport": {
+          "description": "Indicates whether or not to send Cloud Pub\/Sub notifications on bulk import. Only supported for DICOM imports.",
+          "type": "boolean"
         }
       }
     },
@@ -1637,6 +1641,10 @@
         "bigqueryDestination": {
           "description": "The BigQuery output destination. You can only export to a BigQuery dataset that's in the same project as the DICOM store you're exporting from. The Cloud Healthcare Service Agent requires two IAM roles on the BigQuery location: `roles\/bigquery.dataEditor` and `roles\/bigquery.jobUser`.",
           "$ref": "GoogleCloudHealthcareV1alpha2DicomBigQueryDestination"
+        },
+        "filterConfig": {
+          "description": "Specifies the filter configuration.",
+          "$ref": "DicomFilterConfig"
         }
       }
     },
@@ -1683,6 +1691,17 @@
             "WRITE_TRUNCATE",
             "WRITE_APPEND"
           ]
+        }
+      }
+    },
+    "DicomFilterConfig": {
+      "id": "DicomFilterConfig",
+      "description": "Specifies the filter configuration for DICOM resources.",
+      "type": "object",
+      "properties": {
+        "resourcePathsGcsUri": {
+          "description": "The Google Cloud Storage location of the filter configuration file. The `gcs_uri` must be in the format \"gs:\/\/bucket\/path\/to\/object\" The filter configuration file must contain a list resource paths separated by new line characters (\\n or \\r\\n). Each resource path must be in the format \"\/studies\/{studyUID}[\/series\/{seriesUID}[\/instances\/{instanceUID}]]\" The Cloud Healthcare API service account must have the `roles\/storage.objectViewer` Cloud IAM role for this Cloud Storage location.",
+          "type": "string"
         }
       }
     },
@@ -1933,7 +1952,7 @@
           "enumDescriptions": [
             "Default behavior is the same as WRITE_EMPTY.",
             "Only export data if the destination tables are empty.",
-            "Erase all existing data in a tables before writing the instances.",
+            "Erase all existing data in the tables before writing the instances.",
             "Append data to the existing tables."
           ],
           "enum": [

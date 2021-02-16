@@ -2097,9 +2097,9 @@
               "parameters": {
                 "parent": {
                   "description": "The project ID or project number in which this apiserversource should be created.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2122,9 +2122,9 @@
               "parameters": {
                 "parent": {
                   "description": "The project ID or project number from which the apiserversources should be listed.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 },
                 "limit": {
@@ -2180,9 +2180,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the apiserversource being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/apiserversources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/apiserversources\/[^\/]+$",
                   "type": "string"
                 },
                 "region": {
@@ -2207,9 +2207,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the apiserversource being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/apiserversources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/apiserversources\/[^\/]+$",
                   "type": "string"
                 },
                 "region": {
@@ -2237,9 +2237,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the apiserversource being deleted. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/apiserversources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/apiserversources\/[^\/]+$",
                   "type": "string"
                 },
                 "propagationPolicy": {
@@ -2278,9 +2278,9 @@
               "parameters": {
                 "parent": {
                   "description": "The namespace name.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2303,9 +2303,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the Broker being retrieved.",
+                  "pattern": "^namespaces\/[^\/]+\/brokers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/brokers\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2325,9 +2325,9 @@
               "parameters": {
                 "parent": {
                   "description": "The namespace name.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 },
                 "limit": {
@@ -2382,9 +2382,9 @@
               "parameters": {
                 "name": {
                   "description": "The relative name of the broker being deleted, including the namespace",
+                  "pattern": "^namespaces\/[^\/]+\/brokers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/brokers\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2408,9 +2408,9 @@
               "parameters": {
                 "parent": {
                   "description": "The project ID or project number in which this cloudauditlogssource should be created.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2433,9 +2433,9 @@
               "parameters": {
                 "parent": {
                   "description": "The project ID or project number from which the cloudauditlogssources should be listed.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 },
                 "limit": {
@@ -2491,9 +2491,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the cloudauditlogssource being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/cloudauditlogssources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/cloudauditlogssources\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2513,9 +2513,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the cloudauditlogssource being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/cloudauditlogssources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/cloudauditlogssources\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2538,9 +2538,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the cloudauditlogssource being deleted. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/cloudauditlogssources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/cloudauditlogssources\/[^\/]+$",
                   "type": "string"
                 },
                 "propagationPolicy": {
@@ -2579,9 +2579,9 @@
               "parameters": {
                 "parent": {
                   "description": "The project ID or project number in which this cloudpubsubsource should be created.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2604,9 +2604,9 @@
               "parameters": {
                 "parent": {
                   "description": "The project ID or project number from which the cloudpubsubsources should be listed.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 },
                 "limit": {
@@ -2662,9 +2662,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the cloudpubsubsource being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/cloudpubsubsources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/cloudpubsubsources\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2684,9 +2684,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the cloudpubsubsource being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/cloudpubsubsources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/cloudpubsubsources\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2709,9 +2709,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the cloudpubsubsource being deleted. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/cloudpubsubsources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/cloudpubsubsources\/[^\/]+$",
                   "type": "string"
                 },
                 "propagationPolicy": {
@@ -2750,9 +2750,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The project ID or project number in which this cloudschedulersource should be created.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2775,9 +2775,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The project ID or project number from which the cloudschedulersources should be listed.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 },
                 "limit": {
@@ -2833,9 +2833,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the cloudschedulersource being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/cloudschedulersources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/cloudschedulersources\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2855,9 +2855,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the cloudschedulersource being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/cloudschedulersources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/cloudschedulersources\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2880,9 +2880,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the cloudschedulersource being deleted. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/cloudschedulersources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/cloudschedulersources\/[^\/]+$",
                   "type": "string"
                 },
                 "propagationPolicy": {
@@ -2921,9 +2921,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The project ID or project number in which this cloudstoragesource should be created.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2946,9 +2946,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The project ID or project number from which the cloudstoragesources should be listed.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 },
                 "limit": {
@@ -3004,9 +3004,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the cloudstoragesource being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/cloudstoragesources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/cloudstoragesources\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3026,9 +3026,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the cloudstoragesource being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/cloudstoragesources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/cloudstoragesources\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3051,9 +3051,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the cloudstoragesource being deleted. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/cloudstoragesources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/cloudstoragesources\/[^\/]+$",
                   "type": "string"
                 },
                 "propagationPolicy": {
@@ -3092,9 +3092,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the CustomResourceDefinition being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/customresourcedefinitions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/customresourcedefinitions\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3118,9 +3118,9 @@
               "parameters": {
                 "parent": {
                   "description": "The namespace name.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3143,9 +3143,9 @@
               "parameters": {
                 "parent": {
                   "description": "The project ID or project number from which the pingsources should be listed.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 },
                 "limit": {
@@ -3201,9 +3201,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the pingsource being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/pingsources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/pingsources\/[^\/]+$",
                   "type": "string"
                 },
                 "region": {
@@ -3228,9 +3228,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the pingsource being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/pingsources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/pingsources\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3253,9 +3253,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the pingsource being deleted. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/pingsources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/pingsources\/[^\/]+$",
                   "type": "string"
                 },
                 "propagationPolicy": {
@@ -3294,9 +3294,9 @@
               "parameters": {
                 "parent": {
                   "description": "The project ID or project number in which this trigger should be created.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3319,9 +3319,9 @@
               "parameters": {
                 "parent": {
                   "description": "The project ID or project number from which the triggers should be listed.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 },
                 "limit": {
@@ -3377,9 +3377,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the trigger being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/triggers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/triggers\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3399,9 +3399,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the trigger being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/triggers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/triggers\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3424,9 +3424,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the trigger being deleted. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/triggers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/triggers\/[^\/]+$",
                   "type": "string"
                 },
                 "propagationPolicy": {
@@ -3454,6 +3454,64 @@
               "description": "Rpc to delete a trigger."
             }
           }
+        }
+      }
+    },
+    "brokers": {
+      "methods": {
+        "list": {
+          "id": "anthosevents.brokers.list",
+          "path": "apis/eventing.knative.dev/v1beta1/brokers",
+          "flatPath": "apis/eventing.knative.dev/v1beta1/brokers",
+          "httpMethod": "GET",
+          "parameters": {
+            "parent": {
+              "description": "The namespace name.",
+              "location": "query",
+              "type": "string"
+            },
+            "limit": {
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "includeUninitialized": {
+              "description": "Not currently used by Cloud Run.",
+              "location": "query",
+              "type": "boolean"
+            },
+            "fieldSelector": {
+              "description": "Allows to filter resources based on a specific value for a field name. Send this in a query string format. i.e. 'metadata.name%3Dlorem'. Not currently used by Cloud Run.",
+              "location": "query",
+              "type": "string"
+            },
+            "labelSelector": {
+              "description": "Allows to filter resources based on a label. Supported operations are =, !=, exists, in, and notIn.",
+              "location": "query",
+              "type": "string"
+            },
+            "resourceVersion": {
+              "description": "The baseline resource version from which the list or watch operation should start. Not currently used by Cloud Run.",
+              "location": "query",
+              "type": "string"
+            },
+            "watch": {
+              "description": "Flag that indicates that the client expects to watch this resource as well. Not currently used by Cloud Run.",
+              "location": "query",
+              "type": "boolean"
+            },
+            "continue": {
+              "description": "Optional encoded string to continue paging.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ListBrokersResponse"
+          },
+          "description": "Rpc to list brokers in all namespaces."
         }
       }
     },
@@ -3512,6 +3570,65 @@
             "$ref": "ListCustomResourceDefinitionsResponse"
           },
           "description": "Rpc to list custom resource definitions."
+        }
+      }
+    },
+    "triggers": {
+      "methods": {
+        "list": {
+          "id": "anthosevents.triggers.list",
+          "path": "apis/eventing.knative.dev/v1beta1/triggers",
+          "flatPath": "apis/eventing.knative.dev/v1beta1/triggers",
+          "httpMethod": "GET",
+          "parameters": {
+            "parent": {
+              "description": "The project ID or project number from which the triggers should be listed.",
+              "location": "query",
+              "type": "string"
+            },
+            "limit": {
+              "description": "The maximum number of records that should be returned.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "includeUninitialized": {
+              "description": "If true, partially initialized resources are included in the response. Not currently used by Events for Cloud Run.",
+              "location": "query",
+              "type": "boolean"
+            },
+            "fieldSelector": {
+              "description": "Allows to filter resources based on a specific value for a field name. Send this in a query string format. i.e. 'metadata.name%3Dlorem'. Not currently used by Events for Cloud Run.",
+              "location": "query",
+              "type": "string"
+            },
+            "labelSelector": {
+              "description": "Allows to filter resources based on a label. Supported operations are =, !=, exists, in, and notIn.",
+              "location": "query",
+              "type": "string"
+            },
+            "resourceVersion": {
+              "description": "The baseline resource version from which the list or watch operation should start. Not currently used by Events for Cloud Run.",
+              "location": "query",
+              "type": "string"
+            },
+            "watch": {
+              "description": "Flag that indicates that the client expects to watch this resource as well. Not currently used by Events for Cloud Run.",
+              "location": "query",
+              "type": "boolean"
+            },
+            "continue": {
+              "description": "Optional. Encoded string to continue paging.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ListTriggersResponse"
+          },
+          "description": "Rpc to list triggers in all namespaces."
         }
       }
     }

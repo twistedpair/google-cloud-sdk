@@ -25,3 +25,11 @@ def GetConnectionPreference(args, messages):
     return messages.ServiceAttachment.ConnectionPreferenceValueValuesEnum.ACCEPT_AUTOMATIC
 
   return None
+
+
+def GetEnableProxyProtocol(args):
+  """Get enable-proxy-protocol of the service attachment."""
+  if args.enable_proxy_protocol:
+    return True
+
+  return None

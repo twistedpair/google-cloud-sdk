@@ -283,14 +283,15 @@
     },
     "Instance": {
       "id": "Instance",
+      "description": "A Memorystore for Memcached instance",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Unique name of the resource in this scope including project and location using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` Note: Memcached instances are managed and addressed at regional level so location_id here refers to a GCP region; however, users may choose which zones Memcached nodes within an instances should be provisioned in. Refer to [zones] field for more details.",
+          "description": "Required. Unique name of the resource in this scope including project and location using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` Note: Memcached instances are managed and addressed at the regional level so `location_id` here refers to a Google Cloud region; however, users may choose which zones Memcached nodes should be provisioned in within an instance. Refer to zones field for more details.",
           "type": "string"
         },
         "displayName": {
-          "description": "User provided name for the instance only used for display purposes. Cannot be more than 80 characters.",
+          "description": "User provided name for the instance, which is only used for display purposes. Cannot be more than 80 characters.",
           "type": "string"
         },
         "labels": {
@@ -305,7 +306,7 @@
           "type": "string"
         },
         "zones": {
-          "description": "Zones where Memcached nodes should be provisioned in. Memcached nodes will be equally distributed across these zones. If not provided, the service will by default create nodes in all zones in the region for the instance.",
+          "description": "Zones in which Memcached nodes should be provisioned. Memcached nodes will be equally distributed across these zones. If not provided, the service will by default create nodes in all zones in the region for the instance.",
           "type": "array",
           "items": {
             "type": "string"
@@ -321,7 +322,7 @@
           "$ref": "NodeConfig"
         },
         "memcacheVersion": {
-          "description": "The major version of Memcached software. If not provided, latest supported version will be used. Currently the latest supported major version is MEMCACHE_1_5. The minor version will be automatically determined by our system based on the latest supported minor version.",
+          "description": "The major version of Memcached software. If not provided, latest supported version will be used. Currently the latest supported major version is `MEMCACHE_1_5`. The minor version will be automatically determined by our system based on the latest supported minor version.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -337,7 +338,7 @@
           "$ref": "MemcacheParameters"
         },
         "memcacheNodes": {
-          "description": "Output only. List of Memcached nodes. Refer to [Node] message for more details.",
+          "description": "Output only. List of Memcached nodes. Refer to Node message for more details.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -381,14 +382,14 @@
           "type": "string"
         },
         "instanceMessages": {
-          "description": "List of messages that describe current statuses of memcached instance.",
+          "description": "List of messages that describe the current state of the Memcached instance.",
           "type": "array",
           "items": {
             "$ref": "InstanceMessage"
           }
         },
         "discoveryEndpoint": {
-          "description": "Output only. Endpoint for Discovery API",
+          "description": "Output only. Endpoint for the Discovery API.",
           "readOnly": true,
           "type": "string"
         }
@@ -413,10 +414,11 @@
     },
     "MemcacheParameters": {
       "id": "MemcacheParameters",
+      "description": "The unique ID associated with this set of parameters. Users can use this id to determine if the parameters associated with the instance differ from the parameters associated with the nodes. A discrepancy between parameter ids can inform users that they may need to take action to apply parameters on nodes.",
       "type": "object",
       "properties": {
         "id": {
-          "description": "Output only. The unique ID associated with this set of parameters. Users can use this id to determine if the parameters associated with the instance differ from the parameters associated with the nodes and any action needs to be taken to apply parameters on nodes.",
+          "description": "Output only.",
           "readOnly": true,
           "type": "string"
         },
@@ -523,14 +525,14 @@
       "type": "object",
       "properties": {
         "nodeIds": {
-          "description": "Nodes to which we should apply the instance-level parameter group.",
+          "description": "Nodes to which the instance-level parameter group is applied.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "applyAll": {
-          "description": "Whether to apply instance-level parameter group to all nodes. If set to true, will explicitly restrict users from specifying any nodes, and apply parameter group updates to all nodes within the instance.",
+          "description": "Whether to apply instance-level parameter group to all nodes. If set to true, users are restricted from specifying individual nodes, and `ApplyParameters` updates all nodes within the instance.",
           "type": "boolean"
         }
       }
@@ -885,7 +887,7 @@
           "type": "string"
         },
         "scheduleDeadlineTime": {
-          "description": "schedule_deadline_time is the time deadline any schedule start time cannot go beyond, including reschedule. It's normally the initial schedule start time plus a week. If the reschedule type is next window, simply take this value as start time. If reschedule type is IMMEDIATELY or BY_TIME, current or selected time cannot go beyond this deadline.",
+          "description": "schedule_deadline_time is the time deadline any schedule start time cannot go beyond, including reschedule. It's normally the initial schedule start time plus maintenance window length (1 day or 1 week). Maintenance cannot be scheduled to start beyond this deadline.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -1362,18 +1364,18 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of items to return. If not specified, a default value of 1000 will be used by the service. Regardless of the page_size value, the response may include a partial list and a caller should only rely on response's next_page_token to determine if there are more instances left to be queried.",
+                      "description": "The maximum number of items to return. If not specified, a default value of 1000 will be used by the service. Regardless of the `page_size` value, the response may include a partial list and a caller should only rely on response's `next_page_token` to determine if there are more instances left to be queried.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "The next_page_token value returned from a previous List request, if any.",
+                      "description": "The `next_page_token` value returned from a previous List request, if any.",
                       "location": "query",
                       "type": "string"
                     },
                     "filter": {
-                      "description": "List filter. For example, exclude all Memcached instances with name as my-instance by specifying \"name != my-instance\".",
+                      "description": "List filter. For example, exclude all Memcached instances with name as my-instance by specifying `\"name != my-instance\"`.",
                       "location": "query",
                       "type": "string"
                     },
@@ -1433,7 +1435,7 @@
                       "type": "string"
                     },
                     "instanceId": {
-                      "description": "Required. The logical name of the Memcached instance in the user project with the following restrictions: * Must contain only lowercase letters, numbers, and hyphens. * Must start with a letter. * Must be between 1-40 characters. * Must end with a number or a letter. * Must be unique within the user project \/ location If any of the above are not met, will raise an invalid argument error.",
+                      "description": "Required. The logical name of the Memcached instance in the user project with the following restrictions: * Must contain only lowercase letters, numbers, and hyphens. * Must start with a letter. * Must be between 1-40 characters. * Must end with a number or a letter. * Must be unique within the user project \/ location. If any of the above are not met, the API raises an invalid argument error.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1459,7 +1461,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. Unique name of the resource in this scope including project and location using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` Note: Memcached instances are managed and addressed at regional level so location_id here refers to a GCP region; however, users may choose which zones Memcached nodes within an instances should be provisioned in. Refer to [zones] field for more details.",
+                      "description": "Required. Unique name of the resource in this scope including project and location using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` Note: Memcached instances are managed and addressed at the regional level so `location_id` here refers to a Google Cloud region; however, users may choose which zones Memcached nodes should be provisioned in within an instance. Refer to zones field for more details.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1512,7 +1514,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the defined Memcached Parameters for an existing Instance. This method only stages the parameters, it must be followed by ApplyParameters to apply the parameters to nodes of the Memcached Instance."
+                  "description": "Updates the defined Memcached parameters for an existing instance. This method only stages the parameters, it must be followed by `ApplyParameters` to apply the parameters to nodes of the Memcached instance."
                 },
                 "delete": {
                   "id": "memcache.projects.locations.instances.delete",
@@ -1565,7 +1567,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "ApplyParameters will restart the set of specified nodes in order to update them to the current set of parameters for the Memcached Instance."
+                  "description": "`ApplyParameters` restarts the set of specified nodes in order to update them to the current set of parameters for the Memcached Instance."
                 }
               }
             }

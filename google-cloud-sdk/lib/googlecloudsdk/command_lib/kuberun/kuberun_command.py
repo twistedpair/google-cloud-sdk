@@ -40,9 +40,6 @@ class KubeRunCommand(base.BinaryBackedCommand):
     - stderr is used to stream user messages, status and errors.
     - stdout is captured and processed via FormatOutput.
 
-    Non-compliant commands should override should_stream_stdout() and/or
-    OperationResponseHandler().
-
     All child classes must implement Command(), and define a 'flags' attribute.
     Classes formatting command output (e.g. JSON) should override
     FormatOutput(), which will be called when the binary exits successfully.
@@ -76,11 +73,11 @@ class KubeRunCommand(base.BinaryBackedCommand):
 
   def OperationResponseHandler(self, response, args):
     """Process the result of the operation."""
+    out = response.stdout
     if response.failed:
-      # TODO(b/178490662): use error output via stdout for failed commands.
-      raise exceptions.Error('Command execution failed')
+      raise exceptions.Error(out or 'Command execution failed')
 
-    return self.FormatOutput(response.stdout, args)
+    return self.FormatOutput(out, args)
 
   def FormatOutput(self, out, args):
     """Processes and formats the output of the kuberun command execution.
@@ -97,16 +94,7 @@ class KubeRunCommand(base.BinaryBackedCommand):
     return out
 
   @property
-  def should_stream_stdout(self):
-    """Whether stdout should be streamed."""
-    # TODO(b/170872460): Clean this up once all commands stream stderr only.
-    return False
-
-  @property
   def command_executor(self):
-    if self.should_stream_stdout:
-      return kuberuncli.KubeRunStreamingCli()
-
     return kuberuncli.KubeRunStreamingCli(std_out_func=_CaptureStreamOutHandler)
 
   def Run(self, args):

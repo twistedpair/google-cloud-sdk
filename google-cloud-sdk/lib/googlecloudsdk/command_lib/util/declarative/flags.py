@@ -24,11 +24,12 @@ from googlecloudsdk.command_lib.util.declarative.clients import client_base
 from googlecloudsdk.core.util import files
 
 
-def AddPathFlag(parser):
+def AddPathFlag(parser, required=False):
   parser.add_argument(
       '--path',
-      required=True,
+      required=required,
       type=files.ExpandHomeAndVars,
+      default='-',
       help=('Path of the directory or file to output configuration(s). To '
             'output configurations to stdout, specify "--path=-".'))
 

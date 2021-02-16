@@ -69,7 +69,7 @@ A (possibly) easier way of achieving the same thing if you don't have a
 runtime_builders_root set up for development yet:
 
    $ cd $MY_APP_DIR
-   $ export _OUTPUT_IMAGE=gcr.io/$PROJECT/appengine/dummy
+   $ export _OUTPUT_IMAGE=gcr.io/$PROJECT/appengine/placeholder
    $ gcloud container builds submit \
        --config=<(envsubst < /path/to/cloudbuild.yaml) .
    $ gcloud app deploy --image-url=$_OUTPUT_IMAGE
@@ -90,9 +90,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import contextlib
+import enum
 import os
 import re
-import enum
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import config as cloudbuild_config
 from googlecloudsdk.api_lib.storage import storage_api
@@ -109,14 +109,14 @@ import six.moves.urllib.request
 
 
 # "test-{ga,beta}" runtimes are canaries for unit testing
-_WHITELISTED_RUNTIMES_GA = (
+_ALLOWLISTED_RUNTIMES_GA = frozenset(
     {'aspnetcore', 'php', 'nodejs', 'ruby', 'java',
      re.compile(r'(python|python-.+)$'),
      re.compile(r'(go|go1\..+)$'),
      re.compile('^gs://'),
      'test-ga', re.compile('test-re-[ab]')})
-_WHITELISTED_RUNTIMES_BETA = (
-    _WHITELISTED_RUNTIMES_GA |
+_ALLOWLISTED_RUNTIMES_BETA = frozenset(
+    _ALLOWLISTED_RUNTIMES_GA |
     {'test-beta'})
 
 
@@ -158,35 +158,35 @@ class BuilderResolveError(exceptions.Error):
 class RuntimeBuilderStrategy(enum.Enum):
   """Enum indicating when to use runtime builders."""
   NEVER = 1
-  WHITELIST_BETA = 2  # That is, turned on for a whitelisted set of runtimes
-  WHITELIST_GA = 3  # That is, turned on for a whitelisted set of runtimes
+  ALLOWLIST_BETA = 2  # That is, turned on for an allowed set of runtimes
+  ALLOWLIST_GA = 3  # That is, turned on for an allowed set of runtimes
   ALWAYS = 4
 
-  def _GetWhitelist(self):
-    """Return the whitelist of runtimes for this strategy.
+  def _GetAllowlist(self):
+    """Return the allowlist of runtimes for this strategy.
 
-    The whitelist is kept as a constant within this module.
+    The allowlist is kept as a constant within this module.
 
     Returns:
-      list of str, the names of runtimes that are whitelisted for this strategy.
+      list of str, the names of runtimes that are allowed for this strategy.
 
     Raises:
-      ValueError: if this strategy is not whitelist-based.
+      ValueError: if this strategy is not allowlist-based.
     """
-    if self is self.WHITELIST_GA:
-      return _WHITELISTED_RUNTIMES_GA
-    elif self is self.WHITELIST_BETA:
-      return _WHITELISTED_RUNTIMES_BETA
+    if self is self.ALLOWLIST_GA:
+      return _ALLOWLISTED_RUNTIMES_GA
+    elif self is self.ALLOWLIST_BETA:
+      return _ALLOWLISTED_RUNTIMES_BETA
     raise ValueError(
-        'RuntimeBuilderStrategy {} is not a whitelist strategy.'.format(self))
+        'RuntimeBuilderStrategy {} is not an allowed strategy.'.format(self))
 
-  def _IsWhitelisted(self, runtime):
-    for whitelisted_runtime in self._GetWhitelist():
+  def _IsAllowed(self, runtime):
+    for allowlisted_runtime in self._GetAllowlist():
       try:
-        if whitelisted_runtime.match(runtime):
+        if allowlisted_runtime.match(runtime):
           return True
       except AttributeError:
-        if runtime == whitelisted_runtime:
+        if runtime == allowlisted_runtime:
           return True
     return False
 
@@ -194,8 +194,8 @@ class RuntimeBuilderStrategy(enum.Enum):
     """Returns True if runtime should use runtime builders under this strategy.
 
     For the most part, this is obvious: the ALWAYS strategy returns True, the
-    WHITELIST_${TRACK} strategies return True if the given runtime is in the
-    list of _WHITELISTED_RUNTIMES_${TRACK}, and the NEVER strategy returns
+    ALLOWLIST_${TRACK} strategies return True if the given runtime is in the
+    list of _ALLOWLISTED_RUNTIMES_${TRACK}, and the NEVER strategy returns
     False.
 
     However, in the case of 'custom' runtimes, things get tricky: if the
@@ -218,14 +218,14 @@ class RuntimeBuilderStrategy(enum.Enum):
     # runtime builders unless there is a Dockerfile. For other strategies, we
     # never use runtime builders with 'custom'.
     if runtime == 'custom' and self in (self.ALWAYS,
-                                        self.WHITELIST_BETA,
-                                        self.WHITELIST_GA):
+                                        self.ALLOWLIST_BETA,
+                                        self.ALLOWLIST_GA):
       return needs_dockerfile
 
     if self is self.ALWAYS:
       return True
-    elif self is self.WHITELIST_BETA or self is self.WHITELIST_GA:
-      return self._IsWhitelisted(runtime)
+    elif self is self.ALLOWLIST_BETA or self is self.ALLOWLIST_GA:
+      return self._IsAllowed(runtime)
     elif self is self.NEVER:
       return False
     else:

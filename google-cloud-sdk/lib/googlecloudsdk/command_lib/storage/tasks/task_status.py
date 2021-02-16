@@ -20,11 +20,12 @@ from __future__ import unicode_literals
 
 import enum
 import multiprocessing
+import threading
 import time
 
 from googlecloudsdk.command_lib.storage import thread_messages
-
-TASK_STATUS_QUEUE = multiprocessing.Queue()
+from googlecloudsdk.core.console import progress_tracker
+from googlecloudsdk.core.util import scaled_integer
 
 
 class OperationName(enum.Enum):
@@ -33,8 +34,13 @@ class OperationName(enum.Enum):
   HASHING = 'Hashing'
 
 
-class FileProgressCallbackHandler:
-  """Tracks progress info for large file operations.
+class ProgressType(enum.Enum):
+  FILES_AND_BYTES = 'FILES AND BYTES'
+  FILES = 'FILES'
+
+
+class FilesAndBytesProgressCallback:
+  """Tracks file count and bytes progress info for large file operations.
 
   Information is sent to the status_queue, which will print aggregate it
   for printing to the user. Useful for heavy operations like copy or hash.
@@ -93,3 +99,102 @@ class FileProgressCallbackHandler:
             operation_name=self._operation_name,
             process_id=self._process_id,
             thread_id=self._thread_id))
+
+
+class _StatusTracker:
+  """Aggregates and prints information on task statuses.
+
+  We use "start" and "stop" instead of "__enter__" and "__exit__" because
+  this class should only be used by ProgressManager as a non-context-manager.
+  """
+
+  def __init__(self):
+    self._completed_files = 0
+    self._processed_bytes = 0
+    self._tracked_file_progress = {}
+    self._progress_tracker = None
+
+  def _get_status_string(self):
+    # TODO(b/180047352) Avoid having other output print on the same line.
+    return '\rCopied files {} | {}'.format(
+        self._completed_files,
+        scaled_integer.FormatBinaryNumber(
+            self._processed_bytes, decimal_places=1))
+
+  def add_message(self, status_message):
+    """Processes task status message for printing and aggregation.
+
+    Args:
+      status_message (thread_messages.ProgressMessage): Message to process.
+    """
+    known_progress = self._tracked_file_progress.get(
+        status_message.source_url.url_string, 0)
+    # status_message.processed_bytes includes bytes from past messages.
+    self._processed_bytes += status_message.processed_bytes - known_progress
+    if status_message.finished:
+      self._completed_files += 1
+      del self._tracked_file_progress[status_message.source_url.url_string]
+    else:
+      self._tracked_file_progress[status_message.source_url.url_string] = (
+          status_message.processed_bytes)
+
+  def start(self):
+    self._progress_tracker = progress_tracker.ProgressTracker(
+        message='Starting operation',
+        detail_message_callback=self._get_status_string)
+    self._progress_tracker.__enter__()
+    return self
+
+  def stop(self, exc_type, exc_val, exc_tb):
+    if self._progress_tracker:
+      return self._progress_tracker.__exit__(exc_type, exc_val, exc_tb)
+
+
+def status_message_handler(task_status_queue,
+                           status_printing_manager):
+  """Thread method for submiting items from queue to manager for processing."""
+  while True:
+    status_message = task_status_queue.get()
+    if status_message == '_SHUTDOWN':
+      break
+    status_printing_manager.add_message(status_message)
+
+
+class ProgressManager:
+  """Context manager for processing and displaying progress completing command.
+
+  Attributes:
+    task_status_queue (multiprocessing.Queue): Tasks can submit their progress
+      messages here.
+  """
+
+  def __init__(self, progress_type):
+    """Initializes context manager.
+
+    Args:
+      progress_type (ProgressType): Determines what type of progress indicator
+        to display.
+    """
+    super(ProgressManager, self).__init__()
+
+    self._progress_type = progress_type
+    self._status_message_handler_thread = None
+    self._status_tracker = None
+    self.task_status_queue = multiprocessing.Queue()
+
+  def __enter__(self):
+    if self._progress_type is ProgressType.FILES_AND_BYTES:
+      self._status_tracker = _StatusTracker()
+      self._status_message_handler_thread = threading.Thread(
+          target=status_message_handler,
+          args=(self.task_status_queue, self._status_tracker))
+
+      self._status_tracker.start()
+      self._status_message_handler_thread.start()
+    return self
+
+  def __exit__(self, exc_type, exc_val, exc_tb):
+    if self._progress_type is ProgressType.FILES_AND_BYTES:
+      self.task_status_queue.put('_SHUTDOWN')
+      self._status_message_handler_thread.join()
+      self._status_tracker.stop(exc_type, exc_val, exc_tb)

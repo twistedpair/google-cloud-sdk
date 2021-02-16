@@ -20,10 +20,9 @@ class ApplyParametersRequest(_messages.Message):
 
   Fields:
     applyAll: Whether to apply instance-level parameter group to all nodes. If
-      set to true, will explicitly restrict users from specifying any nodes,
-      and apply parameter group updates to all nodes within the instance.
-    nodeIds: Nodes to which we should apply the instance-level parameter
-      group.
+      set to true, users are restricted from specifying individual nodes, and
+      `ApplyParameters` updates all nodes within the instance.
+    nodeIds: Nodes to which the instance-level parameter group is applied.
   """
 
   applyAll = _messages.BooleanField(1)
@@ -452,10 +451,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messag
       reschedule should be against this given policy.
     scheduleDeadlineTime: schedule_deadline_time is the time deadline any
       schedule start time cannot go beyond, including reschedule. It's
-      normally the initial schedule start time plus a week. If the reschedule
-      type is next window, simply take this value as start time. If reschedule
-      type is IMMEDIATELY or BY_TIME, current or selected time cannot go
-      beyond this deadline.
+      normally the initial schedule start time plus maintenance window length
+      (1 day or 1 week). Maintenance cannot be scheduled to start beyond this
+      deadline.
     startTime: The scheduled start time for the maintenance.
   """
 
@@ -648,12 +646,12 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
 
 
 class Instance(_messages.Message):
-  r"""A Instance object.
+  r"""A Memorystore for Memcached instance
 
   Enums:
     MemcacheVersionValueValuesEnum: The major version of Memcached software.
       If not provided, latest supported version will be used. Currently the
-      latest supported major version is MEMCACHE_1_5. The minor version will
+      latest supported major version is `MEMCACHE_1_5`. The minor version will
       be automatically determined by our system based on the latest supported
       minor version.
     StateValueValuesEnum: Output only. The state of this Memcached instance.
@@ -668,11 +666,11 @@ class Instance(_messages.Message):
       [network](https://cloud.google.com/vpc/docs/vpc) to which the instance
       is connected. If left unspecified, the `default` network will be used.
     createTime: Output only. The time the instance was created.
-    discoveryEndpoint: Output only. Endpoint for Discovery API
-    displayName: User provided name for the instance only used for display
-      purposes. Cannot be more than 80 characters.
-    instanceMessages: List of messages that describe current statuses of
-      memcached instance.
+    discoveryEndpoint: Output only. Endpoint for the Discovery API.
+    displayName: User provided name for the instance, which is only used for
+      display purposes. Cannot be more than 80 characters.
+    instanceMessages: List of messages that describe the current state of the
+      Memcached instance.
     labels: Resource labels to represent user-provided metadata. Refer to
       cloud documentation on labels for more details.
       https://cloud.google.com/compute/docs/labeling-resources
@@ -680,19 +678,19 @@ class Instance(_messages.Message):
       running on this instance. System automatically determines the full
       memcached version for an instance based on the input MemcacheVersion.
       The full version format will be "memcached-1.5.16".
-    memcacheNodes: Output only. List of Memcached nodes. Refer to [Node]
-      message for more details.
+    memcacheNodes: Output only. List of Memcached nodes. Refer to Node message
+      for more details.
     memcacheVersion: The major version of Memcached software. If not provided,
       latest supported version will be used. Currently the latest supported
-      major version is MEMCACHE_1_5. The minor version will be automatically
+      major version is `MEMCACHE_1_5`. The minor version will be automatically
       determined by our system based on the latest supported minor version.
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
-      Note: Memcached instances are managed and addressed at regional level so
-      location_id here refers to a GCP region; however, users may choose which
-      zones Memcached nodes within an instances should be provisioned in.
-      Refer to [zones] field for more details.
+      Note: Memcached instances are managed and addressed at the regional
+      level so `location_id` here refers to a Google Cloud region; however,
+      users may choose which zones Memcached nodes should be provisioned in
+      within an instance. Refer to zones field for more details.
     nodeConfig: Required. Configuration for Memcached nodes.
     nodeCount: Required. Number of nodes in the Memcached instance.
     parameters: Optional: User defined parameters to apply to the memcached
@@ -701,7 +699,7 @@ class Instance(_messages.Message):
     updateAvailable: Output only. Returns true if there is an update waiting
       to be applied
     updateTime: Output only. The time the instance was updated.
-    zones: Zones where Memcached nodes should be provisioned in. Memcached
+    zones: Zones in which Memcached nodes should be provisioned. Memcached
       nodes will be equally distributed across these zones. If not provided,
       the service will by default create nodes in all zones in the region for
       the instance.
@@ -710,7 +708,7 @@ class Instance(_messages.Message):
   class MemcacheVersionValueValuesEnum(_messages.Enum):
     r"""The major version of Memcached software. If not provided, latest
     supported version will be used. Currently the latest supported major
-    version is MEMCACHE_1_5. The minor version will be automatically
+    version is `MEMCACHE_1_5`. The minor version will be automatically
     determined by our system based on the latest supported minor version.
 
     Values:
@@ -1023,17 +1021,18 @@ class MaintenanceWindow(_messages.Message):
 
 
 class MemcacheParameters(_messages.Message):
-  r"""A MemcacheParameters object.
+  r"""The unique ID associated with this set of parameters. Users can use this
+  id to determine if the parameters associated with the instance differ from
+  the parameters associated with the nodes. A discrepancy between parameter
+  ids can inform users that they may need to take action to apply parameters
+  on nodes.
 
   Messages:
     ParamsValue: User defined set of parameters to use in the memcached
       process.
 
   Fields:
-    id: Output only. The unique ID associated with this set of parameters.
-      Users can use this id to determine if the parameters associated with the
-      instance differ from the parameters associated with the nodes and any
-      action needs to be taken to apply parameters on nodes.
+    id: Output only.
     params: User defined set of parameters to use in the memcached process.
   """
 
@@ -1112,8 +1111,8 @@ class MemcacheProjectsLocationsInstancesCreateRequest(_messages.Message):
       user project with the following restrictions: * Must contain only
       lowercase letters, numbers, and hyphens. * Must start with a letter. *
       Must be between 1-40 characters. * Must end with a number or a letter. *
-      Must be unique within the user project / location If any of the above
-      are not met, will raise an invalid argument error.
+      Must be unique within the user project / location. If any of the above
+      are not met, the API raises an invalid argument error.
     parent: Required. The resource name of the instance location using the
       form: `projects/{project_id}/locations/{location_id}` where
       `location_id` refers to a GCP region
@@ -1153,15 +1152,15 @@ class MemcacheProjectsLocationsInstancesListRequest(_messages.Message):
 
   Fields:
     filter: List filter. For example, exclude all Memcached instances with
-      name as my-instance by specifying "name != my-instance".
+      name as my-instance by specifying `"name != my-instance"`.
     orderBy: Sort results. Supported values are "name", "name desc" or ""
       (unsorted).
     pageSize: The maximum number of items to return. If not specified, a
       default value of 1000 will be used by the service. Regardless of the
-      page_size value, the response may include a partial list and a caller
-      should only rely on response's next_page_token to determine if there are
-      more instances left to be queried.
-    pageToken: The next_page_token value returned from a previous List
+      `page_size` value, the response may include a partial list and a caller
+      should only rely on response's `next_page_token` to determine if there
+      are more instances left to be queried.
+    pageToken: The `next_page_token` value returned from a previous List
       request, if any.
     parent: Required. The resource name of the instance location using the
       form: `projects/{project_id}/locations/{location_id}` where
@@ -1183,10 +1182,10 @@ class MemcacheProjectsLocationsInstancesPatchRequest(_messages.Message):
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
-      Note: Memcached instances are managed and addressed at regional level so
-      location_id here refers to a GCP region; however, users may choose which
-      zones Memcached nodes within an instances should be provisioned in.
-      Refer to [zones] field for more details.
+      Note: Memcached instances are managed and addressed at the regional
+      level so `location_id` here refers to a Google Cloud region; however,
+      users may choose which zones Memcached nodes should be provisioned in
+      within an instance. Refer to zones field for more details.
     updateMask: Required. Mask of fields to update. * `displayName`
   """
 

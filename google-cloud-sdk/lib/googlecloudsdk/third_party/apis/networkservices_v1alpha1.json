@@ -617,7 +617,7 @@
           }
         },
         "originAddress": {
-          "description": "Required. A fully qualified domain name (FQDN) or IP address reachable over the public Internet, or the address of a Google Cloud Storage bucket. This address will be used as the origin for cache requests - e.g. FQDN: media-backend.example.com IPv4:35.218.1.1 IPv6:[2607:f8b0:4012:809::200e] Cloud Storage: gs:\/\/bucketname When providing an FQDN (hostname), it must be publicly resolvable (e.g. via Google public DNS) and IP addresses must be publicly routable. If a Cloud Storage bucket is provided, it must be in the canonical \u201Cgs:\/\/bucketname\u201D format. Other forms, such as \u201Cstorage.googleapis.com\u201D, will be rejected.",
+          "description": "Required. A fully qualified domain name (FQDN) or IP address reachable over the public Internet, or the address of a Google Cloud Storage bucket. This address will be used as the origin for cache requests - e.g. FQDN: media-backend.example.com IPv4:35.218.1.1 IPv6:[2607:f8b0:4012:809::200e] Cloud Storage: gs:\/\/bucketname When providing an FQDN (hostname), it must be publicly resolvable (e.g. via Google public DNS) and IP addresses must be publicly routable. If a Cloud Storage bucket is provided, it must be in the canonical \"gs:\/\/bucketname\" format. Other forms, such as \"storage.googleapis.com\", will be rejected.",
           "type": "string"
         },
         "protocol": {
@@ -831,7 +831,7 @@
           "type": "string"
         },
         "hosts": {
-          "description": "Required. The list of host patterns to match. Host patterns must be valid hostnames with optional port numbers in the format host:port. * matches any string of ([a-z0-9-.]*). The only accepted ports are :80 and :443. Hosts are matched against the HTTP Host header, or for HTTP\/2 and HTTP\/3, the \u201C:authority\u201D header, from the incoming request. You may specify up to 10 hosts.",
+          "description": "Required. The list of host patterns to match. Host patterns must be valid hostnames with optional port numbers in the format host:port. * matches any string of ([a-z0-9-.]*). The only accepted ports are :80 and :443. Hosts are matched against the HTTP Host header, or for HTTP\/2 and HTTP\/3, the \":authority\" header, from the incoming request. You may specify up to 10 hosts.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1127,8 +1127,8 @@
           "enumDescriptions": [
             "Unspecified value. Will default to CACHE_ALL_STATIC.",
             "Automatically cache static content, including common image formats, media (video & audio), web assets (JavaScript & CSS). Requests and responses that are marked as uncacheable, as well as dynamic content (including HTML), will not be cached.",
-            "Only cache responses with valid HTTP caching directives. Responses without these headers will not be cached at Google\u2019s edge, and will require a full trip to the origin on every request, potentially impacting performance and increasing load on the origin server.",
-            "Cache all content, ignoring any \u201Cprivate\u201D, \u201Cno-store\u201D or \u201Cno-cache\u201D directives in Cache-Control response headers. Warning: this may result in caching private, per-user (user identifiable) content. You should only enable this on backends that are not serving private or dynamic content, such as storage buckets.",
+            "Only cache responses with valid HTTP caching directives. Responses without these headers will not be cached at Google's edge, and will require a full trip to the origin on every request, potentially impacting performance and increasing load on the origin server.",
+            "Cache all content, ignoring any \"private\", \"no-store\" or \"no-cache\" directives in Cache-Control response headers. Warning: this may result in caching private, per-user (user identifiable) content. You should only enable this on backends that are not serving private or dynamic content, such as storage buckets.",
             "Bypass all caching for requests that match routes with this CDNPolicy applied. Enabling this will cause the edge cache to ignore all HTTP caching directives. All responses will be fulfilled from the origin."
           ],
           "enum": [
@@ -1140,17 +1140,17 @@
           ]
         },
         "clientTtl": {
-          "description": "Optional. Specifies a separate client (e.g. browser client) TTL, separate from the TTL used by the edge caches. Leaving this empty will use the same cache TTL for both the CDN and the client-facing response. - The TTL must be > 0 and <= 86400s (1 day) - The clientTtl cannot be larger than the defaultTtl (if set) - Fractions of a second are not allowed. Omit this field to use the defaultTtl, or the max-age set by the origin, as the client-facing TTL. When the cache mode is set to \u201CUSE_ORIGIN_HEADERS\u201D or \"BYPASS_CACHE\", you must omit this field.",
+          "description": "Optional. Specifies a separate client (e.g. browser client) TTL, separate from the TTL used by the edge caches. Leaving this empty will use the same cache TTL for both the CDN and the client-facing response. - The TTL must be > 0 and <= 86400s (1 day) - The clientTtl cannot be larger than the defaultTtl (if set) - Fractions of a second are not allowed. Omit this field to use the defaultTtl, or the max-age set by the origin, as the client-facing TTL. When the cache mode is set to \"USE_ORIGIN_HEADERS\" or \"BYPASS_CACHE\", you must omit this field.",
           "type": "string",
           "format": "google-duration"
         },
         "defaultTtl": {
-          "description": "Optional. Specifies the default TTL for cached content served by this origin for responses that do not have an existing valid TTL (max-age or s-max-age). Defaults to 3600s (1 hour). - The TTL must be >= 0 and <= 2592000s (1 month) - Setting a TTL of \"0\" means \"always revalidate\" (equivalent to must-revalidate) - The value of defaultTTL cannot be set to a value greater than that of maxTTL. - Fractions of a second are not allowed. - When the cacheMode is set to FORCE_CACHE_ALL, the defaultTTL will overwrite the TTL set in all responses. Note that infrequently accessed objects may be evicted from the cache before the defined TTL. Objects that expire will be revalidated with the origin. When the cache mode is set to \u201CUSE_ORIGIN_HEADERS\u201D or \"BYPASS_CACHE\", you must omit this field.",
+          "description": "Optional. Specifies the default TTL for cached content served by this origin for responses that do not have an existing valid TTL (max-age or s-max-age). Defaults to 3600s (1 hour). - The TTL must be >= 0 and <= 2592000s (1 month) - Setting a TTL of \"0\" means \"always revalidate\" (equivalent to must-revalidate) - The value of defaultTTL cannot be set to a value greater than that of maxTTL. - Fractions of a second are not allowed. - When the cacheMode is set to FORCE_CACHE_ALL, the defaultTTL will overwrite the TTL set in all responses. Note that infrequently accessed objects may be evicted from the cache before the defined TTL. Objects that expire will be revalidated with the origin. When the cache mode is set to \"USE_ORIGIN_HEADERS\" or \"BYPASS_CACHE\", you must omit this field.",
           "type": "string",
           "format": "google-duration"
         },
         "maxTtl": {
-          "description": "Optional. Specifies the maximum allowed TTL for cached content served by this origin. Defaults to 86400s (1 day). Cache directives that attempt to set a max-age or s-maxage higher than this, or an Expires header more than maxTtl seconds in the future will be capped at the value of maxTTL, as if it were the value of an s-maxage Cache-Control directive. - The TTL must be >= 0 and <= 2592000s (1 month) - Setting a TTL of \"0\" means \"always revalidate\" - The value of maxTtl must be equal to or greater than defaultTtl. - Fractions of a second are not allowed. When the cache mode is set to \u201CUSE_ORIGIN_HEADERS\u201C, \u201CFORCE_CACHE_ALL\u201D, or \"BYPASS_CACHE\", you must omit this field.",
+          "description": "Optional. Specifies the maximum allowed TTL for cached content served by this origin. Defaults to 86400s (1 day). Cache directives that attempt to set a max-age or s-maxage higher than this, or an Expires header more than maxTtl seconds in the future will be capped at the value of maxTTL, as if it were the value of an s-maxage Cache-Control directive. - The TTL must be >= 0 and <= 2592000s (1 month) - Setting a TTL of \"0\" means \"always revalidate\" - The value of maxTtl must be equal to or greater than defaultTtl. - Fractions of a second are not allowed. When the cache mode is set to \"USE_ORIGIN_HEADERS\", \"FORCE_CACHE_ALL\", or \"BYPASS_CACHE\", you must omit this field.",
           "type": "string",
           "format": "google-duration"
         },

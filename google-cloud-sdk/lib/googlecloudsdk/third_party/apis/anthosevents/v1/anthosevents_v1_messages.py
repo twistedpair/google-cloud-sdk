@@ -306,7 +306,7 @@ class AnthoseventsApiV1NamespacesServiceaccountsPatchRequest(_messages.Message):
   r"""A AnthoseventsApiV1NamespacesServiceaccountsPatchRequest object.
 
   Fields:
-    name: Required. The name of the serviceAccount being retrieved. If needed,
+    name: Required. The name of the serviceAccount being updated. If needed,
       replace {namespace_id} with the project ID.
     serviceAccount: A ServiceAccount resource to be passed as the request
       body.
@@ -329,6 +329,35 @@ class AnthoseventsApiV1NamespacesServiceaccountsReplaceServiceAccountRequest(_me
 
   name = _messages.StringField(1, required=True)
   serviceAccount = _messages.MessageField('ServiceAccount', 2)
+
+
+class AnthoseventsBrokersListRequest(_messages.Message):
+  r"""A AnthoseventsBrokersListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: A integer attribute.
+    parent: The namespace name.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
 
 
 class AnthoseventsCustomresourcedefinitionsGetRequest(_messages.Message):
@@ -1053,7 +1082,7 @@ class AnthoseventsProjectsLocationsNamespacesServiceaccountsPatchRequest(_messag
   object.
 
   Fields:
-    name: Required. The name of the serviceAccount being retrieved. If needed,
+    name: Required. The name of the serviceAccount being updated. If needed,
       replace {namespace_id} with the project ID.
     serviceAccount: A ServiceAccount resource to be passed as the request
       body.
@@ -1185,6 +1214,37 @@ class AnthoseventsProjectsLocationsServiceaccountsListRequest(_messages.Message)
   """
 
   parent = _messages.StringField(1, required=True)
+
+
+class AnthoseventsTriggersListRequest(_messages.Message):
+  r"""A AnthoseventsTriggersListRequest object.
+
+  Fields:
+    continue_: Encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Events for Cloud Run.
+    includeUninitialized: If true, partially initialized resources are
+      included in the response. Not currently used by Events for Cloud Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    pageSize: The maximum number of records that should be returned.
+    parent: The namespace name.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start. Not currently used by Events for Cloud
+      Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Events for Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
 
 
 class Broker(_messages.Message):

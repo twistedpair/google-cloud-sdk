@@ -75,7 +75,8 @@ class CopyTaskIterator:
       else:
         source_url_string = source.resource.storage_url.versionless_url_string
 
-      log.status.Print('Copying {} to {}'.format(
+      # \r prevents output from getting mixed with progress_tracker.
+      log.status.Print('\rCopying {} to {}'.format(
           source_url_string,
           destination_resource.storage_url.versionless_url_string))
       if self._custom_md5_digest:

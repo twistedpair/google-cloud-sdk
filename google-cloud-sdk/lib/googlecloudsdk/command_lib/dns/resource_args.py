@@ -46,8 +46,14 @@ def PolicyAttributeConfig(api_version):
 
 def ResponsePolicyAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='response_policy',
+      name='response-policy',
       help_text='The Cloud DNS response policy name {resource}.')
+
+
+def ResponsePolicyRuleAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='response-policy-rule',
+      help_text='The Cloud DNS response policy rule name {resource}.')
 
 
 def ProjectAttributeConfig():
@@ -72,6 +78,16 @@ def GetResponsePolicyResourceSpec(api_version):
       api_version=api_version,
       resource_name='response_policy',
       responsePolicy=ResponsePolicyAttributeConfig(),
+      project=ProjectAttributeConfig())
+
+
+def GetResponsePolicyRuleSpec(api_version):
+  return concepts.ResourceSpec(
+      'dns.responsePolicyRules',
+      api_version=api_version,
+      resource_name='response_policy_rule',
+      responsePolicy=ResponsePolicyAttributeConfig(),
+      responsePolicyRule=ResponsePolicyRuleAttributeConfig(),
       project=ProjectAttributeConfig())
 
 
@@ -106,7 +122,7 @@ def AddResponsePolicyResourceArg(parser,
                                  api_version,
                                  positional=True,
                                  required=True):
-  """Add a resource argument for a Cloud DNS Policy.
+  """Add a resource argument for a Cloud DNS Response Policy.
 
   Args:
     parser: the parser for the command.
@@ -124,4 +140,31 @@ def AddResponsePolicyResourceArg(parser,
       name,
       GetResponsePolicyResourceSpec(api_version),
       'The response policy {}.'.format(verb),
+      required=required).AddToParser(parser)
+
+
+def AddResponsePolicyRuleArg(parser,
+                             verb,
+                             api_version,
+                             positional=True,
+                             required=True):
+  """Add a resource argument for a Cloud DNS Policy Rule.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    api_version: str, the version of the API to use.
+    positional: bool, if True, means that the policy name is a positional rather
+      than a flag.
+    required: bool, if True, means that the arg will be required.
+  """
+  if positional:
+    name = 'response_policy_rule'
+  else:
+    name = '--response_policy_rule'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetResponsePolicyRuleSpec(api_version),
+      'The response policy rule {}.'.format(verb),
+      flag_name_overrides={'response-policy-rule': 'response_policy_rule'},
       required=required).AddToParser(parser)

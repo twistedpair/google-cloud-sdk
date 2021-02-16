@@ -4,7 +4,7 @@
  "id": "dns:v1",
  "name": "dns",
  "version": "v1",
- "revision": "20210129",
+ "revision": "20210205",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -838,14 +838,7 @@
    "id": "Quota",
    "type": "object",
    "properties": {
-    "allowManualDnssec": {
-     "type": "boolean"
-    },
     "dnsKeysPerManagedZone": {
-     "type": "integer",
-     "format": "int32"
-    },
-    "gkeClustersPerPolicy": {
      "type": "integer",
      "format": "int32"
     },
@@ -910,116 +903,6 @@
     }
    }
   },
-  "RRSetRoutingPolicy": {
-   "id": "RRSetRoutingPolicy",
-   "type": "object",
-   "properties": {
-    "geoPolicy": {
-     "$ref": "RRSetRoutingPolicyGeoPolicy"
-    },
-    "kind": {
-     "type": "string",
-     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#rRSetRoutingPolicy\".",
-     "default": "dns#rRSetRoutingPolicy"
-    },
-    "wrrPolicy": {
-     "$ref": "RRSetRoutingPolicyWrrPolicy"
-    }
-   }
-  },
-  "RRSetRoutingPolicyGeoPolicy": {
-   "id": "RRSetRoutingPolicyGeoPolicy",
-   "type": "object",
-   "properties": {
-    "failovers": {
-     "type": "array",
-     "items": {
-      "$ref": "RRSetRoutingPolicyGeoPolicyGeoPolicyItem"
-     }
-    },
-    "items": {
-     "type": "array",
-     "items": {
-      "$ref": "RRSetRoutingPolicyGeoPolicyGeoPolicyItem"
-     }
-    },
-    "kind": {
-     "type": "string",
-     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#rRSetRoutingPolicyGeoPolicy\".",
-     "default": "dns#rRSetRoutingPolicyGeoPolicy"
-    }
-   }
-  },
-  "RRSetRoutingPolicyGeoPolicyGeoPolicyItem": {
-   "id": "RRSetRoutingPolicyGeoPolicyGeoPolicyItem",
-   "type": "object",
-   "properties": {
-    "kind": {
-     "type": "string",
-     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#rRSetRoutingPolicyGeoPolicyGeoPolicyItem\".",
-     "default": "dns#rRSetRoutingPolicyGeoPolicyGeoPolicyItem"
-    },
-    "location": {
-     "type": "string"
-    },
-    "rrdatas": {
-     "type": "array",
-     "items": {
-      "type": "string"
-     }
-    },
-    "signatureRrdatas": {
-     "type": "array",
-     "items": {
-      "type": "string"
-     }
-    }
-   }
-  },
-  "RRSetRoutingPolicyWrrPolicy": {
-   "id": "RRSetRoutingPolicyWrrPolicy",
-   "type": "object",
-   "properties": {
-    "items": {
-     "type": "array",
-     "items": {
-      "$ref": "RRSetRoutingPolicyWrrPolicyWrrPolicyItem"
-     }
-    },
-    "kind": {
-     "type": "string",
-     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#rRSetRoutingPolicyWrrPolicy\".",
-     "default": "dns#rRSetRoutingPolicyWrrPolicy"
-    }
-   }
-  },
-  "RRSetRoutingPolicyWrrPolicyWrrPolicyItem": {
-   "id": "RRSetRoutingPolicyWrrPolicyWrrPolicyItem",
-   "type": "object",
-   "properties": {
-    "kind": {
-     "type": "string",
-     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#rRSetRoutingPolicyWrrPolicyWrrPolicyItem\".",
-     "default": "dns#rRSetRoutingPolicyWrrPolicyWrrPolicyItem"
-    },
-    "rrdatas": {
-     "type": "array",
-     "items": {
-      "type": "string"
-     }
-    },
-    "signatureRrdatas": {
-     "type": "array",
-     "items": {
-      "type": "string"
-     }
-    },
-    "weight": {
-     "type": "number",
-     "format": "double"
-    }
-   }
-  },
   "ResourceRecordSet": {
    "id": "ResourceRecordSet",
    "type": "object",
@@ -1031,9 +914,6 @@
     },
     "name": {
      "type": "string"
-    },
-    "routingPolicy": {
-     "$ref": "RRSetRoutingPolicy"
     },
     "rrdatas": {
      "type": "array",

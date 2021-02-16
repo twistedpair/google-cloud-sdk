@@ -31,6 +31,9 @@ VAL_READY = 'Ready'
 
 FIELD_CONDITIONS = 'conditions'
 FIELD_LAST_TRANSITION_TIME = 'lastTransitionTime'
+FIELD_LATEST_CREATED_REVISION_NAME = 'latestCreatedRevisionName'
+FIELD_LATEST_READY_REVISION_NAME = 'latestReadyRevisionName'
+FIELD_MESSAGE = 'message'
 FIELD_STATUS = 'status'
 FIELD_TYPE = 'type'
 

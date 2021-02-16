@@ -34,7 +34,7 @@ _SPLIT = 78  # Split lines longer than this.
 _SECTION_INDENT = 8  # Section or list within section indent.
 _FIRST_INDENT = 2  # First line indent.
 _SUBSEQUENT_INDENT = 6  # Subsequent line indent.
-_HANGING_OFFSET = 2  # Used to create hanging indentation using markdown.
+_SECOND_LINE_OFFSET = 2  # Used to create 2nd line indentation using markdown.
 
 
 def _GetIndexFromCapsule(capsule):
@@ -420,7 +420,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     if not usage:
       return
     self._out('\n{usage}{depth}\n'.format(
-        usage=usage, depth=':' * (depth + _HANGING_OFFSET)))
+        usage=usage, depth=':' * (depth + _SECOND_LINE_OFFSET)))
     if arg.is_required and depth and not single:
       modal = ('\nThis {arg_type} must be specified if any of the other '
                'arguments in this group are specified.').format(
@@ -453,7 +453,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
       if a.is_hidden:
         continue
       if heading:
-        self._out('\n{0} {1}\n\n'.format(':' * (depth + _HANGING_OFFSET),
+        self._out('\n{0} {1}\n\n'.format(':' * (depth + _SECOND_LINE_OFFSET),
                                          ' '.join(heading)))
         heading = None
         depth += 1
@@ -473,7 +473,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
   def PrintPositionalDefinition(self, arg, depth=0):
     self._out('\n{usage}{depth}\n'.format(
         usage=usage_text.GetPositionalUsage(arg, markdown=True),
-        depth=':' * (depth + _HANGING_OFFSET)))
+        depth=':' * (depth + _SECOND_LINE_OFFSET)))
     self._out('\n{arghelp}\n'.format(arghelp=self.GetArgDetails(arg)))
 
   def PrintFlagDefinition(self, flag, disable_header=False, depth=0):
@@ -488,7 +488,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
       self._out('\n')
     self._out('{usage}{depth}\n'.format(
         usage=usage_text.GetFlagUsage(flag, markdown=True),
-        depth=':' * (depth + _HANGING_OFFSET)))
+        depth=':' * (depth + _SECOND_LINE_OFFSET)))
     self._out('\n{arghelp}\n'.format(arghelp=self.GetArgDetails(flag)))
 
   def PrintFlagSection(self, heading, arg, disable_header=False):

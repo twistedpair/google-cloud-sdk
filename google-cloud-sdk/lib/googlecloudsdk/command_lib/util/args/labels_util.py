@@ -166,8 +166,8 @@ def GetUpdateLabelsFlag(extra_message, labels_name='labels',
   if validate_values:
     format_help.append(_VALUE_FORMAT_HELP)
   help_parts = [
-      ('List of label KEY=VALUE pairs to update. If a label exists its value '
-       'is modified, otherwise a new label is created.')]
+      ('List of label KEY=VALUE pairs to update. If a label exists, its value '
+       'is modified. Otherwise, a new label is created.')]
   if format_help:
     help_parts.append(' '.join(format_help))
   if extra_message:

@@ -1657,10 +1657,10 @@ class ApigeeOrganizationsEnvironmentsOptimizedStatsGetRequest(_messages.Message)
       and the max value is 14400.
     name: Required. The resource name for which the interactive query will be
       executed. Must be of the form `organizations/{organization_id}/environme
-      nts/{environment_id/stats/{dimensions}` Dimensions let you view metrics
-      in meaningful groupings. E.g. apiproxy, target_host. The value of
-      dimensions should be comma separated list as shown below
-      `organizations/{org}/environments/{env}/stats/apiproxy,request_verb`
+      nts/{environment_id/optimizedStats/{dimensions}` Dimensions let you view
+      metrics in meaningful groupings. E.g. apiproxy, target_host. The value
+      of dimensions should be comma separated list as shown below `organizatio
+      ns/{org}/environments/{env}/optimizedStats/apiproxy,request_verb`
     offset: Use offset with limit to enable pagination of results. For
       example, to display results 11-20, set limit to '10' and offset to '10'.
     realtime: Legacy field: not used anymore.
@@ -2291,10 +2291,10 @@ class ApigeeOrganizationsHostStatsGetRequest(_messages.Message):
       and the max value is 14400.
     name: Required. The resource name for which the interactive query will be
       executed. Must be of the form
-      `organizations/{organization_id}/stats/{dimensions}`. Dimensions let you
-      view metrics in meaningful groupings. E.g. apiproxy, target_host. The
-      value of dimensions should be comma separated list as shown below
-      `organizations/{org}/stats/apiproxy,request_verb`
+      `organizations/{organization_id}/hostStats/{dimensions}`. Dimensions let
+      you view metrics in meaningful groupings. E.g. apiproxy, target_host.
+      The value of dimensions should be comma separated list as shown below
+      `organizations/{org}/hostStats/apiproxy,request_verb`
     offset: Use offset with limit to enable pagination of results. For
       example, to display results 11-20, set limit to '10' and offset to '10'.
     realtime: Legacy field: not used anymore.
@@ -2625,10 +2625,11 @@ class ApigeeOrganizationsOptimizedHostStatsGetRequest(_messages.Message):
       and the max value is 14400.
     name: Required. The resource name for which the interactive query will be
       executed. Must be of the form
-      `organizations/{organization_id}/stats/{dimensions}`. Dimensions let you
-      view metrics in meaningful groupings. E.g. apiproxy, target_host. The
-      value of dimensions should be comma separated list as shown below
-      `organizations/{org}/stats/apiproxy,request_verb`
+      `organizations/{organization_id}/optimizedHostStats/{dimensions}`.
+      Dimensions let you view metrics in meaningful groupings. E.g. apiproxy,
+      target_host. The value of dimensions should be comma separated list as
+      shown below
+      `organizations/{org}/optimizedHostStats/apiproxy,request_verb`
     offset: Use offset with limit to enable pagination of results. For
       example, to display results 11-20, set limit to '10' and offset to '10'.
     realtime: Legacy field: not used anymore.
@@ -4315,6 +4316,9 @@ class GoogleCloudApigeeV1DeveloperAppKey(_messages.Message):
     consumerKey: Consumer key.
     consumerSecret: Secret key.
     expiresAt: Time the developer app expires in milliseconds since epoch.
+    expiresInSeconds: Input only. Expiration time, in seconds, for the
+      consumer key. If not set or left to the default value of `-1`, the API
+      key never expires. The expiration time can't be updated after it is set.
     issuedAt: Time the developer app was created in milliseconds since epoch.
     scopes: Scopes to apply to the app. The specified scope names must already
       be defined for the API product that you associate with the app.
@@ -4327,9 +4331,10 @@ class GoogleCloudApigeeV1DeveloperAppKey(_messages.Message):
   consumerKey = _messages.StringField(3)
   consumerSecret = _messages.StringField(4)
   expiresAt = _messages.IntegerField(5)
-  issuedAt = _messages.IntegerField(6)
-  scopes = _messages.StringField(7, repeated=True)
-  status = _messages.StringField(8)
+  expiresInSeconds = _messages.IntegerField(6)
+  issuedAt = _messages.IntegerField(7)
+  scopes = _messages.StringField(8, repeated=True)
+  status = _messages.StringField(9)
 
 
 class GoogleCloudApigeeV1DimensionMetric(_messages.Message):
@@ -4695,6 +4700,9 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
   r"""Apigee runtime instance.
 
   Enums:
+    PeeringCidrRangeValueValuesEnum: Optional. The size of the CIDR block
+      range that will be reserved by the instance. If not specified, default
+      to SLASH_16.
     StateValueValuesEnum: Output only. State of the instance. Values other
       than ACTIVE means the resource is not ready to use.
 
@@ -4714,10 +4722,25 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
     location: Required. Compute Engine location where the instance resides.
     name: Required. Resource ID of the instance. Values must match the regular
       expression `^a-z{0,30}[a-z\d]$`.
+    peeringCidrRange: Optional. The size of the CIDR block range that will be
+      reserved by the instance. If not specified, default to SLASH_16.
     port: Output only. Port number of the exposed Apigee endpoint.
     state: Output only. State of the instance. Values other than ACTIVE means
       the resource is not ready to use.
   """
+
+  class PeeringCidrRangeValueValuesEnum(_messages.Enum):
+    r"""Optional. The size of the CIDR block range that will be reserved by
+    the instance. If not specified, default to SLASH_16.
+
+    Values:
+      CIDR_RANGE_UNSPECIFIED: Range not specified.
+      SLASH_16: The "/16" CIDR range.
+      SLASH_20: The "/20" CIDR range.
+    """
+    CIDR_RANGE_UNSPECIFIED = 0
+    SLASH_16 = 1
+    SLASH_20 = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the instance. Values other than ACTIVE means the
@@ -4742,8 +4765,9 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
   lastModifiedAt = _messages.IntegerField(6)
   location = _messages.StringField(7)
   name = _messages.StringField(8)
-  port = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 9)
+  port = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class GoogleCloudApigeeV1InstanceAttachment(_messages.Message):
@@ -5349,12 +5373,16 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   r"""A GoogleCloudApigeeV1Organization object.
 
   Enums:
+    BillingTypeValueValuesEnum: Output only. Billing type of the Apigee
+      organization. See [Apigee
+      pricing](https://cloud.google.com/apigee/pricing).
     RuntimeTypeValueValuesEnum: Required. Runtime type of the Apigee
       organization based on the Apigee subscription purchased.
     StateValueValuesEnum: Output only. State of the organization. Values other
       than ACTIVE means the resource is not ready to use.
-    SubscriptionTypeValueValuesEnum: Output only. Subscription type of the
-      Apigee organization. Valid values include trial (free, limited, and for
+    SubscriptionTypeValueValuesEnum: Output only. DEPRECATED: This will
+      eventually be replaced by BillingType. Subscription type of the Apigee
+      organization. Valid values include trial (free, limited, and for
       evaluation purposes only) or paid (full subscription has been
       purchased). See [Apigee
       pricing](https://cloud.google.com/apigee/pricing/).
@@ -5370,11 +5398,20 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       be peered with Apigee runtime instances. See [Getting started with the
       Service Networking API](https://cloud.google.com/service-
       infrastructure/docs/service-networking/getting-started). Valid only when
-      [RuntimeType] is set to CLOUD. The value can be updated only when there
-      are no runtime instances. For example: "default". **Note:** Not
-      supported for Apigee hybrid.
+      [RuntimeType](#RuntimeType) is set to `CLOUD`. The value can be updated
+      only when there are no runtime instances. For example: `default`. Apigee
+      also supports shared VPC (that is, the host network project is not the
+      same as the one that is peering with Apigee). See [Shared VPC
+      overview](https://cloud.google.com/vpc/docs/shared-vpc). To use a shared
+      VPC network, use the following format: `projects/{host-project-
+      id}/{region}/networks/{network-name}`. For example: `projects/my-
+      sharedvpc-host/global/networks/mynetwork` **Note:** Not supported for
+      Apigee hybrid.
+    billingType: Output only. Billing type of the Apigee organization. See
+      [Apigee pricing](https://cloud.google.com/apigee/pricing).
     caCertificate: Output only. Base64-encoded public certificate for the root
-      CA of the Apigee organization. Valid only when [RuntimeType] is CLOUD.
+      CA of the Apigee organization. Valid only when
+      [RuntimeType](#RuntimeType) is `CLOUD`.
     createdAt: Output only. Time that the Apigee organization was created in
       milliseconds since epoch.
     customerName: Not used by Apigee.
@@ -5385,26 +5422,40 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     lastModifiedAt: Output only. Time that the Apigee organization was last
       modified in milliseconds since epoch.
     name: Output only. Name of the Apigee organization.
-    projectId: The project ID associated with the Apigee organization.
+    projectId: Project ID associated with the Apigee organization.
     properties: Properties defined in the Apigee organization profile.
     runtimeDatabaseEncryptionKeyName: Cloud KMS key name used for encrypting
       the data that is stored and replicated across runtime instances. Update
       is not allowed after the organization is created. If not specified, a
       Google-Managed encryption key will be used. Valid only when
-      [RuntimeType] is CLOUD. For example:
+      [RuntimeType](#RuntimeType) is `CLOUD`. For example:
       "projects/foo/locations/us/keyRings/bar/cryptoKeys/baz". **Note:** Not
       supported for Apigee hybrid.
     runtimeType: Required. Runtime type of the Apigee organization based on
       the Apigee subscription purchased.
     state: Output only. State of the organization. Values other than ACTIVE
       means the resource is not ready to use.
-    subscriptionType: Output only. Subscription type of the Apigee
-      organization. Valid values include trial (free, limited, and for
-      evaluation purposes only) or paid (full subscription has been
-      purchased). See [Apigee
+    subscriptionType: Output only. DEPRECATED: This will eventually be
+      replaced by BillingType. Subscription type of the Apigee organization.
+      Valid values include trial (free, limited, and for evaluation purposes
+      only) or paid (full subscription has been purchased). See [Apigee
       pricing](https://cloud.google.com/apigee/pricing/).
     type: Not used by Apigee.
   """
+
+  class BillingTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Billing type of the Apigee organization. See [Apigee
+    pricing](https://cloud.google.com/apigee/pricing).
+
+    Values:
+      BILLING_TYPE_UNSPECIFIED: Billing type not specified.
+      SUBSCRIPTION: A pre-paid subscription to Apigee.
+      EVALUATION: Free and limited access to Apigee for evaluation purposes
+        only. only.
+    """
+    BILLING_TYPE_UNSPECIFIED = 0
+    SUBSCRIPTION = 1
+    EVALUATION = 2
 
   class RuntimeTypeValueValuesEnum(_messages.Enum):
     r"""Required. Runtime type of the Apigee organization based on the Apigee
@@ -5435,9 +5486,10 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     DELETING = 3
 
   class SubscriptionTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. Subscription type of the Apigee organization. Valid
-    values include trial (free, limited, and for evaluation purposes only) or
-    paid (full subscription has been purchased). See [Apigee
+    r"""Output only. DEPRECATED: This will eventually be replaced by
+    BillingType. Subscription type of the Apigee organization. Valid values
+    include trial (free, limited, and for evaluation purposes only) or paid
+    (full subscription has been purchased). See [Apigee
     pricing](https://cloud.google.com/apigee/pricing/).
 
     Values:
@@ -5469,21 +5521,22 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   analyticsRegion = _messages.StringField(1)
   attributes = _messages.StringField(2, repeated=True)
   authorizedNetwork = _messages.StringField(3)
-  caCertificate = _messages.BytesField(4)
-  createdAt = _messages.IntegerField(5)
-  customerName = _messages.StringField(6)
-  description = _messages.StringField(7)
-  displayName = _messages.StringField(8)
-  environments = _messages.StringField(9, repeated=True)
-  lastModifiedAt = _messages.IntegerField(10)
-  name = _messages.StringField(11)
-  projectId = _messages.StringField(12)
-  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 13)
-  runtimeDatabaseEncryptionKeyName = _messages.StringField(14)
-  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 17)
-  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  billingType = _messages.EnumField('BillingTypeValueValuesEnum', 4)
+  caCertificate = _messages.BytesField(5)
+  createdAt = _messages.IntegerField(6)
+  customerName = _messages.StringField(7)
+  description = _messages.StringField(8)
+  displayName = _messages.StringField(9)
+  environments = _messages.StringField(10, repeated=True)
+  lastModifiedAt = _messages.IntegerField(11)
+  name = _messages.StringField(12)
+  projectId = _messages.StringField(13)
+  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 14)
+  runtimeDatabaseEncryptionKeyName = _messages.StringField(15)
+  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 18)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
 
 
 class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):

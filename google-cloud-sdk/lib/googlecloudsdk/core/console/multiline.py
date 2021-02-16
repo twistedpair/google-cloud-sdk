@@ -104,6 +104,7 @@ class SimpleSuffixConsoleOutput(ConsoleOutput):
     self._messages = []
     self._last_print_index = 0
     self._lock = threading.Lock()
+    super(SimpleSuffixConsoleOutput, self).__init__()
 
   def AddMessage(self, message, detail_message_callback=None,
                  indentation_level=0):
@@ -237,7 +238,8 @@ class SuffixConsoleMessage(object):
     """
     if self._console_width == 0 or self._no_output:
       # This can happen if we're on a pseudo-TTY or if the indentation level
-      # cannot be supported; just return to prevent hanging.
+      # cannot be supported; return to prevent the process from being
+      # unresponsive.
       return
 
     message = self.GetMessage()
@@ -356,6 +358,7 @@ class MultilineConsoleOutput(ConsoleOutput):
     self._lock = threading.Lock()
     self._last_total_lines = 0
     self._may_have_update = False
+    super(MultilineConsoleOutput, self).__init__()
 
   def AddMessage(self, message, indentation_level=0):
     """Adds a MultilineConsoleMessage to the MultilineConsoleOutput object.

@@ -44,14 +44,32 @@ from googlecloudsdk.core.util import times
 import six
 
 
+class DefaultArgs(object):
+  """Helper to check if required flags are set and sets defaults if not."""
+
+  @staticmethod
+  def ValidateName(args):
+    """Validates the name arg and sets defaults if values are not set."""
+    account = properties.VALUES.core.account.Get(required=True)
+    if account.find('@') == -1:
+      username = account
+    else:
+      username = account[0:account.find('@')]
+
+    args.name = args.name or username
+
+  @staticmethod
+  def ValidateZone(args):
+    """Validates the zone arg and sets defaults if values are not set."""
+    args.zone = args.zone or properties.VALUES.compute.zone.Get(required=True)
+
+
 class TPUNode(object):
   """Helper to create and modify TPU nodes."""
 
   def __init__(self, release_track):
     if release_track == base.ReleaseTrack.ALPHA:
       self._api_version = 'v1alpha1'
-    elif release_track == base.ReleaseTrack.BETA:
-      self._api_version = 'v1beta1'
     else:
       self._api_version = 'v1'
     self.client = apis.GetClientInstance('tpu', self._api_version)

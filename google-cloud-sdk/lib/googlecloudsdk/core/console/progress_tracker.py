@@ -107,7 +107,7 @@ class _BaseProgressTracker(six.with_metaclass(abc.ABCMeta, object)):
     console_width = console_attr.ConsoleAttr().GetTermSize()[0]
     if console_width < 0:
       # This can happen if we're on a pseudo-TTY. Set it to 0 and also
-      # turn off output to prevent hanging.
+      # turn off output to prevent it from stopping responding.
       console_width = 0
     self._output_enabled = log.IsUserOutputEnabled() and console_width != 0
     # Don't bother autoticking if we aren't going to print anything.
@@ -364,8 +364,8 @@ def CompletionProgressTracker(ofile=None, timeout=4.0, tick_delay=0.1,
   At that point the progress tracker displays '?', forks the cache operation
   into the background, and exits.  This gives the background cache update a
   chance finish.  After background_ttl more seconds the update is forcibly
-  exited (forced to call exit rather than killed by signal) to prevent hung
-  updates from proliferating in the background.
+  exited (forced to call exit rather than killed by signal) to prevent not
+  responding updates from proliferating in the background.
 
   Args:
     ofile: The stream to write to.
@@ -396,8 +396,8 @@ class _NormalCompletionProgressTracker(object):
   At that point the progress tracker displays '?', forks the cache operation
   into the background, and exits.  This gives the background cache update a
   chance finish.  After background_ttl more seconds the update is forcibly
-  exited (forced to call exit rather than killed by signal) to prevent hung
-  updates from proliferating in the background.
+  exited (forced to call exit rather than killed by signal) to prevent not
+  responding updates from proliferating in the background.
   """
 
   _COMPLETION_FD = 9
@@ -662,7 +662,7 @@ class _BaseStagedProgressTracker(collections.Mapping):
     console_width = console.GetTermSize()[0]
     if not isinstance(console_width, int) or console_width < 0:
       # This can happen if we're on a pseudo-TTY. Set it to 0 and also
-      # turn off output to prevent hanging.
+      # turn off output to prevent it from stopping responding.
       console_width = 0
     self._output_enabled = log.IsUserOutputEnabled() and console_width != 0
     # Don't bother autoticking if we aren't going to print anything.

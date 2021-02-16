@@ -34,7 +34,7 @@ def AddSettingsNameArgToParser(parser):
       help=(
           'Name of the resource settings. The list of available settings'
           ' can be found here: '
-          # TODO(b/152985152): Add a url of the list of resource settings
+          # TODO(b/177564987): Add a url of the list of resource settings
       ))
 
 

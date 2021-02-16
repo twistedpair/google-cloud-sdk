@@ -18,7 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import datetime
+
 from apitools.base.py import list_pager
+from google.protobuf import timestamp_pb2
+from googlecloudsdk.api_lib.spanner import response_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import properties
@@ -31,6 +35,9 @@ KNOWN_ROLES = [
     'roles/spanner.databaseReader', 'roles/spanner.databaseUser',
     'roles/spanner.viewer'
 ]
+
+# Timeout to use in ListInstances for unreachable instances.
+UNREACHABLE_INSTANCE_TIMEOUT = datetime.timedelta(seconds=20)
 
 
 def Create(instance, config, description, nodes):
@@ -110,13 +117,18 @@ def List():
   msgs = apis.GetMessagesModule('spanner', 'v1')
   project_ref = resources.REGISTRY.Create(
       'spanner.projects', projectsId=properties.VALUES.core.project.GetOrFail)
+  tp_proto = timestamp_pb2.Timestamp()
+  tp_proto.FromDatetime(
+      datetime.datetime.utcnow() + UNREACHABLE_INSTANCE_TIMEOUT)
   req = msgs.SpannerProjectsInstancesListRequest(
-      parent=project_ref.RelativeName())
+      parent=project_ref.RelativeName(),
+      instanceDeadline=tp_proto.ToJsonString())
   return list_pager.YieldFromList(
       client.projects_instances,
       req,
       field='instances',
-      batch_size_attribute='pageSize')
+      batch_size_attribute='pageSize',
+      get_field_func=response_util.GetFieldAndLogUnreachable)
 
 
 def Patch(instance, description=None, nodes=None):

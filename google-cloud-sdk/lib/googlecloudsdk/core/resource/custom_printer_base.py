@@ -20,7 +20,9 @@ from __future__ import unicode_literals
 
 import abc
 
+from googlecloudsdk.core.console import console_attr as ca
 from googlecloudsdk.core.resource import resource_printer_base
+
 
 import six
 
@@ -91,14 +93,15 @@ class _Marker(object):
 class Table(list, _Marker):
   """Marker class for a table."""
 
-  # Format string to use when generating the string value for a column in a row.
-  _COLUMN_TEMPLATE = '{: <%d}'
-
   # String to use to separate table columns.
   _COLUMN_SEPARATOR = ' '
 
   skip_empty = False
   separator = ''
+
+  def __init__(self, content, console_attr=None):
+    super(Table, self).__init__(content)
+    self._console_attr = console_attr
 
   def CalculateColumnWidths(self, max_column_width=None, indent_length=0):
     """See _Marker base class."""
@@ -120,9 +123,18 @@ class Table(list, _Marker):
     width = column_widths.widths[index]
     if index == 0:
       width -= indent_length
-    column_format = self._COLUMN_TEMPLATE % width
     separator = self.separator if index < len(row) - 1 else ''
-    return column_format.format(str(row[index]) + separator)
+
+    console_attr = self._console_attr
+    if self._console_attr is None:
+      console_attr = ca.ConsoleAttr()
+
+    # calculate number of ' ' paddings required.
+    # avoid using '{: <10}'.format() which doesn't calculate the displaylength
+    # of ANSI ecoded sequence correctly.
+    n_padding = (
+        width - console_attr.DisplayWidth(str(row[index])) - len(separator))
+    return str(row[index]) + separator + (n_padding * ' ')
 
   def _WriteColumns(self, output, indent_length, column_values):
     """Writes generated column values to output with the given indentation."""
@@ -301,7 +313,8 @@ class ColumnWidths(object):
                separator='',
                skip_empty=False,
                max_column_width=None,
-               indent_length=0):
+               indent_length=0,
+               console_attr=None):
     """Computes the width of each column in row and in any nested tables.
 
     Args:
@@ -313,6 +326,7 @@ class ColumnWidths(object):
       max_column_width: An optional maximum column width.
       indent_length: The number of indent spaces that precede `row`. Added to
         the width of the first column in `row`.
+      console_attr: The console attribute for width calculation
 
     Returns:
       A ColumnWidths object containing the computed column widths.
@@ -322,6 +336,7 @@ class ColumnWidths(object):
     self._separator_width = len(separator)
     self._skip_empty = skip_empty
     self._indent_length = indent_length
+    self._console_attr = console_attr
     if row:
       for i in range(len(row)):
         self._ProcessColumn(i, row)
@@ -371,7 +386,10 @@ class ColumnWidths(object):
     if _IsLastColumnInRow(row, index, last_index, self._skip_empty):
       self._SetWidth(index, 0)
     else:
-      width = len(record) + self._separator_width
+      console_attr = self._console_attr
+      if self._console_attr is None:
+        console_attr = ca.ConsoleAttr()
+      width = console_attr.DisplayWidth(str(record)) + self._separator_width
       if index == 0:
         width += self._indent_length
       self._SetWidth(index, width)

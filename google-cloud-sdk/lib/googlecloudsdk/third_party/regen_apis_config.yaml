@@ -184,6 +184,8 @@ apis:
       discovery_doc: cloudasset_v1p4beta1.json
     v1p5beta1:
       discovery_doc: cloudasset_v1p5beta1.json
+    v1p7beta1:
+      discovery_doc: cloudasset_v1p7beta1.json
   cloudbilling:
     v1:
       discovery_doc: cloudbilling_v1.json
@@ -1073,6 +1075,13 @@ apis:
     v1beta1:
       discovery_doc: ondemandscanning_v1beta1.json
       default: true
+      resources:
+        projects.locations.scans:
+          path: projects/{projectsId}/locations/{locationsId}/scans/{scansId}
+        projects.locations.scans.vulnerabilities:
+          path: projects/{projectsId}/locations/{locationsId}/scans/{scansId}/vulnerabilities
+    v1:
+      discovery_doc: ondemandscanning_v1.json
       resources:
         projects.locations.scans:
           path: projects/{projectsId}/locations/{locationsId}/scans/{scansId}

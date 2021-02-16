@@ -405,30 +405,9 @@ class Endpoint(_messages.Message):
 
   Messages:
     MetadataValue: Optional. Metadata for the endpoint. This data can be
-      consumed by service clients. Restrictions: - The entire metadata
+      consumed by service clients. Restrictions: * The entire metadata
       dictionary may contain up to 512 characters, spread accoss all key-value
-      pairs. Metadata that goes beyond any these limits will be rejected. -
-      Valid metadata keys have two segments: an optional prefix and name,
-      separated by a slash (/). The name segment is required and must be 63
-      characters or less, beginning and ending with an alphanumeric character
-      ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
-      alphanumerics between. The prefix is optional. If specified, the prefix
-      must be a DNS subdomain: a series of DNS labels separated by dots (.),
-      not longer than 253 characters in total, followed by a slash (/).
-      Metadata that fails to meet these requirements will be rejected. - The
-      '(*.)google.com/' and '(*.)googleapis.com/' prefixes are reserved for
-      system metadata managed by Service Directory. If the user tries to write
-      to these keyspaces, those entries will be silently ignored by the
-      system.
-
-  Fields:
-    address: Optional. An IPv4 or IPv6 address. Service Directory will reject
-      bad addresses like: "8.8.8" "8.8.8.8:53" "test:bad:address" "[::1]"
-      "[::1]:8080" Limited to 45 characters.
-    metadata: Optional. Metadata for the endpoint. This data can be consumed
-      by service clients. Restrictions: - The entire metadata dictionary may
-      contain up to 512 characters, spread accoss all key-value pairs.
-      Metadata that goes beyond any these limits will be rejected. - Valid
+      pairs. Metadata that goes beyond this limit are rejected * Valid
       metadata keys have two segments: an optional prefix and name, separated
       by a slash (/). The name segment is required and must be 63 characters
       or less, beginning and ending with an alphanumeric character
@@ -436,39 +415,64 @@ class Endpoint(_messages.Message):
       alphanumerics between. The prefix is optional. If specified, the prefix
       must be a DNS subdomain: a series of DNS labels separated by dots (.),
       not longer than 253 characters in total, followed by a slash (/).
-      Metadata that fails to meet these requirements will be rejected. - The
-      '(*.)google.com/' and '(*.)googleapis.com/' prefixes are reserved for
+      Metadata that fails to meet these requirements are rejected * The
+      `(*.)google.com/` and `(*.)googleapis.com/` prefixes are reserved for
       system metadata managed by Service Directory. If the user tries to write
-      to these keyspaces, those entries will be silently ignored by the
-      system.
+      to these keyspaces, those entries are silently ignored by the system
+      Note: This field is equivalent to the `annotations` field in the v1 API.
+      They have the same syntax and read/write to the same location in Service
+      Directory.
+
+  Fields:
+    address: Optional. An IPv4 or IPv6 address. Service Directory rejects bad
+      addresses like: * `8.8.8` * `8.8.8.8:53` * `test:bad:address` * `[::1]`
+      * `[::1]:8080` Limited to 45 characters.
+    metadata: Optional. Metadata for the endpoint. This data can be consumed
+      by service clients. Restrictions: * The entire metadata dictionary may
+      contain up to 512 characters, spread accoss all key-value pairs.
+      Metadata that goes beyond this limit are rejected * Valid metadata keys
+      have two segments: an optional prefix and name, separated by a slash
+      (/). The name segment is required and must be 63 characters or less,
+      beginning and ending with an alphanumeric character ([a-z0-9A-Z]) with
+      dashes (-), underscores (_), dots (.), and alphanumerics between. The
+      prefix is optional. If specified, the prefix must be a DNS subdomain: a
+      series of DNS labels separated by dots (.), not longer than 253
+      characters in total, followed by a slash (/). Metadata that fails to
+      meet these requirements are rejected * The `(*.)google.com/` and
+      `(*.)googleapis.com/` prefixes are reserved for system metadata managed
+      by Service Directory. If the user tries to write to these keyspaces,
+      those entries are silently ignored by the system Note: This field is
+      equivalent to the `annotations` field in the v1 API. They have the same
+      syntax and read/write to the same location in Service Directory.
     name: Immutable. The resource name for the endpoint in the format
-      'projects/*/locations/*/namespaces/*/services/*/endpoints/*'.
+      `projects/*/locations/*/namespaces/*/services/*/endpoints/*`.
     network: Immutable. Specifies the Google Compute Engine Network (VPC) of
-      the Endpoint. Project MUST be specified by project-number, project-id
-      will be rejected. Invalid network (bad format) will be rejected. Network
-      and Project existence is not checked. Example: `projects/project-
+      the Endpoint. Project MUST be specified by project-number, project-id is
+      rejected. Invalid networks (bad format) are rejected. Network and
+      Project existence is not checked. Example: `projects/project-
       number/locations/global/networks/my-network`
-    port: Optional. Service Directory will reject values outside of [0,
-      65535].
+    port: Optional. Service Directory rejects values outside of `[0, 65535]`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
     r"""Optional. Metadata for the endpoint. This data can be consumed by
-    service clients. Restrictions: - The entire metadata dictionary may
+    service clients. Restrictions: * The entire metadata dictionary may
     contain up to 512 characters, spread accoss all key-value pairs. Metadata
-    that goes beyond any these limits will be rejected. - Valid metadata keys
-    have two segments: an optional prefix and name, separated by a slash (/).
-    The name segment is required and must be 63 characters or less, beginning
-    and ending with an alphanumeric character ([a-z0-9A-Z]) with dashes (-),
+    that goes beyond this limit are rejected * Valid metadata keys have two
+    segments: an optional prefix and name, separated by a slash (/). The name
+    segment is required and must be 63 characters or less, beginning and
+    ending with an alphanumeric character ([a-z0-9A-Z]) with dashes (-),
     underscores (_), dots (.), and alphanumerics between. The prefix is
     optional. If specified, the prefix must be a DNS subdomain: a series of
     DNS labels separated by dots (.), not longer than 253 characters in total,
     followed by a slash (/). Metadata that fails to meet these requirements
-    will be rejected. - The '(*.)google.com/' and '(*.)googleapis.com/'
-    prefixes are reserved for system metadata managed by Service Directory. If
-    the user tries to write to these keyspaces, those entries will be silently
-    ignored by the system.
+    are rejected * The `(*.)google.com/` and `(*.)googleapis.com/` prefixes
+    are reserved for system metadata managed by Service Directory. If the user
+    tries to write to these keyspaces, those entries are silently ignored by
+    the system Note: This field is equivalent to the `annotations` field in
+    the v1 API. They have the same syntax and read/write to the same location
+    in Service Directory.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -712,21 +716,21 @@ class Namespace(_messages.Message):
   services together and define permissions for a collection of services.
 
   Messages:
-    LabelsValue: Optional. Resource labels associated with this Namespace. No
+    LabelsValue: Optional. Resource labels associated with this namespace. No
       more than 64 user labels can be associated with a given resource. Label
       keys and values can be no longer than 63 characters.
 
   Fields:
-    labels: Optional. Resource labels associated with this Namespace. No more
+    labels: Optional. Resource labels associated with this namespace. No more
       than 64 user labels can be associated with a given resource. Label keys
       and values can be no longer than 63 characters.
     name: Immutable. The resource name for the namespace in the format
-      'projects/*/locations/*/namespaces/*'.
+      `projects/*/locations/*/namespaces/*`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Resource labels associated with this Namespace. No more than
+    r"""Optional. Resource labels associated with this namespace. No more than
     64 user labels can be associated with a given resource. Label keys and
     values can be no longer than 63 characters.
 
@@ -842,17 +846,25 @@ class ResolveServiceRequest(_messages.Message):
 
   Fields:
     endpointFilter: Optional. The filter applied to the endpoints of the
-      resolved service. General filter string syntax: *`field operator value`*
-      (*`logical connector`*) *`field`* can be `name` or `metadata.`*`key`*
-      for map field. *`operator`* can be `\<`, `>`, `\<=`, `>=`, `!=`, `=`,
-      `:`. Of which `:` means `HAS` and is roughly the same as `=`. *`value`*
-      must be the same data type as the field. *`logical connector*` can be
-      `AND`, `OR`, `NOT`. Examples of valid filters: * `metadata.owner`
-      returns endpoints that have a label with the key `owner`, this is the
-      same as `metadata:owner` * `metadata.protocol=gRPC` returns endpoints
-      that have key/value `protocol=gRPC` * `metadata.owner!=sd AND
-      metadata.foo=bar` returns endpoints that have `owner` field in metadata
-      with a value that is not `sd` and have the key/value `foo=bar`.
+      resolved service. General `filter` string syntax: ` ()` * `` can be
+      `name`, `address`, `port`, or `metadata.` for map field * `` can be `<`,
+      `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:` means `HAS`, and is
+      roughly the same as `=` * `` must be the same data type as field * ``
+      can be `AND`, `OR`, `NOT` Examples of valid filters: * `metadata.owner`
+      returns endpoints that have a annotation with the key `owner`, this is
+      the same as `metadata:owner` * `metadata.protocol=gRPC` returns
+      endpoints that have key/value `protocol=gRPC` * `address=192.108.1.105`
+      returns endpoints that have this address * `port>8080` returns endpoints
+      that have port number larger than 8080 * `name>projects/my-
+      project/locations/us-east1/namespaces/my-namespace/services/my-
+      service/endpoints/endpoint-c` returns endpoints that have name that is
+      alphabetically later than the string, so "endpoint-e" is returned but
+      "endpoint-a" is not * `metadata.owner!=sd AND metadata.foo=bar` returns
+      endpoints that have `owner` in annotation key but value is not `sd` AND
+      have key/value `foo=bar` * `doesnotexist.foo=bar` returns an empty list.
+      Note that endpoint doesn't have a field called "doesnotexist". Since the
+      filter does not match any endpoint, it returns no results For more
+      information about filtering, see [API Filtering](https://aip.dev/160).
     maxEndpoints: Optional. The maximum number of endpoints to return.
       Defaults to 25. Maximum is 100. If a value less than one is specified,
       the Default is used. If a value greater than the Maximum is specified,
@@ -932,25 +944,27 @@ class Service(_messages.Message):
 
   Messages:
     MetadataValue: Optional. Metadata for the service. This data can be
-      consumed by service clients. Restrictions: - The entire metadata
-      dictionary may contain up to 2000 characters, spread accoss all key-
-      value pairs. Metadata that goes beyond any these limits will be
-      rejected. - Valid metadata keys have two segments: an optional prefix
-      and name, separated by a slash (/). The name segment is required and
-      must be 63 characters or less, beginning and ending with an alphanumeric
-      character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
+      consumed by service clients. Restrictions: * The entire metadata
+      dictionary may contain up to 512 characters, spread accoss all key-value
+      pairs. Metadata that goes beyond this limit are rejected * Valid
+      metadata keys have two segments: an optional prefix and name, separated
+      by a slash (/). The name segment is required and must be 63 characters
+      or less, beginning and ending with an alphanumeric character
+      ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
       alphanumerics between. The prefix is optional. If specified, the prefix
       must be a DNS subdomain: a series of DNS labels separated by dots (.),
       not longer than 253 characters in total, followed by a slash (/).
-      Metadata that fails to meet these requirements will be rejected. - The
-      '(*.)google.com/' and '(*.)googleapis.com/' prefixes are reserved for
+      Metadata that fails to meet these requirements are rejected * The
+      `(*.)google.com/` and `(*.)googleapis.com/` prefixes are reserved for
       system metadata managed by Service Directory. If the user tries to write
-      to these keyspaces, those entries will be silently ignored by the
-      system.
+      to these keyspaces, those entries are silently ignored by the system
+      Note: This field is equivalent to the `annotations` field in the v1 API.
+      They have the same syntax and read/write to the same location in Service
+      Directory.
 
   Fields:
     endpoints: Output only. Endpoints associated with this service. Returned
-      on LookupService.Resolve. Control plane clients should use
+      on LookupService.ResolveService. Control plane clients should use
       RegistrationService.ListEndpoints.
     hostname: Optional. Hostname. Service consumer may use for: 1) HTTP
       parameter for Host (HTTP/1.1) or Authority (HTTP/2, HTTP/3) 2) TLS SNI
@@ -959,23 +973,24 @@ class Service(_messages.Message):
       Example: `service.example.com` Limits: Field limited to 255 ASCII
       characters per https://www.ietf.org/rfc/rfc1035.txt
     metadata: Optional. Metadata for the service. This data can be consumed by
-      service clients. Restrictions: - The entire metadata dictionary may
-      contain up to 2000 characters, spread accoss all key-value pairs.
-      Metadata that goes beyond any these limits will be rejected. - Valid
-      metadata keys have two segments: an optional prefix and name, separated
-      by a slash (/). The name segment is required and must be 63 characters
-      or less, beginning and ending with an alphanumeric character
-      ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
-      alphanumerics between. The prefix is optional. If specified, the prefix
-      must be a DNS subdomain: a series of DNS labels separated by dots (.),
-      not longer than 253 characters in total, followed by a slash (/).
-      Metadata that fails to meet these requirements will be rejected. - The
-      '(*.)google.com/' and '(*.)googleapis.com/' prefixes are reserved for
-      system metadata managed by Service Directory. If the user tries to write
-      to these keyspaces, those entries will be silently ignored by the
-      system.
+      service clients. Restrictions: * The entire metadata dictionary may
+      contain up to 512 characters, spread accoss all key-value pairs.
+      Metadata that goes beyond this limit are rejected * Valid metadata keys
+      have two segments: an optional prefix and name, separated by a slash
+      (/). The name segment is required and must be 63 characters or less,
+      beginning and ending with an alphanumeric character ([a-z0-9A-Z]) with
+      dashes (-), underscores (_), dots (.), and alphanumerics between. The
+      prefix is optional. If specified, the prefix must be a DNS subdomain: a
+      series of DNS labels separated by dots (.), not longer than 253
+      characters in total, followed by a slash (/). Metadata that fails to
+      meet these requirements are rejected * The `(*.)google.com/` and
+      `(*.)googleapis.com/` prefixes are reserved for system metadata managed
+      by Service Directory. If the user tries to write to these keyspaces,
+      those entries are silently ignored by the system Note: This field is
+      equivalent to the `annotations` field in the v1 API. They have the same
+      syntax and read/write to the same location in Service Directory.
     name: Immutable. The resource name for the service in the format
-      'projects/*/locations/*/namespaces/*/services/*'.
+      `projects/*/locations/*/namespaces/*/services/*`.
     serviceIdentities: Optional. Authorized Service Identities. If provided,
       the consumer may use this information to determine whether the service
       provider is authorized. Examples: `spiffe_id:spiffe://example.org/my-
@@ -986,20 +1001,22 @@ class Service(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
     r"""Optional. Metadata for the service. This data can be consumed by
-    service clients. Restrictions: - The entire metadata dictionary may
-    contain up to 2000 characters, spread accoss all key-value pairs. Metadata
-    that goes beyond any these limits will be rejected. - Valid metadata keys
-    have two segments: an optional prefix and name, separated by a slash (/).
-    The name segment is required and must be 63 characters or less, beginning
-    and ending with an alphanumeric character ([a-z0-9A-Z]) with dashes (-),
+    service clients. Restrictions: * The entire metadata dictionary may
+    contain up to 512 characters, spread accoss all key-value pairs. Metadata
+    that goes beyond this limit are rejected * Valid metadata keys have two
+    segments: an optional prefix and name, separated by a slash (/). The name
+    segment is required and must be 63 characters or less, beginning and
+    ending with an alphanumeric character ([a-z0-9A-Z]) with dashes (-),
     underscores (_), dots (.), and alphanumerics between. The prefix is
     optional. If specified, the prefix must be a DNS subdomain: a series of
     DNS labels separated by dots (.), not longer than 253 characters in total,
     followed by a slash (/). Metadata that fails to meet these requirements
-    will be rejected. - The '(*.)google.com/' and '(*.)googleapis.com/'
-    prefixes are reserved for system metadata managed by Service Directory. If
-    the user tries to write to these keyspaces, those entries will be silently
-    ignored by the system.
+    are rejected * The `(*.)google.com/` and `(*.)googleapis.com/` prefixes
+    are reserved for system metadata managed by Service Directory. If the user
+    tries to write to these keyspaces, those entries are silently ignored by
+    the system Note: This field is equivalent to the `annotations` field in
+    the v1 API. They have the same syntax and read/write to the same location
+    in Service Directory.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -1134,30 +1151,32 @@ class ServicedirectoryProjectsLocationsNamespacesListRequest(_messages.Message):
   r"""A ServicedirectoryProjectsLocationsNamespacesListRequest object.
 
   Fields:
-    filter: Optional. The filter to list result by. General filter string
-      syntax: () can be "name", or "labels." for map field. can be "<, >, <=,
-      >=, !=, =, :". Of which ":" means HAS, and is roughly the same as "=".
-      must be the same data type as field. can be "AND, OR, NOT". Examples of
-      valid filters: * "labels.owner" returns Namespaces that have a label
-      with the key "owner" this is the same as "labels:owner". *
-      "labels.protocol=gRPC" returns Namespaces that have key/value
-      "protocol=gRPC". * "name>projects/my-project/locations/us-
-      east/namespaces/namespace-c" returns Namespaces that have name that is
-      alphabetically later than the string, so "namespace-e" will be returned
-      but "namespace-a" will not be. * "labels.owner!=sd AND labels.foo=bar"
-      returns Namespaces that have "owner" in label key but value is not "sd"
-      AND have key/value foo=bar. * "doesnotexist.foo=bar" returns an empty
-      list. Note that Namespace doesn't have a field called "doesnotexist".
-      Since the filter does not match any Namespaces, it returns no results.
-    orderBy: Optional. The order to list result by. General order by string
-      syntax: () (,) allows values {"name"} ascending or descending order by .
-      If this is left blank, "asc" is used. Note that an empty order_by string
-      result in default order, which is order by name in ascending order.
+    filter: Optional. The filter to list results by. General `filter` string
+      syntax: ` ()` * `` can be `name` or `labels.` for map field * `` can be
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:` means `HAS`, and is
+      roughly the same as `=` * `` must be the same data type as field * ``
+      can be `AND`, `OR`, `NOT` Examples of valid filters: * `labels.owner`
+      returns namespaces that have a label with the key `owner`, this is the
+      same as `labels:owner` * `labels.owner=sd` returns namespaces that have
+      key/value `owner=sd` * `name>projects/my-project/locations/us-
+      east1/namespaces/namespace-c` returns namespaces that have name that is
+      alphabetically later than the string, so "namespace-e" is returned but
+      "namespace-a" is not * `labels.owner!=sd AND labels.foo=bar` returns
+      namespaces that have `owner` in label key but value is not `sd` AND have
+      key/value `foo=bar` * `doesnotexist.foo=bar` returns an empty list. Note
+      that namespace doesn't have a field called "doesnotexist". Since the
+      filter does not match any namespaces, it returns no results For more
+      information about filtering, see [API Filtering](https://aip.dev/160).
+    orderBy: Optional. The order to list results by. General `order_by` string
+      syntax: ` () (,)` * `` allows value: `name` * `` ascending or descending
+      order by ``. If this is left blank, `asc` is used Note that an empty
+      `order_by` string results in default order, which is order by `name` in
+      ascending order.
     pageSize: Optional. The maximum number of items to return.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
     parent: Required. The resource name of the project and location whose
-      namespaces we'd like to list.
+      namespaces you'd like to list.
   """
 
   filter = _messages.StringField(1)
@@ -1172,7 +1191,7 @@ class ServicedirectoryProjectsLocationsNamespacesPatchRequest(_messages.Message)
 
   Fields:
     name: Immutable. The resource name for the namespace in the format
-      'projects/*/locations/*/namespaces/*'.
+      `projects/*/locations/*/namespaces/*`.
     namespace: A Namespace resource to be passed as the request body.
     updateMask: Required. List of fields to be updated in this request.
   """
@@ -1265,29 +1284,35 @@ class ServicedirectoryProjectsLocationsNamespacesServicesEndpointsListRequest(_m
   object.
 
   Fields:
-    filter: Optional. The filter to list result by. General filter string
-      syntax: () can be "name", "address", "port" or "metadata." for map
-      field. can be "<, >, <=, >=, !=, =, :". Of which ":" means HAS, and is
-      roughly the same as "=". must be the same data type as field. can be
-      "AND, OR, NOT". Examples of valid filters: * "metadata.owner" returns
-      Endpoints that have a label with the key "owner" this is the same as
-      "metadata:owner". * "metadata.protocol=gRPC" returns Endpoints that have
-      key/value "protocol=gRPC". * "address=192.108.1.105" returns Endpoints
-      that have this address. * "port>8080" returns Endpoints that have port
-      number larger than 8080. * "name>projects/my-project/locations/us-
-      east/namespaces/my-namespace/services/my-service/endpoints/endpoint-c"
-      returns Endpoints that have name that is alphabetically later than the
-      string, so "endpoint-e" will be returned but "endpoint-a" will not be. *
-      "metadata.owner!=sd AND metadata.foo=bar" returns Endpoints that have
-      "owner" in label key but value is not "sd" AND have key/value foo=bar. *
-      "doesnotexist.foo=bar" returns an empty list. Note that Endpoint doesn't
+    filter: Optional. The filter to list results by. General `filter` string
+      syntax: ` ()` * `` can be `name`, `address`, `port`, or `metadata.` for
+      map field * `` can be `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:`
+      means `HAS`, and is roughly the same as `=` * `` must be the same data
+      type as field * `` can be `AND`, `OR`, `NOT` Examples of valid filters:
+      * `metadata.owner` returns endpoints that have a metadata with the key
+      `owner`, this is the same as `metadata:owner` * `metadata.protocol=gRPC`
+      returns endpoints that have key/value `protocol=gRPC` *
+      `address=192.108.1.105` returns endpoints that have this address *
+      `port>8080` returns endpoints that have port number larger than 8080 *
+      `name>projects/my-project/locations/us-east1/namespaces/my-
+      namespace/services/my-service/endpoints/endpoint-c` returns endpoints
+      that have name that is alphabetically later than the string, so
+      "endpoint-e" is returned but "endpoint-a" is not * `metadata.owner!=sd
+      AND metadata.foo=bar` returns endpoints that have `owner` in metadata
+      key but value is not `sd` AND have key/value `foo=bar` *
+      `doesnotexist.foo=bar` returns an empty list. Note that endpoint doesn't
       have a field called "doesnotexist". Since the filter does not match any
-      Endpoints, it returns no results.
-    orderBy: Optional. The order to list result by.
+      endpoints, it returns no results For more information about filtering,
+      see [API Filtering](https://aip.dev/160).
+    orderBy: Optional. The order to list results by. General `order_by` string
+      syntax: ` () (,)` * `` allows values: `name`, `address`, `port` * ``
+      ascending or descending order by ``. If this is left blank, `asc` is
+      used Note that an empty `order_by` string results in default order,
+      which is order by `name` in ascending order.
     pageSize: Optional. The maximum number of items to return.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
-    parent: Required. The resource name of the service whose endpoints we'd
+    parent: Required. The resource name of the service whose endpoints you'd
       like to list.
   """
 
@@ -1306,7 +1331,7 @@ class ServicedirectoryProjectsLocationsNamespacesServicesEndpointsPatchRequest(_
   Fields:
     endpoint: A Endpoint resource to be passed as the request body.
     name: Immutable. The resource name for the endpoint in the format
-      'projects/*/locations/*/namespaces/*/services/*/endpoints/*'.
+      `projects/*/locations/*/namespaces/*/services/*/endpoints/*`.
     updateMask: Required. List of fields to be updated in this request.
   """
 
@@ -1345,27 +1370,32 @@ class ServicedirectoryProjectsLocationsNamespacesServicesListRequest(_messages.M
   r"""A ServicedirectoryProjectsLocationsNamespacesServicesListRequest object.
 
   Fields:
-    filter: Optional. The filter to list result by. General filter string
-      syntax: () can be "name", or "metadata." for map field. can be "<, >,
-      <=, >=, !=, =, :". Of which ":" means HAS, and is roughly the same as
-      "=". must be the same data type as field. can be "AND, OR, NOT".
-      Examples of valid filters: * "metadata.owner" returns Services that have
-      a label with the key "owner" this is the same as "metadata:owner". *
-      "metadata.protocol=gRPC" returns Services that have key/value
-      "protocol=gRPC". * "name>projects/my-project/locations/us-
-      east/namespaces/my-namespace/services/service-c" returns Services that
-      have name that is alphabetically later than the string, so "service-e"
-      will be returned but "service-a" will not be. * "metadata.owner!=sd AND
-      metadata.foo=bar" returns Services that have "owner" in label key but
-      value is not "sd" AND have key/value foo=bar. * "doesnotexist.foo=bar"
-      returns an empty list. Note that Service doesn't have a field called
-      "doesnotexist". Since the filter does not match any Services, it returns
-      no results.
-    orderBy: Optional. The order to list result by.
+    filter: Optional. The filter to list results by. General `filter` string
+      syntax: ` ()` * `` can be `name` or `metadata.` for map field * `` can
+      be `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:` means `HAS`, and
+      is roughly the same as `=` * `` must be the same data type as field * ``
+      can be `AND`, `OR`, `NOT` Examples of valid filters: * `metadata.owner`
+      returns services that have a metadata with the key `owner`, this is the
+      same as `metadata:owner` * `metadata.protocol=gRPC` returns services
+      that have key/value `protocol=gRPC` * `name>projects/my-
+      project/locations/us-east1/namespaces/my-namespace/services/service-c`
+      returns services that have name that is alphabetically later than the
+      string, so "service-e" is returned but "service-a" is not *
+      `metadata.owner!=sd AND metadata.foo=bar` returns services that have
+      `owner` in metadata key but value is not `sd` AND have key/value
+      `foo=bar` * `doesnotexist.foo=bar` returns an empty list. Note that
+      service doesn't have a field called "doesnotexist". Since the filter
+      does not match any services, it returns no results For more information
+      about filtering, see [API Filtering](https://aip.dev/160).
+    orderBy: Optional. The order to list results by. General `order_by` string
+      syntax: ` () (,)` * `` allows value: `name` * `` ascending or descending
+      order by ``. If this is left blank, `asc` is used Note that an empty
+      `order_by` string results in default order, which is order by `name` in
+      ascending order.
     pageSize: Optional. The maximum number of items to return.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
-    parent: Required. The resource name of the namespace whose services we'd
+    parent: Required. The resource name of the namespace whose services you'd
       like to list.
   """
 
@@ -1382,7 +1412,7 @@ class ServicedirectoryProjectsLocationsNamespacesServicesPatchRequest(_messages.
 
   Fields:
     name: Immutable. The resource name for the service in the format
-      'projects/*/locations/*/namespaces/*/services/*'.
+      `projects/*/locations/*/namespaces/*/services/*`.
     service: A Service resource to be passed as the request body.
     updateMask: Required. List of fields to be updated in this request.
   """

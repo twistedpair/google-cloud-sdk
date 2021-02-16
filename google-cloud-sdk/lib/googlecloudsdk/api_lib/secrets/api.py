@@ -112,11 +112,17 @@ class Secrets(Client):
              labels,
              expire_time=None,
              ttl=None,
-             keys=None):
+             keys=None,
+             topics=None):
     """Create a secret."""
     keys = keys or []
     replication = _MakeReplicationMessage(self.messages, policy, locations,
                                           keys)
+    topics_message_list = []
+    if topics:
+      for topic in topics:
+        topics_message_list.append(self.messages.Topic(name=topic))
+
     return self.service.Create(
         self.messages.SecretmanagerProjectsSecretsCreateRequest(
             parent=secret_ref.Parent().RelativeName(),
@@ -125,7 +131,8 @@ class Secrets(Client):
                 labels=labels,
                 replication=replication,
                 expireTime=expire_time,
-                ttl=ttl)))
+                ttl=ttl,
+                topics=topics_message_list)))
 
   def Delete(self, secret_ref):
     """Delete a secret."""
@@ -166,13 +173,26 @@ class Secrets(Client):
             payload=self.messages.SecretPayload(data=data)))
     return self.service.AddVersion(request)
 
-  def Update(self, secret_ref, labels, update_mask, expire_time=None, ttl=None):
+  def Update(self,
+             secret_ref,
+             labels,
+             update_mask,
+             expire_time=None,
+             ttl=None,
+             topics=None):
     """Update a secret."""
+    topics_message_list = []
+    if topics:
+      for topic in topics:
+        topics_message_list.append(self.messages.Topic(name=topic))
     return self.service.Patch(
         self.messages.SecretmanagerProjectsSecretsPatchRequest(
             name=secret_ref.RelativeName(),
             secret=self.messages.Secret(
-                labels=labels, expireTime=expire_time, ttl=ttl),
+                labels=labels,
+                expireTime=expire_time,
+                ttl=ttl,
+                topics=topics_message_list),
             updateMask=_FormatUpdateMask(update_mask)))
 
   def SetReplication(self, secret_ref, policy, locations, keys):

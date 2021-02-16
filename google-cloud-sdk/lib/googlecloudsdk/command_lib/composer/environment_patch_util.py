@@ -499,7 +499,24 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, worker_min_count,
           workerCpu=worker_cpu,
           workerMinCount=worker_min_count,
           workerMaxCount=worker_max_count))
-  return 'config.workloads_config', messages.Environment(config=config)
+  mask = ''
+  if scheduler_cpu:
+    mask = mask + 'config.workloads_config.scheduler_cpu'
+  if worker_cpu:
+    if mask:
+      mask = mask + ','
+    mask = mask + 'config.workloads_config.worker_cpu'
+  if worker_min_count:
+    if mask:
+      mask = mask + ','
+    mask = mask + 'config.workloads_config.worker_min_count'
+  if worker_max_count:
+    if mask:
+      mask = mask + ','
+    mask = mask + 'config.workloads_config.worker_max_count'
+  if scheduler_cpu and worker_cpu and worker_min_count and worker_max_count:
+    mask = 'config.workloads_config'
+  return mask, messages.Environment(config=config)
 
 
 def _ConstructMaintenanceWindowPatch(maintenance_window_start,

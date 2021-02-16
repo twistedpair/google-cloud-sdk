@@ -26,6 +26,28 @@ class Capacity(_messages.Message):
   subscribeMibPerSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class ComputeHeadCursorRequest(_messages.Message):
+  r"""Compute the current head cursor for a partition.
+
+  Fields:
+    partition: Required. The partition for which we should compute the head
+      cursor.
+  """
+
+  partition = _messages.IntegerField(1)
+
+
+class ComputeHeadCursorResponse(_messages.Message):
+  r"""Response containing the head cursor for the requested topic and
+  partition.
+
+  Fields:
+    headCursor: The head cursor.
+  """
+
+  headCursor = _messages.MessageField('Cursor', 1)
+
+
 class ComputeMessageStatsRequest(_messages.Message):
   r"""Compute statistics about a range of messages in a given topic and
   partition.
@@ -403,6 +425,20 @@ class PubsubliteCursorProjectsLocationsSubscriptionsCursorsListRequest(_messages
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class PubsubliteTopicStatsProjectsLocationsTopicsComputeHeadCursorRequest(_messages.Message):
+  r"""A PubsubliteTopicStatsProjectsLocationsTopicsComputeHeadCursorRequest
+  object.
+
+  Fields:
+    computeHeadCursorRequest: A ComputeHeadCursorRequest resource to be passed
+      as the request body.
+    topic: Required. The topic for which we should compute the head cursor.
+  """
+
+  computeHeadCursorRequest = _messages.MessageField('ComputeHeadCursorRequest', 1)
+  topic = _messages.StringField(2, required=True)
 
 
 class PubsubliteTopicStatsProjectsLocationsTopicsComputeMessageStatsRequest(_messages.Message):

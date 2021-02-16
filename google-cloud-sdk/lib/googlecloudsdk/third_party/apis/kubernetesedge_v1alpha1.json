@@ -249,6 +249,10 @@
         "hub": {
           "description": "GKE Hub configuration.",
           "$ref": "Hub"
+        },
+        "endpoint": {
+          "description": "The IP address of the Kubernetes API server.",
+          "type": "string"
         }
       }
     },

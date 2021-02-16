@@ -21,12 +21,14 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.resourcesettings import service as settings_service
 
 
-def GetCreateRequestFromArgs(args, setting_value):
+def GetCreateRequestFromArgs(args, parent_resource, setting_id, setting_value):
   """Returns the get_request from the user-specified arguments.
 
   Args:
     args: argparse.Namespace, An object that contains the values for the
       arguments specified in the Args method.
+    parent_resource: resource location such as `organizations/123`
+    setting_id: setting id such as `iam-projectCreatorRoles`
     setting_value: setting value object contains name, value and (optional) etag
   """
 
@@ -39,8 +41,9 @@ def GetCreateRequestFromArgs(args, setting_value):
   else:
     message_type = messages.ResourcesettingsProjectsSettingsValueCreateRequest
 
-  get_request = message_type(name=setting_value.name,
-                             googleCloudResourcesettingsV1alpha1SettingValue
+  get_request = message_type(parent=parent_resource,
+                             settingsId=setting_id,
+                             googleCloudResourcesettingsV1SettingValue
                              =setting_value)
 
   return get_request
@@ -106,14 +109,14 @@ def GetLookupEffectiveValueRequestFromArgs(args, parent_resource):
   messages = settings_service.ResourceSettingsMessages()
 
   if args.organization:
-    get_request = messages.ResourcesettingsOrganizationsSettingsLookupEffectiveValueRequest(
-        parent=parent_resource)
+    get_request = messages.ResourcesettingsOrganizationsSettingsValueLookupEffectiveValueRequest(
+        name=parent_resource)
   elif args.folder:
-    get_request = messages.ResourcesettingsFoldersSettingsLookupEffectiveValueRequest(
-        parent=parent_resource)
+    get_request = messages.ResourcesettingsFoldersSettingsValueLookupEffectiveValueRequest(
+        name=parent_resource)
   else:
-    get_request = messages.ResourcesettingsProjectsSettingsLookupEffectiveValueRequest(
-        parent=parent_resource)
+    get_request = messages.ResourcesettingsProjectsSettingsValueLookupEffectiveValueRequest(
+        name=parent_resource)
 
   return get_request
 
@@ -203,7 +206,7 @@ def GetUpdateValueRequestFromArgs(args, setting_value):
     message_type = messages.ResourcesettingsProjectsSettingsUpdateValueRequest
 
   get_request = message_type(name=setting_value.name,
-                             googleCloudResourcesettingsV1alpha1SettingValue
+                             googleCloudResourcesettingsV1SettingValue
                              =setting_value)
 
   return get_request

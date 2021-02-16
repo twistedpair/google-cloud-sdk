@@ -40,6 +40,8 @@ class MetastoreV1beta(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_services_databases_tables = self.ProjectsLocationsServicesDatabasesTablesService(self)
+    self.projects_locations_services_databases = self.ProjectsLocationsServicesDatabasesService(self)
     self.projects_locations_services_metadataImports = self.ProjectsLocationsServicesMetadataImportsService(self)
     self.projects_locations_services = self.ProjectsLocationsServicesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -133,6 +135,134 @@ class MetastoreV1beta(base_api.BaseApiClient):
         request_field='',
         request_type_name='MetastoreProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsServicesDatabasesTablesService(base_api.BaseApiService):
+    """Service class for the projects_locations_services_databases_tables resource."""
+
+    _NAME = 'projects_locations_services_databases_tables'
+
+    def __init__(self, client):
+      super(MetastoreV1beta.ProjectsLocationsServicesDatabasesTablesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (MetastoreProjectsLocationsServicesDatabasesTablesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/databases/{databasesId}/tables/{tablesId}:getIamPolicy',
+        http_method='GET',
+        method_id='metastore.projects.locations.services.databases.tables.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='MetastoreProjectsLocationsServicesDatabasesTablesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
+
+      Args:
+        request: (MetastoreProjectsLocationsServicesDatabasesTablesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/databases/{databasesId}/tables/{tablesId}:setIamPolicy',
+        http_method='POST',
+        method_id='metastore.projects.locations.services.databases.tables.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='MetastoreProjectsLocationsServicesDatabasesTablesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsServicesDatabasesService(base_api.BaseApiService):
+    """Service class for the projects_locations_services_databases resource."""
+
+    _NAME = 'projects_locations_services_databases'
+
+    def __init__(self, client):
+      super(MetastoreV1beta.ProjectsLocationsServicesDatabasesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (MetastoreProjectsLocationsServicesDatabasesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/databases/{databasesId}:getIamPolicy',
+        http_method='GET',
+        method_id='metastore.projects.locations.services.databases.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='MetastoreProjectsLocationsServicesDatabasesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
+
+      Args:
+        request: (MetastoreProjectsLocationsServicesDatabasesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/databases/{databasesId}:setIamPolicy',
+        http_method='POST',
+        method_id='metastore.projects.locations.services.databases.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='MetastoreProjectsLocationsServicesDatabasesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 

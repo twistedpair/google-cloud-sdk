@@ -28,6 +28,11 @@ class Asset(_messages.Message):
       by the user.
 
   Fields:
+    canonicalName: The canonical name of the resource. It's either
+      "organizations/{organization_id}/assets/{asset_id}",
+      "folders/{folder_id}/assets/{asset_id}" or
+      "projects/{project_number}/assets/{asset_id}", depending on the closest
+      CRM ancestor of the resource.
     createTime: The time at which the asset was created in Security Command
       Center.
     iamPolicy: Cloud IAM Policy information associated with the Google Cloud
@@ -77,13 +82,14 @@ class Asset(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  iamPolicy = _messages.MessageField('IamPolicy', 2)
-  name = _messages.StringField(3)
-  resourceProperties = _messages.MessageField('ResourcePropertiesValue', 4)
-  securityCenterProperties = _messages.MessageField('SecurityCenterProperties', 5)
-  securityMarks = _messages.MessageField('SecurityMarks', 6)
-  updateTime = _messages.StringField(7)
+  canonicalName = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  iamPolicy = _messages.MessageField('IamPolicy', 3)
+  name = _messages.StringField(4)
+  resourceProperties = _messages.MessageField('ResourcePropertiesValue', 5)
+  securityCenterProperties = _messages.MessageField('SecurityCenterProperties', 6)
+  securityMarks = _messages.MessageField('SecurityMarks', 7)
+  updateTime = _messages.StringField(8)
 
 
 class AssetDiscoveryConfig(_messages.Message):
@@ -301,6 +307,12 @@ class Finding(_messages.Message):
       only.
 
   Fields:
+    canonicalName: The canonical name of the finding. It's either "organizatio
+      ns/{organization_id}/sources/{source_id}/findings/{finding_id}",
+      "folders/{folder_id}/sources/{source_id}/findings/{finding_id}" or
+      "projects/{project_number}/sources/{source_id}/findings/{finding_id}",
+      depending on the closest CRM ancestor of the resource associated with
+      the finding.
     category: The additional taxonomy group within findings from a given
       source. This field is immutable after creation time. Example:
       "XSS_FLASH_INJECTION"
@@ -434,17 +446,18 @@ class Finding(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  category = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  eventTime = _messages.StringField(3)
-  externalUri = _messages.StringField(4)
-  name = _messages.StringField(5)
-  parent = _messages.StringField(6)
-  resourceName = _messages.StringField(7)
-  securityMarks = _messages.MessageField('SecurityMarks', 8)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 9)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
+  canonicalName = _messages.StringField(1)
+  category = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  eventTime = _messages.StringField(4)
+  externalUri = _messages.StringField(5)
+  name = _messages.StringField(6)
+  parent = _messages.StringField(7)
+  resourceName = _messages.StringField(8)
+  securityMarks = _messages.MessageField('SecurityMarks', 9)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 10)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
 
 
 class Folder(_messages.Message):
@@ -1581,6 +1594,14 @@ class SecurityMarks(_messages.Message):
       between 1 - 4096 characters (inclusive)
 
   Fields:
+    canonicalName: The canonical name of the marks. Examples:
+      "organizations/{organization_id}/assets/{asset_id}/securityMarks"
+      "folders/{folder_id}/assets/{asset_id}/securityMarks"
+      "projects/{project_number}/assets/{asset_id}/securityMarks" "organizatio
+      ns/{organization_id}/sources/{source_id}/findings/{finding_id}/securityM
+      arks" "folders/{folder_id}/sources/{source_id}/findings/{finding_id}/sec
+      urityMarks" "projects/{project_number}/sources/{source_id}/findings/{fin
+      ding_id}/securityMarks"
     marks: Mutable user specified security marks belonging to the parent
       resource. Constraints are as follows: * Keys and values are treated as
       case insensitive * Keys must be between 1 - 256 characters (inclusive) *
@@ -1624,8 +1645,9 @@ class SecurityMarks(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  marks = _messages.MessageField('MarksValue', 1)
-  name = _messages.StringField(2)
+  canonicalName = _messages.StringField(1)
+  marks = _messages.MessageField('MarksValue', 2)
+  name = _messages.StringField(3)
 
 
 class SecuritycenterFoldersAssetsGroupRequest(_messages.Message):
@@ -2932,6 +2954,11 @@ class Source(_messages.Message):
   findings that come from the same scanner, logger, monitor, and other tools.
 
   Fields:
+    canonicalName: The canonical name of the finding. It's either
+      "organizations/{organization_id}/sources/{source_id}",
+      "folders/{folder_id}/sources/{source_id}" or
+      "projects/{project_number}/sources/{source_id}", depending on the
+      closest CRM ancestor of the resource associated with the finding.
     description: The description of the source (max of 1024 characters).
       Example: "Web Security Scanner is a web security scanner for common
       vulnerabilities in App Engine applications. It can automatically scan
@@ -2947,9 +2974,10 @@ class Source(_messages.Message):
       me Example: "organizations/{organization_id}/sources/{source_id}"
   """
 
-  description = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  name = _messages.StringField(3)
+  canonicalName = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

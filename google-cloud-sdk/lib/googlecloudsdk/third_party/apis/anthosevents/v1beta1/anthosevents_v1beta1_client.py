@@ -39,6 +39,7 @@ class AnthoseventsV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.brokers = self.BrokersService(self)
     self.customresourcedefinitions = self.CustomresourcedefinitionsService(self)
     self.namespaces_apiserversources = self.NamespacesApiserversourcesService(self)
     self.namespaces_brokers = self.NamespacesBrokersService(self)
@@ -50,6 +51,43 @@ class AnthoseventsV1beta1(base_api.BaseApiClient):
     self.namespaces_pingsources = self.NamespacesPingsourcesService(self)
     self.namespaces_triggers = self.NamespacesTriggersService(self)
     self.namespaces = self.NamespacesService(self)
+    self.triggers = self.TriggersService(self)
+
+  class BrokersService(base_api.BaseApiService):
+    """Service class for the brokers resource."""
+
+    _NAME = 'brokers'
+
+    def __init__(self, client):
+      super(AnthoseventsV1beta1.BrokersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list brokers in all namespaces.
+
+      Args:
+        request: (AnthoseventsBrokersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBrokersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='anthosevents.brokers.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'parent', 'resourceVersion', 'watch'],
+        relative_path='apis/eventing.knative.dev/v1beta1/brokers',
+        request_field='',
+        request_type_name='AnthoseventsBrokersListRequest',
+        response_type_name='ListBrokersResponse',
+        supports_download=False,
+    )
 
   class CustomresourcedefinitionsService(base_api.BaseApiService):
     """Service class for the customresourcedefinitions resource."""
@@ -1266,3 +1304,39 @@ class AnthoseventsV1beta1(base_api.BaseApiClient):
       super(AnthoseventsV1beta1.NamespacesService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class TriggersService(base_api.BaseApiService):
+    """Service class for the triggers resource."""
+
+    _NAME = 'triggers'
+
+    def __init__(self, client):
+      super(AnthoseventsV1beta1.TriggersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list triggers in all namespaces.
+
+      Args:
+        request: (AnthoseventsTriggersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTriggersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='anthosevents.triggers.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'parent', 'resourceVersion', 'watch'],
+        relative_path='apis/eventing.knative.dev/v1beta1/triggers',
+        request_field='',
+        request_type_name='AnthoseventsTriggersListRequest',
+        response_type_name='ListTriggersResponse',
+        supports_download=False,
+    )

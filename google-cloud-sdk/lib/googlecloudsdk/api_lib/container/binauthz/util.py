@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
+LOCATIONS_POLICY = 'binaryauthorization.systempolicy'
 PROJECTS_COLLECTION = 'binaryauthorization.projects'
 PROJECTS_POLICY_COLLECTION = 'binaryauthorization.projects.policy'
 PROJECTS_ATTESTORS_COLLECTION = 'binaryauthorization.projects.attestors'
@@ -41,6 +42,13 @@ def GetPolicyRef():
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection=PROJECTS_POLICY_COLLECTION,
   )
+
+
+def GetSystemPolicyRef(location):
+  return resources.REGISTRY.Parse(
+      None,
+      params={'locationsId': location},
+      collection=LOCATIONS_POLICY)
 
 
 def GetAttestorRef(attestor_name):

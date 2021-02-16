@@ -1,3 +1,13 @@
+project:
+  name: project
+  collection: pubsub.projects
+  attributes:
+  - parameter_name: projectsId
+    attribute_name: project
+    help: |
+      The project name.
+    property: core/project
+
 subscription:
   name: subscription
   collection: pubsub.projects.subscriptions
@@ -15,6 +25,16 @@ topic:
     attribute_name: topic
     help: |
       The topic name.
+
+schema:
+  name: schema
+  collection: pubsub.projects.schemas
+  request_id_field: schemaId
+  attributes:
+  - parameter_name: schemasId
+    attribute_name: schema
+    help: |
+      The schema name.
 
 location:
   name: location

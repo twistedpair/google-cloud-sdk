@@ -99,6 +99,8 @@ CONDITION_FILE_FORMAT_EXCEPTION = gcloud_exceptions.InvalidArgumentException(
 MAX_LIBRARY_IAM_SUPPORTED_VERSION = 3
 
 _ALL_CONDITIONS = {'All': None}
+_NEW_CONDITION = object()
+_NONE_CONDITION = {'None': None}
 
 
 def _IsAllConditions(condition):
@@ -311,11 +313,17 @@ def AddArgsForAddIamPolicyBinding(parser,
     ArgumentError if one of the arguments is already defined in the parser.
   """
 
+  help_text = """
+    Role name to assign to the member. The role name is the complete path of a
+    predefined role, such as `roles/logging.viewer`, or a custom role, such as
+    `organizations/{ORGANIZATION_ID}/roles/logging.viewer`.
+  """
+
   parser.add_argument(
       '--role',
       required=True,
       completer=role_completer,
-      help='Define the role of the member.')
+      help=help_text)
   _AddMemberFlag(parser, 'to add the binding for')
   if add_condition:
     _AddConditionFlagsForAddBindingToIamPolicy(parser)
@@ -456,16 +464,21 @@ def _ConditionsInPolicy(policy, member=None, role=None):
   Returns:
     A list of conditions got selected
   """
-  conditions = []
+  conditions = {}
   for binding in policy.bindings:
     if (member is None or member in binding.members) and (role is None or
                                                           role == binding.role):
-      conditions.append(binding.condition)
-  conditions = [_ConditionToString(condition) for condition in conditions]
-  conditions = sorted(list(set(conditions)))
+      condition = binding.condition
+      conditions[_ConditionToString(condition)] = condition
+  contain_none = False
   if 'None' in conditions:
-    conditions = [c for c in conditions if c != 'None']
-    conditions.append('None')
+    contain_none = True
+    del conditions['None']
+  conditions = [(condition_str, condition)
+                for condition_str, condition in conditions.items()]
+  conditions = sorted(conditions, key=lambda x: x[0])
+  if contain_none:
+    conditions.append(('None', _NONE_CONDITION))
   return conditions
 
 
@@ -477,8 +490,8 @@ def _ConditionToString(condition):
   for key in keys:
     if getattr(condition, key) is not None:
       key_values.append('{key}={value}'.format(
-          key=key, value=getattr(condition, key)))
-  return ','.join(key_values)
+          key=key.upper(), value=getattr(condition, key)))
+  return ', '.join(key_values)
 
 
 def PromptChoicesForAddBindingToIamPolicy(policy):
@@ -493,9 +506,9 @@ def PromptChoicesForAddBindingToIamPolicy(policy):
     `Specify a new condition`.
   """
   conditions = _ConditionsInPolicy(policy)
-  if conditions[-1] != 'None':
-    conditions.append('None')
-  conditions.append('Specify a new condition')
+  if conditions and conditions[-1][0] != 'None':
+    conditions.append(('None', _NONE_CONDITION))
+  conditions.append(('Specify a new condition', _NEW_CONDITION))
   return conditions
 
 
@@ -512,8 +525,17 @@ def PromptChoicesForRemoveBindingFromIamPolicy(policy, member, role):
   """
   conditions = _ConditionsInPolicy(policy, member, role)
   if conditions:
-    conditions.append('all conditions')
+    conditions.append(('all conditions', _ALL_CONDITIONS))
   return conditions
+
+
+def _ToDictCondition(condition):
+  if isinstance(condition, dict):
+    return condition
+  return_condition = {}
+  for key in ('expression', 'title', 'description'):
+    return_condition[key] = getattr(condition, key)
+  return return_condition
 
 
 def _PromptForConditionAddBindingToIamPolicy(policy):
@@ -522,12 +544,13 @@ def _PromptForConditionAddBindingToIamPolicy(policy):
                     'so specifying a condition is required when adding a '
                     'binding. Please specify a condition.')
   conditions = PromptChoicesForAddBindingToIamPolicy(policy)
+  condition_keys = [c[0] for c in conditions]
 
   condition_index = console_io.PromptChoice(
-      conditions, prompt_string=prompt_message)
+      condition_keys, prompt_string=prompt_message)
   if condition_index == len(conditions) - 1:
     return _PromptForNewCondition()
-  return _ConditionArgDict()(conditions[condition_index])
+  return _ToDictCondition(conditions[condition_index][1])
 
 
 def _PromptForConditionRemoveBindingFromIamPolicy(policy, member, role):
@@ -539,12 +562,13 @@ def _PromptForConditionRemoveBindingFromIamPolicy(policy, member, role):
   prompt_message = ('The policy contains bindings with conditions, '
                     'so specifying a condition is required when removing a '
                     'binding. Please specify a condition.')
+  condition_keys = [c[0] for c in conditions]
 
   condition_index = console_io.PromptChoice(
-      conditions, prompt_string=prompt_message)
+      condition_keys, prompt_string=prompt_message)
   if condition_index == len(conditions) - 1:
     return _ALL_CONDITIONS
-  return _ConditionArgDict()(conditions[condition_index])
+  return _ToDictCondition(conditions[condition_index][1])
 
 
 def _PromptForNewCondition():

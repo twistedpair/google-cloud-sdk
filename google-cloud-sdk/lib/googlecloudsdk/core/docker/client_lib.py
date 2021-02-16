@@ -61,7 +61,9 @@ def _GetUserHomeDir():
 
 def _GetNewConfigDirectory():
   # Return the value of $DOCKER_CONFIG, if it exists, otherwise ~/.docker
-  # see https://github.com/docker/docker/blob/master/cliconfig/config.go
+  # see https://github.com/moby/moby/blob/master/cli/config/configdir.go
+  # NOTE: The preceding link is not owned by Google and cannot yet be updated to
+  # address disrespectful term.
   docker_config = encoding.GetEncodedValue(os.environ, 'DOCKER_CONFIG')
   if docker_config is not None:
     return docker_config
@@ -98,7 +100,9 @@ def GetDockerConfigPath(force_new=False):
 
   # Only one location will be probed to locate the new config.
   # This is consistent with the Docker client's behavior:
-  # https://github.com/docker/docker/blob/master/cliconfig/config.go#L83
+  # https://github.com/moby/moby/blob/master/cli/config/configdir.go
+  # NOTE: The preceding link is not owned by Google and cannot yet be updated to
+  # address disrespectful term.
   old_path = os.path.join(_GetUserHomeDir(), '.dockercfg')
   return old_path, False
 

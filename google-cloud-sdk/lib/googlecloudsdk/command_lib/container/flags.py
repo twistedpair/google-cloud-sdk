@@ -919,7 +919,7 @@ Example:
 
   group.add_argument(
       '--master-logs',
-      type=arg_parsers.ArgList(choices=api_adapter.MASTER_LOGS_OPTIONS),
+      type=arg_parsers.ArgList(choices=api_adapter.PRIMARY_LOGS_OPTIONS),
       help=help_text,
       metavar='COMPONENT',
       hidden=True,
@@ -949,10 +949,21 @@ Enable sending metrics from master components to Cloud Operations.
   )
 
 
-def AddNodeLabelsFlag(parser, for_node_pool=False):
+def AddNodeLabelsFlag(parser,
+                      for_node_pool=False,
+                      for_update=False,
+                      hidden=False):
   """Adds a --node-labels flag to the given parser."""
   if for_node_pool:
-    help_text = """\
+    if for_update:
+      help_text = """\
+Replaces all the user specified kubernetes labels on all nodes in an existing
+node pool with the given labels. Example:
+
+  $ {command} node-pool-1 --cluster=example-cluster --node-labels=label1=value1,label2=value2
+"""
+    else:
+      help_text = """\
 Applies the given kubernetes labels on all nodes in the new node pool. Example:
 
   $ {command} node-pool-1 --cluster=example-cluster --node-labels=label1=value1,label2=value2
@@ -977,7 +988,8 @@ and usage information."""
       '--node-labels',
       metavar='NODE_LABEL',
       type=arg_parsers.ArgDict(),
-      help=help_text)
+      help=help_text,
+      hidden=hidden)
 
 
 def AddLocalSSDsAlphaFlags(parser, for_node_pool=False, suppressed=False):
@@ -1066,10 +1078,20 @@ See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
   )
 
 
-def AddNodeTaintsFlag(parser, for_node_pool=False, hidden=False):
+def AddNodeTaintsFlag(parser,
+                      for_node_pool=False,
+                      for_update=False,
+                      hidden=False):
   """Adds a --node-taints flag to the given parser."""
   if for_node_pool:
-    help_text = """\
+    if for_update:
+      help_text = """\
+Replaces all the user specified kubernetes taints on all nodes in an existing node pool, which can be used with tolerations for pod scheduling. Example:
+
+  $ {command} node-pool-1 --cluster=example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
+"""
+    else:
+      help_text = """\
 Applies the given kubernetes taints on all nodes in the new node pool, which can be used with tolerations for pod scheduling. Example:
 
   $ {command} node-pool-1 --cluster=example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
@@ -1223,6 +1245,28 @@ on the Compute Engine API instance object and can be used in firewall rules.
 See https://cloud.google.com/sdk/gcloud/reference/compute/firewall-rules/create
 for examples.
 """)
+
+
+def AddTagsNodePoolUpdate(parser, hidden=False):
+  """Adds a --tags flag to the given parser."""
+  help_text = """\
+Replaces all the user specified Compute Engine tags on all nodes in an existing
+node pool with the given tags (comma separated). Example
+
+  $ {command} node-pool-1 --cluster=example-cluster --tags=tag1,tag2
+
+New nodes, including ones created by resize or recreate, will have these tags
+on the Compute Engine API instance object and these tags can be used in
+firewall rules.
+See https://cloud.google.com/sdk/gcloud/reference/compute/firewall-rules/create
+for examples.
+"""
+  parser.add_argument(
+      '--tags',
+      metavar='TAG',
+      type=arg_parsers.ArgList(),
+      help=help_text,
+      hidden=hidden)
 
 
 def AddMasterAuthorizedNetworksFlags(parser, enable_group_for_update=None):
@@ -2454,8 +2498,10 @@ For more information on Workload Identity, see
   """,
       required=False,
       type=arg_parsers.RegexpValidator(
+          # Don't document hub.id.goog in the error, but still pass it through
+          # for now.
           r'^[a-z][-a-z0-9]{4,}[a-z0-9]\.(svc|hub)\.id\.goog$',
-          "Must be in format of '[PROJECT_ID].svc.id.goog' or '[PROJECT_ID].hub.id.goog'"
+          "Must be in format of '[PROJECT_ID].svc.id.goog'"
       ),
   )
   if use_identity_provider:
@@ -2464,9 +2510,6 @@ For more information on Workload Identity, see
         default=None,
         help="""\
   Enable 3P identity provider on the cluster.
-
-  Currently, the only accepted identity provider is the identity provider of Hub
-  membership for hub workload pool `PROJECT_ID.hub.id.goog`.
     """)
   if use_workload_certificates:
     parser.add_argument(

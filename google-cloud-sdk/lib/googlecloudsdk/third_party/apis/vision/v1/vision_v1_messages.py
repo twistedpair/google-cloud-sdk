@@ -6238,6 +6238,8 @@ class ImageContext(_messages.Message):
       languages](https://cloud.google.com/vision/docs/languages).
     latLongRect: Not used.
     productSearchParams: Parameters for product search.
+    textDetectionParams: Parameters for text detection and document text
+      detection.
     webDetectionParams: Parameters for web detection.
   """
 
@@ -6245,7 +6247,8 @@ class ImageContext(_messages.Message):
   languageHints = _messages.StringField(2, repeated=True)
   latLongRect = _messages.MessageField('LatLongRect', 3)
   productSearchParams = _messages.MessageField('ProductSearchParams', 4)
-  webDetectionParams = _messages.MessageField('WebDetectionParams', 5)
+  textDetectionParams = _messages.MessageField('TextDetectionParams', 5)
+  webDetectionParams = _messages.MessageField('WebDetectionParams', 6)
 
 
 class ImageProperties(_messages.Message):
@@ -7371,6 +7374,19 @@ class TextAnnotation(_messages.Message):
 
   pages = _messages.MessageField('Page', 1, repeated=True)
   text = _messages.StringField(2)
+
+
+class TextDetectionParams(_messages.Message):
+  r"""Parameters for text detections. This is used to control TEXT_DETECTION
+  and DOCUMENT_TEXT_DETECTION features.
+
+  Fields:
+    enableTextDetectionConfidenceScore: By default, Cloud Vision API only
+      includes confidence score for DOCUMENT_TEXT_DETECTION result. Set the
+      flag to true to include confidence score for TEXT_DETECTION as well.
+  """
+
+  enableTextDetectionConfidenceScore = _messages.BooleanField(1)
 
 
 class TextProperty(_messages.Message):

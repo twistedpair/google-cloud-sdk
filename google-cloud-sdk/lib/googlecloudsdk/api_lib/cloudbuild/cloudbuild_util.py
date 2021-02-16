@@ -33,16 +33,13 @@ import six
 _API_NAME = 'cloudbuild'
 _GA_API_VERSION = 'v1'
 _BETA_API_VERSION = 'v1beta1'
-_ALPHA_API_VERSION = 'v1alpha2'
 
 RELEASE_TRACK_TO_API_VERSION = {
     base.ReleaseTrack.GA: _GA_API_VERSION,
     base.ReleaseTrack.BETA: _BETA_API_VERSION,
-    base.ReleaseTrack.ALPHA: _ALPHA_API_VERSION,
+    base.ReleaseTrack.ALPHA: _BETA_API_VERSION,
 }
 
-GLOBAL_WORKERPOOL_NAME_MATCHER = r'projects/.*/workerPools/.*'
-GLOBAL_WORKERPOOL_NAME_SELECTOR = r'projects/.*/workerPools/(.*)'
 REGIONAL_WORKERPOOL_NAME_MATCHER = r'projects/.*/locations/.*/workerPools/.*'
 REGIONAL_WORKERPOOL_NAME_SELECTOR = r'projects/.*/locations/.*/workerPools/(.*)'
 REGIONAL_WORKERPOOL_REGION_SELECTOR = r'projects/.*/locations/(.*)/workerPools/.*'
@@ -462,27 +459,6 @@ def IsRegionalWorkerPool(resource_name):
     bool, True if the string is a regional worker pool's full resource name.
   """
   return bool(re.match(REGIONAL_WORKERPOOL_NAME_MATCHER, resource_name))
-
-
-def GlobalWorkerPoolShortName(resource_name):
-  """Get the name part of a global worker pool's full resource name.
-
-  For example, "projects/abc/workerPools/def" returns "def".
-
-  Args:
-    resource_name: A global worker pool's full resource name.
-
-  Raises:
-    ValueError: If the full resource name was not well-formatted.
-
-  Returns:
-    The worker pool's short name.
-  """
-  match = re.search(GLOBAL_WORKERPOOL_NAME_SELECTOR, resource_name)
-  if match:
-    return match.group(1)
-  raise ValueError('The worker pool resource name must match "%s"' %
-                   (GLOBAL_WORKERPOOL_NAME_MATCHER,))
 
 
 def RegionalWorkerPoolShortName(resource_name):

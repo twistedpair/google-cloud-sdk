@@ -326,7 +326,7 @@ class AbstractRpcServer(object):
     Raises:
       HTTPError: If there was an error fetching the authentication cookies.
     """
-    # This is a dummy value to allow us to identify when we're successful.
+    # This is an indicator to allow us to identify when we're successful.
     continue_location = "http://localhost/"
     args = {"continue": continue_location, "auth": auth_token}
     login_path = os.environ.get("APPCFG_LOGIN_PATH", "/_ah")

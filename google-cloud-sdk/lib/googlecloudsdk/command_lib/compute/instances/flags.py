@@ -2909,3 +2909,51 @@ def AddIpv6NetworkTierArgs(parser):
       help=('Specifies the IPv6 network tier that will be used to configure '
             'the instance network interface IPv6 access config. Only `PREMIUM` '
             'is supported for now.'))
+
+
+def AddNetworkPerformanceConfigsArgs(parser):
+  """Adds config flags for advanced networking bandwidth tiers."""
+
+  network_perf_config_help = """\
+      Configures network performance settings for the instance.
+      If this flag is not specified, the instance will be created
+      with its default network performance configuration.
+
+      *total-egress-bandwidth-tier*::: Total egress bandwidth is the available
+      outbound bandwidth from a VM, regardless of whether the traffic
+      is going to internal IP or external IP destinations.
+      The following tier values are allowed: [{tier_values}]
+
+      """.format(tier_values=','.join([
+          six.text_type(tier_val)
+          for tier_val in constants.ADV_NETWORK_TIER_CHOICES
+      ]))
+
+  spec = {
+      'total-egress-bandwidth-tier': str
+  }
+
+  parser.add_argument(
+      '--network-performance-configs',
+      type=arg_parsers.ArgDict(spec=spec),
+      action='append',
+      metavar='PROPERTY=VALUE',
+      help=network_perf_config_help)
+
+
+def ValidateNetworkPerformanceConfigsArgs(args):
+  """Validates advanced networking bandwidth tier values."""
+
+  for config in getattr(args, 'network_performance_configs', []) or []:
+    total_tier = config.get('total-egress-bandwidth-tier', '').upper()
+    if total_tier and \
+        total_tier not in constants.ADV_NETWORK_TIER_CHOICES:
+      raise exceptions.InvalidArgumentException(
+          '--network-performance-configs',
+          """Invalid total-egress-bandwidth-tier tier value, "{tier}".
+             Tier value must be on of the follwing {tier_values}"""
+          .format(tier=total_tier,
+                  tier_values=','.join([
+                      six.text_type(tier_val)
+                      for tier_val in constants.ADV_NETWORK_TIER_CHOICES
+                  ])))

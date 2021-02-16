@@ -135,8 +135,8 @@ def _SetSpecifiedArg(cloud_task_args, key, value):
   access to _specified_args
 
   Args:
-    cloud_task_args: argparse.Namespace, A dummy args namespace built to pass
-      on forwards to Cloud Tasks API.
+    cloud_task_args: argparse.Namespace, A placeholder args namespace built to
+      pass on forwards to Cloud Tasks API.
     key: The attribute key we are trying to set.
     value: The attribute value we are trying to set.
   """
@@ -148,8 +148,8 @@ def _DeleteSpecifiedArg(cloud_task_args, key):
   """Deletes the specified key in the namespace provided.
 
   Args:
-    cloud_task_args: argparse.Namespace, A dummy args namespace built to pass
-      on forwards to Cloud Tasks API.
+    cloud_task_args: argparse.Namespace, A placeholder args namespace built to
+      pass on forwards to Cloud Tasks API.
     key: The attribute key we are trying to set.
   """
   # pylint: disable=protected-access
@@ -166,8 +166,8 @@ def _PostProcessMinMaxBackoff(
   min_backoff <= max_backoff, then it is set equal to the other backoff value.
 
   Args:
-    cloud_task_args: argparse.Namespace, A dummy args namespace built to pass
-      on forwards to Cloud Tasks API.
+    cloud_task_args: argparse.Namespace, A placeholder args namespace built to
+      pass on forwards to Cloud Tasks API.
     used_default_value_for_min_backoff: A boolean value telling us if we used
       a default value for min_backoff or if it was specified explicitly in the
       YAML file.
@@ -213,8 +213,8 @@ def _PostProcessRoutingOverride(cloud_task_args, cur_queue_state):
   and make sure the service & target values are only updated when need be.
 
   Args:
-    cloud_task_args: argparse.Namespace, A dummy args namespace built to pass
-      on forwards to Cloud Tasks API.
+    cloud_task_args: argparse.Namespace, A placeholder args namespace built to
+      pass on forwards to Cloud Tasks API.
     cur_queue_state: apis.cloudtasks.<ver>.cloudtasks_<ver>_messages.Queue,
       The Queue instance fetched from the backend if it exists, None otherwise.
   """
@@ -239,7 +239,7 @@ def _PostProcessRoutingOverride(cloud_task_args, cur_queue_state):
 
 
 def _PopulateCloudTasksArgs(queue, cur_queue_state, ct_expected_args):
-  """Builds dummy command line args to pass on to Cloud Tasks API.
+  """Builds placeholder command line args to pass on to Cloud Tasks API.
 
   Most of Cloud Tasks functions use args passed in during CLI invocation. To
   reuse those functions without extensive rework on their implementation, we
@@ -254,8 +254,8 @@ def _PopulateCloudTasksArgs(queue, cur_queue_state, ct_expected_args):
       forwarding to Cloud Tasks APIs.
 
   Returns:
-    argparse.Namespace, A dummy args namespace built to pass on forwards to
-    Cloud Tasks API.
+    argparse.Namespace, A placeholder args namespace built to pass on forwards
+    to Cloud Tasks API.
   """
 
   cloud_task_args = parser_extensions.Namespace()
@@ -313,8 +313,8 @@ def _AnyUpdatableFields(args):
   """Check whether the queue has any changed attributes based on args provided.
 
   Args:
-    args: argparse.Namespace, A dummy args namespace built to pass on forwards
-      to Cloud Tasks API.
+    args: argparse.Namespace, A placeholder args namespace built to pass on
+      forwards to Cloud Tasks API.
 
   Returns:
     True if any of the queue attributes have changed from the attributes stored
@@ -641,13 +641,13 @@ def DeployQueuesYamlFile(
     states for every call made to modify the attributes of a queue.
   """
 
-  class _DummyQueueRef:
-    """A dummy class to simulate queue_ref resource objects used in CT APIs.
+  class _PlaceholderQueueRef:
+    """A placeholder class to simulate queue_ref resource objects used in CT APIs.
 
     This class simulates the behaviour of the resource object returned by
-    tasks.parsers.ParseQueue(...) function. We use this dummy class instead of
-    creating an actual resource instance because otherwise it takes roughly 2
-    minutes to create resource instances for a 1000 queues.
+    tasks.parsers.ParseQueue(...) function. We use this placeholder class
+    instead of creating an actual resource instance because otherwise it takes
+    roughly 2 minutes to create resource instances for a 1000 queues.
 
     Attributes:
       _relative_path: A string representing the full path for a queue in the
@@ -675,7 +675,7 @@ def DeployQueuesYamlFile(
   queues_not_present_in_yaml = set(all_queues_in_db_dict.keys())
 
   # Just need to create one real instance of queue_ref. After that we can
-  # create dummy queue_ref objects based on this instance.
+  # create placeholder queue_ref objects based on this instance.
   queue_ref = parsers.ParseQueue('a')
   queue_ref_stub = queue_ref.RelativeName()[:-1]
 
@@ -695,7 +695,7 @@ def DeployQueuesYamlFile(
     if queue.name in queues_not_present_in_yaml:
       queues_not_present_in_yaml.remove(queue.name)
 
-    queue_ref = _DummyQueueRef('{}{}'.format(queue_ref_stub, queue.name))
+    queue_ref = _PlaceholderQueueRef('{}{}'.format(queue_ref_stub, queue.name))
     cur_queue_object = all_queues_in_db_dict.get(queue.name, None)
     cloud_task_args = _PopulateCloudTasksArgs(queue, cur_queue_object,
                                               expected_args)
@@ -756,7 +756,7 @@ def DeployQueuesYamlFile(
     queue = all_queues_in_db_dict[queue_name]
     if queue.state in (queue.state.PAUSED, queue.state.DISABLED):
       continue
-    queue_ref = _DummyQueueRef('{}{}'.format(queue_ref_stub, queue_name))
+    queue_ref = _PlaceholderQueueRef('{}{}'.format(queue_ref_stub, queue_name))
     queues_client.Pause(queue_ref)
   return responses
 

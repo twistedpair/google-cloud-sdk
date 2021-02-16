@@ -127,7 +127,7 @@ def _GaeBuilder(runtime):
   Returns:
     gcr.io image path.
   """
-  return 'gcr.io/gae-runtimes/buildpacks/%s/builder:argo_current' % runtime
+  return 'gcr.io/gae-runtimes/buildpacks/%s/builder:latest' % runtime
 
 
 def _IsGcpBaseBuilder(builder):

@@ -69,7 +69,7 @@ SUBCOMMAND_DEPRECATION = {
 # support. {'cmd': ('1.10.14', '2.0.0')} - command `cmd` is supported for
 # Airflow versions greater or equal to 1.10.14, prior to 2.0.0 (exclusive).
 # None - means no boundary.
-SUBCOMMAND_WHITELIST = {
+SUBCOMMAND_ALLOWLIST = {
     'backfill': (None, '2.0.0'),
     'clear': (None, '2.0.0'),
     'connections': (None, '2.0.0'),
@@ -93,10 +93,10 @@ SUBCOMMAND_WHITELIST = {
     'variables': (None, '2.0.0'),
     'version': (None, '2.0.0'),
 }
-SUBCOMMAND_WHITELIST.update(SUBCOMMAND_DEPRECATION)
+SUBCOMMAND_ALLOWLIST.update(SUBCOMMAND_DEPRECATION)
 
-SUBCOMMAND_WHITELIST_BETA = dict(SUBCOMMAND_WHITELIST)
-SUBCOMMAND_WHITELIST_BETA.update({
+SUBCOMMAND_ALLOWLIST_BETA = dict(SUBCOMMAND_ALLOWLIST)
+SUBCOMMAND_ALLOWLIST_BETA.update({
     'connections': (None, '3.0.0'),
     'dags': ('2.0.0', '3.0.0'),
     'kerberos': (None, '3.0.0'),

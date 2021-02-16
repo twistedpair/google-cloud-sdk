@@ -2877,10 +2877,16 @@ class BackendBucketCdnPolicy(_messages.Message):
       image formats, media (video and audio), and web assets (JavaScript and
       CSS). Requests and responses that are marked as uncacheable, as well as
       dynamic content (including HTML), will not be cached.
-    clientTtl: Specifies a separate client (e.g. browser client) TTL, separate
-      from the TTL for Cloud CDN's edge caches. Leaving this empty will use
-      the same cache TTL for both Cloud CDN and the client-facing response.
-      The maximum allowed value is 86400s (1 day).
+    clientTtl: Specifies a separate client (e.g. browser client) maximum TTL.
+      This is used to clamp the max-age (or Expires) value sent to the client.
+      With FORCE_CACHE_ALL, the lesser of client_ttl and default_ttl is used
+      for the response max-age directive, along with a "public" directive. For
+      cacheable content in CACHE_ALL_STATIC mode, client_ttl clamps the max-
+      age from the origin (if specified), or else sets the response max-age
+      directive to the lesser of the client_ttl and default_ttl, and also
+      ensures a "public" cache-control directive is present. If a client TTL
+      is not specified, a default value (1 hour) will be used. The maximum
+      allowed value is 86400s (1 day).
     defaultTtl: Specifies the default TTL for cached content served by this
       origin for responses that do not have an existing valid TTL (max-age or
       s-max-age). Setting a TTL of "0" means "always revalidate". The value of
@@ -3740,10 +3746,16 @@ class BackendServiceCdnPolicy(_messages.Message):
       image formats, media (video and audio), and web assets (JavaScript and
       CSS). Requests and responses that are marked as uncacheable, as well as
       dynamic content (including HTML), will not be cached.
-    clientTtl: Specifies a separate client (e.g. browser client) TTL, separate
-      from the TTL for Cloud CDN's edge caches. Leaving this empty will use
-      the same cache TTL for both Cloud CDN and the client-facing response.
-      The maximum allowed value is 86400s (1 day).
+    clientTtl: Specifies a separate client (e.g. browser client) maximum TTL.
+      This is used to clamp the max-age (or Expires) value sent to the client.
+      With FORCE_CACHE_ALL, the lesser of client_ttl and default_ttl is used
+      for the response max-age directive, along with a "public" directive. For
+      cacheable content in CACHE_ALL_STATIC mode, client_ttl clamps the max-
+      age from the origin (if specified), or else sets the response max-age
+      directive to the lesser of the client_ttl and default_ttl, and also
+      ensures a "public" cache-control directive is present. If a client TTL
+      is not specified, a default value (1 hour) will be used. The maximum
+      allowed value is 86400s (1 day).
     defaultTtl: Specifies the default TTL for cached content served by this
       origin for responses that do not have an existing valid TTL (max-age or
       s-max-age). Setting a TTL of "0" means "always revalidate". The value of
@@ -4652,6 +4664,96 @@ class Binding(_messages.Message):
   condition = _messages.MessageField('Expr', 2)
   members = _messages.StringField(3, repeated=True)
   role = _messages.StringField(4)
+
+
+class BulkInsertInstanceResource(_messages.Message):
+  r"""A BulkInsertInstanceResource object.
+
+  Messages:
+    PerInstancePropertiesValue: Per-instance properties to be set on
+      individual instances. Keys of this map specify requested instance names.
+      Can be empty if name_pattern is used.
+
+  Fields:
+    count: The maximum number of instances to create.
+    instanceProperties: The instance properties defining the VM instances to
+      be created. Required if sourceInstanceTemplate is not provided.
+    locationPolicy: A LocationPolicy attribute.
+    minCount: The minimum number of instances to create. If no min_count is
+      specified then count is used as the default value. If min_count
+      instances cannot be created, then no instances will be created.
+    namePattern: The string pattern used for the names of the VMs. Either
+      name_pattern or predefined_names must be set. The pattern should contain
+      one consecutive sequence of placeholder hash characters (#) with each
+      character corresponding to one digit of the generated instance name.
+      Example: name_pattern of inst-#### will generate instance names like
+      inst-0001, inst-0002, ... . If there already exist instance(s) whose
+      names match the name pattern in the same project and zone, then the
+      generated instance numbers will start after the biggest existing number.
+      For example, if there exists an instance with name inst-0050, then
+      instance names generated using the pattern inst-#### will be inst-0051,
+      inst-0052, etc. The name pattern placeholder #...# can contain up to 18
+      characters.
+    perInstanceProperties: Per-instance properties to be set on individual
+      instances. Keys of this map specify requested instance names. Can be
+      empty if name_pattern is used.
+    sourceInstanceTemplate: Specifies the instance template from which to
+      create instances. You may combine sourceInstanceTemplate with
+      instanceProperties to override specific values from an existing instance
+      template. Bulk API follows the semantics of JSON Merge Patch described
+      by RFC 7396.  It can be a full or partial URL. For example, the
+      following are all valid URLs to an instance template:   - https://www.go
+      ogleapis.com/compute/v1/projects/project/global/instanceTemplates/instan
+      ceTemplate  - projects/project/global/instanceTemplates/instanceTemplate
+      - global/instanceTemplates/instanceTemplate    This field is optional.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PerInstancePropertiesValue(_messages.Message):
+    r"""Per-instance properties to be set on individual instances. Keys of
+    this map specify requested instance names. Can be empty if name_pattern is
+    used.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        PerInstancePropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        PerInstancePropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PerInstancePropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A BulkInsertInstanceResourcePerInstanceProperties attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('BulkInsertInstanceResourcePerInstanceProperties', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  count = _messages.IntegerField(1)
+  instanceProperties = _messages.MessageField('InstanceProperties', 2)
+  locationPolicy = _messages.MessageField('LocationPolicy', 3)
+  minCount = _messages.IntegerField(4)
+  namePattern = _messages.StringField(5)
+  perInstanceProperties = _messages.MessageField('PerInstancePropertiesValue', 6)
+  sourceInstanceTemplate = _messages.StringField(7)
+
+
+class BulkInsertInstanceResourcePerInstanceProperties(_messages.Message):
+  r"""Per-instance properties to be set on individual instances. To be
+  extended in the future.
+
+  Fields:
+    name: This field is only temporary. It will be removed. Do not use it.
+  """
+
+  name = _messages.StringField(1)
 
 
 class CacheInvalidationRule(_messages.Message):
@@ -11035,6 +11137,32 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
   project = _messages.StringField(4, required=True)
   requestId = _messages.StringField(5)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputeInstancesBulkInsertRequest(_messages.Message):
+  r"""A ComputeInstancesBulkInsertRequest object.
+
+  Fields:
+    bulkInsertInstanceResource: A BulkInsertInstanceResource resource to be
+      passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  bulkInsertInstanceResource = _messages.MessageField('BulkInsertInstanceResource', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstancesDeleteAccessConfigRequest(_messages.Message):
@@ -17916,6 +18044,32 @@ class ComputeRegionInstanceGroupsTestIamPermissionsRequest(_messages.Message):
   region = _messages.StringField(2, required=True)
   resource = _messages.StringField(3, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
+class ComputeRegionInstancesBulkInsertRequest(_messages.Message):
+  r"""A ComputeRegionInstancesBulkInsertRequest object.
+
+  Fields:
+    bulkInsertInstanceResource: A BulkInsertInstanceResource resource to be
+      passed as the request body.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  bulkInsertInstanceResource = _messages.MessageField('BulkInsertInstanceResource', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeRegionNetworkEndpointGroupsDeleteRequest(_messages.Message):
@@ -28116,11 +28270,12 @@ class HealthCheck(_messages.Message):
     logConfig: Configure logging on this health check.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
-      Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
-      character must be a lowercase letter, and all following characters must
-      be a dash, lowercase letter, or digit, except the last character, which
-      cannot be a dash.
+      For example, a name that is 1-63 characters long, matches the regular
+      expression `[a-z]([-a-z0-9]*[a-z0-9])?`, and otherwise complies with
+      RFC1035. This regular expression describes a name where the first
+      character is a lowercase letter, and all following characters are a
+      dash, lowercase letter, or digit, except the last character, which isn't
+      a dash.
     region: [Output Only] Region where the health check resides. Not
       applicable to global health checks.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -35676,6 +35831,75 @@ class LocalDisk(_messages.Message):
   diskType = _messages.StringField(3)
 
 
+class LocationPolicy(_messages.Message):
+  r"""Configuration for location policy among multiple possible locations
+  (e.g. preferences for zone selection among zones in a single region).
+
+  Messages:
+    LocationsValue: Location configurations mapped by location name. Currently
+      only zone names are supported and must be represented as valid internal
+      URLs, like: zones/us-central1-a.
+
+  Fields:
+    locations: Location configurations mapped by location name. Currently only
+      zone names are supported and must be represented as valid internal URLs,
+      like: zones/us-central1-a.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LocationsValue(_messages.Message):
+    r"""Location configurations mapped by location name. Currently only zone
+    names are supported and must be represented as valid internal URLs, like:
+    zones/us-central1-a.
+
+    Messages:
+      AdditionalProperty: An additional property for a LocationsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LocationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LocationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A LocationPolicyLocation attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('LocationPolicyLocation', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  locations = _messages.MessageField('LocationsValue', 1)
+
+
+class LocationPolicyLocation(_messages.Message):
+  r"""A LocationPolicyLocation object.
+
+  Enums:
+    PreferenceValueValuesEnum:
+
+  Fields:
+    preference: A PreferenceValueValuesEnum attribute.
+  """
+
+  class PreferenceValueValuesEnum(_messages.Enum):
+    r"""PreferenceValueValuesEnum enum type.
+
+    Values:
+      ALLOW: <no description>
+      DENY: <no description>
+      PREFERENCE_UNSPECIFIED: <no description>
+    """
+    ALLOW = 0
+    DENY = 1
+    PREFERENCE_UNSPECIFIED = 2
+
+  preference = _messages.EnumField('PreferenceValueValuesEnum', 1)
+
+
 class LogConfig(_messages.Message):
   r"""Specifies what kind of log the caller must write
 
@@ -40265,6 +40489,9 @@ class Operation(_messages.Message):
     kind: [Output Only] Type of the resource. Always `compute#operation` for
       Operation resources.
     name: [Output Only] Name of the operation.
+    operationGroupId: [Output Only] An ID that represents a group of
+      operations, such as when a group of operations results from a
+      `bulkInsert` API request.
     operationType: [Output Only] The type of operation, such as `insert`,
       `update`, or `delete`, and so on.
     progress: [Output Only] An optional progress indicator that ranges from 0
@@ -40446,18 +40673,19 @@ class Operation(_messages.Message):
   insertTime = _messages.StringField(9)
   kind = _messages.StringField(10, default='compute#operation')
   name = _messages.StringField(11)
-  operationType = _messages.StringField(12)
-  progress = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  region = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  startTime = _messages.StringField(16)
-  status = _messages.EnumField('StatusValueValuesEnum', 17)
-  statusMessage = _messages.StringField(18)
-  targetId = _messages.IntegerField(19, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(20)
-  user = _messages.StringField(21)
-  warnings = _messages.MessageField('WarningsValueListEntry', 22, repeated=True)
-  zone = _messages.StringField(23)
+  operationGroupId = _messages.StringField(12)
+  operationType = _messages.StringField(13)
+  progress = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  region = _messages.StringField(15)
+  selfLink = _messages.StringField(16)
+  startTime = _messages.StringField(17)
+  status = _messages.EnumField('StatusValueValuesEnum', 18)
+  statusMessage = _messages.StringField(19)
+  targetId = _messages.IntegerField(20, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(21)
+  user = _messages.StringField(22)
+  warnings = _messages.MessageField('WarningsValueListEntry', 23, repeated=True)
+  zone = _messages.StringField(24)
 
 
 class OperationAggregatedList(_messages.Message):
@@ -50485,9 +50713,9 @@ class Subnetwork(_messages.Message):
       subnetwork. Provide this property when you create the subnetwork. For
       example, 10.0.0.0/8 or 100.64.0.0/10. Ranges must be unique and non-
       overlapping within a network. Only IPv4 is supported. This field is set
-      at resource creation time. This may be a RFC 1918 IP range, or a
-      privately routed, non-RFC 1918 IP range, not belonging to Google. The
-      range can be expanded after creation using expandIpCidrRange.
+      at resource creation time. The range can be any range listed in the
+      Valid ranges list. The range can be expanded after creation using
+      expandIpCidrRange.
     ipv6CidrRange: [Output Only] The range of internal IPv6 addresses that are
       owned by this subnetwork.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
@@ -51008,9 +51236,8 @@ class SubnetworkSecondaryRange(_messages.Message):
     ipCidrRange: The range of IP addresses belonging to this subnetwork
       secondary range. Provide this property when you create the subnetwork.
       Ranges must be unique and non-overlapping with all primary and secondary
-      IP ranges within a network. Only IPv4 is supported. This may be a RFC
-      1918 IP range, or a privately, non-RFC 1918 IP range, not belonging to
-      Google.
+      IP ranges within a network. Only IPv4 is supported. The range can be any
+      range listed in the Valid ranges list.
     rangeName: The name associated with this subnetwork secondary range, used
       when adding an alias IP range to a VM instance. The name must be 1-63
       characters long, and comply with RFC1035. The name must be unique within

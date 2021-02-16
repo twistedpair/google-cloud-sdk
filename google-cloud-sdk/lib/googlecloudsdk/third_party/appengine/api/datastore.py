@@ -45,7 +45,7 @@ import logging
 import os
 import re
 import sys
-import threading  # Knowing full well that this is a usually a dummy.
+import threading  # Knowing full well that this is a usually a placeholder.
 import traceback
 from xml.sax import saxutils
 

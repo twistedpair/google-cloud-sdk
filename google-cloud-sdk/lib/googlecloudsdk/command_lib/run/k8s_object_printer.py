@@ -79,3 +79,11 @@ class K8sObjectPrinter(cp.CustomPrinterBase):
       place = 'namespace ' + record.namespace
     return con.Emphasize('{} {} {} in {}'.format(status, record.Kind(),
                                                  record.name, place))
+
+  @staticmethod
+  def GetBinAuthzPolicy(record):
+    return record.annotations.get(k8s_object.BINAUTHZ_POLICY_ANNOTATION, '')
+
+  @staticmethod
+  def GetBinAuthzBreakglass(record):
+    return record.annotations.get(k8s_object.BINAUTHZ_BREAKGLASS_ANNOTATION)

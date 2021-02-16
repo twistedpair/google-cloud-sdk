@@ -1021,12 +1021,18 @@ class ProvidedSoftwareCatalog(_messages.Message):
   r"""The currently provided software environment on the devices under test.
 
   Fields:
+    androidxOrchestratorVersion: A string representing the current version of
+      AndroidX Test Orchestrator that is used in the environment. The package
+      is available at
+      https://maven.google.com/web/index.html#androidx.test:orchestrator.
     orchestratorVersion: A string representing the current version of Android
-      Test Orchestrator that is provided by TestExecutionService. Example:
-      "1.0.2 beta".
+      Test Orchestrator that is used in the environment. The package is
+      available at https://maven.google.com/web/index.html#com.android.support
+      .test:orchestrator.
   """
 
-  orchestratorVersion = _messages.StringField(1)
+  androidxOrchestratorVersion = _messages.StringField(1)
+  orchestratorVersion = _messages.StringField(2)
 
 
 class RegularFile(_messages.Message):

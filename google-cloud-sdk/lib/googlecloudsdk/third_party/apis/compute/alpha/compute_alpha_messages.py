@@ -3155,10 +3155,16 @@ class BackendBucketCdnPolicy(_messages.Message):
       image formats, media (video and audio), and web assets (JavaScript and
       CSS). Requests and responses that are marked as uncacheable, as well as
       dynamic content (including HTML), will not be cached.
-    clientTtl: Specifies a separate client (e.g. browser client) TTL, separate
-      from the TTL for Cloud CDN's edge caches. Leaving this empty will use
-      the same cache TTL for both Cloud CDN and the client-facing response.
-      The maximum allowed value is 86400s (1 day).
+    clientTtl: Specifies a separate client (e.g. browser client) maximum TTL.
+      This is used to clamp the max-age (or Expires) value sent to the client.
+      With FORCE_CACHE_ALL, the lesser of client_ttl and default_ttl is used
+      for the response max-age directive, along with a "public" directive. For
+      cacheable content in CACHE_ALL_STATIC mode, client_ttl clamps the max-
+      age from the origin (if specified), or else sets the response max-age
+      directive to the lesser of the client_ttl and default_ttl, and also
+      ensures a "public" cache-control directive is present. If a client TTL
+      is not specified, a default value (1 hour) will be used. The maximum
+      allowed value is 86400s (1 day).
     defaultTtl: Specifies the default TTL for cached content served by this
       origin for responses that do not have an existing valid TTL (max-age or
       s-max-age). Setting a TTL of "0" means "always revalidate". The value of
@@ -4040,10 +4046,16 @@ class BackendServiceCdnPolicy(_messages.Message):
       image formats, media (video and audio), and web assets (JavaScript and
       CSS). Requests and responses that are marked as uncacheable, as well as
       dynamic content (including HTML), will not be cached.
-    clientTtl: Specifies a separate client (e.g. browser client) TTL, separate
-      from the TTL for Cloud CDN's edge caches. Leaving this empty will use
-      the same cache TTL for both Cloud CDN and the client-facing response.
-      The maximum allowed value is 86400s (1 day).
+    clientTtl: Specifies a separate client (e.g. browser client) maximum TTL.
+      This is used to clamp the max-age (or Expires) value sent to the client.
+      With FORCE_CACHE_ALL, the lesser of client_ttl and default_ttl is used
+      for the response max-age directive, along with a "public" directive. For
+      cacheable content in CACHE_ALL_STATIC mode, client_ttl clamps the max-
+      age from the origin (if specified), or else sets the response max-age
+      directive to the lesser of the client_ttl and default_ttl, and also
+      ensures a "public" cache-control directive is present. If a client TTL
+      is not specified, a default value (1 hour) will be used. The maximum
+      allowed value is 86400s (1 day).
     defaultTtl: Specifies the default TTL for cached content served by this
       origin for responses that do not have an existing valid TTL (max-age or
       s-max-age). Setting a TTL of "0" means "always revalidate". The value of
@@ -5411,6 +5423,7 @@ class Commitment(_messages.Message):
     Values:
       ACCELERATOR_OPTIMIZED: <no description>
       COMPUTE_OPTIMIZED: <no description>
+      COMPUTE_OPTIMIZED_C2D: <no description>
       GENERAL_PURPOSE: <no description>
       GENERAL_PURPOSE_E2: <no description>
       GENERAL_PURPOSE_N2: <no description>
@@ -5420,12 +5433,13 @@ class Commitment(_messages.Message):
     """
     ACCELERATOR_OPTIMIZED = 0
     COMPUTE_OPTIMIZED = 1
-    GENERAL_PURPOSE = 2
-    GENERAL_PURPOSE_E2 = 3
-    GENERAL_PURPOSE_N2 = 4
-    GENERAL_PURPOSE_N2D = 5
-    MEMORY_OPTIMIZED = 6
-    TYPE_UNSPECIFIED = 7
+    COMPUTE_OPTIMIZED_C2D = 2
+    GENERAL_PURPOSE = 3
+    GENERAL_PURPOSE_E2 = 4
+    GENERAL_PURPOSE_N2 = 5
+    GENERAL_PURPOSE_N2D = 6
+    MEMORY_OPTIMIZED = 7
+    TYPE_UNSPECIFIED = 8
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   creationTimestamp = _messages.StringField(2)
@@ -27028,8 +27042,11 @@ class Disk(_messages.Message):
     sourceDisk: The source disk used to create this disk. You can provide this
       as a partial or full URL to the resource. For example, the following are
       valid values:   - https://www.googleapis.com/compute/v1/projects/project
-      /zones/zone/disks/disk  - projects/project/zones/zone/disks/disk  -
-      zones/zone/disks/disk
+      /zones/zone/disks/disk   - https://www.googleapis.com/compute/v1/project
+      s/project/regions/region/disks/disk   -
+      projects/project/zones/zone/disks/disk   -
+      projects/project/regions/region/disks/disk   - zones/zone/disks/disk   -
+      regions/region/disks/disk
     sourceDiskId: [Output Only] The unique ID of the disk used to create this
       disk. This value identifies the exact disk that was used to create this
       persistent disk. For example, if you created the persistent disk from a
@@ -30923,11 +30940,12 @@ class HealthCheck(_messages.Message):
     logConfig: Configure logging on this health check.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
-      Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
-      character must be a lowercase letter, and all following characters must
-      be a dash, lowercase letter, or digit, except the last character, which
-      cannot be a dash.
+      For example, a name that is 1-63 characters long, matches the regular
+      expression `[a-z]([-a-z0-9]*[a-z0-9])?`, and otherwise complies with
+      RFC1035. This regular expression describes a name where the first
+      character is a lowercase letter, and all following characters are a
+      dash, lowercase letter, or digit, except the last character, which isn't
+      a dash.
     region: [Output Only] Region where the health check resides. Not
       applicable to global health checks.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -37223,8 +37241,11 @@ class InstantSnapshot(_messages.Message):
       Note that the source disk must be in the same zone/region as the instant
       snapshot to be created. This can be a full or valid partial URL. For
       example, the following are valid values:   - https://www.googleapis.com/
-      compute/v1/projects/project/zones/zone/disks/disk  -
-      projects/project/zones/zone/disks/disk  - zones/zone/disks/disk
+      compute/v1/projects/project/zones/zone/disks/disk   - https://www.google
+      apis.com/compute/v1/projects/project/regions/region/disks/disk   -
+      projects/project/zones/zone/disks/disk   -
+      projects/project/regions/region/disks/disk   - zones/zone/disks/disk   -
+      regions/region/disks/disk
     sourceDiskId: [Output Only] The ID value of the disk used to create this
       InstantSnapshot. This value may be used to determine whether the
       InstantSnapshot was taken from the current or a previous instance of a
@@ -45125,6 +45146,9 @@ class Operation(_messages.Message):
     metadata: [Output Only] Service-specific metadata attached to this
       operation.
     name: [Output Only] Name of the operation.
+    operationGroupId: [Output Only] An ID that represents a group of
+      operations, such as when a group of operations results from a
+      `bulkInsert` API request.
     operationType: [Output Only] The type of operation, such as `insert`,
       `update`, or `delete`, and so on.
     progress: [Output Only] An optional progress indicator that ranges from 0
@@ -45309,19 +45333,20 @@ class Operation(_messages.Message):
   kind = _messages.StringField(10, default='compute#operation')
   metadata = _messages.MessageField('Any', 11)
   name = _messages.StringField(12)
-  operationType = _messages.StringField(13)
-  progress = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  selfLinkWithId = _messages.StringField(17)
-  startTime = _messages.StringField(18)
-  status = _messages.EnumField('StatusValueValuesEnum', 19)
-  statusMessage = _messages.StringField(20)
-  targetId = _messages.IntegerField(21, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(22)
-  user = _messages.StringField(23)
-  warnings = _messages.MessageField('WarningsValueListEntry', 24, repeated=True)
-  zone = _messages.StringField(25)
+  operationGroupId = _messages.StringField(13)
+  operationType = _messages.StringField(14)
+  progress = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  selfLinkWithId = _messages.StringField(18)
+  startTime = _messages.StringField(19)
+  status = _messages.EnumField('StatusValueValuesEnum', 20)
+  statusMessage = _messages.StringField(21)
+  targetId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(23)
+  user = _messages.StringField(24)
+  warnings = _messages.MessageField('WarningsValueListEntry', 25, repeated=True)
+  zone = _messages.StringField(26)
 
 
 class OperationAggregatedList(_messages.Message):
@@ -46783,11 +46808,19 @@ class PreservedState(_messages.Message):
   Messages:
     DisksValue: Preserved disks defined for this instance. This map is keyed
       with the device names of the disks.
+    ExternalIPsValue: Preserved external IPs defined for this instance. This
+      map is keyed with the name of the network interface.
+    InternalIPsValue: Preserved internal IPs defined for this instance. This
+      map is keyed with the name of the network interface.
     MetadataValue: Preserved metadata defined for this instance.
 
   Fields:
     disks: Preserved disks defined for this instance. This map is keyed with
       the device names of the disks.
+    externalIPs: Preserved external IPs defined for this instance. This map is
+      keyed with the name of the network interface.
+    internalIPs: Preserved internal IPs defined for this instance. This map is
+      keyed with the name of the network interface.
     metadata: Preserved metadata defined for this instance.
   """
 
@@ -46817,6 +46850,58 @@ class PreservedState(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExternalIPsValue(_messages.Message):
+    r"""Preserved external IPs defined for this instance. This map is keyed
+    with the name of the network interface.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExternalIPsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ExternalIPsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExternalIPsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PreservedStatePreservedNetworkIp attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PreservedStatePreservedNetworkIp', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InternalIPsValue(_messages.Message):
+    r"""Preserved internal IPs defined for this instance. This map is keyed
+    with the name of the network interface.
+
+    Messages:
+      AdditionalProperty: An additional property for a InternalIPsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type InternalIPsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InternalIPsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PreservedStatePreservedNetworkIp attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PreservedStatePreservedNetworkIp', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
     r"""Preserved metadata defined for this instance.
 
@@ -46841,7 +46926,9 @@ class PreservedState(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   disks = _messages.MessageField('DisksValue', 1)
-  metadata = _messages.MessageField('MetadataValue', 2)
+  externalIPs = _messages.MessageField('ExternalIPsValue', 2)
+  internalIPs = _messages.MessageField('InternalIPsValue', 3)
+  metadata = _messages.MessageField('MetadataValue', 4)
 
 
 class PreservedStatePreservedDisk(_messages.Message):
@@ -46898,6 +46985,55 @@ class PreservedStatePreservedDisk(_messages.Message):
   autoDelete = _messages.EnumField('AutoDeleteValueValuesEnum', 1)
   mode = _messages.EnumField('ModeValueValuesEnum', 2)
   source = _messages.StringField(3)
+
+
+class PreservedStatePreservedNetworkIp(_messages.Message):
+  r"""A PreservedStatePreservedNetworkIp object.
+
+  Enums:
+    AutoDeleteValueValuesEnum: These stateful IPs will never be released
+      during autohealing, update or VM instance recreate operations. This flag
+      is used to configure if the IP reservation should be deleted after it is
+      no longer used by the group, e.g. when the given instance or the whole
+      group is deleted.
+
+  Fields:
+    autoDelete: These stateful IPs will never be released during autohealing,
+      update or VM instance recreate operations. This flag is used to
+      configure if the IP reservation should be deleted after it is no longer
+      used by the group, e.g. when the given instance or the whole group is
+      deleted.
+    ipAddress: Ip address representation
+  """
+
+  class AutoDeleteValueValuesEnum(_messages.Enum):
+    r"""These stateful IPs will never be released during autohealing, update
+    or VM instance recreate operations. This flag is used to configure if the
+    IP reservation should be deleted after it is no longer used by the group,
+    e.g. when the given instance or the whole group is deleted.
+
+    Values:
+      NEVER: <no description>
+      ON_PERMANENT_INSTANCE_DELETION: <no description>
+    """
+    NEVER = 0
+    ON_PERMANENT_INSTANCE_DELETION = 1
+
+  autoDelete = _messages.EnumField('AutoDeleteValueValuesEnum', 1)
+  ipAddress = _messages.MessageField('PreservedStatePreservedNetworkIpIpAddress', 2)
+
+
+class PreservedStatePreservedNetworkIpIpAddress(_messages.Message):
+  r"""A PreservedStatePreservedNetworkIpIpAddress object.
+
+  Fields:
+    address: The URL of the reservation for this IP address.
+    literal: An IPv4 internal network address to assign to the instance for
+      this network interface.
+  """
+
+  address = _messages.StringField(1)
+  literal = _messages.StringField(2)
 
 
 class Principal(_messages.Message):
@@ -56092,11 +56228,23 @@ class StatefulPolicyPreservedState(_messages.Message):
     DisksValue: Disks created on the instances that will be preserved on
       instance delete, update, etc. This map is keyed with the device names of
       the disks.
+    ExternalIPsValue: External network IPs assigned to the instances that will
+      be preserved on instance delete, update, etc. This map is keyed with the
+      network interface name.
+    InternalIPsValue: Internal network IPs assigned to the instances that will
+      be preserved on instance delete, update, etc. This map is keyed with the
+      network interface name.
 
   Fields:
     disks: Disks created on the instances that will be preserved on instance
       delete, update, etc. This map is keyed with the device names of the
       disks.
+    externalIPs: External network IPs assigned to the instances that will be
+      preserved on instance delete, update, etc. This map is keyed with the
+      network interface name.
+    internalIPs: Internal network IPs assigned to the instances that will be
+      preserved on instance delete, update, etc. This map is keyed with the
+      network interface name.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -56124,7 +56272,63 @@ class StatefulPolicyPreservedState(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExternalIPsValue(_messages.Message):
+    r"""External network IPs assigned to the instances that will be preserved
+    on instance delete, update, etc. This map is keyed with the network
+    interface name.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExternalIPsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ExternalIPsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExternalIPsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A StatefulPolicyPreservedStateNetworkIp attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('StatefulPolicyPreservedStateNetworkIp', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InternalIPsValue(_messages.Message):
+    r"""Internal network IPs assigned to the instances that will be preserved
+    on instance delete, update, etc. This map is keyed with the network
+    interface name.
+
+    Messages:
+      AdditionalProperty: An additional property for a InternalIPsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type InternalIPsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InternalIPsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A StatefulPolicyPreservedStateNetworkIp attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('StatefulPolicyPreservedStateNetworkIp', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   disks = _messages.MessageField('DisksValue', 1)
+  externalIPs = _messages.MessageField('ExternalIPsValue', 2)
+  internalIPs = _messages.MessageField('InternalIPsValue', 3)
 
 
 class StatefulPolicyPreservedStateDiskDevice(_messages.Message):
@@ -56151,6 +56355,40 @@ class StatefulPolicyPreservedStateDiskDevice(_messages.Message):
     disk should be deleted after it is no longer used by the group, e.g. when
     the given instance or the whole group is deleted. Note: disks attached in
     READ_ONLY mode cannot be auto-deleted.
+
+    Values:
+      NEVER: <no description>
+      ON_PERMANENT_INSTANCE_DELETION: <no description>
+    """
+    NEVER = 0
+    ON_PERMANENT_INSTANCE_DELETION = 1
+
+  autoDelete = _messages.EnumField('AutoDeleteValueValuesEnum', 1)
+
+
+class StatefulPolicyPreservedStateNetworkIp(_messages.Message):
+  r"""A StatefulPolicyPreservedStateNetworkIp object.
+
+  Enums:
+    AutoDeleteValueValuesEnum: These stateful IPs will never be released
+      during autohealing, update or VM instance recreate operations. This flag
+      is used to configure if the IP reservation should be deleted after it is
+      no longer used by the group, e.g. when the given instance or the whole
+      group is deleted.
+
+  Fields:
+    autoDelete: These stateful IPs will never be released during autohealing,
+      update or VM instance recreate operations. This flag is used to
+      configure if the IP reservation should be deleted after it is no longer
+      used by the group, e.g. when the given instance or the whole group is
+      deleted.
+  """
+
+  class AutoDeleteValueValuesEnum(_messages.Enum):
+    r"""These stateful IPs will never be released during autohealing, update
+    or VM instance recreate operations. This flag is used to configure if the
+    IP reservation should be deleted after it is no longer used by the group,
+    e.g. when the given instance or the whole group is deleted.
 
     Values:
       NEVER: <no description>
@@ -56271,9 +56509,9 @@ class Subnetwork(_messages.Message):
       subnetwork. Provide this property when you create the subnetwork. For
       example, 10.0.0.0/8 or 100.64.0.0/10. Ranges must be unique and non-
       overlapping within a network. Only IPv4 is supported. This field is set
-      at resource creation time. This may be a RFC 1918 IP range, or a
-      privately routed, non-RFC 1918 IP range, not belonging to Google. The
-      range can be expanded after creation using expandIpCidrRange.
+      at resource creation time. The range can be any range listed in the
+      Valid ranges list. The range can be expanded after creation using
+      expandIpCidrRange.
     ipv6AccessType: The access type of IPv6 address this subnet holds. It's
       immutable and can only be specified during creation or the first time
       the subnet is updated into IPV4_IPV6 dual stack. If the ipv6_type is
@@ -56904,9 +57142,8 @@ class SubnetworkSecondaryRange(_messages.Message):
     ipCidrRange: The range of IP addresses belonging to this subnetwork
       secondary range. Provide this property when you create the subnetwork.
       Ranges must be unique and non-overlapping with all primary and secondary
-      IP ranges within a network. Only IPv4 is supported. This may be a RFC
-      1918 IP range, or a privately, non-RFC 1918 IP range, not belonging to
-      Google.
+      IP ranges within a network. Only IPv4 is supported. The range can be any
+      range listed in the Valid ranges list.
     rangeName: The name associated with this subnetwork secondary range, used
       when adding an alias IP range to a VM instance. The name must be 1-63
       characters long, and comply with RFC1035. The name must be unique within

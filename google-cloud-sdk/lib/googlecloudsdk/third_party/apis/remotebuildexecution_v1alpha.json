@@ -1155,6 +1155,11 @@
           "description": "The timestamp when docker preparation begins.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "cmWaitForAssignment": {
+          "description": "The time spent waiting for Container Manager to assign an asynchronous container for execution.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -1185,6 +1190,24 @@
         "dockerImageName": {
           "description": "Docker Image name.",
           "type": "string"
+        },
+        "usedAsyncContainer": {
+          "description": "Indicates whether an asynchronous container was used for execution.",
+          "type": "boolean"
+        },
+        "cmUsage": {
+          "description": "Indicates if and how Container Manager is being used for task execution.",
+          "type": "string",
+          "enumDescriptions": [
+            "Container Manager is disabled or not running for this execution.",
+            "Container Manager is enabled and there was a matching container available for use during execution.",
+            "Container Manager is enabled, but there was no matching container available for execution."
+          ],
+          "enum": [
+            "NONE",
+            "CONFIG_MATCH",
+            "CONFIG_MISMATCH"
+          ]
         }
       }
     },

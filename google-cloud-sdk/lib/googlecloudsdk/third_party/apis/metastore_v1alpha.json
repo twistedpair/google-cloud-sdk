@@ -307,7 +307,7 @@
           }
         },
         "network": {
-          "description": "Immutable. The relative resource name of the VPC network on which the instance can be accessed. The network must belong to the same project as the metastore instance. It is specified in the following form:\"projects\/{project_number}\/global\/networks\/{network_id}\".",
+          "description": "Immutable. The relative resource name of the VPC network on which the instance can be accessed. It is specified in the following form:\"projects\/{project_number}\/global\/networks\/{network_id}\".",
           "type": "string"
         },
         "endpointUri": {
@@ -496,6 +496,14 @@
           "items": {
             "$ref": "MetadataExport"
           }
+        },
+        "restores": {
+          "description": "Output only. The latest restores of the metastore service.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "Restore"
+          }
         }
       }
     },
@@ -531,6 +539,44 @@
             "The metadata export completed successfully.",
             "The metadata export failed.",
             "The metadata export is cancelled."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "RUNNING",
+            "SUCCEEDED",
+            "FAILED",
+            "CANCELLED"
+          ]
+        }
+      }
+    },
+    "Restore": {
+      "id": "Restore",
+      "description": "The details of a metadata restore operation.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Output only. The time when the restore started.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time when the restore ended.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. The current state of the restore.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The state of the metadata restore is unknown.",
+            "The metadata restore is running.",
+            "The metadata restore completed successfully.",
+            "The metadata restore failed.",
+            "The metadata restore is cancelled."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -1517,6 +1563,135 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Updates a single import. Only the description field of MetadataImport is supported to be updated."
+                    }
+                  }
+                },
+                "databases": {
+                  "methods": {
+                    "setIamPolicy": {
+                      "id": "metastore.projects.locations.services.databases.setIamPolicy",
+                      "path": "v1alpha/{+resource}:setIamPolicy",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/databases/{databasesId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+\/databases\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors."
+                    },
+                    "getIamPolicy": {
+                      "id": "metastore.projects.locations.services.databases.getIamPolicy",
+                      "path": "v1alpha/{+resource}:getIamPolicy",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/databases/{databasesId}:getIamPolicy",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+\/databases\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The policy format version to be returned.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "tables": {
+                      "methods": {
+                        "setIamPolicy": {
+                          "id": "metastore.projects.locations.services.databases.tables.setIamPolicy",
+                          "path": "v1alpha/{+resource}:setIamPolicy",
+                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/databases/{databasesId}/tables/{tablesId}:setIamPolicy",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+\/databases\/[^\/]+\/tables\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "request": {
+                            "$ref": "SetIamPolicyRequest"
+                          },
+                          "response": {
+                            "$ref": "Policy"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors."
+                        },
+                        "getIamPolicy": {
+                          "id": "metastore.projects.locations.services.databases.tables.getIamPolicy",
+                          "path": "v1alpha/{+resource}:getIamPolicy",
+                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/databases/{databasesId}/tables/{tablesId}:getIamPolicy",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+\/databases\/[^\/]+\/tables\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "options.requestedPolicyVersion": {
+                              "description": "Optional. The policy format version to be returned.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "response": {
+                            "$ref": "Policy"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                        }
+                      }
                     }
                   }
                 }

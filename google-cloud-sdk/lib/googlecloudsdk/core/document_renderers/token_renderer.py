@@ -103,11 +103,11 @@ class TokenRenderer(renderer.Renderer):
   TOKEN_TEXT_INDEX = 1
 
   class Indent(object):
-    """Hanging indent stack."""
+    """Second line indent stack."""
 
     def __init__(self, compact=True):
       self.indent = 0 if compact else TokenRenderer.INDENT
-      self.hanging_indent = self.indent
+      self.second_line_indent = self.indent
 
   def __init__(self, height=0, encoding='utf-8', compact=True, **kwargs):
     super(TokenRenderer, self).__init__(**kwargs)
@@ -273,16 +273,16 @@ class TokenRenderer(renderer.Renderer):
       self.Content()
       self._fill = 0
 
-  def _SetIndent(self, level, indent=0, hanging_indent=None):
+  def _SetIndent(self, level, indent=0, second_line_indent=None):
     """Sets the markdown list level and indentations.
 
     Args:
       level: int, The desired markdown list level.
       indent: int, The new indentation.
-      hanging_indent: int, The hanging indentation. This is subtracted from the
-        prevailing indent to decrease the indentation of the next input line
-        for this effect:
-            HANGING INDENT ON THE NEXT LINE
+      second_line_indent: int, The second line indentation. This is subtracted
+        from the prevailing indent to decrease the indentation of the next input
+        line for this effect:
+            SECOND LINE INDENT ON THE NEXT LINE
                PREVAILING INDENT
                ON SUBSEQUENT LINES
     """
@@ -297,23 +297,23 @@ class TokenRenderer(renderer.Renderer):
         self._indent[self._level].indent = (
             self._indent[prev_level].indent + indent)
         if (self._level > 1 and
-            self._indent[prev_level].hanging_indent ==
+            self._indent[prev_level].second_line_indent ==
             self._indent[prev_level].indent):
           # Bump the indent by 1 char for nested indentation. Top level looks
           # fine (aesthetically) without it.
           self._indent[self._level].indent += 1
-        self._indent[self._level].hanging_indent = (
+        self._indent[self._level].second_line_indent = (
             self._indent[self._level].indent)
-        if hanging_indent is not None:
-          # Adjust the hanging indent if specified.
-          self._indent[self._level].hanging_indent -= hanging_indent
+        if second_line_indent is not None:
+          # Adjust the second line indent if specified.
+          self._indent[self._level].second_line_indent -= second_line_indent
     else:
       # Decreasing level just sets the indent stack level, no state to clean up.
       self._level = level
-      if hanging_indent is not None:
-        # Change hanging indent on existing level.
+      if second_line_indent is not None:
+        # Change second line indent on existing level.
         self._indent[self._level].indent = (
-            self._indent[self._level].hanging_indent + hanging_indent)
+            self._indent[self._level].second_line_indent + second_line_indent)
 
   def Example(self, line):
     """Displays line as an indented example.
@@ -449,17 +449,17 @@ class TokenRenderer(renderer.Renderer):
     elif definition is not None:
       # Definition list item.
       if definition:
-        self._SetIndent(level, indent=4, hanging_indent=3)
-        self._AddToken(' ' * self._indent[level].hanging_indent)
+        self._SetIndent(level, indent=4, second_line_indent=3)
+        self._AddToken(' ' * self._indent[level].second_line_indent)
         self._AddDefinition(definition)
       else:
-        self._SetIndent(level, indent=1, hanging_indent=0)
+        self._SetIndent(level, indent=1, second_line_indent=0)
         self.Line()
     else:
       # Bullet list item.
       indent = 2 if level > 1 else 4
-      self._SetIndent(level, indent=indent, hanging_indent=2)
-      self._AddToken(' ' * self._indent[level].hanging_indent +
+      self._SetIndent(level, indent=indent, second_line_indent=2)
+      self._AddToken(' ' * self._indent[level].second_line_indent +
                      self._bullet[(level - 1) % len(self._bullet)])
       self._fill = self._indent[level].indent + 1
       self._ignore_width = True
@@ -563,7 +563,7 @@ class TokenRenderer(renderer.Renderer):
     return running_width
 
   def Synopsis(self, line, is_synopsis=False):
-    """Renders NAME and SYNOPSIS lines as a hanging indent.
+    """Renders NAME and SYNOPSIS lines as a second line indent.
 
     Collapses adjacent spaces to one space, deletes trailing space, and doesn't
     split top-level nested [...] or (...) groups. Also detects and does not

@@ -94,11 +94,26 @@ _SHELL_RCFILES = [
     'gcfilesys.zsh.inc'
 ]
 
-BUNDLED_PYTHON_COMPONENT = 'bundled-python3'
+BUNDLED_PYTHON_COMPONENTS = ['bundled-python3', 'bundled-python3-unix']
 BUNDLED_PYTHON_REMOVAL_WARNING = (
     'This command is running using a bundled installation of Python. '
     'If you remove it, you may have no way to run this command.\n'
 )
+
+
+def _HaltIfBundledPythonUnix():
+  current_os = platforms.OperatingSystem.Current()
+  if current_os in [platforms.OperatingSystem.MACOSX]:
+    log.error(
+        'To remove bundled python component please re-run this command '
+        'after setting CLOUDSDK_PYTHON env var to preferred system python.'
+    )
+    sys.exit(1)
+
+
+def _ContainsBundledPython(components):
+  """Return true if components list contains 'bundled python' component(s)."""
+  return len(list(set(BUNDLED_PYTHON_COMPONENTS) & set(components))) >= 1
 
 
 class Error(exceptions.Error):
@@ -926,7 +941,8 @@ version [{1}].  To clear your fixed version setting, run:
     # necessary.
     config.EnsureSDKWriteAccess(self.__sdk_root)
 
-    if self.IsPythonBundled() and BUNDLED_PYTHON_COMPONENT in to_remove:
+    if self.IsPythonBundled() and _ContainsBundledPython(to_remove):
+      _HaltIfBundledPythonUnix()
       log.warning(BUNDLED_PYTHON_REMOVAL_WARNING)
     self._RestartIfUsingBundledPython(args=restart_args)
 
@@ -1215,7 +1231,8 @@ To revert your SDK to the previously installed version, you may run:
     # necessary.
     config.EnsureSDKWriteAccess(self.__sdk_root)
 
-    if self.IsPythonBundled() and BUNDLED_PYTHON_COMPONENT in to_remove:
+    if self.IsPythonBundled() and _ContainsBundledPython(to_remove):
+      _HaltIfBundledPythonUnix()
       log.warning(BUNDLED_PYTHON_REMOVAL_WARNING)
     self._RestartIfUsingBundledPython()
 
@@ -1263,8 +1280,8 @@ To revert your SDK to the previously installed version, you may run:
     config.EnsureSDKWriteAccess(self.__sdk_root)
 
     backup_has_bundled_python = (
-        BUNDLED_PYTHON_COMPONENT in
-        install_state.BackupInstallationState().InstalledComponents())
+        _ContainsBundledPython(
+            install_state.BackupInstallationState().InstalledComponents()))
     if self.IsPythonBundled() and not backup_has_bundled_python:
       log.warning(BUNDLED_PYTHON_REMOVAL_WARNING)
     self._RestartIfUsingBundledPython()

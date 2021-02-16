@@ -940,6 +940,24 @@ class DicomConfig(_messages.Message):
   removeList = _messages.MessageField('TagFilterList', 3)
 
 
+class DicomFilterConfig(_messages.Message):
+  r"""Specifies the filter configuration for DICOM resources.
+
+  Fields:
+    resourcePathsGcsUri: The Google Cloud Storage location of the filter
+      configuration file. The `gcs_uri` must be in the format
+      "gs://bucket/path/to/object" The filter configuration file must contain
+      a list resource paths separated by new line characters (\n or \r\n).
+      Each resource path must be in the format
+      "/studies/{studyUID}[/series/{seriesUID}[/instances/{instanceUID}]]" The
+      Cloud Healthcare API service account must have the
+      `roles/storage.objectViewer` Cloud IAM role for this Cloud Storage
+      location.
+  """
+
+  resourcePathsGcsUri = _messages.StringField(1)
+
+
 class DicomStore(_messages.Message):
   r"""Represents a DICOM store.
 
@@ -1281,13 +1299,15 @@ class ExportDicomDataRequest(_messages.Message):
       you're exporting from. The Cloud Healthcare Service Agent requires two
       IAM roles on the BigQuery location: `roles/bigquery.dataEditor` and
       `roles/bigquery.jobUser`.
+    filterConfig: Specifies the filter configuration.
     gcsDestination: The Cloud Storage output destination. The Cloud Healthcare
       Service Agent requires the `roles/storage.objectAdmin` Cloud IAM roles
       on the Cloud Storage location.
   """
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2DicomBigQueryDestination', 1)
-  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2DicomGcsDestination', 2)
+  filterConfig = _messages.MessageField('DicomFilterConfig', 2)
+  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2DicomGcsDestination', 3)
 
 
 class ExportDicomDataResponse(_messages.Message):
@@ -1887,7 +1907,7 @@ class GoogleCloudHealthcareV1alpha2FhirBigQueryDestination(_messages.Message):
       WRITE_DISPOSITION_UNSPECIFIED: Default behavior is the same as
         WRITE_EMPTY.
       WRITE_EMPTY: Only export data if the destination tables are empty.
-      WRITE_TRUNCATE: Erase all existing data in a tables before writing the
+      WRITE_TRUNCATE: Erase all existing data in the tables before writing the
         instances.
       WRITE_APPEND: Append data to the existing tables.
     """
@@ -4494,9 +4514,12 @@ class NotificationConfig(_messages.Message):
       Note that not all operations trigger notifications, see [Configuring
       Pub/Sub notifications](https://cloud.google.com/healthcare/docs/how-
       tos/pubsub) for specific details.
+    sendForBulkImport: Indicates whether or not to send Cloud Pub/Sub
+      notifications on bulk import. Only supported for DICOM imports.
   """
 
   pubsubTopic = _messages.StringField(1)
+  sendForBulkImport = _messages.BooleanField(2)
 
 
 class Operation(_messages.Message):

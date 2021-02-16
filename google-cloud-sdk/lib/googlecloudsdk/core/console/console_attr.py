@@ -348,7 +348,6 @@ class ConsoleAttr(object):
           color_code=self._ANSI_COLOR[color],
           reset_code=self._ANSI_COLOR_RESET,
           string=string)
-    # TODO(b/35939231): Add elif self._encoding == 'cp437': code here.
     return string
 
   def ConvertOutputToUnicode(self, buf):
@@ -583,6 +582,13 @@ class ConsoleAttr(object):
     return lines
 
   def SupportsAnsi(self):
+    """Indicates whether the terminal appears to support ANSI escape sequences.
+
+    Returns:
+      bool: True if ANSI seems to be supported; False otherwise.
+    """
+    if console_attr_os.ForceEnableAnsi():
+      return True
     return (self._encoding != 'ascii' and
             ('screen' in self._term or 'xterm' in self._term))
 

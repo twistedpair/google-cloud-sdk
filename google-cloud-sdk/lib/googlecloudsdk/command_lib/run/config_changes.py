@@ -175,6 +175,20 @@ class SetAnnotationChange(ConfigChanger):
     return resource
 
 
+class DeleteAnnotationChange(ConfigChanger):
+  """Represents the user intent to delete an annotation."""
+
+  def __init__(self, key):
+    super(DeleteAnnotationChange, self).__init__()
+    self._key = key
+
+  def Adjust(self, resource):
+    annotations = resource.annotations
+    if self._key in annotations:
+      del annotations[self._key]
+    return resource
+
+
 class SetTemplateAnnotationChange(ConfigChanger):
   """Represents the user intent to set a template annotation."""
 

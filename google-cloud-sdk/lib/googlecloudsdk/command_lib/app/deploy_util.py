@@ -830,11 +830,14 @@ def _PossiblyCreateApp(api_client, project):
       return api_client.GetApplication()
     raise exceptions.MissingApplicationError(project)
   except apitools_exceptions.HttpForbiddenError:
+    active_account = properties.VALUES.core.account.Get()
+    # pylint: disable=protected-access
     raise core_api_exceptions.HttpException(
         ('Permissions error fetching application [{}]. Please '
-         'make sure you are using the correct project ID and that '
-         'you have permission to view applications on the project.'.format(
-             api_client._FormatApp())))  # pylint: disable=protected-access
+         'make sure that you have permission to view applications on the '
+         'project and that {} has the App Engine Deployer '
+         '(roles/appengine.deployer) role.'.format(api_client._FormatApp(),
+                                                   active_account)))
 
 
 def _PossiblyRepairApp(api_client, app):
@@ -900,9 +903,9 @@ def GetRuntimeBuilderStrategy(release_track):
       return runtime_builders.RuntimeBuilderStrategy.NEVER
 
   if release_track is base.ReleaseTrack.GA:
-    return runtime_builders.RuntimeBuilderStrategy.WHITELIST_GA
+    return runtime_builders.RuntimeBuilderStrategy.ALLOWLIST_GA
   elif release_track is base.ReleaseTrack.BETA:
-    return runtime_builders.RuntimeBuilderStrategy.WHITELIST_BETA
+    return runtime_builders.RuntimeBuilderStrategy.ALLOWLIST_BETA
   else:
     raise ValueError('Unrecognized release track [{}]'.format(release_track))
 

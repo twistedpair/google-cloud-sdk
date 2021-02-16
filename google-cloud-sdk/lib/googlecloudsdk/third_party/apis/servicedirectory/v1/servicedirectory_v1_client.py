@@ -56,7 +56,7 @@ class ServicedirectoryV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a endpoint, and returns the new Endpoint.
+      r"""Creates an endpoint, and returns the new endpoint.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesServicesEndpointsCreateRequest) input message
@@ -83,7 +83,7 @@ class ServicedirectoryV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a endpoint.
+      r"""Deletes an endpoint.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesServicesEndpointsDeleteRequest) input message
@@ -110,7 +110,7 @@ class ServicedirectoryV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a endpoint.
+      r"""Gets an endpoint.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesServicesEndpointsGetRequest) input message
@@ -164,7 +164,7 @@ class ServicedirectoryV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a endpoint.
+      r"""Updates an endpoint.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesServicesEndpointsPatchRequest) input message
@@ -201,7 +201,7 @@ class ServicedirectoryV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a service, and returns the new Service.
+      r"""Creates a service, and returns the new service.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesServicesCreateRequest) input message
@@ -454,7 +454,7 @@ class ServicedirectoryV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a namespace, and returns the new Namespace.
+      r"""Creates a namespace, and returns the new namespace.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesCreateRequest) input message

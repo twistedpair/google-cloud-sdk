@@ -25,7 +25,6 @@ from googlecloudsdk.command_lib.run import traffic_printer
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
-
 SERVICE_PRINTER_FORMAT = 'service'
 
 
@@ -48,13 +47,34 @@ class ServicePrinter(k8s_object_printer.K8sObjectPrinter):
         revision_printer.RevisionPrinter.TransformSpec(record.template),
     ])
 
+  def _GetServiceSettings(self, record):
+    """Adds service-level values."""
+    labels = [
+        cp.Labeled([
+            ('Binary Authorization',
+             k8s_object_printer.K8sObjectPrinter.GetBinAuthzPolicy(record))
+        ])
+    ]
+    breakglass_value = k8s_object_printer.K8sObjectPrinter.GetBinAuthzBreakglass(
+        record)
+    if breakglass_value is not None:
+      # Show breakglass even if empty, but only if set. There's no skip_none
+      # option so this the workaround.
+      breakglass_label = cp.Labeled([
+          ('Breakglass Justification', breakglass_value),
+      ])
+      breakglass_label.skip_empty = False
+      labels.append(breakglass_label)
+    return cp.Section(labels)
+
   def Transform(self, record):
     """Transform a service into the output structure of marker classes."""
+    service_settings = self._GetServiceSettings(record)
     fmt = cp.Lines([
         self._GetHeader(record),
         self._GetLabels(record.labels), ' ',
-        traffic_printer.TransformRouteFields(record),
-        ' ',
+        traffic_printer.TransformRouteFields(record), ' ', service_settings,
+        (' ' if service_settings.WillPrintOutput() else ''),
         cp.Labeled([(self._GetLastUpdated(record),
                      self._RevisionPrinters(record))]),
         self._GetReadyMessage(record)

@@ -619,9 +619,11 @@ class MetadataManagementActivity(_messages.Message):
   Fields:
     metadataExports: Output only. The latest metadata exports of the metastore
       service.
+    restores: Output only. The latest restores of the metastore service.
   """
 
   metadataExports = _messages.MessageField('MetadataExport', 1, repeated=True)
+  restores = _messages.MessageField('Restore', 2, repeated=True)
 
 
 class MetastoreProjectsLocationsGetRequest(_messages.Message):
@@ -714,6 +716,80 @@ class MetastoreProjectsLocationsServicesCreateRequest(_messages.Message):
   requestId = _messages.StringField(2)
   service = _messages.MessageField('Service', 3)
   serviceId = _messages.StringField(4)
+
+
+class MetastoreProjectsLocationsServicesDatabasesGetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesDatabasesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned.Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.To learn
+      which resources support conditions in their IAM policies, see the IAM
+      documentation (https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class MetastoreProjectsLocationsServicesDatabasesSetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesDatabasesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class MetastoreProjectsLocationsServicesDatabasesTablesGetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesDatabasesTablesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned.Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.To learn
+      which resources support conditions in their IAM policies, see the IAM
+      documentation (https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class MetastoreProjectsLocationsServicesDatabasesTablesSetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesDatabasesTablesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
 class MetastoreProjectsLocationsServicesDeleteRequest(_messages.Message):
@@ -1154,6 +1230,39 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class Restore(_messages.Message):
+  r"""The details of a metadata restore operation.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the restore.
+
+  Fields:
+    endTime: Output only. The time when the restore ended.
+    startTime: Output only. The time when the restore started.
+    state: Output only. The current state of the restore.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the restore.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the metadata restore is unknown.
+      RUNNING: The metadata restore is running.
+      SUCCEEDED: The metadata restore completed successfully.
+      FAILED: The metadata restore failed.
+      CANCELLED: The metadata restore is cancelled.
+    """
+    STATE_UNSPECIFIED = 0
+    RUNNING = 1
+    SUCCEEDED = 2
+    FAILED = 3
+    CANCELLED = 4
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
 class Secret(_messages.Message):
   r"""A securely stored value.
 
@@ -1198,8 +1307,7 @@ class Service(_messages.Message):
       the form:"projects/{project_number}/locations/{location_id}/services/{se
       rvice_id}".
     network: Immutable. The relative resource name of the VPC network on which
-      the instance can be accessed. The network must belong to the same
-      project as the metastore instance. It is specified in the following
+      the instance can be accessed. It is specified in the following
       form:"projects/{project_number}/global/networks/{network_id}".
     port: The TCP port at which the metastore service is reached. Default:
       9083.

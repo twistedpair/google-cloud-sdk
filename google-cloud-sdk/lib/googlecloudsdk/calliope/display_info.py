@@ -90,7 +90,9 @@ class DisplayInfo(object):
     """Adds a flatten to the display info, newer info takes precedence.
 
     Args:
-      flatten: The default flatten string. args.flatten takes precedence.
+      flatten: [str], The list of flatten strings to use by default; e.g.
+        ['fieldA.fieldB', 'fieldC.fieldD']. Flatten strings provided by
+        args.flatten take precedence if the --flatten flag is specified.
     """
     if flatten:
       self._flatten = flatten

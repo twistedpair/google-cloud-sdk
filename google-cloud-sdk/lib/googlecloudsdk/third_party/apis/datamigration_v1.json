@@ -930,6 +930,10 @@
           "description": "Output only. Indicates If this connection profile root password is stored.",
           "readOnly": true,
           "type": "boolean"
+        },
+        "collation": {
+          "description": "The Cloud SQL default instance level collation.",
+          "type": "string"
         }
       }
     },

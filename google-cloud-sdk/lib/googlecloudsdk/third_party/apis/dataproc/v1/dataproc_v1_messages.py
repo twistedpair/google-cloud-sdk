@@ -2304,6 +2304,46 @@ class HiveJob(_messages.Message):
   scriptVariables = _messages.MessageField('ScriptVariablesValue', 6)
 
 
+class IdentityConfig(_messages.Message):
+  r"""Identity related configuration, including service account based secure
+  multi-tenancy user mappings.
+
+  Messages:
+    UserServiceAccountMappingValue: Required. Map of user to service account.
+
+  Fields:
+    userServiceAccountMapping: Required. Map of user to service account.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UserServiceAccountMappingValue(_messages.Message):
+    r"""Required. Map of user to service account.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        UserServiceAccountMappingValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        UserServiceAccountMappingValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UserServiceAccountMappingValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  userServiceAccountMapping = _messages.MessageField('UserServiceAccountMappingValue', 1)
+
+
 class InjectCredentialsRequest(_messages.Message):
   r"""A request to inject credentials into a cluster.
 
@@ -3699,13 +3739,16 @@ class ReservationAffinity(_messages.Message):
 
 
 class SecurityConfig(_messages.Message):
-  r"""Security related configuration, including Kerberos.
+  r"""Security related configuration, including encryption, Kerberos, etc.
 
   Fields:
-    kerberosConfig: Kerberos related configuration.
+    identityConfig: Optional. Identity related configuration, including
+      service account based secure multi-tenancy user mappings.
+    kerberosConfig: Optional. Kerberos related configuration.
   """
 
-  kerberosConfig = _messages.MessageField('KerberosConfig', 1)
+  identityConfig = _messages.MessageField('IdentityConfig', 1)
+  kerberosConfig = _messages.MessageField('KerberosConfig', 2)
 
 
 class SetIamPolicyRequest(_messages.Message):

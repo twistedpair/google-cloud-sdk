@@ -140,6 +140,38 @@ def AddVersion(parser, purpose, positional=False, **kwargs):
       **kwargs).AddToParser(parser)
 
 
+def AddTopics(parser, positional=False, **kwargs):
+  parser.add_argument(
+      _ArgOrFlag('topics', positional),
+      metavar='TOPICS',
+      type=arg_parsers.ArgList(),
+      action=arg_parsers.UpdateAction,
+      help=('List of Pub/Sub topics to configure on the secret.'),
+      **kwargs)
+
+
+def AddUpdateTopicsGroup(parser):
+  """Add flags for specifying topics on secret updates."""
+
+  group = parser.add_group(mutex=True, help='Topics.')
+  group.add_argument(
+      _ArgOrFlag('add-topics', False),
+      metavar='ADD-TOPICS',
+      type=arg_parsers.ArgList(),
+      action=arg_parsers.UpdateAction,
+      help=('List of Pub/Sub topics to add to the secret.'))
+  group.add_argument(
+      _ArgOrFlag('remove-topics', False),
+      metavar='REMOVE-TOPICS',
+      type=arg_parsers.ArgList(),
+      action=arg_parsers.UpdateAction,
+      help=('List of Pub/Sub topics to remove from the secret.'))
+  group.add_argument(
+      _ArgOrFlag('clear-topics', False),
+      action='store_true',
+      help=('Clear all Pub/Sub topics from the secret.'))
+
+
 def AddUpdateReplicationGroup(parser):
   """Add flags for specifying replication policy updates."""
   group = parser.add_group(mutex=True, help='Replication update.')

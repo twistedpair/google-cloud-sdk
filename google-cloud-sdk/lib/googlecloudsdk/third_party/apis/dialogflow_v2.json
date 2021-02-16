@@ -2393,6 +2393,10 @@
             "type": "any",
             "description": "Properties of the object."
           }
+        },
+        "sentimentAnalysisResult": {
+          "description": "The sentiment analysis result of the current user request. The field is filled when sentiment analysis is configured to be enabled for the request.",
+          "$ref": "GoogleCloudDialogflowCxV3WebhookRequestSentimentAnalysisResult"
         }
       }
     },
@@ -2704,6 +2708,23 @@
           "description": "Output only. Whether the playback of this segment can be interrupted by the end user's speech and the client should then start the next Dialogflow request.",
           "readOnly": true,
           "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3WebhookRequestSentimentAnalysisResult": {
+      "id": "GoogleCloudDialogflowCxV3WebhookRequestSentimentAnalysisResult",
+      "description": "Represents the result of sentiment analysis.",
+      "type": "object",
+      "properties": {
+        "score": {
+          "description": "Sentiment score between -1.0 (negative sentiment) and 1.0 (positive sentiment).",
+          "type": "number",
+          "format": "float"
+        },
+        "magnitude": {
+          "description": "A non-negative number in the [0, +inf) range, which represents the absolute magnitude of sentiment, regardless of score (positive or negative).",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -3281,7 +3302,7 @@
           }
         },
         "transitionRoutes": {
-          "description": "A list of transitions for the transition rules of this page. They route the conversation to another page in the same flow, or another flow. When we are in a certain page, the TransitionRoutes are evalauted in the following order: * TransitionRoutes defined in the page with intent specified. * TransitionRoutes defined in the transition route groups with intent specified. * TransitionRoutes defined in flow with intent specified. * TransitionRoutes defined in the page with only condition specified. * TransitionRoutes defined in the transition route groups with only condition specified.",
+          "description": "A list of transitions for the transition rules of this page. They route the conversation to another page in the same flow, or another flow. When we are in a certain page, the TransitionRoutes are evalauted in the following order: * TransitionRoutes defined in the page with intent specified. * TransitionRoutes defined in the transition route groups with intent specified. * TransitionRoutes defined in flow with intent specified. * TransitionRoutes defined in the transition route groups with intent specified. * TransitionRoutes defined in the page with only condition specified. * TransitionRoutes defined in the transition route groups with only condition specified.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDialogflowCxV3TransitionRoute"
@@ -3829,6 +3850,10 @@
             "type": "any",
             "description": "Properties of the object."
           }
+        },
+        "sentimentAnalysisResult": {
+          "description": "The sentiment analysis result of the current user request. The field is filled when sentiment analysis is configured to be enabled for the request.",
+          "$ref": "GoogleCloudDialogflowCxV3beta1WebhookRequestSentimentAnalysisResult"
         }
       }
     },
@@ -4140,6 +4165,23 @@
           "description": "Output only. Whether the playback of this segment can be interrupted by the end user's speech and the client should then start the next Dialogflow request.",
           "readOnly": true,
           "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1WebhookRequestSentimentAnalysisResult": {
+      "id": "GoogleCloudDialogflowCxV3beta1WebhookRequestSentimentAnalysisResult",
+      "description": "Represents the result of sentiment analysis.",
+      "type": "object",
+      "properties": {
+        "score": {
+          "description": "Sentiment score between -1.0 (negative sentiment) and 1.0 (positive sentiment).",
+          "type": "number",
+          "format": "float"
+        },
+        "magnitude": {
+          "description": "A non-negative number in the [0, +inf) range, which represents the absolute magnitude of sentiment, regardless of score (positive or negative).",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -4717,7 +4759,7 @@
           }
         },
         "transitionRoutes": {
-          "description": "A list of transitions for the transition rules of this page. They route the conversation to another page in the same flow, or another flow. When we are in a certain page, the TransitionRoutes are evalauted in the following order: * TransitionRoutes defined in the page with intent specified. * TransitionRoutes defined in the transition route groups with intent specified. * TransitionRoutes defined in flow with intent specified. * TransitionRoutes defined in the page with only condition specified. * TransitionRoutes defined in the transition route groups with only condition specified.",
+          "description": "A list of transitions for the transition rules of this page. They route the conversation to another page in the same flow, or another flow. When we are in a certain page, the TransitionRoutes are evalauted in the following order: * TransitionRoutes defined in the page with intent specified. * TransitionRoutes defined in the transition route groups with intent specified. * TransitionRoutes defined in flow with intent specified. * TransitionRoutes defined in the transition route groups with intent specified. * TransitionRoutes defined in the page with only condition specified. * TransitionRoutes defined in the transition route groups with only condition specified.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDialogflowCxV3beta1TransitionRoute"

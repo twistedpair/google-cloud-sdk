@@ -39,7 +39,7 @@ import six
 
 LINE_WIDTH = 80
 HELP_INDENT = 25
-# Used to offset hanging indentation of arg choices in markdown.
+# Used to offset second-line indentation of arg choices in markdown.
 _CHOICE_OFFSET = 3
 
 

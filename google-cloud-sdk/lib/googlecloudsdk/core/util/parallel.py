@@ -15,7 +15,7 @@
 """Parallel execution pools based on multithreading.
 
 This module provides 2 types of pools:
-- DummyPool: executes work synchronously, in the current process
+- NullPool: executes work synchronously, in the current process
 - ThreadPool: executes work across multiple threads
 
 It also contains a convenience method GetPool to get the appropriate pool for
@@ -299,11 +299,11 @@ class _Task(object):
 
 
 ################################################################################
-# DummyPool
+# NullPool
 ################################################################################
 
 
-class _DummyFuture(BaseFuture):
+class _NullFuture(BaseFuture):
 
   def __init__(self, result):
     self.result = result
@@ -315,7 +315,7 @@ class _DummyFuture(BaseFuture):
     return True
 
 
-class DummyPool(BasePool):
+class NullPool(BasePool):
   """Serial analog of parallel execution Pool."""
 
   def __init__(self):
@@ -324,26 +324,26 @@ class DummyPool(BasePool):
   def ApplyAsync(self, func, args):
     if not self._started:
       # This is for consistency with the other Pools; if a program works with
-      # DummyPool, no changes should be necessary to make it work with the other
+      # NullPool, no changes should be necessary to make it work with the other
       # Pools.
-      raise InvalidStateException('DummyPool must be Start()ed before use.')
+      raise InvalidStateException('NullPool must be Start()ed before use.')
     try:
       result = _Result((func(*args),))
     except:  # pylint: disable=bare-except
       result = _Result(exc_info=sys.exc_info())
-    return _DummyFuture(result)
+    return _NullFuture(result)
 
   def Start(self):
     if self._started:
-      raise InvalidStateException('Can only start DummyPool once.')
+      raise InvalidStateException('Can only start NullPool once.')
     self._started = True
 
   def Join(self):
     if not self._started:
       # This is for consistency with the other Pools; if a program works with
-      # DummyPool, no changes should be necessary to make it work with the other
+      # NullPool, no changes should be necessary to make it work with the other
       # Pools.
-      raise InvalidStateException('DummyPool must be Start()ed before use.')
+      raise InvalidStateException('NullPool must be Start()ed before use.')
     # Do nothing, since there is nothing to clean up
 
 
@@ -444,7 +444,7 @@ def GetPool(num_threads):
   """Returns a parallel execution pool for the given number of threads.
 
   Can return either:
-  - DummyPool: if num_threads is 1.
+  - NullPool: if num_threads is 1.
   - ThreadPool: if num_threads is greater than 1
 
   Args:
@@ -454,6 +454,6 @@ def GetPool(num_threads):
     BasePool instance appropriate for the given type of parallelism.
   """
   if num_threads == 1:
-    return DummyPool()
+    return NullPool()
   else:
     return ThreadPool(num_threads)

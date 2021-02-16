@@ -356,31 +356,34 @@ class DropInfo(_messages.Message):
     Values:
       CAUSE_UNSPECIFIED: Cause is unspecified.
       UNKNOWN_EXTERNAL_ADDRESS: Destination external address cannot be
-        resolved to a known target.
+        resolved to a known target. If the address is used in a GCP project,
+        provide the project ID as test input.
       FOREIGN_IP_DISALLOWED: a Compute Engine instance can only send or
         receive a packet with a foreign IP if ip_forward is enabled.
-      FIREWALL_RULE: Dropped due to a firewall rule unless allowed due to
+      FIREWALL_RULE: Dropped due to a firewall rule, unless allowed due to
         connection tracking.
       NO_ROUTE: Dropped due to no routes.
       ROUTE_BLACKHOLE: Dropped due to invalid route. Route's next hop is a
         blackhole.
       ROUTE_WRONG_NETWORK: Packet is sent to a wrong (unintended) network.
-        Example: user traces a packet from VM1:Network1 to VM2:Network2,
+        Example: you trace a packet from VM1:Network1 to VM2:Network2,
         however, the route configured in Network1 sends the packet destined
         for VM2's IP addresss to Network3.
       PRIVATE_TRAFFIC_TO_INTERNET: Packet with internal destination address
         sent to Internet gateway.
       PRIVATE_GOOGLE_ACCESS_DISALLOWED: Instance with only an internal IP
-        tries to access Google API and Services, and private Google access is
+        tries to access Google API and Services, but private Google access is
         not enabled.
       NO_EXTERNAL_ADDRESS: Instance with only internal IP tries to access
         external hosts, but Cloud NAT is not enabled in the subnet, unless
         special configurations on a VM allows this connection. See [Special
         Configurations for VM
         instances](https://cloud.google.com/vpc/docs/special-configurations)
-        for details.
+        for more details.
       UNKNOWN_INTERNAL_ADDRESS: Destination internal address cannot be
-        resolved to a known target.
+        resolved to a known target. If this is a shared VPC scenario, verify
+        if the service project ID is provided as test input. Otherwise, verify
+        if the IP address is being used in the project.
       FORWARDING_RULE_MISMATCH: Forwarding rule's protocol and ports do not
         match the packet header.
       FORWARDING_RULE_NO_INSTANCES: Forwarding rule does not have backends
@@ -611,7 +614,7 @@ class ForwardInfo(_messages.Message):
       TARGET_UNSPECIFIED: Target not specified.
       PEERING_VPC: Forwarded to a VPC peering network.
       VPN_GATEWAY: Forwarded to a Cloud VPN gateway.
-      INTERCONNECT: Forwarded to an Cloud Interconnect connection.
+      INTERCONNECT: Forwarded to a Cloud Interconnect connection.
       GKE_MASTER: Forwarded to a Google Kubernetes Engine Container cluster
         master.
       IMPORTED_CUSTOM_ROUTE_NEXT_HOP: Forwarded to the next hop of a custom
@@ -1556,7 +1559,7 @@ class RouteInfo(_messages.Message):
       NEXT_HOP_VPN_GATEWAY: Next hop is a VPN Gateway. This scenario only
         happens when tracing connectivity from an on-premises network to GCP
         through a VPN. The analysis simulates a packet departing from the on-
-        premises network through a VPN tunnel and arrives at a Cloud VPN
+        premises network through a VPN tunnel and arriving at a Cloud VPN
         gateway.
       NEXT_HOP_INTERNET_GATEWAY: Next hop is an internet gateway.
       NEXT_HOP_BLACKHOLE: Next hop is blackhole; that is, the next hop either
@@ -1812,10 +1815,10 @@ class Step(_messages.Message):
       NAT: Transition state: packet header translated.
       PROXY_CONNECTION: Transition state: original connection is terminated
         and a new proxied connection is initiated.
-      DELIVER: Final state: packet delivered.
-      DROP: Final state: packet dropped.
-      FORWARD: Final state: packet forwarded to a network with an unknown
-        configuration.
+      DELIVER: Final state: packet could be delivered.
+      DROP: Final state: packet could be dropped.
+      FORWARD: Final state: packet could be forwarded to a network with an
+        unknown configuration.
       ABORT: Final state: analysis is aborted.
       VIEWER_PERMISSION_MISSING: Special state: viewer of the test result does
         not have permission to see the configuration in this step.

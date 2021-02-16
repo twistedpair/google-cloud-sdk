@@ -2299,7 +2299,7 @@ class GoogleCloudHealthcareV1beta1FhirBigQueryDestination(_messages.Message):
       WRITE_DISPOSITION_UNSPECIFIED: Default behavior is the same as
         WRITE_EMPTY.
       WRITE_EMPTY: Only export data if the destination tables are empty.
-      WRITE_TRUNCATE: Erase all existing data in a tables before writing the
+      WRITE_TRUNCATE: Erase all existing data in the tables before writing the
         instances.
       WRITE_APPEND: Append data to the existing tables.
     """

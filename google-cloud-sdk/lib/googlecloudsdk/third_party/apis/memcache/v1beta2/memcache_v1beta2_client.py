@@ -55,7 +55,7 @@ class MemcacheV1beta2(base_api.BaseApiClient):
           }
 
     def ApplyParameters(self, request, global_params=None):
-      r"""ApplyParameters will restart the set of specified nodes in order to update them to the current set of parameters for the Memcached Instance.
+      r"""`ApplyParameters` restarts the set of specified nodes in order to update them to the current set of parameters for the Memcached Instance.
 
       Args:
         request: (MemcacheProjectsLocationsInstancesApplyParametersRequest) input message
@@ -244,7 +244,7 @@ class MemcacheV1beta2(base_api.BaseApiClient):
     )
 
     def UpdateParameters(self, request, global_params=None):
-      r"""Updates the defined Memcached Parameters for an existing Instance. This method only stages the parameters, it must be followed by ApplyParameters to apply the parameters to nodes of the Memcached Instance.
+      r"""Updates the defined Memcached parameters for an existing instance. This method only stages the parameters, it must be followed by `ApplyParameters` to apply the parameters to nodes of the Memcached instance.
 
       Args:
         request: (MemcacheProjectsLocationsInstancesUpdateParametersRequest) input message

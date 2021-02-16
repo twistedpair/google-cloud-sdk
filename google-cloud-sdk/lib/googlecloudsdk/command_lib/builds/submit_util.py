@@ -497,9 +497,9 @@ def Build(messages, async_, build_config, hide_logs=False,
       messages.BuildOptions.LoggingValueValuesEnum.STACKDRIVER_ONLY,
       messages.BuildOptions.LoggingValueValuesEnum.CLOUD_LOGGING_ONLY,
   ]:
-    log.status.Print('\nOpt in: to tail live logs from Cloud Logging use the'
-                     ' alpha or beta versions\n$ gcloud alpha builds submit'
-                     ' \n$ gcloud beta builds submit\n')
+    log.status.Print('\ngcloud builds submit only displays logs from Cloud'
+                     ' Storage. To view logs from Cloud Logging, run:\ngcloud'
+                     ' beta builds submit\n')
 
   mash_handler = execution.MashHandler(
       execution.GetCancelBuildHandler(client, messages, build_ref))

@@ -1684,6 +1684,9 @@ class Operation(_messages.Message):
     metadata: [Output Only] Service-specific metadata attached to this
       operation.
     name: [Output Only] Name of the operation.
+    operationGroupId: [Output Only] An ID that represents a group of
+      operations, such as when a group of operations results from a
+      `bulkInsert` API request.
     operationType: [Output Only] The type of operation, such as `insert`,
       `update`, or `delete`, and so on.
     progress: [Output Only] An optional progress indicator that ranges from 0
@@ -1792,19 +1795,20 @@ class Operation(_messages.Message):
   kind = _messages.StringField(10, default='deploymentmanager#operation')
   metadata = _messages.MessageField('Any', 11)
   name = _messages.StringField(12)
-  operationType = _messages.StringField(13)
-  progress = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  selfLinkWithId = _messages.StringField(17)
-  startTime = _messages.StringField(18)
-  status = _messages.StringField(19)
-  statusMessage = _messages.StringField(20)
-  targetId = _messages.IntegerField(21, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(22)
-  user = _messages.StringField(23)
-  warnings = _messages.MessageField('WarningsValueListEntry', 24, repeated=True)
-  zone = _messages.StringField(25)
+  operationGroupId = _messages.StringField(13)
+  operationType = _messages.StringField(14)
+  progress = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  selfLinkWithId = _messages.StringField(18)
+  startTime = _messages.StringField(19)
+  status = _messages.StringField(20)
+  statusMessage = _messages.StringField(21)
+  targetId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(23)
+  user = _messages.StringField(24)
+  warnings = _messages.MessageField('WarningsValueListEntry', 25, repeated=True)
+  zone = _messages.StringField(26)
 
 
 class OperationsListResponse(_messages.Message):

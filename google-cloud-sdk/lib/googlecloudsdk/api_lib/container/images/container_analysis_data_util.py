@@ -48,7 +48,7 @@ class PackageVulnerabilitiesSummary(SummaryResolver):
     self.vulnerabilities = collections.defaultdict(list)
 
   def add_record(self, occ):
-    sev = six.text_type(occ.vulnerability.severity)
+    sev = six.text_type(occ.vulnerability.effectiveSeverity)
     self.vulnerabilities[sev].append(occ)
 
   def resolve(self):

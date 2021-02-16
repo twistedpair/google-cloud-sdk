@@ -127,7 +127,7 @@ class TaskGraphExecutor:
 
     self._worker_count = self._max_process_count * self._thread_count
     # If a process forks at the same time as _task_iterator generates a value,
-    # it will cause obscure hanging.
+    # it will cause obscure case of the process not responding.
     self._process_start_lock = multiprocessing.Lock()
 
     # Sends task_graph.TaskWrapper instances to child processes.

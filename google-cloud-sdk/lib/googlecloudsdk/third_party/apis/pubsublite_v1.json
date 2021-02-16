@@ -389,6 +389,29 @@
           "format": "google-datetime"
         }
       }
+    },
+    "ComputeHeadCursorRequest": {
+      "id": "ComputeHeadCursorRequest",
+      "description": "Compute the current head cursor for a partition.",
+      "type": "object",
+      "properties": {
+        "partition": {
+          "description": "Required. The partition for which we should compute the head cursor.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ComputeHeadCursorResponse": {
+      "id": "ComputeHeadCursorResponse",
+      "description": "Response containing the head cursor for the requested topic and partition.",
+      "type": "object",
+      "properties": {
+        "headCursor": {
+          "description": "The head cursor.",
+          "$ref": "Cursor"
+        }
+      }
     }
   },
   "resources": {
@@ -877,6 +900,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Compute statistics about a range of messages in a given topic and partition."
+                    },
+                    "computeHeadCursor": {
+                      "id": "pubsublite.topicStats.projects.locations.topics.computeHeadCursor",
+                      "path": "v1/topicStats/{+topic}:computeHeadCursor",
+                      "flatPath": "v1/topicStats/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}:computeHeadCursor",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "topic": {
+                          "description": "Required. The topic for which we should compute the head cursor.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/topics\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "topic"
+                      ],
+                      "request": {
+                        "$ref": "ComputeHeadCursorRequest"
+                      },
+                      "response": {
+                        "$ref": "ComputeHeadCursorResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Compute the head cursor for the partition. The head cursor\u2019s offset is guaranteed to be before or equal to all messages which have not yet been acknowledged to be published, and greater than the offset of any message whose publish has already been acknowledged. It is 0 if there have never been messages on the partition."
                     }
                   }
                 }

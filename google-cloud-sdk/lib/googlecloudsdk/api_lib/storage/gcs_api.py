@@ -34,6 +34,7 @@ from apitools.base.py import transfer as apitools_transfer
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
+from googlecloudsdk.api_lib.storage import gcs_metadata_util
 # pylint: disable=unused-import
 # Applies pickling patches:
 from googlecloudsdk.api_lib.storage import patch_gcs_messages
@@ -41,13 +42,14 @@ from googlecloudsdk.api_lib.storage import patch_gcs_messages
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions as calliope_errors
 from googlecloudsdk.command_lib.storage import storage_url
-from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
+from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests
 from googlecloudsdk.core.credentials import transports
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import retry
 
 import oauth2client
@@ -72,50 +74,6 @@ def _catch_http_error_raise_gcs_api_error(format_str=None):
       apitools_exceptions.HttpError,
       cloud_errors.GcsApiError,
       format_str=format_str)
-
-
-def _bucket_resource_from_metadata(metadata):
-  """Helper method to generate a BucketResource instance from GCS metadata.
-
-  Args:
-    metadata (messages.Bucket): Extract resource properties from this.
-
-  Returns:
-    BucketResource with properties populated by metadata.
-  """
-  url = storage_url.CloudUrl(scheme=storage_url.ProviderPrefix.GCS,
-                             bucket_name=metadata.name)
-  return gcs_resource_reference.GcsBucketResource(
-      url, etag=metadata.etag, metadata=metadata)
-
-
-def _object_resource_from_metadata(metadata):
-  """Helper method to generate a ObjectResource instance from GCS metadata.
-
-  Args:
-    metadata (messages.Object): Extract resource properties from this.
-
-  Returns:
-    ObjectResource with properties populated by metadata.
-  """
-  if metadata.generation is not None:
-    # Generation may be 0 integer, which is valid although falsy.
-    generation = str(metadata.generation)
-  else:
-    generation = None
-  url = storage_url.CloudUrl(
-      scheme=storage_url.ProviderPrefix.GCS,
-      bucket_name=metadata.bucket,
-      object_name=metadata.name,
-      generation=generation)
-  return gcs_resource_reference.GcsObjectResource(
-      url,
-      creation_time=metadata.timeCreated,
-      etag=metadata.etag,
-      md5_hash=metadata.md5Hash,
-      metadata=metadata,
-      metageneration=metadata.metageneration,
-      size=metadata.size)
 
 
 def _no_op_callback(unused_response, unused_object):
@@ -288,7 +246,8 @@ class GcsApi(cloud_api.CloudApi):
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageBucketsInsertRequest)
     if not bucket_resource.metadata:
-      bucket_resource.metadata = self.messages.Bucket(name=bucket_resource.name)
+      bucket_resource.metadata = gcs_metadata_util.get_apitools_metadata_from_url(
+          bucket_resource.storage_url)
 
     request = self.messages.StorageBucketsInsertRequest(
         bucket=bucket_resource.metadata,
@@ -296,7 +255,8 @@ class GcsApi(cloud_api.CloudApi):
         projection=projection)
 
     created_bucket_metadata = self.client.buckets.Insert(request)
-    return _bucket_resource_from_metadata(created_bucket_metadata)
+    return gcs_metadata_util.get_bucket_resource_from_metadata(
+        created_bucket_metadata)
 
   @_catch_http_error_raise_gcs_api_error()
   def delete_bucket(self, bucket_name, request_config=None):
@@ -320,7 +280,7 @@ class GcsApi(cloud_api.CloudApi):
         projection=projection)
 
     metadata = self.client.buckets.Get(request)
-    return _bucket_resource_from_metadata(metadata)
+    return gcs_metadata_util.get_bucket_resource_from_metadata(metadata)
 
   def list_buckets(self, fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
@@ -342,7 +302,7 @@ class GcsApi(cloud_api.CloudApi):
         global_params=global_params)
     try:
       for bucket in bucket_iter:
-        yield _bucket_resource_from_metadata(bucket)
+        yield gcs_metadata_util.get_bucket_resource_from_metadata(bucket)
     except apitools_exceptions.HttpError as error:
       core_exceptions.reraise(cloud_errors.GcsApiError(error))
 
@@ -382,7 +342,8 @@ class GcsApi(cloud_api.CloudApi):
       # TODO(b/160238394) Decrypt metadata fields if necessary.
       for object_metadata in object_list.items:
         object_metadata.bucket = bucket_name
-        yield _object_resource_from_metadata(object_metadata)
+        yield gcs_metadata_util.get_object_resource_from_metadata(
+            object_metadata)
 
       # Yield prefixes.
       for prefix_string in object_list.prefixes:
@@ -448,7 +409,7 @@ class GcsApi(cloud_api.CloudApi):
               storage_url.ProviderPrefix.GCS, bucket_name, object_name,
               generation).url_string)
       )
-    return _object_resource_from_metadata(object_metadata)
+    return gcs_metadata_util.get_object_resource_from_metadata(object_metadata)
 
   @_catch_http_error_raise_gcs_api_error()
   def patch_object_metadata(self,
@@ -479,8 +440,8 @@ class GcsApi(cloud_api.CloudApi):
     # the resource contains the desired patched metadata values.
     patched_metadata = object_resource.metadata
     if not patched_metadata:
-      object_resource.metadata = self.messages.Object(
-          name=object_resource.name, bucket=object_resource.bucket)
+      object_resource.metadata = gcs_metadata_util.get_apitools_metadata_from_url(
+          object_resource.storage_url)
 
     request = self.messages.StorageObjectsPatchRequest(
         bucket=bucket_name,
@@ -493,7 +454,7 @@ class GcsApi(cloud_api.CloudApi):
         projection=projection)
 
     updated_metadata = self.client.objects.Patch(request)
-    return _object_resource_from_metadata(updated_metadata)
+    return gcs_metadata_util.get_object_resource_from_metadata(updated_metadata)
 
   @_catch_http_error_raise_gcs_api_error()
   def copy_object(self,
@@ -502,22 +463,82 @@ class GcsApi(cloud_api.CloudApi):
                   progress_callback=None,
                   request_config=None):
     """See super class."""
-    # TODO(b/161900052): Implement resumable copies.
     # TODO(b/161898251): Implement encryption and decryption.
-    del progress_callback
-
     if not request_config:
       request_config = GcsRequestConfig()
 
-    result_metadata = self.client.objects.Copy(
-        self.messages.StorageObjectsCopyRequest(
-            sourceBucket=source_resource.storage_url.bucket_name,
-            sourceObject=source_resource.storage_url.object_name,
-            destinationBucket=destination_resource.storage_url.bucket_name,
-            destinationObject=destination_resource.storage_url.object_name,
-            ifSourceGenerationMatch=(
-                request_config.precondition_generation_match)))
-    return _object_resource_from_metadata(result_metadata)
+    destination_metadata = getattr(destination_resource, 'metadata', None)
+    if not destination_metadata:
+      destination_metadata = gcs_metadata_util.get_apitools_metadata_from_url(
+          destination_resource.storage_url)
+      if source_resource.metadata:
+        gcs_metadata_util.copy_select_object_metadata(source_resource.metadata,
+                                                      destination_metadata)
+
+    if request_config.max_bytes_per_call:
+      max_bytes_per_call = request_config.max_bytes_per_call
+    else:
+      max_bytes_per_call = properties.VALUES.storage.chunk_size.GetInt()
+
+    if request_config.predefined_acl_string:
+      predefined_acl = getattr(
+          self.messages.StorageObjectsRewriteRequest
+          .DestinationPredefinedAclValueValuesEnum,
+          request_config.predefined_acl_string)
+    else:
+      predefined_acl = None
+
+    if source_resource.generation is None:
+      source_generation = None
+    else:
+      source_generation = int(source_resource.generation)
+
+    tracker_file_path = tracker_file_util.get_tracker_file_path(
+        destination_resource.storage_url,
+        tracker_file_util.TrackerFileType.REWRITE, source_resource.storage_url)
+    rewrite_parameters_hash = tracker_file_util.hash_gcs_rewrite_parameters_for_tracker_file(
+        source_resource,
+        destination_resource,
+        destination_metadata,
+        request_config=request_config)
+    try:
+      resume_rewrite_token = tracker_file_util.read_rewrite_tracker_file(
+          tracker_file_path, rewrite_parameters_hash)
+      log.debug('Found rewrite token. Resuming copy.')
+    except files.MissingFileError:
+      resume_rewrite_token = None
+      log.debug('No rewrite token found. Starting copy from scratch.')
+
+    while True:
+      request = self.messages.StorageObjectsRewriteRequest(
+          sourceBucket=source_resource.storage_url.bucket_name,
+          sourceObject=source_resource.storage_url.object_name,
+          destinationBucket=destination_resource.storage_url.bucket_name,
+          destinationObject=destination_resource.storage_url.object_name,
+          object=destination_metadata,
+          sourceGeneration=source_generation,
+          ifGenerationMatch=request_config.precondition_generation_match,
+          ifMetagenerationMatch=(
+              request_config.precondition_metageneration_match),
+          destinationPredefinedAcl=predefined_acl,
+          rewriteToken=resume_rewrite_token,
+          maxBytesRewrittenPerCall=max_bytes_per_call)
+      rewrite_response = self.client.objects.Rewrite(request)
+      processed_bytes = rewrite_response.totalBytesRewritten
+      if progress_callback:
+        progress_callback(processed_bytes)
+
+      if rewrite_response.done:
+        break
+      elif not resume_rewrite_token:
+        resume_rewrite_token = rewrite_response.rewriteToken
+        tracker_file_util.write_rewrite_tracker_file(
+            tracker_file_path, rewrite_parameters_hash,
+            rewrite_response.rewriteToken)
+
+    tracker_file_util.delete_tracker_file(tracker_file_path)
+    return gcs_metadata_util.get_object_resource_from_metadata(
+        rewrite_response.resource)
 
   # pylint: disable=unused-argument
   def _download_object(self,
@@ -775,7 +796,8 @@ class GcsApi(cloud_api.CloudApi):
       result_object_metadata = self.client.objects.Insert(
           request, upload=apitools_upload)
 
-      return _object_resource_from_metadata(result_object_metadata)
+      return gcs_metadata_util.get_object_resource_from_metadata(
+          result_object_metadata)
     else:
       # TODO(b/160998556): Implement resumable upload.
       pass
@@ -840,11 +862,8 @@ class GcsApi(cloud_api.CloudApi):
 
     compose_request_payload = self.messages.ComposeRequest(
         sourceObjects=source_messages,
-        destination=self.messages.Object(
-            bucket=destination_resource.storage_url.bucket_name,
-            name=destination_resource.storage_url.object_name,
-        )
-    )
+        destination=gcs_metadata_util.get_apitools_metadata_from_url(
+            destination_resource.storage_url))
 
     compose_request = self.messages.StorageObjectsComposeRequest(
         composeRequest=compose_request_payload,
@@ -862,5 +881,5 @@ class GcsApi(cloud_api.CloudApi):
           DestinationPredefinedAclValueValuesEnum,
           request_config.predefined_acl_string)
 
-    return _object_resource_from_metadata(
+    return gcs_metadata_util.get_object_resource_from_metadata(
         self.client.objects.Compose(compose_request))

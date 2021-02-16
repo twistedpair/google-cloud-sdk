@@ -51,6 +51,39 @@ The attribute can be set in the following ways:
 - provide the argument [--location] on the command line
 - set the property [artifacts/location]"""
 
+SA_SETTING_TEMPLATE = """\
+# Insert the following snippet into your .pypirc
+
+[distutils]
+index-servers =
+    {repo}
+
+[{repo}]
+repository: https://{location}-pypi.pkg.dev/{repo_path}/
+username: _json_key_base64
+password: {password}
+
+# Insert the following snippet into your pip.conf
+
+[global]
+index-url = https://_json_key_base64:{password}@{location}-pypi.pkg.dev/{repo_path}/simple/
+"""
+UNAUTHENTICATED_SETTING_TEMPLATE = """\
+# Insert the following snippet into your .pypirc
+
+[distutils]
+index-servers =
+    {repo}
+
+[{repo}]
+repository: https://{location}-pypi.pkg.dev/{repo_path}/
+
+# Insert the following snippet into your pip.conf
+
+[global]
+index-url = https://{location}-pypi.pkg.dev/{repo_path}/simple/
+"""
+
 
 def _GetRequiredProjectValue(args):
   if not args.project and not properties.VALUES.core.project.Get():
@@ -394,3 +427,29 @@ repositories {{
 
     data["extension_version"] = "2.1.0"
   return gradle_template.format(**data)
+
+
+def GetPypiSettingsSnippet(args):
+  """Forms a PyPI snippet to add to the .pypirc file (twine) and pip.conf file.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+
+  Returns:
+    A pypi snippet.
+  """
+  messages = ar_requests.GetMessages()
+  location, repo_path = _GetLocationAndRepoPath(
+      args, messages.Repository.FormatValueValuesEnum.PYPI)
+  repo = _GetRequiredRepoValue(args)
+  data = {"location": location, "repo_path": repo_path, "repo": repo}
+
+  sa_creds = _GetServiceAccountCreds(args)
+
+  if sa_creds:
+    data["password"] = base64.b64encode(
+        sa_creds.encode("utf-8")).decode("utf-8")
+    return SA_SETTING_TEMPLATE.format(**data)
+  else:
+    return UNAUTHENTICATED_SETTING_TEMPLATE.format(**data)

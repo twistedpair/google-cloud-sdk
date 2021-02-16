@@ -1810,7 +1810,7 @@ class ValidateMessageRequest(_messages.Message):
 
 
 class ValidateMessageResponse(_messages.Message):
-  r"""Response for the `ValidateMessage` method."""
+  r"""Response for the `ValidateMessage` method. Empty for now."""
 
 
 class ValidateSchemaRequest(_messages.Message):
@@ -1824,7 +1824,7 @@ class ValidateSchemaRequest(_messages.Message):
 
 
 class ValidateSchemaResponse(_messages.Message):
-  r"""Response for the `ValidateSchema` method."""
+  r"""Response for the `ValidateSchema` method. Empty for now."""
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -765,6 +765,8 @@ class GoogleDevtoolsRemotebuildbotCommandDurations(_messages.Message):
   performs a command.
 
   Fields:
+    cmWaitForAssignment: The time spent waiting for Container Manager to
+      assign an asynchronous container for execution.
     dockerPrep: The time spent preparing the command to be run in a Docker
       container (includes pulling the Docker image, if necessary).
     dockerPrepStartTime: The timestamp when docker preparation begins.
@@ -781,37 +783,63 @@ class GoogleDevtoolsRemotebuildbotCommandDurations(_messages.Message):
     uploadStartTime: The timestamp when uploading the output files begins.
   """
 
-  dockerPrep = _messages.StringField(1)
-  dockerPrepStartTime = _messages.StringField(2)
-  download = _messages.StringField(3)
-  downloadStartTime = _messages.StringField(4)
-  execStartTime = _messages.StringField(5)
-  execution = _messages.StringField(6)
-  isoPrepDone = _messages.StringField(7)
-  overall = _messages.StringField(8)
-  stdout = _messages.StringField(9)
-  upload = _messages.StringField(10)
-  uploadStartTime = _messages.StringField(11)
+  cmWaitForAssignment = _messages.StringField(1)
+  dockerPrep = _messages.StringField(2)
+  dockerPrepStartTime = _messages.StringField(3)
+  download = _messages.StringField(4)
+  downloadStartTime = _messages.StringField(5)
+  execStartTime = _messages.StringField(6)
+  execution = _messages.StringField(7)
+  isoPrepDone = _messages.StringField(8)
+  overall = _messages.StringField(9)
+  stdout = _messages.StringField(10)
+  upload = _messages.StringField(11)
+  uploadStartTime = _messages.StringField(12)
 
 
 class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
   r"""CommandEvents contains counters for the number of warnings and errors
   that occurred during the execution of a command.
 
+  Enums:
+    CmUsageValueValuesEnum: Indicates if and how Container Manager is being
+      used for task execution.
+
   Fields:
+    cmUsage: Indicates if and how Container Manager is being used for task
+      execution.
     dockerCacheHit: Indicates whether we are using a cached Docker image
       (true) or had to pull the Docker image (false) for this command.
     dockerImageName: Docker Image name.
     inputCacheMiss: The input cache miss ratio.
     numErrors: The number of errors reported.
     numWarnings: The number of warnings reported.
+    usedAsyncContainer: Indicates whether an asynchronous container was used
+      for execution.
   """
 
-  dockerCacheHit = _messages.BooleanField(1)
-  dockerImageName = _messages.StringField(2)
-  inputCacheMiss = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
-  numErrors = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  numWarnings = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  class CmUsageValueValuesEnum(_messages.Enum):
+    r"""Indicates if and how Container Manager is being used for task
+    execution.
+
+    Values:
+      NONE: Container Manager is disabled or not running for this execution.
+      CONFIG_MATCH: Container Manager is enabled and there was a matching
+        container available for use during execution.
+      CONFIG_MISMATCH: Container Manager is enabled, but there was no matching
+        container available for execution.
+    """
+    NONE = 0
+    CONFIG_MATCH = 1
+    CONFIG_MISMATCH = 2
+
+  cmUsage = _messages.EnumField('CmUsageValueValuesEnum', 1)
+  dockerCacheHit = _messages.BooleanField(2)
+  dockerImageName = _messages.StringField(3)
+  inputCacheMiss = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  numErrors = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  numWarnings = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  usedAsyncContainer = _messages.BooleanField(7)
 
 
 class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):

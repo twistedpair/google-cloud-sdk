@@ -1940,9 +1940,10 @@ class GoogleCloudDialogflowCxV3Page(_messages.Message):
       evalauted in the following order: * TransitionRoutes defined in the page
       with intent specified. * TransitionRoutes defined in the transition
       route groups with intent specified. * TransitionRoutes defined in flow
-      with intent specified. * TransitionRoutes defined in the page with only
-      condition specified. * TransitionRoutes defined in the transition route
-      groups with only condition specified.
+      with intent specified. * TransitionRoutes defined in the transition
+      route groups with intent specified. * TransitionRoutes defined in the
+      page with only condition specified. * TransitionRoutes defined in the
+      transition route groups with only condition specified.
   """
 
   displayName = _messages.StringField(1)
@@ -2626,6 +2627,9 @@ class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
       WebhookResponse.fulfillment_response;
     pageInfo: Information about page status.
     payload: Custom data set in QueryParameters.payload.
+    sentimentAnalysisResult: The sentiment analysis result of the current user
+      request. The field is filled when sentiment analysis is configured to be
+      enabled for the request.
     sessionInfo: Information about session status.
   """
 
@@ -2659,7 +2663,8 @@ class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
   messages = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessage', 4, repeated=True)
   pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3PageInfo', 5)
   payload = _messages.MessageField('PayloadValue', 6)
-  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3SessionInfo', 7)
+  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookRequestSentimentAnalysisResult', 7)
+  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3SessionInfo', 8)
 
 
 class GoogleCloudDialogflowCxV3WebhookRequestFulfillmentInfo(_messages.Message):
@@ -2741,6 +2746,21 @@ class GoogleCloudDialogflowCxV3WebhookRequestIntentInfoIntentParameterValue(_mes
 
   originalValue = _messages.StringField(1)
   resolvedValue = _messages.MessageField('extra_types.JsonValue', 2)
+
+
+class GoogleCloudDialogflowCxV3WebhookRequestSentimentAnalysisResult(_messages.Message):
+  r"""Represents the result of sentiment analysis.
+
+  Fields:
+    magnitude: A non-negative number in the [0, +inf) range, which represents
+      the absolute magnitude of sentiment, regardless of score (positive or
+      negative).
+    score: Sentiment score between -1.0 (negative sentiment) and 1.0 (positive
+      sentiment).
+  """
+
+  magnitude = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDialogflowCxV3WebhookResponse(_messages.Message):
@@ -3692,9 +3712,10 @@ class GoogleCloudDialogflowCxV3beta1Page(_messages.Message):
       evalauted in the following order: * TransitionRoutes defined in the page
       with intent specified. * TransitionRoutes defined in the transition
       route groups with intent specified. * TransitionRoutes defined in flow
-      with intent specified. * TransitionRoutes defined in the page with only
-      condition specified. * TransitionRoutes defined in the transition route
-      groups with only condition specified.
+      with intent specified. * TransitionRoutes defined in the transition
+      route groups with intent specified. * TransitionRoutes defined in the
+      page with only condition specified. * TransitionRoutes defined in the
+      transition route groups with only condition specified.
   """
 
   displayName = _messages.StringField(1)
@@ -4378,6 +4399,9 @@ class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
       WebhookResponse.fulfillment_response;
     pageInfo: Information about page status.
     payload: Custom data set in QueryParameters.payload.
+    sentimentAnalysisResult: The sentiment analysis result of the current user
+      request. The field is filled when sentiment analysis is configured to be
+      enabled for the request.
     sessionInfo: Information about session status.
   """
 
@@ -4411,7 +4435,8 @@ class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
   messages = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 4, repeated=True)
   pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1PageInfo', 5)
   payload = _messages.MessageField('PayloadValue', 6)
-  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1SessionInfo', 7)
+  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestSentimentAnalysisResult', 7)
+  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1SessionInfo', 8)
 
 
 class GoogleCloudDialogflowCxV3beta1WebhookRequestFulfillmentInfo(_messages.Message):
@@ -4492,6 +4517,21 @@ class GoogleCloudDialogflowCxV3beta1WebhookRequestIntentInfoIntentParameterValue
 
   originalValue = _messages.StringField(1)
   resolvedValue = _messages.MessageField('extra_types.JsonValue', 2)
+
+
+class GoogleCloudDialogflowCxV3beta1WebhookRequestSentimentAnalysisResult(_messages.Message):
+  r"""Represents the result of sentiment analysis.
+
+  Fields:
+    magnitude: A non-negative number in the [0, +inf) range, which represents
+      the absolute magnitude of sentiment, regardless of score (positive or
+      negative).
+    score: Sentiment score between -1.0 (negative sentiment) and 1.0 (positive
+      sentiment).
+  """
+
+  magnitude = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDialogflowCxV3beta1WebhookResponse(_messages.Message):

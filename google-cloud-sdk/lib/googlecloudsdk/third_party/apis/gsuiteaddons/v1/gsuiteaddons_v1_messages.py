@@ -392,10 +392,12 @@ class GoogleAppsScriptTypeLayoutProperties(_messages.Message):
       secondary color is the same as the primary color. If neither primary
       color nor secondary color is set, the default value provided by the
       framework is used.
+    useNewMaterialDesign: Enable material design for cards.
   """
 
   primaryColor = _messages.StringField(1)
   secondaryColor = _messages.StringField(2)
+  useNewMaterialDesign = _messages.BooleanField(3)
 
 
 class GoogleAppsScriptTypeMenuItemExtensionPoint(_messages.Message):

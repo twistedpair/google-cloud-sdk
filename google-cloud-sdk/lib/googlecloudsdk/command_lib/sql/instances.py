@@ -68,13 +68,13 @@ def ConnectToInstance(cmd_args, sql_user):
     log.Print(info_holder.InfoHolder())
 
 
-def _GetAndValidateCmekKeyName(args, is_master):
+def _GetAndValidateCmekKeyName(args, is_primary):
   """Parses the CMEK resource arg, makes sure the key format was correct."""
   kms_ref = args.CONCEPTS.kms_key.Parse()
   if kms_ref:
-    # Since CMEK is required for replicas of CMEK masters, this prompt is only
-    # actionable for master instances.
-    if is_master:
+    # Since CMEK is required for replicas of CMEK primaries, this prompt is only
+    # actionable for primary instances.
+    if is_primary:
       _ShowCmekPrompt()
     return kms_ref.RelativeName()
   else:
@@ -572,16 +572,16 @@ class _BaseInstances(object):
     if args.collation:
       instance_resource.settings.collation = args.collation
 
-    # BETA: Config for creating a replica of an external master instance.
+    # BETA: Config for creating a replica of an external primary instance.
     if _IsBetaOrNewer(release_track) and args.IsSpecified('master_username'):
-      # Ensure that the master instance name is specified.
+      # Ensure that the primary instance name is specified.
       if not args.IsSpecified('master_instance_name'):
         raise exceptions.RequiredArgumentException(
             '--master-instance-name', 'To create a read replica of an external '
             'master instance, [--master-instance-name] must be specified')
 
       # TODO(b/78648703): Remove when mutex required status is fixed.
-      # Ensure that the master replication user password is specified.
+      # Ensure that the primary replication user password is specified.
       if not (args.IsSpecified('master_password') or
               args.IsSpecified('prompt_for_master_password')):
         raise exceptions.RequiredArgumentException(
@@ -599,8 +599,8 @@ class _BaseInstances(object):
           args.master_dump_file_path, args.master_ca_certificate_path,
           args.client_certificate_path, args.client_key_path)
 
-    is_master = instance_resource.masterInstanceName is None
-    key_name = _GetAndValidateCmekKeyName(args, is_master)
+    is_primary = instance_resource.masterInstanceName is None
+    key_name = _GetAndValidateCmekKeyName(args, is_primary)
     if key_name:
       config = sql_messages.DiskEncryptionConfiguration(
           kind='sql#diskEncryptionConfiguration', kmsKeyName=key_name)

@@ -213,6 +213,10 @@
         "description": {
           "description": "The description of the source (max of 1024 characters). Example: \"Web Security Scanner is a web security scanner for common vulnerabilities in App Engine applications. It can automatically scan and detect four common vulnerabilities, including cross-site-scripting (XSS), Flash injection, mixed content (HTTP in HTTPS), and outdated or insecure libraries.\"",
           "type": "string"
+        },
+        "canonicalName": {
+          "description": "The canonical name of the finding. It's either \"organizations\/{organization_id}\/sources\/{source_id}\", \"folders\/{folder_id}\/sources\/{source_id}\" or \"projects\/{project_number}\/sources\/{source_id}\", depending on the closest CRM ancestor of the resource associated with the finding.",
+          "type": "string"
         }
       }
     },
@@ -294,6 +298,10 @@
             "MEDIUM",
             "LOW"
           ]
+        },
+        "canonicalName": {
+          "description": "The canonical name of the finding. It's either \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\", \"folders\/{folder_id}\/sources\/{source_id}\/findings\/{finding_id}\" or \"projects\/{project_number}\/sources\/{source_id}\/findings\/{finding_id}\", depending on the closest CRM ancestor of the resource associated with the finding.",
+          "type": "string"
         }
       }
     },
@@ -312,6 +320,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "canonicalName": {
+          "description": "The canonical name of the marks. Examples: \"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\" \"folders\/{folder_id}\/assets\/{asset_id}\/securityMarks\" \"projects\/{project_number}\/assets\/{asset_id}\/securityMarks\" \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\" \"folders\/{folder_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\" \"projects\/{project_number}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\"",
+          "type": "string"
         }
       }
     },
@@ -790,6 +802,10 @@
         "iamPolicy": {
           "description": "Cloud IAM Policy information associated with the Google Cloud resource described by the Security Command Center asset. This information is managed and defined by the Google Cloud resource and cannot be modified by the user.",
           "$ref": "IamPolicy"
+        },
+        "canonicalName": {
+          "description": "The canonical name of the resource. It's either \"organizations\/{organization_id}\/assets\/{asset_id}\", \"folders\/{folder_id}\/assets\/{asset_id}\" or \"projects\/{project_number}\/assets\/{asset_id}\", depending on the closest CRM ancestor of the resource.",
+          "type": "string"
         }
       }
     },

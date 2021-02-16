@@ -530,8 +530,8 @@ class GoogleCloudMlV1DiskConfig(_messages.Message):
 
   Fields:
     bootDiskSizeGb: Size in GB of the boot disk (default is 100GB).
-    bootDiskType: Type of the boot disk (default is "pd-standard"). Valid
-      values: "pd-ssd" (Persistent Disk Solid State Drive) or "pd-standard"
+    bootDiskType: Type of the boot disk (default is "pd-ssd"). Valid values:
+      "pd-ssd" (Persistent Disk Solid State Drive) or "pd-standard"
       (Persistent Disk Hard Disk Drive).
   """
 
@@ -1559,6 +1559,8 @@ class GoogleCloudMlV1NasSpecMultiTrialAlgorithmSpec(_messages.Message):
       `NAS_MULTI_TRIAL_ALGORITHM_REINFORCEMENT_LEARNING`.
 
   Fields:
+    initialIgnoredModelCount: If non-zero, it specifies the number of first
+      models whose rewards will be ignored.
     maxFailedNasTrials: Optional. It decides when a Neural Architecture Search
       (NAS) job should fail. Defaults to zero.
     maxNasTrials: Optional. How many Neural Architecture Search (NAS) trials
@@ -1589,11 +1591,12 @@ class GoogleCloudMlV1NasSpecMultiTrialAlgorithmSpec(_messages.Message):
     REINFORCEMENT_LEARNING = 1
     GRID_SEARCH = 2
 
-  maxFailedNasTrials = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  maxNasTrials = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  maxParallelNasTrials = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  multiTrialAlgorithm = _messages.EnumField('MultiTrialAlgorithmValueValuesEnum', 4)
-  nasTargetRewardMetric = _messages.StringField(5)
+  initialIgnoredModelCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxFailedNasTrials = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxNasTrials = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maxParallelNasTrials = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  multiTrialAlgorithm = _messages.EnumField('MultiTrialAlgorithmValueValuesEnum', 5)
+  nasTargetRewardMetric = _messages.StringField(6)
 
 
 class GoogleCloudMlV1NasSpecOneShotAlgorithmSpec(_messages.Message):

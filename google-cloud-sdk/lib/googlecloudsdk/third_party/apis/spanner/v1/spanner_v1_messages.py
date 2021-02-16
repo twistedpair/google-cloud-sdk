@@ -380,7 +380,11 @@ class Database(_messages.Message):
     createTime: Output only. If exists, the time at which the database
       creation started.
     earliestVersionTime: Output only. Earliest timestamp at which older
-      versions of the data can be read.
+      versions of the data can be read. This value is continuously updated by
+      Cloud Spanner and becomes stale the moment it is queried. If you are
+      using this value to recover data, make sure to account for the time from
+      the moment when the value is queried to the moment when you initiate the
+      recovery.
     encryptionConfig: Output only. Custom encryption configuration (Cloud KMS
       keys). Applicable only for databases using the Customer Managed
       Encryption Keys (CMEK) feature. This is the encryption configuration
@@ -397,9 +401,9 @@ class Database(_messages.Message):
       information about the restore source.
     state: Output only. The current database state.
     versionRetentionPeriod: Output only. The period in which Cloud Spanner
-      retains all versions of data for the database. This is same as the value
-      of version_retention_period database option set using UpdateDatabaseDdl.
-      Defaults to 1 hour, if not set.
+      retains all versions of data for the database. This is the same as the
+      value of version_retention_period database option set using
+      UpdateDatabaseDdl. Defaults to 1 hour, if not set.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -2547,19 +2551,20 @@ class SpannerProjectsInstancesBackupsListRequest(_messages.Message):
       sensitive. The following fields in the Backup are eligible for
       filtering: * `name` * `database` * `state` * `create_time` (and values
       are of the format YYYY-MM-DDTHH:MM:SSZ) * `expire_time` (and values are
-      of the format YYYY-MM-DDTHH:MM:SSZ) * `size_bytes` You can combine
-      multiple expressions by enclosing each expression in parentheses. By
-      default, expressions are combined with AND logic, but you can specify
-      AND, OR, and NOT logic explicitly. Here are a few examples: *
-      `name:Howl` - The backup's name contains the string "howl". *
-      `database:prod` - The database's name contains the string "prod". *
-      `state:CREATING` - The backup is pending creation. * `state:READY` - The
-      backup is fully created and ready for use. * `(name:howl) AND
-      (create_time < \"2018-03-28T14:50:00Z\")` - The backup name contains the
-      string "howl" and `create_time` of the backup is before
-      2018-03-28T14:50:00Z. * `expire_time < \"2018-03-28T14:50:00Z\"` - The
-      backup `expire_time` is before 2018-03-28T14:50:00Z. * `size_bytes >
-      10000000000` - The backup's size is greater than 10GB
+      of the format YYYY-MM-DDTHH:MM:SSZ) * `version_time` (and values are of
+      the format YYYY-MM-DDTHH:MM:SSZ) * `size_bytes` You can combine multiple
+      expressions by enclosing each expression in parentheses. By default,
+      expressions are combined with AND logic, but you can specify AND, OR,
+      and NOT logic explicitly. Here are a few examples: * `name:Howl` - The
+      backup's name contains the string "howl". * `database:prod` - The
+      database's name contains the string "prod". * `state:CREATING` - The
+      backup is pending creation. * `state:READY` - The backup is fully
+      created and ready for use. * `(name:howl) AND (create_time <
+      \"2018-03-28T14:50:00Z\")` - The backup name contains the string "howl"
+      and `create_time` of the backup is before 2018-03-28T14:50:00Z. *
+      `expire_time < \"2018-03-28T14:50:00Z\"` - The backup `expire_time` is
+      before 2018-03-28T14:50:00Z. * `size_bytes > 10000000000` - The backup's
+      size is greater than 10GB
     pageSize: Number of backups to be returned in the response. If 0 or less,
       defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token

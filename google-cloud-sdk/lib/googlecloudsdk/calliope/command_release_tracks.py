@@ -98,17 +98,16 @@ def SeparateDeclarativeCommandTracks(command_impls):
   if not isinstance(command_impls, list):
     command_impls = [command_impls]
   for impl in command_impls:
-    release_tracks = impl.get(RELEASE_TRACKS, [])
+    release_tracks = impl.get(RELEASE_TRACKS)
     if not release_tracks:
-      yield impl
-    else:
-      for track in release_tracks:
-        track_impl = copy.deepcopy(impl)
-        try:
-          _SetValuesForTrack(track_impl, track)
-        except DoesNotExistForTrackError:
-          # The implementation doesn't have any keys left.
-          # continue
-          pass
-        track_impl[RELEASE_TRACKS] = [track]
-        yield track_impl
+      release_tracks = ['ALPHA', 'BETA', 'GA']
+    for track in release_tracks:
+      track_impl = copy.deepcopy(impl)
+      try:
+        _SetValuesForTrack(track_impl, track)
+      except DoesNotExistForTrackError:
+        # The implementation doesn't have any keys left.
+        # continue
+        pass
+      track_impl[RELEASE_TRACKS] = [track]
+      yield track_impl

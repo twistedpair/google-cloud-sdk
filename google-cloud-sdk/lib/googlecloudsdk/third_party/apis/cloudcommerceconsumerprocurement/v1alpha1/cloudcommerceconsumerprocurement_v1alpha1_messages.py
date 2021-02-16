@@ -1674,10 +1674,12 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Subscription(_messages.Messa
       current subscription. This field indicates order/subscription status
       after pending plan change is cancelled or rejected.
     endTime: The timestamp when the subscription ends, if applicable.
+    startTime: The timestamp when the subscription begins, if applicable.
   """
 
   autoRenewalEnabled = _messages.BooleanField(1)
   endTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
 
 
 class GoogleLongrunningCancelOperationRequest(_messages.Message):

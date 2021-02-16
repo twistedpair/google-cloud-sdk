@@ -119,6 +119,22 @@ def AddMultiWriterFlag(parser):
       resize and snapshot operations.
       """)
 
+
+def AddProvisionedIopsFlag(parser, arg_parsers, constants):
+  return parser.add_argument(
+      '--provisioned-iops',
+      type=arg_parsers.BoundedInt(constants.MIN_PROVISIONED_IOPS,
+                                  constants.MAX_PROVISIONED_IOPS),
+      help=(
+          'Provisioned IOPS of pd-extreme disk to create. Only for use with '
+          'disks of type pd-extreme. If specified, the value must be in the '
+          'range between {min} and {max}. If not specified, the default value '
+          'is {default}.').format(
+              min=constants.MIN_PROVISIONED_IOPS,
+              max=constants.MAX_PROVISIONED_IOPS,
+              default=constants.DEFAULT_PROVISIONED_IOPS))
+
+
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='snapshot',
     completer=SnapshotsCompleter,
