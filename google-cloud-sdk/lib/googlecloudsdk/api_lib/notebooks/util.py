@@ -20,18 +20,32 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
-def GetClient():
+def ApiVersionSelector(release_track):
+  """Returns the correct API version.
+
+  Args:
+    release_track: base.ReleaseTrack object
+  """
+  if release_track == base.ReleaseTrack.GA:
+    return 'v1'
+  return 'v1beta1'
+
+
+def GetClient(release_track=base.ReleaseTrack.GA):
   """Returns the client for the trace API."""
-  return core_apis.GetClientInstance('notebooks', 'v1beta1')
+  return core_apis.GetClientInstance('notebooks',
+                                     ApiVersionSelector(release_track))
 
 
-def GetMessages():
+def GetMessages(release_track=base.ReleaseTrack.GA):
   """Returns the messages for the trace API."""
-  return core_apis.GetMessagesModule('notebooks', 'v1beta1')
+  return core_apis.GetMessagesModule('notebooks',
+                                     ApiVersionSelector(release_track))
 
 
 def GetLocationResource(location, project=None):
@@ -74,12 +88,18 @@ def GetParentFromArgs(args):
         project).RelativeName()
 
 
-def GetOperationResource(name):
+def GetOperationResource(name, release_track=None):
   return resources.REGISTRY.ParseRelativeName(
-      name, collection='notebooks.projects.locations.operations')
+      name,
+      collection='notebooks.projects.locations.operations',
+      api_version=ApiVersionSelector(release_track))
 
 
-def WaitForOperation(operation, message, service, is_delete=False):
+def WaitForOperation(operation,
+                     message,
+                     service,
+                     release_track,
+                     is_delete=False):
   """Waits for the given google.longrunning.Operation to complete.
 
   Args:
@@ -87,6 +107,7 @@ def WaitForOperation(operation, message, service, is_delete=False):
     message: String to display for default progress_tracker.
     service: The service to get the resource after the long running operation
       completes.
+    release_track: base.ReleaseTrack object.
     is_delete: Bool indicating is Poller should fetch resource post operation.
 
   Raises:
@@ -95,12 +116,12 @@ def WaitForOperation(operation, message, service, is_delete=False):
   Returns:
     The created Environment resource.
   """
-  operation_ref = GetOperationResource(operation.name)
+  operation_ref = GetOperationResource(operation.name, release_track)
+  client = GetClient(release_track)
   if is_delete:
     poller = waiter.CloudOperationPollerNoResources(
-        GetClient().projects_locations_operations)
+        client.projects_locations_operations)
   else:
     poller = waiter.CloudOperationPoller(
-        service,
-        GetClient().projects_locations_operations)
+        service, client.projects_locations_operations)
   return waiter.WaitFor(poller, operation_ref, message)

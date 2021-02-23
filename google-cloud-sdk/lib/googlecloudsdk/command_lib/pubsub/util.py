@@ -274,3 +274,27 @@ def ListSnapshotDisplayDict(snapshot):
   result['topicId'] = topic_ref.topicsId
   result['expireTime'] = snapshot.expireTime
   return result
+
+
+def GetProject():
+  """Returns the value of the core/project config property.
+
+  Config properties can be overridden with command line flags. If the --project
+  flag was provided, this will return the value provided with the flag.
+  """
+  return properties.VALUES.core.project.Get(required=True)
+
+
+def ParseSchemaName(schema):
+  """Parses a schema name using configuration properties for fallback.
+
+  Args:
+    schema: str, the schema's ID, fully-qualified URL, or relative name
+
+  Returns:
+    str: the relative name of the schema resource
+  """
+  return resources.REGISTRY.Parse(
+      schema, params={
+          'projectsId': GetProject
+      }, collection='pubsub.projects.schemas').RelativeName()

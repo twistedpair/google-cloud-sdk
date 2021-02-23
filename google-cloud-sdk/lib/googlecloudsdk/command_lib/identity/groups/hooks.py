@@ -34,8 +34,8 @@ def SetParent(unused_ref, args, request):
   """Set obfuscated customer id to request.group.parent or request.parent.
 
   Args:
-    unused_ref: A string representing the operation reference. Unused and may
-      be None.
+    unused_ref: A string representing the operation reference. Unused and may be
+      None.
     args: The argparse namespace.
     request: The request to modify.
 
@@ -167,6 +167,9 @@ def SetGroupUpdateMask(unused_ref, args, request):
         args.IsSpecified('clear_posix_groups')):
       update_mask.append('posix_groups')
 
+  if args.IsSpecified('dynamic_user_query'):
+    update_mask.append('dynamic_group_metadata')
+
   if not update_mask:
     raise exceptions.InvalidArgumentException(
         'Must specify at least one field mask.')
@@ -262,8 +265,8 @@ def UpdatePosixGroups(unused_ref, args, request):
     if request.group is None:
       request.group = group
     for pg in list(group.posixGroups):
-      if (six.text_type(pg.gid) in args.remove_posix_groups
-          or pg.name in args.remove_posix_groups):
+      if (six.text_type(pg.gid) in args.remove_posix_groups or
+          pg.name in args.remove_posix_groups):
         group.posixGroups.remove(pg)
     request.group.posixGroups = group.posixGroups
 
@@ -293,8 +296,13 @@ def SetDynamicUserQuery(unused_ref, args, request):
     new_dynamic_group_query = messages.DynamicGroupQuery(
         resourceType=resource_type.USER, query=dg_user_query)
     queries.append(new_dynamic_group_query)
-    request.group.dynamicGroupMetadata = messages.DynamicGroupMetadata(
-        queries=queries)
+    dynamic_group_metadata = messages.DynamicGroupMetadata(queries=queries)
+
+    if hasattr(request.group, 'dynamicGroupMetadata'):
+      request.group.dynamicGroupMetadata = dynamic_group_metadata
+    else:
+      request.group = messages.Group(
+          dynamicGroupMetadata=dynamic_group_metadata)
 
   return request
 
@@ -410,8 +418,7 @@ def FilterLabels(labels):
 
   if not labels:
     raise exceptions.InvalidArgumentException(
-        'labels',
-        'labels can not be an empty string')
+        'labels', 'labels can not be an empty string')
 
   # Convert a comma separated string to a list of strings.
   label_list = labels.split(',')

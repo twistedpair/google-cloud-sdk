@@ -248,6 +248,30 @@ class ArchivesClient(base.BaseClient):
   _entity_path = ["organization", "environment", "archiveDeployment"]
 
   @classmethod
+  def List(cls, identifiers):
+    """Calls the 'list' API for archive deployments.
+
+    Args:
+      identifiers: Dict of identifiers for the request entity path, which must
+        include "organizationsId" and "environmentsId".
+
+    Returns:
+      A dict of the API response in the form of:
+        {"archiveDeployments": [list of archive deployments]}
+
+    Raises:
+      command_lib.apigee.errors.RequestError if there is an error with the API
+        request.
+    """
+    try:
+      return request.ResponseToApiRequest(
+          identifiers,
+          entity_path=cls._entity_path[:-1],
+          entity_collection=cls._entity_path[-1])
+    except errors.RequestError as error:
+      raise error.RewrittenError("archive deployment", "list")
+
+  @classmethod
   def GetUploadUrl(cls, identifiers):
     """Apigee API for generating a signed URL for uploading archives.
 

@@ -161,6 +161,14 @@ def MakeInstanceSchedulePolicy(policy_ref, args, messages):
       vmStartSchedule=vm_start_schedule,
       vmStopSchedule=vm_stop_schedule)
 
+  if args.initiation_date:
+    instance_schedule_policy.startTime = times.FormatDateTime(
+        args.initiation_date)
+
+  if args.end_date:
+    instance_schedule_policy.expirationTime = times.FormatDateTime(
+        args.end_date)
+
   return messages.ResourcePolicy(
       name=policy_ref.Name(),
       description=args.description,

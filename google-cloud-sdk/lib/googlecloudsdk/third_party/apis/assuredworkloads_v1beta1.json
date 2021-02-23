@@ -601,9 +601,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -642,9 +642,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -671,9 +671,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the new Workload's parent. Must be of the form `organizations\/{org_id}\/locations\/{location_id}`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "externalId": {
@@ -704,9 +704,9 @@
                   "parameters": {
                     "name": {
                       "description": "Optional. The resource name of the workload. Format: organizations\/{organization}\/locations\/{location}\/workloads\/{workload} Read-only.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/workloads\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/workloads\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -738,9 +738,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The `name` field is used to identify the workload. Format: organizations\/{org_id}\/locations\/{location_id}\/workloads\/{workload_id}",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/workloads\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/workloads\/[^\/]+$",
                       "type": "string"
                     },
                     "etag": {
@@ -768,9 +768,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the Workload to fetch. This is the workloads's relative path in the API, formatted as \"organizations\/{organization_id}\/locations\/{location_id}\/workloads\/{workload_id}\". For example, \"organizations\/123\/locations\/us-east1\/workloads\/assured-workload-1\".",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/workloads\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/workloads\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -793,9 +793,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent Resource to list workloads from. Must be of the form `organizations\/{org_id}\/locations\/{location}`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {

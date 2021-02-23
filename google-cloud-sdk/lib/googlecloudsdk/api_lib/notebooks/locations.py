@@ -21,9 +21,9 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.notebooks import util
 
 
-def CreateLocationListRequest(args):
+def CreateLocationListRequest(args, messages):
   project_name = util.GetProjectResource(args.project).RelativeName()
-  return util.GetMessages().NotebooksProjectsLocationsListRequest(
+  return messages.NotebooksProjectsLocationsListRequest(
       name=project_name)
 
 

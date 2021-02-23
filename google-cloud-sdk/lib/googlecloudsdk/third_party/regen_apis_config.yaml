@@ -62,14 +62,31 @@ apis:
       resources:
         projects.locations.models.operations:
           path: projects/{projectsId}/locations/{locationsId}/models/{modelsId}/operations/{operationsId}
+        projects.locations.indexes.operations:
+          path: projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}/operations/{operationsId}
         projects.locations.endpoints.operations:
           path: projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}/operations/{operationsId}
+        projects.locations.indexEndpoints.operations:
+          path: projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}/operations/{operationsId}
     v1beta1:
       default: true
       discovery_doc: aiplatform_v1beta1.json
       resources:
         projects.locations.models.operations:
           path: projects/{projectsId}/locations/{locationsId}/models/{modelsId}/operations/{operationsId}
+        projects.locations.indexes.operations:
+          path: projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}/operations/{operationsId}
+        projects.locations.endpoints.operations:
+          path: projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}/operations/{operationsId}
+        projects.locations.indexEndpoints.operations:
+          path: projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}/operations/{operationsId}
+    v1:
+      discovery_doc: aiplatform_v1.json
+      resources:
+        projects.locations.models.operations:
+          path: projects/{projectsId}/locations/{locationsId}/models/{modelsId}/operations/{operationsId}
+        projects.locations.indexes.operations:
+          path: projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}/operations/{operationsId}
         projects.locations.endpoints.operations:
           path: projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}/operations/{operationsId}
   anthosevents:
@@ -119,6 +136,8 @@ apis:
   assuredworkloads:
     v1beta1:
       discovery_doc: assuredworkloads_v1beta1.json
+    v1:
+      discovery_doc: assuredworkloads_v1.json
       default: true
   bigtableadmin:
     v2:
@@ -708,6 +727,10 @@ apis:
       enable_mtls: true
       discovery_doc: logging_v2.json
       default: true
+  luxadmin:
+    v1alpha1:
+      discovery_doc: luxadmin_v1alpha1.json
+      default: true
   memcache:
     v1beta2:
       discovery_doc: memcache_v1beta2.json
@@ -758,9 +781,9 @@ apis:
   notebooks:
     v1:
       discovery_doc: notebooks_v1.json
+      default: true
     v1beta1:
       discovery_doc: notebooks_v1beta1.json
-      default: true
   orgpolicy:
     v2alpha1:
       discovery_doc: orgpolicy_v2alpha1.json
@@ -795,6 +818,10 @@ apis:
     v1beta1:
       default: true
       discovery_doc: privateca_v1beta1.json
+  publicca:
+    v1alpha1:
+      default: true
+      discovery_doc: publicca_v1alpha1.json
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json

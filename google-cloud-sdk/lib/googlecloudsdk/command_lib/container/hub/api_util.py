@@ -392,7 +392,7 @@ def UpdateMembership(name,
 
   if issuer_url:
     request.membership.authority = messages.Authority(issuer=issuer_url)
-    if release_track is base.ReleaseTrack.ALPHA:
+    if release_track is not base.ReleaseTrack.GA:
       if oidc_jwks:
         request.membership.authority.oidcJwks = oidc_jwks.encode('utf-8')
       else:
@@ -463,8 +463,9 @@ def CreateMembership(project,
     request.membership.externalId = external_id
   if issuer_url:
     request.membership.authority = messages.Authority(issuer=issuer_url)
-    if oidc_jwks:
-      request.membership.authority.oidcJwks = oidc_jwks.encode('utf-8')
+    if release_track is not base.ReleaseTrack.GA:
+      if oidc_jwks:
+        request.membership.authority.oidcJwks = oidc_jwks.encode('utf-8')
   op = client.projects_locations_memberships.Create(request)
   op_resource = resources.REGISTRY.ParseRelativeName(
       op.name, collection='gkehub.projects.locations.operations')

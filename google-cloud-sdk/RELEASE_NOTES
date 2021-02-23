@@ -5,6 +5,67 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 329.0.0 (2021-02-23)
+
+### Breaking Changes
+
+*   **(Container Registry)** Fixed issue where `gcloud containers images list-tags` doesn't show occurrence metadata.
+
+
+### AI
+
+* Added `--network` and `--service-account` to `gcloud beta ai <custom-jobs|hp-tuning-jobs> create` to allow specifying a peering network and user service account.
+
+### Cloud Asset Inventory
+
+* Added `--relationship-type` flag to `gcloud beta asset export`.
+
+### Cloud Code
+
+* Promoted `gcloud code dev` and `gcloud code clean-up` to beta.
+
+### Cloud Composer
+
+* Added `--kms-key` flag to `gcloud composer environments` command to specify the Customer-managed KMS key name to use for encrypting the Composer environment.
+
+### Cloud Functions
+
+* Fixed a performance issue in `gcloud functions logs read` by adding a default value of 1 week ago for `--start-time`.
+
+### Cloud Memorystore
+
+* Added `--transit-encryption-mode` flag to `gcloud redis instances create`
+to allow enabling Redis TLS with server authentication when
+creating a new instance.
+* Modified `--region` flag to be optional in `gcloud memcache`. If not
+specified, use the value in `memcache/region` property.
+
+### Cloud Pub/Sub
+
+* Added `gcloud beta pubsub schemas validate-schema` to allow validation of PROTOCOL_BUFFER and AVRO schemas.
+* Added `gcloud beta pubsub schemas validate-message` to allow validation of messages against an existing or inline schema.
+
+### Compute Engine
+
+* Promoted `--provisioned-iops` flag of `gcloud compute disks create` to beta.
+* Promoted `gcloud compute url-maps validate` to GA.
+* Promoted labels-related flags for `gcloud compute forwarding-rules update` to GA.
+* Modified `--short-name` of `gcloud compute firewall-policies create` to be a required flag.
+* Promoted `--proxy-bind` flag of `gcloud compute target-tcp-proxies create` to GA.
+* Allow `--target-tcp-proxy` for `gcloud compute forwarding-rules` `create` and `set-target`
+  with specified `-load-balancing-scheme=INTERNAL_SELF_MANAGED`.
+* Added functionality in `gcloud beta compute images import` to import images from
+AWS.
+* Promoted `gcloud compute resource-policies create instance-schedule` command to GA.
+
+### Identity Groups
+
+*   Added `--dynamic-user-query` flag to `gcloud identity update`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 328.0.0 (2021-02-16)
 
 ### Breaking Changes

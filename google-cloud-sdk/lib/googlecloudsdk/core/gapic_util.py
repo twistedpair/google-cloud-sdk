@@ -18,9 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from google.auth import credentials
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import store
-from google.auth import credentials
 
 
 class MissingStoredCredentialsError(Exception):
@@ -53,7 +54,26 @@ class StoredCredentials(credentials.Credentials):
   def apply(self, headers, token=None):
     super(StoredCredentials, self).apply(headers, token=token)
     if self.quota_project_id is not None:
-      headers["x-goog-user-project"] = self.quota_project_id
+      headers['x-goog-user-project'] = self.quota_project_id
 
   def refresh(self, request):
     pass
+
+
+class NoGRPCInstalledError(exceptions.ToolException):
+  """Unable to import grpc-based modules."""
+
+  def __init__(self):
+    super(NoGRPCInstalledError, self).__init__(
+        'Please ensure the grpc module is installed.  Run:\n'
+        'pip install grpcio')
+
+
+def MakeClient(transport_class, client_class, address=None):
+  """Instantiates a gapic API client with gcloud defaults and configuration."""
+  if not address:
+    address = client_class.SERVICE_ADDRESS
+
+  transport = transport_class(credentials=StoredCredentials(),
+                              address=address)
+  return client_class(transport=transport)

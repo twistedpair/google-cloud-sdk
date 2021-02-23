@@ -125,6 +125,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'aiplatform': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.aiplatform.v1',
+                client_classpath='aiplatform_v1_client.AiplatformV1',
+                messages_modulepath='aiplatform_v1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.aiplatform.v1alpha1',
@@ -267,12 +275,20 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'assuredworkloads': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.assuredworkloads.v1',
+                client_classpath='assuredworkloads_v1_client.AssuredworkloadsV1',
+                messages_modulepath='assuredworkloads_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.assuredworkloads.v1beta1',
                 client_classpath='assuredworkloads_v1beta1_client.AssuredworkloadsV1beta1',
                 messages_modulepath='assuredworkloads_v1beta1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -1386,6 +1402,16 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'luxadmin': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.luxadmin.v1alpha1',
+                client_classpath='luxadmin_v1alpha1_client.LuxadminV1alpha1',
+                messages_modulepath='luxadmin_v1alpha1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'managedidentities': {
         'v1':
             APIDef(
@@ -1530,7 +1556,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.notebooks.v1',
                 client_classpath='notebooks_v1_client.NotebooksV1',
                 messages_modulepath='notebooks_v1_messages',
-                default_version=False,
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
         'v1beta1':
@@ -1538,7 +1564,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.notebooks.v1beta1',
                 client_classpath='notebooks_v1beta1_client.NotebooksV1beta1',
                 messages_modulepath='notebooks_v1beta1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -1680,6 +1706,16 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.privateca.v1beta1',
                 client_classpath='privateca_v1beta1_client.PrivatecaV1beta1',
                 messages_modulepath='privateca_v1beta1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'publicca': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.publicca.v1alpha1',
+                client_classpath='publicca_v1alpha1_client.PubliccaV1alpha1',
+                messages_modulepath='publicca_v1alpha1_messages',
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),

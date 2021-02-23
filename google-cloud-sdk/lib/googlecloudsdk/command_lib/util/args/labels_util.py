@@ -140,7 +140,6 @@ def GetClearLabelsFlag(labels_name='labels'):
   return base.Argument(
       '--clear-{}'.format(labels_name),
       action='store_true',
-      # TODO(b/113682642): Update text to be compliant with the style guide.
       help="""\
           Remove all labels. If `--update-{labels}` is also specified then
           `--clear-{labels}` is applied first.
@@ -149,7 +148,8 @@ def GetClearLabelsFlag(labels_name='labels'):
 
               $ {{command}} --clear-{labels}
 
-          To set the labels to exactly "foo" and "baz":
+          To remove all existing labels and create two new labels,
+          ``foo'' and ``baz'':
 
               $ {{command}} --clear-{labels} --update-{labels} foo=bar,baz=qux
           """.format(labels=labels_name))

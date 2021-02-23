@@ -38,11 +38,14 @@ class KubeRunCommand(base.BinaryBackedCommand):
 
     By default, following the principles of go/gcloud-go-binary-commands,
     - stderr is used to stream user messages, status and errors.
-    - stdout is captured and processed via FormatOutput.
+    - stdout is captured and processed via SuccessResult() or FailureResult().
+    Note: We deviate slightly in the way we process failure results. Instead of
+    returning structured output via stdout on failures, per go/gcloud-for-crfa,
+    we simply return the error message to show the user.
 
     All child classes must implement Command(), and define a 'flags' attribute.
-    Classes formatting command output (e.g. JSON) should override
-    FormatOutput(), which will be called when the binary exits successfully.
+    Classes formatting command output (e.g. via JSON) should override
+    SuccessResult(), which will be called when the binary exits successfully.
   """
 
   @classmethod
@@ -71,18 +74,24 @@ class KubeRunCommand(base.BinaryBackedCommand):
     """Returns the supported kuberun command including all command groups."""
     pass
 
-  def OperationResponseHandler(self, response, args):
-    """Process the result of the operation."""
-    out = response.stdout
-    if response.failed:
-      raise exceptions.Error(out or 'Command execution failed')
+  def FailureResult(self, out):
+    """Processes the result of a failed kuberun command execution.
 
-    return self.FormatOutput(out, args)
+    Args:
+      out: str, the output of the kuberun command
 
-  def FormatOutput(self, out, args):
-    """Processes and formats the output of the kuberun command execution.
+    Raises:
+      An exception using 'out' as the message or a default message if empty
+    """
+    raise exceptions.Error(out if out else 'Command execution failed')
 
-    Child classes typically override this method to parse a JSON object.
+  def SuccessResult(self, out, args):
+    """Processes the result of a successful kuberun command execution.
+
+    Child classes typically override this method to parse and return a
+    structured result (e.g. JSON). The returned data object will be passed
+    through cloudsdk filtering/sorting (if applicable) and rendered in the
+    default or user-specified output format.
 
     Args:
       out: str, the output of the kuberun command
@@ -145,11 +154,15 @@ class KubeRunCommand(base.BinaryBackedCommand):
         show_exec_error=args.show_exec_error)
     log.debug('Response: %s' % response.stdout)
     log.debug('ErrResponse: %s' % response.stderr)
-    return self.OperationResponseHandler(response, args)
+
+    if response.failed:
+      return self.FailureResult(response.stdout)
+
+    return self.SuccessResult(response.stdout, args)
 
 
 def _CaptureStreamOutHandler(result_holder, **kwargs):
-  """Captures streaming stdout from subprocess for processing in OperationResponseHandler."""
+  """Captures streaming stdout from subprocess for processing in result handlers."""
   del kwargs  # we want to capture stdout regardless of other options
 
   def HandleStdOut(line):

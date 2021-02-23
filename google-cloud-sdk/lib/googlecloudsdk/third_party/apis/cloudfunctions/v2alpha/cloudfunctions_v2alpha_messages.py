@@ -18,6 +18,10 @@ class BuildConfig(_messages.Message):
   r"""Describes the Build step of the function that builds a container from
   the given source.
 
+  Messages:
+    EnvironmentVariablesValue: User-provided build-time environment variables
+      for the function
+
   Fields:
     build: Output only. The Cloud Build name of the latest successful
       deployment of the function.
@@ -27,6 +31,8 @@ class BuildConfig(_messages.Message):
       the system will try to use function named "function". For Node.js this
       is name of a function exported by the module specified in
       `source_location`.
+    environmentVariables: User-provided build-time environment variables for
+      the function
     runtime: The runtime in which to run the function. Required when deploying
       a new function, optional when updating an existing function. For a
       complete list of possible choices, see the [`gcloud` command reference](
@@ -45,11 +51,38 @@ class BuildConfig(_messages.Message):
       project.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvironmentVariablesValue(_messages.Message):
+    r"""User-provided build-time environment variables for the function
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        EnvironmentVariablesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        EnvironmentVariablesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvironmentVariablesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   build = _messages.StringField(1)
   entryPoint = _messages.StringField(2)
-  runtime = _messages.StringField(3)
-  source = _messages.MessageField('Source', 4)
-  workerPool = _messages.StringField(5)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 3)
+  runtime = _messages.StringField(4)
+  source = _messages.MessageField('Source', 5)
+  workerPool = _messages.StringField(6)
 
 
 class CloudfunctionsProjectsLocationsFunctionsCreateRequest(_messages.Message):
@@ -276,9 +309,6 @@ class Function(_messages.Message):
     labels: Labels associated with this Cloud Function.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
-    serviceAccountEmail: The email of the function's service account. If
-      empty, defaults to
-      `{project_number}-compute@developer.gserviceaccount.com`.
     serviceConfig: Describes the Service being deployed. Currently deploys
       services to Cloud Run (fully managed).
     state: Output only. State of the function.
@@ -334,10 +364,9 @@ class Function(_messages.Message):
   eventTrigger = _messages.MessageField('EventTrigger', 3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  serviceAccountEmail = _messages.StringField(6)
-  serviceConfig = _messages.MessageField('ServiceConfig', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  serviceConfig = _messages.MessageField('ServiceConfig', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class GenerateDownloadUrlRequest(_messages.Message):
@@ -737,6 +766,8 @@ class ServiceConfig(_messages.Message):
     service: Output only. Name of the service associated with a Function. The
       format of this field is
       `projects/{project}/locations/{region}/services/{service}`
+    serviceAccountEmail: The email of the service's service account. If empty,
+      defaults to `{project_number}-compute@developer.gserviceaccount.com`.
     timeoutSeconds: The function execution timeout. Execution is considered
       failed and can be terminated if the function is not completed at the end
       of the timeout period. Defaults to 60 seconds.
@@ -811,10 +842,11 @@ class ServiceConfig(_messages.Message):
   ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 3)
   maxInstanceCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   service = _messages.StringField(5)
-  timeoutSeconds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  uri = _messages.StringField(7)
-  vpcConnector = _messages.StringField(8)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 9)
+  serviceAccountEmail = _messages.StringField(6)
+  timeoutSeconds = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(8)
+  vpcConnector = _messages.StringField(9)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 10)
 
 
 class Source(_messages.Message):

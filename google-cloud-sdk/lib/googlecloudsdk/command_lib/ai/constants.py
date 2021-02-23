@@ -52,6 +52,9 @@ CUSTOM_JOB_COLLECTION = 'aiplatform.projects.locations.customJobs'
 
 ENDPOINTS_COLLECTION = 'aiplatform.projects.locations.endpoints'
 
+INDEX_ENDPOINTS_COLLECTION = 'aiplatform.projects.locations.indexEndpoints'
+INDEXES_COLLECTION = 'aiplatform.projects.locations.indexes'
+
 TENSORBOARDS_COLLECTION = 'aiplatform.projects.locations.tensorboards'
 
 HPTUNING_JOB_CREATION_DISPLAY_MESSAGE = """\

@@ -96,7 +96,10 @@ def FirewallPolicyRuleArgument(
 def AddArgFirewallPolicyCreation(parser):
   """Adds the argument for firewall policy creaton."""
   parser.add_argument(
-      '--short-name', help=('A textual name of the firewall policy.'))
+      '--short-name',
+      required=True,
+      help=('A textual name of the firewall policy. The name must be 1-63 '
+            'characters long, and comply with RFC 1035.'))
 
   group = parser.add_group(required=True, mutex=True)
 

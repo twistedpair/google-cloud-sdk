@@ -44,7 +44,6 @@ AUTH_CHOICES = [AUTH_SECRETS, AUTH_WI_GSA, AUTH_SKIP]
 
 @enum.unique
 class Operator(enum.Enum):
-  NONE = 'none'
   CLOUDRUN = 'cloudrun'
   KUBERUN = 'kuberun'
 

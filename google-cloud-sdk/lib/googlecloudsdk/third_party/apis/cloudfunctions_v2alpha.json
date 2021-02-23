@@ -203,10 +203,6 @@
           "description": "User-provided description of a function.",
           "type": "string"
         },
-        "serviceAccountEmail": {
-          "description": "The email of the function's service account. If empty, defaults to `{project_number}-compute@developer.gserviceaccount.com`.",
-          "type": "string"
-        },
         "buildConfig": {
           "description": "Describes the Build step of the function that builds a container from the given source.",
           "$ref": "BuildConfig"
@@ -280,6 +276,13 @@
         "workerPool": {
           "description": "Name of the Cloud Build Custom Worker Pool that should be used to build the function. The format of this field is `projects\/{project}\/locations\/{region}\/workerPools\/{workerPool}` where {project} and {region} are the project id and region respectively where the worker pool is defined and {workerPool} is the short name of the worker pool. If the project id is not the same as the function, then the Cloud Functions Service Agent (service-@gcf-admin-robot.iam.gserviceaccount.com) must be granted the role Cloud Build Custom Workers Builder (roles\/cloudbuild.customworkers.builder) in the project.",
           "type": "string"
+        },
+        "environmentVariables": {
+          "description": "User-provided build-time environment variables for the function",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -383,6 +386,10 @@
         "uri": {
           "description": "Output only. URI of the Service deployed.",
           "readOnly": true,
+          "type": "string"
+        },
+        "serviceAccountEmail": {
+          "description": "The email of the service's service account. If empty, defaults to `{project_number}-compute@developer.gserviceaccount.com`.",
           "type": "string"
         }
       }
@@ -659,9 +666,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -705,9 +712,9 @@
                   "parameters": {
                     "name": {
                       "description": "Must not be set.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -746,9 +753,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -775,9 +782,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the function which details should be obtained.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -800,9 +807,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location from which the function should be listed, specified in the format `projects\/*\/locations\/*` If you want to list functions in all locations, use \"-\" in place of a location. When listing functions in all locations, if one or more location(s) are unreachable, the response will contain functions from all reachable locations along with the names of any unreachable locations.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -836,9 +843,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location in which the function should be created, specified in the format `projects\/*\/locations\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "functionId": {
@@ -869,9 +876,9 @@
                   "parameters": {
                     "name": {
                       "description": "A user-defined name of the function. Function names must be unique globally and match pattern `projects\/*\/locations\/*\/functions\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -903,9 +910,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the function which should be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -928,9 +935,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location in which the Google Cloud Storage signed URL should be generated, specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -956,9 +963,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of function for which source code Google Cloud Storage signed URL should be generated.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     }
                   },

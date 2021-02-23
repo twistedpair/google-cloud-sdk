@@ -23,10 +23,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+import threading
+
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import file_part
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.core.util import files
 
 
@@ -54,12 +58,20 @@ class FilePartUploadTask(task.Task):
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
 
-  def execute(self, callback=None):
-    destination_url = self._destination_resource.storage_url
-    provider = destination_url.scheme
+  def execute(self, task_status_queue=None):
+    progress_callback = task_status.FilesAndBytesProgressCallback(
+        status_queue=task_status_queue,
+        size=self._length,
+        source_url=self._source_resource.storage_url,
+        destination_url=self._destination_resource.storage_url,
+        operation_name=task_status.OperationName.UPLOADING,
+        process_id=os.getpid(),
+        thread_id=threading.get_ident(),
+    )
 
     source_stream = files.BinaryFileReader(
         self._source_resource.storage_url.object_name)
+    provider = self._destination_resource.storage_url.scheme
 
     with file_part.FilePart(source_stream, self._offset,
                             self._length) as upload_stream:
@@ -67,8 +79,8 @@ class FilePartUploadTask(task.Task):
           upload_stream,
           self._destination_resource,
           request_config=cloud_api.RequestConfig(
-              md5_hash=self._source_resource.md5_hash,
-              size=self._length))
+              md5_hash=self._source_resource.md5_hash, size=self._length),
+          progress_callback=progress_callback)
 
   def __eq__(self, other):
     if not isinstance(other, FilePartUploadTask):

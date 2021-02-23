@@ -381,7 +381,13 @@ class Parser(object):
       add_transform = self._lex.Transform(key.pop(), self._projection.active)
     else:
       add_transform = None
-    if attribute:
+    if (not self.__key_attributes_only and
+        attribute) or (self.__key_attributes_only and attribute and not key):
+      # When a key is repeated in the format expression, we want to duplicate
+      # the attribute and add transfrom to the key, as the previous behaviour
+      # was. However _AddKey is also processed for attribute only keys; in this
+      # case, we want to reference the same attribute if the attribute is
+      # referenced by its label.
       attribute = copy.copy(attribute)
     else:
       attribute = self._Attribute(self._projection.PROJECT)

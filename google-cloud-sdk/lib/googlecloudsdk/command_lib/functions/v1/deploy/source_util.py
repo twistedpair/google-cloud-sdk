@@ -29,8 +29,8 @@ from apitools.base.py import http_wrapper
 from apitools.base.py import transfer
 from apitools.base.py import util as http_util
 
-from googlecloudsdk.api_lib.functions import exceptions
-from googlecloudsdk.api_lib.functions import util as api_util
+from googlecloudsdk.api_lib.functions.v1 import exceptions
+from googlecloudsdk.api_lib.functions.v1 import util as api_util
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions

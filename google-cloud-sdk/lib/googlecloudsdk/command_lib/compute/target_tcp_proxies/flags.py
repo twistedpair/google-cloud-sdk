@@ -49,7 +49,7 @@ def AddProxyBind(parser):
       action=arg_parsers.StoreTrueFalseAction,
       help="""\
       This field only applies when the forwarding rule that references this
-      target proxy has a `loadBalancingScheme` set to `INTERNAL_SELF_MANAGED`.
+      target proxy has a `--load-balancing-scheme` set to `INTERNAL_SELF_MANAGED`.
 
       When this field is set to `true`, Envoy proxies set up inbound traffic
       interception and bind to the IP address and port specified in the

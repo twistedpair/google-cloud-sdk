@@ -459,6 +459,8 @@ class ResourceSpec(ConceptSpec):
       raise InitializationError(
           'The [{}] resource is not properly specified.\n'
           '{}'.format(self.name, six.text_type(e)))
+    except resources.UserError as e:
+      raise InitializationError(six.text_type(e))
 
   def Parse(self, attribute_to_args_map, base_fallthroughs_map,
             parsed_args=None, plural=False, allow_empty=False):

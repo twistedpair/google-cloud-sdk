@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2020 Google LLC. All Rights Reserved.
+# Copyright 2021 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import common_args
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.util.args import labels_util
 
@@ -51,3 +53,20 @@ class TensorboardsClient(object):
     request = self.messages.AiplatformProjectsLocationsTensorboardsGetRequest(
         name=tensorboard_ref.RelativeName())
     return self._service.Get(request)
+
+  def List(self, limit=1000, page_size=50, region_ref=None, sort_by=None):
+    request = self.messages.AiplatformProjectsLocationsTensorboardsListRequest(
+        parent=region_ref.RelativeName(),
+        orderBy=common_args.ParseSortByArg(sort_by))
+    return list_pager.YieldFromList(
+        self._service,
+        request,
+        field='tensorboards',
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        limit=limit)
+
+  def Delete(self, tensorboard_ref):
+    request = self.messages.AiplatformProjectsLocationsTensorboardsDeleteRequest(
+        name=tensorboard_ref.RelativeName())
+    return self._service.Delete(request)

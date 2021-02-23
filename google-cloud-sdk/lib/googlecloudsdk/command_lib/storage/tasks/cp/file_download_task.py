@@ -23,9 +23,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+import threading
+
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.command_lib.storage import util
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.core.util import files
 
 
@@ -49,11 +53,21 @@ class FileDownloadTask(task.Task):
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
 
-  def execute(self, callback=None):
+  def execute(self, task_status_queue=None):
     if self._source_resource.md5_hash:
       digesters = {util.HashAlgorithms.MD5: util.get_md5_hash()}
     else:
       digesters = {}
+
+    progress_callback = task_status.FilesAndBytesProgressCallback(
+        status_queue=task_status_queue,
+        size=self._source_resource.size,
+        source_url=self._source_resource.storage_url,
+        destination_url=self._destination_resource.storage_url,
+        operation_name=task_status.OperationName.DOWNLOADING,
+        process_id=os.getpid(),
+        thread_id=threading.get_ident(),
+    )
 
     with files.BinaryFileWriter(
         self._destination_resource.storage_url.object_name,
@@ -62,7 +76,10 @@ class FileDownloadTask(task.Task):
 
       # TODO(b/162264437): Support all of download_object's parameters.
       api_factory.get_api(provider).download_object(
-          self._source_resource, download_stream, digesters=digesters)
+          self._source_resource,
+          download_stream,
+          digesters=digesters,
+          progress_callback=progress_callback)
 
     # TODO(b/172048376): Add crc32c, and make this a loop.
     if util.HashAlgorithms.MD5 in digesters:

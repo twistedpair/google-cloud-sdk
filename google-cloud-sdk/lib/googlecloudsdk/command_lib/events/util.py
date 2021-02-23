@@ -38,6 +38,9 @@ _POLLING_TIMEOUT_MS = 180000
 # Max wait time between poll retries before timing out
 _RETRY_TIMEOUT_MS = 1000
 
+# # Max wait time for operator (5 minutes)
+OPERATOR_MAX_WAIT_MS = 300000
+
 
 def EventTypeFromTypeString(source_crds, type_string, source=None):
   """Returns the matching event type object given a list of source crds.
@@ -158,12 +161,14 @@ def ValidateTrigger(trigger_obj, expected_source_obj, expected_event_type):
     raise AssertionError
 
 
-def WaitForCondition(poller, error_class):
+def WaitForCondition(poller, error_class, max_wait_ms=_POLLING_TIMEOUT_MS):
   """Wait for a configuration to be ready in latest revision.
 
   Args:
     poller: A serverless_operations.ConditionPoller object.
     error_class: Error to raise on timeout failure
+    max_wait_ms: int, number of ms to wait before raising an instance of
+      error_class.
 
   Returns:
     A googlecloudsdk.command_lib.run.condition.Conditions object.
@@ -174,10 +179,7 @@ def WaitForCondition(poller, error_class):
 
   try:
     return waiter.PollUntilDone(
-        poller,
-        None,
-        max_wait_ms=_POLLING_TIMEOUT_MS,
-        wait_ceiling_ms=_RETRY_TIMEOUT_MS)
+        poller, None, max_wait_ms, wait_ceiling_ms=_RETRY_TIMEOUT_MS)
   except retry.RetryException:
     conditions = poller.GetConditions()
     # err.message already indicates timeout. Check ready_cond_type for more

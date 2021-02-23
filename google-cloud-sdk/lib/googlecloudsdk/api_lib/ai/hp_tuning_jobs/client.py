@@ -49,7 +49,9 @@ class HpTuningJobsClient(object):
              max_trial_count=None,
              parallel_trial_count=None,
              algorithm=None,
-             kms_key_name=None):
+             kms_key_name=None,
+             network=None,
+             service_account=None):
     """Creates a hyperparameter tuning job with given parameters.
 
     Args:
@@ -67,6 +69,10 @@ class HpTuningJobsClient(object):
         the Study.
       kms_key_name: A customer-managed encryption key to use for the
         hyperparameter tuning job.
+      network: user network to which the job should be peered with (overrides
+        yaml file)
+      service_account: A service account (email address string) to use for the
+          job.
 
     Returns:
       Created hyperparameter tuning job.
@@ -83,6 +89,8 @@ class HpTuningJobsClient(object):
 
     job_spec.maxTrialCount = max_trial_count
     job_spec.parallelTrialCount = parallel_trial_count
+    job_spec.trialJobSpec.network = network
+    job_spec.trialJobSpec.serviceAccount = service_account
 
     if display_name:
       job_spec.displayName = display_name

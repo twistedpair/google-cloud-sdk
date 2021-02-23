@@ -248,7 +248,7 @@ class ConsoleAttr(object):
   _BULLETS_WINDOWS = ('■', '≡', '∞', 'Φ', '·')  # cp437 compatible unicode
   _BULLETS_ASCII = ('o', '*', '+', '-')
 
-  def __init__(self, encoding=None, suppress_output=False):
+  def __init__(self, encoding=None, term=None, suppress_output=False):
     """Constructor.
 
     Args:
@@ -256,6 +256,7 @@ class ConsoleAttr(object):
         ascii -- ASCII art. This is the default.
         utf8 -- UTF-8 unicode.
         win -- Windows code page 437.
+      term: Terminal override. Replaces the value of ENV['TERM'].
       suppress_output: True to create a ConsoleAttr that doesn't want to output
         anything.
     """
@@ -265,8 +266,12 @@ class ConsoleAttr(object):
     elif encoding == 'win':
       encoding = 'cp437'
     self._encoding = encoding or 'ascii'
-    self._term = '' if suppress_output else encoding_util.GetEncodedValue(
-        os.environ, 'TERM', '').lower()
+    if suppress_output:
+      self._term = ''
+    elif term:
+      self._term = term
+    else:
+      self._term = encoding_util.GetEncodedValue(os.environ, 'TERM', '').lower()
 
     # ANSI "standard" attributes.
     if self.SupportsAnsi():
@@ -654,7 +659,7 @@ class Colorizer(object):
         self._con.Colorize(self._string, self._color, justify or self._justify))
 
 
-def GetConsoleAttr(encoding=None, reset=False):
+def GetConsoleAttr(encoding=None, term=None, reset=False):
   """Gets the console attribute state.
 
   If this is the first call or reset is True or encoding is not None and does
@@ -670,6 +675,7 @@ def GetConsoleAttr(encoding=None, reset=False):
       ascii -- ASCII. This is the default.
       utf8 -- UTF-8 unicode.
       win -- Windows code page 437.
+    term: Terminal override. Replaces the value of ENV['TERM'].
     reset: Force re-initialization if True.
 
   Returns:
@@ -682,7 +688,7 @@ def GetConsoleAttr(encoding=None, reset=False):
     elif encoding and encoding != attr.GetEncoding():
       reset = True
   if reset:
-    attr = ConsoleAttr(encoding=encoding)
+    attr = ConsoleAttr(encoding=encoding, term=term)
     ConsoleAttr._CONSOLE_ATTR_STATE = attr  # pylint: disable=protected-access
   return attr
 

@@ -40,7 +40,7 @@ class ComposeObjectsTask(task.Task):
     self._source_resources = source_resources
     self._destination_resource = destination_resource
 
-  def execute(self, callback=None):
+  def execute(self, task_status_queue=None):
     provider = self._destination_resource.storage_url.scheme
     api_factory.get_api(provider).compose_objects(
         self._source_resources,

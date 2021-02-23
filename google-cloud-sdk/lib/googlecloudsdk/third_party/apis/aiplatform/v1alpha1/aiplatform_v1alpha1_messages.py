@@ -3011,6 +3011,22 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadReques
   tensorboardTimeSeries = _messages.StringField(3, required=True)
 
 
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeseriesReadBlobDataRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeseriesReadBl
+  obDataRequest object.
+
+  Fields:
+    blobIds: IDs of the blobs to read.
+    timeSeries: Required. The resource name of the TensorboardTimeSeries to
+      list Blobs. Format: 'projects/{project}/locations/{location}/tensorboard
+      s/{tensorboard}/experiments/{experiment}/runs/{run}/timeseries/{time_ser
+      ies}'
+  """
+
+  blobIds = _messages.StringField(1, repeated=True)
+  timeSeries = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsTensorboardsExperimentsRunsWriteRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsWriteRequest
   object.
@@ -3568,9 +3584,9 @@ class GoogleCloudAiplatformInternalDeployedModel(_messages.Message):
       overrides the value of Model.explanation_spec. All fields of
       explanation_spec are optional in the request. If a field of
       explanation_spec is not populated, the value of the same field of
-      Model.explanation_spec is inherited. The corresponding
-      Model.explanation_spec must be populated, otherwise explanation for this
-      Model is not allowed.
+      Model.explanation_spec is inherited. If the corresponding
+      Model.explanation_spec is not populated, all fields of the
+      explanation_spec will be used for the explanation configuration.
     id: Output only. The ID of the DeployedModel.
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
@@ -5113,9 +5129,9 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
       overrides the value of Model.explanation_spec. All fields of
       explanation_spec are optional in the request. If a field of
       explanation_spec is not populated, the value of the same field of
-      Model.explanation_spec is inherited. The corresponding
-      Model.explanation_spec must be populated, otherwise explanation for this
-      Model is not allowed.
+      Model.explanation_spec is inherited. If the corresponding
+      Model.explanation_spec is not populated, all fields of the
+      explanation_spec will be used for the explanation configuration.
     id: Output only. The ID of the DeployedModel.
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
@@ -6746,13 +6762,8 @@ class GoogleCloudAiplatformUiSchemaVisualInspectionClassificationLabelSavedQuery
 class GoogleCloudAiplatformUiSchemaVisualInspectionMaskSavedQueryMetadata(_messages.Message):
   r"""A GoogleCloudAiplatformUiSchemaVisualInspectionMaskSavedQueryMetadata
   object.
-
-  Fields:
-    colorMap: The mapping between color and AnnotationSpec for this
-      SavedQuery.
   """
 
-  colorMap = _messages.MessageField('GoogleCloudAiplatformUiSchemaAnnotationSpecColor', 1, repeated=True)
 
 
 class GoogleCloudAiplatformUiSmoothGradConfig(_messages.Message):
@@ -7050,7 +7061,8 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
       account. If unspecified, the AI Platform Custom Code Service Agent for
       the CustomJob's project is used.
     workerPoolSpecs: Required. The spec of the worker pools including machine
-      type and Docker image.
+      type and Docker image. All worker pools except the first one are
+      optional and can be skipped by providing an empty value.
   """
 
   baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformV1GcsDestination', 1)
@@ -8183,14 +8195,10 @@ class GoogleCloudAiplatformV1SchemaPredictPredictionTimeSeriesForecastingPredict
   r"""Prediction output format for Time Series Forecasting.
 
   Fields:
-    lowerBound: The lower bound of the prediction interval.
-    upperBound: The upper bound of the prediction interval.
     value: The regression value.
   """
 
-  lowerBound = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  upperBound = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  value = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  value = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1SchemaPredictPredictionVideoActionRecognitionPredictionResult(_messages.Message):
@@ -10047,13 +10055,8 @@ class GoogleCloudAiplatformV1SchemaVisualInspectionClassificationLabelSavedQuery
 class GoogleCloudAiplatformV1SchemaVisualInspectionMaskSavedQueryMetadata(_messages.Message):
   r"""A GoogleCloudAiplatformV1SchemaVisualInspectionMaskSavedQueryMetadata
   object.
-
-  Fields:
-    colorMap: The mapping between color and AnnotationSpec for this
-      SavedQuery.
   """
 
-  colorMap = _messages.MessageField('GoogleCloudAiplatformV1SchemaAnnotationSpecColor', 1, repeated=True)
 
 
 class GoogleCloudAiplatformV1SpecialistPool(_messages.Message):
@@ -10754,7 +10757,8 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
       additional entry keyed `explanation`. The value of the entry is a JSON
       object that conforms to the Explanation object. * `csv`: Generating
       explanations for CSV format is not supported. If this field is set to
-      true, the Model.explanation_spec must be populated.
+      true, either the Model.explanation_spec or explanation_spec must be
+      populated.
     inputConfig: Required. Input configuration of the instances on which
       predictions are performed. The schema of any single instance may be
       specified via the Model's PredictSchemata's instance_schema_uri.
@@ -11223,7 +11227,8 @@ class GoogleCloudAiplatformV1alpha1CustomJobSpec(_messages.Message):
       account. If unspecified, the AI Platform Custom Code Service Agent for
       the CustomJob's project is used.
     workerPoolSpecs: Required. The spec of the worker pools including machine
-      type and Docker image.
+      type and Docker image. All worker pools except the first one are
+      optional and can be skipped by providing an empty value.
   """
 
   scheduling = _messages.MessageField('GoogleCloudAiplatformV1alpha1Scheduling', 1)
@@ -11805,9 +11810,9 @@ class GoogleCloudAiplatformV1alpha1DeployedModel(_messages.Message):
       overrides the value of Model.explanation_spec. All fields of
       explanation_spec are optional in the request. If a field of
       explanation_spec is not populated, the value of the same field of
-      Model.explanation_spec is inherited. The corresponding
-      Model.explanation_spec must be populated, otherwise explanation for this
-      Model is not allowed.
+      Model.explanation_spec is inherited. If the corresponding
+      Model.explanation_spec is not populated, all fields of the
+      explanation_spec will be used for the explanation configuration.
     id: Output only. The ID of the DeployedModel.
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
@@ -13551,10 +13556,14 @@ class GoogleCloudAiplatformV1alpha1Model(_messages.Message):
     etag: Used to perform consistent read-modify-write updates. If not set, a
       blind "overwrite" update happens.
     explanationSpec: The default explanation specification for this Model. The
-      Model can be used for requesting explanation after being deployed iff it
-      is populated. The Model can be used for batch explanation iff it is
+      Model can be used for requesting explanation after being deployed if it
+      is populated. The Model can be used for batch explanation if it is
       populated. All fields of the explanation_spec can be overridden by
       explanation_spec of DeployModelRequest.deployed_model, or
+      explanation_spec of BatchPredictionJob. If the default explanation
+      specification is not set for this Model, this Model can still be used
+      for requesting explanation by setting explanation_spec of
+      DeployModelRequest.deployed_model and for batch explanation by setting
       explanation_spec of BatchPredictionJob.
     labels: The labels with user-defined metadata to organize your Models.
       Label keys and values can be no longer than 64 characters (Unicode
@@ -14172,6 +14181,16 @@ class GoogleCloudAiplatformV1alpha1PythonPackageSpec(_messages.Message):
   pythonModule = _messages.StringField(4)
 
 
+class GoogleCloudAiplatformV1alpha1ReadTensorboardBlobDataResponse(_messages.Message):
+  r"""Response message for TensorboardService.ReadTensorboardBlobData.
+
+  Fields:
+    blobs: Blob messages containing blob bytes.
+  """
+
+  blobs = _messages.MessageField('GoogleCloudAiplatformV1alpha1TensorboardBlob', 1, repeated=True)
+
+
 class GoogleCloudAiplatformV1alpha1ReadTensorboardTimeSeriesDataResponse(_messages.Message):
   r"""Response message for TensorboardService.ReadTensorboardTimeSeriesData.
 
@@ -14770,13 +14789,8 @@ class GoogleCloudAiplatformV1alpha1SchemaVisualInspectionMaskSavedQueryMetadata(
   r"""A
   GoogleCloudAiplatformV1alpha1SchemaVisualInspectionMaskSavedQueryMetadata
   object.
-
-  Fields:
-    colorMap: The mapping between color and AnnotationSpec for this
-      SavedQuery.
   """
 
-  colorMap = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaAnnotationSpecColor', 1, repeated=True)
 
 
 class GoogleCloudAiplatformV1alpha1SearchMigratableResourcesRequest(_messages.Message):
@@ -15099,6 +15113,33 @@ class GoogleCloudAiplatformV1alpha1Tensorboard(_messages.Message):
   updateTime = _messages.StringField(9)
 
 
+class GoogleCloudAiplatformV1alpha1TensorboardBlob(_messages.Message):
+  r"""One blob (e.g, image, graph) viewable on a blob metric plot.
+
+  Fields:
+    data: Optional. The bytes of the blob is not present unless it's returned
+      by the ReadTensorboardBlobData endpoint.
+    id: Output only. A URI safe key uniquely identifying a blob. Can be used
+      to locate the blob stored in the Cloud Storage bucket of the consumer
+      project.
+  """
+
+  data = _messages.BytesField(1)
+  id = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1alpha1TensorboardBlobSequence(_messages.Message):
+  r"""One point viewable on a blob metric plot, but mostly just a wrapper
+  message to work around repeated fields can't be used directly within `oneof`
+  fields.
+
+  Fields:
+    values: List of blobs contained within the sequence.
+  """
+
+  values = _messages.MessageField('GoogleCloudAiplatformV1alpha1TensorboardBlob', 1, repeated=True)
+
+
 class GoogleCloudAiplatformV1alpha1TensorboardExperiment(_messages.Message):
   r"""A TensorboardExperiment is a group of TensorboardRuns, that are
   typically the results of a training job run, in a Tensorboard.
@@ -15370,6 +15411,7 @@ class GoogleCloudAiplatformV1alpha1TimeSeriesDataPoint(_messages.Message):
   r"""A TensorboardTimeSeries data point.
 
   Fields:
+    blobs: A blob sequence value.
     scalar: A scalar value.
     step: Step index of this data point within the run.
     tensor: A tensor value.
@@ -15377,10 +15419,11 @@ class GoogleCloudAiplatformV1alpha1TimeSeriesDataPoint(_messages.Message):
       end user.
   """
 
-  scalar = _messages.MessageField('GoogleCloudAiplatformV1alpha1Scalar', 1)
-  step = _messages.IntegerField(2)
-  tensor = _messages.MessageField('GoogleCloudAiplatformV1alpha1TensorboardTensor', 3)
-  wallTime = _messages.StringField(4)
+  blobs = _messages.MessageField('GoogleCloudAiplatformV1alpha1TensorboardBlobSequence', 1)
+  scalar = _messages.MessageField('GoogleCloudAiplatformV1alpha1Scalar', 2)
+  step = _messages.IntegerField(3)
+  tensor = _messages.MessageField('GoogleCloudAiplatformV1alpha1TensorboardTensor', 4)
+  wallTime = _messages.StringField(5)
 
 
 class GoogleCloudAiplatformV1alpha1TimestampSplit(_messages.Message):
@@ -15587,6 +15630,7 @@ class GoogleCloudAiplatformV1alpha1Trial(_messages.Message):
     finalMeasurement: Output only. The final measurement containing the
       objective value.
     id: Output only. The identifier of the Trial assigned by the service.
+    name: Output only. Resource name of the Trial assigned by the service.
     parameters: Output only. The parameters of the Trial.
     startTime: Output only. Time when the Trial was started.
     state: Output only. The detailed state of the Trial.
@@ -15616,9 +15660,10 @@ class GoogleCloudAiplatformV1alpha1Trial(_messages.Message):
   endTime = _messages.StringField(1)
   finalMeasurement = _messages.MessageField('GoogleCloudAiplatformV1alpha1Measurement', 2)
   id = _messages.StringField(3)
-  parameters = _messages.MessageField('GoogleCloudAiplatformV1alpha1TrialParameter', 4, repeated=True)
-  startTime = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  name = _messages.StringField(4)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1alpha1TrialParameter', 5, repeated=True)
+  startTime = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class GoogleCloudAiplatformV1alpha1TrialParameter(_messages.Message):
@@ -16036,7 +16081,8 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
       account. If unspecified, the AI Platform Custom Code Service Agent for
       the CustomJob's project is used.
     workerPoolSpecs: Required. The spec of the worker pools including machine
-      type and Docker image.
+      type and Docker image. All worker pools except the first one are
+      optional and can be skipped by providing an empty value.
   """
 
   baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 1)
@@ -16196,9 +16242,9 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
       overrides the value of Model.explanation_spec. All fields of
       explanation_spec are optional in the request. If a field of
       explanation_spec is not populated, the value of the same field of
-      Model.explanation_spec is inherited. The corresponding
-      Model.explanation_spec must be populated, otherwise explanation for this
-      Model is not allowed.
+      Model.explanation_spec is inherited. If the corresponding
+      Model.explanation_spec is not populated, all fields of the
+      explanation_spec will be used for the explanation configuration.
     id: Output only. The ID of the DeployedModel.
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
@@ -17835,14 +17881,10 @@ class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTimeSeriesForecastingPr
   r"""Prediction output format for Time Series Forecasting.
 
   Fields:
-    lowerBound: The lower bound of the prediction interval.
-    upperBound: The upper bound of the prediction interval.
     value: The regression value.
   """
 
-  lowerBound = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  upperBound = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  value = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  value = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoActionRecognitionPredictionResult(_messages.Message):
@@ -19746,13 +19788,8 @@ class GoogleCloudAiplatformV1beta1SchemaVisualInspectionMaskSavedQueryMetadata(_
   r"""A
   GoogleCloudAiplatformV1beta1SchemaVisualInspectionMaskSavedQueryMetadata
   object.
-
-  Fields:
-    colorMap: The mapping between color and AnnotationSpec for this
-      SavedQuery.
   """
 
-  colorMap = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaAnnotationSpecColor', 1, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1SmoothGradConfig(_messages.Message):

@@ -170,14 +170,14 @@ class Settings(DataObject):
   def FromArgs(cls, args):
     """Create a Settings object from an args object."""
     project_name = properties.VALUES.core.project.Get()
-    if args.IsSpecified('service_name'):
+    if args.IsKnownAndSpecified('service_name'):
       service_name = args.service_name
     else:
       dir_name = os.path.basename(files.GetCWD())
       # Service names may not include _ and upper case characters.
       service_name = dir_name.replace('_', '-').lower()
 
-    if not args.IsSpecified('image'):
+    if not args.IsKnownAndSpecified('image'):
       if project_name:
         image = 'gcr.io/{project}/{service}'.format(
             project=project_name, service=service_name)
@@ -202,7 +202,7 @@ class Settings(DataObject):
     context = os.path.abspath(args.source or files.GetCWD())
 
     builder = None
-    if 'no_skaffold_file' not in args or not args.no_skaffold_file:
+    if not getattr(args, 'no_skaffold_file', False):
       builder = _CreateBuilder(args, context)
 
     return cls(
@@ -213,10 +213,10 @@ class Settings(DataObject):
         builder=builder,
         local_port=args.local_port,
         env_vars=args.env_vars or args.env_vars_file,
-        cloudsql_instances=args.cloudsql_instances,
-        memory=args.memory,
-        cpu=args.cpu,
-        namespace=args.namespace if 'namespace' in args else None,
+        cloudsql_instances=getattr(args, 'cloudsql_instances', []),
+        memory=getattr(args, 'memory', None),
+        cpu=getattr(args, 'cpu', None),
+        namespace=getattr(args, 'namespace', None),
         readiness_probe=args.readiness_probe)
 
 
@@ -230,13 +230,13 @@ def _CreateBuilder(args, context):
   Returns:
     A builder data object.
   """
-  if args.IsSpecified('builder'):
+  if args.IsKnownAndSpecified('builder'):
     is_gcp_base_builder = _IsGcpBaseBuilder(args.builder)
     return BuildpackBuilder(
         builder=args.builder,
         trust=is_gcp_base_builder,
         devmode=is_gcp_base_builder)
-  elif args.IsSpecified('appengine'):
+  elif args.IsKnownAndSpecified('appengine'):
     rel_path_to_app_yaml = os.path.relpath(os.path.join(context, 'app.yaml'))
     # Undo __future__.unicode_literals so we get a str in py2:
     app_yaml_str = six.ensure_str(rel_path_to_app_yaml)

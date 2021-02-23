@@ -269,14 +269,14 @@ class VersionsClient(object):
       version.autoScaling.maxNodes = kwargs['max_nodes']
     if kwargs['metrics']:
       version.autoScaling.metrics = []
-      if kwargs['metrics']['cpu-usage']:
+      if 'cpu-usage' in kwargs['metrics']:
         t = int(kwargs['metrics']['cpu-usage'])
         version.autoScaling.metrics.append(
             self.messages.GoogleCloudMlV1MetricSpec(
                 name=self.messages.GoogleCloudMlV1MetricSpec.NameValueValuesEnum
                 .CPU_USAGE,
                 target=t))
-      if kwargs['metrics']['gpu-duty-cycle']:
+      if 'gpu-duty-cycle' in kwargs['metrics']:
         t = int(kwargs['metrics']['gpu-duty-cycle'])
         version.autoScaling.metrics.append(
             self.messages.GoogleCloudMlV1MetricSpec(

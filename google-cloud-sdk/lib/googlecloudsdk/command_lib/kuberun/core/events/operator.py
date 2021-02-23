@@ -24,6 +24,7 @@ from googlecloudsdk.api_lib.kuberun.core import events_constants
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.events import exceptions
 from googlecloudsdk.command_lib.events import stages
+from googlecloudsdk.command_lib.events import util
 from googlecloudsdk.command_lib.kuberun.core.events import init_shared
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import progress_tracker
@@ -53,15 +54,15 @@ def install_eventing_via_operator(client, track):
     operator_type = events_constants.Operator.CLOUDRUN
   else:
     # Neither operator installed.
-    operator_type = events_constants.Operator.NONE
+    operator_type = None
     init_shared.prompt_if_can_prompt(
         'Unable to find the CloudRun resource to install Eventing. '
         'Eventing will not be installed. '
         'Would you like to continue anyway?')
     if ('cloud-run-events' in namespaces_list or
         'events-system' in namespaces_list):
-      # Neither operator installed, but OSS knative eventing found.
-      log.status.Print('OSS eventing already installed.')
+      # Neither operator installed, but knative eventing found.
+      log.status.Print('Eventing already installed.')
     else:
       # Neither operator installed, nor is OSS knative eventing installed.
       raise exceptions.EventingInstallError('Eventing not installed.')
@@ -71,12 +72,16 @@ def install_eventing_via_operator(client, track):
 
   tracker_stages = stages.EventingStages()
 
+  operator_max_wait_secs = util.OPERATOR_MAX_WAIT_MS / 1000
+
   # Enable eventing or wait for operator to finish installing eventing.
   with progress_tracker.StagedProgressTracker(
       'Waiting on eventing installation...'
       if operator_obj.eventing_enabled else 'Enabling eventing...',
       tracker_stages,
-      failure_message='Failed to enable eventing') as tracker:
+      failure_message='Eventing failed to install within {} seconds, '
+      'please try rerunning the command.'.format(
+          operator_max_wait_secs)) as tracker:
 
     if not operator_obj.eventing_enabled:
       _update_operator_with_eventing_enabled(client, operator_type)

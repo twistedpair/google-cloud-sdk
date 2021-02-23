@@ -58,6 +58,7 @@ _IMAGE_IMPORT_BUILDER_EXECUTABLE = 'gce_vm_image_import'
 _IMAGE_EXPORT_BUILDER_EXECUTABLE = 'gce_vm_image_export'
 _OVF_IMPORT_BUILDER_EXECUTABLE = 'gce_ovf_import'
 _OS_UPGRADE_BUILDER_EXECUTABLE = 'gce_windows_upgrade'
+_IMAGE_ONESTEP_IMPORT_BUILDER_EXECUTABLE = 'gce_onestep_image_import'
 
 _DEFAULT_BUILDER_VERSION = 'release'
 
@@ -634,6 +635,41 @@ def GetRegionFromZone(zone):
   return '-'.join(zone.split('-')[:-1]).lower()
 
 
+def RunOnestepImageImport(args,
+                          import_args,
+                          tags,
+                          output_filter,
+                          release_track,
+                          docker_image_tag=_DEFAULT_BUILDER_VERSION):
+  """Run a build over gce_onestep_image_import on Cloud Build.
+
+  Args:
+    args: An argparse namespace. All the arguments that were provided to this
+      command invocation.
+    import_args: A list of key-value pairs to pass to importer.
+    tags: A list of strings for adding tags to the Argo build.
+    output_filter: A list of strings indicating what lines from the log should
+      be output. Only lines that start with one of the strings in output_filter
+      will be displayed.
+    release_track: release track of the command used. One of - "alpha", "beta"
+      or "ga".
+    docker_image_tag: Specified docker image tag.
+
+  Returns:
+    A build object that either streams the output or is displayed as a
+    link to the build.
+
+  Raises:
+    FailedBuildException: If the build is completed and not 'SUCCESS'.
+  """
+
+  builder = _GetBuilder(args, _IMAGE_ONESTEP_IMPORT_BUILDER_EXECUTABLE,
+                        docker_image_tag, release_track, _GetImageImportRegion)
+  return RunImageCloudBuild(args, builder, import_args, tags, output_filter,
+                            IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
+                            IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
+
+
 def RunImageExport(args,
                    export_args,
                    tags,
@@ -1184,6 +1220,72 @@ def AddGuestEnvironmentArg(parser, resource='instance'):
       default=True,
       help='The guest environment will be installed on the {}.'.format(
           resource)
+  )
+
+
+def AddAWSImageImportSourceArgs(aws_group):
+  """Adds args for image import from AWS."""
+
+  aws_group.add_argument(
+      '--aws-access-key-id',
+      required=True,
+      help="""\
+          Access key ID for a temporary AWS credential.
+          This ID must be generated using the AWS Security Token Service.
+          """
+  )
+  aws_group.add_argument(
+      '--aws-secret-access-key',
+      required=True,
+      help="""\
+          Secret access key for a temporary AWS credential.
+          This key must be generated using the AWS Security Token Service.
+          """
+  )
+  aws_group.add_argument(
+      '--aws-session-token',
+      required=True,
+      help="""\
+          Session token for a temporary AWS credential. This session
+          token must be generated using the AWS Security Token Service.
+          """
+  )
+  aws_group.add_argument(
+      '--aws-region',
+      required=True,
+      help='AWS region of the image that you want to import.'
+  )
+
+  step_to_begin = aws_group.add_mutually_exclusive_group(
+      required=True,
+      help="""\
+          Specify whether to import from an AMI or disk image.
+          """
+  )
+
+  begin_from_export = step_to_begin.add_group(help="""\
+      If importing an AMI,  specify the following two flags:""")
+  begin_from_export.add_argument(
+      '--aws-ami-id',
+      required=True,
+      help='AWS AMI ID of the image to import.'
+  )
+  begin_from_export.add_argument(
+      '--aws-ami-export-location',
+      required=True,
+      help="""\
+          An AWS S3 bucket location where the converted image file can be
+          temporarily exported to before the import to Cloud Storage."""
+  )
+
+  begin_from_file = step_to_begin.add_group(help="""\
+      If importing a disk image,  specify the following:""")
+  begin_from_file.add_argument(
+      '--aws-source-ami-file-path',
+      help="""\
+          S3 resource path of the exported image file that you want
+          to import.
+          """
   )
 
 

@@ -40,6 +40,8 @@ class OndemandscanningV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_scans_vulnerabilities = self.ProjectsLocationsScansVulnerabilitiesService(self)
+    self.projects_locations_scans = self.ProjectsLocationsScansService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -162,7 +164,7 @@ class OndemandscanningV1(base_api.BaseApiClient):
     )
 
     def Wait(self, request, global_params=None):
-      r"""Waits for the specified long-running operation until it is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP/RPC timeout, the HTTP/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done.
+      r"""Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP/RPC timeout, the HTTP/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done.
 
       Args:
         request: (OndemandscanningProjectsLocationsOperationsWaitRequest) input message
@@ -184,6 +186,80 @@ class OndemandscanningV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:wait',
         request_field='',
         request_type_name='OndemandscanningProjectsLocationsOperationsWaitRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsScansVulnerabilitiesService(base_api.BaseApiService):
+    """Service class for the projects_locations_scans_vulnerabilities resource."""
+
+    _NAME = 'projects_locations_scans_vulnerabilities'
+
+    def __init__(self, client):
+      super(OndemandscanningV1.ProjectsLocationsScansVulnerabilitiesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists vulnerabilities resulting from a successfully completed scan.
+
+      Args:
+        request: (OndemandscanningProjectsLocationsScansVulnerabilitiesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListVulnerabilitiesResponseV1) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/scans/{scansId}/vulnerabilities',
+        http_method='GET',
+        method_id='ondemandscanning.projects.locations.scans.vulnerabilities.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/vulnerabilities',
+        request_field='',
+        request_type_name='OndemandscanningProjectsLocationsScansVulnerabilitiesListRequest',
+        response_type_name='ListVulnerabilitiesResponseV1',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsScansService(base_api.BaseApiService):
+    """Service class for the projects_locations_scans resource."""
+
+    _NAME = 'projects_locations_scans'
+
+    def __init__(self, client):
+      super(OndemandscanningV1.ProjectsLocationsScansService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AnalyzePackages(self, request, global_params=None):
+      r"""Initiates an analysis of the provided packages.
+
+      Args:
+        request: (OndemandscanningProjectsLocationsScansAnalyzePackagesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AnalyzePackages')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AnalyzePackages.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/scans:analyzePackages',
+        http_method='POST',
+        method_id='ondemandscanning.projects.locations.scans.analyzePackages',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/scans:analyzePackages',
+        request_field='analyzePackagesRequestV1',
+        request_type_name='OndemandscanningProjectsLocationsScansAnalyzePackagesRequest',
         response_type_name='Operation',
         supports_download=False,
     )

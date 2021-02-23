@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import frozendict
+
 
 PROJECTS_COLLECTION = 'cloudtasks.projects'
 LOCATIONS_COLLECTION = 'cloudtasks.projects.locations'
@@ -26,13 +28,13 @@ TASKS_COLLECTION = 'cloudtasks.projects.locations.queues.tasks'
 
 PULL_QUEUE = 'pull'
 PUSH_QUEUE = 'push'
-VALID_QUEUE_TYPES = [PULL_QUEUE, PUSH_QUEUE]
+VALID_QUEUE_TYPES = (PULL_QUEUE, PUSH_QUEUE)
 
 PULL_TASK = 'pull'
 APP_ENGINE_TASK = 'app-engine'
 HTTP_TASK = 'http'
 
-APP_ENGINE_ROUTING_KEYS = ['service', 'version', 'instance']
+APP_ENGINE_ROUTING_KEYS = ('service', 'version', 'instance')
 
 QUEUE_MANAGEMENT_WARNING = (
     'You are managing queues with gcloud, do not use queue.yaml or queue.xml '
@@ -42,14 +44,14 @@ QUEUE_MANAGEMENT_WARNING = (
 MAX_RATE = 500
 MAX_BUCKET_SIZE = 500
 
-TIME_IN_SECONDS = {
+TIME_IN_SECONDS = frozendict.frozendict({
     's': 1,
     'm': 60,
     'h': 3600,
     'd': 86400,
-}
+})
 
-APP_TO_TASKS_ATTRIBUTES_MAPPING = {
+APP_TO_TASKS_ATTRIBUTES_MAPPING = frozendict.frozendict({
     'bucket_size': 'max_burst_size',
     'max_concurrent_requests': 'max_concurrent_dispatches',
     'mode': 'type',
@@ -63,9 +65,9 @@ APP_TO_TASKS_ATTRIBUTES_MAPPING = {
     'target': 'routing_override',
     # Not supported and need to deprecate if possible. See go/remove-tq-quotas
     # 'total_storage_limit': 'total_storage_limit'
-}
+})
 
-PUSH_QUEUES_APP_DEPLOY_DEFAULT_VALUES = {
+PUSH_QUEUES_APP_DEPLOY_DEFAULT_VALUES = frozendict.frozendict({
     'max_attempts': -1,  # Translates as 'unlimited' in CT-FE
     'max_backoff': '3600s',
     'max_doublings': 16,
@@ -77,11 +79,18 @@ PUSH_QUEUES_APP_DEPLOY_DEFAULT_VALUES = {
     'max_concurrent_dispatches': 1000,
     'max_retry_duration': '0s',  # Translates as 'unlimited' in CT-FE
     'min_backoff': '0.100s',
-}
+})
+
+CRON_JOB_LEGACY_DEFAULT_VALUES = frozendict.frozendict({
+    'max_backoff': 3600,
+    'max_doublings': 16,
+    'max_retry_duration': '0s',
+    'min_backoff': 0.01,
+})
 
 # Note currently CT APIs do not support modifying any pull-queue attributes
 # except max_attempts and max_retry_duration while queue.yaml does not support
 # max_retry_duration.
-PULL_QUEUES_APP_DEPLOY_DEFAULT_VALUES = {
+PULL_QUEUES_APP_DEPLOY_DEFAULT_VALUES = frozendict.frozendict({
     'max_attempts': -1,  # Translates as 'unlimited' in CT-FE
-}
+})

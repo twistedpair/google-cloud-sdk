@@ -36,6 +36,7 @@ V1P1BETA1_API_VERSION = 'v1p1beta1'
 V1P4ALPHA1_API_VERSION = 'v1p4alpha1'
 V1P4BETA1_API_VERSION = 'v1p4beta1'
 V1P5BETA1_API_VERSION = 'v1p5beta1'
+V1P7BETA1_API_VERSION = 'v1p7beta1'
 _HEADERS = {
     'Content-Type': 'application/x-www-form-urlencoded',
     'X-HTTP-Method-Override': 'GET'
@@ -112,6 +113,8 @@ def ContentTypeTranslation(content_type):
     return 'ACCESS_POLICY'
   if content_type == 'os-inventory':
     return 'OS_INVENTORY'
+  if content_type == 'relationship':
+    return 'RELATIONSHIP'
   return 'CONTENT_TYPE_UNSPECIFIED'
 
 
@@ -401,7 +404,11 @@ class AssetExportClient(object):
   def __init__(self, parent, api_version=DEFAULT_API_VERSION):
     self.parent = parent
     self.message_module = GetMessages(api_version)
-    self.service = GetClient(api_version).v1
+    if api_version == V1P7BETA1_API_VERSION:
+      self.service = GetClient(api_version).v1p7beta1
+    else:
+      self.service = GetClient(api_version).v1
+    self.api_version = api_version
 
   def Export(self, args):
     """Export assets with the asset export method."""
@@ -431,11 +438,23 @@ class AssetExportClient(object):
     snapshot_time = None
     if args.snapshot_time:
       snapshot_time = times.FormatDateTime(args.snapshot_time)
-    export_assets_request = self.message_module.ExportAssetsRequest(
-        assetTypes=args.asset_types,
-        contentType=content_type,
-        outputConfig=output_config,
-        readTime=snapshot_time)
+    if (self.api_version == V1P7BETA1_API_VERSION and
+        content_type == 'RELATIONSHIP'):
+      export_assets_request = self.message_module.ExportAssetsRequest(
+          assetTypes=args.asset_types,
+          contentType=content_type,
+          outputConfig=output_config,
+          readTime=snapshot_time,
+          relationshipTypes=args.relationship_types)
+    elif content_type == 'RELATIONSHIP':
+      raise gcloud_exceptions.InvalidArgumentException('Export relationship'
+                                                       ' not supported')
+    else:
+      export_assets_request = self.message_module.ExportAssetsRequest(
+          assetTypes=args.asset_types,
+          contentType=content_type,
+          outputConfig=output_config,
+          readTime=snapshot_time)
     request_message = self.message_module.CloudassetExportAssetsRequest(
         parent=self.parent, exportAssetsRequest=export_assets_request)
     operation = self.service.ExportAssets(request_message)
@@ -612,7 +631,7 @@ class AssetListClient(object):
     self.message_module = GetMessages(api_version)
     self.service = GetClient(api_version).assets
 
-  def List(self, args):
+  def List(self, args, do_filter=False):
     """List assets with the asset list method."""
     snapshot_time = None
     if args.snapshot_time:
@@ -633,7 +652,8 @@ class AssetListClient(object):
         batch_size=args.page_size,
         batch_size_attribute='pageSize',
         current_token_attribute='pageToken',
-        next_token_attribute='nextPageToken')
+        next_token_attribute='nextPageToken',
+        predicate=args.filter_func if do_filter else None)
 
 
 class AssetOperationClient(object):

@@ -33,6 +33,7 @@ from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.command_lib.storage.tasks import task_status
 
 
 MAX_ALLOWED_READ_SIZE = 100 * 1024 * 1024  # 100 MiB
@@ -351,7 +352,7 @@ class DaisyChainCopyTask(task.Task):
       # re-raise them from the parent thread.
       daisy_chain_stream.shutdown(e)
 
-  def execute(self, callback=None):
+  def execute(self, task_status_queue=None):
     """Copies file by downloading and uploading in parallel."""
     # TODO (b/168712813): Add option to use the Data Transfer component.
 
@@ -366,12 +367,22 @@ class DaisyChainCopyTask(task.Task):
     destination_client = api_factory.get_api(
         self._destination_resource.storage_url.scheme)
     request_config = cloud_api.RequestConfig(size=self._source_resource.size)
+    progress_callback = task_status.FilesAndBytesProgressCallback(
+        status_queue=task_status_queue,
+        size=self._source_resource.size,
+        source_url=self._source_resource.storage_url,
+        destination_url=self._destination_resource.storage_url,
+        operation_name=task_status.OperationName.DAISY_CHAIN_COPYING,
+        process_id=os.getpid(),
+        thread_id=threading.get_ident(),
+    )
 
     try:
       destination_client.upload_object(
           daisy_chain_stream.readable_stream,
           self._destination_resource,
-          request_config=request_config)
+          request_config=request_config,
+          progress_callback=progress_callback)
     except _AbruptShutdownError:
       # Not raising daisy_chain_stream.exception_raised here because we want
       # to wait for the download thread to finish.

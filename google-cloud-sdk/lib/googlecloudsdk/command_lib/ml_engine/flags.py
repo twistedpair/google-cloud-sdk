@@ -280,7 +280,7 @@ TRAINING_SERVICE_ACCOUNT = base.Argument(
       Training Google-managed service account must have the
       `roles/iam.serviceAccountAdmin` role for the specified service account.
       [Learn more about configuring a service
-      account.](/ai-platform/training/docs/custom-service-account)
+      account.](https://cloud.google.com/ai-platform/training/docs/custom-service-account)
       If not specified, the AI Platform Training Google-managed service account
       is used by default.
       """))

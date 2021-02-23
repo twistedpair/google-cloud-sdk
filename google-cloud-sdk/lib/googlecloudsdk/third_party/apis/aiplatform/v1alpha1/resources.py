@@ -316,6 +316,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_INDEXENDPOINTS_OPERATIONS = (
+      'projects.locations.indexEndpoints.operations',
+      'projects/{projectsId}/locations/{locationsId}/indexEndpoints/'
+      '{indexEndpointsId}/operations/{operationsId}',
+      {},
+      ['projectsId', 'locationsId', 'indexEndpointsId', 'operationsId'],
+      True
+  )
   PROJECTS_LOCATIONS_INDEXES = (
       'projects.locations.indexes',
       '{+name}',
@@ -325,6 +333,14 @@ class Collections(enum.Enum):
               '{indexesId}',
       },
       ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_INDEXES_OPERATIONS = (
+      'projects.locations.indexes.operations',
+      'projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}/'
+      'operations/{operationsId}',
+      {},
+      ['projectsId', 'locationsId', 'indexesId', 'operationsId'],
       True
   )
   PROJECTS_LOCATIONS_MIGRATABLERESOURCES = (

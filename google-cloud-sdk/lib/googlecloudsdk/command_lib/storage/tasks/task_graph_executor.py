@@ -45,13 +45,16 @@ _SHUTDOWN = 'SHUTDOWN'
 
 
 @crash_handling.CrashManager
-def _thread_worker(task_queue, task_output_queue, idle_thread_count):
+def _thread_worker(task_queue, task_output_queue, task_status_queue,
+                   idle_thread_count):
   """A consumer thread run in a child process.
 
   Args:
     task_queue (multiprocessing.Queue): Holds task_graph.TaskWrapper instances.
     task_output_queue (multiprocessing.Queue): Sends information about completed
       tasks back to the main process.
+    task_status_queue (multiprocessing.Queue|None): Used by task to report it
+      progress to a central location.
     idle_thread_count (multiprocessing.Semaphore): Keeps track of how many
       threads are busy. Useful for spawning new workers if all threads are busy.
   """
@@ -62,7 +65,8 @@ def _thread_worker(task_queue, task_output_queue, idle_thread_count):
     idle_thread_count.acquire()
 
     try:
-      additional_task_iterators = task_wrapper.task.execute()
+      additional_task_iterators = task_wrapper.task.execute(
+          task_status_queue=task_status_queue)
     # pylint: disable=broad-except
     # If any exception is raised, it will prevent the executor from exiting.
     except Exception as exception:
@@ -76,14 +80,16 @@ def _thread_worker(task_queue, task_output_queue, idle_thread_count):
 
 
 @crash_handling.CrashManager
-def _process_worker(task_queue, task_output_queue, thread_count,
-                    idle_thread_count):
+def _process_worker(task_queue, task_output_queue, task_status_queue,
+                    thread_count, idle_thread_count):
   """Starts a consumer thread pool.
 
   Args:
     task_queue (multiprocessing.Queue): Holds task_graph.TaskWrapper instances.
     task_output_queue (multiprocessing.Queue): Sends information about completed
       tasks back to the main process.
+    task_status_queue (multiprocessing.Queue|None): Used by task to report it
+      progress to a central location.
     thread_count (int): Number of threads the process should spawn.
     idle_thread_count (multiprocessing.Semaphore): Passed on to worker threads.
   """
@@ -93,7 +99,8 @@ def _process_worker(task_queue, task_output_queue, thread_count,
   for _ in range(thread_count):
     thread = threading.Thread(
         target=_thread_worker,
-        args=(task_queue, task_output_queue, idle_thread_count))
+        args=(task_queue, task_output_queue, task_status_queue,
+              idle_thread_count))
     thread.start()
     threads.append(thread)
 
@@ -107,7 +114,8 @@ class TaskGraphExecutor:
   def __init__(self,
                task_iterator,
                max_process_count=multiprocessing.cpu_count(),
-               thread_count=4):
+               thread_count=4,
+               task_status_queue=None):
     """Initializes a TaskGraphExecutor instance.
 
     No threads or processes are started by the constructor.
@@ -117,10 +125,13 @@ class TaskGraphExecutor:
         instances to execute.
       max_process_count (int): The number of processes to start.
       thread_count (int): The number of threads to start per process.
+      task_status_queue (multiprocessing.Queue|None): Used by task to report it
+        progress to a central location.
     """
     self._task_iterator = iter(task_iterator)
     self._max_process_count = max_process_count
     self._thread_count = thread_count
+    self._task_status_queue = task_status_queue
 
     self._processes = []
     self._idle_thread_count = multiprocessing.Semaphore(value=0)
@@ -153,7 +164,8 @@ class TaskGraphExecutor:
 
     process = multiprocessing.Process(
         target=_process_worker,
-        args=(self._task_queue, self._task_output_queue, self._thread_count,
+        args=(self._task_queue, self._task_output_queue,
+              self._task_status_queue, self._thread_count,
               self._idle_thread_count))
     self._processes.append(process)
     with self._process_start_lock:

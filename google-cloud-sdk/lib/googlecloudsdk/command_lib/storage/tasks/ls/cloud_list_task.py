@@ -302,8 +302,11 @@ class CloudListTask(task.Task):
           object_count, int(total_bytes),
           scaled_integer.FormatBinaryNumber(total_bytes, decimal_places=2)))
 
-  def execute(self, callback=None):
+  def execute(self, task_status_queue=None):
     """Recursively create wildcard iterators to print all relevant items."""
+    # List task does not need to report status information.
+    del task_status_queue
+
     fields_scope = _translate_display_detail_to_fields_scope(
         self._display_detail, is_bucket_listing=self._cloud_url.is_provider())
     resources = plurality_checkable_iterator.PluralityCheckableIterator(
@@ -332,6 +335,3 @@ class CloudListTask(task.Task):
       self._print_json_list(resources_wrappers)
     else:
       self._print_row_list(resources_wrappers)
-
-    if callback:
-      callback()

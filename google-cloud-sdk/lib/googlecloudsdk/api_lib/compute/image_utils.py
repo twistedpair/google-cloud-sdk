@@ -347,8 +347,17 @@ def GetFileContentAndFileType(file_path):
   if file_path.endswith('.bin'):
     file_type = 'BIN'
   else:
+    if not IsDERForm(file_content):
+      raise utils.IncorrectX509FormError(
+          'File is not in X509 binary DER form.')
     file_type = 'X509'
   return file_content, file_type
+
+
+def IsDERForm(file_content):
+  """Helper function that returns true if the file is X509 binary DER form."""
+  # check the first two bytes to see if it matches the DER X509 hex signature
+  return len(file_content) >= 2 and file_content[0:2] == b'\x30\x82'
 
 
 def CreateFileContentBuffer(messages, file_path):

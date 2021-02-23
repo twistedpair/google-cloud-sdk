@@ -78,40 +78,62 @@ def AddAssetTypesArgs(parser):
           'A list of asset types (i.e., "compute.googleapis.com/Disk") to take '
           'a snapshot. If specified and non-empty, only assets matching the '
           'specified types will be returned. '
-          'See https://cloud.google.com/resource-manager/docs/'
-          'cloud-asset-inventory/overview '
-          'for supported asset types.'))
+          'See http://cloud.google.com/asset-inventory/docs/supported-asset-types'
+          ' for supported asset types.'))
 
 
-def AddContentTypeArgs(parser, required):
+def AddRelationshipTypesArgs(parser):
+  parser.add_argument(
+      '--relationship-types',
+      metavar='RELATIONSHIP_TYPES',
+      type=arg_parsers.ArgList(),
+      default=[],
+      help=(
+          'A list of relationship types (i.e., "INSTANCE_TO_INSTANCEGROUP") to '
+          'take a snapshot. This argument will only be honoured if '
+          'content_type=RELATIONSHIP. If specified and non-empty, only '
+          'relationships matching the specified types will be returned. '
+          'See http://cloud.google.com/asset-inventory/docs/supported-asset-types'
+          ' for supported relationship types.'))
+
+
+def AddContentTypeArgs(parser, required, track=base.ReleaseTrack.GA):
   """--content-type argument for asset export and get-history."""
   if required:
-    help_text = (
-        'Asset content type. Specifying `resource` will export resource '
-        'metadata, specifying `iam-policy` will export the IAM policy for each '
-        'child asset, specifying `org-policy` will export the Org Policy set on'
-        ' child assets, specifying `access-policy` will export the Access '
-        'Policy set on child assets, and specifying `os-inventory` will export '
-        'the OS inventory of VM instances.')
+    help_text = ('Asset content type.')
   else:
     help_text = (
         'Asset content type. If specified, only content matching the '
         'specified type will be returned. Otherwise, no content but the '
-        'asset name will be returned. Specifying `resource` will export '
-        'resource metadata, specifying `iam-policy` will export the IAM policy '
-        'for each child asset, specifying `org-policy` will export the Org '
-        'Policy set on child assets, specifying `access-policy` will '
-        'export the Access Policy set on child assets, and specifying '
-        '`os-inventory` will export the OS inventory of VM instances.')
-
-  parser.add_argument(
-      '--content-type',
-      required=required,
-      choices=[
-          'resource', 'iam-policy', 'org-policy', 'access-policy',
-          'os-inventory'
-      ],
-      help=help_text)
+        'asset name will be returned.')
+  help_text += (' Specifying `resource` will export resource metadata, '
+                'specifying `iam-policy` will export the IAM policy for each '
+                'child asset, specifying `org-policy` will export the Org '
+                'Policy set on child assets, specifying `access-policy` will '
+                'export the Access Policy set on child assets, ')
+  if track.id != 'GA':
+    help_text += ('specifying `os-inventory` will export the OS inventory of VM'
+                  ' instances, and specifying `relationship` will export '
+                  'relationships of the assets.')
+    parser.add_argument(
+        '--content-type',
+        required=required,
+        choices=[
+            'resource', 'iam-policy', 'org-policy', 'access-policy',
+            'os-inventory', 'relationship'
+        ],
+        help=help_text)
+  else:
+    help_text += ('and specifying `os-inventory` will export the OS inventory '
+                  'of VM instances.')
+    parser.add_argument(
+        '--content-type',
+        required=required,
+        choices=[
+            'resource', 'iam-policy', 'org-policy', 'access-policy',
+            'os-inventory'
+        ],
+        help=help_text)
 
 
 def AddOutputPathArgs(parser, required):

@@ -27,7 +27,7 @@ from googlecloudsdk.command_lib.compute.forwarding_rules import flags
 from googlecloudsdk.core import properties
 
 
-def _ValidateGlobalArgs(args, support_tcp_in_td):
+def _ValidateGlobalArgs(args):
   """Validate the global forwarding rules args."""
   if args.target_instance:
     raise calliope_exceptions.ToolException(
@@ -57,19 +57,13 @@ def _ValidateGlobalArgs(args, support_tcp_in_td):
     if (not getattr(args, 'target_http_proxy', None) and
         not getattr(args, 'target_https_proxy', None) and
         not getattr(args, 'target_grpc_proxy', None) and
-        not (support_tcp_in_td and getattr(args, 'target_tcp_proxy', None))):
+        not getattr(args, 'target_tcp_proxy', None)):
       target_error_message_with_tcp = (
           'You must specify either [--target-http-proxy], '
           '[--target-https-proxy], [--target-grpc-proxy] '
           'or [--target-tcp-proxy] for an '
           'INTERNAL_SELF_MANAGED [--load-balancing-scheme].')
-      target_error_message = (
-          'You must specify either [--target-http-proxy], '
-          '[--target-https-proxy] or [--target-grpc-proxy] for an '
-          'INTERNAL_SELF_MANAGED [--load-balancing-scheme].')
-      raise calliope_exceptions.ToolException(
-          target_error_message_with_tcp
-          if support_tcp_in_td else target_error_message)
+      raise calliope_exceptions.ToolException(target_error_message_with_tcp)
 
     if getattr(args, 'subnet', None):
       raise calliope_exceptions.ToolException(
@@ -82,9 +76,9 @@ def _ValidateGlobalArgs(args, support_tcp_in_td):
           '[--load-balancing-scheme]')
 
 
-def GetGlobalTarget(resources, args, support_tcp_in_td):
+def GetGlobalTarget(resources, args):
   """Return the forwarding target for a globally scoped request."""
-  _ValidateGlobalArgs(args, support_tcp_in_td)
+  _ValidateGlobalArgs(args)
 
   if args.target_http_proxy:
     return flags.TargetHttpProxyArg().ResolveAsResource(

@@ -264,7 +264,16 @@ class _ResourceParser(object):
         return self.ParseRelativeName(
             resource_id, base_url=base_url, subcollection=subcollection)
       except InvalidResourceException:
-        pass
+        path = self.collection_info.GetPath(subcollection)
+        path_prefixes = self.GetFieldNamesFromPath(path)
+
+        contains_all_fields = all(
+            prefix + '/' in resource_id for prefix in path_prefixes)
+
+        if contains_all_fields:
+          raise UserError('Invalid value: {}'.format(resource_id))
+        else:
+          pass
 
     params = self.collection_info.GetParams(subcollection)
 
@@ -309,6 +318,21 @@ class _ResourceParser(object):
     ref = Resource(self.registry, self.collection_info, subcollection,
                    param_values, base_url)
     return ref
+
+  def GetFieldNamesFromPath(self, path):
+    """Extract field names from uri template path.
+
+    Args:
+      path: str, uri template path.
+
+    Returns:
+      list(str), list of field names in the template path.
+    """
+    return [
+        prefix for idx, prefix in enumerate(
+            path.split('/'))
+        if idx % 2 == 0 and prefix
+    ]
 
   def __str__(self):
     path_str = ''

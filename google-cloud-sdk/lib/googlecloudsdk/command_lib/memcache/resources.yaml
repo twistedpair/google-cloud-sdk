@@ -15,7 +15,11 @@ region:
   - &region
     parameter_name: locationsId
     attribute_name: region
-    help: The name of the Memcached region of the {resource}.
+    help: |
+      The name of the Memcached region of the {resource}. Overrides the default
+      memcache/region property value for this command invocation.
+    property: memcache/region
+  disable_auto_completers: false
 
 instance:
   name: instance
@@ -27,6 +31,7 @@ instance:
     parameter_name: instancesId
     attribute_name: instance
     help: The name of the Memcached instance.
+  disable_auto_completers: false
 
 operation:
   name: operation
@@ -37,3 +42,4 @@ operation:
     parameter_name: operationsId
     attribute_name: operation
     help: The name of the Memcached operation.
+  disable_auto_completers: false

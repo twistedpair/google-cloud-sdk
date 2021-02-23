@@ -72,7 +72,7 @@ class FileUploadTask(task.Task):
     self._composite_upload_threshold = scaled_integer.ParseInteger(
         properties.VALUES.storage.parallel_composite_upload_threshold.Get())
 
-  def execute(self, callback=None):
+  def execute(self, task_status_queue=None):
     source_filename = self._source_resource.storage_url.object_name
     size = os.path.getsize(source_filename)
 
@@ -86,7 +86,7 @@ class FileUploadTask(task.Task):
           self._source_resource,
           self._destination_resource,
           offset=0,
-          length=size).execute()
+          length=size).execute(task_status_queue)
     else:
       destination_url = self._destination_resource.storage_url
       provider = destination_url.scheme

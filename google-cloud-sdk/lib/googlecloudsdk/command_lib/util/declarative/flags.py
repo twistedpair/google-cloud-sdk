@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import os
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.util.declarative.clients import client_base
 from googlecloudsdk.core.util import files
 
@@ -67,11 +68,33 @@ def AddOnErrorFlag(parser):
             'are encountered without logging, specify "ignore".'))
 
 
+def AddListResourcesFormatFlag(parser):
+  parser.add_argument(
+      '--output-format',
+      choices=['table', 'yaml', 'json'],
+      default='table',
+      help='Determines the output format of the supported resources.'
+    )
+
+
+def AddResourceTypeFlag(parser):
+  """Add resource-type flag to parser."""
+  parser.add_argument(
+      '--resource-types',
+      type=arg_parsers.ArgList(),
+      metavar='RESOURCE_TYPE',
+      help="""List of Asset Inventory resource types to export.
+  For a full list of supported resource types see:
+  [Cloud Asset Inventory - Supported Asset Types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
+  """)
+
+
 def AddBulkExportArgs(parser):
   """Adds flags for the bulk-export command."""
   AddOnErrorFlag(parser)
   AddPathFlag(parser)
   AddFormatFlag(parser)
+  AddResourceTypeFlag(parser)
   group = parser.add_group(mutex=True)
   group.add_argument('--organization', type=str, help='Organization ID')
   group.add_argument('--project', help='Project ID')

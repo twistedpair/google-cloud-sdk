@@ -787,6 +787,57 @@ def _CreateUniqueJobKeyForExistingJob(job, project):
     )
 
 
+def _ReplaceDefaultRetryParamsForYamlJob(job):
+  """Replaces default values for retry parameters.
+
+  Retry parameters are set to their default values if not already user defined.
+  These values are only set if the user has defined at least one retry
+  parameter. Also we are limiting min_backoff to a minimum value of 5.0s since
+  the new scheduler API does not support setting a lower value than this.
+  Modifies input `job` argument directly.
+
+  Args:
+    job: An instance of a parsed YAML job object.
+  """
+  defaults = constants.CRON_JOB_LEGACY_DEFAULT_VALUES
+  retry_data = job.retry_parameters
+  if retry_data:
+    # Min max backoff is a special case. If only one is specified, the other
+    # value is set to its default value as long as this condition is satisfied:
+    # 'min_backoff <= max_backoff'. Otherwise, the unspecified value is set
+    # equal to the specified value.
+    if (
+        retry_data.min_backoff_seconds is None and
+        retry_data.max_backoff_seconds is None
+    ):
+      # Both values are None so we should set them to defaults.
+      retry_data.min_backoff_seconds = defaults['min_backoff']
+      retry_data.max_backoff_seconds = defaults['max_backoff']
+    elif (
+        retry_data.min_backoff_seconds is None or
+        retry_data.max_backoff_seconds is None
+    ):
+      # Only one of the backoff values is None. We need to ensure that
+      # min_backoff <= max_backoff.
+      if not retry_data.min_backoff_seconds:
+        retry_data.min_backoff_seconds = defaults['min_backoff']
+      if retry_data.max_backoff_seconds:
+        retry_data.min_backoff_seconds = min(retry_data.min_backoff_seconds,
+                                             retry_data.max_backoff_seconds)
+      if retry_data.max_backoff_seconds is None:
+        retry_data.max_backoff_seconds = defaults['max_backoff']
+      retry_data.max_backoff_seconds = max(retry_data.min_backoff_seconds,
+                                           retry_data.max_backoff_seconds)
+
+    # Max Doublings
+    if retry_data.max_doublings is None:
+      retry_data.max_doublings = defaults['max_doublings']
+
+    # Job Age Limit
+    if retry_data.job_age_limit is None:
+      retry_data.job_age_limit = defaults['max_retry_duration']
+
+
 def _CreateUniqueJobKeyForYamlJob(job):
   """Creates a key from the YAML job instance's attributes passed as input.
 
@@ -908,6 +959,7 @@ def DeployCronYamlFile(scheduler_api, config, existing_jobs):
   responses = []
   if cron_yaml.cron:
     for yaml_job in cron_yaml.cron:
+      _ReplaceDefaultRetryParamsForYamlJob(yaml_job)
       job_key = _CreateUniqueJobKeyForYamlJob(yaml_job)
       if job_key in existing_jobs_dict and existing_jobs_dict[job_key]:
         # If the job already exists then we do not need to do anything.

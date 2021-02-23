@@ -42,7 +42,7 @@ _DETAILED_SOURCE_INSTANT_SNAPSHOT_HELP = """\
 """
 
 _SOURCE_DISK_DETAILED_HELP = """\
-      Source disk used to create the disks. It is safe to
+      Source disk used to create the disk(s). It is safe to
       delete a source disk after a disk has been created from the
       source disk. To get a list of disks in your current project,
       run `gcloud compute disks list`. This flag is mutually
@@ -52,9 +52,16 @@ _SOURCE_DISK_DETAILED_HELP = """\
       as large as the source disk size. Use *--size* to adjust the
       size of the disks.
 
-      Source disk must be in the same zone/region as the disk to be created.
+      The source disk must be in the same zone/region as the disk to be created.
 """
 
+_SOURCE_DISK_ZONE_EXPLANATION = """\
+      Zone of the source disk, this argument is not required if target disk is in same zone of source disk.
+"""
+
+_SOURCE_DISK_REGION_EXPLANATION = """\
+      Region of the source disk, this argument is not required if target disk is in same region of source disk.
+"""
 
 DEFAULT_LIST_FORMAT = """\
     table(
@@ -162,9 +169,10 @@ SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     name='--source-disk',
     completer=compute_completers.DisksCompleter,
     short_help='Source disk used to create the disks. Source disk must be in'
-               ' the same zone/region as the disk to be created.',
+    ' the same zone/region as the disk to be created.',
     detailed_help=_SOURCE_DISK_DETAILED_HELP,
     zonal_collection='compute.disks',
     regional_collection='compute.regionDisks',
     required=False,
-    use_existing_default_scope=True)
+    zone_help_text=_SOURCE_DISK_ZONE_EXPLANATION,
+    region_help_text=_SOURCE_DISK_REGION_EXPLANATION)

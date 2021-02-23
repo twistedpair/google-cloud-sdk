@@ -49,7 +49,9 @@ class CustomJobsClient(object):
              python_package_uri=None,
              args=None,
              command=None,
-             kms_key_name=None):
+             kms_key_name=None,
+             network=None,
+             service_account=None):
     """Constructs a request and sends it to the endpoint to create a custom job instance.
 
     Args:
@@ -65,6 +67,10 @@ class CustomJobsClient(object):
         packge.
       command: ArgList, A list of command that passed to containers.
       kms_key_name: A customer-managed encryption key to use for the custom job.
+      network: user network to which the job should be peered with (overrides
+        yaml file)
+      service_account: A service account (email address string) to use for the
+          job.
 
     Returns:
       (GoogleCloudAiplatformV1alpha1CustomJob) The created custom job.
@@ -73,6 +79,8 @@ class CustomJobsClient(object):
       python_package_uri = []
 
     job_spec = self.messages.GoogleCloudAiplatformV1beta1CustomJobSpec()
+    job_spec.network = network
+    job_spec.serviceAccount = service_account
     if config_path:
       data = yaml.load_path(config_path)
       if data:
@@ -125,6 +133,7 @@ class CustomJobsClient(object):
         self.messages.GoogleCloudAiplatformV1beta1CustomJob(
             displayName=display_name,
             jobSpec=job_spec))
+
     if kms_key_name is not None:
       custom_job.encryptionSpec = self.messages.GoogleCloudAiplatformV1beta1EncryptionSpec(
           kmsKeyName=kms_key_name)

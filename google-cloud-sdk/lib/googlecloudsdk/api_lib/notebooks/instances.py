@@ -26,26 +26,28 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
 
-def CreateInstance(args):
+def CreateInstance(args, client, messages):
   """Creates the Instance message for the create request.
 
   Args:
     args: Argparse object from Command.Run
+    client(base_api.BaseApiClient): An instance of the specified API client.
+    messages: Module containing messages definition for the specified API.
 
   Returns:
     Instance of the Instance message.
   """
 
   def GetContainerImageFromExistingEnvironment():
-    environment_service = util.GetClient().projects_locations_environments
+    environment_service = client.projects_locations_environments
     result = environment_service.Get(
-        env_util.CreateEnvironmentDescribeRequest(args))
+        env_util.CreateEnvironmentDescribeRequest(args, messages))
     return result.containerImage
 
   def GetVmImageFromExistingEnvironment():
-    environment_service = util.GetClient().projects_locations_environments
+    environment_service = client.projects_locations_environments
     result = environment_service.Get(
-        env_util.CreateEnvironmentDescribeRequest(args))
+        env_util.CreateEnvironmentDescribeRequest(args, messages))
     return result.vmImage
 
   def GetKmsRelativeName():
@@ -61,7 +63,7 @@ def CreateInstance(args):
       return args.CONCEPTS.subnet.Parse().RelativeName()
 
   def CreateAcceleratorConfigMessage():
-    accelerator_config = util.GetMessages().AcceleratorConfig
+    accelerator_config = messages.AcceleratorConfig
     type_enum = None
     if args.IsSpecified('accelerator_type'):
       type_enum = arg_utils.ChoiceEnumMapper(
@@ -75,7 +77,7 @@ def CreateInstance(args):
   def GetBootDisk():
     type_enum = None
     if args.IsSpecified('boot_disk_type'):
-      instance_message = util.GetMessages().Instance
+      instance_message = messages.Instance
       type_enum = arg_utils.ChoiceEnumMapper(
           arg_name='boot-disk-type',
           message_enum=instance_message.BootDiskTypeValueValuesEnum,
@@ -86,7 +88,7 @@ def CreateInstance(args):
   def GetDiskEncryption():
     type_enum = None
     if args.IsSpecified('disk_encryption'):
-      instance_message = util.GetMessages().Instance
+      instance_message = messages.Instance
       type_enum = arg_utils.ChoiceEnumMapper(
           arg_name='disk-encryption',
           message_enum=instance_message.DiskEncryptionValueValuesEnum,
@@ -98,7 +100,7 @@ def CreateInstance(args):
     if args.IsSpecified('environment'):
       return GetContainerImageFromExistingEnvironment()
     if args.IsSpecified('container_repository'):
-      container_image = util.GetMessages().ContainerImage(
+      container_image = messages.ContainerImage(
           repository=args.container_repository, tag=args.container_tag)
       return container_image
     return None
@@ -108,7 +110,7 @@ def CreateInstance(args):
     if args.IsSpecified('environment'):
       return GetVmImageFromExistingEnvironment()
     if args.IsSpecified('vm_image_project'):
-      vm_image = util.GetMessages().VmImage(project=args.vm_image_project)
+      vm_image = messages.VmImage(project=args.vm_image_project)
       if args.IsSpecified('vm_image_family'):
         vm_image.imageFamily = args.vm_image_family
       else:
@@ -123,7 +125,7 @@ def CreateInstance(args):
 
   def GetLabelsFromArgs():
     if args.IsSpecified('labels'):
-      labels_message = util.GetMessages().Instance.LabelsValue
+      labels_message = messages.Instance.LabelsValue
       return labels_message(additionalProperties=[
           labels_message.AdditionalProperty(key=key, value=value)
           for key, value in args.labels.items()
@@ -132,14 +134,14 @@ def CreateInstance(args):
 
   def GetMetadataFromArgs():
     if args.IsSpecified('metadata'):
-      metadata_message = util.GetMessages().Instance.MetadataValue
+      metadata_message = messages.Instance.MetadataValue
       return metadata_message(additionalProperties=[
           metadata_message.AdditionalProperty(key=key, value=value)
           for key, value in args.metadata.items()
       ])
     return None
 
-  instance = util.GetMessages().Instance(
+  instance = messages.Instance(
       name=args.instance,
       postStartupScript=args.post_startup_script,
       bootDiskSizeGb=args.boot_disk_size,
@@ -164,67 +166,65 @@ def CreateInstance(args):
   return instance
 
 
-def CreateInstanceCreateRequest(args):
+def CreateInstanceCreateRequest(args, client, messages):
   parent = util.GetParentForInstance(args)
-  instance = CreateInstance(args)
-  return util.GetMessages().NotebooksProjectsLocationsInstancesCreateRequest(
+  instance = CreateInstance(args, client, messages)
+  return messages.NotebooksProjectsLocationsInstancesCreateRequest(
       parent=parent, instance=instance, instanceId=args.instance)
 
 
-def CreateInstanceListRequest(args):
+def CreateInstanceListRequest(args, messages):
   parent = util.GetParentFromArgs(args)
-  return util.GetMessages().NotebooksProjectsLocationsInstancesListRequest(
-      parent=parent)
+  return messages.NotebooksProjectsLocationsInstancesListRequest(parent=parent)
 
 
-def CreateInstanceDeleteRequest(args):
+def CreateInstanceDeleteRequest(args, messages):
   instance = GetInstanceResource(args).RelativeName()
-  return util.GetMessages().NotebooksProjectsLocationsInstancesDeleteRequest(
+  return messages.NotebooksProjectsLocationsInstancesDeleteRequest(
       name=instance)
 
 
-def CreateInstanceDescribeRequest(args):
+def CreateInstanceDescribeRequest(args, messages):
   instance = GetInstanceResource(args).RelativeName()
-  return util.GetMessages().NotebooksProjectsLocationsInstancesGetRequest(
-      name=instance)
+  return messages.NotebooksProjectsLocationsInstancesGetRequest(name=instance)
 
 
-def CreateInstanceRegisterRequest(args):
+def CreateInstanceRegisterRequest(args, messages):
   instance = GetInstanceResource(args)
   parent = util.GetLocationResource(instance.locationsId,
                                     instance.projectsId).RelativeName()
-  register_request = util.GetMessages().RegisterInstanceRequest(
+  register_request = messages.RegisterInstanceRequest(
       instanceId=instance.Name())
-  return util.GetMessages().NotebooksProjectsLocationsInstancesRegisterRequest(
+  return messages.NotebooksProjectsLocationsInstancesRegisterRequest(
       parent=parent, registerInstanceRequest=register_request)
 
 
-def CreateInstanceResetRequest(args):
+def CreateInstanceResetRequest(args, messages):
   instance = GetInstanceResource(args).RelativeName()
-  reset_request = util.GetMessages().ResetInstanceRequest()
-  return util.GetMessages().NotebooksProjectsLocationsInstancesResetRequest(
+  reset_request = messages.ResetInstanceRequest()
+  return messages.NotebooksProjectsLocationsInstancesResetRequest(
       name=instance, resetInstanceRequest=reset_request)
 
 
-def CreateInstanceStartRequest(args):
+def CreateInstanceStartRequest(args, messages):
   instance = GetInstanceResource(args).RelativeName()
-  start_request = util.GetMessages().StartInstanceRequest()
-  return util.GetMessages().NotebooksProjectsLocationsInstancesStartRequest(
+  start_request = messages.StartInstanceRequest()
+  return messages.NotebooksProjectsLocationsInstancesStartRequest(
       name=instance, startInstanceRequest=start_request)
 
 
-def CreateInstanceStopRequest(args):
+def CreateInstanceStopRequest(args, messages):
   instance = GetInstanceResource(args).RelativeName()
-  stop_request = util.GetMessages().StopInstanceRequest()
-  return util.GetMessages().NotebooksProjectsLocationsInstancesStopRequest(
+  stop_request = messages.StopInstanceRequest()
+  return messages.NotebooksProjectsLocationsInstancesStopRequest(
       name=instance, stopInstanceRequest=stop_request)
 
 
-def CreateSetAcceleratorRequest(args):
+def CreateSetAcceleratorRequest(args, messages):
   """Create and return Accelerator update request."""
   instance = GetInstanceResource(args).RelativeName()
-  set_acc_request = util.GetMessages().SetInstanceAcceleratorRequest()
-  accelerator_config = util.GetMessages().SetInstanceAcceleratorRequest
+  set_acc_request = messages.SetInstanceAcceleratorRequest()
+  accelerator_config = messages.SetInstanceAcceleratorRequest
   if args.IsSpecified('accelerator_core_count'):
     set_acc_request.coreCount = args.accelerator_core_count
   if args.IsSpecified('accelerator_type'):
@@ -234,43 +234,40 @@ def CreateSetAcceleratorRequest(args):
         include_filter=lambda x: 'UNSPECIFIED' not in x).GetEnumForChoice(
             arg_utils.EnumNameToChoice(args.accelerator_type))
     set_acc_request.type = type_enum
-  return util.GetMessages(
-  ).NotebooksProjectsLocationsInstancesSetAcceleratorRequest(
+  return messages.NotebooksProjectsLocationsInstancesSetAcceleratorRequest(
       name=instance, setInstanceAcceleratorRequest=set_acc_request)
 
 
-def CreateSetLabelsRequest(args):
+def CreateSetLabelsRequest(args, messages):
   instance = GetInstanceResource(args).RelativeName()
-  set_label_request = util.GetMessages().SetInstanceLabelsRequest()
-  labels_message = util.GetMessages().SetInstanceLabelsRequest.LabelsValue
+  set_label_request = messages.SetInstanceLabelsRequest()
+  labels_message = messages.SetInstanceLabelsRequest.LabelsValue
   set_label_request.labels = labels_message(additionalProperties=[
       labels_message.AdditionalProperty(key=key, value=value)
       for key, value in args.labels.items()
   ])
-  return util.GetMessages().NotebooksProjectsLocationsInstancesSetLabelsRequest(
+  return messages.NotebooksProjectsLocationsInstancesSetLabelsRequest(
       name=instance, setInstanceLabelsRequest=set_label_request)
 
 
-def CreateSetMachineTypeRequest(args):
+def CreateSetMachineTypeRequest(args, messages):
   instance = GetInstanceResource(args).RelativeName()
-  set_machine_request = util.GetMessages().SetInstanceMachineTypeRequest(
+  set_machine_request = messages.SetInstanceMachineTypeRequest(
       machineType=args.machine_type)
-  return util.GetMessages(
-  ).NotebooksProjectsLocationsInstancesSetMachineTypeRequest(
+  return messages.NotebooksProjectsLocationsInstancesSetMachineTypeRequest(
       name=instance, setInstanceMachineTypeRequest=set_machine_request)
 
 
-def CreateInstanceIsUpgradeableRequest(args):
+def CreateInstanceIsUpgradeableRequest(args, messages):
   instance = GetInstanceResource(args).RelativeName()
-  return util.GetMessages(
-  ).NotebooksProjectsLocationsInstancesIsUpgradeableRequest(
+  return messages.NotebooksProjectsLocationsInstancesIsUpgradeableRequest(
       notebookInstance=instance)
 
 
-def CreateInstanceUpgradeRequest(args):
+def CreateInstanceUpgradeRequest(args, messages):
   instance = GetInstanceResource(args).RelativeName()
-  upgrade_request = util.GetMessages().UpgradeInstanceRequest()
-  return util.GetMessages().NotebooksProjectsLocationsInstancesUpgradeRequest(
+  upgrade_request = messages.UpgradeInstanceRequest()
+  return messages.NotebooksProjectsLocationsInstancesUpgradeRequest(
       name=instance, upgradeInstanceRequest=upgrade_request)
 
 
@@ -295,6 +292,7 @@ class OperationType(enum.Enum):
 def HandleLRO(operation,
               args,
               instance_service,
+              release_track,
               operation_type=OperationType.UPDATE):
   """Handles Long Running Operations for both cases of async.
 
@@ -303,6 +301,7 @@ def HandleLRO(operation,
     args: ArgParse instance containing user entered arguments.
     instance_service: The service to get the resource after the long running
       operation completes.
+    release_track: base.ReleaseTrack object.
     operation_type: Enum value of type OperationType indicating the kind of
       operation to wait for.
 
@@ -315,7 +314,7 @@ def HandleLRO(operation,
   logging_method = operation_type.value[0]
   if args.async_:
     logging_method(
-        util.GetOperationResource(operation.name),
+        util.GetOperationResource(operation.name, release_track),
         kind='notebooks instance {0}'.format(args.instance),
         is_async=True)
     return operation
@@ -325,9 +324,10 @@ def HandleLRO(operation,
         'Waiting for operation on Instance [{}] to be {} with [{}]'.format(
             args.instance, operation_type.value[1], operation.name),
         service=instance_service,
+        release_track=release_track,
         is_delete=(operation_type.value[1] == 'deleted'))
     logging_method(
-        util.GetOperationResource(operation.name),
+        util.GetOperationResource(operation.name, release_track),
         kind='notebooks instance {0}'.format(args.instance),
         is_async=False)
     return response

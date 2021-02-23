@@ -56,7 +56,9 @@ def AddMaxSurgeArg(parser):
             'can be created during the update process. '
             'This can be a fixed number (e.g. 5) or '
             'a percentage of size to the managed instance '
-            'group (e.g. 10%)'))
+            'group (e.g. 10%). Defaults to 0 if the managed '
+            'instance group has stateful configuration, or to '
+            'the number of zones in which it operates otherwise.'))
 
 
 def AddMaxUnavailableArg(parser):
@@ -67,7 +69,8 @@ def AddMaxUnavailableArg(parser):
             'unavailable during the update process. '
             'This can be a fixed number (e.g. 5) or '
             'a percentage of size to the managed instance '
-            'group (e.g. 10%)'))
+            'group (e.g. 10%). Defaults to the number of zones '
+            'in which the managed instance group operates.'))
 
 
 def AddMinReadyArg(parser):
@@ -88,8 +91,10 @@ def AddReplacementMethodFlag(parser):
                         'with another name.',
           'recreate': 'Updated instances will be recreated with the same name.',
       },
-      help='Type of replacement method. Specifies what action will be taken '
-           'to update instances.')
+      help="Type of replacement method. Specifies what action will be taken "
+           "to update instances. Defaults to ``recreate'' if the managed "
+           "instance group has stateful configuration, or to ``substitute'' "
+           "otherwise.")
 
 
 def AddForceArg(parser):

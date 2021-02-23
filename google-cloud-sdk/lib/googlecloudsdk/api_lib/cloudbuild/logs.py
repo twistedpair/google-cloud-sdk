@@ -400,6 +400,21 @@ class GCSLogTailer(TailerBase):
     self.Poll(is_last=True)
 
 
+class ThreadInterceptor(threading.Thread):
+  """Wrapper to intercept thread exceptions."""
+
+  def __init__(self, target):
+    super(ThreadInterceptor, self).__init__()
+    self.target = target
+    self.exception = None
+
+  def run(self):
+    try:
+      self.target()
+    except (api_exceptions.HttpError, api_exceptions.CommunicationError) as e:
+      self.exception = e
+
+
 class CloudBuildClient(object):
   """Client for interacting with the Cloud Build API (and Cloud Build logs)."""
 
@@ -497,12 +512,14 @@ class CloudBuildClient(object):
 
     t = None
     if log_tailer:
-      t = threading.Thread(target=log_tailer.Tail)
+      t = ThreadInterceptor(target=log_tailer.Tail)
       t.start()
     build = self.ShouldStopTailer(build, build_ref, log_tailer,
                                   working_statuses)
     if t:
       t.join()
+      if t.exception is not None:
+        raise t.exception
 
     return build
 

@@ -253,8 +253,17 @@ definitions:
           properties:
             deprecated:
               type: object
-              patternProperties:
-                .*: {type: string}
+              additionalProperties: false
+              properties:
+                # If False, warning message will be printed, otherwise, error message will be
+                # printed.
+                removed: {type: boolean}
+                # Warning message. 'flag_name' template will be replaced with value of flag_name
+                # parameter.
+                warn: {type: string}
+                # Error message. 'flag_name' template will be replaced with value of flag_name
+                # parameter.
+                error: {type: string}
       # Can be set to False if you want to accept a single value even though the
       # API field is repeated. If the API field is not repeated, this attribute
       # has no effect.
@@ -367,7 +376,7 @@ properties:
     type: object
     additionalProperties: false
     required: [is_removed]
-    patternProperties:
+    properties:
       is_removed: {type: boolean}
       warning: {type: string}
       error: {type: string}

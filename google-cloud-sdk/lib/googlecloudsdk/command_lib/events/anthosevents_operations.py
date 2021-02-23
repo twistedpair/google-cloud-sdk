@@ -973,11 +973,11 @@ class AnthosEventsOperations(object):
 
     poller = CloudRunConditionPoller(
         cloud_run_getter, tracker, grace_period=datetime.timedelta(seconds=180))
-    util.WaitForCondition(
-        poller,
-        exceptions.EventingInstallError(
-            'Eventing failed to install within 180 seconds, please try rerunning the command'
-        ))
+    # Set custom max wait time to OPERATOR_MAX_WAIT_MS (300 seconds)
+    # because cloudrun eventing is unable to resolve within the default
+    # of 180 seconds.
+    util.WaitForCondition(poller, exceptions.EventingInstallError,
+                          util.OPERATOR_MAX_WAIT_MS)
 
   def PollKubeRunResource(self, tracker):
     """Wait for Cloud Run resource to be Ready."""
@@ -985,11 +985,11 @@ class AnthosEventsOperations(object):
 
     poller = KubeRunConditionPoller(
         cloud_run_getter, tracker, grace_period=datetime.timedelta(seconds=180))
-    util.WaitForCondition(
-        poller,
-        exceptions.EventingInstallError(
-            'Eventing failed to install within 180 seconds, please try rerunning the command'
-        ))
+    # Set custom max wait time to OPERATOR_MAX_WAIT_MS (300 seconds)
+    # because cloudrun eventing is unable to resolve within the default
+    # of 180 seconds.
+    util.WaitForCondition(poller, exceptions.EventingInstallError,
+                          util.OPERATOR_MAX_WAIT_MS)
 
 
 def _ConfigMapRef(namespace, name):

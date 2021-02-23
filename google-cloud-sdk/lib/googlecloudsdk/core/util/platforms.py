@@ -222,7 +222,8 @@ class Architecture(object):
       'i386': x86, 'i686': x86, 'x86': x86,
       'ia64': x86,  # Itanium is different x64 arch, treat it as the common x86.
       'powerpc': ppc, 'power macintosh': ppc, 'ppc64': ppc,
-      'armv6': arm, 'armv6l': arm, 'arm64': arm, 'armv7': arm, 'armv7l': arm}
+      'armv6': arm, 'armv6l': arm, 'arm64': arm, 'armv7': arm, 'armv7l': arm,
+      'aarch64': arm}
 
   @staticmethod
   def AllValues():

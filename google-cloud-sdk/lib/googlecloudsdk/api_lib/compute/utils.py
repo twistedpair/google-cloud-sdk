@@ -66,6 +66,10 @@ class ImageNotFoundError(exceptions.Error):
   """The image resource could not be found."""
 
 
+class IncorrectX509FormError(exceptions.Error):
+  """The X509 should be in binary DER form."""
+
+
 def ZoneNameToRegionName(zone_name):
   """Converts zone name to region name: 'us-central1-a' -> 'us-central1'."""
   return zone_name.rsplit('-', 1)[0]

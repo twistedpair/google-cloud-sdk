@@ -49,11 +49,12 @@ class Task(six.with_metaclass(abc.ABCMeta, object)):
     self.parallel_processing_key = None
 
   @abc.abstractmethod
-  def execute(self, callback=None):
+  def execute(self, task_status_queue=None):
     """Performs some work based on class attributes.
 
     Args:
-      callback (Callable): Called after execute completes.
+      task_status_queue (multiprocessing.Queue): Used by task to report it
+        progress to a central location.
 
     Returns:
       An Optional[Iterable[Iterable[Task]]], which should be executed such that

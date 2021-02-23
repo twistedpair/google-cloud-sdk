@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import argparse
 import sys
+import textwrap
 
 from googlecloudsdk.api_lib.util import apis
 
@@ -31,6 +32,7 @@ from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import errors
 from googlecloudsdk.command_lib.ai import region_util
+from googlecloudsdk.command_lib.iam import iam_util as core_iam_util
 from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -195,6 +197,24 @@ _CUSTOM_JOB_ARGS = base.Argument(
 Comma-separated arguments passed to containers or python tasks.
 """)
 
+_NETWORK = base.Argument(
+    '--network',
+    help=textwrap.dedent("""\
+      Full name of the Google Compute Engine network to which the Job
+      is peered with. Private services access must already have been configured.
+      If unspecified, the Job is not peered with any network.
+      """))
+
+_TRAINING_SERVICE_ACCOUNT = base.Argument(
+    '--service-account',
+    type=core_iam_util.GetIamAccountFormatValidator(),
+    required=False,
+    help=textwrap.dedent("""\
+      The email address of a service account to use when running the
+      training appplication. You must have the `iam.serviceAccounts.actAs`
+      permission for the specified service account.
+      """))
+
 
 def AddCreateCustomJobFlags(parser):
   """Adds flags related to create a custom job."""
@@ -203,6 +223,8 @@ def AddCreateCustomJobFlags(parser):
   PYTHON_PACKGE_URIS.AddToParser(parser)
   _CUSTOM_JOB_ARGS.AddToParser(parser)
   _CUSTOM_JOB_COMMAND.AddToParser(parser)
+  _TRAINING_SERVICE_ACCOUNT.AddToParser(parser)
+  _NETWORK.AddToParser(parser)
   AddKmsKeyResourceArg(parser, 'custom job')
   worker_pool_spec_group = base.ArgumentGroup(
       help='Worker pool specification.', required=True)
@@ -543,6 +565,29 @@ inclusive.
   )
 
 
+def AddIndexResourceArg(parser, verb):
+  """Add a resource argument for a cloud AI Platform index.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'index', GetIndexResourceSpec(), 'Index {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def GetIndexResourceSpec(resource_name='index'):
+  return concepts.ResourceSpec(
+      constants.INDEXES_COLLECTION,
+      resource_name=resource_name,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=RegionAttributeConfig(),
+      disable_auto_completers=False)
+
+
 def GetEndpointId():
   return base.Argument('name', help='The endpoint\'s id.')
 
@@ -570,6 +615,31 @@ def AddEndpointResourceArg(parser, verb):
       GetEndpointResourceSpec(),
       'The endpoint {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def AddIndexEndpointResourceArg(parser, verb):
+  """Add a resource argument for a cloud AI Platform index endpoint.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'index_endpoint',
+      GetIndexEndpointResourceSpec(),
+      'The index endpoint {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def GetIndexEndpointResourceSpec(resource_name='index_endpoint'):
+  return concepts.ResourceSpec(
+      constants.INDEX_ENDPOINTS_COLLECTION,
+      resource_name=resource_name,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=RegionAttributeConfig(),
+      disable_auto_completers=False)
 
 
 def GetTensorboardResourceSpec(resource_name='tensorboard'):
@@ -650,11 +720,14 @@ def GetAcceleratorTypeMapper(version):
 
 
 def AddCreateHpTuningJobFlags(parser, algorithm_enum):
+  """Add arguments for creating hp tuning job."""
   AddRegionResourceArg(parser, 'to upload model')
   HPTUNING_JOB_DISPLAY_NAME.AddToParser(parser)
   HPTUNING_JOB_CONFIG.AddToParser(parser)
   HPTUNING_MAX_TRIAL_COUNT.AddToParser(parser)
   HPTUNING_PARALLEL_TRIAL_COUNT.AddToParser(parser)
+  _TRAINING_SERVICE_ACCOUNT.AddToParser(parser)
+  _NETWORK.AddToParser(parser)
   AddKmsKeyResourceArg(parser, 'hyperparameter tuning job')
 
   arg_utils.ChoiceEnumMapper(

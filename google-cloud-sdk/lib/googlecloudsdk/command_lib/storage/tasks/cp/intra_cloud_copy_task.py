@@ -23,9 +23,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+import threading
+
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.command_lib.storage.tasks import task_status
 
 
 class IntraCloudCopyTask(task.Task):
@@ -55,8 +59,20 @@ class IntraCloudCopyTask(task.Task):
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
 
-  def execute(self, callback=None):
+  def execute(self, task_status_queue=None):
+    progress_callback = task_status.FilesAndBytesProgressCallback(
+        status_queue=task_status_queue,
+        size=self._source_resource.size,
+        source_url=self._source_resource.storage_url,
+        destination_url=self._destination_resource.storage_url,
+        operation_name=task_status.OperationName.INTRA_CLOUD_COPYING,
+        process_id=os.getpid(),
+        thread_id=threading.get_ident(),
+    )
+
     # TODO(b/161900052): Support all of copy_object's parameters
     provider = self._source_resource.storage_url.scheme
-    api_factory.get_api(provider).copy_object(self._source_resource,
-                                              self._destination_resource)
+    api_factory.get_api(provider).copy_object(
+        self._source_resource,
+        self._destination_resource,
+        progress_callback=progress_callback)

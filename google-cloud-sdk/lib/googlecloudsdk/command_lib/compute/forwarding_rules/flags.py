@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Flags and helpers for the compute forwarding-rules commands."""
 
 from __future__ import absolute_import
@@ -26,7 +25,6 @@ from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute.addresses import flags as addresses_flags
 from googlecloudsdk.command_lib.util import completers
-
 
 FORWARDING_RULES_OVERVIEW = """
 A forwarding rule directs traffic that matches a destination IP address
@@ -60,7 +58,6 @@ target HTTPS proxies. For more information, refer to
 https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts.
 """
 
-
 FORWARDING_RULES_OVERVIEW_ALPHA = """\
 A forwarding rule directs traffic that matches a destination IP address
 (and possibly a TCP or UDP port) to a forwarding target (load balancer,
@@ -93,7 +90,6 @@ target HTTPS and target gRPC proxies. For more information, refer to
 https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts.
 """
 
-
 # This is the list of valid values for the --target-bundle option, used
 # for Private Service Connect for Google APIs.
 PSC_GOOGLE_APIS_BUNDLES = ['all-apis', 'vpc-sc']
@@ -122,8 +118,9 @@ class ForwardingRulesCompleter(completers.MultiResourceCompleter):
 
   def __init__(self, **kwargs):
     super(ForwardingRulesCompleter, self).__init__(
-        completers=[ForwardingRulesGlobalCompleter,
-                    ForwardingRulesZonalCompleter],
+        completers=[
+            ForwardingRulesGlobalCompleter, ForwardingRulesZonalCompleter
+        ],
         **kwargs)
 
 
@@ -156,8 +153,7 @@ def ForwardingRuleArgumentForRoute(required=True):
       plural=False,
       required=required,
       regional_collection='compute.forwardingRules',
-      short_help=
-      'Target forwarding rule that receives forwarded traffic.',
+      short_help='Target forwarding rule that receives forwarded traffic.',
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
@@ -406,8 +402,7 @@ def AddressArg(include_l7_internal_load_balancing):
 def AddUpdateArgs(parser,
                   include_l7_internal_load_balancing=False,
                   include_psc_google_apis=False,
-                  include_target_service_attachment=False,
-                  support_tcp_in_td=False):
+                  include_target_service_attachment=False):
   """Adds common flags for mutating forwarding rule targets."""
   target = parser.add_mutually_exclusive_group(required=True)
 
@@ -451,21 +446,17 @@ def AddUpdateArgs(parser,
   AddLoadBalancingScheme(
       parser,
       include_l7_ilb=include_l7_internal_load_balancing,
-      support_tcp_in_td=support_tcp_in_td,
       include_psc_google_apis=include_psc_google_apis,
       include_target_service_attachment=include_target_service_attachment)
 
 
 def AddLoadBalancingScheme(parser,
                            include_l7_ilb=False,
-                           support_tcp_in_td=False,
                            include_psc_google_apis=False,
                            include_target_service_attachment=False):
   """Adds the load-balancing-scheme flag."""
   td_proxies = ('--target-http-proxy, --target-https-proxy, '
-                '--target-grpc-proxy, --target-tcp-proxy' if support_tcp_in_td
-                else '--target-http-proxy, --target-https-proxy, '
-                '--target-grpc-proxy')
+                '--target-grpc-proxy, --target-tcp-proxy')
   load_balancing_choices = {
       'EXTERNAL':
           'External load balancing or forwarding, used with one of '
@@ -475,7 +466,7 @@ def AddLoadBalancingScheme(parser,
       'INTERNAL':
           'Internal load balancing or forwarding, used with --backend-service.',
       'INTERNAL_SELF_MANAGED':
-          """Traffic director load balancing or forwarding, used with
+          """Traffic Director load balancing or forwarding, used with
           {0}.""".format(td_proxies)
   }
 

@@ -1498,13 +1498,11 @@ def VerifyManagedFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_GKE]))
 
-  if _HasSecretsChanges(args):
+  if _HasSecretsChanges(args) and release_track != base.ReleaseTrack.ALPHA:
     raise serverless_exceptions.ConfigurationError(
-        error_msg.format(
-            flag='--[update|set|remove|clear]-secrets',
-            platform=platforms.PLATFORM_GKE,
-            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
-                platforms.PLATFORM_GKE]))
+        'The `--[update|set|remove|clear]-secrets` flags are only supported '
+        'in the alpha release track on the fully managed version of Cloud '
+        'Run. Use `gcloud alpha` to enable these flags.')
 
   if _HasConfigMapsChanges(args):
     raise serverless_exceptions.ConfigurationError(
