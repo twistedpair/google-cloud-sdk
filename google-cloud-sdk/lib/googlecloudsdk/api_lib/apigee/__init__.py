@@ -245,7 +245,8 @@ class ProductsClient(base.PagedListClient):
 
 class ArchivesClient(base.BaseClient):
   """Client for the Apigee archiveDeployments API."""
-  _entity_path = ["organization", "environment", "archiveDeployment"]
+  # These are the entity names used internally by gcloud.
+  _entity_path = ["organization", "environment", "archive_deployment"]
 
   @classmethod
   def List(cls, identifiers):

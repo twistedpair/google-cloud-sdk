@@ -44,7 +44,6 @@ class CredentialProvidersManager(object):
   def __enter__(self):
     """Registers sources for credentials and project for use by commands."""
     self._credential_providers = self._credential_providers or [
-        store.DevShellCredentialProvider(),
         store.GceCredentialProvider(),
     ]
     for provider in self._credential_providers:

@@ -317,7 +317,7 @@
       "type": "object",
       "properties": {
         "pageSize": {
-          "description": "Optional. The maximum number of folders to return in the response.",
+          "description": "Optional. The maximum number of folders to return in the response. If unspecified, server picks an appropriate default.",
           "type": "integer",
           "format": "int32"
         },
@@ -639,7 +639,7 @@
       "type": "object",
       "properties": {
         "pageSize": {
-          "description": "Optional. The maximum number of Organizations to return in the response.",
+          "description": "Optional. The maximum number of Organizations to return in the response. If unspecified, server picks an appropriate default.",
           "type": "integer",
           "format": "int32"
         },
@@ -1347,7 +1347,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-platform.read-only"
           ],
-          "description": "Retrieve a Lien by `name`. Callers of this method will require permission on the `parent` resource. For example, a Lien with a `parent` of `projects\/1234` requires permission requires permission `resourcemanager.projects.get` or `resourcemanager.projects.updateLiens`."
+          "description": "Retrieve a Lien by `name`. Callers of this method will require permission on the `parent` resource. For example, a Lien with a `parent` of `projects\/1234` requires permission `resourcemanager.projects.get`"
         },
         "create": {
           "id": "cloudresourcemanager.liens.create",
@@ -1468,7 +1468,7 @@
               "type": "string"
             },
             "pageSize": {
-              "description": "Optional. The maximum number of Folders to return in the response.",
+              "description": "Optional. The maximum number of Folders to return in the response. If unspecified, server picks an appropriate default.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -1522,11 +1522,6 @@
           "flatPath": "v3/folders",
           "httpMethod": "POST",
           "parameters": {
-            "parent": {
-              "description": "Required. The resource name of the new Folder's parent. Must be of the form `folders\/{folder_id}` or `organizations\/{org_id}`.",
-              "location": "query",
-              "type": "string"
-            },
             "validateOnly": {
               "description": "Optional. True to perform validations necessary for creating the resource, but not actually perform the action.",
               "location": "query",
@@ -2057,7 +2052,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Updates the attributes of the Project identified by the specified `name` (for example, `projects\/415104041262`). At present this is only useful for updating the display_name and annotatiions. The caller must have modify permissions for this Project."
+          "description": "Updates the attributes of the Project identified by the specified `name` (for example, `projects\/415104041262`). At present this is only useful for updating the display_name and labels. The caller must have modify permissions for this Project."
         },
         "move": {
           "id": "cloudresourcemanager.projects.move",

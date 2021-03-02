@@ -706,6 +706,124 @@ class Hub(_messages.Message):
   updateTime = _messages.StringField(8)
 
 
+class InternalRange(_messages.Message):
+  r"""The InternalRange resource for IPAM operations within a VPC network.
+  Used to represent a private address range along with behavioral
+  characterstics of that range (it's usage and peering behavior). Networking
+  resources can link to this range if they are created as belonging to it.
+  Next id: 10
+
+  Enums:
+    PeeringValueValuesEnum: The type of peering set for this InternalRange.
+    UsageValueValuesEnum: The type of usage set for this InternalRange.
+
+  Messages:
+    LabelsValue: User-defined labels.
+
+  Fields:
+    createTime: Time when the InternalRange was created.
+    description: A description of this resource.
+    ipCidrRange: IP range that this InternalRange defines.
+    labels: User-defined labels.
+    name: Immutable. The name of a InternalRange. Format:
+      projects/{project}/locations/{location}/internalRanges/{internal_range}
+      See: https://google.aip.dev/122#fields-representing-resource-names
+    network: The URL or resource ID of the network in which to reserve the
+      Internal Range. The network cannot be deleted if there are any reserved
+      Internal Ranges referring to it. Legacy network is not supported. This
+      can only be specified for a global internal address. Example: - URL:
+      /compute/v1/projects/{project}/global/networks/{resourceId} - ID:
+      network123
+    peering: The type of peering set for this InternalRange.
+    updateTime: Time when the InternalRange was updated.
+    usage: The type of usage set for this InternalRange.
+  """
+
+  class PeeringValueValuesEnum(_messages.Enum):
+    r"""The type of peering set for this InternalRange.
+
+    Values:
+      PEERING_UNSPECIFIED: If Peering is left unspecified in
+        CreateInternalRange or UpdateInternalRange, it will be defaulted to
+        FOR_SELF.
+      FOR_SELF: This is the default behavior and represents the case that this
+        InternalRange is intended to be used in the VPC on which it is created
+        and is accessible from it's peers. This implies that peers or peer-of-
+        peer's cannot use this range.
+      FOR_PEER: This behavior can be set when the Internal Range is being
+        reserved for usage by the peers. This means that no resource within
+        the VPC in which it is being created can use this to associate with a
+        GCP resource, but one of the peer's can. This represents "donating" a
+        range for peers to use.
+      NOT_SHARED: This behavior can be set when the Internal Range is being
+        reserved for usage by the VPC on which it is created but not shared
+        with the peers. In a sense it is local to the VPC. This can be used to
+        create Internal Ranges for various purposes like
+        HTTP_INTERNAL_LOAD_BALANCER or for interconnect routes that are not
+        shared with peers. This also implies that peer's cannot use this range
+        in a way that is visible to this VPC, but can re-use this range as
+        long as it is NOT_SHARED from the peer VPC too.
+    """
+    PEERING_UNSPECIFIED = 0
+    FOR_SELF = 1
+    FOR_PEER = 2
+    NOT_SHARED = 3
+
+  class UsageValueValuesEnum(_messages.Enum):
+    r"""The type of usage set for this InternalRange.
+
+    Values:
+      USAGE_UNSPECIFIED: Unspecified usage is allowed in calls which identify
+        the resource by other fields and do not need Usage set to complete.
+        These are i.e.: GetInternalRange and DeleteInternalRange. Usage needs
+        to be specified explicitly in CreateInternalRange or
+        UpdateInternalRange calls.
+      FOR_VPC: A GCP resource can use the reserved CIDR block by associating
+        it with the Internal Range resource if usage is set to FOR_VPC.
+      EXTERNAL_TO_VPC: Ranges created with EXTERNAL_TO_VPC cannot be
+        associated with GCP resources and are meant to block out address
+        ranges for various use cases, like for example, usage on-prem, with
+        dynamic route announcements via interconnect.
+    """
+    USAGE_UNSPECIFIED = 0
+    FOR_VPC = 1
+    EXTERNAL_TO_VPC = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User-defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  ipCidrRange = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  peering = _messages.EnumField('PeeringValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
+  usage = _messages.EnumField('UsageValueValuesEnum', 9)
+
+
 class LinearBuckets(_messages.Message):
   r"""Describing buckets with constant width.
 
@@ -742,6 +860,22 @@ class ListHubsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListInternalRangesResponse(_messages.Message):
+  r"""Response for InternalRange.ListInternalRanges
+
+  Fields:
+    internalRanges: InternalRanges to be returned.
+    nextPageToken: The next pagination token in the List response. It should
+      be used as page_token for the following request. An empty value means no
+      more result.
+    unreachable: Locations that could not be reached.
+  """
+
+  internalRanges = _messages.MessageField('InternalRange', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -768,22 +902,6 @@ class ListPolicyBasedRoutesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   policyBasedRoutes = _messages.MessageField('PolicyBasedRoute', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListPrivateRangesResponse(_messages.Message):
-  r"""Response for PrivateRange.ListPrivateRanges
-
-  Fields:
-    nextPageToken: The next pagination token in the List response. It should
-      be used as page_token for the following request. An empty value means no
-      more result.
-    privateRanges: PrivateRanges to be returned.
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  privateRanges = _messages.MessageField('PrivateRange', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -1366,6 +1484,174 @@ class NetworkconnectivityProjectsLocationsGlobalHubsTestIamPermissionsRequest(_m
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkconnectivityProjectsLocationsInternalRangesCreateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsInternalRangesCreateRequest
+  object.
+
+  Fields:
+    internalRange: A InternalRange resource to be passed as the request body.
+    internalRangeId: Optional. Resource ID (i.e. 'foo' in
+      '[...]/projects/p/locations/l/internalRanges/foo') See
+      https://google.aip.dev/122#resource-id-segments Unique per location.
+    parent: Required. The parent resource's name of the InternalRange.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  internalRange = _messages.MessageField('InternalRange', 1)
+  internalRangeId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsInternalRangesDeleteRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsInternalRangesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the InternalRange to delete.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkconnectivityProjectsLocationsInternalRangesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsInternalRangesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsInternalRangesGetRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsInternalRangesGetRequest object.
+
+  Fields:
+    name: Required. Name of the InternalRange to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsInternalRangesListRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsInternalRangesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters the results listed in the
+      response.
+    orderBy: Sort the results by a certain order.
+    pageSize: The maximum number of results per page that should be returned.
+    pageToken: The page token.
+    parent: Required. The parent resource's name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsInternalRangesPatchRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsInternalRangesPatchRequest object.
+
+  Fields:
+    internalRange: A InternalRange resource to be passed as the request body.
+    name: Immutable. The name of a InternalRange. Format:
+      projects/{project}/locations/{location}/internalRanges/{internal_range}
+      See: https://google.aip.dev/122#fields-representing-resource-names
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the InternalRange resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  internalRange = _messages.MessageField('InternalRange', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsInternalRangesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsInternalRangesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkconnectivityProjectsLocationsInternalRangesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsInternalRangesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class NetworkconnectivityProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsListRequest object.
 
@@ -1609,172 +1895,6 @@ class NetworkconnectivityProjectsLocationsPolicyBasedRoutesTestIamPermissionsReq
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
-class NetworkconnectivityProjectsLocationsPrivateRangesCreateRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsPrivateRangesCreateRequest object.
-
-  Fields:
-    parent: Required. The parent resource's name of the PrivateRange.
-    privateRange: A PrivateRange resource to be passed as the request body.
-    privateRangeId: Optional. Resource ID (i.e. 'foo' in
-      '[...]/projects/p/locations/l/privateRanges/foo') See
-      https://google.aip.dev/122#resource-id-segments Unique per location.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  parent = _messages.StringField(1, required=True)
-  privateRange = _messages.MessageField('PrivateRange', 2)
-  privateRangeId = _messages.StringField(3)
-  requestId = _messages.StringField(4)
-
-
-class NetworkconnectivityProjectsLocationsPrivateRangesDeleteRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsPrivateRangesDeleteRequest object.
-
-  Fields:
-    name: Required. The name of the PrivateRange to delete.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class NetworkconnectivityProjectsLocationsPrivateRangesGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsPrivateRangesGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkconnectivityProjectsLocationsPrivateRangesGetRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsPrivateRangesGetRequest object.
-
-  Fields:
-    name: Required. Name of the PrivateRange to get.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworkconnectivityProjectsLocationsPrivateRangesListRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsPrivateRangesListRequest object.
-
-  Fields:
-    filter: A filter expression that filters the results listed in the
-      response.
-    orderBy: Sort the results by a certain order.
-    pageSize: The maximum number of results per page that should be returned.
-    pageToken: The page token.
-    parent: Required. The parent resource's name.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class NetworkconnectivityProjectsLocationsPrivateRangesPatchRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsPrivateRangesPatchRequest object.
-
-  Fields:
-    name: Immutable. The name of a PrivateRange. Format:
-      projects/{project}/locations/{location}/privateRanges/{private_range}
-      See: https://google.aip.dev/122#fields-representing-resource-names
-    privateRange: A PrivateRange resource to be passed as the request body.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the PrivateRange resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
-  """
-
-  name = _messages.StringField(1, required=True)
-  privateRange = _messages.MessageField('PrivateRange', 2)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-
-
-class NetworkconnectivityProjectsLocationsPrivateRangesSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsPrivateRangesSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkconnectivityProjectsLocationsPrivateRangesTestIamPermissionsRequest(_messages.Message):
-  r"""A
-  NetworkconnectivityProjectsLocationsPrivateRangesTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
 class NetworkconnectivityProjectsLocationsSpokesCreateRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsSpokesCreateRequest object.
 
@@ -1957,8 +2077,7 @@ class Operation(_messages.Message):
       Engine.
     UserLabelsValue: Private Preview. This feature is only available for
       approved services. User defined labels for the resource that this
-      operation is associated with. Only a combination of 1000 user labels per
-      consumer project are allowed.
+      operation is associated with.
 
   Fields:
     consumerId: Identity of the consumer who is using the service. This field
@@ -2015,8 +2134,7 @@ class Operation(_messages.Message):
       produce or the consumer project.
     userLabels: Private Preview. This feature is only available for approved
       services. User defined labels for the resource that this operation is
-      associated with. Only a combination of 1000 user labels per consumer
-      project are allowed.
+      associated with.
   """
 
   class ImportanceValueValuesEnum(_messages.Enum):
@@ -2102,8 +2220,7 @@ class Operation(_messages.Message):
   class UserLabelsValue(_messages.Message):
     r"""Private Preview. This feature is only available for approved services.
     User defined labels for the resource that this operation is associated
-    with. Only a combination of 1000 user labels per consumer project are
-    allowed.
+    with.
 
     Messages:
       AdditionalProperty: An additional property for a UserLabelsValue object.
@@ -2329,123 +2446,6 @@ class PolicyBasedRoute(_messages.Message):
   tags = _messages.StringField(14, repeated=True)
   updateTime = _messages.StringField(15)
   warnings = _messages.MessageField('Warnings', 16, repeated=True)
-
-
-class PrivateRange(_messages.Message):
-  r"""The PrivateRange resource for IPAM operations within a VPC network. Used
-  to represent a private address range along with behavioral characterstics of
-  that range (it's usage and peering behavior). Networking resources can link
-  to this range if they are created as belonging to it. Next id: 10
-
-  Enums:
-    PeeringValueValuesEnum: The type of peering set for this PrivateRange.
-    UsageValueValuesEnum: The type of usage set for this PrivateRange.
-
-  Messages:
-    LabelsValue: User-defined labels.
-
-  Fields:
-    createTime: Time when the PrivateRange was created.
-    description: A description of this resource.
-    ipCidrRange: IP range that this PrivateRange defines.
-    labels: User-defined labels.
-    name: Immutable. The name of a PrivateRange. Format:
-      projects/{project}/locations/{location}/privateRanges/{private_range}
-      See: https://google.aip.dev/122#fields-representing-resource-names
-    network: The URL or resource ID of the network in which to reserve the
-      Private Range. The network cannot be deleted if there are any reserved
-      Private Ranges referring to it. Legacy network is not supported. This
-      can only be specified for a global internal address. Example: - URL:
-      /compute/v1/projects/{project}/global/networks/{resourceId} - ID:
-      network123
-    peering: The type of peering set for this PrivateRange.
-    updateTime: Time when the PrivateRange was updated.
-    usage: The type of usage set for this PrivateRange.
-  """
-
-  class PeeringValueValuesEnum(_messages.Enum):
-    r"""The type of peering set for this PrivateRange.
-
-    Values:
-      PEERING_UNSPECIFIED: If Peering is left unspecified in
-        CreatePrivateRange or UpdatePrivateRange, it will be defaulted to
-        FOR_SELF.
-      FOR_SELF: This is the default behavior and represents the case that this
-        PrivateRange is intended to be used in the VPC on which it is created
-        and is accessible from it's peers. This implies that peers or peer-of-
-        peer's cannot use this range.
-      FOR_PEER: This behavior can be set when the Private Range is being
-        reserved for usage by the peers. This means that no resource within
-        the VPC in which it is being created can use this to associate with a
-        GCP resource, but one of the peer's can. This represents "donating" a
-        range for peers to use.
-      NOT_SHARED: This behavior can be set when the Private Range is being
-        reserved for usage by the VPC on which it is created but not shared
-        with the peers. In a sense it is local to the VPC. This can be used to
-        create Private Ranges for various purposes like
-        HTTP_INTERNAL_LOAD_BALANCER or for interconnect routes that are not
-        shared with peers. This also implies that peer's cannot use this range
-        in a way that is visible to this VPC, but can re-use this range as
-        long as it is NOT_SHARED from the peer VPC too.
-    """
-    PEERING_UNSPECIFIED = 0
-    FOR_SELF = 1
-    FOR_PEER = 2
-    NOT_SHARED = 3
-
-  class UsageValueValuesEnum(_messages.Enum):
-    r"""The type of usage set for this PrivateRange.
-
-    Values:
-      USAGE_UNSPECIFIED: Unspecified usage is allowed in calls which identify
-        the resource by other fields and do not need Usage set to complete.
-        These are i.e.: GetPrivateRange and DeletePrivateRange. Usage needs to
-        be specified explicitly in CreatePrivateRange or UpdatePrivateRange
-        calls.
-      FOR_VPC: A GCP resource can use the reserved CIDR block by associating
-        it with the Private Range resource if usage is set to FOR_VPC.
-      EXTERNAL_TO_VPC: Ranges created with EXTERNAL_TO_VPC cannot be
-        associated with GCP resources and are meant to block out address
-        ranges for various use cases, like for example, usage on-prem, with
-        dynamic route announcements via interconnect.
-    """
-    USAGE_UNSPECIFIED = 0
-    FOR_VPC = 1
-    EXTERNAL_TO_VPC = 2
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""User-defined labels.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  ipCidrRange = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  network = _messages.StringField(6)
-  peering = _messages.EnumField('PeeringValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
-  usage = _messages.EnumField('UsageValueValuesEnum', 9)
 
 
 class QuotaProperties(_messages.Message):

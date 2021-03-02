@@ -533,9 +533,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^.*$",
               "location": "path",
               "required": true,
-              "pattern": "^.*$",
               "type": "string"
             }
           },
@@ -561,9 +561,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^.*$",
               "location": "path",
               "required": true,
-              "pattern": "^.*$",
               "type": "string"
             }
           },
@@ -589,9 +589,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^.*$",
               "location": "path",
               "required": true,
-              "pattern": "^.*$",
               "type": "string"
             }
           },
@@ -617,9 +617,9 @@
           "parameters": {
             "name": {
               "description": "Required. The resource name for which to retrieve the settings. Authorization: Requires the `getSettings` permission for the associated resource.",
+              "pattern": "^.*$",
               "location": "path",
               "required": true,
-              "pattern": "^.*$",
               "type": "string"
             }
           },
@@ -642,9 +642,9 @@
           "parameters": {
             "name": {
               "description": "Required. The resource name of the IAP protected resource.",
+              "pattern": "^.*$",
               "location": "path",
               "required": true,
-              "pattern": "^.*$",
               "type": "string"
             },
             "updateMask": {
@@ -682,9 +682,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. GCP Project number\/id. In the following format: projects\/{project_number\/id}.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -707,9 +707,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. GCP Project number\/id under which the brand is to be created. In the following format: projects\/{project_number\/id}.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -735,9 +735,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Name of the brand to be fetched. In the following format: projects\/{project_number\/id}\/brands\/{brand}.",
+                  "pattern": "^projects\/[^\/]+\/brands\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/brands\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -765,9 +765,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Path to create the client in. In the following format: projects\/{project_number\/id}\/brands\/{brand}. The project must belong to a G Suite account.",
+                      "pattern": "^projects\/[^\/]+\/brands\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/brands\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -793,9 +793,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Full brand path. In the following format: projects\/{project_number\/id}\/brands\/{brand}.",
+                      "pattern": "^projects\/[^\/]+\/brands\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/brands\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -829,9 +829,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the Identity Aware Proxy client to be fetched. In the following format: projects\/{project_number\/id}\/brands\/{brand}\/identityAwareProxyClients\/{client_id}.",
+                      "pattern": "^projects\/[^\/]+\/brands\/[^\/]+\/identityAwareProxyClients\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/brands\/[^\/]+\/identityAwareProxyClients\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -854,9 +854,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the Identity Aware Proxy client to that will have its secret reset. In the following format: projects\/{project_number\/id}\/brands\/{brand}\/identityAwareProxyClients\/{client_id}.",
+                      "pattern": "^projects\/[^\/]+\/brands\/[^\/]+\/identityAwareProxyClients\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/brands\/[^\/]+\/identityAwareProxyClients\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -882,9 +882,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the Identity Aware Proxy client to be deleted. In the following format: projects\/{project_number\/id}\/brands\/{brand}\/identityAwareProxyClients\/{client_id}.",
+                      "pattern": "^projects\/[^\/]+\/brands\/[^\/]+\/identityAwareProxyClients\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/brands\/[^\/]+\/identityAwareProxyClients\/[^\/]+$",
                       "type": "string"
                     }
                   },

@@ -122,10 +122,10 @@ def AddKeepaliveIntervalArg(parser):
   parser.add_argument(
       '--keepalive-interval',
       type=arg_parsers.Duration(
-          default_unit='s', lower_bound='1s', upper_bound='120s'),
+          default_unit='s', lower_bound='20s', upper_bound='60s'),
       hidden=True,
       help='The interval between BGP keepalive messages that are sent to the '
-      'peer. If set, this value must be between 1 and 120 seconds. The default '
+      'peer. If set, this value must be between 20 and 60 seconds. The default '
       'is 20 seconds. See $ gcloud topic datetimes for information on duration '
       'formats.\n\n'
       'BGP systems exchange keepalive messages to determine whether a link or '

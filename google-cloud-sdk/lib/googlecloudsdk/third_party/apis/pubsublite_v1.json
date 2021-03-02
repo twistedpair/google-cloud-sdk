@@ -431,9 +431,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The parent location in which to create the topic. Structured like `projects\/{project_number}\/locations\/{location}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                           "type": "string"
                         },
                         "topicId": {
@@ -464,9 +464,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the topic whose configuration to return.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/topics\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/topics\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -489,9 +489,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The topic whose partition information to return.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/topics\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/topics\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -514,9 +514,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The parent whose topics are to be listed. Structured like `projects\/{project_number}\/locations\/{location}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -550,9 +550,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the topic. Structured like: projects\/{project_number}\/locations\/{location}\/topics\/{topic_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/topics\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/topics\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -584,9 +584,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the topic to delete.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/topics\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/topics\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -614,9 +614,9 @@
                           "parameters": {
                             "name": {
                               "description": "Required. The name of the topic whose subscriptions to list.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/topics\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/topics\/[^\/]+$",
                               "type": "string"
                             },
                             "pageSize": {
@@ -656,9 +656,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The parent location in which to create the subscription. Structured like `projects\/{project_number}\/locations\/{location}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                           "type": "string"
                         },
                         "subscriptionId": {
@@ -689,9 +689,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the subscription whose configuration to return.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/subscriptions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/subscriptions\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -714,9 +714,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The parent whose subscriptions are to be listed. Structured like `projects\/{project_number}\/locations\/{location}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -750,9 +750,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the subscription. Structured like: projects\/{project_number}\/locations\/{location}\/subscriptions\/{subscription_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/subscriptions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/subscriptions\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -784,9 +784,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the subscription to delete.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/subscriptions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/subscriptions\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -827,9 +827,9 @@
                           "parameters": {
                             "parent": {
                               "description": "Required. The subscription for which to retrieve cursors. Structured like `projects\/{project_number}\/locations\/{location}\/subscriptions\/{subscription_id}`.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/subscriptions\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/subscriptions\/[^\/]+$",
                               "type": "string"
                             },
                             "pageSize": {
@@ -881,9 +881,9 @@
                       "parameters": {
                         "topic": {
                           "description": "Required. The topic for which we should compute message stats.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/topics\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/topics\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -909,9 +909,9 @@
                       "parameters": {
                         "topic": {
                           "description": "Required. The topic for which we should compute the head cursor.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/topics\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/topics\/[^\/]+$",
                           "type": "string"
                         }
                       },

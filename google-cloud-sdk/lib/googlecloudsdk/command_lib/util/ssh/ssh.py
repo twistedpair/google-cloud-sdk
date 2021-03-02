@@ -817,11 +817,22 @@ def ParseAndSubstituteSSHFlags(args, remote, instance_address,
   if args.ssh_flag:
     for flag in args.ssh_flag:
       for flag_part in flag.split():  # We want grouping here
-        dereferenced_flag = (
-            flag_part.replace('%USER%', remote.user)
-            .replace('%INSTANCE%', instance_address)
-            .replace('%INTERNAL%', internal_address))
-        extra_flags.append(dereferenced_flag)
+
+        deref_flag = flag_part
+
+        # Call replace only when it is necessary. It will lower the chance
+        # replace crashes because the replacing value is None.
+
+        if '%USER%' in deref_flag:
+          deref_flag = deref_flag.replace('%USER%', remote.user)
+
+        if '%INSTANCE%' in deref_flag:
+          deref_flag = deref_flag.replace('%INSTANCE%', instance_address)
+
+        if '%INTERNAL%' in deref_flag:
+          deref_flag = deref_flag.replace('%INTERNAL%', internal_address)
+
+        extra_flags.append(deref_flag)
   return extra_flags
 
 

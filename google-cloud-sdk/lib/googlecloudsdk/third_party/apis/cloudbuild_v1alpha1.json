@@ -1291,9 +1291,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1316,9 +1316,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1350,9 +1350,9 @@
               "parameters": {
                 "parent": {
                   "description": "ID of the parent project.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1378,9 +1378,9 @@
               "parameters": {
                 "name": {
                   "description": "The field will contain name of the resource requested, for example: \"projects\/project-1\/workerPools\/workerpool-name\"",
+                  "pattern": "^projects\/[^\/]+\/workerPools\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/workerPools\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1403,9 +1403,9 @@
               "parameters": {
                 "name": {
                   "description": "The field will contain name of the resource requested, for example: \"projects\/project-1\/workerPools\/workerpool-name\"",
+                  "pattern": "^projects\/[^\/]+\/workerPools\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/workerPools\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1428,9 +1428,9 @@
               "parameters": {
                 "name": {
                   "description": "The field will contain name of the resource requested, for example: \"projects\/project-1\/workerPools\/workerpool-name\"",
+                  "pattern": "^projects\/[^\/]+\/workerPools\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/workerPools\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1456,9 +1456,9 @@
               "parameters": {
                 "parent": {
                   "description": "ID of the parent project.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },

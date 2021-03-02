@@ -24,7 +24,7 @@ class Change(_messages.Message):
   Enums:
     StatusValueValuesEnum: Status of the operation (output only). A status of
       "done" means that the request to update the authoritative servers has
-      been sent but the servers might not be updated yet.
+      been sent, but the servers might not be updated yet.
 
   Fields:
     additions: Which ResourceRecordSets to add?
@@ -37,13 +37,13 @@ class Change(_messages.Message):
     startTime: The time that this operation was started by the server (output
       only). This is in RFC3339 text format.
     status: Status of the operation (output only). A status of "done" means
-      that the request to update the authoritative servers has been sent but
+      that the request to update the authoritative servers has been sent, but
       the servers might not be updated yet.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""Status of the operation (output only). A status of "done" means that
-    the request to update the authoritative servers has been sent but the
+    the request to update the authoritative servers has been sent, but the
     servers might not be updated yet.
 
     Values:
@@ -76,9 +76,9 @@ class ChangesListResponse(_messages.Message):
       pagination token. In this way you can retrieve the complete contents of
       even very large collections one page at a time. However, if the contents
       of the collection change between the first and last paginated list
-      request, the set of all elements returned will be an inconsistent view
-      of the collection. There is no way to retrieve a "snapshot" of
-      collections larger than the maximum page size.
+      request, the set of all elements returned are an inconsistent view of
+      the collection. There is no way to retrieve a "snapshot" of collections
+      larger than the maximum page size.
   """
 
   changes = _messages.MessageField('Change', 1, repeated=True)
@@ -127,7 +127,7 @@ class DnsActivePeeringZonesListRequest(_messages.Message):
 
   Fields:
     maxResults: Optional. Maximum number of results to be returned. If
-      unspecified, the server will decide how many results to return.
+      unspecified, the server decides how many results to return.
     pageToken: Optional. A tag returned by a previous list request that was
       truncated. Use this parameter to continue a previous list request.
     project: Identifies the producer project addressed by this request.
@@ -191,7 +191,7 @@ class DnsChangesListRequest(_messages.Message):
     managedZone: Identifies the managed zone addressed by this request. Can be
       the managed zone name or ID.
     maxResults: Optional. Maximum number of results to be returned. If
-      unspecified, the server will decide how many results to return.
+      unspecified, the server decides how many results to return.
     pageToken: Optional. A tag returned by a previous list request that was
       truncated. Use this parameter to continue a previous list request.
     project: Identifies the project addressed by this request.
@@ -224,7 +224,7 @@ class DnsDnsKeysGetRequest(_messages.Message):
       resources in the Operations collection.
     digestType: An optional comma-separated list of digest types to compute
       and display for key signing keys. If omitted, the recommended digest
-      type will be computed and displayed.
+      type is computed and displayed.
     dnsKeyId: The identifier of the requested DnsKey.
     managedZone: Identifies the managed zone addressed by this request. Can be
       the managed zone name or ID.
@@ -244,11 +244,11 @@ class DnsDnsKeysListRequest(_messages.Message):
   Fields:
     digestType: An optional comma-separated list of digest types to compute
       and display for key signing keys. If omitted, the recommended digest
-      type will be computed and displayed.
+      type is computed and displayed.
     managedZone: Identifies the managed zone addressed by this request. Can be
       the managed zone name or ID.
     maxResults: Optional. Maximum number of results to be returned. If
-      unspecified, the server will decide how many results to return.
+      unspecified, the server decides how many results to return.
     pageToken: Optional. A tag returned by a previous list request that was
       truncated. Use this parameter to continue a previous list request.
     project: Identifies the project addressed by this request.
@@ -268,11 +268,10 @@ class DnsKey(_messages.Message):
     AlgorithmValueValuesEnum: String mnemonic specifying the DNSSEC algorithm
       of this key. Immutable after creation time.
     TypeValueValuesEnum: One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of type
-      KEY_SIGNING have the Secure Entry Point flag set and, when active, will
-      be used to sign only resource record sets of type DNSKEY. Otherwise, the
-      Secure Entry Point flag will be cleared and this key will be used to
-      sign only resource record sets of other types. Immutable after creation
-      time.
+      KEY_SIGNING have the Secure Entry Point flag set and, when active, are
+      used to sign only resource record sets of type DNSKEY. Otherwise, the
+      Secure Entry Point flag is cleared, and this key is used to sign only
+      resource record sets of other types. Immutable after creation time.
 
   Fields:
     algorithm: String mnemonic specifying the DNSSEC algorithm of this key.
@@ -287,10 +286,10 @@ class DnsKey(_messages.Message):
       points at this DNS key. Output only.
     id: Unique identifier for the resource; defined by the server (output
       only).
-    isActive: Active keys will be used to sign subsequent changes to the
-      ManagedZone. Inactive keys will still be present as DNSKEY Resource
-      Records for the use of resolvers validating existing signatures.
-    keyLength: Length of the key in bits. Specified at creation time then
+    isActive: Active keys are used to sign subsequent changes to the
+      ManagedZone. Inactive keys are still present as DNSKEY Resource Records
+      for the use of resolvers validating existing signatures.
+    keyLength: Length of the key in bits. Specified at creation time, and then
       immutable.
     keyTag: The key tag is a non-cryptographic hash of the a DNSKEY resource
       record associated with this DnsKey. The key tag can be used to identify
@@ -302,10 +301,10 @@ class DnsKey(_messages.Message):
     kind: A string attribute.
     publicKey: Base64 encoded public half of this key. Output only.
     type: One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of type KEY_SIGNING
-      have the Secure Entry Point flag set and, when active, will be used to
-      sign only resource record sets of type DNSKEY. Otherwise, the Secure
-      Entry Point flag will be cleared and this key will be used to sign only
-      resource record sets of other types. Immutable after creation time.
+      have the Secure Entry Point flag set and, when active, are used to sign
+      only resource record sets of type DNSKEY. Otherwise, the Secure Entry
+      Point flag is cleared, and this key is used to sign only resource record
+      sets of other types. Immutable after creation time.
   """
 
   class AlgorithmValueValuesEnum(_messages.Enum):
@@ -327,10 +326,10 @@ class DnsKey(_messages.Message):
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of type KEY_SIGNING have
-    the Secure Entry Point flag set and, when active, will be used to sign
-    only resource record sets of type DNSKEY. Otherwise, the Secure Entry
-    Point flag will be cleared and this key will be used to sign only resource
-    record sets of other types. Immutable after creation time.
+    the Secure Entry Point flag set and, when active, are used to sign only
+    resource record sets of type DNSKEY. Otherwise, the Secure Entry Point
+    flag is cleared, and this key is used to sign only resource record sets of
+    other types. Immutable after creation time.
 
     Values:
       keySigning: <no description>
@@ -390,19 +389,19 @@ class DnsKeySpec(_messages.Message):
       of this key.
     KeyTypeValueValuesEnum: Specifies whether this is a key signing key (KSK)
       or a zone signing key (ZSK). Key signing keys have the Secure Entry
-      Point flag set and, when active, will only be used to sign resource
-      record sets of type DNSKEY. Zone signing keys do not have the Secure
-      Entry Point flag set and will be used to sign all other types of
-      resource record sets.
+      Point flag set and, when active, are only used to sign resource record
+      sets of type DNSKEY. Zone signing keys do not have the Secure Entry
+      Point flag set and are used to sign all other types of resource record
+      sets.
 
   Fields:
     algorithm: String mnemonic specifying the DNSSEC algorithm of this key.
     keyLength: Length of the keys in bits.
     keyType: Specifies whether this is a key signing key (KSK) or a zone
       signing key (ZSK). Key signing keys have the Secure Entry Point flag set
-      and, when active, will only be used to sign resource record sets of type
+      and, when active, are only used to sign resource record sets of type
       DNSKEY. Zone signing keys do not have the Secure Entry Point flag set
-      and will be used to sign all other types of resource record sets.
+      and are used to sign all other types of resource record sets.
     kind: A string attribute.
   """
 
@@ -425,9 +424,9 @@ class DnsKeySpec(_messages.Message):
   class KeyTypeValueValuesEnum(_messages.Enum):
     r"""Specifies whether this is a key signing key (KSK) or a zone signing
     key (ZSK). Key signing keys have the Secure Entry Point flag set and, when
-    active, will only be used to sign resource record sets of type DNSKEY.
-    Zone signing keys do not have the Secure Entry Point flag set and will be
-    used to sign all other types of resource record sets.
+    active, are only used to sign resource record sets of type DNSKEY. Zone
+    signing keys do not have the Secure Entry Point flag set and are used to
+    sign all other types of resource record sets.
 
     Values:
       keySigning: <no description>
@@ -455,9 +454,9 @@ class DnsKeysListResponse(_messages.Message):
       pagination token. In this way you can retrieve the complete contents of
       even very large collections one page at a time. However, if the contents
       of the collection change between the first and last paginated list
-      request, the set of all elements returned will be an inconsistent view
-      of the collection. There is no way to retrieve a "snapshot" of
-      collections larger than the maximum page size.
+      request, the set of all elements returned are an inconsistent view of
+      the collection. There is no way to retrieve a "snapshot" of collections
+      larger than the maximum page size.
   """
 
   dnsKeys = _messages.MessageField('DnsKey', 1, repeated=True)
@@ -474,7 +473,8 @@ class DnsManagedZoneOperationsGetRequest(_messages.Message):
       identifier specified by the client. Must be unique for operation
       resources in the Operations collection.
     managedZone: Identifies the managed zone addressed by this request.
-    operation: Identifies the operation addressed by this request.
+    operation: Identifies the operation addressed by this request (ID of the
+      operation).
     project: Identifies the project addressed by this request.
   """
 
@@ -494,7 +494,7 @@ class DnsManagedZoneOperationsListRequest(_messages.Message):
   Fields:
     managedZone: Identifies the managed zone addressed by this request.
     maxResults: Optional. Maximum number of results to be returned. If
-      unspecified, the server will decide how many results to return.
+      unspecified, the server decides how many results to return.
     pageToken: Optional. A tag returned by a previous list request that was
       truncated. Use this parameter to continue a previous list request.
     project: Identifies the project addressed by this request.
@@ -579,7 +579,7 @@ class DnsManagedZonesListRequest(_messages.Message):
   Fields:
     dnsName: Restricts the list to return only zones with this domain name.
     maxResults: Optional. Maximum number of results to be returned. If
-      unspecified, the server will decide how many results to return.
+      unspecified, the server decides how many results to return.
     pageToken: Optional. A tag returned by a previous list request that was
       truncated. Use this parameter to continue a previous list request.
     project: Identifies the project addressed by this request.
@@ -688,7 +688,7 @@ class DnsPoliciesListRequest(_messages.Message):
 
   Fields:
     maxResults: Optional. Maximum number of results to be returned. If
-      unspecified, the server will decide how many results to return.
+      unspecified, the server decides how many results to return.
     pageToken: Optional. A tag returned by a previous list request that was
       truncated. Use this parameter to continue a previous list request.
     project: Identifies the project addressed by this request.
@@ -846,7 +846,7 @@ class DnsResourceRecordSetsListRequest(_messages.Message):
     managedZone: Identifies the managed zone addressed by this request. Can be
       the managed zone name or ID.
     maxResults: Optional. Maximum number of results to be returned. If
-      unspecified, the server will decide how many results to return.
+      unspecified, the server decides how many results to return.
     name: Restricts the list to return only records with this fully qualified
       domain name.
     pageToken: Optional. A tag returned by a previous list request that was
@@ -924,7 +924,7 @@ class DnsResponsePoliciesListRequest(_messages.Message):
 
   Fields:
     maxResults: Optional. Maximum number of results to be returned. If
-      unspecified, the server will decide how many results to return.
+      unspecified, the server decides how many results to return.
     pageToken: Optional. A tag returned by a previous list request that was
       truncated. Use this parameter to continue a previous list request.
     project: Identifies the project addressed by this request.
@@ -1044,7 +1044,7 @@ class DnsResponsePolicyRulesListRequest(_messages.Message):
 
   Fields:
     maxResults: Optional. Maximum number of results to be returned. If
-      unspecified, the server will decide how many results to return.
+      unspecified, the server decides how many results to return.
     pageToken: Optional. A tag returned by a previous list request that was
       truncated. Use this parameter to continue a previous list request.
     project: Identifies the project addressed by this request.
@@ -1137,7 +1137,8 @@ class ManagedZone(_messages.Message):
       digits or dashes.
     nameServerSet: Optionally specifies the NameServerSet for this
       ManagedZone. A NameServerSet is a set of DNS name servers that all host
-      the same ManagedZones. Most users will leave this field unset.
+      the same ManagedZones. Most users leave this field unset. If you need to
+      use this field, contact your account team.
     nameServers: Delegate your managed_zone to these virtual name servers;
       defined by the server (output only)
     peeringConfig: The presence of this field indicates that DNS Peering is
@@ -1146,11 +1147,11 @@ class ManagedZone(_messages.Message):
     privateVisibilityConfig: For privately visible zones, the set of Virtual
       Private Cloud resources that the zone is visible from.
     reverseLookupConfig: The presence of this field indicates that this is a
-      managed reverse lookup zone and Cloud DNS will resolve reverse lookup
+      managed reverse lookup zone and Cloud DNS resolves reverse lookup
       queries using automatically configured records for VPC resources. This
       only applies to networks listed under private_visibility_config.
     serviceDirectoryConfig: This field links to the associated service
-      directory namespace. This field should not be set for public zones or
+      directory namespace. Do not set this field for public zones or
       forwarding zones.
     visibility: The zone's visibility: public zones are exposed to the
       Internet, while private zones are visible only to Virtual Private Cloud
@@ -1264,8 +1265,7 @@ class ManagedZoneForwardingConfig(_messages.Message):
   Fields:
     kind: A string attribute.
     targetNameServers: List of target name servers to forward to. Cloud DNS
-      will select the best available name server if more than one target is
-      given.
+      selects the best available name server if more than one target is given.
   """
 
   kind = _messages.StringField(1, default='dns#managedZoneForwardingConfig')
@@ -1277,36 +1277,35 @@ class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
 
   Enums:
     ForwardingPathValueValuesEnum: Forwarding path for this NameServerTarget.
-      If unset or set to DEFAULT, Cloud DNS will make forwarding decision
-      based on address ranges, i.e. RFC1918 addresses go to the VPC, non-
-      RFC1918 addresses go to the Internet. When set to PRIVATE, Cloud DNS
-      will always send queries through VPC for this target.
+      If unset or set to DEFAULT, Cloud DNS makes forwarding decisions based
+      on IP address ranges; that is, RFC1918 addresses go to the VPC network,
+      non-RFC1918 addresses go to the internet. When set to PRIVATE, Cloud DNS
+      always sends queries through the VPC network for this target.
 
   Fields:
     forwardingPath: Forwarding path for this NameServerTarget. If unset or set
-      to DEFAULT, Cloud DNS will make forwarding decision based on address
-      ranges, i.e. RFC1918 addresses go to the VPC, non-RFC1918 addresses go
-      to the Internet. When set to PRIVATE, Cloud DNS will always send queries
-      through VPC for this target.
+      to DEFAULT, Cloud DNS makes forwarding decisions based on IP address
+      ranges; that is, RFC1918 addresses go to the VPC network, non-RFC1918
+      addresses go to the internet. When set to PRIVATE, Cloud DNS always
+      sends queries through the VPC network for this target.
     ipv4Address: IPv4 address of a target name server.
-    ipv6Address: IPv6 address of a target name server. Will not accept both
+    ipv6Address: IPv6 address of a target name server. Does not accept both
       fields (ipv4 & ipv6) being populated.
     kind: A string attribute.
   """
 
   class ForwardingPathValueValuesEnum(_messages.Enum):
     r"""Forwarding path for this NameServerTarget. If unset or set to DEFAULT,
-    Cloud DNS will make forwarding decision based on address ranges, i.e.
-    RFC1918 addresses go to the VPC, non-RFC1918 addresses go to the Internet.
-    When set to PRIVATE, Cloud DNS will always send queries through VPC for
-    this target.
+    Cloud DNS makes forwarding decisions based on IP address ranges; that is,
+    RFC1918 addresses go to the VPC network, non-RFC1918 addresses go to the
+    internet. When set to PRIVATE, Cloud DNS always sends queries through the
+    VPC network for this target.
 
     Values:
-      default: Cloud DNS will make forwarding decision based on address
-        ranges, i.e. RFC1918 addresses forward to the target through the VPC
-        and non-RFC1918 addresses will forward to the target through the
-        Internet
-      private: Cloud DNS will always forward to this target through the VPC.
+      default: Cloud DNS makes forwarding decisions based on address ranges;
+        that is, RFC1918 addresses forward to the target through the VPC and
+        non-RFC1918 addresses forward to the target through the internet
+      private: Cloud DNS always forwards to this target through the VPC.
     """
     default = 0
     private = 1
@@ -1329,9 +1328,9 @@ class ManagedZoneOperationsListResponse(_messages.Message):
       token. In this way you can retrieve the complete contents of even very
       large collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
-      set of all elements returned will be an inconsistent view of the
-      collection. There is no way to retrieve a consistent snapshot of a
-      collection larger than the maximum page size.
+      set of all elements returned are an inconsistent view of the collection.
+      There is no way to retrieve a consistent snapshot of a collection larger
+      than the maximum page size.
     operations: The operation resources.
   """
 
@@ -1410,9 +1409,9 @@ class ManagedZonePrivateVisibilityConfigNetwork(_messages.Message):
 
   Fields:
     kind: A string attribute.
-    networkUrl: The fully qualified URL of the VPC network to bind to. This
-      should be formatted like https://www.googleapis.com/compute/v1/projects/
-      {project}/global/networks/{network}
+    networkUrl: The fully qualified URL of the VPC network to bind to. Format
+      this URL like https://www.googleapis.com/compute/v1/projects/{project}/g
+      lobal/networks/{network}
   """
 
   kind = _messages.StringField(1, default='dns#managedZonePrivateVisibilityConfigNetwork')
@@ -1446,9 +1445,9 @@ class ManagedZoneServiceDirectoryConfigNamespace(_messages.Message):
   r"""A ManagedZoneServiceDirectoryConfigNamespace object.
 
   Fields:
-    deletionTime: The time that the namespace backing this zone was deleted,
-      empty string if it still exists. This is in RFC3339 text format. Output
-      only.
+    deletionTime: The time that the namespace backing this zone was deleted;
+      an empty string if it still exists. This is in RFC3339 text format.
+      Output only.
     kind: A string attribute.
     namespaceUrl: The fully qualified URL of the namespace associated with the
       zone. This should be formatted like https://servicedirectory.googleapis.
@@ -1473,9 +1472,9 @@ class ManagedZonesListResponse(_messages.Message):
       token. In this way you can retrieve the complete contents of even very
       large collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
-      set of all elements returned will be an inconsistent view of the
-      collection. There is no way to retrieve a consistent snapshot of a
-      collection larger than the maximum page size.
+      set of all elements returned are an inconsistent view of the collection.
+      There is no way to retrieve a consistent snapshot of a collection larger
+      than the maximum page size.
   """
 
   header = _messages.MessageField('ResponseHeader', 1)
@@ -1592,9 +1591,9 @@ class PeeringZonesListResponse(_messages.Message):
       token. In this way you can retrieve the complete contents of even very
       large collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
-      set of all elements returned will be an inconsistent view of the
-      collection. There is no way to retrieve a consistent snapshot of a
-      collection larger than the maximum page size.
+      set of all elements returned are an inconsistent view of the collection.
+      There is no way to retrieve a consistent snapshot of a collection larger
+      than the maximum page size.
     peeringZones: The active peering zone resources matching the request. Each
       ManagedZone has only the id field set.
   """
@@ -1617,9 +1616,9 @@ class PoliciesListResponse(_messages.Message):
       token. In this way you can retrieve the complete contents of even very
       large collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
-      set of all elements returned will be an inconsistent view of the
-      collection. There is no way to retrieve a consistent snapshot of a
-      collection larger than the maximum page size.
+      set of all elements returned are an inconsistent view of the collection.
+      There is no way to retrieve a consistent snapshot of a collection larger
+      than the maximum page size.
     policies: The policy resources.
   """
 
@@ -1667,14 +1666,14 @@ class Policy(_messages.Message):
       function.
     enableInboundForwarding: Allows networks bound to this policy to receive
       DNS queries sent by VMs or applications over VPN connections. When
-      enabled, a virtual IP address will be allocated from each of the sub-
-      networks that are bound to this policy.
+      enabled, a virtual IP address is allocated from each of the subnetworks
+      that are bound to this policy.
     enableLogging: Controls whether logging is enabled for the networks bound
       to this policy. Defaults to no logging if not set.
     id: Unique identifier for the resource; defined by the server (output
       only).
     kind: A string attribute.
-    name: User assigned name for this policy.
+    name: User-assigned name for this policy.
     networks: List of network names specifying networks to which this policy
       is applied.
   """
@@ -1709,36 +1708,35 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
 
   Enums:
     ForwardingPathValueValuesEnum: Forwarding path for this TargetNameServer.
-      If unset or set to DEFAULT, Cloud DNS will make forwarding decision
-      based on address ranges, i.e. RFC1918 addresses go to the VPC, non-
-      RFC1918 addresses go to the Internet. When set to PRIVATE, Cloud DNS
-      will always send queries through VPC for this target.
+      If unset or set to DEFAULT, Cloud DNS makes forwarding decisions based
+      on address ranges; that is, RFC1918 addresses go to the VPC network,
+      non-RFC1918 addresses go to the internet. When set to PRIVATE, Cloud DNS
+      always sends queries through the VPC network for this target.
 
   Fields:
     forwardingPath: Forwarding path for this TargetNameServer. If unset or set
-      to DEFAULT, Cloud DNS will make forwarding decision based on address
-      ranges, i.e. RFC1918 addresses go to the VPC, non-RFC1918 addresses go
-      to the Internet. When set to PRIVATE, Cloud DNS will always send queries
-      through VPC for this target.
+      to DEFAULT, Cloud DNS makes forwarding decisions based on address
+      ranges; that is, RFC1918 addresses go to the VPC network, non-RFC1918
+      addresses go to the internet. When set to PRIVATE, Cloud DNS always
+      sends queries through the VPC network for this target.
     ipv4Address: IPv4 address to forward to.
-    ipv6Address: IPv6 address to forward to. Will not accept both fields (ipv4
+    ipv6Address: IPv6 address to forward to. Does not accept both fields (ipv4
       & ipv6) being populated.
     kind: A string attribute.
   """
 
   class ForwardingPathValueValuesEnum(_messages.Enum):
     r"""Forwarding path for this TargetNameServer. If unset or set to DEFAULT,
-    Cloud DNS will make forwarding decision based on address ranges, i.e.
-    RFC1918 addresses go to the VPC, non-RFC1918 addresses go to the Internet.
-    When set to PRIVATE, Cloud DNS will always send queries through VPC for
-    this target.
+    Cloud DNS makes forwarding decisions based on address ranges; that is,
+    RFC1918 addresses go to the VPC network, non-RFC1918 addresses go to the
+    internet. When set to PRIVATE, Cloud DNS always sends queries through the
+    VPC network for this target.
 
     Values:
-      default: Cloud DNS will make forwarding decision based on address
-        ranges, i.e. RFC1918 addresses forward to the target through the VPC
-        and non-RFC1918 addresses will forward to the target through the
-        Internet
-      private: Cloud DNS will always forward to this target through the VPC.
+      default: Cloud DNS makes forwarding decision based on IP address ranges;
+        that is, RFC1918 addresses forward to the target through the VPC and
+        non-RFC1918 addresses forward to the target through the internet
+      private: Cloud DNS always forwards to this target through the VPC.
     """
     default = 0
     private = 1
@@ -1837,7 +1835,7 @@ class Quota(_messages.Message):
 
 
 class ResourceRecordSet(_messages.Message):
-  r"""A unit of data that will be returned by the DNS servers.
+  r"""A unit of data that is returned by the DNS servers.
 
   Fields:
     kind: A string attribute.
@@ -1868,12 +1866,12 @@ class ResourceRecordSetsListResponse(_messages.Message):
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your
-      pagination token. In this way you can retrieve the complete contents of
-      even very large collections one page at a time. However, if the contents
-      of the collection change between the first and last paginated list
-      request, the set of all elements returned will be an inconsistent view
-      of the collection. There is no way to retrieve a consistent snapshot of
-      a collection larger than the maximum page size.
+      pagination token. This lets you retrieve complete contents of even
+      larger collections, one page at a time. However, if the contents of the
+      collection change between the first and last paginated list request, the
+      set of elements returned are an inconsistent view of the collection. You
+      cannot retrieve a consistent snapshot of a collection larger than the
+      maximum page size.
     rrsets: The resource record set resources.
   """
 
@@ -1906,9 +1904,9 @@ class ResponsePoliciesListResponse(_messages.Message):
       token. In this way you can retrieve the complete contents of even very
       large collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
-      set of all elements returned will be an inconsistent view of the
-      collection. There is no way to retrieve a consistent snapshot of a
-      collection larger than the maximum page size.
+      set of all elements returned are an inconsistent view of the collection.
+      There is no way to retrieve a consistent snapshot of a collection larger
+      than the maximum page size.
     responsePolicies: The Response Policy resources.
   """
 
@@ -2010,8 +2008,8 @@ class ResponsePolicyRule(_messages.Message):
         wildcard to exempt a subset of the wildcard ResponsePolicyRule from
         the ResponsePolicy behavior and e.g., query the public internet
         instead. For instance, if these rules exist: *.example.com -> 1.2.3.4
-        foo.example.com -> PASSTHRU Then a query for 'foo.example.com' will
-        skip the wildcard.
+        foo.example.com -> PASSTHRU Then a query for 'foo.example.com' skips
+        the wildcard.
     """
     behaviorUnspecified = 0
     bypassResponsePolicy = 1
@@ -2045,9 +2043,9 @@ class ResponsePolicyRulesListResponse(_messages.Message):
       token. In this way you can retrieve the complete contents of even very
       large collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
-      set of all elements returned will be an inconsistent view of the
-      collection. There is no way to retrieve a consistent snapshot of a
-      collection larger than the maximum page size.
+      set of all elements returned are an inconsistent view of the collection.
+      There is no way to retrieve a consistent snapshot of a collection larger
+      than the maximum page size.
     responsePolicyRules: The Response Policy Rule resources.
   """
 

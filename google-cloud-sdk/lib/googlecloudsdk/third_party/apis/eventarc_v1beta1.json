@@ -226,7 +226,7 @@
           "format": "google-datetime"
         },
         "matchingCriteria": {
-          "description": "Required. The criteria by which events are filtered. Only events that match with this criteria will be sent to the destination.",
+          "description": "Required. null The criteria by which events are filtered. Only events that match with this criteria will be sent to the destination.",
           "type": "array",
           "items": {
             "$ref": "MatchingCriteria"
@@ -244,6 +244,13 @@
           "description": "Output only. In order to deliver messages, Eventarc may use other GCP products as transport intermediary. This field contains a reference to that transport intermediary. This information can be used for debugging purposes.",
           "readOnly": true,
           "$ref": "Transport"
+        },
+        "labels": {
+          "description": "Optional. User labels attached to the triggers that can be used to group resources.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         },
         "etag": {
           "description": "Output only. This checksum is computed by the server based on the value of other fields, and may be sent only on create requests to ensure the client has an up-to-date value before proceeding.",

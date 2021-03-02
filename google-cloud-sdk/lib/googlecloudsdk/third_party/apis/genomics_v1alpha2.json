@@ -1023,9 +1023,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation's parent resource.",
+              "pattern": "^operations$",
               "location": "path",
               "required": true,
-              "pattern": "^operations$",
               "type": "string"
             },
             "filter": {
@@ -1065,9 +1065,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -1091,9 +1091,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be cancelled.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },

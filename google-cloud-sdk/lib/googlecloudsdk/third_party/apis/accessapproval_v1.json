@@ -349,9 +349,9 @@
           "parameters": {
             "name": {
               "description": "Name of the AccessApprovalSettings to retrieve.",
+              "pattern": "^projects\/[^\/]+\/accessApprovalSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+\/accessApprovalSettings$",
               "type": "string"
             }
           },
@@ -374,9 +374,9 @@
           "parameters": {
             "name": {
               "description": "The resource name of the settings. Format is one of: * \"projects\/{project}\/accessApprovalSettings\" * \"folders\/{folder}\/accessApprovalSettings\" * \"organizations\/{organization}\/accessApprovalSettings\"",
+              "pattern": "^projects\/[^\/]+\/accessApprovalSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+\/accessApprovalSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -408,9 +408,9 @@
           "parameters": {
             "name": {
               "description": "Name of the AccessApprovalSettings to delete.",
+              "pattern": "^projects\/[^\/]+\/accessApprovalSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+\/accessApprovalSettings$",
               "type": "string"
             }
           },
@@ -438,9 +438,9 @@
               "parameters": {
                 "parent": {
                   "description": "The parent resource. This may be \"projects\/{project}\", \"folders\/{folder}\", or \"organizations\/{organization}\".",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -479,9 +479,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the approval request to retrieve.",
+                  "pattern": "^projects\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -504,9 +504,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the approval request to approve.",
+                  "pattern": "^projects\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -532,9 +532,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the ApprovalRequest to dismiss.",
+                  "pattern": "^projects\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -566,9 +566,9 @@
           "parameters": {
             "name": {
               "description": "Name of the AccessApprovalSettings to retrieve.",
+              "pattern": "^folders\/[^\/]+\/accessApprovalSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+\/accessApprovalSettings$",
               "type": "string"
             }
           },
@@ -591,9 +591,9 @@
           "parameters": {
             "name": {
               "description": "The resource name of the settings. Format is one of: * \"projects\/{project}\/accessApprovalSettings\" * \"folders\/{folder}\/accessApprovalSettings\" * \"organizations\/{organization}\/accessApprovalSettings\"",
+              "pattern": "^folders\/[^\/]+\/accessApprovalSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+\/accessApprovalSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -625,9 +625,9 @@
           "parameters": {
             "name": {
               "description": "Name of the AccessApprovalSettings to delete.",
+              "pattern": "^folders\/[^\/]+\/accessApprovalSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+\/accessApprovalSettings$",
               "type": "string"
             }
           },
@@ -655,9 +655,9 @@
               "parameters": {
                 "parent": {
                   "description": "The parent resource. This may be \"projects\/{project}\", \"folders\/{folder}\", or \"organizations\/{organization}\".",
+                  "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -696,9 +696,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the approval request to retrieve.",
+                  "pattern": "^folders\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -721,9 +721,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the approval request to approve.",
+                  "pattern": "^folders\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -749,9 +749,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the ApprovalRequest to dismiss.",
+                  "pattern": "^folders\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -783,9 +783,9 @@
           "parameters": {
             "name": {
               "description": "Name of the AccessApprovalSettings to retrieve.",
+              "pattern": "^organizations\/[^\/]+\/accessApprovalSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+\/accessApprovalSettings$",
               "type": "string"
             }
           },
@@ -808,9 +808,9 @@
           "parameters": {
             "name": {
               "description": "The resource name of the settings. Format is one of: * \"projects\/{project}\/accessApprovalSettings\" * \"folders\/{folder}\/accessApprovalSettings\" * \"organizations\/{organization}\/accessApprovalSettings\"",
+              "pattern": "^organizations\/[^\/]+\/accessApprovalSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+\/accessApprovalSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -842,9 +842,9 @@
           "parameters": {
             "name": {
               "description": "Name of the AccessApprovalSettings to delete.",
+              "pattern": "^organizations\/[^\/]+\/accessApprovalSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+\/accessApprovalSettings$",
               "type": "string"
             }
           },
@@ -872,9 +872,9 @@
               "parameters": {
                 "parent": {
                   "description": "The parent resource. This may be \"projects\/{project}\", \"folders\/{folder}\", or \"organizations\/{organization}\".",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -913,9 +913,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the approval request to retrieve.",
+                  "pattern": "^organizations\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -938,9 +938,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the approval request to approve.",
+                  "pattern": "^organizations\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -966,9 +966,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the ApprovalRequest to dismiss.",
+                  "pattern": "^organizations\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/approvalRequests\/[^\/]+$",
                   "type": "string"
                 }
               },

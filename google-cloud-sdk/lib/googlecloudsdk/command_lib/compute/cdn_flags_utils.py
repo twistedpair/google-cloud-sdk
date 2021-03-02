@@ -303,3 +303,23 @@ def AddFlexibleCacheStepTwo(parser, resource_name, update_command=False):
         action='store_true',
         help='Remove all bypass cache on request headers for the %s.' %
         resource_name)
+
+
+def AddRequestCoalescing(parser):
+  """Adds request coalescing arg to the parser."""
+  request_coalescing_help = """\
+  Enables request coalescing to the backend (recommended).
+
+  Request coalescing (or collapsing) combines multiple concurrent cache fill
+  requests into a small number of requests to the origin. This can improve
+  performance by putting less load on the origin and backend infrastructure.
+  However, coalescing adds a small amount of latency when multiple requests to
+  the same URL are processed, so for latency-critical applications it may not
+  be desirable.
+
+  Defaults to true.
+  """
+  parser.add_argument(
+      '--request-coalescing',
+      action=arg_parsers.StoreTrueFalseAction,
+      help=request_coalescing_help)

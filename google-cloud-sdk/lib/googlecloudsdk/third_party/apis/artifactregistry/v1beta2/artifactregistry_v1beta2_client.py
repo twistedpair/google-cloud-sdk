@@ -802,3 +802,57 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
       super(ArtifactregistryV1beta2.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def GetProjectSettings(self, request, global_params=None):
+      r"""Retrieves the Settings for the Project.
+
+      Args:
+        request: (ArtifactregistryProjectsGetProjectSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProjectSettings) The response message.
+      """
+      config = self.GetMethodConfig('GetProjectSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetProjectSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/projects/{projectsId}/projectSettings',
+        http_method='GET',
+        method_id='artifactregistry.projects.getProjectSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsGetProjectSettingsRequest',
+        response_type_name='ProjectSettings',
+        supports_download=False,
+    )
+
+    def UpdateProjectSettings(self, request, global_params=None):
+      r"""Retrieves the Settings for the Project.
+
+      Args:
+        request: (ArtifactregistryProjectsUpdateProjectSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProjectSettings) The response message.
+      """
+      config = self.GetMethodConfig('UpdateProjectSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateProjectSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/projects/{projectsId}/projectSettings',
+        http_method='PATCH',
+        method_id='artifactregistry.projects.updateProjectSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta2/{+name}',
+        request_field='projectSettings',
+        request_type_name='ArtifactregistryProjectsUpdateProjectSettingsRequest',
+        response_type_name='ProjectSettings',
+        supports_download=False,
+    )

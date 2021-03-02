@@ -61,12 +61,7 @@ class GoogleCloudResourcesettingsV1Setting(_messages.Message):
       `organizations/{organization_id}/settings/{setting_name}` For example,
       "/projects/123/settings/gcp-enableMyFeature"
     readOnly: A flag indicating that values of this setting cannot be modified
-      (see documentation of the specific setting for updates and reasons);
-      however, it may be deleted using DeleteSettingValue if
-      DeleteSettingValueRequest.ignore_read_only is set to true. Using this
-      flag is considered an acknowledgement that the setting value cannot be
-      recreated. See DeleteSettingValueRequest.ignore_read_only for more
-      details.
+      (see documentation of the specific setting for updates and reasons).
   """
 
   class DataTypeValueValuesEnum(_messages.Enum):
@@ -107,10 +102,7 @@ class GoogleCloudResourcesettingsV1SettingValue(_messages.Message):
       `organizations/{organization_id}/settings/{setting_name}/value` For
       example, "/projects/123/settings/gcp-enableMyFeature/value"
     readOnly: Output only. A flag indicating that this setting value cannot be
-      modified; however, it may be deleted using DeleteSettingValue if
-      DeleteSettingValueRequest.ignore_read_only is set to true. Using this
-      flag is considered an acknowledgement that the setting value cannot be
-      recreated. This flag is inherited from its parent setting and is for
+      modified. This flag is inherited from its parent setting and is for
       convenience purposes. See Setting.read_only for more details.
     updateTime: Output only. The timestamp indicating when the setting value
       was last updated.
@@ -179,24 +171,19 @@ class ResourcesettingsFoldersSettingsDeleteValueRequest(_messages.Message):
   r"""A ResourcesettingsFoldersSettingsDeleteValueRequest object.
 
   Fields:
-    ignoreReadOnly: A flag that allows the deletion of the value of a
-      `read_only` setting. WARNING: use at your own risk. Deleting the value
-      of a read only setting is an irreversible action (i.e., it cannot be
-      created again).
-    name: The name of the setting value to delete. See SettingValue for naming
-      requirements.
+    name: Required. The name of the setting value to delete. See SettingValue
+      for naming requirements.
   """
 
-  ignoreReadOnly = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class ResourcesettingsFoldersSettingsGetValueRequest(_messages.Message):
   r"""A ResourcesettingsFoldersSettingsGetValueRequest object.
 
   Fields:
-    name: The name of the setting value to get. See SettingValue for naming
-      requirements.
+    name: Required. The name of the setting value to get. See SettingValue for
+      naming requirements.
   """
 
   name = _messages.StringField(1, required=True)
@@ -208,9 +195,10 @@ class ResourcesettingsFoldersSettingsListRequest(_messages.Message):
   Fields:
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
-    parent: The Cloud resource that parents the setting. Must be in one of the
-      following forms: * `projects/{project_number}` * `projects/{project_id}`
-      * `folders/{folder_id}` * `organizations/{organization_id}`
+    parent: Required. The Cloud resource that parents the setting. Must be in
+      one of the following forms: * `projects/{project_number}` *
+      `projects/{project_id}` * `folders/{folder_id}` *
+      `organizations/{organization_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -224,9 +212,10 @@ class ResourcesettingsFoldersSettingsSearchRequest(_messages.Message):
   Fields:
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
-    parent: The Cloud resource that parents the setting. Must be in one of the
-      following forms: * `projects/{project_number}` * `projects/{project_id}`
-      * `folders/{folder_id}` * `organizations/{organization_id}`
+    parent: Required. The Cloud resource that parents the setting. Must be in
+      one of the following forms: * `projects/{project_number}` *
+      `projects/{project_id}` * `folders/{folder_id}` *
+      `organizations/{organization_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -260,8 +249,8 @@ class ResourcesettingsFoldersSettingsValueCreateRequest(_messages.Message):
     googleCloudResourcesettingsV1SettingValue: A
       GoogleCloudResourcesettingsV1SettingValue resource to be passed as the
       request body.
-    parent: The name of the setting for which a value should be created. See
-      Setting for naming requirements.
+    parent: Required. The name of the setting for which a value should be
+      created. See Setting for naming requirements.
     settingsId: A string attribute.
   """
 
@@ -275,8 +264,8 @@ class ResourcesettingsFoldersSettingsValueLookupEffectiveValueRequest(_messages.
   object.
 
   Fields:
-    name: The setting value for which an effective value will be evaluated.
-      See SettingValue for naming requirements.
+    name: Required. The setting value for which an effective value will be
+      evaluated. See SettingValue for naming requirements.
   """
 
   name = _messages.StringField(1, required=True)
@@ -286,24 +275,19 @@ class ResourcesettingsOrganizationsSettingsDeleteValueRequest(_messages.Message)
   r"""A ResourcesettingsOrganizationsSettingsDeleteValueRequest object.
 
   Fields:
-    ignoreReadOnly: A flag that allows the deletion of the value of a
-      `read_only` setting. WARNING: use at your own risk. Deleting the value
-      of a read only setting is an irreversible action (i.e., it cannot be
-      created again).
-    name: The name of the setting value to delete. See SettingValue for naming
-      requirements.
+    name: Required. The name of the setting value to delete. See SettingValue
+      for naming requirements.
   """
 
-  ignoreReadOnly = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class ResourcesettingsOrganizationsSettingsGetValueRequest(_messages.Message):
   r"""A ResourcesettingsOrganizationsSettingsGetValueRequest object.
 
   Fields:
-    name: The name of the setting value to get. See SettingValue for naming
-      requirements.
+    name: Required. The name of the setting value to get. See SettingValue for
+      naming requirements.
   """
 
   name = _messages.StringField(1, required=True)
@@ -315,9 +299,10 @@ class ResourcesettingsOrganizationsSettingsListRequest(_messages.Message):
   Fields:
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
-    parent: The Cloud resource that parents the setting. Must be in one of the
-      following forms: * `projects/{project_number}` * `projects/{project_id}`
-      * `folders/{folder_id}` * `organizations/{organization_id}`
+    parent: Required. The Cloud resource that parents the setting. Must be in
+      one of the following forms: * `projects/{project_number}` *
+      `projects/{project_id}` * `folders/{folder_id}` *
+      `organizations/{organization_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -331,9 +316,10 @@ class ResourcesettingsOrganizationsSettingsSearchRequest(_messages.Message):
   Fields:
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
-    parent: The Cloud resource that parents the setting. Must be in one of the
-      following forms: * `projects/{project_number}` * `projects/{project_id}`
-      * `folders/{folder_id}` * `organizations/{organization_id}`
+    parent: Required. The Cloud resource that parents the setting. Must be in
+      one of the following forms: * `projects/{project_number}` *
+      `projects/{project_id}` * `folders/{folder_id}` *
+      `organizations/{organization_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -367,8 +353,8 @@ class ResourcesettingsOrganizationsSettingsValueCreateRequest(_messages.Message)
     googleCloudResourcesettingsV1SettingValue: A
       GoogleCloudResourcesettingsV1SettingValue resource to be passed as the
       request body.
-    parent: The name of the setting for which a value should be created. See
-      Setting for naming requirements.
+    parent: Required. The name of the setting for which a value should be
+      created. See Setting for naming requirements.
     settingsId: A string attribute.
   """
 
@@ -382,8 +368,8 @@ class ResourcesettingsOrganizationsSettingsValueLookupEffectiveValueRequest(_mes
   object.
 
   Fields:
-    name: The setting value for which an effective value will be evaluated.
-      See SettingValue for naming requirements.
+    name: Required. The setting value for which an effective value will be
+      evaluated. See SettingValue for naming requirements.
   """
 
   name = _messages.StringField(1, required=True)
@@ -393,24 +379,19 @@ class ResourcesettingsProjectsSettingsDeleteValueRequest(_messages.Message):
   r"""A ResourcesettingsProjectsSettingsDeleteValueRequest object.
 
   Fields:
-    ignoreReadOnly: A flag that allows the deletion of the value of a
-      `read_only` setting. WARNING: use at your own risk. Deleting the value
-      of a read only setting is an irreversible action (i.e., it cannot be
-      created again).
-    name: The name of the setting value to delete. See SettingValue for naming
-      requirements.
+    name: Required. The name of the setting value to delete. See SettingValue
+      for naming requirements.
   """
 
-  ignoreReadOnly = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class ResourcesettingsProjectsSettingsGetValueRequest(_messages.Message):
   r"""A ResourcesettingsProjectsSettingsGetValueRequest object.
 
   Fields:
-    name: The name of the setting value to get. See SettingValue for naming
-      requirements.
+    name: Required. The name of the setting value to get. See SettingValue for
+      naming requirements.
   """
 
   name = _messages.StringField(1, required=True)
@@ -422,9 +403,10 @@ class ResourcesettingsProjectsSettingsListRequest(_messages.Message):
   Fields:
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
-    parent: The Cloud resource that parents the setting. Must be in one of the
-      following forms: * `projects/{project_number}` * `projects/{project_id}`
-      * `folders/{folder_id}` * `organizations/{organization_id}`
+    parent: Required. The Cloud resource that parents the setting. Must be in
+      one of the following forms: * `projects/{project_number}` *
+      `projects/{project_id}` * `folders/{folder_id}` *
+      `organizations/{organization_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -438,9 +420,10 @@ class ResourcesettingsProjectsSettingsSearchRequest(_messages.Message):
   Fields:
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
-    parent: The Cloud resource that parents the setting. Must be in one of the
-      following forms: * `projects/{project_number}` * `projects/{project_id}`
-      * `folders/{folder_id}` * `organizations/{organization_id}`
+    parent: Required. The Cloud resource that parents the setting. Must be in
+      one of the following forms: * `projects/{project_number}` *
+      `projects/{project_id}` * `folders/{folder_id}` *
+      `organizations/{organization_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -474,8 +457,8 @@ class ResourcesettingsProjectsSettingsValueCreateRequest(_messages.Message):
     googleCloudResourcesettingsV1SettingValue: A
       GoogleCloudResourcesettingsV1SettingValue resource to be passed as the
       request body.
-    parent: The name of the setting for which a value should be created. See
-      Setting for naming requirements.
+    parent: Required. The name of the setting for which a value should be
+      created. See Setting for naming requirements.
     settingsId: A string attribute.
   """
 
@@ -489,8 +472,8 @@ class ResourcesettingsProjectsSettingsValueLookupEffectiveValueRequest(_messages
   object.
 
   Fields:
-    name: The setting value for which an effective value will be evaluated.
-      See SettingValue for naming requirements.
+    name: Required. The setting value for which an effective value will be
+      evaluated. See SettingValue for naming requirements.
   """
 
   name = _messages.StringField(1, required=True)

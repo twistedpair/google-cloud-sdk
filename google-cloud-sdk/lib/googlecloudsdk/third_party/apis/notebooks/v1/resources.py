@@ -52,6 +52,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_EXECUTIONS = (
+      'projects.locations.executions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/executions/'
+              '{executionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_INSTANCES = (
       'projects.locations.instances',
       '{+name}',
@@ -70,6 +81,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SCHEDULES = (
+      'projects.locations.schedules',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/schedules/'
+              '{schedulesId}',
       },
       ['name'],
       True

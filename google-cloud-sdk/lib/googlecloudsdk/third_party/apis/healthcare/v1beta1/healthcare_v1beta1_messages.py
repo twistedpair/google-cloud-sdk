@@ -17,16 +17,18 @@ package = 'healthcare'
 class ActivateConsentRequest(_messages.Message):
   r"""Activates the latest revision of the specified Consent by committing a
   new revision with `state` updated to `ACTIVE`. If the latest revision of the
-  given consent is in the `ACTIVE` state, no new revision is committed.
+  given Consent is in the `ACTIVE` state, no new revision is committed. A
+  FAILED_PRECONDITION error occurs if the latest revision of the given consent
+  is in the `REJECTED` or `REVOKED` state.
 
   Fields:
-    consentArtifact: Required. The resource name of the consent artifact that
-      contains proof of the end user's consent, of the form `projects/{project
-      _id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consen
-      t_store_id}/consentArtifacts/{consent_artifact_id}`. If the draft
-      consent had a consent artifact, this consent artifact overwrites it.
-    expireTime: Timestamp in UTC of when this consent is considered expired.
-    ttl: The time to live for this consent from when it is marked as active.
+    consentArtifact: Required. The resource name of the Consent artifact that
+      contains documentation of the user's consent, of the form `projects/{pro
+      ject_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{co
+      nsent_store_id}/consentArtifacts/{consent_artifact_id}`. If the draft
+      Consent had a Consent artifact, this Consent artifact overwrites it.
+    expireTime: Timestamp in UTC of when this Consent is considered expired.
+    ttl: The time to live for this Consent from when it is marked as active.
   """
 
   consentArtifact = _messages.StringField(1)
@@ -52,7 +54,7 @@ class AnalyzeEntitiesResponse(_messages.Message):
       in this response could link to. These are UMLS concepts or normalized
       mention content.
     entityMentions: entity_mentions contains all the annotated medical
-      entities that were were mentioned in the provided document.
+      entities that were mentioned in the provided document.
     relationships: relationships contains all the binary relationships that
       were identified between entity mentions within the provided document.
   """
@@ -218,12 +220,12 @@ class ArchiveUserDataMappingResponse(_messages.Message):
 
 
 class Attribute(_messages.Message):
-  r"""An attribute value for a consent or data mapping. Each Attribute must
-  have a corresponding AttributeDefinition in the consent store that defines
-  the default and allowed values.
+  r"""An attribute value for a Consent or User data mapping. Each Attribute
+  must have a corresponding AttributeDefinition in the consent store that
+  defines the default and allowed values.
 
   Fields:
-    attributeDefinitionId: Indicates the name of an attribute defined at the
+    attributeDefinitionId: Indicates the name of an attribute defined in the
       consent store.
     values: The value of the attribute. Must be an acceptable value as defined
       in the consent store. For example, if the consent store defines "data
@@ -249,16 +251,18 @@ class AttributeDefinition(_messages.Message):
       can only be expanded after creation.
     category: Required. The category of the attribute. The value of this field
       cannot be changed after creation.
-    consentDefaultValues: Default values of the attribute in consents. If no
-      default values are specified, it defaults to an empty value.
-    dataMappingDefaultValue: Default value of the attribute in user data
-      mappings. If no default value is specified, it defaults to an empty
+    consentDefaultValues: Optional. Default values of the attribute in
+      Consents. If no default values are specified, it defaults to an empty
+      value.
+    dataMappingDefaultValue: Optional. Default value of the attribute in User
+      data mappings. If no default value is specified, it defaults to an empty
       value. This field is only applicable to attributes of the category
       `RESOURCE`.
-    description: A description of the attribute.
-    name: Resource name of the attribute definition, of the form `projects/{pr
+    description: Optional. A description of the attribute.
+    name: Resource name of the Attribute definition, of the form `projects/{pr
       oject_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{c
-      onsent_store_id}/attributeDefinitions/{attribute_definition_id}`.
+      onsent_store_id}/attributeDefinitions/{attribute_definition_id}`. Cannot
+      be changed after creation.
   """
 
   class CategoryValueValuesEnum(_messages.Enum):
@@ -267,10 +271,11 @@ class AttributeDefinition(_messages.Message):
 
     Values:
       CATEGORY_UNSPECIFIED: No category specified. This option is invalid.
-      RESOURCE: Specify when this attribute captures properties of data
-        resources. For example, data anonymity or data type.
-      REQUEST: Specify when this attribute captures properties of access
-        requests. For example, requester's role or requester's organization.
+      RESOURCE: Specify this category when this attribute describes the
+        properties of resources. For example, data anonymity or data type.
+      REQUEST: Specify this category when this attribute describes the
+        properties of requests. For example, requester's role or requester's
+        organization.
     """
     CATEGORY_UNSPECIFIED = 0
     RESOURCE = 1
@@ -438,35 +443,38 @@ class CharacterMaskConfig(_messages.Message):
 
 class CheckDataAccessRequest(_messages.Message):
   r"""Checks if a particular data_id of a User data mapping in the given
-  Consent store is consented for a given use.
+  consent store is consented for a given use.
 
   Enums:
-    ResponseViewValueValuesEnum: The view for CheckDataAccessResponse. If
-      unspecified, defaults to `BASIC` and returns `consented` as `TRUE` or
-      `FALSE`.
+    ResponseViewValueValuesEnum: Optional. The view for
+      CheckDataAccessResponse. If unspecified, defaults to `BASIC` and returns
+      `consented` as `TRUE` or `FALSE`.
 
   Messages:
     RequestAttributesValue: The values of request attributes associated with
       this access request.
 
   Fields:
-    consentList: The Consents to evaluate the access request against. They
-      must have the same `user_id` as the data to check access for, exist in
-      the current `consent_store`, and can have a `state` of either `ACTIVE`
-      or `DRAFT`. A maximum of 100 consents can be provided here. If
-      unspecified, all `ACTIVE` unexpired consents in the current
-      `consent_store` will be evaluated.
-    dataId: The unique identifier of the data to check access for. It must
-      exist in the given `consent_store`.
+    consentList: Optional. Specific Consents to evaluate the access request
+      against. These Consents must have the same `user_id` as the evaluated
+      User data mapping, must exist in the current `consent_store`, and have a
+      `state` of either `ACTIVE` or `DRAFT`. A maximum of 100 Consents can be
+      provided here. If no selection is specified, the access request is
+      evaluated against all `ACTIVE` unexpired Consents with the same
+      `user_id` as the evaluated User data mapping.
+    dataId: Required. The unique identifier of the resource to check access
+      for. This identifier must correspond to a User data mapping in the given
+      consent store.
     requestAttributes: The values of request attributes associated with this
       access request.
-    responseView: The view for CheckDataAccessResponse. If unspecified,
-      defaults to `BASIC` and returns `consented` as `TRUE` or `FALSE`.
+    responseView: Optional. The view for CheckDataAccessResponse. If
+      unspecified, defaults to `BASIC` and returns `consented` as `TRUE` or
+      `FALSE`.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
-    r"""The view for CheckDataAccessResponse. If unspecified, defaults to
-    `BASIC` and returns `consented` as `TRUE` or `FALSE`.
+    r"""Optional. The view for CheckDataAccessResponse. If unspecified,
+    defaults to `BASIC` and returns `consented` as `TRUE` or `FALSE`.
 
     Values:
       RESPONSE_VIEW_UNSPECIFIED: No response view specified. The API will
@@ -474,7 +482,7 @@ class CheckDataAccessRequest(_messages.Message):
       BASIC: Only the `consented` field is populated in
         CheckDataAccessResponse.
       FULL: All fields within CheckDataAccessResponse are populated. When set
-        to `FULL`, all `ACTIVE` consents are evaluated even if a matching
+        to `FULL`, all `ACTIVE` Consents are evaluated even if a matching
         policy is found during evaluation.
     """
     RESPONSE_VIEW_UNSPECIFIED = 0
@@ -515,7 +523,7 @@ class CheckDataAccessRequest(_messages.Message):
 
 class CheckDataAccessResponse(_messages.Message):
   r"""Checks if a particular data_id of a User data mapping in the given
-  Consent store is consented for a given use.
+  consent store is consented for a given use.
 
   Messages:
     ConsentDetailsValue: The resource names of all evaluated Consents mapped
@@ -524,7 +532,7 @@ class CheckDataAccessResponse(_messages.Message):
   Fields:
     consentDetails: The resource names of all evaluated Consents mapped to
       their evaluation.
-    consented: Whether the requested data is consented for the given use.
+    consented: Whether the requested resource is consented for the given use.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -568,16 +576,17 @@ class CloudHealthcareSource(_messages.Message):
 
 
 class Consent(_messages.Message):
-  r"""Represents an end user's consent.
+  r"""Represents a user's consent.
 
   Enums:
-    StateValueValuesEnum: Indicates the current state of this consent.
+    StateValueValuesEnum: Required. Indicates the current state of this
+      Consent.
 
   Messages:
-    MetadataValue: User-supplied key-value pairs used to organize consent
-      resources. Metadata keys must: - be between 1 and 63 characters long -
-      have a UTF-8 encoding of maximum 128 bytes - begin with a letter -
-      consist of up to 63 characters including lowercase letters, numeric
+    MetadataValue: Optional. User-supplied key-value pairs used to organize
+      Consent resources. Metadata keys must: - be between 1 and 63 characters
+      long - have a UTF-8 encoding of maximum 128 bytes - begin with a letter
+      - consist of up to 63 characters including lowercase letters, numeric
       characters, underscores, and dashes Metadata values must be: - be
       between 1 and 63 characters long - have a UTF-8 encoding of maximum 128
       bytes - consist of up to 63 characters including lowercase letters,
@@ -585,12 +594,12 @@ class Consent(_messages.Message):
       entries can be associated with a given consent.
 
   Fields:
-    consentArtifact: Required. The resource name of the consent artifact that
+    consentArtifact: Required. The resource name of the Consent artifact that
       contains proof of the end user's consent, of the form `projects/{project
       _id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consen
       t_store_id}/consentArtifacts/{consent_artifact_id}`.
-    expireTime: Timestamp in UTC of when this consent is considered expired.
-    metadata: User-supplied key-value pairs used to organize consent
+    expireTime: Timestamp in UTC of when this Consent is considered expired.
+    metadata: Optional. User-supplied key-value pairs used to organize Consent
       resources. Metadata keys must: - be between 1 and 63 characters long -
       have a UTF-8 encoding of maximum 128 bytes - begin with a letter -
       consist of up to 63 characters including lowercase letters, numeric
@@ -601,36 +610,37 @@ class Consent(_messages.Message):
       entries can be associated with a given consent.
     name: Resource name of the Consent, of the form `projects/{project_id}/loc
       ations/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_
-      id}/consents/{consent_id}`.
-    policies: Represents an end user's consent in terms of the resources that
-      can be accessed and under what conditions.
+      id}/consents/{consent_id}`. Cannot be changed after creation.
+    policies: Optional. Represents a user's consent in terms of the resources
+      that can be accessed and under what conditions.
     revisionCreateTime: Output only. The timestamp that the revision was
       created.
-    revisionId: Output only. The revision ID of the consent. The format is an
+    revisionId: Output only. The revision ID of the Consent. The format is an
       8-character hexadecimal string. Refer to a specific revision of a
       Consent by appending `@{revision_id}` to the Consent's resource name.
-    state: Indicates the current state of this consent.
-    ttl: Input only. The time to live for this consent from when it is
+    state: Required. Indicates the current state of this Consent.
+    ttl: Input only. The time to live for this Consent from when it is
       created.
     userId: Required. User's UUID provided by the client.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Indicates the current state of this consent.
+    r"""Required. Indicates the current state of this Consent.
 
     Values:
       STATE_UNSPECIFIED: No state specified.
-      ACTIVE: The consent is active and is considered when evaluating user's
+      ACTIVE: The Consent is active and is considered when evaluating a user's
         consent on resources.
-      ARCHIVED: When a consent is updated, the current version is archived and
-        a new one is created with active state.
-      REVOKED: A revoked consent is not considered when evaluating user's
+      ARCHIVED: When a Consent is updated, the current version is archived and
+        a new one is created with its state set to the updated Consent's
+        previous state.
+      REVOKED: A revoked Consent is not considered when evaluating a user's
         consent on resources.
-      DRAFT: A draft consent is not considered when evaluating user's consent
-        on resources unless explicitly asked.
-      REJECTED: When a draft consent is rejected by end user, it should be
-        stored back with rejected state. A rejected consent is not considered
-        when evaluating user's consent on resources.
+      DRAFT: A draft Consent is not considered when evaluating a user's
+        consent on resources unless explicitly specified.
+      REJECTED: When a draft Consent is rejected by a user, it is set to a
+        rejected state. A rejected Consent is not considered when evaluating a
+        user's consent on resources.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -641,15 +651,15 @@ class Consent(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""User-supplied key-value pairs used to organize consent resources.
-    Metadata keys must: - be between 1 and 63 characters long - have a UTF-8
-    encoding of maximum 128 bytes - begin with a letter - consist of up to 63
-    characters including lowercase letters, numeric characters, underscores,
-    and dashes Metadata values must be: - be between 1 and 63 characters long
-    - have a UTF-8 encoding of maximum 128 bytes - consist of up to 63
-    characters including lowercase letters, numeric characters, underscores,
-    and dashes No more than 64 metadata entries can be associated with a given
-    consent.
+    r"""Optional. User-supplied key-value pairs used to organize Consent
+    resources. Metadata keys must: - be between 1 and 63 characters long -
+    have a UTF-8 encoding of maximum 128 bytes - begin with a letter - consist
+    of up to 63 characters including lowercase letters, numeric characters,
+    underscores, and dashes Metadata values must be: - be between 1 and 63
+    characters long - have a UTF-8 encoding of maximum 128 bytes - consist of
+    up to 63 characters including lowercase letters, numeric characters,
+    underscores, and dashes No more than 64 metadata entries can be associated
+    with a given consent.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -684,31 +694,33 @@ class Consent(_messages.Message):
 
 
 class ConsentArtifact(_messages.Message):
-  r"""Proof of an end user's consent.
+  r"""Documentation of a user's consent.
 
   Messages:
-    MetadataValue: Metadata associated with the consent artifact. For example,
-      the consent locale or user agent version.
+    MetadataValue: Optional. Metadata associated with the Consent artifact.
+      For example, the consent locale or user agent version.
 
   Fields:
-    consentContentScreenshots: Screenshots of the consent content.
-    consentContentVersion: An string indicating the version of the consent
-      content.
-    guardianSignature: A signature from guardian.
-    metadata: Metadata associated with the consent artifact. For example, the
-      consent locale or user agent version.
+    consentContentScreenshots: Optional. Screenshots, PDFs, or other binary
+      information documenting the user's consent.
+    consentContentVersion: Optional. An string indicating the version of the
+      consent information shown to the user.
+    guardianSignature: Optional. A signature from a guardian.
+    metadata: Optional. Metadata associated with the Consent artifact. For
+      example, the consent locale or user agent version.
     name: Resource name of the Consent artifact, of the form `projects/{projec
       t_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{conse
-      nt_store_id}/consentArtifacts/{consent_artifact_id}`.
+      nt_store_id}/consentArtifacts/{consent_artifact_id}`. Cannot be changed
+      after creation.
     userId: Required. User's UUID provided by the client.
-    userSignature: User's signature.
-    witnessSignature: A signature from a witness.
+    userSignature: Optional. User's signature.
+    witnessSignature: Optional. A signature from a witness.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Metadata associated with the consent artifact. For example, the
-    consent locale or user agent version.
+    r"""Optional. Metadata associated with the Consent artifact. For example,
+    the consent locale or user agent version.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -756,18 +768,18 @@ class ConsentEvaluation(_messages.Message):
     Values:
       EVALUATION_RESULT_UNSPECIFIED: No evaluation result specified. This
         option is invalid.
-      NOT_APPLICABLE: The consent is not applicable to the requested access
-        determination. For example, it does not belong to the end user who
-        owns the data for which the access determination is requested, or it
-        has a `state` of `REVOKED`.
-      NO_MATCHING_POLICY: The consent does not have a policy with matching
-        `resource_attributes` as the data.
-      NO_SATISFIED_POLICY: The consent has at least one policy with matching
-        `resource_attributes` as the data, but none with a satisfied
-        `authorization_rule`.
-      HAS_SATISFIED_POLICY: The consent has at least one policy with matching
-        `resource_attributes` as the data and a satisfied
-        `authorization_rule`.
+      NOT_APPLICABLE: The Consent is not applicable to the requested access
+        determination. For example, the Consent does not apply to the user for
+        which the access determination is requested, or it has a `state` of
+        `REVOKED`.
+      NO_MATCHING_POLICY: The Consent does not have a policy that matches the
+        `resource_attributes` of the evaluated resource.
+      NO_SATISFIED_POLICY: The Consent has at least one policy that matches
+        the `resource_attributes` of the evaluated resource, but no
+        `authorization_rule` was satisfied.
+      HAS_SATISFIED_POLICY: The Consent has at least one policy that matches
+        the `resource_attributes` of the evaluated resource, and at least one
+        `authorization_rule` was satisfied.
     """
     EVALUATION_RESULT_UNSPECIFIED = 0
     NOT_APPLICABLE = 1
@@ -791,47 +803,51 @@ class ConsentList(_messages.Message):
 
 
 class ConsentStore(_messages.Message):
-  r"""Represents a Consent store.
+  r"""Represents a consent store.
 
   Messages:
-    LabelsValue: User-supplied key-value pairs used to organize Consent
-      stores. Label keys must be between 1 and 63 characters long, have a
-      UTF-8 encoding of maximum 128 bytes, and must conform to the following
-      PCRE regular expression: \p{Ll}\p{Lo}{0,62} Label values must be between
-      1 and 63 characters long, have a UTF-8 encoding of maximum 128 bytes,
-      and must conform to the following PCRE regular expression:
-      [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
-      with a given store.
+    LabelsValue: Optional. User-supplied key-value pairs used to organize
+      consent stores. Label keys must be between 1 and 63 characters long,
+      have a UTF-8 encoding of maximum 128 bytes, and must conform to the
+      following PCRE regular expression: \p{Ll}\p{Lo}{0,62}. Label values must
+      be between 1 and 63 characters long, have a UTF-8 encoding of maximum
+      128 bytes, and must conform to the following PCRE regular expression:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63}. No more than 64 labels can be associated
+      with a given store. For more information:
+      https://cloud.google.com/healthcare/docs/how-tos/labeling-resources
 
   Fields:
-    defaultConsentTtl: Default time to live for consents in this store. Must
-      be at least 24 hours. Updating this field will not affect the expiration
-      time of existing consents.
-    enableConsentCreateOnUpdate: If true, UpdateConsent creates the consent if
-      it does not already exist.
-    labels: User-supplied key-value pairs used to organize Consent stores.
-      Label keys must be between 1 and 63 characters long, have a UTF-8
-      encoding of maximum 128 bytes, and must conform to the following PCRE
-      regular expression: \p{Ll}\p{Lo}{0,62} Label values must be between 1
-      and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and
-      must conform to the following PCRE regular expression:
-      [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
-      with a given store.
-    name: Resource name of the Consent store, of the form `projects/{project_i
+    defaultConsentTtl: Optional. Default time to live for Consents created in
+      this store. Must be at least 24 hours. Updating this field will not
+      affect the expiration time of existing consents.
+    enableConsentCreateOnUpdate: Optional. If `true`, UpdateConsent creates
+      the Consent if it does not already exist. If unspecified, defaults to
+      `false`.
+    labels: Optional. User-supplied key-value pairs used to organize consent
+      stores. Label keys must be between 1 and 63 characters long, have a
+      UTF-8 encoding of maximum 128 bytes, and must conform to the following
+      PCRE regular expression: \p{Ll}\p{Lo}{0,62}. Label values must be
+      between 1 and 63 characters long, have a UTF-8 encoding of maximum 128
+      bytes, and must conform to the following PCRE regular expression:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63}. No more than 64 labels can be associated
+      with a given store. For more information:
+      https://cloud.google.com/healthcare/docs/how-tos/labeling-resources
+    name: Resource name of the consent store, of the form `projects/{project_i
       d}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consent_
-      store_id}`.
+      store_id}`. Cannot be changed after creation.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""User-supplied key-value pairs used to organize Consent stores. Label
-    keys must be between 1 and 63 characters long, have a UTF-8 encoding of
-    maximum 128 bytes, and must conform to the following PCRE regular
-    expression: \p{Ll}\p{Lo}{0,62} Label values must be between 1 and 63
-    characters long, have a UTF-8 encoding of maximum 128 bytes, and must
+    r"""Optional. User-supplied key-value pairs used to organize consent
+    stores. Label keys must be between 1 and 63 characters long, have a UTF-8
+    encoding of maximum 128 bytes, and must conform to the following PCRE
+    regular expression: \p{Ll}\p{Lo}{0,62}. Label values must be between 1 and
+    63 characters long, have a UTF-8 encoding of maximum 128 bytes, and must
     conform to the following PCRE regular expression:
-    [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated with
-    a given store.
+    [\p{Ll}\p{Lo}\p{N}_-]{0,63}. No more than 64 labels can be associated with
+    a given store. For more information:
+    https://cloud.google.com/healthcare/docs/how-tos/labeling-resources
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1358,51 +1374,57 @@ class EvaluateAnnotationStoreResponse(_messages.Message):
 
 
 class EvaluateUserConsentsRequest(_messages.Message):
-  r"""Evaluate an end user's Consents for all matching User data mappings.
+  r"""Evaluate a user's Consents for all matching User data mappings. Note:
+  User data mappings are indexed asynchronously, causing slight delays between
+  the time mappings are created or updated and when they are included in
+  EvaluateUserConsents results.
 
   Enums:
-    ResponseViewValueValuesEnum: The view for EvaluateUserConsentsResponse. If
-      unspecified, defaults to `BASIC` and returns `consented` as `TRUE` or
-      `FALSE`.
+    ResponseViewValueValuesEnum: Optional. The view for
+      EvaluateUserConsentsResponse. If unspecified, defaults to `BASIC` and
+      returns `consented` as `TRUE` or `FALSE`.
 
   Messages:
-    RequestAttributesValue: The values of request attributes associated with
-      this access request.
-    ResourceAttributesValue: The values of resources attributes associated
-      with the type of data being requested. If no values are specified, then
-      all data types are queried.
+    RequestAttributesValue: Required. The values of request attributes
+      associated with this access request.
+    ResourceAttributesValue: Optional. The values of resource attributes
+      associated with the resources being requested. If no values are
+      specified, then all resources are queried.
 
   Fields:
-    consentList: The Consents to evaluate the access request against. They
-      must have the same `user_id` as the data to check access for, exist in
-      the current `consent_store`, and can have a `state` of either `ACTIVE`
-      or `DRAFT`. A maximum of 100 consents can be provided here. If
-      unspecified, all `ACTIVE` unexpired consents in the current
-      `consent_store` will be evaluated.
-    pageSize: Limit on the number of user data mappings to return in a single
-      response. If not specified, 100 is used. May not be larger than 1000.
-    pageToken: Token to retrieve the next page of results to get the first
-      page.
-    requestAttributes: The values of request attributes associated with this
-      access request.
-    resourceAttributes: The values of resources attributes associated with the
-      type of data being requested. If no values are specified, then all data
-      types are queried.
-    responseView: The view for EvaluateUserConsentsResponse. If unspecified,
-      defaults to `BASIC` and returns `consented` as `TRUE` or `FALSE`.
+    consentList: Optional. Specific Consents to evaluate the access request
+      against. These Consents must have the same `user_id` as the User data
+      mappings being evalauted, must exist in the current `consent_store`, and
+      must have a `state` of either `ACTIVE` or `DRAFT`. A maximum of 100
+      Consents can be provided here. If unspecified, all `ACTIVE` unexpired
+      Consents in the current `consent_store` will be evaluated.
+    pageSize: Optional. Limit on the number of User data mappings to return in
+      a single response. If not specified, 100 is used. May not be larger than
+      1000.
+    pageToken: Optional. Token to retrieve the next page of results, or empty
+      to get the first page.
+    requestAttributes: Required. The values of request attributes associated
+      with this access request.
+    resourceAttributes: Optional. The values of resource attributes associated
+      with the resources being requested. If no values are specified, then all
+      resources are queried.
+    responseView: Optional. The view for EvaluateUserConsentsResponse. If
+      unspecified, defaults to `BASIC` and returns `consented` as `TRUE` or
+      `FALSE`.
     userId: Required. User ID to evaluate consents for.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
-    r"""The view for EvaluateUserConsentsResponse. If unspecified, defaults to
-    `BASIC` and returns `consented` as `TRUE` or `FALSE`.
+    r"""Optional. The view for EvaluateUserConsentsResponse. If unspecified,
+    defaults to `BASIC` and returns `consented` as `TRUE` or `FALSE`.
 
     Values:
       RESPONSE_VIEW_UNSPECIFIED: No response view specified. The API will
         default to the BASIC view.
-      BASIC: Only the `consented` field is populated in the response.
+      BASIC: Only the `data_id` and `consented` fields are populated in the
+        response.
       FULL: All fields within the response are populated. When set to `FULL`,
-        all `ACTIVE` consents are evaluated even if a matching policy is found
+        all `ACTIVE` Consents are evaluated even if a matching policy is found
         during evaluation.
     """
     RESPONSE_VIEW_UNSPECIFIED = 0
@@ -1411,7 +1433,8 @@ class EvaluateUserConsentsRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RequestAttributesValue(_messages.Message):
-    r"""The values of request attributes associated with this access request.
+    r"""Required. The values of request attributes associated with this access
+    request.
 
     Messages:
       AdditionalProperty: An additional property for a RequestAttributesValue
@@ -1437,9 +1460,9 @@ class EvaluateUserConsentsRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourceAttributesValue(_messages.Message):
-    r"""The values of resources attributes associated with the type of data
-    being requested. If no values are specified, then all data types are
-    queried.
+    r"""Optional. The values of resource attributes associated with the
+    resources being requested. If no values are specified, then all resources
+    are queried.
 
     Messages:
       AdditionalProperty: An additional property for a ResourceAttributesValue
@@ -1473,10 +1496,10 @@ class EvaluateUserConsentsRequest(_messages.Message):
 
 
 class EvaluateUserConsentsResponse(_messages.Message):
-  r"""Evaluate an end user's Consents for all matching User data mappings.
+  r"""A EvaluateUserConsentsResponse object.
 
   Fields:
-    nextPageToken: Token to retrieve the next page of results or empty if
+    nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list. This token is valid for 72 hours
       after it is created.
     results: The consent evaluation result for each `data_id`.
@@ -2110,16 +2133,17 @@ class GoogleCloudHealthcareV1beta1ConsentGcsDestination(_messages.Message):
 
 
 class GoogleCloudHealthcareV1beta1ConsentPolicy(_messages.Message):
-  r"""Represents an end user's consent in terms of the resources that can be
+  r"""Represents a user's consent in terms of the resources that can be
   accessed and under what conditions.
 
   Fields:
-    authorizationRule: The request conditions to meet to grant access. In
-      addition to any supported comparison operators, authorization rules may
-      have `IN` operator as well as at most 10 logical operators that are
-      limited to `AND` (`&&`), `OR` (`||`).
-    resourceAttributes: The data resources that this policy applies to. A data
-      resource is a match if it matches all the attributes listed here.
+    authorizationRule: Required. The request conditions to meet to grant
+      access. In addition to any supported comparison operators, authorization
+      rules may have `IN` operator as well as at most 10 logical operators
+      that are limited to `AND` (`&&`), `OR` (`||`).
+    resourceAttributes: The resources that this policy applies to. A resource
+      is a match if it matches all the attributes listed here. If empty, this
+      policy applies to all User data mappings for the given user.
   """
 
   authorizationRule = _messages.MessageField('Expr', 1)
@@ -2711,6 +2735,8 @@ class HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsDelete
 
   Fields:
     name: Required. The resource name of the Attribute definition to delete.
+      To preserve referential integrity, Attribute definitions referenced by a
+      User data mapping or the latest revision of a Consent cannot be deleted.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2732,35 +2758,36 @@ class HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsListRe
   stRequest object.
 
   Fields:
-    filter: Restricts the attributes returned to those matching a filter. The
-      following syntax is available: * A string field value can be written as
-      text inside quotation marks, for example `"query text"`. The only valid
-      relational operation for text fields is equality (`=`), where text is
-      searched within the field, rather than having the field be equal to the
-      text. For example, `"Comment = great"` returns messages with `great` in
-      the comment field. * A number field value can be written as an integer,
-      a decimal, or an exponential. The valid relational operators for number
-      fields are the equality operator (`=`), along with the less than/greater
-      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
-      (`!=`) operator. You can prepend the `NOT` operator to an expression to
-      negate it. * A date field value must be written in `yyyy-mm-dd` form.
-      Fields with date and time use the RFC3339 time format. Leading zeros are
-      required for one-digit months and days. The valid relational operators
-      for date fields are the equality operator (`=`) , along with the less
+    filter: Optional. Restricts the attributes returned to those matching a
+      filter. The following syntax is available: * A string field value can be
+      written as text inside quotation marks, for example `"query text"`. The
+      only valid relational operation for text fields is equality (`=`), where
+      text is searched within the field, rather than having the field be equal
+      to the text. For example, `"Comment = great"` returns messages with
+      `great` in the comment field. * A number field value can be written as
+      an integer, a decimal, or an exponential. The valid relational operators
+      for number fields are the equality operator (`=`), along with the less
       than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
       no inequality (`!=`) operator. You can prepend the `NOT` operator to an
-      expression to negate it. * Multiple field query expressions can be
-      combined in one query by adding `AND` or `OR` operators between the
-      expressions. If a boolean operator appears within a quoted string, it is
-      not treated as special, it's just another part of the character string
-      to be matched. You can prepend the `NOT` operator to an expression to
-      negate it. The only field available for filtering is `category`.
-    pageSize: Limit on the number of attribute definitions to return in a
-      single response. If not specified, 100 is used. May not be larger than
-      1000.
-    pageToken: Token to retrieve the next page of results or empty to get the
-      first page.
-    parent: Required. Name of the Consent store to retrieve attribute
+      expression to negate it. * A date field value must be written in `yyyy-
+      mm-dd` form. Fields with date and time use the RFC3339 time format.
+      Leading zeros are required for one-digit months and days. The valid
+      relational operators for date fields are the equality operator (`=`) ,
+      along with the less than/greater than operators (`<`, `<=`, `>`, `>=`).
+      Note that there is no inequality (`!=`) operator. You can prepend the
+      `NOT` operator to an expression to negate it. * Multiple field query
+      expressions can be combined in one query by adding `AND` or `OR`
+      operators between the expressions. If a boolean operator appears within
+      a quoted string, it is not treated as special, it's just another part of
+      the character string to be matched. You can prepend the `NOT` operator
+      to an expression to negate it. The only field available for filtering is
+      `category`. For example, `filter=category=\"REQUEST\"`.
+    pageSize: Optional. Limit on the number of Attribute definitions to return
+      in a single response. If not specified, 100 is used. May not be larger
+      than 1000.
+    pageToken: Optional. Token to retrieve the next page of results or empty
+      to get the first page.
+    parent: Required. Name of the consent store to retrieve Attribute
       definitions from.
   """
 
@@ -2777,15 +2804,16 @@ class HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsPatchR
   Fields:
     attributeDefinition: A AttributeDefinition resource to be passed as the
       request body.
-    name: Resource name of the attribute definition, of the form `projects/{pr
+    name: Resource name of the Attribute definition, of the form `projects/{pr
       oject_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{c
-      onsent_store_id}/attributeDefinitions/{attribute_definition_id}`.
-    updateMask: The update mask that applies to the resource. For the
-      `FieldMask` definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask. The `description`,
-      `allowed_values`, `consent_default_values`, and
-      `data_mapping_default_value` fields are allowed to be updated. The
-      updated `allowed_values` must contain all values from the previous
+      onsent_store_id}/attributeDefinitions/{attribute_definition_id}`. Cannot
+      be changed after creation.
+    updateMask: Required. The update mask that applies to the resource. For
+      the `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask. Only the
+      `description`, `allowed_values`, `consent_default_values` and
+      `data_mapping_default_value` fields can be updated. The updated
+      `allowed_values` must contain all values from the previous
       `allowed_values`.
   """
 
@@ -2801,9 +2829,9 @@ class HealthcareProjectsLocationsDatasetsConsentStoresCheckDataAccessRequest(_me
   Fields:
     checkDataAccessRequest: A CheckDataAccessRequest resource to be passed as
       the request body.
-    consentStore: Name of the Consent store where the requested data_id is
-      stored, of the form `projects/{project_id}/locations/{location_id}/datas
-      ets/{dataset_id}/consentStores/{consent_store_id}`.
+    consentStore: Required. Name of the consent store where the requested
+      data_id is stored, of the form `projects/{project_id}/locations/{locatio
+      n_id}/datasets/{dataset_id}/consentStores/{consent_store_id}`.
   """
 
   checkDataAccessRequest = _messages.MessageField('CheckDataAccessRequest', 1)
@@ -2817,7 +2845,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsCreateRequ
   Fields:
     consentArtifact: A ConsentArtifact resource to be passed as the request
       body.
-    parent: Required. The name of the Consent store this consent artifact
+    parent: Required. The name of the consent store this Consent artifact
       belongs to.
   """
 
@@ -2830,7 +2858,9 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsDeleteRequ
   Request object.
 
   Fields:
-    name: Required. The resource name of the consent artifact to delete.
+    name: Required. The resource name of the Consent artifact to delete. To
+      preserve referential integrity, Consent artifacts referenced by the
+      latest revision of a Consent cannot be deleted.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2842,7 +2872,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsGetRequest
   object.
 
   Fields:
-    name: Required. The resource name of the consent artifact to retrieve.
+    name: Required. The resource name of the Consent artifact to retrieve.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2854,36 +2884,39 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsListReques
   object.
 
   Fields:
-    filter: Restricts the artifacts returned to those matching a filter. The
-      following syntax is available: * A string field value can be written as
-      text inside quotation marks, for example `"query text"`. The only valid
-      relational operation for text fields is equality (`=`), where text is
-      searched within the field, rather than having the field be equal to the
-      text. For example, `"Comment = great"` returns messages with `great` in
-      the comment field. * A number field value can be written as an integer,
-      a decimal, or an exponential. The valid relational operators for number
-      fields are the equality operator (`=`), along with the less than/greater
-      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
-      (`!=`) operator. You can prepend the `NOT` operator to an expression to
-      negate it. * A date field value must be written in `yyyy-mm-dd` form.
-      Fields with date and time use the RFC3339 time format. Leading zeros are
-      required for one-digit months and days. The valid relational operators
-      for date fields are the equality operator (`=`) , along with the less
+    filter: Optional. Restricts the artifacts returned to those matching a
+      filter. The following syntax is available: * A string field value can be
+      written as text inside quotation marks, for example `"query text"`. The
+      only valid relational operation for text fields is equality (`=`), where
+      text is searched within the field, rather than having the field be equal
+      to the text. For example, `"Comment = great"` returns messages with
+      `great` in the comment field. * A number field value can be written as
+      an integer, a decimal, or an exponential. The valid relational operators
+      for number fields are the equality operator (`=`), along with the less
       than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
       no inequality (`!=`) operator. You can prepend the `NOT` operator to an
-      expression to negate it. * Multiple field query expressions can be
-      combined in one query by adding `AND` or `OR` operators between the
-      expressions. If a boolean operator appears within a quoted string, it is
-      not treated as special, it's just another part of the character string
-      to be matched. You can prepend the `NOT` operator to an expression to
-      negate it. The fields available for filtering are: - user_id -
+      expression to negate it. * A date field value must be written in `yyyy-
+      mm-dd` form. Fields with date and time use the RFC3339 time format.
+      Leading zeros are required for one-digit months and days. The valid
+      relational operators for date fields are the equality operator (`=`) ,
+      along with the less than/greater than operators (`<`, `<=`, `>`, `>=`).
+      Note that there is no inequality (`!=`) operator. You can prepend the
+      `NOT` operator to an expression to negate it. * Multiple field query
+      expressions can be combined in one query by adding `AND` or `OR`
+      operators between the expressions. If a boolean operator appears within
+      a quoted string, it is not treated as special, it's just another part of
+      the character string to be matched. You can prepend the `NOT` operator
+      to an expression to negate it. The fields available for filtering are: -
+      user_id. For example, `filter=user_id=\"user123\"`. -
       consent_content_version - metadata. For example,
-      `Metadata("key")="value"` or `HasMetadata("key")`.
-    pageSize: Limit on the number of consent artifacts to return in a single
-      response. If not specified, 100 is used. May not be larger than 1000.
-    pageToken: The next_page_token value returned from the previous List
-      request, if any.
-    parent: Required. Name of the Consent store to retrieve consent artifacts
+      `filter=Metadata(\"testkey\")=\"value\"` or
+      `filter=HasMetadata(\"testkey\")`.
+    pageSize: Optional. Limit on the number of consent artifacts to return in
+      a single response. If not specified, 100 is used. May not be larger than
+      1000.
+    pageToken: Optional. The next_page_token value returned from the previous
+      List request, if any.
+    parent: Required. Name of the consent store to retrieve consent artifacts
       from.
   """
 
@@ -2901,7 +2934,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsActivateRequest(_m
   Fields:
     activateConsentRequest: A ActivateConsentRequest resource to be passed as
       the request body.
-    name: Required. The resource name of the consent to activate, of the form
+    name: Required. The resource name of the Consent to activate, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/con
       sentStores/{consent_store_id}/consents/{consent_id}`. An
       INVALID_ARGUMENT error occurs if `revision_id` is specified in the name.
@@ -2929,7 +2962,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsDeleteRequest(_mes
   object.
 
   Fields:
-    name: Required. The resource name of the consent to delete, of the form `p
+    name: Required. The resource name of the Consent to delete, of the form `p
       rojects/{project_id}/locations/{location_id}/datasets/{dataset_id}/conse
       ntStores/{consent_store_id}/consents/{consent_id}`. An INVALID_ARGUMENT
       error occurs if `revision_id` is specified in the name.
@@ -2943,7 +2976,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsDeleteRevisionRequ
   Request object.
 
   Fields:
-    name: Required. The resource name of the consent revision to delete, of
+    name: Required. The resource name of the Consent revision to delete, of
       the form `projects/{project_id}/locations/{location_id}/datasets/{datase
       t_id}/consentStores/{consent_store_id}/consents/{consent_id}@{revision_i
       d}`. An INVALID_ARGUMENT error occurs if `revision_id` is not specified
@@ -2958,10 +2991,10 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsGetRequest(_messag
   object.
 
   Fields:
-    name: Required. The resource name of the consent to retrieve, of the form
+    name: Required. The resource name of the Consent to retrieve, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/con
       sentStores/{consent_store_id}/consents/{consent_id}`. In order to
-      retrieve a previous revision of the consent, also provide the revision
+      retrieve a previous revision of the Consent, also provide the revision
       ID: `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}
       /consentStores/{consent_store_id}/consents/{consent_id}@{revision_id}`
   """
@@ -2974,36 +3007,38 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRequest(_messa
   object.
 
   Fields:
-    filter: Restricts the consents returned to those matching a filter. The
-      following syntax is available: * A string field value can be written as
-      text inside quotation marks, for example `"query text"`. The only valid
-      relational operation for text fields is equality (`=`), where text is
-      searched within the field, rather than having the field be equal to the
-      text. For example, `"Comment = great"` returns messages with `great` in
-      the comment field. * A number field value can be written as an integer,
-      a decimal, or an exponential. The valid relational operators for number
-      fields are the equality operator (`=`), along with the less than/greater
-      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
-      (`!=`) operator. You can prepend the `NOT` operator to an expression to
-      negate it. * A date field value must be written in `yyyy-mm-dd` form.
-      Fields with date and time use the RFC3339 time format. Leading zeros are
-      required for one-digit months and days. The valid relational operators
-      for date fields are the equality operator (`=`) , along with the less
+    filter: Optional. Restricts the consents returned to those matching a
+      filter. The following syntax is available: * A string field value can be
+      written as text inside quotation marks, for example `"query text"`. The
+      only valid relational operation for text fields is equality (`=`), where
+      text is searched within the field, rather than having the field be equal
+      to the text. For example, `"Comment = great"` returns messages with
+      `great` in the comment field. * A number field value can be written as
+      an integer, a decimal, or an exponential. The valid relational operators
+      for number fields are the equality operator (`=`), along with the less
       than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
       no inequality (`!=`) operator. You can prepend the `NOT` operator to an
-      expression to negate it. * Multiple field query expressions can be
-      combined in one query by adding `AND` or `OR` operators between the
-      expressions. If a boolean operator appears within a quoted string, it is
-      not treated as special, it's just another part of the character string
-      to be matched. You can prepend the `NOT` operator to an expression to
-      negate it. The fields available for filtering are: - user_id -
-      consent_artifact - state - revision_create_time - metadata. For example,
-      `Metadata("key")="value"` or `HasMetadata("key")`.
-    pageSize: Limit on the number of consents to return in a single response.
-      If not specified, 100 is used. May not be larger than 1000.
-    pageToken: The next_page_token value returned from the previous List
-      request, if any.
-    parent: Required. Name of the Consent store to retrieve consents from.
+      expression to negate it. * A date field value must be written in `yyyy-
+      mm-dd` form. Fields with date and time use the RFC3339 time format.
+      Leading zeros are required for one-digit months and days. The valid
+      relational operators for date fields are the equality operator (`=`) ,
+      along with the less than/greater than operators (`<`, `<=`, `>`, `>=`).
+      Note that there is no inequality (`!=`) operator. You can prepend the
+      `NOT` operator to an expression to negate it. * Multiple field query
+      expressions can be combined in one query by adding `AND` or `OR`
+      operators between the expressions. If a boolean operator appears within
+      a quoted string, it is not treated as special, it's just another part of
+      the character string to be matched. You can prepend the `NOT` operator
+      to an expression to negate it. The fields available for filtering are: -
+      user_id. For example, `filter='user_id="user123"'`. - consent_artifact -
+      state - revision_create_time - metadata. For example,
+      `filter=Metadata(\"testkey\")=\"value\"` or
+      `filter=HasMetadata(\"testkey\")`.
+    pageSize: Optional. Limit on the number of Consents to return in a single
+      response. If not specified, 100 is used. May not be larger than 1000.
+    pageToken: Optional. The next_page_token value returned from the previous
+      List request, if any.
+    parent: Required. Name of the consent store to retrieve Consents from.
   """
 
   filter = _messages.StringField(1)
@@ -3018,36 +3053,39 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRevisionsReque
   object.
 
   Fields:
-    filter: Restricts the revisions returned to those matching a filter. The
-      following syntax is available: * A string field value can be written as
-      text inside quotation marks, for example `"query text"`. The only valid
-      relational operation for text fields is equality (`=`), where text is
-      searched within the field, rather than having the field be equal to the
-      text. For example, `"Comment = great"` returns messages with `great` in
-      the comment field. * A number field value can be written as an integer,
-      a decimal, or an exponential. The valid relational operators for number
-      fields are the equality operator (`=`), along with the less than/greater
-      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
-      (`!=`) operator. You can prepend the `NOT` operator to an expression to
-      negate it. * A date field value must be written in `yyyy-mm-dd` form.
-      Fields with date and time use the RFC3339 time format. Leading zeros are
-      required for one-digit months and days. The valid relational operators
-      for date fields are the equality operator (`=`) , along with the less
+    filter: Optional. Restricts the revisions returned to those matching a
+      filter. The following syntax is available: * A string field value can be
+      written as text inside quotation marks, for example `"query text"`. The
+      only valid relational operation for text fields is equality (`=`), where
+      text is searched within the field, rather than having the field be equal
+      to the text. For example, `"Comment = great"` returns messages with
+      `great` in the comment field. * A number field value can be written as
+      an integer, a decimal, or an exponential. The valid relational operators
+      for number fields are the equality operator (`=`), along with the less
       than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
       no inequality (`!=`) operator. You can prepend the `NOT` operator to an
-      expression to negate it. * Multiple field query expressions can be
-      combined in one query by adding `AND` or `OR` operators between the
-      expressions. If a boolean operator appears within a quoted string, it is
-      not treated as special, it's just another part of the character string
-      to be matched. You can prepend the `NOT` operator to an expression to
-      negate it. Fields/functions available for filtering are: - user_id -
-      consent_artifact - state - revision_create_time
-    name: Required. The resource name of the consent to retrieve revisions
+      expression to negate it. * A date field value must be written in `yyyy-
+      mm-dd` form. Fields with date and time use the RFC3339 time format.
+      Leading zeros are required for one-digit months and days. The valid
+      relational operators for date fields are the equality operator (`=`) ,
+      along with the less than/greater than operators (`<`, `<=`, `>`, `>=`).
+      Note that there is no inequality (`!=`) operator. You can prepend the
+      `NOT` operator to an expression to negate it. * Multiple field query
+      expressions can be combined in one query by adding `AND` or `OR`
+      operators between the expressions. If a boolean operator appears within
+      a quoted string, it is not treated as special, it's just another part of
+      the character string to be matched. You can prepend the `NOT` operator
+      to an expression to negate it. Fields/functions available for filtering
+      are: - user_id. For example, `filter='user_id="user123"'`. -
+      consent_artifact - state - revision_create_time - metadata. For example,
+      `filter=Metadata(\"testkey\")=\"value\"` or
+      `filter=HasMetadata(\"testkey\")`.
+    name: Required. The resource name of the Consent to retrieve revisions
       for.
-    pageSize: Limit on the number of revisions to return in a single response.
-      If not specified, 100 is used. May not be larger than 1000.
-    pageToken: Token to retrieve the next page of results or empty if there
-      are no more results in the list.
+    pageSize: Optional. Limit on the number of revisions to return in a single
+      response. If not specified, 100 is used. May not be larger than 1000.
+    pageToken: Optional. Token to retrieve the next page of results or empty
+      if there are no more results in the list.
   """
 
   filter = _messages.StringField(1)
@@ -3064,11 +3102,11 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsPatchRequest(_mess
     consent: A Consent resource to be passed as the request body.
     name: Resource name of the Consent, of the form `projects/{project_id}/loc
       ations/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_
-      id}/consents/{consent_id}`.
-    updateMask: The update mask to apply to the resource. For the `FieldMask`
-      definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask. The `user_id`,
-      `policies`, and `consent_artifact` fields can be updated.
+      id}/consents/{consent_id}`. Cannot be changed after creation.
+    updateMask: Required. The update mask to apply to the resource. For the
+      `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask. Only the `user_id`,
+      `policies`, `consent_artifact`, and `metadata` fields can be updated.
   """
 
   consent = _messages.MessageField('Consent', 1)
@@ -3081,7 +3119,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsRejectRequest(_mes
   object.
 
   Fields:
-    name: Required. The resource name of the consent to reject, of the form `p
+    name: Required. The resource name of the Consent to reject, of the form `p
       rojects/{project_id}/locations/{location_id}/datasets/{dataset_id}/conse
       ntStores/{consent_store_id}/consents/{consent_id}`. An INVALID_ARGUMENT
       error occurs if `revision_id` is specified in the name.
@@ -3098,7 +3136,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsRevokeRequest(_mes
   object.
 
   Fields:
-    name: Required. The resource name of the consent to revoke, of the form `p
+    name: Required. The resource name of the Consent to revoke, of the form `p
       rojects/{project_id}/locations/{location_id}/datasets/{dataset_id}/conse
       ntStores/{consent_store_id}/consents/{consent_id}`. An INVALID_ARGUMENT
       error occurs if `revision_id` is specified in the name.
@@ -3115,9 +3153,10 @@ class HealthcareProjectsLocationsDatasetsConsentStoresCreateRequest(_messages.Me
 
   Fields:
     consentStore: A ConsentStore resource to be passed as the request body.
-    consentStoreId: The ID of the consent store to create. The string must
-      match the following regex: `[\p{L}\p{N}_\-\.]{1,256}`.
-    parent: Required. The name of the dataset this Consent store belongs to.
+    consentStoreId: Required. The ID of the consent store to create. The
+      string must match the following regex: `[\p{L}\p{N}_\-\.]{1,256}`.
+      Cannot be changed after creation.
+    parent: Required. The name of the dataset this consent store belongs to.
   """
 
   consentStore = _messages.MessageField('ConsentStore', 1)
@@ -3129,7 +3168,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresDeleteRequest(_messages.Me
   r"""A HealthcareProjectsLocationsDatasetsConsentStoresDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the Consent store to delete.
+    name: Required. The resource name of the consent store to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3141,8 +3180,8 @@ class HealthcareProjectsLocationsDatasetsConsentStoresEvaluateUserConsentsReques
   object.
 
   Fields:
-    consentStore: Name of the Consent store to retrieve user data mappings
-      from.
+    consentStore: Required. Name of the consent store to retrieve User data
+      mappings from.
     evaluateUserConsentsRequest: A EvaluateUserConsentsRequest resource to be
       passed as the request body.
   """
@@ -3177,7 +3216,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresGetRequest(_messages.Messa
   r"""A HealthcareProjectsLocationsDatasetsConsentStoresGetRequest object.
 
   Fields:
-    name: Required. The resource name of the Consent store to get.
+    name: Required. The resource name of the consent store to get.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3187,34 +3226,35 @@ class HealthcareProjectsLocationsDatasetsConsentStoresListRequest(_messages.Mess
   r"""A HealthcareProjectsLocationsDatasetsConsentStoresListRequest object.
 
   Fields:
-    filter: Restricts the stores returned to those matching a filter. The
-      following syntax is available: * A string field value can be written as
-      text inside quotation marks, for example `"query text"`. The only valid
-      relational operation for text fields is equality (`=`), where text is
-      searched within the field, rather than having the field be equal to the
-      text. For example, `"Comment = great"` returns messages with `great` in
-      the comment field. * A number field value can be written as an integer,
-      a decimal, or an exponential. The valid relational operators for number
-      fields are the equality operator (`=`), along with the less than/greater
-      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
-      (`!=`) operator. You can prepend the `NOT` operator to an expression to
-      negate it. * A date field value must be written in `yyyy-mm-dd` form.
-      Fields with date and time use the RFC3339 time format. Leading zeros are
-      required for one-digit months and days. The valid relational operators
-      for date fields are the equality operator (`=`) , along with the less
+    filter: Optional. Restricts the stores returned to those matching a
+      filter. The following syntax is available: * A string field value can be
+      written as text inside quotation marks, for example `"query text"`. The
+      only valid relational operation for text fields is equality (`=`), where
+      text is searched within the field, rather than having the field be equal
+      to the text. For example, `"Comment = great"` returns messages with
+      `great` in the comment field. * A number field value can be written as
+      an integer, a decimal, or an exponential. The valid relational operators
+      for number fields are the equality operator (`=`), along with the less
       than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
       no inequality (`!=`) operator. You can prepend the `NOT` operator to an
-      expression to negate it. * Multiple field query expressions can be
-      combined in one query by adding `AND` or `OR` operators between the
-      expressions. If a boolean operator appears within a quoted string, it is
-      not treated as special, it's just another part of the character string
-      to be matched. You can prepend the `NOT` operator to an expression to
-      negate it. Only filtering on labels is supported. For example,
-      `labels.key=value`.
-    pageSize: Limit on the number of Consent stores to return in a single
-      response. If not specified, 100 is used. May not be larger than 1000.
-    pageToken: Token to retrieve the next page of results or empty to get the
-      first page.
+      expression to negate it. * A date field value must be written in `yyyy-
+      mm-dd` form. Fields with date and time use the RFC3339 time format.
+      Leading zeros are required for one-digit months and days. The valid
+      relational operators for date fields are the equality operator (`=`) ,
+      along with the less than/greater than operators (`<`, `<=`, `>`, `>=`).
+      Note that there is no inequality (`!=`) operator. You can prepend the
+      `NOT` operator to an expression to negate it. * Multiple field query
+      expressions can be combined in one query by adding `AND` or `OR`
+      operators between the expressions. If a boolean operator appears within
+      a quoted string, it is not treated as special, it's just another part of
+      the character string to be matched. You can prepend the `NOT` operator
+      to an expression to negate it. Only filtering on labels is supported.
+      For example, `filter=labels.key=value`.
+    pageSize: Optional. Limit on the number of consent stores to return in a
+      single response. If not specified, 100 is used. May not be larger than
+      1000.
+    pageToken: Optional. Token to retrieve the next page of results, or empty
+      to get the first page.
     parent: Required. Name of the dataset.
   """
 
@@ -3229,12 +3269,13 @@ class HealthcareProjectsLocationsDatasetsConsentStoresPatchRequest(_messages.Mes
 
   Fields:
     consentStore: A ConsentStore resource to be passed as the request body.
-    name: Resource name of the Consent store, of the form `projects/{project_i
+    name: Resource name of the consent store, of the form `projects/{project_i
       d}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consent_
-      store_id}`.
-    updateMask: The update mask that applies to the resource. For the
-      `FieldMask` definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask. The `labels` field is
+      store_id}`. Cannot be changed after creation.
+    updateMask: Required. The update mask that applies to the resource. For
+      the `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask. Only the `labels`,
+      `default_consent_ttl`, and `enable_consent_create_on_update` fields are
       allowed to be updated.
   """
 
@@ -3249,8 +3290,8 @@ class HealthcareProjectsLocationsDatasetsConsentStoresQueryAccessibleDataRequest
   object.
 
   Fields:
-    consentStore: Name of the Consent store to retrieve user data mappings
-      from.
+    consentStore: Required. Name of the consent store to retrieve User data
+      mappings from.
     queryAccessibleDataRequest: A QueryAccessibleDataRequest resource to be
       passed as the request body.
   """
@@ -3299,7 +3340,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsArchiveReq
   Fields:
     archiveUserDataMappingRequest: A ArchiveUserDataMappingRequest resource to
       be passed as the request body.
-    name: The resource name of the user data mapping to archive.
+    name: Required. The resource name of the User data mapping to archive.
   """
 
   archiveUserDataMappingRequest = _messages.MessageField('ArchiveUserDataMappingRequest', 1)
@@ -3325,7 +3366,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsDeleteRequ
   Request object.
 
   Fields:
-    name: Required. The resource name of the user data mapping to delete.
+    name: Required. The resource name of the User data mapping to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3337,7 +3378,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsGetRequest
   object.
 
   Fields:
-    name: Required. The resource name of the user data mapping to retrieve.
+    name: Required. The resource name of the User data mapping to retrieve.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3349,35 +3390,37 @@ class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsListReques
   object.
 
   Fields:
-    filter: Restricts the user data mappings returned to those matching a
-      filter. The following syntax is available: * A string field value can be
-      written as text inside quotation marks, for example `"query text"`. The
-      only valid relational operation for text fields is equality (`=`), where
-      text is searched within the field, rather than having the field be equal
-      to the text. For example, `"Comment = great"` returns messages with
-      `great` in the comment field. * A number field value can be written as
-      an integer, a decimal, or an exponential. The valid relational operators
-      for number fields are the equality operator (`=`), along with the less
-      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
-      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
-      expression to negate it. * A date field value must be written in `yyyy-
-      mm-dd` form. Fields with date and time use the RFC3339 time format.
-      Leading zeros are required for one-digit months and days. The valid
-      relational operators for date fields are the equality operator (`=`) ,
+    filter: Optional. Restricts the user data mappings returned to those
+      matching a filter. The following syntax is available: * A string field
+      value can be written as text inside quotation marks, for example `"query
+      text"`. The only valid relational operation for text fields is equality
+      (`=`), where text is searched within the field, rather than having the
+      field be equal to the text. For example, `"Comment = great"` returns
+      messages with `great` in the comment field. * A number field value can
+      be written as an integer, a decimal, or an exponential. The valid
+      relational operators for number fields are the equality operator (`=`),
       along with the less than/greater than operators (`<`, `<=`, `>`, `>=`).
       Note that there is no inequality (`!=`) operator. You can prepend the
-      `NOT` operator to an expression to negate it. * Multiple field query
-      expressions can be combined in one query by adding `AND` or `OR`
-      operators between the expressions. If a boolean operator appears within
-      a quoted string, it is not treated as special, it's just another part of
-      the character string to be matched. You can prepend the `NOT` operator
-      to an expression to negate it. The fields available for filtering are: -
-      data_id - user_id - archived - archive_time
-    pageSize: Limit on the number of user data mappings to return in a single
-      response. If not specified, 100 is used. May not be larger than 1000.
-    pageToken: Token to retrieve the next page of results or empty to get the
-      first page.
-    parent: Required. Name of the Consent store to retrieve user data mappings
+      `NOT` operator to an expression to negate it. * A date field value must
+      be written in `yyyy-mm-dd` form. Fields with date and time use the
+      RFC3339 time format. Leading zeros are required for one-digit months and
+      days. The valid relational operators for date fields are the equality
+      operator (`=`) , along with the less than/greater than operators (`<`,
+      `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You
+      can prepend the `NOT` operator to an expression to negate it. * Multiple
+      field query expressions can be combined in one query by adding `AND` or
+      `OR` operators between the expressions. If a boolean operator appears
+      within a quoted string, it is not treated as special, it's just another
+      part of the character string to be matched. You can prepend the `NOT`
+      operator to an expression to negate it. The fields available for
+      filtering are: - data_id - user_id. For example,
+      `filter=user_id=\"user123\"`. - archived - archive_time
+    pageSize: Optional. Limit on the number of User data mappings to return in
+      a single response. If not specified, 100 is used. May not be larger than
+      1000.
+    pageToken: Optional. Token to retrieve the next page of results, or empty
+      to get the first page.
+    parent: Required. Name of the consent store to retrieve User data mappings
       from.
   """
 
@@ -3396,9 +3439,10 @@ class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsPatchReque
     name: Resource name of the User data mapping, of the form `projects/{proje
       ct_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{cons
       ent_store_id}/userDataMappings/{user_data_mapping_id}`.
-    updateMask: The update mask that applies to the resource. For the
-      `FieldMask` definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask.
+    updateMask: Required. The update mask that applies to the resource. For
+      the `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask. Only the `data_id`,
+      `user_id` and `resource_attributes` fields can be updated.
     userDataMapping: A UserDataMapping resource to be passed as the request
       body.
   """
@@ -5681,13 +5725,13 @@ class ListAnnotationsResponse(_messages.Message):
 
 
 class ListAttributeDefinitionsResponse(_messages.Message):
-  r"""Lists the Attribute definitions in the given Consent store.
+  r"""A ListAttributeDefinitionsResponse object.
 
   Fields:
-    attributeDefinitions: The returned attribute definitions. The maximum
+    attributeDefinitions: The returned Attribute definitions. The maximum
       number of attributes returned is determined by the value of page_size in
       the ListAttributeDefinitionsRequest.
-    nextPageToken: Token to retrieve the next page of results or empty if
+    nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
   """
 
@@ -5696,13 +5740,13 @@ class ListAttributeDefinitionsResponse(_messages.Message):
 
 
 class ListConsentArtifactsResponse(_messages.Message):
-  r"""Lists the Consent artifacts in the given Consent store.
+  r"""A ListConsentArtifactsResponse object.
 
   Fields:
-    consentArtifacts: The returned consent artifacts. The maximum number of
+    consentArtifacts: The returned Consent artifacts. The maximum number of
       artifacts returned is determined by the value of page_size in the
       ListConsentArtifactsRequest.
-    nextPageToken: Token to retrieve the next page of results or empty if
+    nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
   """
 
@@ -5711,13 +5755,13 @@ class ListConsentArtifactsResponse(_messages.Message):
 
 
 class ListConsentRevisionsResponse(_messages.Message):
-  r"""Lists the revisions of the given Consent in reverse chronological order.
+  r"""A ListConsentRevisionsResponse object.
 
   Fields:
-    consents: The returned consent revisions. The maximum number of revisions
+    consents: The returned Consent revisions. The maximum number of revisions
       returned is determined by the value of `page_size` in the
       ListConsentRevisionsRequest.
-    nextPageToken: Token to retrieve the next page of results or empty if
+    nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
   """
 
@@ -5726,13 +5770,13 @@ class ListConsentRevisionsResponse(_messages.Message):
 
 
 class ListConsentStoresResponse(_messages.Message):
-  r"""Lists the Consent stores in the given dataset.
+  r"""A ListConsentStoresResponse object.
 
   Fields:
-    consentStores: The returned Consent stores. The maximum number of stores
+    consentStores: The returned consent stores. The maximum number of stores
       returned is determined by the value of page_size in the
       ListConsentStoresRequest.
-    nextPageToken: Token to retrieve the next page of results or empty if
+    nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
   """
 
@@ -5741,12 +5785,12 @@ class ListConsentStoresResponse(_messages.Message):
 
 
 class ListConsentsResponse(_messages.Message):
-  r"""Lists the Consents in the given Consent store.
+  r"""A ListConsentsResponse object.
 
   Fields:
-    consents: The returned consents. The maximum number of consents returned
+    consents: The returned Consents. The maximum number of Consents returned
       is determined by the value of page_size in the ListConsentsRequest.
-    nextPageToken: Token to retrieve the next page of results or empty if
+    nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
   """
 
@@ -5850,13 +5894,13 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListUserDataMappingsResponse(_messages.Message):
-  r"""Lists the User data mappings in the given Consent store.
+  r"""A ListUserDataMappingsResponse object.
 
   Fields:
-    nextPageToken: Token to retrieve the next page of results or empty if
+    nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
-    userDataMappings: The returned user data mappings. The maximum number of
-      user data mappings returned is determined by the value of page_size in
+    userDataMappings: The returned User data mappings. The maximum number of
+      User data mappings returned is determined by the value of page_size in
       the ListUserDataMappingsRequest.
   """
 
@@ -6340,7 +6384,7 @@ class ProgressCounter(_messages.Message):
 
 class QueryAccessibleDataRequest(_messages.Message):
   r"""Queries all data_ids that are consented for a given use in the given
-  Consent store and writes them to a specified destination. The returned
+  consent store and writes them to a specified destination. The returned
   Operation includes a progress counter for the number of User data mappings
   processed. Errors are logged to Cloud Logging (see [Viewing logs]
   (/healthcare/docs/how-tos/logging) and [QueryAccessibleData] for a sample
@@ -6349,9 +6393,9 @@ class QueryAccessibleDataRequest(_messages.Message):
   Messages:
     RequestAttributesValue: The values of request attributes associated with
       this access request.
-    ResourceAttributesValue: The values of resources attributes associated
-      with the type of data being requested. If no values are specified, then
-      all data types are included in the output.
+    ResourceAttributesValue: Optional. The values of resource attributes
+      associated with the type of resources being requested. If no values are
+      specified, then all resource types are included in the output.
 
   Fields:
     gcsDestination: The Cloud Storage destination. The Cloud Healthcare API
@@ -6359,9 +6403,9 @@ class QueryAccessibleDataRequest(_messages.Message):
       for this Cloud Storage location.
     requestAttributes: The values of request attributes associated with this
       access request.
-    resourceAttributes: The values of resources attributes associated with the
-      type of data being requested. If no values are specified, then all data
-      types are included in the output.
+    resourceAttributes: Optional. The values of resource attributes associated
+      with the type of resources being requested. If no values are specified,
+      then all resource types are included in the output.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -6392,9 +6436,9 @@ class QueryAccessibleDataRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourceAttributesValue(_messages.Message):
-    r"""The values of resources attributes associated with the type of data
-    being requested. If no values are specified, then all data types are
-    included in the output.
+    r"""Optional. The values of resource attributes associated with the type
+    of resources being requested. If no values are specified, then all
+    resource types are included in the output.
 
     Messages:
       AdditionalProperty: An additional property for a ResourceAttributesValue
@@ -6433,15 +6477,15 @@ class RedactConfig(_messages.Message):
 class RejectConsentRequest(_messages.Message):
   r"""Rejects the latest revision of the specified Consent by committing a new
   revision with `state` updated to `REJECTED`. If the latest revision of the
-  given consent is in the `REJECTED` state, no new revision is committed.
+  given Consent is in the `REJECTED` state, no new revision is committed.
 
   Fields:
-    consentArtifact: The resource name of the consent artifact that contains
-      proof of the end user's rejection of the draft consent, of the form `pro
-      jects/{project_id}/locations/{location_id}/datasets/{dataset_id}/consent
-      Stores/{consent_store_id}/consentArtifacts/{consent_artifact_id}`. If
-      the draft consent had a consent artifact, this consent artifact
-      overwrites it.
+    consentArtifact: Optional. The resource name of the Consent artifact that
+      contains documentation of the user's rejection of the draft Consent, of
+      the form `projects/{project_id}/locations/{location_id}/datasets/{datase
+      t_id}/consentStores/{consent_store_id}/consentArtifacts/{consent_artifac
+      t_id}`. If the draft Consent had a Consent artifact, this Consent
+      artifact overwrites it.
   """
 
   consentArtifact = _messages.StringField(1)
@@ -6485,8 +6529,8 @@ class Result(_messages.Message):
   Fields:
     consentDetails: The resource names of all evaluated Consents mapped to
       their evaluation.
-    consented: Whether the requested data is consented for the given use.
-    dataId: The unique identifier of the data the consents were checked for.
+    consented: Whether the resource is consented for the given use.
+    dataId: The unique identifier of the evaluated resource.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -6523,13 +6567,13 @@ class Result(_messages.Message):
 class RevokeConsentRequest(_messages.Message):
   r"""Revokes the latest revision of the specified Consent by committing a new
   revision with `state` updated to `REVOKED`. If the latest revision of the
-  given consent is in the `REVOKED` state, no new revision is committed.
+  given Consent is in the `REVOKED` state, no new revision is committed.
 
   Fields:
-    consentArtifact: The resource name of the consent artifact that contains
-      proof of the end user's revocation of the consent, of the form `projects
-      /{project_id}/locations/{location_id}/datasets/{dataset_id}/consentStore
-      s/{consent_store_id}/consentArtifacts/{consent_artifact_id}`.
+    consentArtifact: Optional. The resource name of the Consent artifact that
+      contains proof of the user's revocation of the Consent, of the form `pro
+      jects/{project_id}/locations/{location_id}/datasets/{dataset_id}/consent
+      Stores/{consent_store_id}/consentArtifacts/{consent_artifact_id}`.
   """
 
   consentArtifact = _messages.StringField(1)
@@ -6843,21 +6887,21 @@ class Signature(_messages.Message):
   r"""User signature.
 
   Messages:
-    MetadataValue: Metadata associated with the user's signature. For example,
-      the user's name or the user's title.
+    MetadataValue: Optional. Metadata associated with the user's signature.
+      For example, the user's name or the user's title.
 
   Fields:
-    image: An image of the user's signature.
-    metadata: Metadata associated with the user's signature. For example, the
-      user's name or the user's title.
-    signatureTime: Timestamp of the signature.
-    userId: User's UUID provided by the client.
+    image: Optional. An image of the user's signature.
+    metadata: Optional. Metadata associated with the user's signature. For
+      example, the user's name or the user's title.
+    signatureTime: Optional. Timestamp of the signature.
+    userId: Required. User's UUID provided by the client.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Metadata associated with the user's signature. For example, the user's
-    name or the user's title.
+    r"""Optional. Metadata associated with the user's signature. For example,
+    the user's name or the user's title.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -7142,22 +7186,21 @@ class Type(_messages.Message):
 
 
 class UserDataMapping(_messages.Message):
-  r"""Maps a user data entry to its end user and Attributes.
+  r"""Maps a resource to the associated user and Attributes.
 
   Fields:
-    archiveTime: Output only. Indicates the time when this data mapping was
+    archiveTime: Output only. Indicates the time when this mapping was
       archived.
-    archived: Output only. Indicates whether this data mapping is archived.
-    dataId: Required. A unique identifier for the mapped data.
+    archived: Output only. Indicates whether this mapping is archived.
+    dataId: Required. A unique identifier for the mapped resource.
     name: Resource name of the User data mapping, of the form `projects/{proje
       ct_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{cons
       ent_store_id}/userDataMappings/{user_data_mapping_id}`.
-    resourceAttributes: Attributes of end user data. Each attribute can have
-      exactly one value specified. Only explicitly set attributes are
-      displayed here. Attribute definitions with defaults set implicitly apply
-      to these User data mappings. Attributes listed here must be single
-      valued, that is, exactly one value is specified for the field "values"
-      in each Attribute.
+    resourceAttributes: Attributes of the resource. Only explicitly set
+      attributes are displayed here. Attribute definitions with defaults set
+      implicitly apply to these User data mappings. Attributes listed here
+      must be single valued, that is, exactly one value is specified for the
+      field "values" in each Attribute.
     userId: Required. User's UUID provided by the client.
   """
 

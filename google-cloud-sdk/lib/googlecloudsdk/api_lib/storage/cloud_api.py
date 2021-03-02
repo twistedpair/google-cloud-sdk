@@ -311,7 +311,6 @@ class CloudApi(object):
                       digesters=None,
                       download_strategy=DownloadStrategy.ONE_SHOT,
                       progress_callback=None,
-                      serialization_data=None,
                       start_byte=0,
                       end_byte=None):
     """Gets object data.
@@ -335,8 +334,6 @@ class CloudApi(object):
       progress_callback (function): Optional callback function for progress
           notifications. Receives calls with arguments
           (bytes_transferred, total_size).
-      serialization_data (str): Implementation-specific JSON string of a dict
-          containing serialization information for the download.
       start_byte (int): Starting point for download (for resumable downloads and
           range requests). Can be set to negative to request a range of bytes
           (python equivalent of [:-3]).

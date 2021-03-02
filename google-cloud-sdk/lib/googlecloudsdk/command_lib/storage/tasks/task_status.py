@@ -21,9 +21,7 @@ from __future__ import unicode_literals
 import enum
 import multiprocessing
 import threading
-import time
 
-from googlecloudsdk.command_lib.storage import thread_messages
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import scaled_integer
@@ -39,68 +37,6 @@ class OperationName(enum.Enum):
 class ProgressType(enum.Enum):
   FILES_AND_BYTES = 'FILES AND BYTES'
   FILES = 'FILES'
-
-
-class FilesAndBytesProgressCallback:
-  """Tracks file count and bytes progress info for large file operations.
-
-  Information is sent to the status_queue, which will print aggregate it
-  for printing to the user. Useful for heavy operations like copy or hash.
-  Arguments are the same as thread_messages.ProgressMessage.
-  """
-
-  def __init__(self,
-               status_queue,
-               size,
-               source_url,
-               destination_url=None,
-               component_number=None,
-               operation_name=None,
-               process_id=None,
-               thread_id=None):
-    """Initializes callback, saving non-changing variables.
-
-    Args:
-      status_queue (multiprocessing.Queue): Where to submit progress messages.
-        If we spawn new worker processes, they will lose their reference to the
-        correct version of this queue if we don't package it here.
-      size (int): Total size of file/component in bytes.
-      source_url (StorageUrl): Represents source of data used by operation.
-      destination_url (StorageUrl|None): Represents destination of data used by
-        operation. None for unary operations like hashing.
-      component_number (int|None): If a multipart operation, indicates the
-        component number.
-      operation_name (OperationName|None): Name of the operation running on
-        target data.
-      process_id (int|None): Identifies process that produced the instance of
-        this message (overridable for testing).
-      thread_id (int|None): Identifies thread that produced the instance of this
-        message (overridable for testing).
-    """
-    self._status_queue = status_queue
-    self._size = size
-    self._source_url = source_url
-    self._destination_url = destination_url
-    self._component_number = component_number
-    self._operation_name = operation_name
-    self._process_id = process_id
-    self._thread_id = thread_id
-
-  def __call__(self, processed_bytes):
-    """See __init__ docstring for processed_bytes arg."""
-    # Time progress callback is triggered in seconds since epoch (float).
-    current_time = time.time()
-    self._status_queue.put(
-        thread_messages.ProgressMessage(
-            size=self._size,
-            processed_bytes=processed_bytes,
-            time=current_time,
-            source_url=self._source_url,
-            destination_url=self._destination_url,
-            component_number=self._component_number,
-            operation_name=self._operation_name,
-            process_id=self._process_id,
-            thread_id=self._thread_id))
 
 
 class _StatusTracker:
@@ -123,23 +59,61 @@ class _StatusTracker:
         scaled_integer.FormatBinaryNumber(
             self._processed_bytes, decimal_places=1))
 
+  def _add_component_progress(self, status_message):
+    """Track progress of a multipart file operation."""
+    file_url_string = status_message.source_url.url_string
+    if file_url_string not in self._tracked_file_progress:
+      self._tracked_file_progress[file_url_string] = {
+          component_number: 0
+          for component_number in range(status_message.total_components)
+      }
+
+    component_tracker = self._tracked_file_progress[file_url_string]
+    component_number = status_message.component_number
+
+    # status_message.processed_bytes includes bytes from past messages.
+    self._processed_bytes += (
+        status_message.processed_bytes -
+        component_tracker.get(component_number, 0))
+    if status_message.finished:
+      component_tracker.pop(component_number, None)
+      if not component_tracker:
+        self._tracked_file_progress[file_url_string] = -1
+        self._completed_files += 1
+    else:
+      component_tracker[component_number] = status_message.processed_bytes
+
+  def _add_file_progress(self, status_message):
+    """Track progress of a file operation."""
+    file_url_string = status_message.source_url.url_string
+    if file_url_string not in self._tracked_file_progress:
+      self._tracked_file_progress[file_url_string] = 0
+
+    known_progress = self._tracked_file_progress[file_url_string]
+    # status_message.processed_bytes includes bytes from past messages.
+    self._processed_bytes += status_message.processed_bytes - known_progress
+
+    if status_message.finished:
+      self._tracked_file_progress[file_url_string] = -1
+      self._completed_files += 1
+    else:
+      self._tracked_file_progress[file_url_string] = (
+          status_message.processed_bytes)
+
   def add_message(self, status_message):
     """Processes task status message for printing and aggregation.
 
     Args:
       status_message (thread_messages.ProgressMessage): Message to process.
     """
-    known_progress = self._tracked_file_progress.get(
-        status_message.source_url.url_string, 0)
-    # status_message.processed_bytes includes bytes from past messages.
-    self._processed_bytes += status_message.processed_bytes - known_progress
-    if status_message.finished:
-      self._completed_files += 1
-      self._tracked_file_progress.pop(
-          status_message.source_url.url_string, None)
+    if self._tracked_file_progress.get(status_message.source_url.url_string,
+                                       0) == -1:
+      # File has already been downloaded. No processing to do.
+      return
+    if status_message.total_components:
+      self._add_component_progress(status_message)
     else:
-      self._tracked_file_progress[status_message.source_url.url_string] = (
-          status_message.processed_bytes)
+      self._add_file_progress(status_message)
 
   def start(self):
     self._progress_tracker = progress_tracker.ProgressTracker(

@@ -493,7 +493,14 @@
           "type": "string"
         },
         "experiments": {
-          "description": "The list of experiments to enable.",
+          "description": "The list of experiments to enable. This field should be used for SDK related experiments and not for service related experiments. The proper field for service related experiments is service_options. For more details see the rationale at go\/user-specified-service-options.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "serviceOptions": {
+          "description": "The list of service options to enable. This field should be used for service related experiments only. These experiments, when graduating to GA, should be replaced by dedicated fields or become default (i.e. always on). For more details see the rationale at go\/user-specified-service-options.",
           "type": "array",
           "items": {
             "type": "string"
@@ -6057,9 +6064,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name includes project_id and display_name. version_id is optional. Get the latest TemplateVersion if version_id not set. Get by project_id(pid1) and display_name(tid1): Format: projects\/{pid1}\/catalogTemplates\/{tid1} Get by project_id(pid1), display_name(tid1), and version_id(vid1): Format: projects\/{pid1}\/catalogTemplates\/{tid1@vid}",
+                  "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6083,9 +6090,9 @@
               "parameters": {
                 "name": {
                   "description": "The location of the template, name includes project_id and display_name. Commit using project_id(pid1) and display_name(tid1). Format: projects\/{pid1}\/catalogTemplates\/{tid1}",
+                  "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6112,9 +6119,9 @@
               "parameters": {
                 "name": {
                   "description": "name includes project_id and display_name. Delete by project_id(pid1) and display_name(tid1). Format: projects\/{pid1}\/catalogTemplates\/{tid1}",
+                  "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6138,9 +6145,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name includes project_id, display_name, and version_id. Updates by project_id(pid1), display_name(tid1), and version_id(vid1): Format: projects\/{pid1}\/catalogTemplates\/{tid1@vid}",
+                  "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6167,9 +6174,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name includes project_id, display_name, and version_id. Updates by project_id(pid1), display_name(tid1), and version_id(vid1): Format: projects\/{pid1}\/catalogTemplates\/{tid1@vid}",
+                  "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6201,9 +6208,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The parent project and template that the TemplateVersion will be created under. Create using project_id(pid1) and display_name(tid1). Format: projects\/{pid1}\/catalogTemplates\/{tid1}",
+                      "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/catalogTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -6236,9 +6243,9 @@
               "parameters": {
                 "parent": {
                   "description": "parent includes project_id, and display_name is optional. List by project_id(pid1) and display_name(tid1). Format: projects\/{pid1}\/catalogTemplates\/{tid1} List by project_id(pid1). Format: projects\/{pid1}",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {

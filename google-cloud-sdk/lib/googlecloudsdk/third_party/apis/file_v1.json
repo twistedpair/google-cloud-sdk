@@ -815,8 +815,12 @@
           }
         },
         "eligibility": {
-          "description": "Optional. User-defined instance eligibility.",
+          "description": "Optional. Global per-instance SLI eligibility which applies to all defined SLIs. Exactly one of 'eligibility' and 'per_sli_eligibility' fields must be used.",
           "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility"
+        },
+        "perSliEligibility": {
+          "description": "Optional. Multiple per-instance SLI eligibilities which apply for individual SLIs. Exactly one of 'eligibility' and 'per_sli_eligibility' fields must be used.",
+          "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility"
         }
       }
     },
@@ -826,7 +830,7 @@
       "type": "object",
       "properties": {
         "sliName": {
-          "description": "Name of an SLI that this exclusion applies to. Can be left empty, signaling that the instance should be excluded from all SLIs defined in the service SLO configuration.",
+          "description": "Name of an SLI that this exclusion applies to. Can be left empty, signaling that the instance should be excluded from all SLIs.",
           "type": "string"
         },
         "startTime": {
@@ -879,6 +883,20 @@
         "reason": {
           "description": "User-defined reason for the current value of instance eligibility. Usually, this can be directly mapped to the internal state. An empty reason is allowed.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility": {
+      "id": "GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility",
+      "description": "PerSliSloEligibility is a mapping from an SLI name to eligibility.",
+      "type": "object",
+      "properties": {
+        "eligibilities": {
+          "description": "An entry in the eligibilities map specifies an eligibility for a particular SLI for the given instance. The SLI key in the name must be a valid SLI name specified in the Eligibility Exporter binary flags otherwise an error will be emitted by Eligibility Exporter and the oncaller will be alerted. If an SLI has been defined in the binary flags but the eligibilities map does not contain it, the corresponding SLI time series will not be emitted by the Eligibility Exporter. This ensures a smooth rollout and compatibility between the data produced by different versions of the Eligibility Exporters. If eligibilities map contains a key for an SLI which has not been declared in the binary flags, there will be an error message emitted in the Eligibility Exporter log and the metric for the SLI in question will not be emitted.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility"
+          }
         }
       }
     },

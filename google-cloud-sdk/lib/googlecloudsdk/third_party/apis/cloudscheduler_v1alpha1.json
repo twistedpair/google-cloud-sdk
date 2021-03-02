@@ -591,9 +591,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -632,9 +632,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -662,9 +662,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The location name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -703,9 +703,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The job name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -728,9 +728,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The location name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -756,9 +756,9 @@
                   "parameters": {
                     "name": {
                       "description": "Optionally caller-specified in CreateJob, after which it becomes output only. The job name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`. The maximum allowed length for `JOB_ID` is 500 characters.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -790,9 +790,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The job name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "type": "string"
                     },
                     "legacyAppEngineCron": {
@@ -820,9 +820,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The job name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -848,9 +848,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The job name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -876,9 +876,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The job name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "type": "string"
                     }
                   },

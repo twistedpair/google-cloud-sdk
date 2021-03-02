@@ -12,7 +12,7 @@ class ServiceusageV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = 'https://serviceusage.googleapis.com/'
-  MTLS_BASE_URL = ''
+  MTLS_BASE_URL = 'https://serviceusage.mtls.googleapis.com/'
 
   _PACKAGE = 'serviceusage'
   _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only', 'https://www.googleapis.com/auth/service.management']
@@ -53,16 +53,7 @@ class ServiceusageV1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (ServiceusageOperationsCancelRequest) input message
@@ -89,10 +80,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
 
       Args:
         request: (ServiceusageOperationsDeleteRequest) input message
@@ -119,9 +107,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (ServiceusageOperationsGetRequest) input message
@@ -148,16 +134,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (ServiceusageOperationsListRequest) input message
@@ -193,10 +170,7 @@ is the parent resource, without the operations collection id.
           }
 
     def BatchEnable(self, request, global_params=None):
-      r"""Enable multiple services on a project. The operation is atomic: if enabling.
-any service fails, then the entire batch fails, and no state changes occur.
-
-Operation<response: BatchEnableServicesResponse>
+      r"""Enable multiple services on a project. The operation is atomic: if enabling any service fails, then the entire batch fails, and no state changes occur. To enable a single service, use the `EnableService` method instead.
 
       Args:
         request: (ServiceusageServicesBatchEnableRequest) input message
@@ -222,16 +196,35 @@ Operation<response: BatchEnableServicesResponse>
         supports_download=False,
     )
 
+    def BatchGet(self, request, global_params=None):
+      r"""Returns the service configurations and enabled states for a given list of services.
+
+      Args:
+        request: (ServiceusageServicesBatchGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BatchGetServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchGet')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchGet.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}/{v1Id1}/services:batchGet',
+        http_method='GET',
+        method_id='serviceusage.services.batchGet',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['names'],
+        relative_path='v1/{+parent}/services:batchGet',
+        request_field='',
+        request_type_name='ServiceusageServicesBatchGetRequest',
+        response_type_name='BatchGetServicesResponse',
+        supports_download=False,
+    )
+
     def Disable(self, request, global_params=None):
-      r"""Disable a service so that it can no longer be used with a project.
-This prevents unintended usage that may cause unexpected billing
-charges or security leaks.
-
-It is not valid to call the disable method on a service that is not
-currently enabled. Callers will receive a `FAILED_PRECONDITION` status if
-the target service is not currently enabled.
-
-Operation<response: DisableServiceResponse>
+      r"""Disable a service so that it can no longer be used with a project. This prevents unintended usage that may cause unexpected billing charges or security leaks. It is not valid to call the disable method on a service that is not currently enabled. Callers will receive a `FAILED_PRECONDITION` status if the target service is not currently enabled.
 
       Args:
         request: (ServiceusageServicesDisableRequest) input message
@@ -259,8 +252,6 @@ Operation<response: DisableServiceResponse>
 
     def Enable(self, request, global_params=None):
       r"""Enable a service so that it can be used with a project.
-
-Operation<response: EnableServiceResponse>
 
       Args:
         request: (ServiceusageServicesEnableRequest) input message
@@ -314,13 +305,7 @@ Operation<response: EnableServiceResponse>
     )
 
     def List(self, request, global_params=None):
-      r"""List all services available to the specified project, and the current.
-state of those services with respect to the project. The list includes
-all public services, all services for which the calling user has the
-`servicemanagement.services.bind` permission, and all services that have
-already been enabled on the project. The list can be filtered to
-only include services in a specific state, for example to only include
-services enabled on the project.
+      r"""List all services available to the specified project, and the current state of those services with respect to the project. The list includes all public services, all services for which the calling user has the `servicemanagement.services.bind` permission, and all services that have already been enabled on the project. The list can be filtered to only include services in a specific state, for example to only include services enabled on the project. WARNING: If you need to query enabled services frequently or across an organization, you should use [Cloud Asset Inventory API](https://cloud.google.com/asset-inventory/docs/apis), which provides higher throughput and richer filtering capability.
 
       Args:
         request: (ServiceusageServicesListRequest) input message

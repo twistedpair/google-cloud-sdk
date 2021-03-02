@@ -80,18 +80,6 @@ class Empty(_messages.Message):
 
 
 
-class Endpointer(_messages.Message):
-  r"""Config to enable endpointer.
-
-  Fields:
-    sensitivity: Value between 0 and 100 indicating endpointer sensitivity.
-      The higher the value, the shorter the wait before closing the
-      microphone.
-  """
-
-  sensitivity = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-
-
 class ListCustomClassesResponse(_messages.Message):
   r"""Message returned to the client by the `ListCustomClasses` method.
 
@@ -495,11 +483,6 @@ class RecognitionConfig(_messages.Message):
     encoding: Encoding of audio data sent in all `RecognitionAudio` messages.
       This field is optional for `FLAC` and `WAV` audio files and required for
       all other audio formats. For details, see AudioEncoding.
-    endpointer: Config to enable the configurable endpointer. If enabled, you
-      can set the endpointer sensitivity to a value (0-100) that is suited to
-      your application. The sensitivity value controls the aggressiveness of
-      the endpointer. If not enabled the default behavior is used, which auto-
-      selects a sensitivity value with the best general WER/latency tradeoff.
     languageCode: Required. The language of the supplied audio as a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
       Example: "en-US". See [Language
@@ -615,15 +598,14 @@ class RecognitionConfig(_messages.Message):
   enableWordConfidence = _messages.BooleanField(11)
   enableWordTimeOffsets = _messages.BooleanField(12)
   encoding = _messages.EnumField('EncodingValueValuesEnum', 13)
-  endpointer = _messages.MessageField('Endpointer', 14)
-  languageCode = _messages.StringField(15)
-  maxAlternatives = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  metadata = _messages.MessageField('RecognitionMetadata', 17)
-  model = _messages.StringField(18)
-  profanityFilter = _messages.BooleanField(19)
-  sampleRateHertz = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  speechContexts = _messages.MessageField('SpeechContext', 21, repeated=True)
-  useEnhanced = _messages.BooleanField(22)
+  languageCode = _messages.StringField(14)
+  maxAlternatives = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  metadata = _messages.MessageField('RecognitionMetadata', 16)
+  model = _messages.StringField(17)
+  profanityFilter = _messages.BooleanField(18)
+  sampleRateHertz = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  speechContexts = _messages.MessageField('SpeechContext', 20, repeated=True)
+  useEnhanced = _messages.BooleanField(21)
 
 
 class RecognitionMetadata(_messages.Message):
@@ -1002,32 +984,6 @@ class SpeechProjectsLocationsLogDataStatsListRequest(_messages.Message):
   """
 
   parent = _messages.StringField(1, required=True)
-
-
-class SpeechProjectsLocationsOperationsGetRequest(_messages.Message):
-  r"""A SpeechProjectsLocationsOperationsGetRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class SpeechProjectsLocationsOperationsListRequest(_messages.Message):
-  r"""A SpeechProjectsLocationsOperationsListRequest object.
-
-  Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
 
 
 class SpeechProjectsLocationsPhraseSetsCreateRequest(_messages.Message):

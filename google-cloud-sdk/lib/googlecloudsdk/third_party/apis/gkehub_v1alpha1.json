@@ -332,12 +332,26 @@
     },
     "MultiClusterIngressFeatureSpec": {
       "id": "MultiClusterIngressFeatureSpec",
-      "description": "MultiClusterIngressFeatureSpec contains the input for the MultiClusterIngress feature. This spec is a placeholder and is subject to change.",
+      "description": "LINT.IfChange MultiClusterIngressFeatureSpec contains the input for the MultiClusterIngress feature. This spec is a placeholder and is subject to change.",
       "type": "object",
       "properties": {
         "configMembership": {
           "description": "Fully-qualified member name which hosts the MultiClusterIngress CRD. Example member name: `projects\/foo-proj\/locations\/global\/memberships\/bar`",
           "type": "string"
+        },
+        "billing": {
+          "description": "Customer's billing structure",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown",
+            "User pays a fee per-endpoint.",
+            "User is paying for Anthos as a whole."
+          ],
+          "enum": [
+            "BILLING_UNSPECIFIED",
+            "PAY_AS_YOU_GO",
+            "ANTHOS_LICENSE"
+          ]
         }
       }
     },

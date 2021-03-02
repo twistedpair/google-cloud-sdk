@@ -670,7 +670,6 @@ class GcsApi(cloud_api.CloudApi):
                       digesters=None,
                       download_strategy=cloud_api.DownloadStrategy.RESUMABLE,
                       progress_callback=None,
-                      serialization_data=None,
                       start_byte=0,
                       end_byte=None):
     """See super class."""
@@ -678,17 +677,21 @@ class GcsApi(cloud_api.CloudApi):
     generation = (
         int(cloud_resource.generation) if cloud_resource.generation else None)
 
-    if not serialization_data:
+    if start_byte and download_strategy == cloud_api.DownloadStrategy.RESUMABLE:
+      # Resuming download.
+      serialization_data = get_download_serialization_data(
+          cloud_resource, start_byte)
+      apitools_download = apitools_transfer.Download.FromData(
+          download_stream,
+          serialization_data,
+          num_retries=properties.VALUES.storage.max_retries.GetInt())
+    else:
       # New download.
+      serialization_data = None
       apitools_download = apitools_transfer.Download.FromStream(
           download_stream,
           auto_transfer=False,
           total_size=cloud_resource.size,
-          num_retries=properties.VALUES.storage.max_retries.GetInt())
-    else:
-      apitools_download = apitools_transfer.Download.FromData(
-          download_stream,
-          serialization_data,
           num_retries=properties.VALUES.storage.max_retries.GetInt())
 
     self._stream_response_handler.update_destination_info(
@@ -737,7 +740,6 @@ class GcsApi(cloud_api.CloudApi):
                      apitools_strategy=apitools_transfer.SIMPLE_UPLOAD,
                      progress_callback=None,
                      serialization_data=None,
-                     total_size=0,
                      tracker_callback=None):
     # pylint: disable=g-doc-args
     """GCS-specific upload implementation. Adds args to Cloud API interface.
@@ -749,8 +751,6 @@ class GcsApi(cloud_api.CloudApi):
           apitools.base.py.transfer.
       serialization_data (str): Implementation-specific JSON string of a dict
           containing serialization information for the download.
-      total_size (int): Total size of the upload in bytes.
-          If streaming, total size is None.
       tracker_callback (function): Callback that keeps track of upload progress.
 
     Returns:
@@ -809,8 +809,18 @@ class GcsApi(cloud_api.CloudApi):
                     progress_callback=None,
                     request_config=None):
     """See CloudApi class for function doc strings."""
-    validated_request_config = cloud_api.get_provider_request_config(
-        request_config, GcsRequestConfig)
+    if progress_callback:
+      # Apitools uploads pass response objects to callbacks. Parse these
+      # because our callbacks only expect an int "processed_bytes".
+      def wrapped_progress_callback(response, message_string):
+        del message_string  # Unused.
+        # Range field format: "bytes=0-138989".
+        _, range_values_string = response.info['range'].split('=')
+        start_byte, end_byte = [int(x) for x in range_values_string.split('-')]
+        processed_bytes = end_byte - start_byte
+        progress_callback(processed_bytes)
+    else:
+      wrapped_progress_callback = None
 
     if request_config.size is None:
       # Size is required so that apitools_transfer can pick the
@@ -819,18 +829,27 @@ class GcsApi(cloud_api.CloudApi):
           'Upload failed due to missing size. Destination: {}'.format(
               destination_resource.storage_url.url_string))
 
+    validated_request_config = cloud_api.get_provider_request_config(
+        request_config, GcsRequestConfig)
+
     object_metadata = self.messages.Object(
         name=destination_resource.storage_url.object_name,
         bucket=destination_resource.storage_url.bucket_name,
         md5Hash=validated_request_config.md5_hash)
 
-    return self._upload_object(
+    upload_result = self._upload_object(
         source_stream,
         object_metadata,
         apitools_strategy=apitools_transfer.SIMPLE_UPLOAD,
-        progress_callback=progress_callback,
+        progress_callback=wrapped_progress_callback,
         request_config=validated_request_config,
         serialization_data=None)
+
+    if progress_callback:
+      # Apitools does not always run the callback at the end of an upload.
+      progress_callback(request_config.size)
+
+    return upload_result
 
   @_catch_http_error_raise_gcs_api_error()
   def compose_objects(self,

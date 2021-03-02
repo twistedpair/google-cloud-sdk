@@ -34,31 +34,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS = (
-      'projects',
-      'projects/{projectsId}',
-      {},
-      ['projectsId'],
-      True
-  )
-  PROJECTS_LOCATIONS = (
-      'projects.locations',
-      'projects/{projectsId}/locations/{locationsId}',
-      {},
-      ['projectsId', 'locationsId'],
-      True
-  )
-  PROJECTS_LOCATIONS_OPERATIONS = (
-      'projects.locations.operations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/operations/'
-              '{operationsId}',
-      },
-      ['name'],
-      True
-  )
   SPEECH = (
       'speech',
       'speech',

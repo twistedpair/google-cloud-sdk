@@ -452,9 +452,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -498,9 +498,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -539,9 +539,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -568,9 +568,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location in which the configuration should be created, specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "connectorId": {
@@ -601,9 +601,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name in the format `projects\/*\/locations\/*\/connectors\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectors\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectors\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -635,9 +635,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of a Serverless VPC Access connector to get.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectors\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectors\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -660,9 +660,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location from which the routes should be listed.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -696,9 +696,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of a Serverless VPC Access connector to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectors\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectors\/[^\/]+$",
                       "type": "string"
                     }
                   },

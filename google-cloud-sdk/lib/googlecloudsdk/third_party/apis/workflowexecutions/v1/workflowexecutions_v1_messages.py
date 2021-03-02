@@ -21,13 +21,15 @@ class Error(_messages.Message):
   r"""Error describes why the execution was abnormally terminated.
 
   Fields:
-    context: Human readable error context, helpful for debugging purposes.
-    payload: Error payload returned by the execution, represented as a JSON
-      string.
+    context: Human readable stack trace string.
+    payload: Error message and data returned represented as a JSON string.
+    stackTrace: Stack trace with detailed information of where error was
+      generated.
   """
 
   context = _messages.StringField(1)
   payload = _messages.StringField(2)
+  stackTrace = _messages.MessageField('StackTrace', 3)
 
 
 class Execution(_messages.Message):
@@ -94,6 +96,49 @@ class ListExecutionsResponse(_messages.Message):
 
   executions = _messages.MessageField('Execution', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class Position(_messages.Message):
+  r"""Position contains source position information about the stack trace
+  element such as line number, column number and length of the code block in
+  bytes.
+
+  Fields:
+    column: The source code column position (of the line) the current
+      instruction was generated from.
+    length: The length in bytes of text in this character group, e.g. digits
+      of a number, string length, or AST (abstract syntax tree) node.
+    line: The source code line number the current instruction was generated
+      from.
+  """
+
+  column = _messages.IntegerField(1)
+  length = _messages.IntegerField(2)
+  line = _messages.IntegerField(3)
+
+
+class StackTrace(_messages.Message):
+  r"""A collection of stack elements (frames) where an error occurred.
+
+  Fields:
+    elements: An array of Stack elements.
+  """
+
+  elements = _messages.MessageField('StackTraceElement', 1, repeated=True)
+
+
+class StackTraceElement(_messages.Message):
+  r"""A single stack element (frame) where an error occurred.
+
+  Fields:
+    position: The source position information of the stacktrace element.
+    routine: The routine where the error occurred.
+    step: The step the error occurred at.
+  """
+
+  position = _messages.MessageField('Position', 1)
+  routine = _messages.StringField(2)
+  step = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):

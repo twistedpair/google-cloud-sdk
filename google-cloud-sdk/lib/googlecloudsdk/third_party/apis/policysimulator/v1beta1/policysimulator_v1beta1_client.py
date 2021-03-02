@@ -64,7 +64,7 @@ class PolicysimulatorV1beta1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""List the results of running a replay.
+      r"""Lists the results of running a Replay.
 
       Args:
         request: (PolicysimulatorFoldersLocationsReplaysResultsListRequest) input message
@@ -101,7 +101,7 @@ class PolicysimulatorV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a replay using the given ReplayConfig. The parent of the replay must contain all resources in the overlay. For example, if the overlay contains: ``` ReplayConfig { policy_overlay = map = { "//cloudresourcemanager.googleapis.com/projects/project-1": ..., "//cloudresourcemanager.googleapis.com/projects/project-2": ..., } ``` Then, the parent used for CreateReplay must be the organization or a folder that contains both projects as children.
+      r"""Creates and starts a Replay using the given ReplayConfig.
 
       Args:
         request: (PolicysimulatorFoldersLocationsReplaysCreateRequest) input message
@@ -128,7 +128,7 @@ class PolicysimulatorV1beta1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get the specified Replay.
+      r"""Gets the specified Replay. Each `Replay` is available for at least 7 days.
 
       Args:
         request: (PolicysimulatorFoldersLocationsReplaysGetRequest) input message
@@ -248,7 +248,7 @@ class PolicysimulatorV1beta1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""List the results of running a replay.
+      r"""Lists the results of running a Replay.
 
       Args:
         request: (PolicysimulatorOrganizationsLocationsReplaysResultsListRequest) input message
@@ -285,7 +285,7 @@ class PolicysimulatorV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a replay using the given ReplayConfig. The parent of the replay must contain all resources in the overlay. For example, if the overlay contains: ``` ReplayConfig { policy_overlay = map = { "//cloudresourcemanager.googleapis.com/projects/project-1": ..., "//cloudresourcemanager.googleapis.com/projects/project-2": ..., } ``` Then, the parent used for CreateReplay must be the organization or a folder that contains both projects as children.
+      r"""Creates and starts a Replay using the given ReplayConfig.
 
       Args:
         request: (PolicysimulatorOrganizationsLocationsReplaysCreateRequest) input message
@@ -312,7 +312,7 @@ class PolicysimulatorV1beta1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get the specified Replay.
+      r"""Gets the specified Replay. Each `Replay` is available for at least 7 days.
 
       Args:
         request: (PolicysimulatorOrganizationsLocationsReplaysGetRequest) input message
@@ -369,7 +369,7 @@ class PolicysimulatorV1beta1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""List the results of running a replay.
+      r"""Lists the results of running a Replay.
 
       Args:
         request: (PolicysimulatorProjectsLocationsReplaysResultsListRequest) input message
@@ -406,7 +406,7 @@ class PolicysimulatorV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a replay using the given ReplayConfig. The parent of the replay must contain all resources in the overlay. For example, if the overlay contains: ``` ReplayConfig { policy_overlay = map = { "//cloudresourcemanager.googleapis.com/projects/project-1": ..., "//cloudresourcemanager.googleapis.com/projects/project-2": ..., } ``` Then, the parent used for CreateReplay must be the organization or a folder that contains both projects as children.
+      r"""Creates and starts a Replay using the given ReplayConfig.
 
       Args:
         request: (PolicysimulatorProjectsLocationsReplaysCreateRequest) input message
@@ -433,7 +433,7 @@ class PolicysimulatorV1beta1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get the specified Replay.
+      r"""Gets the specified Replay. Each `Replay` is available for at least 7 days.
 
       Args:
         request: (PolicysimulatorProjectsLocationsReplaysGetRequest) input message

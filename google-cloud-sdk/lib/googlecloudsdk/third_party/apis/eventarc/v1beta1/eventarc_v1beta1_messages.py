@@ -961,6 +961,10 @@ class Transport(_messages.Message):
 class Trigger(_messages.Message):
   r"""A representation of the trigger resource.
 
+  Messages:
+    LabelsValue: Optional. User labels attached to the triggers that can be
+      used to group resources.
+
   Fields:
     createTime: Output only. The creation time.
     destination: Required. Destination specifies where the events should be
@@ -968,8 +972,10 @@ class Trigger(_messages.Message):
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and may be sent only on create requests to ensure
       the client has an up-to-date value before proceeding.
-    matchingCriteria: Required. The criteria by which events are filtered.
-      Only events that match with this criteria will be sent to the
+    labels: Optional. User labels attached to the triggers that can be used to
+      group resources.
+    matchingCriteria: Required. null The criteria by which events are
+      filtered. Only events that match with this criteria will be sent to the
       destination.
     name: Required. The resource name of the trigger. Must be unique within
       the location on the project and must in
@@ -993,14 +999,40 @@ class Trigger(_messages.Message):
     updateTime: Output only. The last-modified time.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User labels attached to the triggers that can be used to
+    group resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   destination = _messages.MessageField('Destination', 2)
   etag = _messages.StringField(3)
-  matchingCriteria = _messages.MessageField('MatchingCriteria', 4, repeated=True)
-  name = _messages.StringField(5)
-  serviceAccount = _messages.StringField(6)
-  transport = _messages.MessageField('Transport', 7)
-  updateTime = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 4)
+  matchingCriteria = _messages.MessageField('MatchingCriteria', 5, repeated=True)
+  name = _messages.StringField(6)
+  serviceAccount = _messages.StringField(7)
+  transport = _messages.MessageField('Transport', 8)
+  updateTime = _messages.StringField(9)
 
 
 encoding.AddCustomJsonFieldMapping(

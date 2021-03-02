@@ -81,6 +81,25 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class Certificate(_messages.Message):
+  r"""Certificate used to configure LDAPS.
+
+  Fields:
+    expireTime: The certificate expire time.
+    issuingCertificate: The issuer of this certificate.
+    subject: The certificate subject.
+    subjectAlternativeName: The additional hostnames for the domain.
+    thumbprint: The certificate thumbprint which uniquely identifies the
+      certificate.
+  """
+
+  expireTime = _messages.StringField(1)
+  issuingCertificate = _messages.MessageField('Certificate', 2)
+  subject = _messages.StringField(3)
+  subjectAlternativeName = _messages.StringField(4, repeated=True)
+  thumbprint = _messages.StringField(5)
+
+
 class DailyCycle(_messages.Message):
   r"""Time window specified for daily operations.
 
@@ -637,10 +656,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messag
       reschedule should be against this given policy.
     scheduleDeadlineTime: schedule_deadline_time is the time deadline any
       schedule start time cannot go beyond, including reschedule. It's
-      normally the initial schedule start time plus a week. If the reschedule
-      type is next window, simply take this value as start time. If reschedule
-      type is IMMEDIATELY or BY_TIME, current or selected time cannot go
-      beyond this deadline.
+      normally the initial schedule start time plus maintenance window length
+      (1 day or 1 week). Maintenance cannot be scheduled to start beyond this
+      deadline.
     startTime: The scheduled start time for the maintenance.
   """
 
@@ -738,6 +756,79 @@ class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.M
   nodeId = _messages.StringField(3)
 
 
+class GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility(_messages.Message):
+  r"""PerSliSloEligibility is a mapping from an SLI name to eligibility.
+
+  Messages:
+    EligibilitiesValue: An entry in the eligibilities map specifies an
+      eligibility for a particular SLI for the given instance. The SLI key in
+      the name must be a valid SLI name specified in the Eligibility Exporter
+      binary flags otherwise an error will be emitted by Eligibility Exporter
+      and the oncaller will be alerted. If an SLI has been defined in the
+      binary flags but the eligibilities map does not contain it, the
+      corresponding SLI time series will not be emitted by the Eligibility
+      Exporter. This ensures a smooth rollout and compatibility between the
+      data produced by different versions of the Eligibility Exporters. If
+      eligibilities map contains a key for an SLI which has not been declared
+      in the binary flags, there will be an error message emitted in the
+      Eligibility Exporter log and the metric for the SLI in question will not
+      be emitted.
+
+  Fields:
+    eligibilities: An entry in the eligibilities map specifies an eligibility
+      for a particular SLI for the given instance. The SLI key in the name
+      must be a valid SLI name specified in the Eligibility Exporter binary
+      flags otherwise an error will be emitted by Eligibility Exporter and the
+      oncaller will be alerted. If an SLI has been defined in the binary flags
+      but the eligibilities map does not contain it, the corresponding SLI
+      time series will not be emitted by the Eligibility Exporter. This
+      ensures a smooth rollout and compatibility between the data produced by
+      different versions of the Eligibility Exporters. If eligibilities map
+      contains a key for an SLI which has not been declared in the binary
+      flags, there will be an error message emitted in the Eligibility
+      Exporter log and the metric for the SLI in question will not be emitted.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EligibilitiesValue(_messages.Message):
+    r"""An entry in the eligibilities map specifies an eligibility for a
+    particular SLI for the given instance. The SLI key in the name must be a
+    valid SLI name specified in the Eligibility Exporter binary flags
+    otherwise an error will be emitted by Eligibility Exporter and the
+    oncaller will be alerted. If an SLI has been defined in the binary flags
+    but the eligibilities map does not contain it, the corresponding SLI time
+    series will not be emitted by the Eligibility Exporter. This ensures a
+    smooth rollout and compatibility between the data produced by different
+    versions of the Eligibility Exporters. If eligibilities map contains a key
+    for an SLI which has not been declared in the binary flags, there will be
+    an error message emitted in the Eligibility Exporter log and the metric
+    for the SLI in question will not be emitted.
+
+    Messages:
+      AdditionalProperty: An additional property for a EligibilitiesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type EligibilitiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EligibilitiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  eligibilities = _messages.MessageField('EligibilitiesValue', 1)
+
+
 class GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource(_messages.Message):
   r"""Describes provisioned dataplane resources.
 
@@ -788,8 +879,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion(_messages.Mess
       string (e.g. "Disruptive update in progress") and should not contain
       dynamically generated data (e.g. instance name). Can be left empty.
     sliName: Name of an SLI that this exclusion applies to. Can be left empty,
-      signaling that the instance should be excluded from all SLIs defined in
-      the service SLO configuration.
+      signaling that the instance should be excluded from all SLIs.
     startTime: Start time of the exclusion. No alignment (e.g. to a full
       minute) needed.
   """
@@ -805,7 +895,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
   the instance.
 
   Fields:
-    eligibility: Optional. User-defined instance eligibility.
+    eligibility: Optional. Global per-instance SLI eligibility which applies
+      to all defined SLIs. Exactly one of 'eligibility' and
+      'per_sli_eligibility' fields must be used.
     exclusions: List of SLO exclusion windows. When multiple entries in the
       list match (matching the exclusion time-window against current time
       point) the exclusion reason used in the first matching entry will be
@@ -821,6 +913,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
       metadata to calculate SLO. This field allows such producers to publish
       per-node SLO meta data, which will be consumed by SSA Eligibility
       Exporter and published in the form of per node metric to Monarch.
+    perSliEligibility: Optional. Multiple per-instance SLI eligibilities which
+      apply for individual SLIs. Exactly one of 'eligibility' and
+      'per_sli_eligibility' fields must be used.
     tier: Name of the SLO tier the Instance belongs to. This name will be
       expected to match the tiers specified in the service SLO configuration.
       Field is mandatory and must not be empty.
@@ -829,7 +924,71 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
   eligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility', 1)
   exclusions = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion', 2, repeated=True)
   nodes = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata', 3, repeated=True)
-  tier = _messages.StringField(4)
+  perSliEligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility', 4)
+  tier = _messages.StringField(5)
+
+
+class LDAPSSettings(_messages.Message):
+  r"""LDAPSSettings represents the ldaps settings for domain resource. LDAP is
+  the Lightweight Directory Access Protocol, defined in
+  https://tools.ietf.org/html/rfc4511. The settings object configures LDAP
+  over SSL/TLS, whether it is over port 636 or the StartTLS operation. If
+  LDAPSSettings is being changed, it will be placed into the UPDATING state,
+  which indicates that the resource is being reconciled. At this point, Get
+  will reflect an intermediate state.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of this LDAPS
+      settings.
+
+  Fields:
+    certificate: Output only. The certificate used to configure LDAPS.
+      Certificates can be chained with a maximum length of 15.
+    certificatePassword: Input only. The password used to encrypt the uploaded
+      pfx certificate.
+    certificatePfx: Input only. The uploaded PKCS12-formatted certificate to
+      configure LDAPS with. It will enable the domain controllers in this
+      domain to accept LDAPS connections (either LDAP over SSL/TLS or the
+      StartTLS operation). A valid certificate chain must form a valid x.509
+      certificate chain (or be comprised of a single self-signed certificate.
+      It must be encrypted with either: 1) PBES2 + PBKDF2 + AES256 encryption
+      and SHA256 PRF; or 2) pbeWithSHA1And3-KeyTripleDES-CBC Private key must
+      be included for the leaf / single self-signed certificate. Note: For a
+      fqdn your-example-domain.com, the wildcard fqdn is *.your-example-
+      domain.com. Specifically the leaf certificate must have: - Either a
+      blank subject or a subject with CN matching the wildcard fqdn. - Exactly
+      two SANs - the fqdn and wildcard fqdn. - Encipherment and digital key
+      signature key usages. - Server authentication extended key usage
+      (OID=1.3.6.1.5.5.7.3.1) - Private key must be in one of the following
+      formats: RSA, ECDSA, ED25519. - Private key must have appropriate key
+      length: 2048 for RSA, 256 for ECDSA - Signature algorithm of the leaf
+      certificate cannot be MD2, MD5 or SHA1.
+    name: The resource name of the LDAPS settings. Uses the form:
+      `projects/{project}/locations/{location}/domains/{domain}`.
+    state: Output only. The current state of this LDAPS settings.
+    updateTime: Output only. Last update time.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of this LDAPS settings.
+
+    Values:
+      STATE_UNSPECIFIED: Not Set
+      UPDATING: The LDAPS setting is being updated.
+      ACTIVE: The LDAPS setting is ready.
+      FAILED: The LDAPS setting is not applied correctly.
+    """
+    STATE_UNSPECIFIED = 0
+    UPDATING = 1
+    ACTIVE = 2
+    FAILED = 3
+
+  certificate = _messages.MessageField('Certificate', 1)
+  certificatePassword = _messages.StringField(2)
+  certificatePfx = _messages.BytesField(3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  updateTime = _messages.StringField(6)
 
 
 class ListDomainsResponse(_messages.Message):
@@ -873,19 +1032,19 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
-class ListSQLIntegrationsResponse(_messages.Message):
-  r"""ListSQLIntegrationsResponse is the response message for
-  ListSQLIntegrations method.
+class ListSqlIntegrationsResponse(_messages.Message):
+  r"""ListSqlIntegrationsResponse is the response message for
+  ListSqlIntegrations method.
 
   Fields:
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
-    sqlIntegrations: A list of SQLIntegrations of a domain.
+    sqlIntegrations: A list of SqlIntegrations of a domain.
     unreachable: A list of locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
-  sqlIntegrations = _messages.MessageField('SQLIntegration', 2, repeated=True)
+  sqlIntegrations = _messages.MessageField('SqlIntegration', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -1153,6 +1312,18 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsGetIamPolicyRequest(_messag
   resource = _messages.StringField(2, required=True)
 
 
+class ManagedidentitiesProjectsLocationsGlobalDomainsGetLdapssettingsRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsGetLdapssettingsRequest
+  object.
+
+  Fields:
+    name: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ManagedidentitiesProjectsLocationsGlobalDomainsGetRequest(_messages.Message):
   r"""A ManagedidentitiesProjectsLocationsGlobalDomainsGetRequest object.
 
@@ -1262,7 +1433,7 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsSqlIntegrationsGetRequest(_
   object.
 
   Fields:
-    name: Required. SQLIntegration resource name using the form:
+    name: Required. SqlIntegration resource name using the form:
       `projects/{project_id}/locations/global/domains/*/sqlIntegrations/{name}
       `
   """
@@ -1277,7 +1448,7 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsSqlIntegrationsListRequest(
 
   Fields:
     filter: Optional. Filter specifying constraints of a list operation. For
-      example, `SQLIntegration.name="sql"`.
+      example, `SqlIntegration.name="sql"`.
     orderBy: Optional. Specifies the ordering of results following syntax at
       https://cloud.google.com/apis/design/design_patterns#sorting_order.
     pageSize: Optional. The maximum number of items to return. If not
@@ -1288,7 +1459,7 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsSqlIntegrationsListRequest(
       queried.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
-    parent: Required. The resource name of the SQLIntegrations using the form:
+    parent: Required. The resource name of the SqlIntegrations using the form:
       `projects/{project_id}/locations/global/domains/*`
   """
 
@@ -1314,6 +1485,26 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsTestIamPermissionsRequest(_
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsUpdateLdapssettingsRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalDomainsUpdateLdapssettingsRequest
+  object.
+
+  Fields:
+    lDAPSSettings: A LDAPSSettings resource to be passed as the request body.
+    name: The resource name of the LDAPS settings. Uses the form:
+      `projects/{project}/locations/{location}/domains/{domain}`.
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. For the `FieldMask` definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
+  """
+
+  lDAPSSettings = _messages.MessageField('LDAPSSettings', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsValidateTrustRequest(_messages.Message):
@@ -1631,47 +1822,6 @@ class ResetAdminPasswordResponse(_messages.Message):
   password = _messages.StringField(1)
 
 
-class SQLIntegration(_messages.Message):
-  r"""Represents the SQL instance integrated with AD.
-
-  Enums:
-    StateValueValuesEnum: Output only. The current state of the sql
-      integration.
-
-  Fields:
-    createTime: Output only. The time sql integration was created. Synthetic
-      field is populated automatically by CCFE.
-    name: The unique name of the sql integration in the form of `projects/{pro
-      ject_id}/locations/global/domains/{domain_name}/sqlIntegrations/{sql_int
-      egration}`
-    sqlInstance: The full resource name of an integrated sql instance
-      TODO(b/161918255) Add resource type annotation post CloudSQL API fix.
-    state: Output only. The current state of the sql integration.
-    updateTime: Output only. The time sql integration was updated. Synthetic
-      field is populated automatically by CCFE.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The current state of the sql integration.
-
-    Values:
-      STATE_UNSPECIFIED: Not Set
-      CREATING: The sqlIntegration is being created.
-      DELETING: The sqlIntegration is being deleted.
-      READY: The sqlIntegration is ready.
-    """
-    STATE_UNSPECIFIED = 0
-    CREATING = 1
-    DELETING = 2
-    READY = 3
-
-  createTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  sqlInstance = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  updateTime = _messages.StringField(5)
-
-
 class Schedule(_messages.Message):
   r"""Configure the schedule.
 
@@ -1724,6 +1874,46 @@ class SetIamPolicyRequest(_messages.Message):
   """
 
   policy = _messages.MessageField('Policy', 1)
+
+
+class SqlIntegration(_messages.Message):
+  r"""Represents the Sql instance integrated with AD.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the sql
+      integration.
+
+  Fields:
+    createTime: Output only. The time sql integration was created. Synthetic
+      field is populated automatically by CCFE.
+    name: The unique name of the sql integration in the form of `projects/{pro
+      ject_id}/locations/global/domains/{domain_name}/sqlIntegrations/{sql_int
+      egration}`
+    sqlInstance: The full resource name of an integrated sql instance
+    state: Output only. The current state of the sql integration.
+    updateTime: Output only. The time sql integration was updated. Synthetic
+      field is populated automatically by CCFE.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the sql integration.
+
+    Values:
+      STATE_UNSPECIFIED: Not Set
+      CREATING: The sqlIntegration is being created.
+      DELETING: The sqlIntegration is being deleted.
+      READY: The sqlIntegration is ready.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    DELETING = 2
+    READY = 3
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  sqlInstance = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  updateTime = _messages.StringField(5)
 
 
 class StandardQueryParameters(_messages.Message):

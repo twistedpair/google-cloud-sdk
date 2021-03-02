@@ -587,12 +587,16 @@ class LocationMetadata(_messages.Message):
   Fields:
     flexibleEnvironmentAvailable: App Engine flexible environment is available
       in the given location.@OutputOnly
+    searchApiAvailable: Output only. Search API
+      (https://cloud.google.com/appengine/docs/standard/python/search) is
+      available in the given location.
     standardEnvironmentAvailable: App Engine standard environment is available
       in the given location.@OutputOnly
   """
 
   flexibleEnvironmentAvailable = _messages.BooleanField(1)
-  standardEnvironmentAvailable = _messages.BooleanField(2)
+  searchApiAvailable = _messages.BooleanField(2)
+  standardEnvironmentAvailable = _messages.BooleanField(3)
 
 
 class ManagedCertificate(_messages.Message):

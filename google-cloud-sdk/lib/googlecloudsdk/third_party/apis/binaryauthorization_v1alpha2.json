@@ -283,7 +283,7 @@
     },
     "AdmissionWhitelistPattern": {
       "id": "AdmissionWhitelistPattern",
-      "description": "An admission whitelist pattern exempts images from checks by admission rules.",
+      "description": "An admission allowlist pattern exempts images from checks by admission rules.",
       "type": "object",
       "properties": {
         "namePattern": {
@@ -294,7 +294,7 @@
     },
     "AdmissionRule": {
       "id": "AdmissionRule",
-      "description": "An admission rule specifies either that all container images used in a pod creation request must be attested to by one or more attestors, that all pod creations will be allowed, or that all pod creations will be denied. Images matching an admission whitelist pattern are exempted from admission rules and will never block a pod creation.",
+      "description": "An admission rule specifies either that all container images used in a pod creation request must be attested to by one or more attestors, that all pod creations will be allowed, or that all pod creations will be denied. Images matching an admission allowlist pattern are exempted from admission rules and will never block a pod creation.",
       "type": "object",
       "properties": {
         "evaluationMode": {
@@ -601,9 +601,9 @@
           "parameters": {
             "name": {
               "description": "Required. The resource name of the policy to retrieve, in the format `projects\/*\/policy`.",
+              "pattern": "^projects\/[^\/]+\/policy$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+\/policy$",
               "type": "string"
             }
           },
@@ -626,9 +626,9 @@
           "parameters": {
             "name": {
               "description": "Output only. The resource name, in the format `projects\/*\/policy`. There is at most one policy per project.",
+              "pattern": "^projects\/[^\/]+\/policy$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+\/policy$",
               "type": "string"
             }
           },
@@ -659,9 +659,9 @@
               "parameters": {
                 "attestor": {
                   "description": "Required. The resource name of the Attestor of the occurrence, in the format `projects\/*\/attestors\/*`.",
+                  "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -687,9 +687,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent of this attestor.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "attestorId": {
@@ -720,9 +720,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the attestor to retrieve, in the format `projects\/*\/attestors\/*`.",
+                  "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -745,9 +745,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name, in the format: `projects\/*\/attestors\/*`. This field may not be updated.",
+                  "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -773,9 +773,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The resource name of the project associated with the attestors, in the format `projects\/*`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -809,9 +809,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the attestors to delete, in the format `projects\/*\/attestors\/*`.",
+                  "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -834,9 +834,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -862,9 +862,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+$",
                   "type": "string"
                 },
                 "options.requestedPolicyVersion": {
@@ -893,9 +893,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -926,9 +926,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+\/attestations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+\/attestations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -954,9 +954,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+\/attestations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+\/attestations\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -985,9 +985,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+\/attestations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/attestors\/[^\/]+\/attestations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1019,9 +1019,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/policy$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/policy$",
                   "type": "string"
                 }
               },
@@ -1047,9 +1047,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/policy$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/policy$",
                   "type": "string"
                 },
                 "options.requestedPolicyVersion": {
@@ -1078,9 +1078,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/policy$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/policy$",
                   "type": "string"
                 }
               },
@@ -1112,9 +1112,9 @@
           "parameters": {
             "name": {
               "description": "Required. The resource name, in the format `locations\/*\/policy`. Note that the system policy is not associated with a project.",
+              "pattern": "^locations\/[^\/]+\/policy$",
               "location": "path",
               "required": true,
-              "pattern": "^locations\/[^\/]+\/policy$",
               "type": "string"
             }
           },

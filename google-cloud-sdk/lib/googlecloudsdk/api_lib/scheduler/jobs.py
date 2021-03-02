@@ -49,3 +49,13 @@ class BaseJobs(object):
         self.messages.CloudschedulerProjectsLocationsJobsCreateRequest(
             job=job, parent=parent_ref))
     return self.jobs_service.Create(request)
+
+  def Run(self, job_ref, legacy_cron=False):
+    request = (
+        self.messages.CloudschedulerProjectsLocationsJobsRunRequest(
+            name=job_ref,
+            runJobRequest=self.messages.RunJobRequest(
+                legacyAppEngineCron=legacy_cron))
+        )
+    return self.jobs_service.Run(request)
+

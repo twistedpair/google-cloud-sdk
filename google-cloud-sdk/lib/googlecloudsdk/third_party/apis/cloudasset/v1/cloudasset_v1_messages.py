@@ -2984,8 +2984,9 @@ class ResourceSearchResult(_messages.Message):
     folders: The folder(s) that this resource belongs to, in the form of
       folders/{FOLDER_NUMBER}. This field is available when the resource
       belongs to one or more folders. To search against `folders`: * use a
-      field query. Example: `folders:(123 OR 456)` * specify the `scope` field
-      as this folder in your search request.
+      field query. Example: `folders:(123 OR 456)` * use a free text query.
+      Example: `123` * specify the `scope` field as this folder in your search
+      request.
     kmsKey: The Cloud KMS [CryptoKey](https://cloud.google.com/kms/docs/refere
       nce/rest/v1/projects.locations.keyRings.cryptoKeys?hl=en) name or [Crypt
       oKeyVersion](https://cloud.google.com/kms/docs/reference/rest/v1/project
@@ -3024,13 +3025,21 @@ class ResourceSearchResult(_messages.Message):
     organization: The organization that this resource belongs to, in the form
       of organizations/{ORGANIZATION_NUMBER}. This field is available when the
       resource belongs to an organization. To search against `organization`: *
-      use a field query. Example: `organization:123` * specify the `scope`
-      field as this organization in your search request.
+      use a field query. Example: `organization:123` * use a free text query.
+      Example: `123` * specify the `scope` field as this organization in your
+      search request.
+    parentAssetType: The type of this resource's immediate parent, if there is
+      one. To search against the `parent_asset_type`: * use a field query.
+      Example: `parentAssetType:"cloudresourcemanager.googleapis.com/Project"`
+      * use a free text query. Example:
+      `cloudresourcemanager.googleapis.com/Project`
+    parentFullResourceName: The full resource name of this resource's parent,
+      if it has one.
     project: The project that this resource belongs to, in the form of
       projects/{PROJECT_NUMBER}. This field is available when the resource
       belongs to a project. To search against `project`: * use a field query.
-      Example: `project:12345` * specify the `scope` field as this project in
-      your search request.
+      Example: `project:12345` * use a free text query. Example: `12345` *
+      specify the `scope` field as this project in your search request.
     state: The state of this resource. Different resources types have
       different state definitions that are mapped from various fields of
       different resource types. This field is available only when the
@@ -3134,9 +3143,11 @@ class ResourceSearchResult(_messages.Message):
   name = _messages.StringField(10)
   networkTags = _messages.StringField(11, repeated=True)
   organization = _messages.StringField(12)
-  project = _messages.StringField(13)
-  state = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  parentAssetType = _messages.StringField(13)
+  parentFullResourceName = _messages.StringField(14)
+  project = _messages.StringField(15)
+  state = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class ResourceSelector(_messages.Message):

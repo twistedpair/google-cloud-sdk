@@ -1004,7 +1004,7 @@ Example request body:
     )
 
     def SetSecurityPolicy(self, request, global_params=None):
-      r"""Sets the security policy for the specified backend service.
+      r"""Sets the Google Cloud Armor security policy for the specified backend service. For more information, see Google Cloud Armor Overview.
 
       Args:
         request: (ComputeBackendServicesSetSecurityPolicyRequest) input message

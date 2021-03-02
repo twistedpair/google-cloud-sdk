@@ -168,8 +168,8 @@ class GoogleCloudBillingBudgetsV1alpha1BudgetAmount(_messages.Message):
     specifiedAmount: A specified amount to use as the budget. `currency_code`
       is optional. If specified when creating a budget, it must match the
       currency of the billing account. If specified when updating a budget, it
-      must match the existing budget currency_code. The `currency_code` is
-      provided on output.
+      must match the currency_code of the existing budget. The `currency_code`
+      is provided on output.
   """
 
   lastPeriodAmount = _messages.MessageField('GoogleCloudBillingBudgetsV1alpha1LastPeriodAmount', 1)

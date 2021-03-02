@@ -230,7 +230,7 @@
       "type": "object",
       "properties": {
         "specifiedAmount": {
-          "description": "A specified amount to use as the budget. `currency_code` is optional. If specified when creating a budget, it must match the currency of the billing account. If specified when updating a budget, it must match the existing budget currency_code. The `currency_code` is provided on output.",
+          "description": "A specified amount to use as the budget. `currency_code` is optional. If specified when creating a budget, it must match the currency of the billing account. If specified when updating a budget, it must match the currency_code of the existing budget. The `currency_code` is provided on output.",
           "$ref": "GoogleTypeMoney"
         },
         "lastPeriodAmount": {
@@ -374,9 +374,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the billing account to create the budget in. Values are of the form `billingAccounts\/{billingAccountId}`.",
+                  "pattern": "^billingAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -403,9 +403,9 @@
               "parameters": {
                 "name": {
                   "description": "Output only. Resource name of the budget. The resource name implies the scope of a budget. Values are of the form `billingAccounts\/{billingAccountId}\/budgets\/{budgetId}`.",
+                  "pattern": "^billingAccounts\/[^\/]+\/budgets\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+\/budgets\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -432,9 +432,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Name of budget to get. Values are of the form `billingAccounts\/{billingAccountId}\/budgets\/{budgetId}`.",
+                  "pattern": "^billingAccounts\/[^\/]+\/budgets\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+\/budgets\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -458,9 +458,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Name of billing account to list budgets under. Values are of the form `billingAccounts\/{billingAccountId}`.",
+                  "pattern": "^billingAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -495,9 +495,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Name of the budget to delete. Values are of the form `billingAccounts\/{billingAccountId}\/budgets\/{budgetId}`.",
+                  "pattern": "^billingAccounts\/[^\/]+\/budgets\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+\/budgets\/[^\/]+$",
                   "type": "string"
                 }
               },

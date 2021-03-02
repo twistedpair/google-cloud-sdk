@@ -279,6 +279,7 @@ class Node(_messages.Message):
     symptoms: Output only. The Symptoms that have occurred to the TPU Node.
     tags: Tags to apply to the TPU Node. Tags are used to identify valid
       sources or targets for network firewalls.
+    useTpuVm: Output only.
   """
 
   class ApiVersionValueValuesEnum(_messages.Enum):
@@ -420,6 +421,7 @@ class Node(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 17)
   symptoms = _messages.MessageField('Symptom', 18, repeated=True)
   tags = _messages.StringField(19, repeated=True)
+  useTpuVm = _messages.BooleanField(20)
 
 
 class Operation(_messages.Message):
@@ -742,6 +744,8 @@ class Symptom(_messages.Message):
       MESH_BUILD_FAIL: TPU runtime fails to construct a mesh that recognizes
         each TPU device's neighbors.
       HBM_OUT_OF_MEMORY: TPU HBM is out of memory.
+      PROJECT_ABUSE: Abusive behaviors have been identified on the current
+        project.
     """
     SYMPTOM_TYPE_UNSPECIFIED = 0
     LOW_MEMORY = 1
@@ -749,6 +753,7 @@ class Symptom(_messages.Message):
     EXECUTE_TIMED_OUT = 3
     MESH_BUILD_FAIL = 4
     HBM_OUT_OF_MEMORY = 5
+    PROJECT_ABUSE = 6
 
   createTime = _messages.StringField(1)
   details = _messages.StringField(2)

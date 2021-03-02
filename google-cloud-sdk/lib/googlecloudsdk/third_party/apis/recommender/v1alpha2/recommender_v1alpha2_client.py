@@ -59,6 +59,7 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
     self.organizations = self.OrganizationsService(self)
     self.projects_locations_insightTypes_insights = self.ProjectsLocationsInsightTypesInsightsService(self)
     self.projects_locations_insightTypes = self.ProjectsLocationsInsightTypesService(self)
+    self.projects_locations_recommenders_config = self.ProjectsLocationsRecommendersConfigService(self)
     self.projects_locations_recommenders_recommendations = self.ProjectsLocationsRecommendersRecommendationsService(self)
     self.projects_locations_recommenders = self.ProjectsLocationsRecommendersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -1371,6 +1372,43 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+  class ProjectsLocationsRecommendersConfigService(base_api.BaseApiService):
+    """Service class for the projects_locations_recommenders_config resource."""
+
+    _NAME = 'projects_locations_recommenders_config'
+
+    def __init__(self, client):
+      super(RecommenderV1alpha2.ProjectsLocationsRecommendersConfigService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Commit(self, request, global_params=None):
+      r"""Commits a Recommender Config change.
+
+      Args:
+        request: (GoogleCloudRecommenderV1alpha2RecommenderConfig) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1alpha2RecommenderConfig) The response message.
+      """
+      config = self.GetMethodConfig('Commit')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Commit.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/config:commit',
+        http_method='POST',
+        method_id='recommender.projects.locations.recommenders.config.commit',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}:commit',
+        request_field='<request>',
+        request_type_name='GoogleCloudRecommenderV1alpha2RecommenderConfig',
+        response_type_name='GoogleCloudRecommenderV1alpha2RecommenderConfig',
+        supports_download=False,
+    )
+
   class ProjectsLocationsRecommendersRecommendationsService(base_api.BaseApiService):
     """Service class for the projects_locations_recommenders_recommendations resource."""
 
@@ -1579,6 +1617,33 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
       super(RecommenderV1alpha2.ProjectsLocationsRecommendersService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def GetConfig(self, request, global_params=None):
+      r"""Gets the requested Recommender Config. There is only one instance of the config for each Recommender.
+
+      Args:
+        request: (RecommenderProjectsLocationsRecommendersGetConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1alpha2RecommenderConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/config',
+        http_method='GET',
+        method_id='recommender.projects.locations.recommenders.getConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}',
+        request_field='',
+        request_type_name='RecommenderProjectsLocationsRecommendersGetConfigRequest',
+        response_type_name='GoogleCloudRecommenderV1alpha2RecommenderConfig',
+        supports_download=False,
+    )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""

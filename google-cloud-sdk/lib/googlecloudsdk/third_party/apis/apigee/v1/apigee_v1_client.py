@@ -44,6 +44,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_analytics_datastores = self.OrganizationsAnalyticsDatastoresService(self)
     self.organizations_analytics = self.OrganizationsAnalyticsService(self)
     self.organizations_apiproducts_attributes = self.OrganizationsApiproductsAttributesService(self)
+    self.organizations_apiproducts_rateplans = self.OrganizationsApiproductsRateplansService(self)
     self.organizations_apiproducts = self.OrganizationsApiproductsService(self)
     self.organizations_apis_deployments = self.OrganizationsApisDeploymentsService(self)
     self.organizations_apis_keyvaluemaps = self.OrganizationsApisKeyvaluemapsService(self)
@@ -59,6 +60,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_developers_apps_keys = self.OrganizationsDevelopersAppsKeysService(self)
     self.organizations_developers_apps = self.OrganizationsDevelopersAppsService(self)
     self.organizations_developers_attributes = self.OrganizationsDevelopersAttributesService(self)
+    self.organizations_developers_subscriptions = self.OrganizationsDevelopersSubscriptionsService(self)
     self.organizations_developers = self.OrganizationsDevelopersService(self)
     self.organizations_envgroups_attachments = self.OrganizationsEnvgroupsAttachmentsService(self)
     self.organizations_envgroups = self.OrganizationsEnvgroupsService(self)
@@ -71,6 +73,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_environments_apis_revisions_deployments = self.OrganizationsEnvironmentsApisRevisionsDeploymentsService(self)
     self.organizations_environments_apis_revisions = self.OrganizationsEnvironmentsApisRevisionsService(self)
     self.organizations_environments_apis = self.OrganizationsEnvironmentsApisService(self)
+    self.organizations_environments_archiveDeployments = self.OrganizationsEnvironmentsArchiveDeploymentsService(self)
     self.organizations_environments_caches = self.OrganizationsEnvironmentsCachesService(self)
     self.organizations_environments_deployments = self.OrganizationsEnvironmentsDeploymentsService(self)
     self.organizations_environments_flowhooks = self.OrganizationsEnvironmentsFlowhooksService(self)
@@ -86,6 +89,8 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_environments_sharedflows = self.OrganizationsEnvironmentsSharedflowsService(self)
     self.organizations_environments_stats = self.OrganizationsEnvironmentsStatsService(self)
     self.organizations_environments_targetservers = self.OrganizationsEnvironmentsTargetserversService(self)
+    self.organizations_environments_traceConfig_overrides = self.OrganizationsEnvironmentsTraceConfigOverridesService(self)
+    self.organizations_environments_traceConfig = self.OrganizationsEnvironmentsTraceConfigService(self)
     self.organizations_environments = self.OrganizationsEnvironmentsService(self)
     self.organizations_hostQueries = self.OrganizationsHostQueriesService(self)
     self.organizations_hostStats = self.OrganizationsHostStatsService(self)
@@ -450,6 +455,151 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='GoogleCloudApigeeV1Attribute',
         response_type_name='GoogleCloudApigeeV1Attribute',
+        supports_download=False,
+    )
+
+  class OrganizationsApiproductsRateplansService(base_api.BaseApiService):
+    """Service class for the organizations_apiproducts_rateplans resource."""
+
+    _NAME = 'organizations_apiproducts_rateplans'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsApiproductsRateplansService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a Rate Plan which is associated with an api product of an organization. A Rate Plan is used to define the way in which API Product owners would like to monetize their products. Using a Rate Plan, they can define things like: - Billing frequency - The initial setup fee / termination fee for using an API Product - When can the customers start using an API Product - Fixed recurring charges for using an API Product - Consumption based charges for using an API Product - Should the billing be done in a prepaid or postpaid manner - Share revenue with the developers. An API Product can have multiple Rate Plans associated with it but ONLY one rate plan can be active at any point of time. From the developers perspective (people who use the API Products), what this means for them is that they will be buying API products (and not rate plans).
+
+      Args:
+        request: (ApigeeOrganizationsApiproductsRateplansCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1RatePlan) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apiproducts/{apiproductsId}/rateplans',
+        http_method='POST',
+        method_id='apigee.organizations.apiproducts.rateplans.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/rateplans',
+        request_field='googleCloudApigeeV1RatePlan',
+        request_type_name='ApigeeOrganizationsApiproductsRateplansCreateRequest',
+        response_type_name='GoogleCloudApigeeV1RatePlan',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a particular rate plan. A Rate Plan can only be deleted if it satisfies any of the following: - Rate Plan is in draft state. - Rate Plan is active but has had no active transactions for the last 14 months. - Rate plan has expired.
+
+      Args:
+        request: (ApigeeOrganizationsApiproductsRateplansDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1RatePlan) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apiproducts/{apiproductsId}/rateplans/{rateplansId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.apiproducts.rateplans.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsApiproductsRateplansDeleteRequest',
+        response_type_name='GoogleCloudApigeeV1RatePlan',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the details of a particular rate plan.
+
+      Args:
+        request: (ApigeeOrganizationsApiproductsRateplansGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1RatePlan) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apiproducts/{apiproductsId}/rateplans/{rateplansId}',
+        http_method='GET',
+        method_id='apigee.organizations.apiproducts.rateplans.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsApiproductsRateplansGetRequest',
+        response_type_name='GoogleCloudApigeeV1RatePlan',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the rate plans.
+
+      Args:
+        request: (ApigeeOrganizationsApiproductsRateplansListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListRatePlansResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apiproducts/{apiproductsId}/rateplans',
+        http_method='GET',
+        method_id='apigee.organizations.apiproducts.rateplans.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['count', 'expand', 'orderBy', 'startKey', 'state'],
+        relative_path='v1/{+parent}/rateplans',
+        request_field='',
+        request_type_name='ApigeeOrganizationsApiproductsRateplansListRequest',
+        response_type_name='GoogleCloudApigeeV1ListRatePlansResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates an existing rate plan. Note that a rate plan can only be edited if: - It has no active users. - It has not expired.
+
+      Args:
+        request: (GoogleCloudApigeeV1RatePlan) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1RatePlan) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apiproducts/{apiproductsId}/rateplans/{rateplansId}',
+        http_method='PUT',
+        method_id='apigee.organizations.apiproducts.rateplans.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='<request>',
+        request_type_name='GoogleCloudApigeeV1RatePlan',
+        response_type_name='GoogleCloudApigeeV1RatePlan',
         supports_download=False,
     )
 
@@ -1899,6 +2049,124 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsDevelopersSubscriptionsService(base_api.BaseApiService):
+    """Service class for the organizations_developers_subscriptions resource."""
+
+    _NAME = 'organizations_developers_subscriptions'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsDevelopersSubscriptionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Subscribe to a particular API Product. Subscription includes things like: - API Product to which the developer is subscribing. - When the subscription is to be started. - When the subscription will end. The API Product associated with the subscription cannot be used before the start of the subscription and after the end of the subscription.
+
+      Args:
+        request: (ApigeeOrganizationsDevelopersSubscriptionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1DeveloperSubscription) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/developers/{developersId}/subscriptions',
+        http_method='POST',
+        method_id='apigee.organizations.developers.subscriptions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/subscriptions',
+        request_field='googleCloudApigeeV1DeveloperSubscription',
+        request_type_name='ApigeeOrganizationsDevelopersSubscriptionsCreateRequest',
+        response_type_name='GoogleCloudApigeeV1DeveloperSubscription',
+        supports_download=False,
+    )
+
+    def Expire(self, request, global_params=None):
+      r"""Expire a subscription. This will expire a subscription immediately.
+
+      Args:
+        request: (ApigeeOrganizationsDevelopersSubscriptionsExpireRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1DeveloperSubscription) The response message.
+      """
+      config = self.GetMethodConfig('Expire')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Expire.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/developers/{developersId}/subscriptions/{subscriptionsId}:expire',
+        http_method='POST',
+        method_id='apigee.organizations.developers.subscriptions.expire',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:expire',
+        request_field='googleCloudApigeeV1ExpireDeveloperSubscriptionRequest',
+        request_type_name='ApigeeOrganizationsDevelopersSubscriptionsExpireRequest',
+        response_type_name='GoogleCloudApigeeV1DeveloperSubscription',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get the details regarding a particular subscription.
+
+      Args:
+        request: (ApigeeOrganizationsDevelopersSubscriptionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1DeveloperSubscription) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/developers/{developersId}/subscriptions/{subscriptionsId}',
+        http_method='GET',
+        method_id='apigee.organizations.developers.subscriptions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsDevelopersSubscriptionsGetRequest',
+        response_type_name='GoogleCloudApigeeV1DeveloperSubscription',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List all the Subscriptions.
+
+      Args:
+        request: (ApigeeOrganizationsDevelopersSubscriptionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListDeveloperSubscriptionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/developers/{developersId}/subscriptions',
+        http_method='GET',
+        method_id='apigee.organizations.developers.subscriptions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['count', 'startKey'],
+        relative_path='v1/{+parent}/subscriptions',
+        request_field='',
+        request_type_name='ApigeeOrganizationsDevelopersSubscriptionsListRequest',
+        response_type_name='GoogleCloudApigeeV1ListDeveloperSubscriptionsResponse',
+        supports_download=False,
+    )
+
   class OrganizationsDevelopersService(base_api.BaseApiService):
     """Service class for the organizations_developers resource."""
 
@@ -2855,6 +3123,205 @@ class ApigeeV1(base_api.BaseApiClient):
       super(ApigeeV1.OrganizationsEnvironmentsApisService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class OrganizationsEnvironmentsArchiveDeploymentsService(base_api.BaseApiService):
+    """Service class for the organizations_environments_archiveDeployments resource."""
+
+    _NAME = 'organizations_environments_archiveDeployments'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsEnvironmentsArchiveDeploymentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new ArchiveDeployment.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsArchiveDeploymentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/archiveDeployments',
+        http_method='POST',
+        method_id='apigee.organizations.environments.archiveDeployments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/archiveDeployments',
+        request_field='googleCloudApigeeV1ArchiveDeployment',
+        request_type_name='ApigeeOrganizationsEnvironmentsArchiveDeploymentsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an archive deployment.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsArchiveDeploymentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/archiveDeployments/{archiveDeploymentsId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.environments.archiveDeployments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsArchiveDeploymentsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def GenerateDownloadUrl(self, request, global_params=None):
+      r"""Generates a signed URL for downloading the original zip file used to create an Archive Deployment. The URL is only valid for a limited period and should be used within minutes after generation. Each call returns a new upload URL.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsArchiveDeploymentsGenerateDownloadUrlRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1GenerateDownloadUrlResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateDownloadUrl')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateDownloadUrl.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/archiveDeployments/{archiveDeploymentsId}:generateDownloadUrl',
+        http_method='POST',
+        method_id='apigee.organizations.environments.archiveDeployments.generateDownloadUrl',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:generateDownloadUrl',
+        request_field='googleCloudApigeeV1GenerateDownloadUrlRequest',
+        request_type_name='ApigeeOrganizationsEnvironmentsArchiveDeploymentsGenerateDownloadUrlRequest',
+        response_type_name='GoogleCloudApigeeV1GenerateDownloadUrlResponse',
+        supports_download=False,
+    )
+
+    def GenerateUploadUrl(self, request, global_params=None):
+      r"""Generates a signed URL for uploading an Archive zip file to Google Cloud Storage. Once the upload is complete, the signed URL should be passed to CreateArchiveDeployment. When uploading to the generated signed URL, please follow these restrictions: * Source file type should be a zip file. * Source file size should not exceed 1GB limit. * No credentials should be attached - the signed URLs provide access to the target bucket using internal service identity; if credentials were attached, the identity from the credentials would be used, but that identity does not have permissions to upload files to the URL. When making a HTTP PUT request, these two headers need to be specified: * `content-type: application/zip` * `x-goog-content-length-range: 0,1073741824` And this header SHOULD NOT be specified: * `Authorization: Bearer YOUR_TOKEN`.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsArchiveDeploymentsGenerateUploadUrlRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1GenerateUploadUrlResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateUploadUrl')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateUploadUrl.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/archiveDeployments:generateUploadUrl',
+        http_method='POST',
+        method_id='apigee.organizations.environments.archiveDeployments.generateUploadUrl',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/archiveDeployments:generateUploadUrl',
+        request_field='googleCloudApigeeV1GenerateUploadUrlRequest',
+        request_type_name='ApigeeOrganizationsEnvironmentsArchiveDeploymentsGenerateUploadUrlRequest',
+        response_type_name='GoogleCloudApigeeV1GenerateUploadUrlResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified ArchiveDeployment.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsArchiveDeploymentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ArchiveDeployment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/archiveDeployments/{archiveDeploymentsId}',
+        http_method='GET',
+        method_id='apigee.organizations.environments.archiveDeployments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsArchiveDeploymentsGetRequest',
+        response_type_name='GoogleCloudApigeeV1ArchiveDeployment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the ArchiveDeployments in the specified Environment.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsArchiveDeploymentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListArchiveDeploymentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/archiveDeployments',
+        http_method='GET',
+        method_id='apigee.organizations.environments.archiveDeployments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/archiveDeployments',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsArchiveDeploymentsListRequest',
+        response_type_name='GoogleCloudApigeeV1ListArchiveDeploymentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing ArchiveDeployment. Labels can modified but most of the other fields are not modifiable.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsArchiveDeploymentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ArchiveDeployment) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/archiveDeployments/{archiveDeploymentsId}',
+        http_method='PATCH',
+        method_id='apigee.organizations.environments.archiveDeployments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1ArchiveDeployment',
+        request_type_name='ApigeeOrganizationsEnvironmentsArchiveDeploymentsPatchRequest',
+        response_type_name='GoogleCloudApigeeV1ArchiveDeployment',
+        supports_download=False,
+    )
 
   class OrganizationsEnvironmentsCachesService(base_api.BaseApiService):
     """Service class for the organizations_environments_caches resource."""
@@ -4086,6 +4553,161 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsEnvironmentsTraceConfigOverridesService(base_api.BaseApiService):
+    """Service class for the organizations_environments_traceConfig_overrides resource."""
+
+    _NAME = 'organizations_environments_traceConfig_overrides'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsEnvironmentsTraceConfigOverridesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a trace configuration override. The response contains a system-generated UUID, that can be used to view, update, or delete the configuration override. override. Use the List API to view the existing trace configuration overrides. overrides.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsTraceConfigOverridesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1TraceConfigOverride) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/traceConfig/overrides',
+        http_method='POST',
+        method_id='apigee.organizations.environments.traceConfig.overrides.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/overrides',
+        request_field='googleCloudApigeeV1TraceConfigOverride',
+        request_type_name='ApigeeOrganizationsEnvironmentsTraceConfigOverridesCreateRequest',
+        response_type_name='GoogleCloudApigeeV1TraceConfigOverride',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a distributed trace configuration override.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsTraceConfigOverridesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/traceConfig/overrides/{overridesId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.environments.traceConfig.overrides.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsTraceConfigOverridesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a trace configuration override.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsTraceConfigOverridesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1TraceConfigOverride) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/traceConfig/overrides/{overridesId}',
+        http_method='GET',
+        method_id='apigee.organizations.environments.traceConfig.overrides.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsTraceConfigOverridesGetRequest',
+        response_type_name='GoogleCloudApigeeV1TraceConfigOverride',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all of the distributed trace configuration overrides in an environment.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsTraceConfigOverridesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListTraceConfigOverridesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/traceConfig/overrides',
+        http_method='GET',
+        method_id='apigee.organizations.environments.traceConfig.overrides.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/overrides',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsTraceConfigOverridesListRequest',
+        response_type_name='GoogleCloudApigeeV1ListTraceConfigOverridesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a distributed trace configuration override. Note that the repeated fields have replace semantics when included in the field mask and that they will be overwritten by the value of the fields in the request body.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsTraceConfigOverridesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1TraceConfigOverride) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/traceConfig/overrides/{overridesId}',
+        http_method='PATCH',
+        method_id='apigee.organizations.environments.traceConfig.overrides.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1TraceConfigOverride',
+        request_type_name='ApigeeOrganizationsEnvironmentsTraceConfigOverridesPatchRequest',
+        response_type_name='GoogleCloudApigeeV1TraceConfigOverride',
+        supports_download=False,
+    )
+
+  class OrganizationsEnvironmentsTraceConfigService(base_api.BaseApiService):
+    """Service class for the organizations_environments_traceConfig resource."""
+
+    _NAME = 'organizations_environments_traceConfig'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsEnvironmentsTraceConfigService, self).__init__(client)
+      self._upload_configs = {
+          }
+
   class OrganizationsEnvironmentsService(base_api.BaseApiService):
     """Service class for the organizations_environments resource."""
 
@@ -4255,6 +4877,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApigeeOrganizationsEnvironmentsGetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def GetTraceConfig(self, request, global_params=None):
+      r"""Get distributed trace configuration in an environment.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsGetTraceConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1TraceConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetTraceConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetTraceConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/traceConfig',
+        http_method='GET',
+        method_id='apigee.organizations.environments.getTraceConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsGetTraceConfigRequest',
+        response_type_name='GoogleCloudApigeeV1TraceConfig',
         supports_download=False,
     )
 
@@ -4444,6 +5093,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='GoogleCloudApigeeV1Environment',
         response_type_name='GoogleCloudApigeeV1Environment',
+        supports_download=False,
+    )
+
+    def UpdateTraceConfig(self, request, global_params=None):
+      r"""Updates the trace configurations in an environment. Note that the repeated fields have replace semantics when included in the field mask and that they will be overwritten by the value of the fields in the request body.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsUpdateTraceConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1TraceConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateTraceConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateTraceConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/traceConfig',
+        http_method='PATCH',
+        method_id='apigee.organizations.environments.updateTraceConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1TraceConfig',
+        request_type_name='ApigeeOrganizationsEnvironmentsUpdateTraceConfigRequest',
+        response_type_name='GoogleCloudApigeeV1TraceConfig',
         supports_download=False,
     )
 

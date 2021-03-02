@@ -514,6 +514,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'clouddeploy': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.clouddeploy.v1alpha1',
+                client_classpath='clouddeploy_v1alpha1_client.ClouddeployV1alpha1',
+                messages_modulepath='clouddeploy_v1alpha1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'clouderrorreporting': {
         'v1beta1':
             APIDef(
@@ -1435,6 +1445,16 @@ MAP = {
                 client_classpath='managedidentities_v1beta1_client.ManagedidentitiesV1beta1',
                 messages_modulepath='managedidentities_v1beta1_messages',
                 default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'mediaasset': {
+        'v1alpha':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.mediaasset.v1alpha',
+                client_classpath='mediaasset_v1alpha_client.MediaassetV1alpha',
+                messages_modulepath='mediaasset_v1alpha_messages',
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

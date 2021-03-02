@@ -1808,9 +1808,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation's parent resource.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1850,9 +1850,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource.",
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1876,9 +1876,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource to be deleted.",
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1902,9 +1902,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource to be cancelled.",
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },

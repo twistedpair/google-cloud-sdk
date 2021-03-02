@@ -253,9 +253,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^.*$",
               "location": "path",
               "required": true,
-              "pattern": "^.*$",
               "type": "string"
             }
           },
@@ -281,9 +281,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^.*$",
               "location": "path",
               "required": true,
-              "pattern": "^.*$",
               "type": "string"
             }
           },
@@ -309,9 +309,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^.*$",
               "location": "path",
               "required": true,
-              "pattern": "^.*$",
               "type": "string"
             }
           },

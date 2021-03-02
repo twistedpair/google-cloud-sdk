@@ -41,7 +41,11 @@ def CheckFieldsSpecifiedBeta(unused_instance_ref, args, patch_request):
 
 def CheckFieldsSpecifiedAlpha(unused_instance_ref, args, patch_request):
   """Checks if fields to update are registered for ALPHA track."""
-  return CheckFieldsSpecifiedCommon(args, patch_request, [])
+  additional_update_args = [
+      'maintenance_window_day',
+      'maintenance_window_hour',
+  ]
+  return CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args)
 
 
 def CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args):
@@ -150,4 +154,20 @@ def UpdateAuthEnabled(unused_instance_ref, args, patch_request):
   if args.IsSpecified('enable_auth'):
     util.WarnOnAuthEnabled(args.enable_auth)
     patch_request = AddFieldToUpdateMask('auth_enabled', patch_request)
+  return patch_request
+
+
+def UpdateMaintenanceWindowDay(unused_instance_ref, args, patch_request):
+  """Hook to update maintenance window day to the update mask of the request."""
+  if args.IsSpecified('maintenance_window_day'):
+    patch_request = AddFieldToUpdateMask('maintenance_policy',
+                                         patch_request)
+  return patch_request
+
+
+def UpdateMaintenanceWindowHour(unused_instance_ref, args, patch_request):
+  """Hook to update maintenance window hour to the update mask of the request."""
+  if args.IsSpecified('maintenance_window_hour'):
+    patch_request = AddFieldToUpdateMask('maintenance_policy',
+                                         patch_request)
   return patch_request

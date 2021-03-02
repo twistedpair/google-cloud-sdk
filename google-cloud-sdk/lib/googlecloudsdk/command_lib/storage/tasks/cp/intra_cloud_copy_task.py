@@ -27,6 +27,7 @@ import os
 import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
+from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
@@ -60,7 +61,7 @@ class IntraCloudCopyTask(task.Task):
         self._destination_resource.storage_url.url_string)
 
   def execute(self, task_status_queue=None):
-    progress_callback = task_status.FilesAndBytesProgressCallback(
+    progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
         status_queue=task_status_queue,
         size=self._source_resource.size,
         source_url=self._source_resource.storage_url,

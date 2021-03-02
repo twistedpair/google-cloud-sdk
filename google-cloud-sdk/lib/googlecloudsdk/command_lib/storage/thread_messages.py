@@ -38,6 +38,8 @@ class ProgressMessage(object):
       operation. None for unary operations like hashing.
     component_number (int|None): If a multipart operation, indicates the
       component number.
+    total_components (int|None): If a multipart operation, indicates the
+        total number of components.
     operation_name (task_status.OperationName|None): Name of the operation
       running on target data.
     process_id (int|None): Identifies process that produced the instance of this
@@ -53,6 +55,7 @@ class ProgressMessage(object):
                source_url,
                destination_url=None,
                component_number=None,
+               total_components=None,
                operation_name=None,
                process_id=None,
                thread_id=None):
@@ -65,6 +68,7 @@ class ProgressMessage(object):
     self.source_url = source_url
     self.destination_url = destination_url
     self.component_number = component_number
+    self.total_components = total_components
 
     self.operation_name = operation_name
     self.process_id = process_id or os.getpid()

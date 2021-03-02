@@ -189,6 +189,8 @@ class UpdateManager(object):
 
   BIN_DIR_NAME = 'bin'
   VERSIONED_SNAPSHOT_FORMAT = 'components-v{0}.json'
+  DARWIN_X86_64 = platforms.Platform(platforms.OperatingSystem.MACOSX,
+                                     platforms.Architecture.x86_64)
 
   @staticmethod
   def GetAdditionalRepositories():
@@ -267,7 +269,8 @@ class UpdateManager(object):
     # pylint: disable=protected-access
     manager._PerformUpdateCheck(command_path, force=force)
 
-  def __init__(self, sdk_root=None, url=None, platform_filter=None, warn=True):
+  def __init__(self, sdk_root=None, url=None, platform_filter=None, warn=True,
+               enable_fallback=False):
     """Creates a new UpdateManager.
 
     Args:
@@ -284,6 +287,8 @@ class UpdateManager(object):
         to False when using this class for background operations like checking
         for updates so the user only sees the warnings when they are actually
         dealing directly with the component manager.
+      enable_fallback: bool, True to enable fallback from darwin arm64 version
+        to darwin x86_64 version of the component.
 
     Raises:
       local_state.InvalidSDKRootError: If the Cloud SDK root cannot be found.
@@ -314,6 +319,10 @@ class UpdateManager(object):
     self.__text_wrapper = textwrap.TextWrapper(replace_whitespace=False,
                                                drop_whitespace=False)
     self.__warn = warn
+    self.__enable_fallback = (
+        enable_fallback and platform_filter and
+        platform_filter.operating_system == platforms.OperatingSystem.MACOSX and
+        platform_filter.architecture == platforms.Architecture.arm)
 
     fixed_version = properties.VALUES.component_manager.fixed_sdk_version.Get()
     self.__fixed_version = fixed_version
@@ -630,7 +639,8 @@ version [{1}].  To clear your fixed version setting, run:
     latest_snapshot = self._GetLatestSnapshot(version=version,
                                               command_path=command_path)
     diff = install_state.DiffCurrentState(
-        latest_snapshot, platform_filter=self.__platform_filter)
+        latest_snapshot, platform_filter=self.__platform_filter,
+        enable_fallback=self.__enable_fallback)
     return install_state, diff
 
   def GetCurrentVersionsInformation(self, include_hidden=False):
@@ -1215,6 +1225,9 @@ To revert your SDK to the previously installed version, you may run:
 
     to_remove = snapshot.ConsumerClosureForComponents(
         ids, platform_filter=self.__platform_filter)
+    if self.__enable_fallback:
+      to_remove |= snapshot.ConsumerClosureForComponents(
+          ids, platform_filter=self.DARWIN_X86_64)
     if not to_remove:
       self.__Write(log.status, 'No components to remove.\n')
       return

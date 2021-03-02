@@ -487,7 +487,7 @@ Path of the JSON/YAML file which contains information about the
 cluster's node autoprovisioning configuration. Currently it contains
 a list of resource limits, identity defaults for autoprovisioning, node upgrade
 settings, node management settings, minimum cpu platform, node locations for
-autoprovisioning, disk type and size configuration, shielded instance settings,
+autoprovisioning, disk type and size configuration, Shielded instance settings,
 and customer-managed encryption keys settings.
 
 Resource limits are specified in the field 'resourceLimits'.
@@ -2958,7 +2958,7 @@ def AddEnableShieldedNodesFlags(parser):
   help_text = """\
 Enable Shielded Nodes for this cluster. Enabling Shielded Nodes will enable a
 more secure Node credential bootstrapping implementation. Starting with version
-1.18, clusters will have shielded GKE nodes by default.
+1.18, clusters will have Shielded GKE nodes by default.
 """
   parser.add_argument(
       '--enable-shielded-nodes',
@@ -3408,7 +3408,7 @@ either a node-pool upgrade or node-pool creation.
       '--enable-gvnic', help=help_text, default=None, action='store_true')
 
 
-def AddEnableConfidentialNodesFlag(parser):
+def AddEnableConfidentialNodesFlag(parser, hidden=False):
   """Adds a --enable-confidential-nodes flag to the given parser."""
   help_text = """
 Enable Confidential Nodes for this cluster. Enabling Confidential Nodes will
@@ -3421,7 +3421,7 @@ N2D machine type https://cloud.google.com/compute/docs/machine-types#n2d_machine
       '--enable-confidential-nodes',
       help=help_text,
       default=None,
-      hidden=False,
+      hidden=hidden,
       action='store_true')
 
 
@@ -3603,3 +3603,68 @@ def AddCrossConnectSubnetworksMutationFlags(parser, hidden=True):
       hidden=hidden,
       default=None,
       action='store_true')
+
+
+def AddNetworkConfigFlags(parser):
+  """Adds flags related to the network config for the node pool.
+
+  Args:
+    parser: A given parser.
+  """
+  group = parser.add_mutually_exclusive_group()
+
+  group.add_argument(
+      '--pod-ipv4-range',
+      metavar='NAME',
+      help="""
+Set the pod range to be used as the source for pod IPs for the pods in this node
+pool. NAME must be the name of an existing subnetwork secondary range in the
+subnetwork for this cluster.
+
+Must be used in VPC native clusters. Cannot be used with
+--create-ipv4-pod-range.
+
+Examples:
+
+Specify a pod range called ``other-range''
+
+      $ {command} --pod-ipv4-range other-range
+""")
+  group.add_argument(
+      '--create-pod-ipv4-range',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help="""
+Create a new pod range for the node pool. The name and range of the
+pod range can be customized via optional ``name'' and ``range'' key-value
+pairs.
+
+``name'' specifies the name of the secondary range to be created.
+
+``range'' specifies the IP range for the new secondary range. This can either
+be a netmask size (e.g. '/20') or a CIDR range (e.g. '10.0.0.0/20').
+If a netmask size is specified, the IP is automatically taken from the
+free space in the cluster's network.
+
+Examples:
+
+Create a new pod range with a default name and size.
+
+      $ {command} --create-pod-ipv4-range ""
+
+Create a new pod range named ``my-range'' with netmask of size 21.
+
+      $ {command} --create-pod-ipv4-range name=my-range,range=/21
+
+Create a new pod range with a default name with the primary range of
+10.100.0.0/16.
+
+      $ {command} --create-pod-ipv4-range range=10.100.0.0/16
+
+Create a new pod range with the name ``my-range'' with a default range.
+
+      $ {command} --create-pod-ipv4-range name=my-range
+
+Must be used in VPC native clusters. Can not be used in conjunction with the
+`--pod-ipv4-range` option.
+""")

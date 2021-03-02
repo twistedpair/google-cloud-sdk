@@ -213,14 +213,16 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Messa
       format. Example: * projects/{project_id}/locations/{location}/entryGroup
       s/{entry_group_id}/entries/{entry_id} Note that this Entry and its child
       resources may not actually be stored in the location in this name.
-    updateMask: The fields to update on the entry. If absent or empty, all
-      modifiable fields are updated. The following fields are modifiable: *
-      For entries with type `DATA_STREAM`: * `schema` * For entries with type
-      `FILESET` * `schema` * `display_name` * `description` *
-      `gcs_fileset_spec` * `gcs_fileset_spec.file_patterns` * For entries with
-      `user_specified_type` * `schema` * `display_name` * `description` *
-      user_specified_type * user_specified_system * linked_resource *
-      source_system_timestamps
+    updateMask: Names of fields whose values to overwrite on an entry. If this
+      parameter is absent or empty, all modifiable fields are overwritten. If
+      such fields are non-required and omitted in the request body, their
+      values are emptied. The following fields are modifiable: * For entries
+      with type `DATA_STREAM`: * `schema` * For entries with type `FILESET`: *
+      `schema` * `display_name` * `description` * `gcs_fileset_spec` *
+      `gcs_fileset_spec.file_patterns` * For entries with
+      `user_specified_type`: * `schema` * `display_name` * `description` *
+      `user_specified_type` * `user_specified_system` * `linked_resource` *
+      `source_system_timestamps`
   """
 
   googleCloudDatacatalogV1Entry = _messages.MessageField('GoogleCloudDatacatalogV1Entry', 1)
@@ -290,9 +292,11 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesTagsPatchRequest(_messages.M
       y_id}/tags/{tag_id} where `tag_id` is a system-generated identifier.
       Note that this Tag may not actually be stored in the location in this
       name.
-    updateMask: The fields to update on the Tag. If absent or empty, all
-      modifiable fields are updated. Currently the only modifiable field is
-      the field `fields`.
+    updateMask: Names of fields whose values to overwrite on a tag. Currently,
+      a tag has the only modifiable field with the name `fields`. In general,
+      if this parameter is absent or empty, all modifiable fields are
+      overwritten. If such fields are non-required and omitted in the request
+      body, their values are emptied.
   """
 
   googleCloudDatacatalogV1Tag = _messages.MessageField('GoogleCloudDatacatalogV1Tag', 1)
@@ -375,8 +379,10 @@ class DatacatalogProjectsLocationsEntryGroupsPatchRequest(_messages.Message):
       projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
       Note that this EntryGroup and its child resources may not actually be
       stored in the location in this name.
-    updateMask: The fields to update on the entry group. If absent or empty,
-      all modifiable fields are updated.
+    updateMask: Names of fields whose values to overwrite on an entry group.
+      If this parameter is absent or empty, all modifiable fields are
+      overwritten. If such fields are non-required and omitted in the request
+      body, their values are emptied.
   """
 
   googleCloudDatacatalogV1EntryGroup = _messages.MessageField('GoogleCloudDatacatalogV1EntryGroup', 1)
@@ -459,9 +465,11 @@ class DatacatalogProjectsLocationsEntryGroupsTagsPatchRequest(_messages.Message)
       y_id}/tags/{tag_id} where `tag_id` is a system-generated identifier.
       Note that this Tag may not actually be stored in the location in this
       name.
-    updateMask: The fields to update on the Tag. If absent or empty, all
-      modifiable fields are updated. Currently the only modifiable field is
-      the field `fields`.
+    updateMask: Names of fields whose values to overwrite on a tag. Currently,
+      a tag has the only modifiable field with the name `fields`. In general,
+      if this parameter is absent or empty, all modifiable fields are
+      overwritten. If such fields are non-required and omitted in the request
+      body, their values are emptied.
   """
 
   googleCloudDatacatalogV1Tag = _messages.MessageField('GoogleCloudDatacatalogV1Tag', 1)
@@ -530,7 +538,8 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsCreateRequest(_messages.Mess
       Example: * projects/{project_id}/locations/us-
       central1/tagTemplates/{tag_template_id}
     tagTemplateFieldId: Required. The ID of the tag template field to create.
-      Field ids can contain letters (both uppercase and lowercase), numbers
+      Note: Adding a required field to an existing template is *not* allowed.
+      Field IDs can contain letters (both uppercase and lowercase), numbers
       (0-9), underscores (_) and dashes (-). Field IDs must be at least 1
       character long and at most 128 characters long. Field IDs must also be
       unique within their template.
@@ -584,13 +593,16 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsPatchRequest(_messages.Messa
     name: Required. The name of the tag template field. Example: * projects/{p
       roject_id}/locations/{location}/tagTemplates/{tag_template_id}/fields/{t
       ag_template_field_id}
-    updateMask: Optional. The field mask specifies the parts of the template
-      to be updated. Allowed fields: * `display_name` * `type.enum_type` *
-      `is_required` If `update_mask` is not set or empty, all of the allowed
-      fields above will be updated. When updating an enum type, the provided
-      values will be merged with the existing values. Therefore, enum values
-      can only be added, existing enum values cannot be deleted nor renamed.
-      Updating a template field from optional to required is NOT allowed.
+    updateMask: Optional. Names of fields whose values to overwrite on an
+      individual field of a tag template. The following fields are modifiable:
+      * `display_name` * `type.enum_type` * `is_required` If this parameter is
+      absent or empty, all modifiable fields are overwritten. If such fields
+      are non-required and omitted in the request body, their values are
+      emptied with one exception: when updating an enum type, the provided
+      values are merged with the existing values. Therefore, enum values can
+      only be added, existing enum values cannot be deleted or renamed.
+      Additionally, updating a template field from optional to required is
+      *not* allowed.
   """
 
   googleCloudDatacatalogV1TagTemplateField = _messages.MessageField('GoogleCloudDatacatalogV1TagTemplateField', 1)
@@ -651,9 +663,11 @@ class DatacatalogProjectsLocationsTagTemplatesPatchRequest(_messages.Message):
       projects/{project_id}/locations/{location}/tagTemplates/{tag_template_id
       } Note that this TagTemplate and its child resources may not actually be
       stored in the location in this name.
-    updateMask: The field mask specifies the parts of the template to
-      overwrite. Allowed fields: * `display_name` If absent or empty, all of
-      the allowed fields above will be updated.
+    updateMask: Names of fields whose values to overwrite on a tag template.
+      Currently, only `display_name` can be overwritten. In general, if this
+      parameter is absent or empty, all modifiable fields are overwritten. If
+      such fields are non-required and omitted in the request body, their
+      values are emptied.
   """
 
   googleCloudDatacatalogV1TagTemplate = _messages.MessageField('GoogleCloudDatacatalogV1TagTemplate', 1)

@@ -116,6 +116,10 @@ CREATE_SUBNETWORK_WITH_SUBNETWORK_ERROR_MSG = """\
 Cannot specify both --subnetwork and --create-subnetwork at the same time.
 """
 
+CREATE_POD_RANGE_INVALID_KEY_ERROR_MSG = """
+Invalid key '{key}' for --create-pod-ipv4-range (must be one of 'name', 'range').
+"""
+
 NODE_TAINT_INCORRECT_FORMAT_ERROR_MSG = """\
 Invalid value [{key}={value}] for argument --node-taints. Node taint is of format key=value:effect
 """
@@ -908,7 +912,9 @@ class CreateNodePoolOptions(object):
                reservation_affinity=None,
                reservation=None,
                node_group=None,
-               enable_gcfs=None):
+               enable_gcfs=None,
+               pod_ipv4_range=None,
+               create_pod_ipv4_range=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -952,6 +958,8 @@ class CreateNodePoolOptions(object):
     self.reservation = reservation
     self.node_group = node_group
     self.enable_gcfs = enable_gcfs
+    self.pod_ipv4_range = pod_ipv4_range
+    self.create_pod_ipv4_range = create_pod_ipv4_range
 
 
 class UpdateNodePoolOptions(object):
@@ -2942,6 +2950,33 @@ class APIAdapter(object):
     node_management.autoUpgrade = options.enable_autoupgrade
     return node_management
 
+  def _GetNetworkConfig(self, options):
+    """Gets a wrapper containing the network config for the node pool.
+
+    Args:
+      options: Network config options
+
+    Returns:
+      A NetworkConfig object that contains the options for how the network
+      for the nodepool needs to be configured.
+    """
+    if (options.pod_ipv4_range is None
+        and options.create_pod_ipv4_range is None):
+      return None
+
+    network_config = self.messages.NodeNetworkConfig()
+    network_config.podRange = options.pod_ipv4_range
+    if options.create_pod_ipv4_range is not None:
+      for key in options.create_pod_ipv4_range:
+        if key not in ['name', 'range']:
+          raise util.Error(
+              CREATE_POD_RANGE_INVALID_KEY_ERROR_MSG.format(key=key))
+      network_config.createPodRange = True
+      network_config.podRange = options.create_pod_ipv4_range.get('name', None)
+      network_config.podIpv4CidrBlock = options.create_pod_ipv4_range.get(
+          'range', None)
+    return network_config
+
   def UpdateLabelsCommon(self, cluster_ref, update_labels):
     """Update labels on a cluster.
 
@@ -3343,6 +3378,19 @@ class V1Beta1Adapter(V1Adapter):
         cluster=cluster)
     operation = self.client.projects_locations_clusters.Create(req)
     return self.ParseOperation(operation.name, cluster_ref.zone)
+
+  def CreateNodePool(self, node_pool_ref, options):
+    pool = self.CreateNodePoolCommon(node_pool_ref, options)
+    if options.enable_autoprovisioning is not None:
+      pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
+    pool.networkConfig = self._GetNetworkConfig(options)
+    req = self.messages.CreateNodePoolRequest(
+        nodePool=pool,
+        parent=ProjectLocationCluster(node_pool_ref.projectId,
+                                      node_pool_ref.zone,
+                                      node_pool_ref.clusterId))
+    operation = self.client.projects_locations_clusters_nodePools.Create(req)
+    return self.ParseOperation(operation.name, node_pool_ref.zone)
 
   def UpdateCluster(self, cluster_ref, options):
     update = self.UpdateClusterCommon(cluster_ref, options)
@@ -3920,6 +3968,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     pool = self.CreateNodePoolCommon(node_pool_ref, options)
     if options.enable_autoprovisioning is not None:
       pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
+    pool.networkConfig = self._GetNetworkConfig(options)
     req = self.messages.CreateNodePoolRequest(
         nodePool=pool,
         parent=ProjectLocationCluster(node_pool_ref.projectId,

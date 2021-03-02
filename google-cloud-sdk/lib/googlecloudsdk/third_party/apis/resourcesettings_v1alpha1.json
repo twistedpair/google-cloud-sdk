@@ -287,9 +287,9 @@
               "parameters": {
                 "parent": {
                   "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -323,9 +323,9 @@
               "parameters": {
                 "parent": {
                   "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -359,9 +359,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the setting value to get. See SettingValue for naming requirements.",
+                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 }
               },
@@ -384,9 +384,9 @@
               "parameters": {
                 "parent": {
                   "description": "The setting for which an effective value will be evaluated. See Setting for naming requirements.",
+                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -409,9 +409,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 }
               },
@@ -437,9 +437,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the setting value to delete. See SettingValue for naming requirements.",
+                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 },
                 "ignoreReadOnly": {
@@ -472,9 +472,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                      "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                       "type": "string"
                     }
                   },
@@ -510,9 +510,9 @@
               "parameters": {
                 "parent": {
                   "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -546,9 +546,9 @@
               "parameters": {
                 "parent": {
                   "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -582,9 +582,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the setting value to get. See SettingValue for naming requirements.",
+                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 }
               },
@@ -607,9 +607,9 @@
               "parameters": {
                 "parent": {
                   "description": "The setting for which an effective value will be evaluated. See Setting for naming requirements.",
+                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -632,9 +632,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 }
               },
@@ -660,9 +660,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the setting value to delete. See SettingValue for naming requirements.",
+                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 },
                 "ignoreReadOnly": {
@@ -695,9 +695,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                      "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                       "type": "string"
                     }
                   },
@@ -733,9 +733,9 @@
               "parameters": {
                 "parent": {
                   "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -769,9 +769,9 @@
               "parameters": {
                 "parent": {
                   "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -805,9 +805,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the setting value to get. See SettingValue for naming requirements.",
+                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 }
               },
@@ -830,9 +830,9 @@
               "parameters": {
                 "parent": {
                   "description": "The setting for which an effective value will be evaluated. See Setting for naming requirements.",
+                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -855,9 +855,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 }
               },
@@ -883,9 +883,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the setting value to delete. See SettingValue for naming requirements.",
+                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 },
                 "ignoreReadOnly": {
@@ -918,9 +918,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                      "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                       "type": "string"
                     }
                   },

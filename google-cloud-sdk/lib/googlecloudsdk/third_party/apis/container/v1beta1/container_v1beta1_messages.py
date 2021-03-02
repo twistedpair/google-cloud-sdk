@@ -150,6 +150,7 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
     diskType: Type of the disk attached to each node (e.g. 'pd-standard', 'pd-
       ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-
       standard'
+    imageType: The image type to use for NAP created node.
     management: NodeManagement configuration for this NodePool.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
@@ -182,12 +183,13 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
   bootDiskKmsKey = _messages.StringField(1)
   diskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   diskType = _messages.StringField(3)
-  management = _messages.MessageField('NodeManagement', 4)
-  minCpuPlatform = _messages.StringField(5)
-  oauthScopes = _messages.StringField(6, repeated=True)
-  serviceAccount = _messages.StringField(7)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 8)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 9)
+  imageType = _messages.StringField(4)
+  management = _messages.MessageField('NodeManagement', 5)
+  minCpuPlatform = _messages.StringField(6)
+  oauthScopes = _messages.StringField(7, repeated=True)
+  serviceAccount = _messages.StringField(8)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 9)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 10)
 
 
 class AvailableVersion(_messages.Message):
@@ -317,7 +319,8 @@ class Cluster(_messages.Message):
       the cluster.
     authenticatorGroupsConfig: Configuration controlling RBAC group membership
       information.
-    autogke: AutoGKE configuration for the cluster.
+    autogke: AutoGKE configuration for the cluster. It has the same semantics
+      as autopilot and is overridden by the autopilot setting.
     autopilot: Autopilot configuration for the cluster. It has the same
       semantics as AutoGKE and overrides the setting in autogke.
     autoscaling: Cluster-level autoscaling configuration.
@@ -364,6 +367,7 @@ class Cluster(_messages.Message):
     expireTime: [Output only] The time the cluster will be automatically
       deleted in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     gkeOidcConfig: Security message for security related configuration
+    id: Output only. Unique id for the cluster.
     initialClusterVersion: The initial Kubernetes version for this cluster.
       Valid versions are those found in validMasterVersions returned by
       getServerConfig. The version can be upgraded over time; such upgrades
@@ -581,48 +585,49 @@ class Cluster(_messages.Message):
   endpoint = _messages.StringField(21)
   expireTime = _messages.StringField(22)
   gkeOidcConfig = _messages.MessageField('GkeOidcConfig', 23)
-  initialClusterVersion = _messages.StringField(24)
-  initialNodeCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(26, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 27)
-  kubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 28)
-  labelFingerprint = _messages.StringField(29)
-  legacyAbac = _messages.MessageField('LegacyAbac', 30)
-  location = _messages.StringField(31)
-  locations = _messages.StringField(32, repeated=True)
-  loggingService = _messages.StringField(33)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 34)
-  master = _messages.MessageField('Master', 35)
-  masterAuth = _messages.MessageField('MasterAuth', 36)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 37)
-  masterIpv4CidrBlock = _messages.StringField(38)
-  monitoringService = _messages.StringField(39)
-  name = _messages.StringField(40)
-  network = _messages.StringField(41)
-  networkConfig = _messages.MessageField('NetworkConfig', 42)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 43)
-  nodeConfig = _messages.MessageField('NodeConfig', 44)
-  nodeIpv4CidrSize = _messages.IntegerField(45, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 46, repeated=True)
-  notificationConfig = _messages.MessageField('NotificationConfig', 47)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 48)
-  privateCluster = _messages.BooleanField(49)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 50)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 51)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 52)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 53)
-  selfLink = _messages.StringField(54)
-  servicesIpv4Cidr = _messages.StringField(55)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 56)
-  status = _messages.EnumField('StatusValueValuesEnum', 57)
-  statusMessage = _messages.StringField(58)
-  subnetwork = _messages.StringField(59)
-  tpuConfig = _messages.MessageField('TpuConfig', 60)
-  tpuIpv4CidrBlock = _messages.StringField(61)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 62)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 63)
-  workloadMonitoringEnabledEap = _messages.BooleanField(64)
-  zone = _messages.StringField(65)
+  id = _messages.StringField(24)
+  initialClusterVersion = _messages.StringField(25)
+  initialNodeCount = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(27, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 28)
+  kubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 29)
+  labelFingerprint = _messages.StringField(30)
+  legacyAbac = _messages.MessageField('LegacyAbac', 31)
+  location = _messages.StringField(32)
+  locations = _messages.StringField(33, repeated=True)
+  loggingService = _messages.StringField(34)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 35)
+  master = _messages.MessageField('Master', 36)
+  masterAuth = _messages.MessageField('MasterAuth', 37)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 38)
+  masterIpv4CidrBlock = _messages.StringField(39)
+  monitoringService = _messages.StringField(40)
+  name = _messages.StringField(41)
+  network = _messages.StringField(42)
+  networkConfig = _messages.MessageField('NetworkConfig', 43)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 44)
+  nodeConfig = _messages.MessageField('NodeConfig', 45)
+  nodeIpv4CidrSize = _messages.IntegerField(46, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 47, repeated=True)
+  notificationConfig = _messages.MessageField('NotificationConfig', 48)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 49)
+  privateCluster = _messages.BooleanField(50)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 51)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 52)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 53)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 54)
+  selfLink = _messages.StringField(55)
+  servicesIpv4Cidr = _messages.StringField(56)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 57)
+  status = _messages.EnumField('StatusValueValuesEnum', 58)
+  statusMessage = _messages.StringField(59)
+  subnetwork = _messages.StringField(60)
+  tpuConfig = _messages.MessageField('TpuConfig', 61)
+  tpuIpv4CidrBlock = _messages.StringField(62)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 63)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 64)
+  workloadMonitoringEnabledEap = _messages.BooleanField(65)
+  zone = _messages.StringField(66)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -2827,9 +2832,7 @@ class NodeNetworkConfig(_messages.Message):
       chosen with the default size. Set to /netmask (e.g. `/14`) to have a
       range chosen with a specific netmask. Set to a
       [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
-      notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
-      `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
-      range to use.
+      notation (e.g. `10.96.0.0/14`) to pick a specific range to use.
     podRange: The ID of the secondary range for pod IPs. If `create_pod_range`
       is true, this ID is used for the new range.
     privateNodesConfig: Configuration for controlling private nodes settings.

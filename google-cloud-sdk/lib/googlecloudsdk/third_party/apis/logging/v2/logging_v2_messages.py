@@ -716,7 +716,10 @@ class LogEntry(_messages.Message):
     JsonPayloadValue: The log entry payload, represented as a structure that
       is expressed as a JSON object.
     LabelsValue: Optional. A set of user-defined (key, value) data that
-      provides additional information about the log entry.
+      provides additional information about the log entry.Cloud Logging
+      truncates label keys that exceed 512 B and label values that exceed 64
+      KB upon their associated log entry being written. The truncation is
+      indicated by an ellipsis at the end of the character string.
     ProtoPayloadValue: The log entry payload, represented as a protocol
       buffer. Some Google Cloud Platform services use this field for their log
       entry payloads.The following protocol buffer types are supported; user-
@@ -738,7 +741,10 @@ class LogEntry(_messages.Message):
     jsonPayload: The log entry payload, represented as a structure that is
       expressed as a JSON object.
     labels: Optional. A set of user-defined (key, value) data that provides
-      additional information about the log entry.
+      additional information about the log entry.Cloud Logging truncates label
+      keys that exceed 512 B and label values that exceed 64 KB upon their
+      associated log entry being written. The truncation is indicated by an
+      ellipsis at the end of the character string.
     logName: Required. The resource name of the log to which this log entry
       belongs: "projects/[PROJECT_ID]/logs/[LOG_ID]"
       "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
@@ -763,7 +769,7 @@ class LogEntry(_messages.Message):
       Kubernetes pod labels that used to be in metadata.userLabels will now be
       present in the labels field with a key prefix of k8s-pod/. The system
       labels that were present in the metadata.systemLabels field will no
-      longer be available in the LogEntry.
+      longer be available in the log entry.
     operation: Optional. Information about an operation associated with the
       log entry, if applicable.
     protoPayload: The log entry payload, represented as a protocol buffer.
@@ -865,7 +871,10 @@ class LogEntry(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. A set of user-defined (key, value) data that provides
-    additional information about the log entry.
+    additional information about the log entry.Cloud Logging truncates label
+    keys that exceed 512 B and label values that exceed 64 KB upon their
+    associated log entry being written. The truncation is indicated by an
+    ellipsis at the end of the character string.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

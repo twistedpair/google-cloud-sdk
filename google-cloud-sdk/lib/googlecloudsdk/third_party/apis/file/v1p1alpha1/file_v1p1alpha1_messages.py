@@ -952,6 +952,79 @@ class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.M
   nodeId = _messages.StringField(3)
 
 
+class GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility(_messages.Message):
+  r"""PerSliSloEligibility is a mapping from an SLI name to eligibility.
+
+  Messages:
+    EligibilitiesValue: An entry in the eligibilities map specifies an
+      eligibility for a particular SLI for the given instance. The SLI key in
+      the name must be a valid SLI name specified in the Eligibility Exporter
+      binary flags otherwise an error will be emitted by Eligibility Exporter
+      and the oncaller will be alerted. If an SLI has been defined in the
+      binary flags but the eligibilities map does not contain it, the
+      corresponding SLI time series will not be emitted by the Eligibility
+      Exporter. This ensures a smooth rollout and compatibility between the
+      data produced by different versions of the Eligibility Exporters. If
+      eligibilities map contains a key for an SLI which has not been declared
+      in the binary flags, there will be an error message emitted in the
+      Eligibility Exporter log and the metric for the SLI in question will not
+      be emitted.
+
+  Fields:
+    eligibilities: An entry in the eligibilities map specifies an eligibility
+      for a particular SLI for the given instance. The SLI key in the name
+      must be a valid SLI name specified in the Eligibility Exporter binary
+      flags otherwise an error will be emitted by Eligibility Exporter and the
+      oncaller will be alerted. If an SLI has been defined in the binary flags
+      but the eligibilities map does not contain it, the corresponding SLI
+      time series will not be emitted by the Eligibility Exporter. This
+      ensures a smooth rollout and compatibility between the data produced by
+      different versions of the Eligibility Exporters. If eligibilities map
+      contains a key for an SLI which has not been declared in the binary
+      flags, there will be an error message emitted in the Eligibility
+      Exporter log and the metric for the SLI in question will not be emitted.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EligibilitiesValue(_messages.Message):
+    r"""An entry in the eligibilities map specifies an eligibility for a
+    particular SLI for the given instance. The SLI key in the name must be a
+    valid SLI name specified in the Eligibility Exporter binary flags
+    otherwise an error will be emitted by Eligibility Exporter and the
+    oncaller will be alerted. If an SLI has been defined in the binary flags
+    but the eligibilities map does not contain it, the corresponding SLI time
+    series will not be emitted by the Eligibility Exporter. This ensures a
+    smooth rollout and compatibility between the data produced by different
+    versions of the Eligibility Exporters. If eligibilities map contains a key
+    for an SLI which has not been declared in the binary flags, there will be
+    an error message emitted in the Eligibility Exporter log and the metric
+    for the SLI in question will not be emitted.
+
+    Messages:
+      AdditionalProperty: An additional property for a EligibilitiesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type EligibilitiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EligibilitiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  eligibilities = _messages.MessageField('EligibilitiesValue', 1)
+
+
 class GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource(_messages.Message):
   r"""Describes provisioned dataplane resources.
 
@@ -1002,8 +1075,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion(_messages.Mess
       string (e.g. "Disruptive update in progress") and should not contain
       dynamically generated data (e.g. instance name). Can be left empty.
     sliName: Name of an SLI that this exclusion applies to. Can be left empty,
-      signaling that the instance should be excluded from all SLIs defined in
-      the service SLO configuration.
+      signaling that the instance should be excluded from all SLIs.
     startTime: Start time of the exclusion. No alignment (e.g. to a full
       minute) needed.
   """
@@ -1019,7 +1091,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
   the instance.
 
   Fields:
-    eligibility: Optional. User-defined instance eligibility.
+    eligibility: Optional. Global per-instance SLI eligibility which applies
+      to all defined SLIs. Exactly one of 'eligibility' and
+      'per_sli_eligibility' fields must be used.
     exclusions: List of SLO exclusion windows. When multiple entries in the
       list match (matching the exclusion time-window against current time
       point) the exclusion reason used in the first matching entry will be
@@ -1035,6 +1109,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
       metadata to calculate SLO. This field allows such producers to publish
       per-node SLO meta data, which will be consumed by SSA Eligibility
       Exporter and published in the form of per node metric to Monarch.
+    perSliEligibility: Optional. Multiple per-instance SLI eligibilities which
+      apply for individual SLIs. Exactly one of 'eligibility' and
+      'per_sli_eligibility' fields must be used.
     tier: Name of the SLO tier the Instance belongs to. This name will be
       expected to match the tiers specified in the service SLO configuration.
       Field is mandatory and must not be empty.
@@ -1043,7 +1120,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
   eligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility', 1)
   exclusions = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion', 2, repeated=True)
   nodes = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata', 3, repeated=True)
-  tier = _messages.StringField(4)
+  perSliEligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility', 4)
+  tier = _messages.StringField(5)
 
 
 class Instance(_messages.Message):

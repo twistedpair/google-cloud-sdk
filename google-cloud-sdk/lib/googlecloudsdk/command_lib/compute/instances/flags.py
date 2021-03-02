@@ -981,19 +981,22 @@ def ValidateDiskCommonFlags(args, include_name=True):
   for disk in args.disk or []:
     disk_name = disk.get('name')
     if not disk_name:
-      raise exceptions.ToolException(
+      raise exceptions.InvalidArgumentException(
+          '--disk',
           '[name] is missing in [--disk]. [--disk] value must be of the form '
           '[{0}].'.format(DISK_METAVAR))
 
     mode_value = disk.get('mode')
     if mode_value and mode_value not in ('rw', 'ro'):
-      raise exceptions.ToolException(
+      raise exceptions.InvalidArgumentException(
+          '--disk',
           'Value for [mode] in [--disk] must be [rw] or [ro], not [{0}].'
           .format(mode_value))
 
     auto_delete_value = disk.get('auto-delete')
     if auto_delete_value and auto_delete_value not in ['yes', 'no']:
-      raise exceptions.ToolException(
+      raise exceptions.InvalidArgumentException(
+          '--disk',
           'Value for [auto-delete] in [--disk] must be [yes] or [no], not '
           '[{0}].'.format(auto_delete_value))
 
@@ -1006,7 +1009,8 @@ def ValidateDiskAccessModeFlags(args):
     # Ensures that the user is not trying to attach a read-write
     # disk to more than one instance.
     if len(args.instance_names) > 1 and mode_value == 'rw':
-      raise exceptions.ToolException(
+      raise exceptions.BadArgumentException(
+          '--disk',
           'Cannot attach disk [{0}] in read-write mode to more than one '
           'instance.'.format(disk_name))
 
@@ -1019,62 +1023,73 @@ def ValidateDiskBootFlags(args, enable_kms=False):
     # we need to fail because only one boot disk can be attached.
     boot_value = disk.get('boot')
     if boot_value and boot_value not in ('yes', 'no'):
-      raise exceptions.ToolException(
+      raise exceptions.InvalidArgumentException(
+          '--disk',
           'Value for [boot] in [--disk] must be [yes] or [no], not [{0}].'
           .format(boot_value))
 
     if boot_value == 'yes':
       if boot_disk_specified:
-        raise exceptions.ToolException(
+        raise exceptions.BadArgumentException(
+            '--disk',
             'Each instance can have exactly one boot disk. At least two '
             'boot disks were specified through [--disk].')
       else:
         boot_disk_specified = True
 
   if args.image and boot_disk_specified:
-    raise exceptions.ToolException(
+    raise exceptions.BadArgumentException(
+        '--disk',
         'Each instance can have exactly one boot disk. One boot disk '
         'was specified through [--disk] and another through [--image].')
 
   if boot_disk_specified:
     if args.boot_disk_device_name:
-      raise exceptions.ToolException(
+      raise exceptions.BadArgumentException(
+          '--boot-disk-device-name',
           '[--boot-disk-device-name] can only be used when creating a new '
           'boot disk.')
 
     if args.boot_disk_type:
-      raise exceptions.ToolException(
+      raise exceptions.BadArgumentException(
+          '--boot-disk-type',
           '[--boot-disk-type] can only be used when creating a new boot '
           'disk.')
 
     if args.boot_disk_size:
-      raise exceptions.ToolException(
+      raise exceptions.BadArgumentException(
+          '--boot-disk-size',
           '[--boot-disk-size] can only be used when creating a new boot '
           'disk.')
 
     if not args.boot_disk_auto_delete:
-      raise exceptions.ToolException(
+      raise exceptions.BadArgumentException(
+          '--no-boot-disk-auto-delete',
           '[--no-boot-disk-auto-delete] can only be used when creating a '
           'new boot disk.')
 
     if enable_kms:
       if args.boot_disk_kms_key:
-        raise exceptions.ToolException(
+        raise exceptions.BadArgumentException(
+            '--boot-disk-kms-key',
             '[--boot-disk-kms-key] can only be used when creating a new boot '
             'disk.')
 
       if args.boot_disk_kms_keyring:
-        raise exceptions.ToolException(
+        raise exceptions.BadArgumentException(
+            '--boot-disk-kms-keyring',
             '[--boot-disk-kms-keyring] can only be used when creating a new '
             'boot disk.')
 
       if args.boot_disk_kms_location:
-        raise exceptions.ToolException(
+        raise exceptions.BadArgumentException(
+            '--boot-disk-kms-location',
             '[--boot-disk-kms-location] can only be used when creating a new '
             'boot disk.')
 
       if args.boot_disk_kms_project:
-        raise exceptions.ToolException(
+        raise exceptions.BadArgumentException(
+            '--boot-disk-kms-project',
             '[--boot-disk-kms-project] can only be used when creating a new '
             'boot disk.')
 
@@ -1092,17 +1107,20 @@ def ValidateCreateDiskFlags(args,
   for disk in getattr(args, 'create_disk', []) or []:
     disk_name = disk.get('name')
     if include_name and len(resource_names) > 1 and disk_name:
-      raise exceptions.ToolException(
+      raise exceptions.BadArgumentException(
+          '--disk',
           'Cannot create a disk with [name]={} for more than one instance.'
           .format(disk_name))
     if disk_name and require_csek_key_create and csek_key_file:
-      raise exceptions.ToolException(
+      raise exceptions.BadArgumentException(
+          '--disk',
           'Cannot create a disk with customer supplied key when disk name '
           'is not specified.')
 
     mode_value = disk.get('mode')
     if mode_value and mode_value not in ('rw', 'ro'):
-      raise exceptions.ToolException(
+      raise exceptions.InvalidArgumentException(
+          '--disk',
           'Value for [mode] in [--disk] must be [rw] or [ro], not [{0}].'
           .format(mode_value))
 
@@ -2066,8 +2084,8 @@ def AddShieldedInstanceConfigArgs(parser,
 
   # --shielded-secure-boot
   secure_boot_help = """\
-      The instance boots with secure boot enabled. On Shielded VMs, Secure
-      Boot is not enabled by default. For information about how to modify
+      The instance boots with secure boot enabled. On Shielded VM instances,
+      Secure Boot is not enabled by default. For information about how to modify
       Shielded VM options, see
       https://cloud.google.com/compute/docs/instances/modifying-shielded-vm.
       """
@@ -2089,8 +2107,8 @@ def AddShieldedInstanceConfigArgs(parser,
       The instance boots with the TPM (Trusted Platform Module) enabled.
       A TPM is a hardware module that can be used for different security
       operations such as remote attestation, encryption, and sealing of keys.
-      On Shielded VMs, vTPM is enabled by default. For information about how
-      to modify Shielded VM options, see
+      On Shielded VM instances, vTPM is enabled by default. For information
+      about how to modify Shielded VM options, see
       https://cloud.google.com/compute/docs/instances/modifying-shielded-vm.
       """
   if for_update:
@@ -2114,10 +2132,10 @@ def AddShieldedInstanceConfigArgs(parser,
       trusted boot image when the instance is created. This baseline can be
       updated by using
       `gcloud compute instances {} --shielded-learn-integrity-policy`. On
-      Shielded VMs, integrity monitoring is enabled by default. For information
-      about how to modify Shielded VM options, see
+      Shielded VM instances, integrity monitoring is enabled by default. For
+      information about how to modify Shielded VM options, see
       https://cloud.google.com/compute/docs/instances/modifying-shielded-vm.
-      For information about monitoring integrity on Shielded VMs, see
+      For information about monitoring integrity on Shielded VM instances, see
       https://cloud.google.com/compute/docs/instances/integrity-monitoring."
       """
   if for_container:

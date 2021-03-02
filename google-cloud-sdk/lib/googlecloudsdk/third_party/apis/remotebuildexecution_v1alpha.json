@@ -1766,9 +1766,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource.",
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1795,9 +1795,9 @@
               "parameters": {
                 "parent": {
                   "description": "Resource name of the project containing the instance. Format: `projects\/[PROJECT_ID]`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1823,9 +1823,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the instance to retrieve. Format: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1848,9 +1848,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the instance to delete. Format: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1873,9 +1873,9 @@
               "parameters": {
                 "parent": {
                   "description": "Resource name of the project. Format: `projects\/[PROJECT_ID]`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1898,9 +1898,9 @@
               "parameters": {
                 "name": {
                   "description": "Output only. Instance resource name formatted as: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`. Name should not be populated when creating an instance since it is provided in the `instance_id` field.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 },
                 "name1": {
@@ -1947,9 +1947,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Resource name of the instance in which to create the new worker pool. Format: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1975,9 +1975,9 @@
                   "parameters": {
                     "name": {
                       "description": "WorkerPool resource name formatted as: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]`. name should not be populated when creating a worker pool since it is provided in the `poolId` field.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/workerpools\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/workerpools\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2003,9 +2003,9 @@
                   "parameters": {
                     "name": {
                       "description": "Name of the worker pool to retrieve. Format: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/workerpools\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/workerpools\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2028,9 +2028,9 @@
                   "parameters": {
                     "name": {
                       "description": "Name of the worker pool to delete. Format: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/workerpools\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/workerpools\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2053,9 +2053,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Resource name of the instance. Format: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {

@@ -125,12 +125,8 @@
       "type": "object",
       "properties": {
         "device": {
-          "description": "Required. The device to be created. The name field within this device is ignored in the create method. A new name is created by the method, and returned within the response. Only the fields `device_type`, `serial_number` and `asset_tag` (if present) are used to create the device.`device_type` and `serial_number` are required.",
+          "description": "Required. The device to be created. The name field within this device is ignored in the create method. A new name is created by the method, and returned within the response. Only the fields `device_type`, `serial_number` and `asset_tag` (if present) are used to create the device. All other fields are ignored. The `device_type` and `serial_number` fields are required.",
           "$ref": "Device"
-        },
-        "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-          "type": "string"
         }
       }
     },
@@ -476,10 +472,6 @@
       "description": "Request message for wiping all data on the device.",
       "type": "object",
       "properties": {
-        "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-          "type": "string"
-        }
       }
     },
     "CancelWipeDeviceRequest": {
@@ -487,10 +479,6 @@
       "description": "Request message for cancelling an unfinished device wipe.",
       "type": "object",
       "properties": {
-        "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-          "type": "string"
-        }
       }
     },
     "DeviceUser": {
@@ -632,10 +620,6 @@
       "description": "Request message for approving the device to access user data.",
       "type": "object",
       "properties": {
-        "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-          "type": "string"
-        }
       }
     },
     "BlockDeviceUserRequest": {
@@ -643,10 +627,6 @@
       "description": "Request message for blocking account on device.",
       "type": "object",
       "properties": {
-        "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-          "type": "string"
-        }
       }
     },
     "WipeDeviceUserRequest": {
@@ -654,10 +634,6 @@
       "description": "Request message for starting an account wipe on device.",
       "type": "object",
       "properties": {
-        "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-          "type": "string"
-        }
       }
     },
     "CancelWipeDeviceUserRequest": {
@@ -665,10 +641,6 @@
       "description": "Request message for cancelling an unfinished user account wipe.",
       "type": "object",
       "properties": {
-        "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-          "type": "string"
-        }
       }
     },
     "ClientState": {
@@ -2054,11 +2026,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "customer": {
-              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Customer in format: `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -2075,11 +2042,6 @@
           "flatPath": "v1beta1/devices",
           "httpMethod": "GET",
           "parameters": {
-            "customer": {
-              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer.",
-              "location": "query",
-              "type": "string"
-            },
             "filter": {
               "description": "Optional. Additional restrictions when fetching list of devices. For a list of search fields, refer to [Mobile device search fields](https:\/\/developers.google.com\/admin-sdk\/directory\/v1\/search-operators). Multiple search fields are separated by the space character.",
               "location": "query",
@@ -2135,11 +2097,6 @@
               "pattern": "^devices\/[^\/]+$",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "customer": {
-              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-              "location": "query",
               "type": "string"
             }
           },
@@ -2218,11 +2175,6 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
-                },
-                "customer": {
-                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-                  "location": "query",
-                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -2244,11 +2196,6 @@
                   "pattern": "^devices\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "customer": {
-                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-                  "location": "query",
                   "type": "string"
                 },
                 "filter": {
@@ -2292,11 +2239,6 @@
                   "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "customer": {
-                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-                  "location": "query",
                   "type": "string"
                 }
               },
@@ -2478,7 +2420,7 @@
                       "type": "string"
                     },
                     "customer": {
-                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
+                      "description": "Optional. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2505,7 +2447,7 @@
                       "type": "string"
                     },
                     "customer": {
-                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
+                      "description": "Optional. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
                       "location": "query",
                       "type": "string"
                     },

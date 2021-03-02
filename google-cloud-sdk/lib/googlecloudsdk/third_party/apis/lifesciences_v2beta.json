@@ -1010,9 +1010,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1051,9 +1051,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1081,9 +1081,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1122,9 +1122,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1147,9 +1147,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1179,9 +1179,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The project and location that this request should be executed against.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },

@@ -1910,8 +1910,7 @@ class Operation(_messages.Message):
       Engine.
     UserLabelsValue: Private Preview. This feature is only available for
       approved services. User defined labels for the resource that this
-      operation is associated with. Only a combination of 1000 user labels per
-      consumer project are allowed.
+      operation is associated with.
 
   Fields:
     consumerId: Identity of the consumer who is using the service. This field
@@ -1968,8 +1967,7 @@ class Operation(_messages.Message):
       produce or the consumer project.
     userLabels: Private Preview. This feature is only available for approved
       services. User defined labels for the resource that this operation is
-      associated with. Only a combination of 1000 user labels per consumer
-      project are allowed.
+      associated with.
   """
 
   class ImportanceValueValuesEnum(_messages.Enum):
@@ -2055,8 +2053,7 @@ class Operation(_messages.Message):
   class UserLabelsValue(_messages.Message):
     r"""Private Preview. This feature is only available for approved services.
     User defined labels for the resource that this operation is associated
-    with. Only a combination of 1000 user labels per consumer project are
-    allowed.
+    with.
 
     Messages:
       AdditionalProperty: An additional property for a UserLabelsValue object.

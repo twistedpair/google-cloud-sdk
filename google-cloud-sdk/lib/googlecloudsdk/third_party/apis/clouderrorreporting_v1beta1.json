@@ -468,9 +468,9 @@
           "parameters": {
             "projectName": {
               "description": "Required. The resource name of the Google Cloud Platform project. Written as `projects\/{projectID}`, where `{projectID}` is the [Google Cloud Platform project ID](https:\/\/support.google.com\/cloud\/answer\/6158840). Example: `projects\/my-project-123`.",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },
@@ -498,9 +498,9 @@
               "parameters": {
                 "groupName": {
                   "description": "Required. The group resource name. Written as `projects\/{projectID}\/groups\/{group_name}`. Call [`groupStats.list`](https:\/\/cloud.google.com\/error-reporting\/reference\/rest\/v1beta1\/projects.groupStats\/list) to return a list of groups belonging to this project. Example: `projects\/my-project-123\/groups\/my-group`",
+                  "pattern": "^projects\/[^\/]+\/groups\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/groups\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -523,9 +523,9 @@
               "parameters": {
                 "name": {
                   "description": "The group resource name. Example: projects\/my-project-123\/groups\/CNSgkpnppqKCUw",
+                  "pattern": "^projects\/[^\/]+\/groups\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/groups\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -554,10 +554,10 @@
               "httpMethod": "GET",
               "parameters": {
                 "projectName": {
-                  "description": "Required. The resource name of the Google Cloud Platform project. Written as `projects\/{projectID}` or `projects\/{projectNumber}, where `{projectID}` and `{projectNumber}` can be [found in the Google Cloud Console]( https:\/\/support.google.com\/cloud\/answer\/6158840). Examples: `projects\/my-project-123`, `projects\/5551234`.",
+                  "description": "Required. The resource name of the Google Cloud Platform project. Written as `projects\/{projectID}` or `projects\/{projectNumber}`, where `{projectID}` and `{projectNumber}` can be found in the [Google Cloud Console](https:\/\/support.google.com\/cloud\/answer\/6158840). Examples: `projects\/my-project-123`, `projects\/5551234`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "groupId": {
@@ -683,9 +683,9 @@
               "parameters": {
                 "projectName": {
                   "description": "Required. The resource name of the Google Cloud Platform project. Written as `projects\/{projectID}`, where `{projectID}` is the [Google Cloud Platform project ID](https:\/\/support.google.com\/cloud\/answer\/6158840). Example: `projects\/my-project-123`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "groupId": {
@@ -760,9 +760,9 @@
               "parameters": {
                 "projectName": {
                   "description": "Required. The resource name of the Google Cloud Platform project. Written as `projects\/{projectId}`, where `{projectId}` is the [Google Cloud Platform project ID](https:\/\/support.google.com\/cloud\/answer\/6158840). Example: \/\/ `projects\/my-project-123`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },

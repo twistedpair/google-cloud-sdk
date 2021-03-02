@@ -440,9 +440,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation's parent resource.",
+              "pattern": "^operations$",
               "location": "path",
               "required": true,
-              "pattern": "^operations$",
               "type": "string"
             },
             "filter": {
@@ -481,9 +481,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -506,9 +506,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be deleted.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -531,9 +531,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be cancelled.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -565,9 +565,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Name of the requested resource, for example `users\/me\/environments\/default` or `users\/someone@example.com\/environments\/default`.",
+                  "pattern": "^users\/[^\/]+\/environments\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^users\/[^\/]+\/environments\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -590,9 +590,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the resource that should be started, for example `users\/me\/environments\/default` or `users\/someone@example.com\/environments\/default`.",
+                  "pattern": "^users\/[^\/]+\/environments\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^users\/[^\/]+\/environments\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -618,9 +618,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the resource that should receive the credentials, for example `users\/me\/environments\/default` or `users\/someone@example.com\/environments\/default`.",
+                  "pattern": "^users\/[^\/]+\/environments\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^users\/[^\/]+\/environments\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -646,9 +646,9 @@
               "parameters": {
                 "environment": {
                   "description": "Environment this key should be added to, e.g. `users\/me\/environments\/default`.",
+                  "pattern": "^users\/[^\/]+\/environments\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^users\/[^\/]+\/environments\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -674,9 +674,9 @@
               "parameters": {
                 "environment": {
                   "description": "Environment this key should be removed from, e.g. `users\/me\/environments\/default`.",
+                  "pattern": "^users\/[^\/]+\/environments\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^users\/[^\/]+\/environments\/[^\/]+$",
                   "type": "string"
                 }
               },

@@ -29,9 +29,7 @@ class Backup(_messages.Message):
       from which this backup was created. This needs to be in the same
       instance as the backup. Values are of the form
       `projects//instances//databases/`.
-    encryptionInfo: Output only. The encryption information for the backup. If
-      the encryption key protecting this resource is customer managed, then
-      kms_key_version will be filled.
+    encryptionInfo: Output only. The encryption information for the backup.
     expireTime: Required for the CreateBackup operation. The expiration time
       of the backup, with microseconds granularity that must be at least 6
       hours and at most 366 days from the time the CreateBackup request is
@@ -314,7 +312,9 @@ class CreateDatabaseRequest(_messages.Message):
       expression `a-z*[a-z0-9]` and be between 2 and 30 characters in length.
       If the database ID is a reserved word or if it contains a hyphen, the
       database ID must be enclosed in backticks (`` ` ``).
-    encryptionConfig: Optional.
+    encryptionConfig: Optional. The encryption configuration for the database.
+      If this field is not specified, Cloud Spanner will encrypt/decrypt all
+      data at rest using Google default encryption.
     extraStatements: Optional. A list of DDL statements to run inside the
       newly created database. Statements can create tables, indexes, etc.
       These statements execute atomically with the creation of the database:
@@ -385,14 +385,17 @@ class Database(_messages.Message):
       using this value to recover data, make sure to account for the time from
       the moment when the value is queried to the moment when you initiate the
       recovery.
-    encryptionConfig: Output only. Custom encryption configuration (Cloud KMS
-      keys). Applicable only for databases using the Customer Managed
-      Encryption Keys (CMEK) feature. This is the encryption configuration
-      that is intended to be used by the database. It may differ from
-      encryption_info during CMEK migration.
-    encryptionInfo: Output only. Custom encryption information (database
-      encryption state and Cloud KMS key versions in use). Applicable only for
-      databases using the Customer Managed Encryption Keys feature.
+    encryptionConfig: Output only. For databases that are using customer
+      managed encryption, this field contains the encryption configuration for
+      the database. For databases that are using Google default or other types
+      of encryption, this field is empty.
+    encryptionInfo: Output only. For databases that are using customer managed
+      encryption, this field contains the encryption information for the
+      database, such as encryption state and the Cloud KMS key versions that
+      are in use. For databases that are using Google default or other types
+      of encryption, this field is empty. This field is propagated lazily from
+      the backend. There might be a delay from when a key version is being
+      used and when it appears in this field.
     name: Required. The name of the database. Values are of the form
       `projects//instances//databases/`, where `` is as specified in the
       `CREATE DATABASE` statement. This name can be passed to other API
@@ -463,12 +466,11 @@ class Empty(_messages.Message):
 
 
 class EncryptionConfig(_messages.Message):
-  r"""Encryption configuration describing key resources in Cloud KMS used to
-  encrypt/decrypt a Cloud Spanner database.
+  r"""Encryption configuration for a Cloud Spanner database.
 
   Fields:
-    kmsKeyName: The resource name of the Cloud KMS key that was used to
-      encrypt and decrypt the database. Values are of the form
+    kmsKeyName: The Cloud KMS key to be used for encrypting and decrypting the
+      database. Values are of the form
       `projects//locations//keyRings//cryptoKeys/`.
   """
 
@@ -476,38 +478,33 @@ class EncryptionConfig(_messages.Message):
 
 
 class EncryptionInfo(_messages.Message):
-  r"""Encryption information for a given resource. If this resource is
-  protected with customer managed encryption, the in-use Cloud KMS key
-  versions will be specified along with their status. CMEK is not currently
-  available to end users.
+  r"""Encryption information for a Cloud Spanner database or backup.
 
   Enums:
-    EncryptionTypeValueValuesEnum: Output only. The type of encryption used to
-      protect this resource.
+    EncryptionTypeValueValuesEnum: Output only. The type of encryption.
 
   Fields:
     encryptionStatus: Output only. If present, the status of a recent
-      encrypt/decrypt calls on underlying data for this resource. Regardless
-      of status, data is always encrypted at rest.
-    encryptionType: Output only. The type of encryption used to protect this
-      resource.
-    kmsKeyVersion: Output only. The Cloud KMS key versions used for a CMEK-
-      protected Spanner resource.
+      encrypt/decrypt call on underlying data for this database or backup.
+      Regardless of status, data is always encrypted at rest.
+    encryptionType: Output only. The type of encryption.
+    kmsKeyVersion: Output only. A Cloud KMS key version that is being used to
+      protect the database or backup.
   """
 
   class EncryptionTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. The type of encryption used to protect this resource.
+    r"""Output only. The type of encryption.
 
     Values:
       TYPE_UNSPECIFIED: Encryption type was not specified, though data at rest
         remains encrypted.
-      GOOGLE_DEFAULT_ENCRYPTION: The data backing this resource is encrypted
-        at rest with a key that is fully managed by Google. No key version or
-        status will be populated. This is the default state.
-      CUSTOMER_MANAGED_ENCRYPTION: The data backing this resource is encrypted
-        at rest with a key that is managed by the customer. The active version
-        of the key. 'kms_key_version' will be populated, and
-        'encryption_status' may be populated.
+      GOOGLE_DEFAULT_ENCRYPTION: The data is encrypted at rest with a key that
+        is fully managed by Google. No key version or status will be
+        populated. This is the default state.
+      CUSTOMER_MANAGED_ENCRYPTION: The data is encrypted at rest with a key
+        that is managed by the customer. The active version of the key.
+        `kms_key_version` will be populated, and `encryption_status` may be
+        populated.
     """
     TYPE_UNSPECIFIED = 0
     GOOGLE_DEFAULT_ENCRYPTION = 1
@@ -1993,7 +1990,7 @@ class ReplicaInfo(_messages.Message):
 
 
 class RestoreDatabaseEncryptionConfig(_messages.Message):
-  r"""Encryption configuration for the database to restore to.
+  r"""Encryption configuration for the restored database.
 
   Enums:
     EncryptionTypeValueValuesEnum: Required. The encryption type of the
@@ -2001,12 +1998,10 @@ class RestoreDatabaseEncryptionConfig(_messages.Message):
 
   Fields:
     encryptionType: Required. The encryption type of the restored database.
-    kmsKeyName: Optional. The resource name of the Cloud KMS key that will be
-      used to encrypt/decrypt the database to restore to. Once specified, the
-      database will enforce customer managed encryption, regardless of the
-      backup encryption type. This field should be set only when
-      encryption_type is CUSTOMER_MANAGED_ENCRYPTION. Values are of the form
-      `projects//locations//keyRings//cryptoKeys/`.
+    kmsKeyName: Optional. The Cloud KMS key that will be used to
+      encrypt/decrypt the restored database. This field should be set only
+      when encryption_type is `CUSTOMER_MANAGED_ENCRYPTION`. Values are of the
+      form `projects//locations//keyRings//cryptoKeys/`.
   """
 
   class EncryptionTypeValueValuesEnum(_messages.Enum):
@@ -2015,13 +2010,10 @@ class RestoreDatabaseEncryptionConfig(_messages.Message):
     Values:
       ENCRYPTION_TYPE_UNSPECIFIED: Unspecified. Do not use.
       USE_CONFIG_DEFAULT_OR_BACKUP_ENCRYPTION: This is the default option when
-        encryption_config is empty. It will first check whether there is a
-        config default and use it if set. if not set, it will use the backup
-        encryption setting. Note that the config default feature is a new
-        feature that may not be available at the beginning.
-      GOOGLE_DEFAULT_ENCRYPTION: Enforce google default encryption.
-      CUSTOMER_MANAGED_ENCRYPTION: Enforce customer managed encryption. If
-        specified, the kms_key_name must provide a valid Cloud KMS key name.
+        encryption_config is not specified.
+      GOOGLE_DEFAULT_ENCRYPTION: Use Google default encryption.
+      CUSTOMER_MANAGED_ENCRYPTION: Use customer managed encryption. If
+        specified, `kms_key_name` must must contain a valid Cloud KMS key.
     """
     ENCRYPTION_TYPE_UNSPECIFIED = 0
     USE_CONFIG_DEFAULT_OR_BACKUP_ENCRYPTION = 1
@@ -2095,10 +2087,10 @@ class RestoreDatabaseRequest(_messages.Message):
       `projects//instances//databases/`.
     encryptionConfig: Optional. An encryption configuration describing the
       encryption type and key resources in Cloud KMS used to encrypt/decrypt
-      the database to restore to. If no `encryption_config` is specified, the
-      restored database will use the config default (if set) or the same
-      encryption configuration as the backup by default, namely
-      encryption_type = USE_CONFIG_DEFAULT_OR_DATABASE_ENCRYPTION.
+      the database to restore to. If this field is not specified, the restored
+      database will use the same encryption configuration as the backup by
+      default, namely encryption_type =
+      `USE_CONFIG_DEFAULT_OR_DATABASE_ENCRYPTION`.
   """
 
   backup = _messages.StringField(1)
@@ -2464,11 +2456,9 @@ class SpannerProjectsInstancesBackupsCreateRequest(_messages.Message):
       `projects//instances//backups/`.
     encryptionConfig_encryptionType: Required. The encryption type of the
       backup.
-    encryptionConfig_kmsKeyName: Optional. The resource name of the Cloud KMS
-      key that will be used to protect the backup. Once specified, the backup
-      will enforce customer managed encryption, regardless of the database
-      encryption type. This field should be set only when encryption_type is
-      CUSTOMER_MANAGED_ENCRYPTION. Values are of the form
+    encryptionConfig_kmsKeyName: Optional. The Cloud KMS key that will be used
+      to protect the backup. This field should be set only when
+      encryption_type is `CUSTOMER_MANAGED_ENCRYPTION`. Values are of the form
       `projects//locations//keyRings//cryptoKeys/`.
     parent: Required. The name of the instance in which the backup will be
       created. This must be the same instance that contains the database the
@@ -2484,11 +2474,11 @@ class SpannerProjectsInstancesBackupsCreateRequest(_messages.Message):
       ENCRYPTION_TYPE_UNSPECIFIED: Unspecified. Do not use.
       USE_DATABASE_ENCRYPTION: Use the same encryption configuration as the
         database. This is the default option when encryption_config is empty.
-        If the database is using customer managed encryption, the backup will
-        be using the same KMS key.
-      GOOGLE_DEFAULT_ENCRYPTION: Enforce google default encryption.
-      CUSTOMER_MANAGED_ENCRYPTION: Enforce customer managed encryption. If
-        specified, the kms_key_name must provide a valid Cloud KMS key name.
+        For example, if the database is using `Customer_Managed_Encryption`,
+        the backup will be using the same Cloud KMS key as the database.
+      GOOGLE_DEFAULT_ENCRYPTION: Use Google default encryption.
+      CUSTOMER_MANAGED_ENCRYPTION: Use customer managed encryption. If
+        specified, `kms_key_name` must contain a valid Cloud KMS key.
     """
     ENCRYPTION_TYPE_UNSPECIFIED = 0
     USE_DATABASE_ENCRYPTION = 1

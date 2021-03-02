@@ -1542,6 +1542,69 @@ class AiplatformProjectsLocationsIndexEndpointsListRequest(_messages.Message):
   readMask = _messages.StringField(5)
 
 
+class AiplatformProjectsLocationsIndexEndpointsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexEndpointsOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsIndexEndpointsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexEndpointsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsIndexEndpointsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexEndpointsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsIndexEndpointsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexEndpointsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsIndexEndpointsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexEndpointsOperationsWaitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
 class AiplatformProjectsLocationsIndexEndpointsPatchRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsIndexEndpointsPatchRequest object.
 
@@ -1630,6 +1693,67 @@ class AiplatformProjectsLocationsIndexesListRequest(_messages.Message):
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
   readMask = _messages.StringField(5)
+
+
+class AiplatformProjectsLocationsIndexesOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexesOperationsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsIndexesOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexesOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsIndexesOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexesOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsIndexesOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexesOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsIndexesOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexesOperationsWaitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
 
 
 class AiplatformProjectsLocationsIndexesPatchRequest(_messages.Message):
@@ -11740,10 +11864,13 @@ class GoogleCloudAiplatformV1alpha1DeployedIndex(_messages.Message):
   DeployedIndexes.
 
   Fields:
-    automaticResources: A description of resources that the DeployedIndex
-      uses, which to large degree are decided by AI Platform, and optionally
-      allows only a modest additional configuration. The user is billed for
-      the resources (at least their minimal amount) even if the DeployedIndex
+    automaticResources: Optional. A description of resources that the
+      DeployedIndex uses, which to large degree are decided by AI Platform,
+      and optionally allows only a modest additional configuration. If
+      min_replica_count is not set, the default value is 1. If
+      max_replica_count is not set, the default value is min_replica_count.
+      The max allowed replica count is 1000. The user is billed for the
+      resources (at least their minimal amount) even if the DeployedIndex
       receives no traffic.
     createTime: Output only. Timestamp when the DeployedIndex was created.
     displayName: The display name of the DeployedIndex. If not provided upon
@@ -16176,10 +16303,13 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
   DeployedIndexes.
 
   Fields:
-    automaticResources: A description of resources that the DeployedIndex
-      uses, which to large degree are decided by AI Platform, and optionally
-      allows only a modest additional configuration. The user is billed for
-      the resources (at least their minimal amount) even if the DeployedIndex
+    automaticResources: Optional. A description of resources that the
+      DeployedIndex uses, which to large degree are decided by AI Platform,
+      and optionally allows only a modest additional configuration. If
+      min_replica_count is not set, the default value is 1. If
+      max_replica_count is not set, the default value is min_replica_count.
+      The max allowed replica count is 1000. The user is billed for the
+      resources (at least their minimal amount) even if the DeployedIndex
       receives no traffic.
     createTime: Output only. Timestamp when the DeployedIndex was created.
     displayName: The display name of the DeployedIndex. If not provided upon

@@ -14,10 +14,6 @@ from apitools.base.py import extra_types
 package = 'cloudidentity'
 
 
-class AddIdpSigningKeyOperationMetadata(_messages.Message):
-  r"""Details of the Add IdpSigningKey operation."""
-
-
 class AndroidAttributes(_messages.Message):
   r"""Resource representing the Android specific attributes of a Device.
 
@@ -56,22 +52,6 @@ class AndroidAttributes(_messages.Message):
   ownerProfileAccount = _messages.BooleanField(2)
   ownershipPrivilege = _messages.EnumField('OwnershipPrivilegeValueValuesEnum', 3)
   supportsWorkProfile = _messages.BooleanField(4)
-
-
-class ApplyIdpMetadataOperationMetadata(_messages.Message):
-  r"""Details of the ApplyIdpMetadata operation."""
-
-
-class ApplyIdpMetadataResponse(_messages.Message):
-  r"""The apply IDP metadata response.
-
-  Fields:
-    idpSigningKeys: The updated IdpSigningKeys' metadata.
-    inboundSamlSsoProfile: The updated InboundSamlSsoProfile.
-  """
-
-  idpSigningKeys = _messages.MessageField('IdpSigningKey', 1, repeated=True)
-  inboundSamlSsoProfile = _messages.MessageField('InboundSamlSsoProfile', 2)
 
 
 class ApproveDeviceUserResponse(_messages.Message):
@@ -672,10 +652,6 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
-class CreateInboundSamlSsoProfileOperationMetadata(_messages.Message):
-  r"""Details of the create InboundSamlSsoProfile operation."""
-
-
 class CustomAttributeValue(_messages.Message):
   r"""Additional custom attribute values may be one of these types
 
@@ -688,14 +664,6 @@ class CustomAttributeValue(_messages.Message):
   boolValue = _messages.BooleanField(1)
   numberValue = _messages.FloatField(2)
   stringValue = _messages.StringField(3)
-
-
-class DeleteIdpSigningKeyOperationMetadata(_messages.Message):
-  r"""Details of the delete IdpSigningKey operation."""
-
-
-class DeleteInboundSamlSsoProfileOperationMetadata(_messages.Message):
-  r"""Details of the delete InboundSamlSsoProfile operation."""
 
 
 class Device(_messages.Message):
@@ -2417,10 +2385,6 @@ class TransitiveMembershipRole(_messages.Message):
   """
 
   role = _messages.StringField(1)
-
-
-class UpdateInboundSamlSsoProfileOperationMetadata(_messages.Message):
-  r"""Details of the update InboundSamlSsoProfile operation."""
 
 
 class UpdateMembershipRolesParams(_messages.Message):

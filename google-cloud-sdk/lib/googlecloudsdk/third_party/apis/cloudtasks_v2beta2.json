@@ -922,9 +922,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -963,9 +963,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -993,9 +993,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The location name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1040,9 +1040,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the queue. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "type": "string"
                     },
                     "readMask": {
@@ -1071,9 +1071,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The location name in which the queue will be created. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID` The list of allowed locations can be obtained by calling Cloud Tasks' implementation of ListLocations.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1099,9 +1099,9 @@
                   "parameters": {
                     "name": {
                       "description": "Caller-specified and required in CreateQueue, after which it becomes output only. The queue name. The queue name must have the following format: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID` * `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]), hyphens (-), colons (:), or periods (.). For more information, see [Identifying projects](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects#identifying_projects) * `LOCATION_ID` is the canonical ID for the queue's location. The list of available locations can be obtained by calling ListLocations. For more information, see https:\/\/cloud.google.com\/about\/locations\/. * `QUEUE_ID` can contain letters ([A-Za-z]), numbers ([0-9]), or hyphens (-). The maximum length is 100 characters.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1133,9 +1133,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The queue name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1158,9 +1158,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The queue name. For example: `projects\/PROJECT_ID\/location\/LOCATION_ID\/queues\/QUEUE_ID`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1186,9 +1186,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The queue name. For example: `projects\/PROJECT_ID\/location\/LOCATION_ID\/queues\/QUEUE_ID`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1214,9 +1214,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The queue name. For example: `projects\/PROJECT_ID\/location\/LOCATION_ID\/queues\/QUEUE_ID`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1242,9 +1242,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1270,9 +1270,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1298,9 +1298,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1331,9 +1331,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The queue name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                           "type": "string"
                         },
                         "responseView": {
@@ -1382,9 +1382,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The task name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
                           "type": "string"
                         },
                         "responseView": {
@@ -1422,9 +1422,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The queue name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID` The queue must already exist.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1450,9 +1450,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The task name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1475,9 +1475,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The queue name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1503,9 +1503,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The task name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1531,9 +1531,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The task name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1559,9 +1559,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The task name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1587,9 +1587,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The task name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+\/tasks\/[^\/]+$",
                           "type": "string"
                         }
                       },

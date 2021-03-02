@@ -41,7 +41,6 @@ from googlecloudsdk.core import requests
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.credentials import creds as c_creds
-from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import gce as c_gce
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
@@ -269,42 +268,6 @@ class StaticCredentialProviders(object):
 
 
 STATIC_CREDENTIAL_PROVIDERS = StaticCredentialProviders()
-
-
-class DevShellCredentialProvider(object):
-  """Provides account, project and credential data for devshell env."""
-
-  def GetCredentials(self, account, use_google_auth=False):
-    devshell_creds = c_devshell.LoadDevshellCredentials(use_google_auth)
-    if devshell_creds and (devshell_creds.devshell_response.user_email ==
-                           account):
-      return devshell_creds
-    return None
-
-  def GetAccount(self):
-    return c_devshell.DefaultAccount()
-
-  def GetAccounts(self):
-    # DevShellCredentialsGoogleAuth and DevShellCredentials use the same code
-    # to get devshell_response, so here it is safe to load
-    # DevShellCredentialsGoogleAuth.
-    devshell_creds = c_devshell.LoadDevshellCredentials(use_google_auth=True)
-    if devshell_creds:
-      return set([devshell_creds.devshell_response.user_email])
-    return set()
-
-  def GetProject(self):
-    return c_devshell.Project()
-
-  def Register(self):
-    properties.VALUES.core.account.AddCallback(self.GetAccount)
-    properties.VALUES.core.project.AddCallback(self.GetProject)
-    STATIC_CREDENTIAL_PROVIDERS.AddProvider(self)
-
-  def UnRegister(self):
-    properties.VALUES.core.account.RemoveCallback(self.GetAccount)
-    properties.VALUES.core.project.RemoveCallback(self.GetProject)
-    STATIC_CREDENTIAL_PROVIDERS.RemoveProvider(self)
 
 
 class GceCredentialProvider(object):
@@ -1189,13 +1152,6 @@ def Revoke(account=None):
       account, prevent_refresh=True, use_google_auth=True)
   if not credentials:
     raise NoCredentialsForAccountException(account)
-
-  if (isinstance(credentials, c_devshell.DevshellCredentials) or
-      isinstance(credentials, c_devshell.DevShellCredentialsGoogleAuth)):
-    raise RevokeError(
-        'Cannot revoke the automatically provisioned Cloud Shell credential.'
-        'This comes from your browser session and will not persist outside'
-        'of your connected Cloud Shell session.')
 
   rv = False
   try:

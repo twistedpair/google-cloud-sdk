@@ -419,9 +419,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
+              "pattern": "^operations\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/[^\/]+$",
               "type": "string"
             }
           },
@@ -451,9 +451,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The project for which this API key will be created.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -479,9 +479,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the Api key to be cloned under same parent. `apikeys.keys.get permission` and `apikeys.keys.create permission` are required for parent resource.",
+                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -507,9 +507,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Lists all API keys associated with this project.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -549,9 +549,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the API key to be retrieved.",
+                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -575,9 +575,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the API key to be retrieved.",
+                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -601,9 +601,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the API key to be modified.",
+                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -635,9 +635,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the API key to be deleted.",
+                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -660,9 +660,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the API key to be undeleted.",
+                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "type": "string"
                 }
               },

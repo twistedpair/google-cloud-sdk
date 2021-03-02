@@ -184,6 +184,46 @@ class DialogflowProjectsAgentEntityTypesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class DialogflowProjectsAgentEnvironmentsIntentsListRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentEnvironmentsIntentsListRequest object.
+
+  Enums:
+    IntentViewValueValuesEnum: Optional. The resource view to apply to the
+      returned intent.
+
+  Fields:
+    intentView: Optional. The resource view to apply to the returned intent.
+    languageCode: Optional. The language used to access language-specific
+      data. If not specified, the agent's default language is used. For more
+      information, see [Multilingual intent and entity
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
+    pageSize: Optional. The maximum number of items to return in a single
+      page. By default 100 and at most 1000.
+    pageToken: Optional. The next_page_token value returned from a previous
+      list request.
+    parent: Required. The agent to list all intents from. Format:
+      `projects//agent`.
+  """
+
+  class IntentViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The resource view to apply to the returned intent.
+
+    Values:
+      INTENT_VIEW_UNSPECIFIED: Training phrases field is not populated in the
+        response.
+      INTENT_VIEW_FULL: All fields are populated.
+    """
+    INTENT_VIEW_UNSPECIFIED = 0
+    INTENT_VIEW_FULL = 1
+
+  intentView = _messages.EnumField('IntentViewValueValuesEnum', 1)
+  languageCode = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class DialogflowProjectsAgentEnvironmentsListRequest(_messages.Message):
   r"""A DialogflowProjectsAgentEnvironmentsListRequest object.
 
@@ -321,10 +361,11 @@ class DialogflowProjectsAgentEnvironmentsUsersSessionsDetectIntentRequest(_messa
     session: Required. The name of the session this query is sent to. Format:
       `projects//agent/sessions/`, or
       `projects//agent/environments//users//sessions/`. If `Environment ID` is
-      not specified, we assume default 'draft' environment. If `User ID` is
-      not specified, we are using "-". It's up to the API caller to choose an
-      appropriate `Session ID` and `User Id`. They can be a random number or
-      some type of user and session identifiers (preferably hashed). The
+      not specified, we assume default 'draft' environment (`Environment ID`
+      might be referred to as environment name at some places). If `User ID`
+      is not specified, we are using "-". It's up to the API caller to choose
+      an appropriate `Session ID` and `User Id`. They can be a random number
+      or some type of user and session identifiers (preferably hashed). The
       length of the `Session ID` and `User ID` must not exceed 36 characters.
       For more information, see the [API interactions
       guide](https://cloud.google.com/dialogflow/docs/api-overview). Note:
@@ -828,10 +869,11 @@ class DialogflowProjectsAgentSessionsDetectIntentRequest(_messages.Message):
     session: Required. The name of the session this query is sent to. Format:
       `projects//agent/sessions/`, or
       `projects//agent/environments//users//sessions/`. If `Environment ID` is
-      not specified, we assume default 'draft' environment. If `User ID` is
-      not specified, we are using "-". It's up to the API caller to choose an
-      appropriate `Session ID` and `User Id`. They can be a random number or
-      some type of user and session identifiers (preferably hashed). The
+      not specified, we assume default 'draft' environment (`Environment ID`
+      might be referred to as environment name at some places). If `User ID`
+      is not specified, we are using "-". It's up to the API caller to choose
+      an appropriate `Session ID` and `User Id`. They can be a random number
+      or some type of user and session identifiers (preferably hashed). The
       length of the `Session ID` and `User ID` must not exceed 36 characters.
       For more information, see the [API interactions
       guide](https://cloud.google.com/dialogflow/docs/api-overview). Note:
@@ -1183,8 +1225,8 @@ class GoogleCloudDialogflowCxV3ConversationTurnVirtualAgentOutput(_messages.Mess
       this point.
 
   Fields:
-    currentPage: The Page on which the utterance was spoken. Only some fields
-      such as name and displayname will be set.
+    currentPage: The Page on which the utterance was spoken. Only name and
+      displayName will be set.
     diagnosticInfo: Required. Input only. The diagnostic info output for the
       turn.
     differences: Output only. If this is part of a result conversation turn,
@@ -1195,8 +1237,8 @@ class GoogleCloudDialogflowCxV3ConversationTurnVirtualAgentOutput(_messages.Mess
     status: Response error from the agent in the test result. If set, other
       output is empty.
     textResponses: The text responses from the agent for the turn.
-    triggeredIntent: The Intent that triggered the response. Only some fields
-      such as name and displayname will be set.
+    triggeredIntent: The Intent that triggered the response. Only name and
+      displayName will be set.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2049,7 +2091,7 @@ class GoogleCloudDialogflowCxV3QueryInput(_messages.Message):
     event: The event to be triggered.
     intent: The intent to be triggered.
     languageCode: Required. The language of the input. See [Language
-      Support](https://cloud.google.com/dialogflow/docs/reference/language)
+      Support](https://cloud.google.com/dialogflow/cx/docs/reference/language)
       for a list of the currently supported language codes. Note that queries
       in the same session do not necessarily need to specify the same
       language.
@@ -2955,8 +2997,8 @@ class GoogleCloudDialogflowCxV3beta1ConversationTurnVirtualAgentOutput(_messages
       this point.
 
   Fields:
-    currentPage: The Page on which the utterance was spoken. Only some fields
-      such as name and displayname will be set.
+    currentPage: The Page on which the utterance was spoken. Only name and
+      displayName will be set.
     diagnosticInfo: Required. Input only. The diagnostic info output for the
       turn.
     differences: Output only. If this is part of a result conversation turn,
@@ -2967,8 +3009,8 @@ class GoogleCloudDialogflowCxV3beta1ConversationTurnVirtualAgentOutput(_messages
     status: Response error from the agent in the test result. If set, other
       output is empty.
     textResponses: The text responses from the agent for the turn.
-    triggeredIntent: The Intent that triggered the response. Only some fields
-      such as name and displayname will be set.
+    triggeredIntent: The Intent that triggered the response. Only name and
+      displayName will be set.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -3821,7 +3863,7 @@ class GoogleCloudDialogflowCxV3beta1QueryInput(_messages.Message):
     event: The event to be triggered.
     intent: The intent to be triggered.
     languageCode: Required. The language of the input. See [Language
-      Support](https://cloud.google.com/dialogflow/docs/reference/language)
+      Support](https://cloud.google.com/dialogflow/cx/docs/reference/language)
       for a list of the currently supported language codes. Note that queries
       in the same session do not necessarily need to specify the same
       language.

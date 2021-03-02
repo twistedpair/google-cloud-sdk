@@ -557,9 +557,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Parent resource of the context to create. The parent must be of the form \"projects\/{projectId}\/locations\/{locationId}\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -585,9 +585,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the context to delete. Must be in the form \"projects\/{projectId}\/locations\/{locationId}\/contexts\/{contextId}.\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/contexts\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/contexts\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -610,9 +610,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the context to retrieve. Must be in the form \"projects\/{projectId}\/locations\/{locationId}\/contexts\/{contextId}.\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/contexts\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/contexts\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -635,9 +635,9 @@
                   "parameters": {
                     "parent": {
                       "description": "List contexts in the given parent resource. Parent must be in the form \"projects\/{projectId}\/locations\/{locationId}\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -685,9 +685,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Parent resource of the workflow to create. The parent must be of the form \"projects\/{projectId}\/locations\/{locationId}\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -713,9 +713,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the workflow to delete. Must be in the form \"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}.\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -738,9 +738,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the workflow to retrieve. Must be in the form \"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}.\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -763,9 +763,9 @@
                   "parameters": {
                     "parent": {
                       "description": "List workflows in the given parent resource. Parent must be in the form \"projects\/{projectId}\/locations\/{locationId}\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -814,9 +814,9 @@
                       "parameters": {
                         "name": {
                           "description": "The resource name for the WorkflowRun in the form: \"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}\/runs\/{runId}\".",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/runs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/runs\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -839,9 +839,9 @@
                       "parameters": {
                         "parent": {
                           "description": "The parent selector for the WorkflowRun. Supports parent in the form: \"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}\".",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {

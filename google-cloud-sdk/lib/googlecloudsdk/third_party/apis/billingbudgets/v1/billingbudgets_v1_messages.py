@@ -93,9 +93,9 @@ class BillingbudgetsBillingAccountsBudgetsPatchRequest(_messages.Message):
 class GoogleCloudBillingBudgetsV1Budget(_messages.Message):
   r"""A budget is a plan that describes what you expect to spend on Cloud
   projects, plus the rules to execute as spend is tracked against that plan,
-  (for example, send an alert when 90% of the target spend is met). Currently
-  all plans are monthly budgets so the usage period(s) tracked are implied
-  (calendar months of usage back-to-back).
+  (for example, send an alert when 90% of the target spend is met). The budget
+  time period is configurable, with options such as month (default), quarter,
+  year, or custom time period.
 
   Fields:
     amount: Required. Budgeted amount.
@@ -130,7 +130,7 @@ class GoogleCloudBillingBudgetsV1BudgetAmount(_messages.Message):
 
   Fields:
     lastPeriodAmount: Use the last period's actual spend as the budget for the
-      present period.
+      present period. Cannot be set in combination with Filter.custom_period.
     specifiedAmount: A specified amount to use as the budget. `currency_code`
       is optional. If specified when creating a budget, it must match the
       currency of the billing account. If specified when updating a budget, it
@@ -142,10 +142,30 @@ class GoogleCloudBillingBudgetsV1BudgetAmount(_messages.Message):
   specifiedAmount = _messages.MessageField('GoogleTypeMoney', 2)
 
 
+class GoogleCloudBillingBudgetsV1CustomPeriod(_messages.Message):
+  r"""All date times begin at 12 AM US and Canadian Pacific Time (UTC-8).
+
+  Fields:
+    endDate: Optional. The end date of the time period. Budgets with elapsed
+      end date won't be processed. If unset, specifies to track all usage
+      incurred since the start_date.
+    startDate: Required. The start date must be after January 1, 2017.
+  """
+
+  endDate = _messages.MessageField('GoogleTypeDate', 1)
+  startDate = _messages.MessageField('GoogleTypeDate', 2)
+
+
 class GoogleCloudBillingBudgetsV1Filter(_messages.Message):
   r"""A filter for a budget, limiting the scope of the cost to calculate.
 
   Enums:
+    CalendarPeriodValueValuesEnum: Optional. Specifies to track usage for
+      recurring calendar period. E.g. Assume that CalendarPeriod.QUARTER is
+      set. The budget will track usage from April 1 to June 30, when current
+      calendar month is April, May, June. After that, it will track usage from
+      July 1 to September 30 when current calendar month is July, August,
+      September, and so on.
     CreditTypesTreatmentValueValuesEnum: Optional. If not set, default
       behavior is `INCLUDE_ALL_CREDITS`.
 
@@ -157,6 +177,12 @@ class GoogleCloudBillingBudgetsV1Filter(_messages.Message):
       usage.
 
   Fields:
+    calendarPeriod: Optional. Specifies to track usage for recurring calendar
+      period. E.g. Assume that CalendarPeriod.QUARTER is set. The budget will
+      track usage from April 1 to June 30, when current calendar month is
+      April, May, June. After that, it will track usage from July 1 to
+      September 30 when current calendar month is July, August, September, and
+      so on.
     creditTypes: Optional. If Filter.credit_types_treatment is
       INCLUDE_SPECIFIED_CREDITS, this is a list of credit types to be
       subtracted from gross cost to determine the spend for threshold
@@ -167,6 +193,8 @@ class GoogleCloudBillingBudgetsV1Filter(_messages.Message):
       bigquery-tables#credits-type).
     creditTypesTreatment: Optional. If not set, default behavior is
       `INCLUDE_ALL_CREDITS`.
+    customPeriod: Optional. Specifies to track usage from any start date
+      (required) to any end date (optional).
     labels: Optional. A single label and value pair specifying that usage from
       only this set of labeled resources should be included in the budget.
       Currently, multiple entries or multiple values per entry are not
@@ -190,11 +218,31 @@ class GoogleCloudBillingBudgetsV1Filter(_messages.Message):
       the parent account and all subaccounts, if they exist.
   """
 
+  class CalendarPeriodValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies to track usage for recurring calendar period. E.g.
+    Assume that CalendarPeriod.QUARTER is set. The budget will track usage
+    from April 1 to June 30, when current calendar month is April, May, June.
+    After that, it will track usage from July 1 to September 30 when current
+    calendar month is July, August, September, and so on.
+
+    Values:
+      CALENDAR_PERIOD_UNSPECIFIED: <no description>
+      MONTH: A month. Month starts on the first day of each month, such as
+        January 1, February 1, March 1, and so on.
+      QUARTER: A quarter. Quarters start on dates January 1, April 1, July 1,
+        and October 1 of each year.
+      YEAR: A year. Year starts on January 1.
+    """
+    CALENDAR_PERIOD_UNSPECIFIED = 0
+    MONTH = 1
+    QUARTER = 2
+    YEAR = 3
+
   class CreditTypesTreatmentValueValuesEnum(_messages.Enum):
     r"""Optional. If not set, default behavior is `INCLUDE_ALL_CREDITS`.
 
     Values:
-      CREDIT_TYPES_TREATMENT_UNSPECIFIED: This is an invalid value.
+      CREDIT_TYPES_TREATMENT_UNSPECIFIED: <no description>
       INCLUDE_ALL_CREDITS: All types of credit are subtracted from the gross
         cost to determine the spend for threshold calculations.
       EXCLUDE_ALL_CREDITS: All types of credit are added to the net cost to
@@ -235,12 +283,14 @@ class GoogleCloudBillingBudgetsV1Filter(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  creditTypes = _messages.StringField(1, repeated=True)
-  creditTypesTreatment = _messages.EnumField('CreditTypesTreatmentValueValuesEnum', 2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  projects = _messages.StringField(4, repeated=True)
-  services = _messages.StringField(5, repeated=True)
-  subaccounts = _messages.StringField(6, repeated=True)
+  calendarPeriod = _messages.EnumField('CalendarPeriodValueValuesEnum', 1)
+  creditTypes = _messages.StringField(2, repeated=True)
+  creditTypesTreatment = _messages.EnumField('CreditTypesTreatmentValueValuesEnum', 3)
+  customPeriod = _messages.MessageField('GoogleCloudBillingBudgetsV1CustomPeriod', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  projects = _messages.StringField(6, repeated=True)
+  services = _messages.StringField(7, repeated=True)
+  subaccounts = _messages.StringField(8, repeated=True)
 
 
 class GoogleCloudBillingBudgetsV1LastPeriodAmount(_messages.Message):
@@ -335,7 +385,8 @@ class GoogleCloudBillingBudgetsV1ThresholdRule(_messages.Message):
       CURRENT_SPEND: Use current spend as the basis for comparison against the
         threshold.
       FORECASTED_SPEND: Use forecasted spend for the period as the basis for
-        comparison against the threshold.
+        comparison against the threshold. Cannot be set in combination with
+        Filter.custom_period.
     """
     BASIS_UNSPECIFIED = 0
     CURRENT_SPEND = 1
@@ -353,6 +404,31 @@ class GoogleProtobufEmpty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class GoogleTypeDate(_messages.Message):
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values * A month and day value, with a zero year, such as an
+  anniversary * A year on its own, with zero month and day values * A year and
+  month value, with a zero day, such as a credit card expiration date Related
+  types are google.type.TimeOfDay and `google.protobuf.Timestamp`.
+
+  Fields:
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
+      without a month and day.
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleTypeMoney(_messages.Message):

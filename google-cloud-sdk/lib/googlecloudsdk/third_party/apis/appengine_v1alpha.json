@@ -667,6 +667,11 @@
         "flexibleEnvironmentAvailable": {
           "description": "App Engine flexible environment is available in the given location.@OutputOnly",
           "type": "boolean"
+        },
+        "searchApiAvailable": {
+          "description": "Output only. Search API (https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search) is available in the given location.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     }
@@ -684,9 +689,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation's parent resource.",
+                  "pattern": "^apps\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -727,9 +732,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource.",
+                  "pattern": "^apps\/[^\/]+\/operations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -758,9 +763,9 @@
               "parameters": {
                 "parent": {
                   "description": "Name of the parent Application resource. Example: apps\/myapp.",
+                  "pattern": "^apps\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -800,9 +805,9 @@
               "parameters": {
                 "parent": {
                   "description": "Name of the parent Application resource. Example: apps\/myapp.",
+                  "pattern": "^apps\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]+$",
                   "type": "string"
                 },
                 "view": {
@@ -851,9 +856,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the resource requested. Example: apps\/myapp\/authorizedCertificates\/12345.",
+                  "pattern": "^apps\/[^\/]+\/authorizedCertificates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]+\/authorizedCertificates\/[^\/]+$",
                   "type": "string"
                 },
                 "view": {
@@ -891,9 +896,9 @@
               "parameters": {
                 "parent": {
                   "description": "Name of the parent Application resource. Example: apps\/myapp.",
+                  "pattern": "^apps\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -919,9 +924,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the resource to update. Example: apps\/myapp\/authorizedCertificates\/12345.",
+                  "pattern": "^apps\/[^\/]+\/authorizedCertificates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]+\/authorizedCertificates\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -953,9 +958,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the resource to delete. Example: apps\/myapp\/authorizedCertificates\/12345.",
+                  "pattern": "^apps\/[^\/]+\/authorizedCertificates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]+\/authorizedCertificates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -982,9 +987,9 @@
               "parameters": {
                 "parent": {
                   "description": "Name of the parent Application resource. Example: apps\/myapp.",
+                  "pattern": "^apps\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -1020,9 +1025,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the resource requested. Example: apps\/myapp\/domainMappings\/example.com.",
+                  "pattern": "^apps\/[^\/]+\/domainMappings\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]+\/domainMappings\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1047,9 +1052,9 @@
               "parameters": {
                 "parent": {
                   "description": "Name of the parent Application resource. Example: apps\/myapp.",
+                  "pattern": "^apps\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]+$",
                   "type": "string"
                 },
                 "noManagedCertificate": {
@@ -1095,9 +1100,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the resource to update. Example: apps\/myapp\/domainMappings\/example.com.",
+                  "pattern": "^apps\/[^\/]+\/domainMappings\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]+\/domainMappings\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -1134,9 +1139,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of the resource to delete. Example: apps\/myapp\/domainMappings\/example.com.",
+                  "pattern": "^apps\/[^\/]+\/domainMappings\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]+\/domainMappings\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1163,9 +1168,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^apps\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1206,9 +1211,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^apps\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },

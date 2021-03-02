@@ -1392,9 +1392,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1417,9 +1417,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1451,9 +1451,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource where this book will be created. Format: projects\/{project}",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "workerPoolId": {
@@ -1484,9 +1484,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the `WorkerPool` to retrieve. Format: projects\/{project}\/workerPools\/{workerPool}",
+                  "pattern": "^projects\/[^\/]+\/workerPools\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/workerPools\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1509,9 +1509,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the `WorkerPool` to delete. Format: projects\/{project}\/workerPools\/{workerPool}",
+                  "pattern": "^projects\/[^\/]+\/workerPools\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/workerPools\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1534,9 +1534,9 @@
               "parameters": {
                 "name": {
                   "description": "Output only. The resource name of the `WorkerPool`. Format of the name is `projects\/{project_id}\/workerPools\/{worker_pool_id}`, where the value of {worker_pool_id} is provided in the CreateWorkerPool request.",
+                  "pattern": "^projects\/[^\/]+\/workerPools\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/workerPools\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -1568,9 +1568,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent, which owns this collection of `WorkerPools`. Format: projects\/{project}",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },

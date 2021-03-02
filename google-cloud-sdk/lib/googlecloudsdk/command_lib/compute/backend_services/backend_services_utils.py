@@ -405,7 +405,8 @@ def ApplyCdnPolicyArgs(client,
                        cleared_fields=None,
                        support_flexible_cache_step_one=False,
                        support_flexible_cache_step_two=True,
-                       support_negative_cache=False):
+                       support_negative_cache=False,
+                       support_request_coalescing=False):
   """Applies the CdnPolicy arguments to the specified backend service.
 
   If there are no arguments related to CdnPolicy, the backend service remains
@@ -429,6 +430,7 @@ def ApplyCdnPolicyArgs(client,
         headers
     support_negative_cache: If True then maps negative caching and negative
       caching policy arguments
+    support_request_coalescing: If True then maps request coalescing argument
   """
   if backend_service.cdnPolicy is not None:
     cdn_policy = encoding.CopyProtoMessage(backend_service.cdnPolicy)
@@ -442,6 +444,9 @@ def ApplyCdnPolicyArgs(client,
   if apply_signed_url_cache_max_age and args.IsSpecified(
       'signed_url_cache_max_age'):
     cdn_policy.signedUrlCacheMaxAgeSec = args.signed_url_cache_max_age
+
+  if support_request_coalescing and args.request_coalescing is not None:
+    cdn_policy.requestCoalescing = args.request_coalescing
 
   if support_flexible_cache_step_one:
     if args.cache_mode:

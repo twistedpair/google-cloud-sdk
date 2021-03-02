@@ -795,7 +795,7 @@
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "The time at which the asset was last updated, added, or deleted in Security Command Center.",
+          "description": "The time at which the asset was last updated or added in Cloud SCC.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -1411,9 +1411,9 @@
           "parameters": {
             "name": {
               "description": "Required. Name of the organization to get organization settings for. Its format is \"organizations\/[organization_id]\/organizationSettings\".",
+              "pattern": "^organizations\/[^\/]+\/organizationSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+\/organizationSettings$",
               "type": "string"
             }
           },
@@ -1436,9 +1436,9 @@
           "parameters": {
             "name": {
               "description": "The relative resource name of the settings. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/organizationSettings\".",
+              "pattern": "^organizations\/[^\/]+\/organizationSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+\/organizationSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -1475,9 +1475,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation's parent resource.",
+                  "pattern": "^organizations\/[^\/]+\/operations$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/operations$",
                   "type": "string"
                 },
                 "filter": {
@@ -1516,9 +1516,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource.",
+                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1541,9 +1541,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource to be deleted.",
+                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1566,9 +1566,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource to be cancelled.",
+                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1595,9 +1595,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name of the new source's parent. Its format should be \"organizations\/[organization_id]\".",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1623,9 +1623,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1651,9 +1651,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Relative resource name of the source. Its format is \"organizations\/[organization_id]\/source\/[source_id]\".",
+                  "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1676,9 +1676,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name of the parent of sources to list. Its format should be \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -1712,9 +1712,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1740,9 +1740,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1768,9 +1768,9 @@
               "parameters": {
                 "name": {
                   "description": "The relative resource name of this source. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/sources\/{source_id}\"",
+                  "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -1807,9 +1807,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Resource name of the new finding's parent. Its format should be \"organizations\/[organization_id]\/sources\/[source_id]\".",
+                      "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                       "type": "string"
                     },
                     "findingId": {
@@ -1840,9 +1840,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Name of the source to groupBy. Its format is \"organizations\/[organization_id]\/sources\/[source_id]\", folders\/[folder_id]\/sources\/[source_id], or projects\/[project_id]\/sources\/[source_id]. To groupBy across all sources provide a source_id of `-`. For example: organizations\/{organization_id}\/sources\/-, folders\/{folder_id}\/sources\/-, or projects\/{project_id}\/sources\/-",
+                      "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1868,9 +1868,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Name of the source the findings belong to. Its format is \"organizations\/[organization_id]\/sources\/[source_id], folders\/[folder_id]\/sources\/[source_id], or projects\/[project_id]\/sources\/[source_id]\". To list across all sources provide a source_id of `-`. For example: organizations\/{organization_id}\/sources\/-, folders\/{folder_id}\/sources\/- or projects\/{projects_id}\/sources\/-",
+                      "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1932,9 +1932,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The relative resource name of the finding. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/sources\/{source_id}\/finding\/{finding_id}\".",
+                      "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1960,9 +1960,9 @@
                   "parameters": {
                     "name": {
                       "description": "The relative resource name of this finding. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\"",
+                      "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1994,9 +1994,9 @@
                   "parameters": {
                     "name": {
                       "description": "The relative resource name of the SecurityMarks. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Examples: \"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\" \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\".",
+                      "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+\/securityMarks$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+\/securityMarks$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -2040,9 +2040,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name of the new notification config's parent. Its format is \"organizations\/[organization_id]\".",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "configId": {
@@ -2073,9 +2073,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Name of the notification config to delete. Its format is \"organizations\/[organization_id]\/notificationConfigs\/[config_id]\".",
+                  "pattern": "^organizations\/[^\/]+\/notificationConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/notificationConfigs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2098,9 +2098,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Name of the notification config to get. Its format is \"organizations\/[organization_id]\/notificationConfigs\/[config_id]\".",
+                  "pattern": "^organizations\/[^\/]+\/notificationConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/notificationConfigs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2123,9 +2123,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Name of the organization to list notification configs. Its format is \"organizations\/[organization_id]\".",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -2159,9 +2159,9 @@
               "parameters": {
                 "name": {
                   "description": "The relative resource name of this notification config. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/notificationConfigs\/notify_public_bucket\".",
+                  "pattern": "^organizations\/[^\/]+\/notificationConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/notificationConfigs\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -2197,9 +2197,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Name of the organization to groupBy. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2225,9 +2225,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Name of the organization assets should belong to. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -2289,9 +2289,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Name of the organization to run asset discovery for. Its format is \"organizations\/[organization_id]\".",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2317,9 +2317,9 @@
               "parameters": {
                 "name": {
                   "description": "The relative resource name of the SecurityMarks. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Examples: \"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\" \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\".",
+                  "pattern": "^organizations\/[^\/]+\/assets\/[^\/]+\/securityMarks$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/assets\/[^\/]+\/securityMarks$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -2365,9 +2365,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Name of the organization to groupBy. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
+                  "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2393,9 +2393,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Name of the organization assets should belong to. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
+                  "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -2457,9 +2457,9 @@
               "parameters": {
                 "name": {
                   "description": "The relative resource name of the SecurityMarks. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Examples: \"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\" \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\".",
+                  "pattern": "^folders\/[^\/]+\/assets\/[^\/]+\/securityMarks$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/assets\/[^\/]+\/securityMarks$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -2501,9 +2501,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name of the parent of sources to list. Its format should be \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
+                  "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -2542,9 +2542,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Name of the source to groupBy. Its format is \"organizations\/[organization_id]\/sources\/[source_id]\", folders\/[folder_id]\/sources\/[source_id], or projects\/[project_id]\/sources\/[source_id]. To groupBy across all sources provide a source_id of `-`. For example: organizations\/{organization_id}\/sources\/-, folders\/{folder_id}\/sources\/-, or projects\/{project_id}\/sources\/-",
+                      "pattern": "^folders\/[^\/]+\/sources\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^folders\/[^\/]+\/sources\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2570,9 +2570,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Name of the source the findings belong to. Its format is \"organizations\/[organization_id]\/sources\/[source_id], folders\/[folder_id]\/sources\/[source_id], or projects\/[project_id]\/sources\/[source_id]\". To list across all sources provide a source_id of `-`. For example: organizations\/{organization_id}\/sources\/-, folders\/{folder_id}\/sources\/- or projects\/{projects_id}\/sources\/-",
+                      "pattern": "^folders\/[^\/]+\/sources\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^folders\/[^\/]+\/sources\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -2634,9 +2634,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The relative resource name of the finding. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/sources\/{source_id}\/finding\/{finding_id}\".",
+                      "pattern": "^folders\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^folders\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2662,9 +2662,9 @@
                   "parameters": {
                     "name": {
                       "description": "The relative resource name of this finding. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\"",
+                      "pattern": "^folders\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^folders\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -2696,9 +2696,9 @@
                   "parameters": {
                     "name": {
                       "description": "The relative resource name of the SecurityMarks. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Examples: \"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\" \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\".",
+                      "pattern": "^folders\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+\/securityMarks$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^folders\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+\/securityMarks$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -2746,9 +2746,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Name of the organization to groupBy. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2774,9 +2774,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Name of the organization assets should belong to. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -2838,9 +2838,9 @@
               "parameters": {
                 "name": {
                   "description": "The relative resource name of the SecurityMarks. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Examples: \"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\" \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\".",
+                  "pattern": "^projects\/[^\/]+\/assets\/[^\/]+\/securityMarks$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/assets\/[^\/]+\/securityMarks$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -2882,9 +2882,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name of the parent of sources to list. Its format should be \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -2923,9 +2923,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Name of the source to groupBy. Its format is \"organizations\/[organization_id]\/sources\/[source_id]\", folders\/[folder_id]\/sources\/[source_id], or projects\/[project_id]\/sources\/[source_id]. To groupBy across all sources provide a source_id of `-`. For example: organizations\/{organization_id}\/sources\/-, folders\/{folder_id}\/sources\/-, or projects\/{project_id}\/sources\/-",
+                      "pattern": "^projects\/[^\/]+\/sources\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/sources\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2951,9 +2951,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Name of the source the findings belong to. Its format is \"organizations\/[organization_id]\/sources\/[source_id], folders\/[folder_id]\/sources\/[source_id], or projects\/[project_id]\/sources\/[source_id]\". To list across all sources provide a source_id of `-`. For example: organizations\/{organization_id}\/sources\/-, folders\/{folder_id}\/sources\/- or projects\/{projects_id}\/sources\/-",
+                      "pattern": "^projects\/[^\/]+\/sources\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/sources\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -3015,9 +3015,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The relative resource name of the finding. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/sources\/{source_id}\/finding\/{finding_id}\".",
+                      "pattern": "^projects\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3043,9 +3043,9 @@
                   "parameters": {
                     "name": {
                       "description": "The relative resource name of this finding. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\"",
+                      "pattern": "^projects\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -3077,9 +3077,9 @@
                   "parameters": {
                     "name": {
                       "description": "The relative resource name of the SecurityMarks. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Examples: \"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\" \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\".",
+                      "pattern": "^projects\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+\/securityMarks$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+\/securityMarks$",
                       "type": "string"
                     },
                     "updateMask": {

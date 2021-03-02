@@ -186,7 +186,6 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     _file_name: The command path name (used to name documents).
     _final_sections: The list of PrintFinalSections section names.
     _is_hidden: The command is hidden.
-    _is_topic: True if the command is a help topic.
     _out: Output writer.
     _printed_sections: The set of already printed sections.
     _release_track: The calliope.base.ReleaseTrack.
@@ -215,15 +214,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     self._file_name = '_'.join(self._command_path)
     self._global_flags = set()
     self._is_hidden = is_hidden
-    self._is_root = self._IsRoot()
     self._release_track = release_track
-    if (len(self._command_path) >= 3 and
-        self._command_path[1] == release_track.prefix):
-      command_index = 2
-    else:
-      command_index = 1
-    self._is_topic = (len(self._command_path) >= (command_index + 1) and
-                      self._command_path[command_index] == 'topic')
     self._printed_sections = set()
 
   @abc.abstractmethod
@@ -267,7 +258,8 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
       command_link += ' ' + ' '.join(args)
     return command_link
 
-  def _IsRoot(self):
+  @property
+  def is_root(self):
     """Determine if this node should be treated as a "root" of the CLI tree.
 
     The top element is the root, but we also treat any additional release tracks
@@ -283,6 +275,22 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
       if self._command_path[-1] in tracks:
         return True
     return False
+
+  @property
+  def is_group(self):
+    """Returns True if this node is a command group."""
+    return bool(self._subgroups or self._subcommands)
+
+  @property
+  def is_topic(self):
+    """Returns True if this node is a topic command."""
+    if (len(self._command_path) >= 3 and
+        self._command_path[1] == self._release_track.prefix):
+      command_index = 2
+    else:
+      command_index = 1
+    return (len(self._command_path) >= (command_index + 1) and
+            self._command_path[command_index] == 'topic')
 
   def _ExpandHelpText(self, text):
     """Expand command {...} references in text.
@@ -308,7 +316,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     """Sets self._arg_sections in document order."""
     if self._arg_sections is None:
       self._arg_sections, self._global_flags = usage_text.GetArgSections(
-          self.GetArguments(), self._is_root)
+          self.GetArguments(), self.is_root, self.is_group)
 
   def _SplitCommandFromArgs(self, cmd):
     """Splits cmd into command and args lists.
@@ -382,7 +390,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     Args:
       disable_header: Disable printing the section header if True.
     """
-    if self._is_topic:
+    if self.is_topic:
       return
     self._SetArgSections()
     # MARKDOWN_CODE is the default SYNOPSIS font style.
@@ -509,7 +517,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     Args:
       disable_header: Disable printing the section header if True.
     """
-    if self._is_topic:
+    if self.is_topic:
       return
     self._SetArgSections()
 
@@ -545,7 +553,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
       disable_header: Disable printing the section header if True.
     """
     if self._subcommands:
-      if self._is_topic:
+      if self.is_topic:
         self.PrintCommandSection('TOPIC', self._subcommands, is_topic=True,
                                  disable_header=disable_header)
       else:

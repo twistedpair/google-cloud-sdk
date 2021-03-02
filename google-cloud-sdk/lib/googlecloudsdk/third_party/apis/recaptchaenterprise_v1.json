@@ -548,9 +548,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project in which the assessment will be created, in the format \"projects\/{project}\".",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -576,9 +576,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the Assessment, in the format \"projects\/{project}\/assessments\/{assessment}\".",
+                  "pattern": "^projects\/[^\/]+\/assessments\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/assessments\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -608,9 +608,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project in which the key will be created, in the format \"projects\/{project}\".",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -636,9 +636,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project that contains the keys that will be listed, in the format \"projects\/{project}\".",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -672,9 +672,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the requested key, in the format \"projects\/{project}\/keys\/{key}\".",
+                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -697,9 +697,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource name for the Key in the format \"projects\/{project}\/keys\/{key}\".",
+                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -731,9 +731,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the key to be deleted, in the format \"projects\/{project}\/keys\/{key}\".",
+                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -756,9 +756,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the requested metrics, in the format \"projects\/{project}\/keys\/{key}\/metrics\".",
+                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+\/metrics$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+\/metrics$",
                   "type": "string"
                 }
               },

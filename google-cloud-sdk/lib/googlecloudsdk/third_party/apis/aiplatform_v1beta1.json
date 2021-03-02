@@ -721,6 +721,13 @@
           "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
           "type": "integer",
           "format": "int32"
+        },
+        "autoscalingMetricSpecs": {
+          "description": "Immutable. The metric specifications that overrides a resource utilization metric (CPU utilization, accelerator's duty cycle, and so on) target value (default to 60 if not set). At most one entry is allowed per metric. If machine_spec.accelerator_count is above 0, the autoscaling will be based on both CPU utilization and accelerator's duty cycle metrics and scale up when either metrics exceeds its target value while scale down if both metrics are under their target value. The default target value is 60 for both metrics. If machine_spec.accelerator_count is 0, the autoscaling will be based on CPU utilization metric only with default target value 60 if not explicitly set. For example, in the case of Online Prediction, if you want to override target CPU utilization to 80, you should set autoscaling_metric_specs.metric_name to `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization` and autoscaling_metric_specs.target to `80`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1AutoscalingMetricSpec"
+          }
         }
       }
     },
@@ -759,6 +766,22 @@
         },
         "acceleratorCount": {
           "description": "The number of accelerators to attach to the machine.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1AutoscalingMetricSpec": {
+      "id": "GoogleCloudAiplatformV1beta1AutoscalingMetricSpec",
+      "description": "The metric specification that defines the target resource utilization (CPU utilization, accelerator's duty cycle, and so on) for calculating the desired replica count.",
+      "type": "object",
+      "properties": {
+        "metricName": {
+          "description": "Required. The resource metric name. Supported metrics: * For Online Prediction: * `aiplatform.googleapis.com\/prediction\/online\/accelerator\/duty_cycle` * `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization`",
+          "type": "string"
+        },
+        "target": {
+          "description": "The target resource utilization in percentage (1% - 100%) for the given metric; once the real usage deviates from the target by a certain percentage, the machine replicas change. The default value is 60 (representing 60%) if not provided.",
           "type": "integer",
           "format": "int32"
         }
@@ -1149,7 +1172,7 @@
       "type": "object",
       "properties": {
         "indexDisplayNameMapping": {
-          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimentions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
+          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimensions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
           "type": "any"
         },
         "displayNameMappingKey": {
@@ -1400,7 +1423,7 @@
           "format": "google-datetime"
         },
         "automaticResources": {
-          "description": "A description of resources that the DeployedIndex uses, which to large degree are decided by AI Platform, and optionally allows only a modest additional configuration. The user is billed for the resources (at least their minimal amount) even if the DeployedIndex receives no traffic.",
+          "description": "Optional. A description of resources that the DeployedIndex uses, which to large degree are decided by AI Platform, and optionally allows only a modest additional configuration. If min_replica_count is not set, the default value is 1. If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. The user is billed for the resources (at least their minimal amount) even if the DeployedIndex receives no traffic.",
           "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
         }
       }
@@ -4871,6 +4894,13 @@
           "description": "Required. Immutable. The minimum number of machine replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas, and as traffic decreases, some of these extra replicas may be freed. Note: if machine_spec.accelerator_count is above 0, currently the model will be always deployed precisely on min_replica_count.",
           "type": "integer",
           "format": "int32"
+        },
+        "autoscalingMetricSpecs": {
+          "description": "Immutable. The metric specifications that overrides a resource utilization metric (CPU utilization, accelerator's duty cycle, and so on) target value (default to 60 if not set). At most one entry is allowed per metric. If machine_spec.accelerator_count is above 0, the autoscaling will be based on both CPU utilization and accelerator's duty cycle metrics and scale up when either metrics exceeds its target value while scale down if both metrics are under their target value. The default target value is 60 for both metrics. If machine_spec.accelerator_count is 0, the autoscaling will be based on CPU utilization metric only with default target value 60 if not explicitly set. For example, in the case of Online Prediction, if you want to override target CPU utilization to 80, you should set autoscaling_metric_specs.metric_name to `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization` and autoscaling_metric_specs.target to `80`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformInternalAutoscalingMetricSpec"
+          }
         }
       }
     },
@@ -4909,6 +4939,22 @@
         },
         "acceleratorCount": {
           "description": "The number of accelerators to attach to the machine.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalAutoscalingMetricSpec": {
+      "id": "GoogleCloudAiplatformInternalAutoscalingMetricSpec",
+      "description": "The metric specification that defines the target resource utilization (CPU utilization, accelerator's duty cycle, and so on) for calculating the desired replica count.",
+      "type": "object",
+      "properties": {
+        "metricName": {
+          "description": "Required. The resource metric name. Supported metrics: * For Online Prediction: * `aiplatform.googleapis.com\/prediction\/online\/accelerator\/duty_cycle` * `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization`",
+          "type": "string"
+        },
+        "target": {
+          "description": "The target resource utilization in percentage (1% - 100%) for the given metric; once the real usage deviates from the target by a certain percentage, the machine replicas change. The default value is 60 (representing 60%) if not provided.",
           "type": "integer",
           "format": "int32"
         }
@@ -5299,7 +5345,7 @@
       "type": "object",
       "properties": {
         "indexDisplayNameMapping": {
-          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimentions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
+          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimensions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
           "type": "any"
         },
         "displayNameMappingKey": {
@@ -6571,6 +6617,13 @@
           "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
           "type": "integer",
           "format": "int32"
+        },
+        "autoscalingMetricSpecs": {
+          "description": "Immutable. The metric specifications that overrides a resource utilization metric (CPU utilization, accelerator's duty cycle, and so on) target value (default to 60 if not set). At most one entry is allowed per metric. If machine_spec.accelerator_count is above 0, the autoscaling will be based on both CPU utilization and accelerator's duty cycle metrics and scale up when either metrics exceeds its target value while scale down if both metrics are under their target value. The default target value is 60 for both metrics. If machine_spec.accelerator_count is 0, the autoscaling will be based on CPU utilization metric only with default target value 60 if not explicitly set. For example, in the case of Online Prediction, if you want to override target CPU utilization to 80, you should set autoscaling_metric_specs.metric_name to `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization` and autoscaling_metric_specs.target to `80`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiAutoscalingMetricSpec"
+          }
         }
       }
     },
@@ -6609,6 +6662,22 @@
         },
         "acceleratorCount": {
           "description": "The number of accelerators to attach to the machine.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiAutoscalingMetricSpec": {
+      "id": "GoogleCloudAiplatformUiAutoscalingMetricSpec",
+      "description": "The metric specification that defines the target resource utilization (CPU utilization, accelerator's duty cycle, and so on) for calculating the desired replica count.",
+      "type": "object",
+      "properties": {
+        "metricName": {
+          "description": "Required. The resource metric name. Supported metrics: * For Online Prediction: * `aiplatform.googleapis.com\/prediction\/online\/accelerator\/duty_cycle` * `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization`",
+          "type": "string"
+        },
+        "target": {
+          "description": "The target resource utilization in percentage (1% - 100%) for the given metric; once the real usage deviates from the target by a certain percentage, the machine replicas change. The default value is 60 (representing 60%) if not provided.",
           "type": "integer",
           "format": "int32"
         }
@@ -6999,7 +7068,7 @@
       "type": "object",
       "properties": {
         "indexDisplayNameMapping": {
-          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimentions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
+          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimensions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
           "type": "any"
         },
         "displayNameMappingKey": {
@@ -8717,7 +8786,7 @@
       "type": "object",
       "properties": {
         "indexDisplayNameMapping": {
-          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimentions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
+          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimensions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
           "type": "any"
         },
         "displayNameMappingKey": {
@@ -8783,7 +8852,7 @@
           "format": "google-datetime"
         },
         "automaticResources": {
-          "description": "A description of resources that the DeployedIndex uses, which to large degree are decided by AI Platform, and optionally allows only a modest additional configuration. The user is billed for the resources (at least their minimal amount) even if the DeployedIndex receives no traffic.",
+          "description": "Optional. A description of resources that the DeployedIndex uses, which to large degree are decided by AI Platform, and optionally allows only a modest additional configuration. If min_replica_count is not set, the default value is 1. If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. The user is billed for the resources (at least their minimal amount) even if the DeployedIndex receives no traffic.",
           "$ref": "GoogleCloudAiplatformV1alpha1AutomaticResources"
         }
       }
@@ -12814,6 +12883,13 @@
           "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
           "type": "integer",
           "format": "int32"
+        },
+        "autoscalingMetricSpecs": {
+          "description": "Immutable. The metric specifications that overrides a resource utilization metric (CPU utilization, accelerator's duty cycle, and so on) target value (default to 60 if not set). At most one entry is allowed per metric. If machine_spec.accelerator_count is above 0, the autoscaling will be based on both CPU utilization and accelerator's duty cycle metrics and scale up when either metrics exceeds its target value while scale down if both metrics are under their target value. The default target value is 60 for both metrics. If machine_spec.accelerator_count is 0, the autoscaling will be based on CPU utilization metric only with default target value 60 if not explicitly set. For example, in the case of Online Prediction, if you want to override target CPU utilization to 80, you should set autoscaling_metric_specs.metric_name to `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization` and autoscaling_metric_specs.target to `80`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1AutoscalingMetricSpec"
+          }
         }
       }
     },
@@ -12852,6 +12928,22 @@
         },
         "acceleratorCount": {
           "description": "The number of accelerators to attach to the machine.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1AutoscalingMetricSpec": {
+      "id": "GoogleCloudAiplatformV1AutoscalingMetricSpec",
+      "description": "The metric specification that defines the target resource utilization (CPU utilization, accelerator's duty cycle, and so on) for calculating the desired replica count.",
+      "type": "object",
+      "properties": {
+        "metricName": {
+          "description": "Required. The resource metric name. Supported metrics: * For Online Prediction: * `aiplatform.googleapis.com\/prediction\/online\/accelerator\/duty_cycle` * `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization`",
+          "type": "string"
+        },
+        "target": {
+          "description": "The target resource utilization in percentage (1% - 100%) for the given metric; once the real usage deviates from the target by a certain percentage, the machine replicas change. The default value is 60 (representing 60%) if not provided.",
           "type": "integer",
           "format": "int32"
         }
@@ -18605,6 +18697,160 @@
                   "description": "Deletes an Index. An Index can only be deleted when all its DeployedIndexes had been undeployed."
                 }
               }
+              ,
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "list": {
+                      "id": "aiplatform.projects.locations.indexes.operations.list",
+                      "path": "v1beta1/{+name}/operations",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}/operations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation's parent resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningListOperationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                    },
+                    "get": {
+                      "id": "aiplatform.projects.locations.indexes.operations.get",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexes\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    },
+                    "delete": {
+                      "id": "aiplatform.projects.locations.indexes.operations.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}/operations/{operationsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be deleted.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexes\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                    },
+                    "cancel": {
+                      "id": "aiplatform.projects.locations.indexes.operations.cancel",
+                      "path": "v1beta1/{+name}:cancel",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}/operations/{operationsId}:cancel",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be cancelled.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexes\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                    },
+                    "wait": {
+                      "id": "aiplatform.projects.locations.indexes.operations.wait",
+                      "path": "v1beta1/{+name}:wait",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}/operations/{operationsId}:wait",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to wait on.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexes\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "timeout": {
+                          "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-duration"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                    }
+                  }
+                }
+              }
             },
             "indexEndpoints": {
               "methods": {
@@ -18822,6 +19068,160 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Undeploys an Index from an IndexEndpoint, removing a DeployedIndex from it, and freeing all resources it's using."
+                }
+              }
+              ,
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "list": {
+                      "id": "aiplatform.projects.locations.indexEndpoints.operations.list",
+                      "path": "v1beta1/{+name}/operations",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}/operations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation's parent resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexEndpoints\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningListOperationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                    },
+                    "get": {
+                      "id": "aiplatform.projects.locations.indexEndpoints.operations.get",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexEndpoints\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    },
+                    "delete": {
+                      "id": "aiplatform.projects.locations.indexEndpoints.operations.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}/operations/{operationsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be deleted.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexEndpoints\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                    },
+                    "cancel": {
+                      "id": "aiplatform.projects.locations.indexEndpoints.operations.cancel",
+                      "path": "v1beta1/{+name}:cancel",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}/operations/{operationsId}:cancel",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be cancelled.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexEndpoints\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                    },
+                    "wait": {
+                      "id": "aiplatform.projects.locations.indexEndpoints.operations.wait",
+                      "path": "v1beta1/{+name}:wait",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}/operations/{operationsId}:wait",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to wait on.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexEndpoints\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "timeout": {
+                          "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-duration"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                    }
+                  }
                 }
               }
             },

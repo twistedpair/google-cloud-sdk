@@ -847,9 +847,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -893,9 +893,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -923,9 +923,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the project and location the namespace will be created in.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "namespaceId": {
@@ -956,9 +956,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the project and location whose namespaces you'd like to list.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1002,9 +1002,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the namespace to retrieve.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1027,9 +1027,9 @@
                   "parameters": {
                     "name": {
                       "description": "Immutable. The resource name for the namespace in the format `projects\/*\/locations\/*\/namespaces\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1061,9 +1061,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the namespace to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1086,9 +1086,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1114,9 +1114,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1142,9 +1142,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1175,9 +1175,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the service to resolve.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1203,9 +1203,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The resource name of the namespace this service will belong to.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                           "type": "string"
                         },
                         "serviceId": {
@@ -1236,9 +1236,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The resource name of the namespace whose services you'd like to list.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1282,9 +1282,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the service to get.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1307,9 +1307,9 @@
                       "parameters": {
                         "name": {
                           "description": "Immutable. The resource name for the service in the format `projects\/*\/locations\/*\/namespaces\/*\/services\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -1341,9 +1341,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the service to delete.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1366,9 +1366,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1394,9 +1394,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1422,9 +1422,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1455,9 +1455,9 @@
                           "parameters": {
                             "parent": {
                               "description": "Required. The resource name of the service that this endpoint provides.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                               "type": "string"
                             },
                             "endpointId": {
@@ -1488,9 +1488,9 @@
                           "parameters": {
                             "parent": {
                               "description": "Required. The resource name of the service whose endpoints you'd like to list.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
                               "type": "string"
                             },
                             "pageSize": {
@@ -1534,9 +1534,9 @@
                           "parameters": {
                             "name": {
                               "description": "Required. The name of the endpoint to get.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+\/endpoints\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+\/endpoints\/[^\/]+$",
                               "type": "string"
                             }
                           },
@@ -1559,9 +1559,9 @@
                           "parameters": {
                             "name": {
                               "description": "Immutable. The resource name for the endpoint in the format `projects\/*\/locations\/*\/namespaces\/*\/services\/*\/endpoints\/*`.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+\/endpoints\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+\/endpoints\/[^\/]+$",
                               "type": "string"
                             },
                             "updateMask": {
@@ -1593,9 +1593,9 @@
                           "parameters": {
                             "name": {
                               "description": "Required. The name of the endpoint to delete.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+\/endpoints\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+\/endpoints\/[^\/]+$",
                               "type": "string"
                             }
                           },

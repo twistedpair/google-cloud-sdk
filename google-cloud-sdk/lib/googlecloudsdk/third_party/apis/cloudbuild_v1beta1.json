@@ -1258,9 +1258,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1283,9 +1283,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1315,9 +1315,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource where this worker pool will be created. Format: `projects\/{project}\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "workerPoolId": {
@@ -1348,9 +1348,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the `WorkerPool` to retrieve. Format: `projects\/{project}\/locations\/{location}\/workerPools\/{workerPool}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workerPools\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workerPools\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1373,9 +1373,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the `WorkerPool` to delete. Format: `projects\/{project}\/locations\/{workerPool}\/workerPools\/{workerPool}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workerPools\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workerPools\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1398,9 +1398,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. The resource name of the `WorkerPool`, with format `projects\/{project}\/locations\/{location}\/workerPools\/{worker_pool}`. The value of `{worker_pool}` is provided by `worker_pool_id` in `CreateWorkerPool` request and the value of `{location}` is determined by the endpoint accessed.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workerPools\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workerPools\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1432,9 +1432,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent of the collection of `WorkerPools`. Format: `projects\/{project}\/locations\/location`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },

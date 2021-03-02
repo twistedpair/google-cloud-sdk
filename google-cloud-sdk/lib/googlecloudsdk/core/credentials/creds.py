@@ -655,8 +655,6 @@ class CredentialType(enum.Enum):
 
   @staticmethod
   def FromCredentials(creds):
-    if isinstance(creds, c_devshell.DevshellCredentials):
-      return CredentialType.DEVSHELL
     if isinstance(creds, oauth2client_gce.AppAssertionCredentials):
       return CredentialType.GCE
     if isinstance(creds, service_account.ServiceAccountCredentials):
@@ -715,8 +713,6 @@ class CredentialTypeGoogleAuth(enum.Enum):
   @staticmethod
   def FromCredentials(creds):
     """Returns the credentials type based on the input credentials."""
-    if isinstance(creds, c_devshell.DevShellCredentialsGoogleAuth):
-      return CredentialTypeGoogleAuth.DEVSHELL
     if isinstance(creds, google_auth_compute_engine.Credentials):
       return CredentialTypeGoogleAuth.GCE
     if isinstance(creds, google_auth_impersonated.Credentials):

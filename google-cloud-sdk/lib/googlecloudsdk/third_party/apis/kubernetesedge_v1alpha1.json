@@ -233,10 +233,12 @@
           "type": "string"
         },
         "createTime": {
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -297,10 +299,12 @@
           "type": "string"
         },
         "createTime": {
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -329,10 +333,12 @@
           "type": "string"
         },
         "createTime": {
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -361,7 +367,7 @@
           "description": "Address of the kubernetes cluster control plane (https:\/\/hostname:port).",
           "type": "string"
         },
-        "token": {
+        "bootstrapToken": {
           "description": "Bearer token for authentication and TLS bootstrapping into the Kubernetes cluster.",
           "type": "string"
         }
@@ -397,10 +403,12 @@
           "type": "string"
         },
         "createTime": {
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -442,10 +450,12 @@
           "type": "string"
         },
         "createTime": {
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },

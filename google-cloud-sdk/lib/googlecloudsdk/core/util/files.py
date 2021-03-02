@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import contextlib
+import enum
 import errno
 import hashlib
 import io
@@ -1206,19 +1207,29 @@ def FileWriter(path,
       newline=newline)
 
 
-def BinaryFileWriter(path, private=False, create_path=False):
+class BinaryFileWriterMode(enum.Enum):
+  APPEND = 'ab'
+  MODIFY = 'r+b'
+  TRUNCATE = 'wb'
+
+
+def BinaryFileWriter(path,
+                     private=False,
+                     mode=BinaryFileWriterMode.TRUNCATE,
+                     create_path=False):
   """Opens the given file for binary write for use in a 'with' statement.
 
   Args:
     path: str, The file path to write to.
     private: bool, True to create or update the file permission to be 0o600.
+    mode: BinaryFileWriterMode, Determines how to open file for writing.
     create_path: bool, True to create intermediate directories, if needed.
 
   Returns:
     A file-like object opened for write in binary mode.
   """
   return _FileOpener(
-      path, 'wb', 'write', private=private, create_path=create_path)
+      path, mode.value, 'write', private=private, create_path=create_path)
 
 
 def _FileOpener(path,
@@ -1257,6 +1268,12 @@ def ExpandHomeDir(path):
 def ExpandHomeAndVars(path):
   """Expands ~ and ENV_VARS in path."""
   return encoding_util.Decode(os.path.expandvars(ExpandHomeDir(path)))
+
+
+def NormalizePathFromURL(url):
+  """Converts url to path string and normalizes path string."""
+  url2pathname = six.moves.urllib.request.url2pathname
+  return os.path.normcase(os.path.normpath(url2pathname(url)))
 
 
 def _MakePathToFile(path, mode=0o777):

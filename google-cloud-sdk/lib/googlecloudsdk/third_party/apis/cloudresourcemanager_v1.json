@@ -973,123 +973,6 @@
         }
       }
     },
-    "DeleteOrganizationMetadata": {
-      "id": "DeleteOrganizationMetadata",
-      "description": "A status object which is used as the `metadata` field for the Operation returned by DeleteOrganization.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "UndeleteOrganizationMetadata": {
-      "id": "UndeleteOrganizationMetadata",
-      "description": "A status object which is used as the `metadata` field for the Operation returned by UndeleteOrganization.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "CreateFolderMetadata": {
-      "id": "CreateFolderMetadata",
-      "description": "Metadata pertaining to the Folder creation process.",
-      "type": "object",
-      "properties": {
-        "displayName": {
-          "description": "The display name of the folder.",
-          "type": "string"
-        },
-        "parent": {
-          "description": "The resource name of the folder or organization we are creating the folder under.",
-          "type": "string"
-        }
-      }
-    },
-    "UpdateFolderMetadata": {
-      "id": "UpdateFolderMetadata",
-      "description": "A status object which is used as the `metadata` field for the Operation returned by UpdateFolder.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "MoveFolderMetadata": {
-      "id": "MoveFolderMetadata",
-      "description": "Metadata pertaining to the Folder move process.",
-      "type": "object",
-      "properties": {
-        "displayName": {
-          "description": "The display name of the folder.",
-          "type": "string"
-        },
-        "sourceParent": {
-          "description": "The resource name of the folder's parent.",
-          "type": "string"
-        },
-        "destinationParent": {
-          "description": "The resource name of the folder or organization to move the folder to.",
-          "type": "string"
-        }
-      }
-    },
-    "DeleteFolderMetadata": {
-      "id": "DeleteFolderMetadata",
-      "description": "A status object which is used as the `metadata` field for the Operation returned by DeleteFolder.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "UndeleteFolderMetadata": {
-      "id": "UndeleteFolderMetadata",
-      "description": "A status object which is used as the `metadata` field for the Operation returned by UndeleteFolder.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "CreateProjectMetadata": {
-      "id": "CreateProjectMetadata",
-      "description": "A status object which is used as the `metadata` field for the Operation returned by CreateProject. It provides insight for when significant phases of Project creation have completed.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Creation time of the project creation workflow.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "gettable": {
-          "description": "True if the project can be retrieved using GetProject. No other operations on the project are guaranteed to work until the project creation is complete.",
-          "type": "boolean"
-        },
-        "ready": {
-          "description": "True if the project creation process is complete.",
-          "type": "boolean"
-        }
-      }
-    },
-    "UpdateProjectMetadata": {
-      "id": "UpdateProjectMetadata",
-      "description": "A status object which is used as the `metadata` field for the Operation returned by UpdateProject.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "MoveProjectMetadata": {
-      "id": "MoveProjectMetadata",
-      "description": "A status object which is used as the `metadata` field for the Operation returned by MoveProject.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "DeleteProjectMetadata": {
-      "id": "DeleteProjectMetadata",
-      "description": "A status object which is used as the `metadata` field for the Operation returned by DeleteProject.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "UndeleteProjectMetadata": {
-      "id": "UndeleteProjectMetadata",
-      "description": "A status object which is used as the `metadata` field for the Operation returned by UndeleteProject.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "CreateTagKeyMetadata": {
       "id": "CreateTagKeyMetadata",
       "description": "Runtime operation information for creating a TagKey.",
@@ -1193,7 +1076,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-platform.read-only"
           ],
-          "description": "Retrieve a Lien by `name`. Callers of this method will require permission on the `parent` resource. For example, a Lien with a `parent` of `projects\/1234` requires permission requires permission `resourcemanager.projects.get` or `resourcemanager.projects.updateLiens`."
+          "description": "Retrieve a Lien by `name`. Callers of this method will require permission on the `parent` resource. For example, a Lien with a `parent` of `projects\/1234` requires permission `resourcemanager.projects.get`"
         },
         "create": {
           "id": "cloudresourcemanager.liens.create",

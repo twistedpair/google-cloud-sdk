@@ -673,9 +673,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name of the project that the newly created taxonomy belongs to.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -701,9 +701,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the taxonomy to be deleted. All categories in this taxonomy will also be deleted.",
+                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -726,9 +726,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the taxonomy to be updated.",
+                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -760,9 +760,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name of a project to list the taxonomies of.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -796,9 +796,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the taxonomy to be returned.",
+                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -821,9 +821,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -849,9 +849,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -877,9 +877,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -905,9 +905,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name of project that the newly created taxonomies will belong to.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -933,9 +933,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name of the project that taxonomies to be exported will share.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "taxonomyNames": {
@@ -969,9 +969,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Resource name of the taxonomy that the newly created category belongs to.",
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -997,9 +997,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the category to be deleted. All its descendant categories will also be deleted.",
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1022,9 +1022,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the category to be updated.",
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1056,9 +1056,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Resource name of a taxonomy to list the categories of.",
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1092,9 +1092,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the category to be returned.",
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1117,9 +1117,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1145,9 +1145,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1173,9 +1173,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/taxonomies\/[^\/]+\/categories\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1207,9 +1207,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project this crawler is in. Example: \"projects\/foo\".",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "crawlerId": {
@@ -1240,9 +1240,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the crawler. For example, \"projects\/foo\/crawlers\/bar\".",
+                  "pattern": "^projects\/[^\/]+\/crawlers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/crawlers\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1265,9 +1265,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource name. Example: \"projects\/foo\".",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -1301,9 +1301,9 @@
               "parameters": {
                 "name": {
                   "description": "Output only. The resource name of the crawler. Must be empty when creating a crawler. For example, \"projects\/a\/crawlers\/b\".",
+                  "pattern": "^projects\/[^\/]+\/crawlers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/crawlers\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -1335,9 +1335,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the crawler. For example, \"projects\/bar\/crawlers\/foo\".",
+                  "pattern": "^projects\/[^\/]+\/crawlers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/crawlers\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1360,9 +1360,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the crawler resource. For example, \"projects\/project1\/crawlers\/crawler1\".",
+                  "pattern": "^projects\/[^\/]+\/crawlers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/crawlers\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1393,9 +1393,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the crawler run to retrieve. For example, \"projects\/project1\/crawlers\/crawler1\/crawlerRuns\/run1\".",
+                      "pattern": "^projects\/[^\/]+\/crawlers\/[^\/]+\/crawlerRuns\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/crawlers\/[^\/]+\/crawlerRuns\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1418,9 +1418,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Resource name of the parent crawler resource. For example, \"projects\/project1\/crawlers\/crawler1\".",
+                      "pattern": "^projects\/[^\/]+\/crawlers\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/crawlers\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {

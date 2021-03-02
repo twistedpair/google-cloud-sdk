@@ -589,8 +589,8 @@ class Address(_messages.Message):
       - `NAT_AUTO` for addresses that are external IP addresses automatically
       reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
       from a private IP range that are reserved for a VLAN attachment in an
-      IPsec encrypted Interconnect configuration. These addresses are regional
-      resources.
+      IPsec-encrypted Cloud Interconnect configuration. These addresses are
+      regional resources.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -628,7 +628,7 @@ class Address(_messages.Message):
       balancer. Regional forwarding rules in Premium Tier can only be used
       with a network load balancer.  If this field is not specified, it is
       assumed to be PREMIUM.
-    prefixLength: The prefix length if the resource reprensents an IP range.
+    prefixLength: The prefix length if the resource represents an IP range.
     purpose: The purpose of this resource, which can be one of the following
       values:   - `GCE_ENDPOINT` for addresses that are used by VM instances,
       alias IP ranges, internal load balancers, and similar resources.  -
@@ -637,8 +637,8 @@ class Address(_messages.Message):
       `NAT_AUTO` for addresses that are external IP addresses automatically
       reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
       from a private IP range that are reserved for a VLAN attachment in an
-      IPsec encrypted Interconnect configuration. These addresses are regional
-      resources.
+      IPsec-encrypted Cloud Interconnect configuration. These addresses are
+      regional resources.
     region: [Output Only] The URL of the region where a regional address
       resides. For regional addresses, you must specify the region as a path
       parameter in the HTTP request URL. This field is not applicable to
@@ -708,8 +708,8 @@ class Address(_messages.Message):
     for addresses that are reserved for VPC peer networks.  - `NAT_AUTO` for
     addresses that are external IP addresses automatically reserved for Cloud
     NAT.  - `IPSEC_INTERCONNECT` for addresses created from a private IP range
-    that are reserved for a VLAN attachment in an IPsec encrypted Interconnect
-    configuration. These addresses are regional resources.
+    that are reserved for a VLAN attachment in an IPsec-encrypted Cloud
+    Interconnect configuration. These addresses are regional resources.
 
     Values:
       DNS_RESOLVER: <no description>
@@ -21570,8 +21570,11 @@ class Disk(_messages.Message):
     sourceDisk: The source disk used to create this disk. You can provide this
       as a partial or full URL to the resource. For example, the following are
       valid values:   - https://www.googleapis.com/compute/v1/projects/project
-      /zones/zone/disks/disk  - projects/project/zones/zone/disks/disk  -
-      zones/zone/disks/disk
+      /zones/zone/disks/disk   - https://www.googleapis.com/compute/v1/project
+      s/project/regions/region/disks/disk   -
+      projects/project/zones/zone/disks/disk   -
+      projects/project/regions/region/disks/disk   - zones/zone/disks/disk   -
+      regions/region/disks/disk
     sourceDiskId: [Output Only] The unique ID of the disk used to create this
       disk. This value identifies the exact disk that was used to create this
       persistent disk. For example, if you created the persistent disk from a
@@ -23602,14 +23605,14 @@ class FirewallPolicy(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    displayName: User-provided name of the Organization firewall plicy. The
-      name should be unique in the organization in which the firewall policy
-      is created. The name must be 1-63 characters long, and comply with
-      RFC1035. Specifically, the name must be 1-63 characters long and match
-      the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the
-      first character must be a lowercase letter, and all following characters
-      must be a dash, lowercase letter, or digit, except the last character,
-      which cannot be a dash.
+    displayName: Depreacted, please use short name instead. User-provided name
+      of the Organization firewall plicy. The name should be unique in the
+      organization in which the firewall policy is created. The name must be
+      1-63 characters long, and comply with RFC1035. Specifically, the name
+      must be 1-63 characters long and match the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
+      lowercase letter, and all following characters must be a dash, lowercase
+      letter, or digit, except the last character, which cannot be a dash.
     fingerprint: Specifies a fingerprint for this resource, which is
       essentially a hash of the metadata's contents and used for optimistic
       locking. The fingerprint is initially generated by Compute Engine and
@@ -23634,6 +23637,14 @@ class FirewallPolicy(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
+    shortName: User-provided name of the Organization firewall plicy. The name
+      should be unique in the organization in which the firewall policy is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
   """
 
   associations = _messages.MessageField('FirewallPolicyAssociation', 1, repeated=True)
@@ -23649,6 +23660,7 @@ class FirewallPolicy(_messages.Message):
   rules = _messages.MessageField('FirewallPolicyRule', 11, repeated=True)
   selfLink = _messages.StringField(12)
   selfLinkWithId = _messages.StringField(13)
+  shortName = _messages.StringField(14)
 
 
 class FirewallPolicyAssociation(_messages.Message):
@@ -23656,16 +23668,19 @@ class FirewallPolicyAssociation(_messages.Message):
 
   Fields:
     attachmentTarget: The target that the firewall policy is attached to.
-    displayName: [Output Only] The display name of the firewall policy of the
-      association.
+    displayName: [Output Only] Deprecated, please use short name instead. The
+      display name of the firewall policy of the association.
     firewallPolicyId: [Output Only] The firewall policy ID of the association.
     name: The name for an association.
+    shortName: [Output Only] The short name of the firewall policy of the
+      association.
   """
 
   attachmentTarget = _messages.StringField(1)
   displayName = _messages.StringField(2)
   firewallPolicyId = _messages.StringField(3)
   name = _messages.StringField(4)
+  shortName = _messages.StringField(5)
 
 
 class FirewallPolicyList(_messages.Message):
@@ -23994,7 +24009,9 @@ class ForwardingRule(_messages.Message):
       information, refer to [IP address specifications](/load-
       balancing/docs/forwarding-rule-concepts#ip_address_specifications).
       Must be set to `0.0.0.0` when the target is targetGrpcProxy that has
-      validateForProxyless field set to true.
+      validateForProxyless field set to true.  For Private Service Connect
+      forwarding rules that forward traffic to Google APIs, IP address must be
+      provided.
     IPProtocol: The IP protocol to which this rule applies.  For protocol
       forwarding, valid options are TCP, UDP, ESP, AH, SCTP and ICMP.  The
       valid IP protocols are different for different load balancing products:
@@ -24091,7 +24108,9 @@ class ForwardingRule(_messages.Message):
     network: This field is not used for external load balancing.  For Internal
       TCP/UDP Load Balancing, this field identifies the network that the load
       balanced IP should belong to for this Forwarding Rule. If this field is
-      not specified, the default network will be used.
+      not specified, the default network will be used.  For Private Service
+      Connect forwarding rules that forward traffic to Google APIs, a network
+      must be provided.
     networkTier: This signifies the networking tier used for configuring this
       load balancer and can only take the following values: PREMIUM, STANDARD.
       For regional ForwardingRule, the valid values are PREMIUM and STANDARD.
@@ -24150,13 +24169,7 @@ class ForwardingRule(_messages.Message):
       network specified is in auto subnet mode, this field is optional.
       However, if the network is in custom subnet mode, a subnetwork must be
       specified.
-    target: The URL of the target resource to receive the matched traffic. For
-      regional forwarding rules, this target must be in the same region as the
-      forwarding rule. For global forwarding rules, this target must be a
-      global load balancing resource. The forwarded traffic must be of a type
-      appropriate to the target object. For more information, see the "Target"
-      column in [Port specifications](/load-balancing/docs/forwarding-rule-
-      concepts#ip_address_specifications).
+    target: A string attribute.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -27383,6 +27396,8 @@ class Instance(_messages.Message):
   Machine Instances. (== resource_for {$api_version}.instances ==)
 
   Enums:
+    PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
+      the instance.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for the VM. If not specified, use  INHERIT_FROM_SUBNETWORK as
       default.
@@ -27473,6 +27488,7 @@ class Instance(_messages.Message):
       These specify how interfaces are configured to interact with other
       network services, such as connecting to the internet. Multiple
       interfaces are supported per instance.
+    postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
     privateIpv6GoogleAccess: The private IPv6 google access type for the VM.
       If not specified, use  INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Specifies the reservations that this instance can
@@ -27506,6 +27522,18 @@ class Instance(_messages.Message):
       specify this field as part of the HTTP request URL. It is not settable
       as a field in the request body.
   """
+
+  class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
+    r"""PostKeyRevocationActionType of the instance.
+
+    Values:
+      NOOP: <no description>
+      POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: <no description>
+      SHUTDOWN: <no description>
+    """
+    NOOP = 0
+    POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 1
+    SHUTDOWN = 2
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The private IPv6 google access type for the VM. If not specified, use
@@ -27598,20 +27626,21 @@ class Instance(_messages.Message):
   minCpuPlatform = _messages.StringField(22)
   name = _messages.StringField(23)
   networkInterfaces = _messages.MessageField('NetworkInterface', 24, repeated=True)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 25)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 26)
-  resourcePolicies = _messages.StringField(27, repeated=True)
-  satisfiesPzs = _messages.BooleanField(28)
-  scheduling = _messages.MessageField('Scheduling', 29)
-  selfLink = _messages.StringField(30)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 31, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 32)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 33)
-  startRestricted = _messages.BooleanField(34)
-  status = _messages.EnumField('StatusValueValuesEnum', 35)
-  statusMessage = _messages.StringField(36)
-  tags = _messages.MessageField('Tags', 37)
-  zone = _messages.StringField(38)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 25)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 26)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 27)
+  resourcePolicies = _messages.StringField(28, repeated=True)
+  satisfiesPzs = _messages.BooleanField(29)
+  scheduling = _messages.MessageField('Scheduling', 30)
+  selfLink = _messages.StringField(31)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 32, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 33)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 34)
+  startRestricted = _messages.BooleanField(35)
+  status = _messages.EnumField('StatusValueValuesEnum', 36)
+  statusMessage = _messages.StringField(37)
+  tags = _messages.MessageField('Tags', 38)
+  zone = _messages.StringField(39)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -29954,6 +29983,8 @@ class InstanceProperties(_messages.Message):
   r"""InstanceProperties message type.
 
   Enums:
+    PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
+      the instance.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for VMs. If not specified, use  INHERIT_FROM_SUBNETWORK as default.
 
@@ -29992,6 +30023,7 @@ class InstanceProperties(_messages.Message):
       information, read Specifying a Minimum CPU Platform.
     networkInterfaces: An array of network access configurations for this
       interface.
+    postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
     privateIpv6GoogleAccess: The private IPv6 google access type for VMs. If
       not specified, use  INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Specifies the reservations that instances can consume
@@ -30010,6 +30042,18 @@ class InstanceProperties(_messages.Message):
       firewalls. The setTags method can modify this list of tags. Each tag
       within the list must comply with RFC1035.
   """
+
+  class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
+    r"""PostKeyRevocationActionType of the instance.
+
+    Values:
+      NOOP: <no description>
+      POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: <no description>
+      SHUTDOWN: <no description>
+    """
+    NOOP = 0
+    POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 1
+    SHUTDOWN = 2
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The private IPv6 google access type for VMs. If not specified, use
@@ -30059,13 +30103,14 @@ class InstanceProperties(_messages.Message):
   metadata = _messages.MessageField('Metadata', 9)
   minCpuPlatform = _messages.StringField(10)
   networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 12)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 13)
-  resourcePolicies = _messages.StringField(14, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 15)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 16, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 17)
-  tags = _messages.MessageField('Tags', 18)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 12)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 13)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 14)
+  resourcePolicies = _messages.StringField(15, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 16)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 17, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 18)
+  tags = _messages.MessageField('Tags', 19)
 
 
 class InstanceReference(_messages.Message):
@@ -30325,9 +30370,11 @@ class InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Me
     TypeValueValuesEnum: [Output Only] The type of the firewall policy.
 
   Fields:
-    displayName: [Output Only] The display name of the firewall policy.
+    displayName: [Output Only] Deprecated, please use short name instead. The
+      display name of the firewall policy.
     name: [Output Only] The name of the firewall policy.
     rules: The rules that apply to the network.
+    shortName: [Output Only] The short name of the firewall policy.
     type: [Output Only] The type of the firewall policy.
   """
 
@@ -30344,7 +30391,8 @@ class InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Me
   displayName = _messages.StringField(1)
   name = _messages.StringField(2)
   rules = _messages.MessageField('FirewallPolicyRule', 3, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  shortName = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class InstancesRemoveResourcePoliciesRequest(_messages.Message):
@@ -34481,8 +34529,9 @@ class NetworkInterface(_messages.Message):
     fingerprint: Fingerprint hash of contents stored in this network
       interface. This field will be ignored when inserting an Instance or
       adding a NetworkInterface. An up-to-date fingerprint must be provided in
-      order to update the NetworkInterface, otherwise the request will fail
-      with error 412 conditionNotMet.
+      order to update the NetworkInterface. The request will fail with error
+      400 Bad Request if the fingerprint is not provided, or 412 Precondition
+      Failed if the fingerprint is out of date.
     ipv6Address: [Output Only] An IPv6 internal network address for this
       network interface.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
@@ -34826,9 +34875,11 @@ class NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Mes
     TypeValueValuesEnum: [Output Only] The type of the firewall policy.
 
   Fields:
-    displayName: [Output Only] The display name of the firewall policy.
+    displayName: [Output Only] Deprecated, please use short name instead. The
+      display name of the firewall policy.
     name: [Output Only] The name of the firewall policy.
     rules: The rules that apply to the network.
+    shortName: [Output Only] The short name of the firewall policy.
     type: [Output Only] The type of the firewall policy.
   """
 
@@ -34847,7 +34898,8 @@ class NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Mes
   displayName = _messages.StringField(1)
   name = _messages.StringField(2)
   rules = _messages.MessageField('FirewallPolicyRule', 3, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  shortName = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class NetworksRemovePeeringRequest(_messages.Message):
@@ -38711,9 +38763,11 @@ class Quota(_messages.Message):
       AUTOSCALERS: <no description>
       BACKEND_BUCKETS: <no description>
       BACKEND_SERVICES: <no description>
+      C2D_CPUS: <no description>
       C2_CPUS: <no description>
       COMMITMENTS: <no description>
       COMMITTED_A2_CPUS: <no description>
+      COMMITTED_C2D_CPUS: <no description>
       COMMITTED_C2_CPUS: <no description>
       COMMITTED_CPUS: <no description>
       COMMITTED_E2_CPUS: <no description>
@@ -38823,112 +38877,114 @@ class Quota(_messages.Message):
     AUTOSCALERS = 2
     BACKEND_BUCKETS = 3
     BACKEND_SERVICES = 4
-    C2_CPUS = 5
-    COMMITMENTS = 6
-    COMMITTED_A2_CPUS = 7
-    COMMITTED_C2_CPUS = 8
-    COMMITTED_CPUS = 9
-    COMMITTED_E2_CPUS = 10
-    COMMITTED_LICENSES = 11
-    COMMITTED_LOCAL_SSD_TOTAL_GB = 12
-    COMMITTED_MEMORY_OPTIMIZED_CPUS = 13
-    COMMITTED_N2D_CPUS = 14
-    COMMITTED_N2_CPUS = 15
-    COMMITTED_NVIDIA_A100_GPUS = 16
-    COMMITTED_NVIDIA_K80_GPUS = 17
-    COMMITTED_NVIDIA_P100_GPUS = 18
-    COMMITTED_NVIDIA_P4_GPUS = 19
-    COMMITTED_NVIDIA_T4_GPUS = 20
-    COMMITTED_NVIDIA_V100_GPUS = 21
-    CPUS = 22
-    CPUS_ALL_REGIONS = 23
-    DISKS_TOTAL_GB = 24
-    E2_CPUS = 25
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 26
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 27
-    EXTERNAL_VPN_GATEWAYS = 28
-    FIREWALLS = 29
-    FORWARDING_RULES = 30
-    GLOBAL_INTERNAL_ADDRESSES = 31
-    GPUS_ALL_REGIONS = 32
-    HEALTH_CHECKS = 33
-    IMAGES = 34
-    INSTANCES = 35
-    INSTANCE_GROUPS = 36
-    INSTANCE_GROUP_MANAGERS = 37
-    INSTANCE_TEMPLATES = 38
-    INTERCONNECTS = 39
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 40
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 41
-    INTERCONNECT_TOTAL_GBPS = 42
-    INTERNAL_ADDRESSES = 43
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 44
-    IN_PLACE_SNAPSHOTS = 45
-    IN_USE_ADDRESSES = 46
-    IN_USE_BACKUP_SCHEDULES = 47
-    IN_USE_SNAPSHOT_SCHEDULES = 48
-    LOCAL_SSD_TOTAL_GB = 49
-    M1_CPUS = 50
-    M2_CPUS = 51
-    MACHINE_IMAGES = 52
-    N2D_CPUS = 53
-    N2_CPUS = 54
-    NETWORKS = 55
-    NETWORK_ENDPOINT_GROUPS = 56
-    NETWORK_FIREWALL_POLICIES = 57
-    NODE_GROUPS = 58
-    NODE_TEMPLATES = 59
-    NVIDIA_A100_GPUS = 60
-    NVIDIA_K80_GPUS = 61
-    NVIDIA_P100_GPUS = 62
-    NVIDIA_P100_VWS_GPUS = 63
-    NVIDIA_P4_GPUS = 64
-    NVIDIA_P4_VWS_GPUS = 65
-    NVIDIA_T4_GPUS = 66
-    NVIDIA_T4_VWS_GPUS = 67
-    NVIDIA_V100_GPUS = 68
-    PACKET_MIRRORINGS = 69
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 70
-    PREEMPTIBLE_CPUS = 71
-    PREEMPTIBLE_LOCAL_SSD_GB = 72
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 73
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 74
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 75
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 76
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 77
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 78
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 79
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 80
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 81
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 82
-    PUBLIC_ADVERTISED_PREFIXES = 83
-    PUBLIC_DELEGATED_PREFIXES = 84
-    REGIONAL_AUTOSCALERS = 85
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 86
-    RESERVATIONS = 87
-    RESOURCE_POLICIES = 88
-    ROUTERS = 89
-    ROUTES = 90
-    SECURITY_POLICIES = 91
-    SECURITY_POLICY_CEVAL_RULES = 92
-    SECURITY_POLICY_RULES = 93
-    SNAPSHOTS = 94
-    SSD_TOTAL_GB = 95
-    SSL_CERTIFICATES = 96
-    STATIC_ADDRESSES = 97
-    STATIC_BYOIP_ADDRESSES = 98
-    SUBNETWORKS = 99
-    TARGET_HTTPS_PROXIES = 100
-    TARGET_HTTP_PROXIES = 101
-    TARGET_INSTANCES = 102
-    TARGET_POOLS = 103
-    TARGET_SSL_PROXIES = 104
-    TARGET_TCP_PROXIES = 105
-    TARGET_VPN_GATEWAYS = 106
-    URL_MAPS = 107
-    VPN_GATEWAYS = 108
-    VPN_TUNNELS = 109
-    XPN_SERVICE_PROJECTS = 110
+    C2D_CPUS = 5
+    C2_CPUS = 6
+    COMMITMENTS = 7
+    COMMITTED_A2_CPUS = 8
+    COMMITTED_C2D_CPUS = 9
+    COMMITTED_C2_CPUS = 10
+    COMMITTED_CPUS = 11
+    COMMITTED_E2_CPUS = 12
+    COMMITTED_LICENSES = 13
+    COMMITTED_LOCAL_SSD_TOTAL_GB = 14
+    COMMITTED_MEMORY_OPTIMIZED_CPUS = 15
+    COMMITTED_N2D_CPUS = 16
+    COMMITTED_N2_CPUS = 17
+    COMMITTED_NVIDIA_A100_GPUS = 18
+    COMMITTED_NVIDIA_K80_GPUS = 19
+    COMMITTED_NVIDIA_P100_GPUS = 20
+    COMMITTED_NVIDIA_P4_GPUS = 21
+    COMMITTED_NVIDIA_T4_GPUS = 22
+    COMMITTED_NVIDIA_V100_GPUS = 23
+    CPUS = 24
+    CPUS_ALL_REGIONS = 25
+    DISKS_TOTAL_GB = 26
+    E2_CPUS = 27
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 28
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 29
+    EXTERNAL_VPN_GATEWAYS = 30
+    FIREWALLS = 31
+    FORWARDING_RULES = 32
+    GLOBAL_INTERNAL_ADDRESSES = 33
+    GPUS_ALL_REGIONS = 34
+    HEALTH_CHECKS = 35
+    IMAGES = 36
+    INSTANCES = 37
+    INSTANCE_GROUPS = 38
+    INSTANCE_GROUP_MANAGERS = 39
+    INSTANCE_TEMPLATES = 40
+    INTERCONNECTS = 41
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 42
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 43
+    INTERCONNECT_TOTAL_GBPS = 44
+    INTERNAL_ADDRESSES = 45
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 46
+    IN_PLACE_SNAPSHOTS = 47
+    IN_USE_ADDRESSES = 48
+    IN_USE_BACKUP_SCHEDULES = 49
+    IN_USE_SNAPSHOT_SCHEDULES = 50
+    LOCAL_SSD_TOTAL_GB = 51
+    M1_CPUS = 52
+    M2_CPUS = 53
+    MACHINE_IMAGES = 54
+    N2D_CPUS = 55
+    N2_CPUS = 56
+    NETWORKS = 57
+    NETWORK_ENDPOINT_GROUPS = 58
+    NETWORK_FIREWALL_POLICIES = 59
+    NODE_GROUPS = 60
+    NODE_TEMPLATES = 61
+    NVIDIA_A100_GPUS = 62
+    NVIDIA_K80_GPUS = 63
+    NVIDIA_P100_GPUS = 64
+    NVIDIA_P100_VWS_GPUS = 65
+    NVIDIA_P4_GPUS = 66
+    NVIDIA_P4_VWS_GPUS = 67
+    NVIDIA_T4_GPUS = 68
+    NVIDIA_T4_VWS_GPUS = 69
+    NVIDIA_V100_GPUS = 70
+    PACKET_MIRRORINGS = 71
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 72
+    PREEMPTIBLE_CPUS = 73
+    PREEMPTIBLE_LOCAL_SSD_GB = 74
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 75
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 76
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 77
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 78
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 79
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 80
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 81
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 82
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 83
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 84
+    PUBLIC_ADVERTISED_PREFIXES = 85
+    PUBLIC_DELEGATED_PREFIXES = 86
+    REGIONAL_AUTOSCALERS = 87
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 88
+    RESERVATIONS = 89
+    RESOURCE_POLICIES = 90
+    ROUTERS = 91
+    ROUTES = 92
+    SECURITY_POLICIES = 93
+    SECURITY_POLICY_CEVAL_RULES = 94
+    SECURITY_POLICY_RULES = 95
+    SNAPSHOTS = 96
+    SSD_TOTAL_GB = 97
+    SSL_CERTIFICATES = 98
+    STATIC_ADDRESSES = 99
+    STATIC_BYOIP_ADDRESSES = 100
+    SUBNETWORKS = 101
+    TARGET_HTTPS_PROXIES = 102
+    TARGET_HTTP_PROXIES = 103
+    TARGET_INSTANCES = 104
+    TARGET_POOLS = 105
+    TARGET_SSL_PROXIES = 106
+    TARGET_TCP_PROXIES = 107
+    TARGET_VPN_GATEWAYS = 108
+    URL_MAPS = 109
+    VPN_GATEWAYS = 110
+    VPN_TUNNELS = 111
+    XPN_SERVICE_PROJECTS = 112
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -46613,6 +46669,13 @@ class TargetHttpsProxy(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    fingerprint: Fingerprint of this resource. A hash of the contents stored
+      in this object. This field is used in optimistic locking. This field
+      will be ignored when inserting a TargetHttpsProxy. An up-to-date
+      fingerprint must be provided in order to patch the TargetHttpsProxy;
+      otherwise, the request will fail with error 412 conditionNotMet. To see
+      the latest fingerprint, make a get() request to retrieve the
+      TargetHttpsProxy.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#targetHttpsProxy for
@@ -46687,17 +46750,18 @@ class TargetHttpsProxy(_messages.Message):
   authorizationPolicy = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default='compute#targetHttpsProxy')
-  name = _messages.StringField(6)
-  proxyBind = _messages.BooleanField(7)
-  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 8)
-  region = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  serverTlsPolicy = _messages.StringField(11)
-  sslCertificates = _messages.StringField(12, repeated=True)
-  sslPolicy = _messages.StringField(13)
-  urlMap = _messages.StringField(14)
+  fingerprint = _messages.BytesField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default='compute#targetHttpsProxy')
+  name = _messages.StringField(7)
+  proxyBind = _messages.BooleanField(8)
+  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 9)
+  region = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  serverTlsPolicy = _messages.StringField(12)
+  sslCertificates = _messages.StringField(13, repeated=True)
+  sslPolicy = _messages.StringField(14)
+  urlMap = _messages.StringField(15)
 
 
 class TargetHttpsProxyAggregatedList(_messages.Message):

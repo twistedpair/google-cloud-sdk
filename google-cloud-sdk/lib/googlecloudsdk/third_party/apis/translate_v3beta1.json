@@ -672,9 +672,9 @@
           "parameters": {
             "parent": {
               "description": "Required. Project or location to make a call. Must refer to a caller's project. Format: `projects\/{project-number-or-id}` or `projects\/{project-number-or-id}\/locations\/{location-id}`. For global calls, use `projects\/{project-number-or-id}\/locations\/global` or `projects\/{project-number-or-id}`. Non-global location is required for requests using AutoML models or custom glossaries. Models and glossaries must be within the same region (have same location-id), otherwise an INVALID_ARGUMENT (400) error is returned.",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },
@@ -701,9 +701,9 @@
           "parameters": {
             "parent": {
               "description": "Required. Project or location to make a call. Must refer to a caller's project. Format: `projects\/{project-number-or-id}\/locations\/{location-id}` or `projects\/{project-number-or-id}`. For global calls, use `projects\/{project-number-or-id}\/locations\/global` or `projects\/{project-number-or-id}`. Only models within the same region (has same location-id) can be used. Otherwise an INVALID_ARGUMENT (400) error is returned.",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },
@@ -730,9 +730,9 @@
           "parameters": {
             "parent": {
               "description": "Required. Project or location to make a call. Must refer to a caller's project. Format: `projects\/{project-number-or-id}` or `projects\/{project-number-or-id}\/locations\/{location-id}`. For global calls, use `projects\/{project-number-or-id}\/locations\/global` or `projects\/{project-number-or-id}`. Non-global location is required for AutoML models. Only models within the same region (have same location-id) can be used, otherwise an INVALID_ARGUMENT (400) error is returned.",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             },
             "displayLanguageCode": {
@@ -771,9 +771,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -813,9 +813,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -839,9 +839,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Project or location to make a call. Must refer to a caller's project. Format: `projects\/{project-number-or-id}` or `projects\/{project-number-or-id}\/locations\/{location-id}`. For global calls, use `projects\/{project-number-or-id}\/locations\/global` or `projects\/{project-number-or-id}`. Non-global location is required for requests using AutoML models or custom glossaries. Models and glossaries must be within the same region (have same location-id), otherwise an INVALID_ARGUMENT (400) error is returned.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -868,9 +868,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Project or location to make a call. Must refer to a caller's project. Format: `projects\/{project-number-or-id}\/locations\/{location-id}` or `projects\/{project-number-or-id}`. For global calls, use `projects\/{project-number-or-id}\/locations\/global` or `projects\/{project-number-or-id}`. Only models within the same region (has same location-id) can be used. Otherwise an INVALID_ARGUMENT (400) error is returned.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -897,9 +897,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Project or location to make a call. Must refer to a caller's project. Format: `projects\/{project-number-or-id}` or `projects\/{project-number-or-id}\/locations\/{location-id}`. For global calls, use `projects\/{project-number-or-id}\/locations\/global` or `projects\/{project-number-or-id}`. Non-global location is required for AutoML models. Only models within the same region (have same location-id) can be used, otherwise an INVALID_ARGUMENT (400) error is returned.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 },
                 "displayLanguageCode": {
@@ -933,9 +933,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Location to make a call. Must refer to a caller's project. Format: `projects\/{project-number-or-id}\/locations\/{location-id}`. The `global` location is not supported for batch translation. Only AutoML Translation models or glossaries within the same region (have the same location-id) can be used, otherwise an INVALID_ARGUMENT (400) error is returned.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -966,9 +966,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1008,9 +1008,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1034,9 +1034,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1060,9 +1060,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1089,9 +1089,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to wait on.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1108,7 +1108,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloud-translation"
                   ],
-                  "description": "Waits for the specified long-running operation until it is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                  "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
                 }
               }
             },
@@ -1122,9 +1122,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1150,9 +1150,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The name of the project from which to list all of the glossaries.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1192,9 +1192,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the glossary to retrieve.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/glossaries\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/glossaries\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1218,9 +1218,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the glossary to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/glossaries\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/glossaries\/[^\/]+$",
                       "type": "string"
                     }
                   },

@@ -472,10 +472,6 @@
         "useEnhanced": {
           "description": "Set to true to use an enhanced model for speech recognition. If `use_enhanced` is set to true and the `model` field is not set, then an appropriate enhanced model is chosen if an enhanced model exists for the audio. If `use_enhanced` is true and an enhanced version of the specified model does not exist, then the speech is recognized using the standard version of the specified model.",
           "type": "boolean"
-        },
-        "endpointer": {
-          "description": "Config to enable the configurable endpointer. If enabled, you can set the endpointer sensitivity to a value (0-100) that is suited to your application. The sensitivity value controls the aggressiveness of the endpointer. If not enabled the default behavior is used, which auto-selects a sensitivity value with the best general WER\/latency tradeoff.",
-          "$ref": "Endpointer"
         }
       }
     },
@@ -664,18 +660,6 @@
           "items": {
             "type": "string"
           }
-        }
-      }
-    },
-    "Endpointer": {
-      "id": "Endpointer",
-      "description": "Config to enable endpointer.",
-      "type": "object",
-      "properties": {
-        "sensitivity": {
-          "description": "Value between 0 and 100 indicating endpointer sensitivity. The higher the value, the shorter the wait before closing the microphone.",
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
@@ -991,9 +975,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
+              "pattern": "^.*$",
               "location": "path",
               "required": true,
-              "pattern": "^.*$",
               "type": "string"
             }
           },
@@ -1022,9 +1006,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name of the parent. Has the format :- \"projects\/{project_id}\/locations\/{location_id}\"",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 },
                 "bucketName": {
@@ -1047,76 +1031,6 @@
           }
           ,
           "resources": {
-            "operations": {
-              "methods": {
-                "list": {
-                  "id": "speech.projects.locations.operations.list",
-                  "path": "v1p1beta1/{+name}/operations",
-                  "flatPath": "v1p1beta1/projects/{projectsId}/locations/{locationsId}/operations",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the operation's parent resource.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "filter": {
-                      "description": "The standard list filter.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "The standard list page size.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "The standard list page token.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "ListOperationsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
-                },
-                "get": {
-                  "id": "speech.projects.locations.operations.get",
-                  "path": "v1p1beta1/{+name}",
-                  "flatPath": "v1p1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the operation resource.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
-                }
-              }
-            },
             "phraseSets": {
               "methods": {
                 "create": {
@@ -1127,9 +1041,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource where this phrase set will be created. Format: {api_version}\/projects\/{project}\/locations\/{location}\/phraseSets",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1155,9 +1069,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the phrase set to retrieve. Format: {api_version}\/projects\/{project}\/locations\/{location}\/phraseSets\/{phrase_set}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/phraseSets\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/phraseSets\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1180,9 +1094,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent, which owns this collection of phrase set. Format: projects\/{project}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1216,9 +1130,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the phrase set.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/phraseSets\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/phraseSets\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1250,9 +1164,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the phrase set to delete. Format: {api_version}\/projects\/{project}\/locations\/{location}\/phraseSets\/{phrase_set}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/phraseSets\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/phraseSets\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1279,9 +1193,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource where this custom class will be created. Format: {api_version}\/projects\/{project}\/locations\/{location}\/customClasses",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1307,9 +1221,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the custom class to retrieve. Format: {api_version}\/projects\/{project}\/locations\/{location}\/customClasses\/{custom_class}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/customClasses\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/customClasses\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1332,9 +1246,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent, which owns this collection of custom classes. Format: {api_version}\/projects\/{project}\/locations\/{location}\/customClasses",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1368,9 +1282,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the custom class.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/customClasses\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/customClasses\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1402,9 +1316,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the custom class to delete. Format: {api_version}\/projects\/{project}\/locations\/{location}\/customClasses\/{custom_class}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/customClasses\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/customClasses\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1431,9 +1345,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Resource name of the parent. Has the format :- \"projects\/{project_id}\/locations\/{location_id}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },

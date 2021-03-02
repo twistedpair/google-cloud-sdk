@@ -26,6 +26,10 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
+# The singular name is used internally by gcloud to identify the reference type
+# and should be named according to the rules in the Cloud SDK internal docs.
+# The plural name refers to the entity name in the API resource path, e.g.,
+# apigee.googleapis.com/v1/myEntityNamePlurals/...
 _EntityNames = collections.namedtuple(
     "EntityNames",
     "singular plural docs_name valid_pattern secondary_description")
@@ -57,7 +61,7 @@ _ENTITY_TUPLES = [
                  "Developer of the {resource}."),
     _EntityNames("app", "apps", "application", None,
                  "Relevant application for the {resource}."),
-    _EntityNames("archiveDeployment", "archiveDeployments",
+    _EntityNames("archive_deployment", "archiveDeployments",
                  "archive deployment", None,
                  "Archive deployment for {resource}")
 ]

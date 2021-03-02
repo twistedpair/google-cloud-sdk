@@ -397,13 +397,6 @@ def read_or_create_download_tracker_file(source_object_resource,
     raise errors.ValueCannotBeDeterminedError(
         'Source object resource is missing etag.')
 
-  tracker_file_path = None
-  if (not source_object_resource.size or
-      (source_object_resource.size <
-       properties.VALUES.storage.resumable_threshold.GetInt())):
-    # There is no tracker file for small downloads, so start from scratch.
-    return tracker_file_path, slice_start_byte
-
   if component_number is None:
     tracker_file_type = TrackerFileType.DOWNLOAD
     download_name_for_logger = destination_url.object_name

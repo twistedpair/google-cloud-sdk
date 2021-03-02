@@ -15,6 +15,16 @@ from apitools.base.py import extra_types
 package = 'artifactregistry'
 
 
+class ArtifactregistryProjectsGetProjectSettingsRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsGetProjectSettingsRequest object.
+
+  Fields:
+    name: Required. The name of the projectSettings resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ArtifactregistryProjectsLocationsGetRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsGetRequest object.
 
@@ -425,6 +435,23 @@ class ArtifactregistryProjectsLocationsRepositoriesTestIamPermissionsRequest(_me
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class ArtifactregistryProjectsUpdateProjectSettingsRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsUpdateProjectSettingsRequest object.
+
+  Fields:
+    name: The name of the project's settings. Always of the form:
+      projects/{project-id}/projectSettings In update request: never set In
+      response: always set
+    projectSettings: A ProjectSettings resource to be passed as the request
+      body.
+    updateMask: Field mask to support partial updates.
+  """
+
+  name = _messages.StringField(1, required=True)
+  projectSettings = _messages.MessageField('ProjectSettings', 2)
+  updateMask = _messages.StringField(3)
 
 
 class Binding(_messages.Message):
@@ -937,6 +964,40 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class ProjectSettings(_messages.Message):
+  r"""The Artifact Registry settings that apply to a Project.
+
+  Enums:
+    LegacyRedirectionStateValueValuesEnum: The redirection state of the legacy
+      repositories in this project.
+
+  Fields:
+    legacyRedirectionState: The redirection state of the legacy repositories
+      in this project.
+    name: The name of the project's settings. Always of the form:
+      projects/{project-id}/projectSettings In update request: never set In
+      response: always set
+  """
+
+  class LegacyRedirectionStateValueValuesEnum(_messages.Enum):
+    r"""The redirection state of the legacy repositories in this project.
+
+    Values:
+      REDIRECTION_STATE_UNSPECIFIED: No redirection status has been set.
+      REDIRECTION_FROM_GCR_IO_DISABLED: Redirection is disabled.
+      REDIRECTION_FROM_GCR_IO_ENABLED: Redirection is enabled.
+      REDIRECTION_FROM_GCR_IO_FINALIZED: Redirection is enabled, and has been
+        finalized so cannot be reverted.
+    """
+    REDIRECTION_STATE_UNSPECIFIED = 0
+    REDIRECTION_FROM_GCR_IO_DISABLED = 1
+    REDIRECTION_FROM_GCR_IO_ENABLED = 2
+    REDIRECTION_FROM_GCR_IO_FINALIZED = 3
+
+  legacyRedirectionState = _messages.EnumField('LegacyRedirectionStateValueValuesEnum', 1)
+  name = _messages.StringField(2)
 
 
 class Repository(_messages.Message):

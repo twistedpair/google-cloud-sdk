@@ -1348,9 +1348,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1390,9 +1390,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1421,9 +1421,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the location associated with the KeyRings, in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1468,9 +1468,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the KeyRing to get.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1494,9 +1494,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the location associated with the KeyRings, in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "keyRingId": {
@@ -1528,9 +1528,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1557,9 +1557,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -1589,9 +1589,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1623,9 +1623,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The resource name of the KeyRing to list, in the format `projects\/*\/locations\/*\/keyRings\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1683,9 +1683,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the CryptoKey to get.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1709,9 +1709,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The name of the KeyRing associated with the CryptoKeys.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                           "type": "string"
                         },
                         "cryptoKeyId": {
@@ -1748,9 +1748,9 @@
                       "parameters": {
                         "name": {
                           "description": "Output only. The resource name for this CryptoKey in the format `projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -1783,9 +1783,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The resource name of the CryptoKey or CryptoKeyVersion to use for encryption. If a CryptoKey is specified, the server will use its primary version.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/.*$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/.*$",
                           "type": "string"
                         }
                       },
@@ -1812,9 +1812,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The resource name of the CryptoKey to use for decryption. The server will choose the appropriate version.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1841,9 +1841,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The resource name of the CryptoKey to update.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1870,9 +1870,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1899,9 +1899,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
@@ -1931,9 +1931,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1965,9 +1965,9 @@
                           "parameters": {
                             "parent": {
                               "description": "Required. The resource name of the CryptoKey to list, in the format `projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*`.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                               "type": "string"
                             },
                             "pageSize": {
@@ -2025,9 +2025,9 @@
                           "parameters": {
                             "name": {
                               "description": "Required. The name of the CryptoKeyVersion to get.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "type": "string"
                             }
                           },
@@ -2051,9 +2051,9 @@
                           "parameters": {
                             "name": {
                               "description": "Required. The name of the CryptoKeyVersion public key to get.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "type": "string"
                             }
                           },
@@ -2077,9 +2077,9 @@
                           "parameters": {
                             "parent": {
                               "description": "Required. The name of the CryptoKey associated with the CryptoKeyVersions.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                               "type": "string"
                             }
                           },
@@ -2106,9 +2106,9 @@
                           "parameters": {
                             "parent": {
                               "description": "Required. The name of the CryptoKey to be imported into.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                               "type": "string"
                             }
                           },
@@ -2135,9 +2135,9 @@
                           "parameters": {
                             "name": {
                               "description": "Output only. The resource name for this CryptoKeyVersion in the format `projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*\/cryptoKeyVersions\/*`.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "type": "string"
                             },
                             "updateMask": {
@@ -2170,9 +2170,9 @@
                           "parameters": {
                             "name": {
                               "description": "Required. The resource name of the CryptoKeyVersion to use for signing.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "type": "string"
                             }
                           },
@@ -2199,9 +2199,9 @@
                           "parameters": {
                             "name": {
                               "description": "Required. The resource name of the CryptoKeyVersion to use for decryption.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "type": "string"
                             }
                           },
@@ -2228,9 +2228,9 @@
                           "parameters": {
                             "name": {
                               "description": "Required. The resource name of the CryptoKeyVersion to destroy.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "type": "string"
                             }
                           },
@@ -2257,9 +2257,9 @@
                           "parameters": {
                             "name": {
                               "description": "Required. The resource name of the CryptoKeyVersion to restore.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "type": "string"
                             }
                           },
@@ -2292,9 +2292,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The resource name of the KeyRing to list, in the format `projects\/*\/locations\/*\/keyRings\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -2339,9 +2339,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the ImportJob to get.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/importJobs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/importJobs\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2365,9 +2365,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The name of the KeyRing associated with the ImportJobs.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                           "type": "string"
                         },
                         "importJobId": {
@@ -2399,9 +2399,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/importJobs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/importJobs\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2428,9 +2428,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/importJobs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/importJobs\/[^\/]+$",
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
@@ -2460,9 +2460,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/importJobs\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/importJobs\/[^\/]+$",
                           "type": "string"
                         }
                       },

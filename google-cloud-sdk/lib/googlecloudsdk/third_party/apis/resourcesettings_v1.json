@@ -146,7 +146,7 @@
           "type": "string"
         },
         "readOnly": {
-          "description": "A flag indicating that values of this setting cannot be modified (see documentation of the specific setting for updates and reasons); however, it may be deleted using DeleteSettingValue if DeleteSettingValueRequest.ignore_read_only is set to true. Using this flag is considered an acknowledgement that the setting value cannot be recreated. See DeleteSettingValueRequest.ignore_read_only for more details.",
+          "description": "A flag indicating that values of this setting cannot be modified (see documentation of the specific setting for updates and reasons).",
           "type": "boolean"
         },
         "dataType": {
@@ -256,11 +256,13 @@
           "type": "string"
         },
         "readOnly": {
-          "description": "Output only. A flag indicating that this setting value cannot be modified; however, it may be deleted using DeleteSettingValue if DeleteSettingValueRequest.ignore_read_only is set to true. Using this flag is considered an acknowledgement that the setting value cannot be recreated. This flag is inherited from its parent setting and is for convenience purposes. See Setting.read_only for more details.",
+          "description": "Output only. A flag indicating that this setting value cannot be modified. This flag is inherited from its parent setting and is for convenience purposes. See Setting.read_only for more details.",
+          "readOnly": true,
           "type": "boolean"
         },
         "updateTime": {
           "description": "Output only. The timestamp indicating when the setting value was last updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }
@@ -286,10 +288,10 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "description": "Required. The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -322,10 +324,10 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "description": "Required. The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -358,10 +360,10 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the setting value to get. See SettingValue for naming requirements.",
+                  "description": "Required. The name of the setting value to get. See SettingValue for naming requirements.",
+                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 }
               },
@@ -384,9 +386,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 }
               },
@@ -411,16 +413,11 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The name of the setting value to delete. See SettingValue for naming requirements.",
+                  "description": "Required. The name of the setting value to delete. See SettingValue for naming requirements.",
+                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
-                },
-                "ignoreReadOnly": {
-                  "description": "A flag that allows the deletion of the value of a `read_only` setting. WARNING: use at your own risk. Deleting the value of a read only setting is an irreversible action (i.e., it cannot be created again).",
-                  "location": "query",
-                  "type": "boolean"
                 }
               },
               "parameterOrder": [
@@ -446,10 +443,10 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The setting value for which an effective value will be evaluated. See SettingValue for naming requirements.",
+                      "description": "Required. The setting value for which an effective value will be evaluated. See SettingValue for naming requirements.",
+                      "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                       "type": "string"
                     }
                   },
@@ -471,10 +468,10 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The name of the setting for which a value should be created. See Setting for naming requirements.",
+                      "description": "Required. The name of the setting for which a value should be created. See Setting for naming requirements.",
+                      "pattern": "^organizations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+$",
                       "type": "string"
                     },
                     "settingsId": {
@@ -515,10 +512,10 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "description": "Required. The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -551,10 +548,10 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "description": "Required. The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -587,10 +584,10 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the setting value to get. See SettingValue for naming requirements.",
+                  "description": "Required. The name of the setting value to get. See SettingValue for naming requirements.",
+                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 }
               },
@@ -613,9 +610,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 }
               },
@@ -640,16 +637,11 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The name of the setting value to delete. See SettingValue for naming requirements.",
+                  "description": "Required. The name of the setting value to delete. See SettingValue for naming requirements.",
+                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
-                },
-                "ignoreReadOnly": {
-                  "description": "A flag that allows the deletion of the value of a `read_only` setting. WARNING: use at your own risk. Deleting the value of a read only setting is an irreversible action (i.e., it cannot be created again).",
-                  "location": "query",
-                  "type": "boolean"
                 }
               },
               "parameterOrder": [
@@ -675,10 +667,10 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The setting value for which an effective value will be evaluated. See SettingValue for naming requirements.",
+                      "description": "Required. The setting value for which an effective value will be evaluated. See SettingValue for naming requirements.",
+                      "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                       "type": "string"
                     }
                   },
@@ -700,10 +692,10 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The name of the setting for which a value should be created. See Setting for naming requirements.",
+                      "description": "Required. The name of the setting for which a value should be created. See Setting for naming requirements.",
+                      "pattern": "^folders\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^folders\/[^\/]+$",
                       "type": "string"
                     },
                     "settingsId": {
@@ -744,10 +736,10 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "description": "Required. The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -780,10 +772,10 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "description": "Required. The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -816,10 +808,10 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the setting value to get. See SettingValue for naming requirements.",
+                  "description": "Required. The name of the setting value to get. See SettingValue for naming requirements.",
+                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 }
               },
@@ -842,9 +834,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 }
               },
@@ -869,16 +861,11 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The name of the setting value to delete. See SettingValue for naming requirements.",
+                  "description": "Required. The name of the setting value to delete. See SettingValue for naming requirements.",
+                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
-                },
-                "ignoreReadOnly": {
-                  "description": "A flag that allows the deletion of the value of a `read_only` setting. WARNING: use at your own risk. Deleting the value of a read only setting is an irreversible action (i.e., it cannot be created again).",
-                  "location": "query",
-                  "type": "boolean"
                 }
               },
               "parameterOrder": [
@@ -904,10 +891,10 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The setting value for which an effective value will be evaluated. See SettingValue for naming requirements.",
+                      "description": "Required. The setting value for which an effective value will be evaluated. See SettingValue for naming requirements.",
+                      "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                       "type": "string"
                     }
                   },
@@ -929,10 +916,10 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The name of the setting for which a value should be created. See Setting for naming requirements.",
+                      "description": "Required. The name of the setting for which a value should be created. See Setting for naming requirements.",
+                      "pattern": "^projects\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+$",
                       "type": "string"
                     },
                     "settingsId": {

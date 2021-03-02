@@ -962,6 +962,10 @@ class Transport(_messages.Message):
 class Trigger(_messages.Message):
   r"""A representation of the trigger resource.
 
+  Messages:
+    LabelsValue: Optional. User labels attached to the triggers that can be
+      used to group resources.
+
   Fields:
     createTime: Output only. The creation time.
     destination: Required. Destination specifies where the events should be
@@ -969,9 +973,11 @@ class Trigger(_messages.Message):
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and may be sent only on create requests to ensure
       the client has an up-to-date value before proceeding.
-    eventFilters: Required. The list of filters that applies to event
+    eventFilters: Required. null The list of filters that applies to event
       attributes. Only events that match all the provided filters will be sent
       to the destination.
+    labels: Optional. User labels attached to the triggers that can be used to
+      group resources.
     name: Required. The resource name of the trigger. Must be unique within
       the location on the project and must be in
       `projects/{project}/locations/{location}/triggers/{trigger}` format.
@@ -986,7 +992,7 @@ class Trigger(_messages.Message):
       https://cloud.google.com/run/docs/triggering/pubsub-push#create-service-
       account for information on how to invoke authenticated Cloud Run
       services. In order to create Audit Log triggers, the service account
-      should also have 'eventarc.events.receiveAuditLogV1Written' permission.
+      should also have `roles/eventarc.eventReceiver` IAM role.
     transport: Optional. In order to deliver messages, Eventarc may use other
       GCP products as transport intermediary. This field contains a reference
       to that transport intermediary. This information can be used for
@@ -997,15 +1003,41 @@ class Trigger(_messages.Message):
     updateTime: Output only. The last-modified time.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User labels attached to the triggers that can be used to
+    group resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   destination = _messages.MessageField('Destination', 2)
   etag = _messages.StringField(3)
   eventFilters = _messages.MessageField('EventFilter', 4, repeated=True)
-  name = _messages.StringField(5)
-  serviceAccount = _messages.StringField(6)
-  transport = _messages.MessageField('Transport', 7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  serviceAccount = _messages.StringField(7)
+  transport = _messages.MessageField('Transport', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 encoding.AddCustomJsonFieldMapping(

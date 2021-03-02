@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1",
-  "revision": "20210205",
+  "revision": "20210218",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -1957,9 +1957,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1999,9 +1999,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2029,9 +2029,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Database to export. Should be of the form: `projects\/{project_id}\/databases\/{database_id}`.",
+                  "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2058,9 +2058,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Database to import into. Should be of the form: `projects\/{project_id}\/databases\/{database_id}`.",
+                  "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2092,9 +2092,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -2134,9 +2134,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2160,9 +2160,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2186,9 +2186,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2221,9 +2221,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. A parent name of the form `projects\/{project_id}\/databases\/{database_id}\/collectionGroups\/{collection_id}`",
+                          "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/collectionGroups\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/collectionGroups\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2250,9 +2250,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. A parent name of the form `projects\/{project_id}\/databases\/{database_id}\/collectionGroups\/{collection_id}`",
+                          "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/collectionGroups\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/collectionGroups\/[^\/]+$",
                           "type": "string"
                         },
                         "filter": {
@@ -2292,9 +2292,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. A name of the form `projects\/{project_id}\/databases\/{database_id}\/collectionGroups\/{collection_id}\/indexes\/{index_id}`",
+                          "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/collectionGroups\/[^\/]+\/indexes\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/collectionGroups\/[^\/]+\/indexes\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2318,9 +2318,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. A name of the form `projects\/{project_id}\/databases\/{database_id}\/collectionGroups\/{collection_id}\/indexes\/{index_id}`",
+                          "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/collectionGroups\/[^\/]+\/indexes\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/collectionGroups\/[^\/]+\/indexes\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2348,9 +2348,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. A name of the form `projects\/{project_id}\/databases\/{database_id}\/collectionGroups\/{collection_id}\/fields\/{field_id}`",
+                          "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/collectionGroups\/[^\/]+\/fields\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/collectionGroups\/[^\/]+\/fields\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2374,9 +2374,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. A field name of the form `projects\/{project_id}\/databases\/{database_id}\/collectionGroups\/{collection_id}\/fields\/{field_path}` A field path may be a simple field name, e.g. `address` or a path to fields within map_value , e.g. `address.city`, or a special field path. The only valid special field is `*`, which represents any field. Field paths may be quoted using ` (backtick). The only character that needs to be escaped within a quoted field path is the backtick character itself, escaped using a backslash. Special characters in field paths that must be quoted include: `*`, `.`, ``` (backtick), `[`, `]`, as well as any ascii symbolic characters. Examples: (Note: Comments here are written in markdown syntax, so there is an additional layer of backticks to represent a code block) `\\`address.city\\`` represents a field named `address.city`, not the map key `city` in the field `address`. `\\`*\\`` represents a field named `*`, not any field. A special `Field` contains the default indexing settings for all fields. This field's resource name is: `projects\/{project_id}\/databases\/{database_id}\/collectionGroups\/__default__\/fields\/*` Indexes defined on this `Field` will be applied to all fields which do not have their own `Field` index configuration.",
+                          "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/collectionGroups\/[^\/]+\/fields\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/collectionGroups\/[^\/]+\/fields\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -2409,9 +2409,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. A parent name of the form `projects\/{project_id}\/databases\/{database_id}\/collectionGroups\/{collection_id}`",
+                          "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/collectionGroups\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/collectionGroups\/[^\/]+$",
                           "type": "string"
                         },
                         "filter": {
@@ -2457,9 +2457,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the Document to get. In the format: `projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "type": "string"
                     },
                     "mask.fieldPaths": {
@@ -2501,9 +2501,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name. In the format: `projects\/{project_id}\/databases\/{database_id}\/documents` or `projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`. For example: `projects\/my-project\/databases\/my-database\/documents` or `projects\/my-project\/databases\/my-database\/documents\/chatrooms\/my-chatroom`",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "type": "string"
                     },
                     "collectionId": {
@@ -2573,9 +2573,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the document, for example `projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "type": "string"
                     },
                     "updateMask.fieldPaths": {
@@ -2625,9 +2625,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the Document to delete. In the format: `projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "type": "string"
                     },
                     "currentDocument.exists": {
@@ -2662,9 +2662,9 @@
                   "parameters": {
                     "database": {
                       "description": "Required. The database name. In the format: `projects\/{project_id}\/databases\/{database_id}`.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2691,9 +2691,9 @@
                   "parameters": {
                     "database": {
                       "description": "Required. The database name. In the format: `projects\/{project_id}\/databases\/{database_id}`.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2720,9 +2720,9 @@
                   "parameters": {
                     "database": {
                       "description": "Required. The database name. In the format: `projects\/{project_id}\/databases\/{database_id}`.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2749,9 +2749,9 @@
                   "parameters": {
                     "database": {
                       "description": "Required. The database name. In the format: `projects\/{project_id}\/databases\/{database_id}`.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2778,9 +2778,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name. In the format: `projects\/{project_id}\/databases\/{database_id}\/documents` or `projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`. For example: `projects\/my-project\/databases\/my-database\/documents` or `projects\/my-project\/databases\/my-database\/documents\/chatrooms\/my-chatroom`",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents$",
                       "type": "string"
                     }
                   },
@@ -2807,9 +2807,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name. In the format: `projects\/{project_id}\/databases\/{database_id}\/documents` or `projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`. For example: `projects\/my-project\/databases\/my-database\/documents` or `projects\/my-project\/databases\/my-database\/documents\/chatrooms\/my-chatroom`",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "type": "string"
                     }
                   },
@@ -2836,9 +2836,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name. In the format: `projects\/{project_id}\/databases\/{database_id}\/documents`. Document resource names are not supported; only database resource names can be specified.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents$",
                       "type": "string"
                     }
                   },
@@ -2865,9 +2865,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource name. In the format: `projects\/{project_id}\/databases\/{database_id}\/documents`. Document resource names are not supported; only database resource names can be specified.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "type": "string"
                     }
                   },
@@ -2894,9 +2894,9 @@
                   "parameters": {
                     "database": {
                       "description": "Required. The database name. In the format: `projects\/{project_id}\/databases\/{database_id}`. This is only required in the first message.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2923,9 +2923,9 @@
                   "parameters": {
                     "database": {
                       "description": "Required. The database name. In the format: `projects\/{project_id}\/databases\/{database_id}`.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2952,9 +2952,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent document. In the format: `projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`. For example: `projects\/my-project\/databases\/my-database\/documents\/chatrooms\/my-chatroom`",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents$",
                       "type": "string"
                     }
                   },
@@ -2981,9 +2981,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent document. In the format: `projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`. For example: `projects\/my-project\/databases\/my-database\/documents\/chatrooms\/my-chatroom`",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "type": "string"
                     }
                   },
@@ -3010,9 +3010,9 @@
                   "parameters": {
                     "database": {
                       "description": "Required. The database name. In the format: `projects\/{project_id}\/databases\/{database_id}`.",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3039,9 +3039,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource. For example: `projects\/{project_id}\/databases\/{database_id}\/documents` or `projects\/{project_id}\/databases\/{database_id}\/documents\/chatrooms\/{chatroom_id}`",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/.*$",
                       "type": "string"
                     },
                     "collectionId": {

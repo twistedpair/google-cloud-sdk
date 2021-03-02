@@ -824,9 +824,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the ContainerThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/containerThreatDetectionSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+\/containerThreatDetectionSettings$",
               "type": "string"
             }
           },
@@ -849,9 +849,9 @@
           "parameters": {
             "name": {
               "description": "The resource name of the ContainerThreatDetectionSettings. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/containerThreatDetectionSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+\/containerThreatDetectionSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -883,9 +883,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the EventThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/eventThreatDetectionSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+\/eventThreatDetectionSettings$",
               "type": "string"
             }
           },
@@ -908,9 +908,9 @@
           "parameters": {
             "name": {
               "description": "The resource name of the EventThreatDetectionSettings. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/eventThreatDetectionSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+\/eventThreatDetectionSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -942,9 +942,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the SecurityCenterSettings to retrieve. Format: organizations\/{organization}\/securityCenterSettings",
+              "pattern": "^organizations\/[^\/]+\/securityCenterSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+\/securityCenterSettings$",
               "type": "string"
             }
           },
@@ -967,9 +967,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the SecurityHealthAnalyticsSettings to retrieve. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+              "pattern": "^organizations\/[^\/]+\/securityHealthAnalyticsSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+\/securityHealthAnalyticsSettings$",
               "type": "string"
             }
           },
@@ -992,9 +992,9 @@
           "parameters": {
             "name": {
               "description": "The resource name of the SecurityHealthAnalyticsSettings. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+              "pattern": "^organizations\/[^\/]+\/securityHealthAnalyticsSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+\/securityHealthAnalyticsSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -1026,9 +1026,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the subscription to retrieve. Format: organizations\/{organization}\/subscription",
+              "pattern": "^organizations\/[^\/]+\/subscription$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+\/subscription$",
               "type": "string"
             }
           },
@@ -1051,9 +1051,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the WebSecurityScannerSettings to retrieve. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+              "pattern": "^organizations\/[^\/]+\/webSecurityScannerSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+\/webSecurityScannerSettings$",
               "type": "string"
             }
           },
@@ -1076,9 +1076,9 @@
           "parameters": {
             "name": {
               "description": "The resource name of the WebSecurityScannerSettings. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+              "pattern": "^organizations\/[^\/]+\/webSecurityScannerSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^organizations\/[^\/]+\/webSecurityScannerSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -1115,9 +1115,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the ContainerThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+                  "pattern": "^organizations\/[^\/]+\/containerThreatDetectionSettings$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/containerThreatDetectionSettings$",
                   "type": "string"
                 }
               },
@@ -1144,9 +1144,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the EventThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+                  "pattern": "^organizations\/[^\/]+\/eventThreatDetectionSettings$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/eventThreatDetectionSettings$",
                   "type": "string"
                 }
               },
@@ -1173,9 +1173,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the SecurityHealthAnalyticsSettings to calculate. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+                  "pattern": "^organizations\/[^\/]+\/securityHealthAnalyticsSettings$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/securityHealthAnalyticsSettings$",
                   "type": "string"
                 }
               },
@@ -1202,9 +1202,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the WebSecurityScannerSettings to calculate. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+                  "pattern": "^organizations\/[^\/]+\/webSecurityScannerSettings$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/webSecurityScannerSettings$",
                   "type": "string"
                 }
               },
@@ -1233,9 +1233,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the ContainerThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/containerThreatDetectionSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+\/containerThreatDetectionSettings$",
               "type": "string"
             }
           },
@@ -1258,9 +1258,9 @@
           "parameters": {
             "name": {
               "description": "The resource name of the ContainerThreatDetectionSettings. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/containerThreatDetectionSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+\/containerThreatDetectionSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -1292,9 +1292,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the EventThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/eventThreatDetectionSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+\/eventThreatDetectionSettings$",
               "type": "string"
             }
           },
@@ -1317,9 +1317,9 @@
           "parameters": {
             "name": {
               "description": "The resource name of the EventThreatDetectionSettings. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/eventThreatDetectionSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+\/eventThreatDetectionSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -1351,9 +1351,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the SecurityHealthAnalyticsSettings to retrieve. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+              "pattern": "^folders\/[^\/]+\/securityHealthAnalyticsSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+\/securityHealthAnalyticsSettings$",
               "type": "string"
             }
           },
@@ -1376,9 +1376,9 @@
           "parameters": {
             "name": {
               "description": "The resource name of the SecurityHealthAnalyticsSettings. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+              "pattern": "^folders\/[^\/]+\/securityHealthAnalyticsSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+\/securityHealthAnalyticsSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -1410,9 +1410,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the WebSecurityScannerSettings to retrieve. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+              "pattern": "^folders\/[^\/]+\/webSecurityScannerSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+\/webSecurityScannerSettings$",
               "type": "string"
             }
           },
@@ -1435,9 +1435,9 @@
           "parameters": {
             "name": {
               "description": "The resource name of the WebSecurityScannerSettings. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+              "pattern": "^folders\/[^\/]+\/webSecurityScannerSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^folders\/[^\/]+\/webSecurityScannerSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -1474,9 +1474,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the ContainerThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+                  "pattern": "^folders\/[^\/]+\/containerThreatDetectionSettings$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/containerThreatDetectionSettings$",
                   "type": "string"
                 }
               },
@@ -1503,9 +1503,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the EventThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+                  "pattern": "^folders\/[^\/]+\/eventThreatDetectionSettings$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/eventThreatDetectionSettings$",
                   "type": "string"
                 }
               },
@@ -1532,9 +1532,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the SecurityHealthAnalyticsSettings to calculate. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+                  "pattern": "^folders\/[^\/]+\/securityHealthAnalyticsSettings$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/securityHealthAnalyticsSettings$",
                   "type": "string"
                 }
               },
@@ -1561,9 +1561,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the WebSecurityScannerSettings to calculate. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+                  "pattern": "^folders\/[^\/]+\/webSecurityScannerSettings$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/webSecurityScannerSettings$",
                   "type": "string"
                 }
               },
@@ -1592,9 +1592,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the ContainerThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/containerThreatDetectionSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+\/containerThreatDetectionSettings$",
               "type": "string"
             }
           },
@@ -1617,9 +1617,9 @@
           "parameters": {
             "name": {
               "description": "The resource name of the ContainerThreatDetectionSettings. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/containerThreatDetectionSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+\/containerThreatDetectionSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -1651,9 +1651,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the EventThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/eventThreatDetectionSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+\/eventThreatDetectionSettings$",
               "type": "string"
             }
           },
@@ -1676,9 +1676,9 @@
           "parameters": {
             "name": {
               "description": "The resource name of the EventThreatDetectionSettings. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/eventThreatDetectionSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+\/eventThreatDetectionSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -1710,9 +1710,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the SecurityHealthAnalyticsSettings to retrieve. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+              "pattern": "^projects\/[^\/]+\/securityHealthAnalyticsSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+\/securityHealthAnalyticsSettings$",
               "type": "string"
             }
           },
@@ -1735,9 +1735,9 @@
           "parameters": {
             "name": {
               "description": "The resource name of the SecurityHealthAnalyticsSettings. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+              "pattern": "^projects\/[^\/]+\/securityHealthAnalyticsSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+\/securityHealthAnalyticsSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -1769,9 +1769,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the WebSecurityScannerSettings to retrieve. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+              "pattern": "^projects\/[^\/]+\/webSecurityScannerSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+\/webSecurityScannerSettings$",
               "type": "string"
             }
           },
@@ -1794,9 +1794,9 @@
           "parameters": {
             "name": {
               "description": "The resource name of the WebSecurityScannerSettings. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+              "pattern": "^projects\/[^\/]+\/webSecurityScannerSettings$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+\/webSecurityScannerSettings$",
               "type": "string"
             },
             "updateMask": {
@@ -1835,9 +1835,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the ContainerThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/containerThreatDetectionSettings$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/containerThreatDetectionSettings$",
                       "type": "string"
                     }
                   },
@@ -1860,9 +1860,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the ContainerThreatDetectionSettings. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/containerThreatDetectionSettings$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/containerThreatDetectionSettings$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1899,9 +1899,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the ContainerThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/containerThreatDetectionSettings$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/containerThreatDetectionSettings$",
                           "type": "string"
                         }
                       },
@@ -1932,9 +1932,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the ContainerThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+                  "pattern": "^projects\/[^\/]+\/containerThreatDetectionSettings$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/containerThreatDetectionSettings$",
                   "type": "string"
                 }
               },
@@ -1961,9 +1961,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the EventThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+                  "pattern": "^projects\/[^\/]+\/eventThreatDetectionSettings$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/eventThreatDetectionSettings$",
                   "type": "string"
                 }
               },
@@ -1990,9 +1990,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the SecurityHealthAnalyticsSettings to calculate. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+                  "pattern": "^projects\/[^\/]+\/securityHealthAnalyticsSettings$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/securityHealthAnalyticsSettings$",
                   "type": "string"
                 }
               },
@@ -2019,9 +2019,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the WebSecurityScannerSettings to calculate. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+                  "pattern": "^projects\/[^\/]+\/webSecurityScannerSettings$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/webSecurityScannerSettings$",
                   "type": "string"
                 }
               },

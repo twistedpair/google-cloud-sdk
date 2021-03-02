@@ -44,43 +44,17 @@ class CloudidentityDevicesCancelWipeRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
-class CloudidentityDevicesCreateRequest(_messages.Message):
-  r"""A CloudidentityDevicesCreateRequest object.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-    googleAppsCloudidentityDevicesV1Device: A
-      GoogleAppsCloudidentityDevicesV1Device resource to be passed as the
-      request body.
-  """
-
-  customer = _messages.StringField(1)
-  googleAppsCloudidentityDevicesV1Device = _messages.MessageField('GoogleAppsCloudidentityDevicesV1Device', 2)
-
-
 class CloudidentityDevicesDeleteRequest(_messages.Message):
   r"""A CloudidentityDevicesDeleteRequest object.
 
   Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
     name: Required. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the Device
       in format: `devices/{device_id}`, where device_id is the unique ID
       assigned to the Device.
   """
 
-  customer = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class CloudidentityDevicesDeviceUsersApproveRequest(_messages.Message):
@@ -141,7 +115,7 @@ class CloudidentityDevicesDeviceUsersClientStatesGetRequest(_messages.Message):
   r"""A CloudidentityDevicesDeviceUsersClientStatesGetRequest object.
 
   Fields:
-    customer: Required. [Resource
+    customer: Optional. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the
       customer. If you're using this API for your own organization, use
       `customers/my_customer` If you're using this API to manage another
@@ -169,7 +143,7 @@ class CloudidentityDevicesDeviceUsersClientStatesListRequest(_messages.Message):
   r"""A CloudidentityDevicesDeviceUsersClientStatesListRequest object.
 
   Fields:
-    customer: Required. [Resource
+    customer: Optional. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the
       customer. If you're using this API for your own organization, use
       `customers/my_customer` If you're using this API to manage another
@@ -199,7 +173,7 @@ class CloudidentityDevicesDeviceUsersClientStatesPatchRequest(_messages.Message)
   r"""A CloudidentityDevicesDeviceUsersClientStatesPatchRequest object.
 
   Fields:
-    customer: Required. [Resource
+    customer: Optional. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the
       customer. If you're using this API for your own organization, use
       `customers/my_customer` If you're using this API to manage another
@@ -239,12 +213,6 @@ class CloudidentityDevicesDeviceUsersDeleteRequest(_messages.Message):
   r"""A CloudidentityDevicesDeviceUsersDeleteRequest object.
 
   Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
     name: Required. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the Device
       in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
@@ -252,20 +220,13 @@ class CloudidentityDevicesDeviceUsersDeleteRequest(_messages.Message):
       the unique ID assigned to the User.
   """
 
-  customer = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class CloudidentityDevicesDeviceUsersGetRequest(_messages.Message):
   r"""A CloudidentityDevicesDeviceUsersGetRequest object.
 
   Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
     name: Required. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the Device
       in format: `devices/{device_id}/deviceUsers/{device_user_id}`, where
@@ -273,20 +234,13 @@ class CloudidentityDevicesDeviceUsersGetRequest(_messages.Message):
       the unique ID assigned to the User.
   """
 
-  customer = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class CloudidentityDevicesDeviceUsersListRequest(_messages.Message):
   r"""A CloudidentityDevicesDeviceUsersListRequest object.
 
   Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
     filter: Optional. Additional restrictions when fetching list of devices.
       For a list of search fields, refer to [Mobile device search
       fields](https://developers.google.com/admin-sdk/directory/v1/search-
@@ -304,12 +258,11 @@ class CloudidentityDevicesDeviceUsersListRequest(_messages.Message):
       the device. Format: devices/{device}
   """
 
-  customer = _messages.StringField(1)
-  filter = _messages.StringField(2)
-  orderBy = _messages.StringField(3)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
-  parent = _messages.StringField(6, required=True)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class CloudidentityDevicesDeviceUsersLookupRequest(_messages.Message):
@@ -370,21 +323,13 @@ class CloudidentityDevicesGetRequest(_messages.Message):
   r"""A CloudidentityDevicesGetRequest object.
 
   Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      Customer in the format: `customers/{customer_id}`, where customer_id is
-      the customer to whom the device belongs. If you're using this API for
-      your own organization, use `customers/my_customer`. If you're using this
-      API to manage another organization, use `customers/{customer_id}`, where
-      customer_id is the customer to whom the device belongs.
     name: Required. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the Device
       in the format: `devices/{device_id}`, where device_id is the unique ID
       assigned to the Device.
   """
 
-  customer = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class CloudidentityDevicesListRequest(_messages.Message):
@@ -394,13 +339,6 @@ class CloudidentityDevicesListRequest(_messages.Message):
     ViewValueValuesEnum: Optional. The view to use for the List request.
 
   Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer in the format: `customers/{customer_id}`, where customer_id is
-      the customer to whom the device belongs. If you're using this API for
-      your own organization, use `customers/my_customer`. If you're using this
-      API to manage another organization, use `customers/{customer_id}`, where
-      customer_id is the customer to whom the device belongs.
     filter: Optional. Additional restrictions when fetching list of devices.
       For a list of search fields, refer to [Mobile device search
       fields](https://developers.google.com/admin-sdk/directory/v1/search-
@@ -439,12 +377,11 @@ class CloudidentityDevicesListRequest(_messages.Message):
     COMPANY_INVENTORY = 1
     USER_ASSIGNED_DEVICES = 2
 
-  customer = _messages.StringField(1)
-  filter = _messages.StringField(2)
-  orderBy = _messages.StringField(3)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
-  view = _messages.EnumField('ViewValueValuesEnum', 6)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class CloudidentityDevicesWipeRequest(_messages.Message):
@@ -1019,18 +956,7 @@ class GoogleAppsCloudidentityDevicesV1AndroidAttributes(_messages.Message):
 
 
 class GoogleAppsCloudidentityDevicesV1ApproveDeviceUserRequest(_messages.Message):
-  r"""Request message for approving the device to access user data.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-  """
-
-  customer = _messages.StringField(1)
+  r"""Request message for approving the device to access user data."""
 
 
 class GoogleAppsCloudidentityDevicesV1ApproveDeviceUserResponse(_messages.Message):
@@ -1044,18 +970,7 @@ class GoogleAppsCloudidentityDevicesV1ApproveDeviceUserResponse(_messages.Messag
 
 
 class GoogleAppsCloudidentityDevicesV1BlockDeviceUserRequest(_messages.Message):
-  r"""Request message for blocking account on device.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-  """
-
-  customer = _messages.StringField(1)
+  r"""Request message for blocking account on device."""
 
 
 class GoogleAppsCloudidentityDevicesV1BlockDeviceUserResponse(_messages.Message):
@@ -1069,18 +984,7 @@ class GoogleAppsCloudidentityDevicesV1BlockDeviceUserResponse(_messages.Message)
 
 
 class GoogleAppsCloudidentityDevicesV1CancelWipeDeviceRequest(_messages.Message):
-  r"""Request message for cancelling an unfinished device wipe.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-  """
-
-  customer = _messages.StringField(1)
+  r"""Request message for cancelling an unfinished device wipe."""
 
 
 class GoogleAppsCloudidentityDevicesV1CancelWipeDeviceResponse(_messages.Message):
@@ -1095,18 +999,7 @@ class GoogleAppsCloudidentityDevicesV1CancelWipeDeviceResponse(_messages.Message
 
 
 class GoogleAppsCloudidentityDevicesV1CancelWipeDeviceUserRequest(_messages.Message):
-  r"""Request message for cancelling an unfinished user account wipe.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-  """
-
-  customer = _messages.StringField(1)
+  r"""Request message for cancelling an unfinished user account wipe."""
 
 
 class GoogleAppsCloudidentityDevicesV1CancelWipeDeviceUserResponse(_messages.Message):
@@ -1621,18 +1514,7 @@ class GoogleAppsCloudidentityDevicesV1LookupSelfDeviceUsersResponse(_messages.Me
 
 
 class GoogleAppsCloudidentityDevicesV1WipeDeviceRequest(_messages.Message):
-  r"""Request message for wiping all data on the device.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-  """
-
-  customer = _messages.StringField(1)
+  r"""Request message for wiping all data on the device."""
 
 
 class GoogleAppsCloudidentityDevicesV1WipeDeviceResponse(_messages.Message):
@@ -1647,18 +1529,7 @@ class GoogleAppsCloudidentityDevicesV1WipeDeviceResponse(_messages.Message):
 
 
 class GoogleAppsCloudidentityDevicesV1WipeDeviceUserRequest(_messages.Message):
-  r"""Request message for starting an account wipe on device.
-
-  Fields:
-    customer: Required. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the
-      customer. If you're using this API for your own organization, use
-      `customers/my_customer` If you're using this API to manage another
-      organization, use `customers/{customer_id}`, where customer_id is the
-      customer to whom the device belongs.
-  """
-
-  customer = _messages.StringField(1)
+  r"""Request message for starting an account wipe on device."""
 
 
 class GoogleAppsCloudidentityDevicesV1WipeDeviceUserResponse(_messages.Message):

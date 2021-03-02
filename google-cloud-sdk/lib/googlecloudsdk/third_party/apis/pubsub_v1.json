@@ -932,9 +932,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -961,9 +961,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "type": "string"
                 },
                 "options.requestedPolicyVersion": {
@@ -993,9 +993,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1022,9 +1022,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the topic. It must have the format `\"projects\/{project}\/topics\/{topic}\"`. `{topic}` must start with a letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores (`_`), periods (`.`), tildes (`~`), plus (`+`) or percent signs (`%`). It must be between 3 and 255 characters in length, and it must not start with `\"goog\"`.",
+                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1051,9 +1051,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the topic. It must have the format `\"projects\/{project}\/topics\/{topic}\"`. `{topic}` must start with a letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores (`_`), periods (`.`), tildes (`~`), plus (`+`) or percent signs (`%`). It must be between 3 and 255 characters in length, and it must not start with `\"goog\"`.",
+                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1080,9 +1080,9 @@
               "parameters": {
                 "topic": {
                   "description": "Required. The messages in the request will be published on this topic. Format is `projects\/{project}\/topics\/{topic}`.",
+                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1109,9 +1109,9 @@
               "parameters": {
                 "topic": {
                   "description": "Required. The name of the topic to get. Format is `projects\/{project}\/topics\/{topic}`.",
+                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1135,9 +1135,9 @@
               "parameters": {
                 "project": {
                   "description": "Required. The name of the project in which to list topics. Format is `projects\/{project-id}`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -1172,9 +1172,9 @@
               "parameters": {
                 "topic": {
                   "description": "Required. Name of the topic to delete. Format is `projects\/{project}\/topics\/{topic}`.",
+                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1203,9 +1203,9 @@
                   "parameters": {
                     "topic": {
                       "description": "Required. The name of the topic that subscriptions are attached to. Format is `projects\/{project}\/topics\/{topic}`.",
+                      "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1244,9 +1244,9 @@
                   "parameters": {
                     "topic": {
                       "description": "Required. The name of the topic that snapshots are attached to. Format is `projects\/{project}\/topics\/{topic}`.",
+                      "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1287,9 +1287,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1316,9 +1316,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "type": "string"
                 },
                 "options.requestedPolicyVersion": {
@@ -1348,9 +1348,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1377,9 +1377,9 @@
               "parameters": {
                 "subscription": {
                   "description": "Required. The subscription to detach. Format is `projects\/{project}\/subscriptions\/{subscription}`.",
+                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1403,9 +1403,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the subscription. It must have the format `\"projects\/{project}\/subscriptions\/{subscription}\"`. `{subscription}` must start with a letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores (`_`), periods (`.`), tildes (`~`), plus (`+`) or percent signs (`%`). It must be between 3 and 255 characters in length, and it must not start with `\"goog\"`.",
+                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1432,9 +1432,9 @@
               "parameters": {
                 "subscription": {
                   "description": "Required. The name of the subscription to get. Format is `projects\/{project}\/subscriptions\/{sub}`.",
+                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1458,9 +1458,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the subscription. It must have the format `\"projects\/{project}\/subscriptions\/{subscription}\"`. `{subscription}` must start with a letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores (`_`), periods (`.`), tildes (`~`), plus (`+`) or percent signs (`%`). It must be between 3 and 255 characters in length, and it must not start with `\"goog\"`.",
+                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1487,9 +1487,9 @@
               "parameters": {
                 "project": {
                   "description": "Required. The name of the project in which to list subscriptions. Format is `projects\/{project-id}`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -1524,9 +1524,9 @@
               "parameters": {
                 "subscription": {
                   "description": "Required. The subscription to delete. Format is `projects\/{project}\/subscriptions\/{sub}`.",
+                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1550,9 +1550,9 @@
               "parameters": {
                 "subscription": {
                   "description": "Required. The name of the subscription. Format is `projects\/{project}\/subscriptions\/{sub}`.",
+                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1579,9 +1579,9 @@
               "parameters": {
                 "subscription": {
                   "description": "Required. The subscription whose message is being acknowledged. Format is `projects\/{project}\/subscriptions\/{sub}`.",
+                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1608,9 +1608,9 @@
               "parameters": {
                 "subscription": {
                   "description": "Required. The subscription from which messages should be pulled. Format is `projects\/{project}\/subscriptions\/{sub}`.",
+                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1637,9 +1637,9 @@
               "parameters": {
                 "subscription": {
                   "description": "Required. The name of the subscription. Format is `projects\/{project}\/subscriptions\/{sub}`.",
+                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1666,9 +1666,9 @@
               "parameters": {
                 "subscription": {
                   "description": "Required. The subscription to affect.",
+                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/subscriptions\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1699,9 +1699,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/snapshots\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/snapshots\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1728,9 +1728,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/snapshots\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/snapshots\/[^\/]+$",
                   "type": "string"
                 },
                 "options.requestedPolicyVersion": {
@@ -1760,9 +1760,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/snapshots\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/snapshots\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1789,9 +1789,9 @@
               "parameters": {
                 "snapshot": {
                   "description": "Required. The name of the snapshot to get. Format is `projects\/{project}\/snapshots\/{snap}`.",
+                  "pattern": "^projects\/[^\/]+\/snapshots\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/snapshots\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1815,9 +1815,9 @@
               "parameters": {
                 "project": {
                   "description": "Required. The name of the project in which to list snapshots. Format is `projects\/{project-id}`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -1852,9 +1852,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. User-provided name for this snapshot. If the name is not provided in the request, the server will assign a random name for this snapshot on the same project as the subscription. Note that for REST API requests, you must specify a name. See the resource name rules. Format is `projects\/{project}\/snapshots\/{snap}`.",
+                  "pattern": "^projects\/[^\/]+\/snapshots\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/snapshots\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1881,9 +1881,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the snapshot.",
+                  "pattern": "^projects\/[^\/]+\/snapshots\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/snapshots\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1910,9 +1910,9 @@
               "parameters": {
                 "snapshot": {
                   "description": "Required. The name of the snapshot to delete. Format is `projects\/{project}\/snapshots\/{snap}`.",
+                  "pattern": "^projects\/[^\/]+\/snapshots\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/snapshots\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1940,9 +1940,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project in which to create the schema. Format is `projects\/{project-id}`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "schemaId": {
@@ -1974,9 +1974,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the schema to get. Format is `projects\/{project}\/schemas\/{schema}`.",
+                  "pattern": "^projects\/[^\/]+\/schemas\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/schemas\/[^\/]+$",
                   "type": "string"
                 },
                 "view": {
@@ -2015,9 +2015,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project in which to list schemas. Format is `projects\/{project-id}`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "view": {
@@ -2067,9 +2067,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Name of the schema to delete. Format is `projects\/{project}\/schemas\/{schema}`.",
+                  "pattern": "^projects\/[^\/]+\/schemas\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/schemas\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2093,9 +2093,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project in which to validate schemas. Format is `projects\/{project-id}`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2122,9 +2122,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project in which to validate schemas. Format is `projects\/{project-id}`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },

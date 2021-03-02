@@ -722,9 +722,9 @@
           "parameters": {
             "name": {
               "description": "Required. Name of the project for which to get the Google Workspace Add-ons authorization information. Example: `projects\/my_project\/authorization`.",
+              "pattern": "^projects\/[^\/]+\/authorization$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+\/authorization$",
               "type": "string"
             }
           },
@@ -752,9 +752,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Name of the project in which to create the deployment. Example: `projects\/my_project`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "deploymentId": {
@@ -785,9 +785,9 @@
               "parameters": {
                 "name": {
                   "description": "The deployment resource name. Example: projects\/123\/deployments\/my_deployment.",
+                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -813,9 +813,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The full resource name of the deployment to get. Example: `projects\/my_project\/deployments\/my_deployment`.",
+                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -838,9 +838,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Name of the project in which to create the deployment. Example: `projects\/my_project`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -874,9 +874,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The full resource name of the deployment to delete. Example: `projects\/my_project\/deployments\/my_deployment`.",
+                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
                   "type": "string"
                 },
                 "etag": {
@@ -904,9 +904,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The full resource name of the deployment to install. Example: `projects\/my_project\/deployments\/my_deployment`.",
+                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -932,9 +932,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The full resource name of the deployment to install. Example: `projects\/my_project\/deployments\/my_deployment`.",
+                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -960,9 +960,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The full resource name of the deployment. Example: `projects\/my_project\/deployments\/my_deployment\/installStatus`.",
+                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+\/installStatus$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+\/installStatus$",
                   "type": "string"
                 }
               },

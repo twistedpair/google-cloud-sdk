@@ -195,6 +195,33 @@ class StoragetransferV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Run(self, request, global_params=None):
+      r"""Attempts to start a new TransferOperation for the current TransferJob. A TransferJob has a maximum of one active TransferOperation. If this method is called while a TransferOperation is active, an error wil be returned.
+
+      Args:
+        request: (StoragetransferTransferJobsRunRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Run')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Run.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/transferJobs/{transferJobsId}:run',
+        http_method='POST',
+        method_id='storagetransfer.transferJobs.run',
+        ordered_params=['jobName'],
+        path_params=['jobName'],
+        query_params=[],
+        relative_path='v1/{+jobName}:run',
+        request_field='runTransferJobRequest',
+        request_type_name='StoragetransferTransferJobsRunRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class TransferOperationsService(base_api.BaseApiService):
     """Service class for the transferOperations resource."""
 
@@ -260,7 +287,7 @@ class StoragetransferV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists transfer operations.
+      r"""Lists transfer operations. Operations are ordered by their creation time in reverse chronological order.
 
       Args:
         request: (StoragetransferTransferOperationsListRequest) input message

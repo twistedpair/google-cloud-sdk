@@ -974,9 +974,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
+              "pattern": "^operations\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1005,9 +1005,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1051,9 +1051,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The project and location from which the function should be listed, specified in the format `projects\/*\/locations\/*` If you want to list functions in all locations, use \"-\" in place of a location. When listing functions in all locations, if one or more location(s) are unreachable, the response will contain functions from all reachable locations along with the names of any unreachable locations.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1087,9 +1087,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the function which details should be obtained.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1112,9 +1112,9 @@
                   "parameters": {
                     "location": {
                       "description": "Required. The project and location in which the function should be created, specified in the format `projects\/*\/locations\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1140,9 +1140,9 @@
                   "parameters": {
                     "name": {
                       "description": "A user-defined name of the function. Function names must be unique globally and match pattern `projects\/*\/locations\/*\/functions\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1174,9 +1174,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the function which should be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1199,9 +1199,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the function to be called.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1227,9 +1227,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The project and location in which the Google Cloud Storage signed URL should be generated, specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1255,9 +1255,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of function for which source code Google Cloud Storage signed URL should be generated.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1283,9 +1283,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1311,9 +1311,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -1342,9 +1342,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     }
                   },

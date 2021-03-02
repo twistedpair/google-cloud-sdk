@@ -551,9 +551,9 @@
           "parameters": {
             "name": {
               "description": "The name of the requested project. Values are of the form `projects\/`.",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },
@@ -576,9 +576,9 @@
           "parameters": {
             "name": {
               "description": "The name of the requested project. Values are of the form `projects\/`.",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },
@@ -609,9 +609,9 @@
               "parameters": {
                 "name": {
                   "description": "The project ID whose repos should be listed. Values are of the form `projects\/`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -648,9 +648,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the requested repository. Values are of the form `projects\/\/repos\/`.",
+                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "type": "string"
                 }
               },
@@ -676,9 +676,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the requested repository. Values are of the form `projects\/\/repos\/`.",
+                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "type": "string"
                 }
               },
@@ -704,9 +704,9 @@
               "parameters": {
                 "parent": {
                   "description": "The project in which to create the repo. Values are of the form `projects\/`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -733,9 +733,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the repo to delete. Values are of the form `projects\/\/repos\/`.",
+                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "type": "string"
                 }
               },
@@ -759,9 +759,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the repo to synchronize. Values are of the form `projects\/\/repos\/`.",
+                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "type": "string"
                 }
               },
@@ -787,9 +787,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "type": "string"
                 }
               },
@@ -816,9 +816,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "type": "string"
                 },
                 "options.requestedPolicyVersion": {
@@ -850,9 +850,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "type": "string"
                 }
               },

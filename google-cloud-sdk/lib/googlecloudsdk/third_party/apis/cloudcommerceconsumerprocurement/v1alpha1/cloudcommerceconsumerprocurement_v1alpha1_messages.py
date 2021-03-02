@@ -843,6 +843,8 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange(_messages.
         rejected by partner.
       CHANGE_STATE_ABANDONED: Change is in this state, if it was abandoned by
         user.
+      CHANGE_STATE_ACTIVATING: Change is in this state, if it is going through
+        downstream provision, the change is not cancellable in this state.
     """
     CHANGE_STATE_UNSPECIFIED = 0
     CHANGE_STATE_PENDING_APPROVAL = 1
@@ -850,6 +852,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange(_messages.
     CHANGE_STATE_COMPLETED = 3
     CHANGE_STATE_REJECTED = 4
     CHANGE_STATE_ABANDONED = 5
+    CHANGE_STATE_ACTIVATING = 6
 
   changeEffectiveTime = _messages.StringField(1)
   changeState = _messages.EnumField('ChangeStateValueValuesEnum', 2)
@@ -1006,6 +1009,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Mes
         was rejected by partner.
       LINE_ITEM_CHANGE_STATE_ABANDONED: Change is in this state, if it was
         abandoned by user.
+      LINE_ITEM_CHANGE_STATE_ACTIVATING: Change is in this state, if it is
+        going through downstream provision, the change is not cancellable in
+        this state.
     """
     LINE_ITEM_CHANGE_STATE_UNSPECIFIED = 0
     LINE_ITEM_CHANGE_STATE_PENDING_APPROVAL = 1
@@ -1013,6 +1019,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Mes
     LINE_ITEM_CHANGE_STATE_COMPLETED = 3
     LINE_ITEM_CHANGE_STATE_REJECTED = 4
     LINE_ITEM_CHANGE_STATE_ABANDONED = 5
+    LINE_ITEM_CHANGE_STATE_ACTIVATING = 6
 
   class ChangeTypeValueValuesEnum(_messages.Enum):
     r"""Required. Type of the change to make.

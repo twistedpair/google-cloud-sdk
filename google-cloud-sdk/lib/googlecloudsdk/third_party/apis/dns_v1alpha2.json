@@ -133,7 +133,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your pagination token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned will be an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your pagination token. This lets you retrieve complete contents of even larger collections, one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of elements returned are an inconsistent view of the collection. You cannot retrieve a consistent snapshot of a collection larger than the maximum page size.",
           "type": "string"
         },
         "kind": {
@@ -156,7 +156,7 @@
     },
     "ResourceRecordSet": {
       "id": "ResourceRecordSet",
-      "description": "A unit of data that will be returned by the DNS servers.",
+      "description": "A unit of data that is returned by the DNS servers.",
       "type": "object",
       "properties": {
         "name": {
@@ -207,7 +207,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned will be an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
           "type": "string"
         },
         "kind": {
@@ -254,7 +254,7 @@
           "$ref": "ManagedZoneDnsSecConfig"
         },
         "nameServerSet": {
-          "description": "Optionally specifies the NameServerSet for this ManagedZone. A NameServerSet is a set of DNS name servers that all host the same ManagedZones. Most users will leave this field unset.",
+          "description": "Optionally specifies the NameServerSet for this ManagedZone. A NameServerSet is a set of DNS name servers that all host the same ManagedZones. Most users leave this field unset. If you need to use this field, contact your account team.",
           "type": "string"
         },
         "visibility": {
@@ -289,11 +289,11 @@
           "$ref": "ManagedZonePeeringConfig"
         },
         "reverseLookupConfig": {
-          "description": "The presence of this field indicates that this is a managed reverse lookup zone and Cloud DNS will resolve reverse lookup queries using automatically configured records for VPC resources. This only applies to networks listed under private_visibility_config.",
+          "description": "The presence of this field indicates that this is a managed reverse lookup zone and Cloud DNS resolves reverse lookup queries using automatically configured records for VPC resources. This only applies to networks listed under private_visibility_config.",
           "$ref": "ManagedZoneReverseLookupConfig"
         },
         "serviceDirectoryConfig": {
-          "description": "This field links to the associated service directory namespace. This field should not be set for public zones or forwarding zones.",
+          "description": "This field links to the associated service directory namespace. Do not set this field for public zones or forwarding zones.",
           "$ref": "ManagedZoneServiceDirectoryConfig"
         },
         "kind": {
@@ -351,7 +351,7 @@
       "type": "object",
       "properties": {
         "keyType": {
-          "description": "Specifies whether this is a key signing key (KSK) or a zone signing key (ZSK). Key signing keys have the Secure Entry Point flag set and, when active, will only be used to sign resource record sets of type DNSKEY. Zone signing keys do not have the Secure Entry Point flag set and will be used to sign all other types of resource record sets.",
+          "description": "Specifies whether this is a key signing key (KSK) or a zone signing key (ZSK). Key signing keys have the Secure Entry Point flag set and, when active, are only used to sign resource record sets of type DNSKEY. Zone signing keys do not have the Secure Entry Point flag set and are used to sign all other types of resource record sets.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -420,7 +420,7 @@
       "type": "object",
       "properties": {
         "networkUrl": {
-          "description": "The fully qualified URL of the VPC network to bind to. This should be formatted like https:\/\/www.googleapis.com\/compute\/v1\/projects\/{project}\/global\/networks\/{network}",
+          "description": "The fully qualified URL of the VPC network to bind to. Format this URL like https:\/\/www.googleapis.com\/compute\/v1\/projects\/{project}\/global\/networks\/{network}",
           "type": "string"
         },
         "kind": {
@@ -448,7 +448,7 @@
       "type": "object",
       "properties": {
         "targetNameServers": {
-          "description": "List of target name servers to forward to. Cloud DNS will select the best available name server if more than one target is given.",
+          "description": "List of target name servers to forward to. Cloud DNS selects the best available name server if more than one target is given.",
           "type": "array",
           "items": {
             "$ref": "ManagedZoneForwardingConfigNameServerTarget"
@@ -469,11 +469,11 @@
           "type": "string"
         },
         "forwardingPath": {
-          "description": "Forwarding path for this NameServerTarget. If unset or set to DEFAULT, Cloud DNS will make forwarding decision based on address ranges, i.e. RFC1918 addresses go to the VPC, non-RFC1918 addresses go to the Internet. When set to PRIVATE, Cloud DNS will always send queries through VPC for this target.",
+          "description": "Forwarding path for this NameServerTarget. If unset or set to DEFAULT, Cloud DNS makes forwarding decisions based on IP address ranges; that is, RFC1918 addresses go to the VPC network, non-RFC1918 addresses go to the internet. When set to PRIVATE, Cloud DNS always sends queries through the VPC network for this target.",
           "type": "string",
           "enumDescriptions": [
-            "Cloud DNS will make forwarding decision based on address ranges, i.e. RFC1918 addresses forward to the target through the VPC and non-RFC1918 addresses will forward to the target through the Internet",
-            "Cloud DNS will always forward to this target through the VPC."
+            "Cloud DNS makes forwarding decisions based on address ranges; that is, RFC1918 addresses forward to the target through the VPC and non-RFC1918 addresses forward to the target through the internet",
+            "Cloud DNS always forwards to this target through the VPC."
           ],
           "enum": [
             "default",
@@ -481,7 +481,7 @@
           ]
         },
         "ipv6Address": {
-          "description": "IPv6 address of a target name server. Will not accept both fields (ipv4 & ipv6) being populated.",
+          "description": "IPv6 address of a target name server. Does not accept both fields (ipv4 & ipv6) being populated.",
           "type": "string"
         },
         "kind": {
@@ -556,7 +556,7 @@
           "type": "string"
         },
         "deletionTime": {
-          "description": "The time that the namespace backing this zone was deleted, empty string if it still exists. This is in RFC3339 text format. Output only.",
+          "description": "The time that the namespace backing this zone was deleted; an empty string if it still exists. This is in RFC3339 text format. Output only.",
           "type": "string"
         },
         "kind": {
@@ -606,7 +606,7 @@
           "type": "string"
         },
         "status": {
-          "description": "Status of the operation (output only). A status of \"done\" means that the request to update the authoritative servers has been sent but the servers might not be updated yet.",
+          "description": "Status of the operation (output only). A status of \"done\" means that the request to update the authoritative servers has been sent, but the servers might not be updated yet.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -643,7 +643,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your pagination token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned will be an inconsistent view of the collection. There is no way to retrieve a \"snapshot\" of collections larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your pagination token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. There is no way to retrieve a \"snapshot\" of collections larger than the maximum page size.",
           "type": "string"
         },
         "kind": {
@@ -681,7 +681,7 @@
           ]
         },
         "keyLength": {
-          "description": "Length of the key in bits. Specified at creation time then immutable.",
+          "description": "Length of the key in bits. Specified at creation time, and then immutable.",
           "type": "integer",
           "format": "uint32"
         },
@@ -694,11 +694,11 @@
           "type": "string"
         },
         "isActive": {
-          "description": "Active keys will be used to sign subsequent changes to the ManagedZone. Inactive keys will still be present as DNSKEY Resource Records for the use of resolvers validating existing signatures.",
+          "description": "Active keys are used to sign subsequent changes to the ManagedZone. Inactive keys are still present as DNSKEY Resource Records for the use of resolvers validating existing signatures.",
           "type": "boolean"
         },
         "type": {
-          "description": "One of \"KEY_SIGNING\" or \"ZONE_SIGNING\". Keys of type KEY_SIGNING have the Secure Entry Point flag set and, when active, will be used to sign only resource record sets of type DNSKEY. Otherwise, the Secure Entry Point flag will be cleared and this key will be used to sign only resource record sets of other types. Immutable after creation time.",
+          "description": "One of \"KEY_SIGNING\" or \"ZONE_SIGNING\". Keys of type KEY_SIGNING have the Secure Entry Point flag set and, when active, are used to sign only resource record sets of type DNSKEY. Otherwise, the Secure Entry Point flag is cleared, and this key is used to sign only resource record sets of other types. Immutable after creation time.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -771,7 +771,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your pagination token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned will be an inconsistent view of the collection. There is no way to retrieve a \"snapshot\" of collections larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your pagination token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. There is no way to retrieve a \"snapshot\" of collections larger than the maximum page size.",
           "type": "string"
         },
         "kind": {
@@ -990,7 +990,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned will be an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
           "type": "string"
         },
         "kind": {
@@ -1014,7 +1014,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned will be an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
           "type": "string"
         },
         "kind": {
@@ -1035,11 +1035,11 @@
           "format": "uint64"
         },
         "name": {
-          "description": "User assigned name for this policy.",
+          "description": "User-assigned name for this policy.",
           "type": "string"
         },
         "enableInboundForwarding": {
-          "description": "Allows networks bound to this policy to receive DNS queries sent by VMs or applications over VPN connections. When enabled, a virtual IP address will be allocated from each of the sub-networks that are bound to this policy.",
+          "description": "Allows networks bound to this policy to receive DNS queries sent by VMs or applications over VPN connections. When enabled, a virtual IP address is allocated from each of the subnetworks that are bound to this policy.",
           "type": "boolean"
         },
         "description": {
@@ -1107,11 +1107,11 @@
           "type": "string"
         },
         "forwardingPath": {
-          "description": "Forwarding path for this TargetNameServer. If unset or set to DEFAULT, Cloud DNS will make forwarding decision based on address ranges, i.e. RFC1918 addresses go to the VPC, non-RFC1918 addresses go to the Internet. When set to PRIVATE, Cloud DNS will always send queries through VPC for this target.",
+          "description": "Forwarding path for this TargetNameServer. If unset or set to DEFAULT, Cloud DNS makes forwarding decisions based on address ranges; that is, RFC1918 addresses go to the VPC network, non-RFC1918 addresses go to the internet. When set to PRIVATE, Cloud DNS always sends queries through the VPC network for this target.",
           "type": "string",
           "enumDescriptions": [
-            "Cloud DNS will make forwarding decision based on address ranges, i.e. RFC1918 addresses forward to the target through the VPC and non-RFC1918 addresses will forward to the target through the Internet",
-            "Cloud DNS will always forward to this target through the VPC."
+            "Cloud DNS makes forwarding decision based on IP address ranges; that is, RFC1918 addresses forward to the target through the VPC and non-RFC1918 addresses forward to the target through the internet",
+            "Cloud DNS always forwards to this target through the VPC."
           ],
           "enum": [
             "default",
@@ -1119,7 +1119,7 @@
           ]
         },
         "ipv6Address": {
-          "description": "IPv6 address to forward to. Will not accept both fields (ipv4 & ipv6) being populated.",
+          "description": "IPv6 address to forward to. Does not accept both fields (ipv4 & ipv6) being populated.",
           "type": "string"
         },
         "kind": {
@@ -1143,7 +1143,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned will be an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
           "type": "string"
         },
         "kind": {
@@ -1237,7 +1237,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned will be an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
           "type": "string"
         }
       }
@@ -1288,7 +1288,7 @@
           "type": "string",
           "enumDescriptions": [
             "",
-            "Skip a less-specific ResponsePolicyRule and continue normal query logic. This can be used in conjunction with a wildcard to exempt a subset of the wildcard ResponsePolicyRule from the ResponsePolicy behavior and e.g., query the public internet instead. For instance, if these rules exist: *.example.com -> 1.2.3.4 foo.example.com -> PASSTHRU Then a query for 'foo.example.com' will skip the wildcard."
+            "Skip a less-specific ResponsePolicyRule and continue normal query logic. This can be used in conjunction with a wildcard to exempt a subset of the wildcard ResponsePolicyRule from the ResponsePolicy behavior and e.g., query the public internet instead. For instance, if these rules exist: *.example.com -> 1.2.3.4 foo.example.com -> PASSTHRU Then a query for 'foo.example.com' skips the wildcard."
           ],
           "enum": [
             "behaviorUnspecified",
@@ -1329,7 +1329,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned will be an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
           "type": "string"
         }
       }
@@ -1381,7 +1381,7 @@
               "type": "string"
             },
             "maxResults": {
-              "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+              "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -1415,7 +1415,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Enumerate ResourceRecordSets that have been created but not yet deleted."
+          "description": "Enumerates ResourceRecordSets that you have created but not yet deleted."
         }
       }
     },
@@ -1434,7 +1434,7 @@
               "type": "string"
             },
             "maxResults": {
-              "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+              "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -1464,7 +1464,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Enumerate PeeringZones that target a given network via dns peering."
+          "description": "Enumerate PeeringZones that target a given network through DNS peering."
         },
         "getPeeringZoneInfo": {
           "id": "dns.activePeeringZones.getPeeringZoneInfo",
@@ -1586,7 +1586,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Atomically update the ResourceRecordSet collection."
+          "description": "Atomically updates the ResourceRecordSet collection."
         },
         "get": {
           "id": "dns.changes.get",
@@ -1632,7 +1632,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Fetch the representation of an existing Change."
+          "description": "Fetches the representation of an existing Change."
         },
         "list": {
           "id": "dns.changes.list",
@@ -1653,7 +1653,7 @@
               "type": "string"
             },
             "maxResults": {
-              "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+              "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -1694,7 +1694,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Enumerate Changes to a ResourceRecordSet collection."
+          "description": "Enumerates Changes to a ResourceRecordSet collection."
         }
       }
     },
@@ -1730,7 +1730,7 @@
               "type": "string"
             },
             "digestType": {
-              "description": "An optional comma-separated list of digest types to compute and display for key signing keys. If omitted, the recommended digest type will be computed and displayed.",
+              "description": "An optional comma-separated list of digest types to compute and display for key signing keys. If omitted, the recommended digest type is computed and displayed.",
               "location": "query",
               "type": "string"
             }
@@ -1770,7 +1770,7 @@
               "type": "string"
             },
             "maxResults": {
-              "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+              "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -1781,7 +1781,7 @@
               "type": "string"
             },
             "digestType": {
-              "description": "An optional comma-separated list of digest types to compute and display for key signing keys. If omitted, the recommended digest type will be computed and displayed.",
+              "description": "An optional comma-separated list of digest types to compute and display for key signing keys. If omitted, the recommended digest type is computed and displayed.",
               "location": "query",
               "type": "string"
             }
@@ -2066,7 +2066,7 @@
               "type": "string"
             },
             "operation": {
-              "description": "Identifies the operation addressed by this request.",
+              "description": "Identifies the operation addressed by this request (ID of the operation).",
               "location": "path",
               "required": true,
               "type": "string"
@@ -2091,7 +2091,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Fetch the representation of an existing Operation."
+          "description": "Fetches the representation of an existing Operation."
         },
         "list": {
           "id": "dns.managedZoneOperations.list",
@@ -2112,7 +2112,7 @@
               "type": "string"
             },
             "maxResults": {
-              "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+              "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -2150,7 +2150,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Enumerate Operations for the given ManagedZone."
+          "description": "Enumerates Operations for the given ManagedZone."
         }
       }
     },
@@ -2241,7 +2241,7 @@
               "type": "string"
             },
             "maxResults": {
-              "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+              "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -2420,7 +2420,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Create a new Policy"
+          "description": "Creates a new Policy."
         },
         "get": {
           "id": "dns.policies.get",
@@ -2459,7 +2459,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Fetch the representation of an existing Policy."
+          "description": "Fetches the representation of an existing Policy."
         },
         "list": {
           "id": "dns.policies.list",
@@ -2474,7 +2474,7 @@
               "type": "string"
             },
             "maxResults": {
-              "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+              "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -2497,7 +2497,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Enumerate all Policies associated with a project."
+          "description": "Enumerates all Policies associated with a project."
         },
         "delete": {
           "id": "dns.policies.delete",
@@ -2531,7 +2531,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Delete a previously created Policy. Will fail if the policy is still being referenced by a network."
+          "description": "Deletes a previously created Policy. Fails if the policy is still being referenced by a network."
         },
         "patch": {
           "id": "dns.policies.patch",
@@ -2648,7 +2648,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Create a new Response Policy"
+          "description": "Creates a new Response Policy"
         },
         "get": {
           "id": "dns.responsePolicies.get",
@@ -2702,7 +2702,7 @@
               "type": "string"
             },
             "maxResults": {
-              "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+              "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -2759,7 +2759,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Delete a previously created Response Policy. Will fail if the response policy is non-empty or still being referenced by a network."
+          "description": "Delete a previously created Response Policy. Fails if the response policy is non-empty or still being referenced by a network."
         },
         "patch": {
           "id": "dns.responsePolicies.patch",
@@ -2883,7 +2883,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Create a new Response Policy Rule."
+          "description": "Creates a new Response Policy Rule."
         },
         "get": {
           "id": "dns.responsePolicyRules.get",
@@ -2991,7 +2991,7 @@
               "type": "string"
             },
             "maxResults": {
-              "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+              "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
               "location": "query",
               "type": "integer",
               "format": "int32"

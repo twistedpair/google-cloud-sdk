@@ -2047,7 +2047,10 @@ class Environment(_messages.Message):
     dataset: The dataset for the current project where various workflow
       related tables are stored. The supported resource type is: Google
       BigQuery: bigquery.googleapis.com/{dataset}
-    experiments: The list of experiments to enable.
+    experiments: The list of experiments to enable. This field should be used
+      for SDK related experiments and not for service related experiments. The
+      proper field for service related experiments is service_options. For
+      more details see the rationale at go/user-specified-service-options.
     flexResourceSchedulingGoal: Which Flexible Resource Scheduling mode to run
       in.
     internalExperiments: Experimental settings.
@@ -2061,6 +2064,11 @@ class Environment(_messages.Message):
       encrypt data at rest, AKA a Customer Managed Encryption Key (CMEK).
       Format:
       projects/PROJECT_ID/locations/LOCATION/keyRings/KEY_RING/cryptoKeys/KEY
+    serviceOptions: The list of service options to enable. This field should
+      be used for service related experiments only. These experiments, when
+      graduating to GA, should be replaced by dedicated fields or become
+      default (i.e. always on). For more details see the rationale at go/user-
+      specified-service-options.
     shuffleMode: Output only. The shuffle mode used for the job.
     tempStoragePrefix: The prefix of the resources the system should use for
       temporary storage. The system will append the suffix "/temp-{JOBNAME} to
@@ -2224,13 +2232,14 @@ class Environment(_messages.Message):
   sdkPipelineOptions = _messages.MessageField('SdkPipelineOptionsValue', 6)
   serviceAccountEmail = _messages.StringField(7)
   serviceKmsKeyName = _messages.StringField(8)
-  shuffleMode = _messages.EnumField('ShuffleModeValueValuesEnum', 9)
-  tempStoragePrefix = _messages.StringField(10)
-  userAgent = _messages.MessageField('UserAgentValue', 11)
-  version = _messages.MessageField('VersionValue', 12)
-  workerPools = _messages.MessageField('WorkerPool', 13, repeated=True)
-  workerRegion = _messages.StringField(14)
-  workerZone = _messages.StringField(15)
+  serviceOptions = _messages.StringField(9, repeated=True)
+  shuffleMode = _messages.EnumField('ShuffleModeValueValuesEnum', 10)
+  tempStoragePrefix = _messages.StringField(11)
+  userAgent = _messages.MessageField('UserAgentValue', 12)
+  version = _messages.MessageField('VersionValue', 13)
+  workerPools = _messages.MessageField('WorkerPool', 14, repeated=True)
+  workerRegion = _messages.StringField(15)
+  workerZone = _messages.StringField(16)
 
 
 class ExecutionStageState(_messages.Message):

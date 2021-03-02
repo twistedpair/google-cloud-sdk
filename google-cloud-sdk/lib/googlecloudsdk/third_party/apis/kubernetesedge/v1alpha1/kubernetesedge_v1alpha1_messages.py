@@ -138,17 +138,17 @@ class BootstrapKubeconfig(_messages.Message):
   field descriptions.
 
   Fields:
+    bootstrapToken: Bearer token for authentication and TLS bootstrapping into
+      the Kubernetes cluster.
     certificateAuthorityData: PEM-encoded certificate authority for the
       cluster.
     server: Address of the kubernetes cluster control plane
       (https://hostname:port).
-    token: Bearer token for authentication and TLS bootstrapping into the
-      Kubernetes cluster.
   """
 
-  certificateAuthorityData = _messages.StringField(1)
-  server = _messages.StringField(2)
-  token = _messages.StringField(3)
+  bootstrapToken = _messages.StringField(1)
+  certificateAuthorityData = _messages.StringField(2)
+  server = _messages.StringField(3)
 
 
 class CancelOperationRequest(_messages.Message):

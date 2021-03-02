@@ -256,9 +256,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The resource to save this contact for. Format: organizations\/{organization_id}, folders\/{folder_id} or projects\/{project_id}",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -284,9 +284,9 @@
               "parameters": {
                 "name": {
                   "description": "The identifier for the contact. Format: {resource_type}\/{resource_id}\/contacts\/{contact_id}",
+                  "pattern": "^projects\/[^\/]+\/contacts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/contacts\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -318,9 +318,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource name. Format: organizations\/{organization_id}, folders\/{folder_id} or projects\/{project_id}",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -354,9 +354,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the contact to retrieve. Format: organizations\/{organization_id}\/contacts\/{contact_id}, folders\/{folder_id}\/contacts\/{contact_id} or projects\/{project_id}\/contacts\/{contact_id}",
+                  "pattern": "^projects\/[^\/]+\/contacts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/contacts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -379,9 +379,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the contact to delete. Format: organizations\/{organization_id}\/contacts\/{contact_id}, folders\/{folder_id}\/contacts\/{contact_id} or projects\/{project_id}\/contacts\/{contact_id}",
+                  "pattern": "^projects\/[^\/]+\/contacts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/contacts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -404,9 +404,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the resource to compute contacts for. Format: organizations\/{organization_id}, folders\/{folder_id} or projects\/{project_id}",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "notificationCategory": {
@@ -504,9 +504,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the contact to verify. Format: organizations\/{organization_id}\/contacts\/{contact_id}, folders\/{folder_id}\/contacts\/{contact_id} or projects\/{project_id}\/contacts\/{contact_id}",
+                  "pattern": "^projects\/[^\/]+\/contacts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/contacts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -532,9 +532,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the contact to verify. Format: organizations\/{organization_id}\/contacts\/{contact_id}, folders\/{folder_id}\/contacts\/{contact_id} or projects\/{project_id}\/contacts\/{contact_id}",
+                  "pattern": "^projects\/[^\/]+\/contacts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/contacts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -568,9 +568,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The resource to save this contact for. Format: organizations\/{organization_id}, folders\/{folder_id} or projects\/{project_id}",
+                  "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -596,9 +596,9 @@
               "parameters": {
                 "name": {
                   "description": "The identifier for the contact. Format: {resource_type}\/{resource_id}\/contacts\/{contact_id}",
+                  "pattern": "^folders\/[^\/]+\/contacts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/contacts\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -630,9 +630,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource name. Format: organizations\/{organization_id}, folders\/{folder_id} or projects\/{project_id}",
+                  "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -666,9 +666,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the contact to retrieve. Format: organizations\/{organization_id}\/contacts\/{contact_id}, folders\/{folder_id}\/contacts\/{contact_id} or projects\/{project_id}\/contacts\/{contact_id}",
+                  "pattern": "^folders\/[^\/]+\/contacts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/contacts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -691,9 +691,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the contact to delete. Format: organizations\/{organization_id}\/contacts\/{contact_id}, folders\/{folder_id}\/contacts\/{contact_id} or projects\/{project_id}\/contacts\/{contact_id}",
+                  "pattern": "^folders\/[^\/]+\/contacts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/contacts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -716,9 +716,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the resource to compute contacts for. Format: organizations\/{organization_id}, folders\/{folder_id} or projects\/{project_id}",
+                  "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+$",
                   "type": "string"
                 },
                 "notificationCategory": {
@@ -816,9 +816,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the contact to verify. Format: organizations\/{organization_id}\/contacts\/{contact_id}, folders\/{folder_id}\/contacts\/{contact_id} or projects\/{project_id}\/contacts\/{contact_id}",
+                  "pattern": "^folders\/[^\/]+\/contacts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/contacts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -844,9 +844,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the contact to verify. Format: organizations\/{organization_id}\/contacts\/{contact_id}, folders\/{folder_id}\/contacts\/{contact_id} or projects\/{project_id}\/contacts\/{contact_id}",
+                  "pattern": "^folders\/[^\/]+\/contacts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/contacts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -880,9 +880,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The resource to save this contact for. Format: organizations\/{organization_id}, folders\/{folder_id} or projects\/{project_id}",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -908,9 +908,9 @@
               "parameters": {
                 "name": {
                   "description": "The identifier for the contact. Format: {resource_type}\/{resource_id}\/contacts\/{contact_id}",
+                  "pattern": "^organizations\/[^\/]+\/contacts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/contacts\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -942,9 +942,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource name. Format: organizations\/{organization_id}, folders\/{folder_id} or projects\/{project_id}",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -978,9 +978,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the contact to retrieve. Format: organizations\/{organization_id}\/contacts\/{contact_id}, folders\/{folder_id}\/contacts\/{contact_id} or projects\/{project_id}\/contacts\/{contact_id}",
+                  "pattern": "^organizations\/[^\/]+\/contacts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/contacts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1003,9 +1003,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the contact to delete. Format: organizations\/{organization_id}\/contacts\/{contact_id}, folders\/{folder_id}\/contacts\/{contact_id} or projects\/{project_id}\/contacts\/{contact_id}",
+                  "pattern": "^organizations\/[^\/]+\/contacts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/contacts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1028,9 +1028,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the resource to compute contacts for. Format: organizations\/{organization_id}, folders\/{folder_id} or projects\/{project_id}",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "notificationCategory": {
@@ -1128,9 +1128,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the contact to verify. Format: organizations\/{organization_id}\/contacts\/{contact_id}, folders\/{folder_id}\/contacts\/{contact_id} or projects\/{project_id}\/contacts\/{contact_id}",
+                  "pattern": "^organizations\/[^\/]+\/contacts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/contacts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1156,9 +1156,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the contact to verify. Format: organizations\/{organization_id}\/contacts\/{contact_id}, folders\/{folder_id}\/contacts\/{contact_id} or projects\/{project_id}\/contacts\/{contact_id}",
+                  "pattern": "^organizations\/[^\/]+\/contacts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/contacts\/[^\/]+$",
                   "type": "string"
                 }
               },

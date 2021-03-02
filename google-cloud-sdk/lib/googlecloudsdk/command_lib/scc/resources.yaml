@@ -15,6 +15,24 @@ organization:
         if it is not specified in command line.
   disable_auto_completers: false
 
+parent:
+  name: parent
+  collection: securitycenter.organizations
+  attributes:
+  - &parent
+    parameter_name: organizationsId
+    attribute_name: organization
+    help: |
+      (Optional) If the full resource name isn't provided for an organization
+      e.g. organizations/123, then provide the organization id which is the suffix of the
+      organization. Otherwise, provide the full parent parent resource.
+      Examples: organization/123, 123, projects/456, folders/789.
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.scc.hooks:GetDefaultParent
+      hint: Set the parent property in configuration using `gcloud config set scc/parent`
+        if it is not specified in command line.
+  disable_auto_completers: false
+
 asset:
   name: asset
   collection: securitycenter.organizations.assets

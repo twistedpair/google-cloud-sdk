@@ -18,7 +18,7 @@ class AdmissionRule(_messages.Message):
   r"""An admission rule specifies either that all container images used in a
   pod creation request must be attested to by one or more attestors, that all
   pod creations will be allowed, or that all pod creations will be denied.
-  Images matching an admission whitelist pattern are exempted from admission
+  Images matching an admission allowlist pattern are exempted from admission
   rules and will never block a pod creation.
 
   Enums:
@@ -78,7 +78,7 @@ class AdmissionRule(_messages.Message):
 
 
 class AdmissionWhitelistPattern(_messages.Message):
-  r"""An admission whitelist pattern exempts images from checks by admission
+  r"""An admission allowlist pattern exempts images from checks by admission
   rules.
 
   Fields:

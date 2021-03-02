@@ -218,8 +218,6 @@ class CommonFlags(FlagDefs):
     self.AddLocalPort()
     self.CredentialsGroup().AddServiceAccount()
     self.CredentialsGroup().AddApplicationDefaultCredential()
-    self.EnvVarsGroup().AddEnvVars()
-    self.EnvVarsGroup().AddEnvVarsFile()
     self.AddReadinessProbe()
 
   def AddAlphaFlags(self):
@@ -230,6 +228,8 @@ class CommonFlags(FlagDefs):
     self.AddCpu()
     self.BuildersGroup().AddAppengine()
     self.BuildersGroup().AddBuilder()
+    self.EnvVarsGroup().AddEnvVars()
+    self.EnvVarsGroup().AddEnvVarsFile()
 
 
 class InvalidFlagError(exceptions.Error):

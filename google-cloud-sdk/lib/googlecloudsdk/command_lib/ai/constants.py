@@ -30,6 +30,14 @@ AI_PLATFORM_API_NAME = 'aiplatform'
 
 SUPPORTED_REGION = ['us-central1', 'europe-west4', 'asia-east1']
 
+OPERATION_CREATION_DISPLAY_MESSAGE = """\
+The {verb} operation [{name}] was submitted successfully.
+
+You may view the status of your operation with the command
+
+  $ gcloud beta ai operations describe {id}\
+"""
+
 CUSTOM_JOB_CREATION_DISPLAY_MESSAGE = """\
 Custom Job [{id}] submitted successfully.
 
@@ -47,6 +55,8 @@ You may view the status of your job with the command
 
   $ gcloud alpha ai custom-jobs describe {id}
 """
+
+DEFAULT_OPERATION_COLLECTION = 'aiplatform.projects.locations.operations'
 
 CUSTOM_JOB_COLLECTION = 'aiplatform.projects.locations.customJobs'
 

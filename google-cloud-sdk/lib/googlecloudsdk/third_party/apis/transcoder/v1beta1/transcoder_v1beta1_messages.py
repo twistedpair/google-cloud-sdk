@@ -125,12 +125,13 @@ class Audio(_messages.Message):
     lowBoost: Enable boosting low frequency components. The default is
       `false`.
     lufs: Specify audio loudness normalization in loudness units relative to
-      full scale (LUFS). Enter a value between -24 and 0, where -24 is the
-      Advanced Television Systems Committee (ATSC A/85), -23 is the EU R128
-      broadcast standard, -19 is the prior standard for online mono audio, -18
-      is the ReplayGain standard, -16 is the prior standard for stereo audio,
-      -14 is the new online audio standard recommended by Spotify, as well as
-      Amazon Echo, and 0 disables normalization. The default is 0.
+      full scale (LUFS). Enter a value between -24 and 0 (the default), where:
+      * -24 is the Advanced Television Systems Committee (ATSC A/85) standard
+      * -23 is the EU R128 broadcast standard * -19 is the prior standard for
+      online mono audio * -18 is the ReplayGain standard * -16 is the prior
+      standard for stereo audio * -14 is the new online audio standard
+      recommended by Spotify, as well as Amazon Echo * 0 disables
+      normalization
   """
 
   highBoost = _messages.BooleanField(1)
@@ -783,6 +784,10 @@ class SpriteSheet(_messages.Message):
     format: Format type. The default is `"jpeg"`. Supported formats: - 'jpeg'
     interval: Starting from `0s`, create sprites at regular intervals. Specify
       the interval value in seconds.
+    quality: The quality of the generated sprite sheet. Enter a value between
+      1 and 100, where 1 is the lowest quality and 100 is the highest quality.
+      The default is 100. A high quality value corresponds to a low image data
+      compression ratio.
     rowCount: The maximum number of rows per sprite sheet. When the sprite
       sheet is full, a new sprite sheet is created. The default is 0, which
       indicates no maximum limit.
@@ -802,11 +807,12 @@ class SpriteSheet(_messages.Message):
   filePrefix = _messages.StringField(3)
   format = _messages.StringField(4)
   interval = _messages.StringField(5)
-  rowCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  spriteHeightPixels = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  spriteWidthPixels = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  startTimeOffset = _messages.StringField(9)
-  totalCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  quality = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  rowCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  spriteHeightPixels = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  spriteWidthPixels = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  startTimeOffset = _messages.StringField(10)
+  totalCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):

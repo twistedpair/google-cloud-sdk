@@ -211,9 +211,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource whose sinks are to be listed (currently only project parent resources are supported): \"projects\/[PROJECT_ID]\"",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -248,9 +248,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the sink: \"projects\/[PROJECT_NUMBER]\/traceSinks\/[SINK_ID]\" Example: `\"projects\/12345\/traceSinks\/my-sink-id\"`.",
+                  "pattern": "^projects\/[^\/]+\/traceSinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/traceSinks\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -274,9 +274,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The resource in which to create the sink (currently only project sinks are supported): \"projects\/[PROJECT_ID]\" Examples: `\"projects\/my-trace-project\"`, `\"projects\/123456789\"`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -303,9 +303,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_NUMBER]\/traceSinks\/[SINK_ID]\" Example: `\"projects\/12345\/traceSinks\/my-sink-id\"`.",
+                  "pattern": "^projects\/[^\/]+\/traceSinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/traceSinks\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -338,9 +338,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier: \"projects\/[PROJECT_NUMBER]\/traceSinks\/[SINK_ID]\" Example: `\"projects\/12345\/traceSinks\/my-sink-id\"`.",
+                  "pattern": "^projects\/[^\/]+\/traceSinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/traceSinks\/[^\/]+$",
                   "type": "string"
                 }
               },

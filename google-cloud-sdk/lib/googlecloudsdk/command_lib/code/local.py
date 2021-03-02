@@ -212,7 +212,8 @@ class Settings(DataObject):
         context=context,
         builder=builder,
         local_port=args.local_port,
-        env_vars=args.env_vars or args.env_vars_file,
+        env_vars=getattr(args, 'env_vars', None) or
+        getattr(args, 'env_vars_file', None),
         cloudsql_instances=getattr(args, 'cloudsql_instances', []),
         memory=getattr(args, 'memory', None),
         cpu=getattr(args, 'cpu', None),

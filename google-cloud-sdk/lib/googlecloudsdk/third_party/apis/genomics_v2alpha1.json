@@ -1180,9 +1180,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation's parent resource.",
+                  "pattern": "^projects\/[^\/]+\/operations$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/operations$",
                   "type": "string"
                 },
                 "filter": {
@@ -1222,9 +1222,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource.",
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1248,9 +1248,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource to be cancelled.",
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1281,9 +1281,9 @@
               "parameters": {
                 "id": {
                   "description": "The VM identity token for authenticating the VM instance. https:\/\/cloud.google.com\/compute\/docs\/instances\/verifying-instance-identity",
+                  "pattern": "^projects\/[^\/]+\/workers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/workers\/[^\/]+$",
                   "type": "string"
                 }
               },

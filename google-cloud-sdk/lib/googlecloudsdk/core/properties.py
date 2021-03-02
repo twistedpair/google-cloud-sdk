@@ -1509,6 +1509,9 @@ class _SectionScc(_Section):
     self.organization = self._Add(
         'organization',
         help_text='Default organization `gcloud` should use for scc surface.')
+    self.parent = self._Add(
+        'parent',
+        help_text='Default parent `gcloud` should use for scc surface.')
 
 
 class _SectionAuth(_Section):
@@ -1895,7 +1898,9 @@ class _SectionPrivateCa(_Section):
         'location',
         help_text='Default location to use when working with Private CA '
         'resources. When a `--location` flag is required but not provided, the '
-        'command will fall back to this value, if set.')
+        'command will fall back to this value, if set.',
+        completer=('googlecloudsdk.command_lib.privateca.completers:'
+                   'LocationsCompleter'))
 
 
 class _SectionProxy(_Section):
@@ -2054,6 +2059,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.policysimulator = self._Add('policysimulator')
     self.policytroubleshooter = self._Add('policytroubleshooter')
     self.privateca = self._Add('privateca')
+    self.publicca = self._Add('publicca')
     self.pubsub = self._Add('pubsub')
     self.pubsublite = self._Add('pubsublite')
     self.recommender = self._Add('recommender')
@@ -2192,7 +2198,8 @@ class _SectionContextAware(_Section):
                    'sends requests to such services, the client certificate '
                    'will not be validated. '
                    'Run `gcloud topic client-certificate` for list of services '
-                   'supporting this feature.'))
+                   'supporting this feature.'),
+        default=False)
     self.auto_discovery_file_path = self._Add(
         'auto_discovery_file_path',
         validator=ExistingAbsoluteFilepathValidator,

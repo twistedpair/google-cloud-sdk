@@ -806,7 +806,7 @@
     },
     "Service": {
       "id": "Service",
-      "description": "`Service` is the root object of Google service configuration schema. It describes basic information about a service, such as the name and the title, and delegates other aspects to sub-sections. Each sub-section is either a proto message or a repeated proto message that configures a specific aspect, such as auth. See each proto message definition for details. Example: type: google.api.Service config_version: 3 name: calendar.googleapis.com title: Google Calendar API apis: - name: google.calendar.v3.Calendar authentication: providers: - id: google_calendar_auth jwks_uri: https:\/\/www.googleapis.com\/oauth2\/v1\/certs issuer: https:\/\/securetoken.google.com rules: - selector: \"*\" requirements: provider_id: google_calendar_auth",
+      "description": "`Service` is the root object of Google service configuration schema. It describes basic information about a service, such as the name and the title, and delegates other aspects to sub-sections. Each sub-section is either a proto message or a repeated proto message that configures a specific aspect, such as auth. See each proto message definition for details. Example: type: google.api.Service name: calendar.googleapis.com title: Google Calendar API apis: - name: google.calendar.v3.Calendar authentication: providers: - id: google_calendar_auth jwks_uri: https:\/\/www.googleapis.com\/oauth2\/v1\/certs issuer: https:\/\/securetoken.google.com rules: - selector: \"*\" requirements: provider_id: google_calendar_auth",
       "type": "object",
       "properties": {
         "name": {
@@ -2588,9 +2588,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation's parent resource.",
+              "pattern": "^operations$",
               "location": "path",
               "required": true,
-              "pattern": "^operations$",
               "type": "string"
             },
             "filter": {
@@ -2630,9 +2630,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
+              "pattern": "^operations\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2656,9 +2656,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be deleted.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -2682,9 +2682,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be cancelled.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -2715,9 +2715,9 @@
           "parameters": {
             "parent": {
               "description": "The service that is managing peering connectivity for a service producer's organization. For Google services that support this functionality, this value is `services\/servicenetworking.googleapis.com`.",
+              "pattern": "^services\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^services\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2744,9 +2744,9 @@
           "parameters": {
             "parent": {
               "description": "The service that is managing peering connectivity for a service producer's organization. For Google services that support this functionality, this value is `services\/servicenetworking.googleapis.com`.",
+              "pattern": "^services\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^services\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2773,9 +2773,9 @@
           "parameters": {
             "parent": {
               "description": "Required. A tenant project in the service producer organization, in the following format: services\/{service}\/{collection-id}\/{resource-id}. {collection-id} is the cloud resource collection type that represents the tenant project. Only `projects` are supported. {resource-id} is the tenant project numeric id, such as `123456`. {service} the name of the peering service, such as `service-peering.example.com`. This service must already be enabled in the service consumer's project.",
+              "pattern": "^services\/[^\/]+\/[^\/]+\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^services\/[^\/]+\/[^\/]+\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2802,9 +2802,9 @@
           "parameters": {
             "parent": {
               "description": "Required. This is in a form services\/{service}. {service} the name of the private access management service, for example 'service-peering.example.com'.",
+              "pattern": "^services\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^services\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2831,9 +2831,9 @@
           "parameters": {
             "parent": {
               "description": "Required. This is in a form services\/{service} where {service} is the name of the private access management service. For example 'service-peering.example.com'.",
+              "pattern": "^services\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^services\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2865,9 +2865,9 @@
               "parameters": {
                 "parent": {
                   "description": "The service that is managing peering connectivity for a service producer's organization. For Google services that support this functionality, this value is `services\/servicenetworking.googleapis.com`. If you specify `services\/-` as the parameter value, all configured peering services are listed.",
+                  "pattern": "^services\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^services\/[^\/]+$",
                   "type": "string"
                 },
                 "network": {
@@ -2896,9 +2896,9 @@
               "parameters": {
                 "parent": {
                   "description": "The service that is managing peering connectivity for a service producer's organization. For Google services that support this functionality, this value is `services\/servicenetworking.googleapis.com`.",
+                  "pattern": "^services\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^services\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2925,9 +2925,9 @@
               "parameters": {
                 "name": {
                   "description": "The private service connection that connects to a service producer organization. The name includes both the private service name and the VPC network peering name in the format of `services\/{peering_service_name}\/connections\/{vpc_peering_name}`. For Google services that support this functionality, this is `services\/servicenetworking.googleapis.com\/connections\/servicenetworking-googleapis-com`.",
+                  "pattern": "^services\/[^\/]+\/connections\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^services\/[^\/]+\/connections\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -2973,9 +2973,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. Parent resource identifying the connection for which the consumer config is being updated in the format: `services\/{service}\/projects\/{project}\/global\/networks\/{network}` {service} is the peering service that is managing connectivity for the service producer's organization. For Google services that support this functionality, this value is `servicenetworking.googleapis.com`. {project} is the number of the project that contains the service consumer's VPC network e.g. `12345`. {network} is the name of the service consumer's VPC network.",
+                          "pattern": "^services\/[^\/]+\/projects\/[^\/]+\/global\/networks\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^services\/[^\/]+\/projects\/[^\/]+\/global\/networks\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3002,9 +3002,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the consumer config to retrieve in the format: `services\/{service}\/projects\/{project}\/global\/networks\/{network}`. {service} is the peering service that is managing connectivity for the service producer's organization. For Google services that support this functionality, this value is `servicenetworking.googleapis.com`. {project} is a project number e.g. `12345` that contains the service consumer's VPC network. {network} is the name of the service consumer's VPC network.",
+                          "pattern": "^services\/[^\/]+\/projects\/[^\/]+\/global\/networks\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^services\/[^\/]+\/projects\/[^\/]+\/global\/networks\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3033,9 +3033,9 @@
                           "parameters": {
                             "parent": {
                               "description": "Required. Parent resource identifying the connection for which the peered DNS domain will be created in the format: `services\/{service}\/projects\/{project}\/global\/networks\/{network}` {service} is the peering service that is managing connectivity for the service producer's organization. For Google services that support this functionality, this value is `servicenetworking.googleapis.com`. {project} is the number of the project that contains the service consumer's VPC network e.g. `12345`. {network} is the name of the service consumer's VPC network.",
+                              "pattern": "^services\/[^\/]+\/projects\/[^\/]+\/global\/networks\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^services\/[^\/]+\/projects\/[^\/]+\/global\/networks\/[^\/]+$",
                               "type": "string"
                             }
                           },
@@ -3062,9 +3062,9 @@
                           "parameters": {
                             "name": {
                               "description": "Required. The name of the peered DNS domain to delete in the format: `services\/{service}\/projects\/{project}\/global\/networks\/{network}\/peeredDnsDomains\/{name}`. {service} is the peering service that is managing connectivity for the service producer's organization. For Google services that support this functionality, this value is `servicenetworking.googleapis.com`. {project} is the number of the project that contains the service consumer's VPC network e.g. `12345`. {network} is the name of the service consumer's VPC network. {name} is the name of the peered DNS domain.",
+                              "pattern": "^services\/[^\/]+\/projects\/[^\/]+\/global\/networks\/[^\/]+\/peeredDnsDomains\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^services\/[^\/]+\/projects\/[^\/]+\/global\/networks\/[^\/]+\/peeredDnsDomains\/[^\/]+$",
                               "type": "string"
                             }
                           },
@@ -3088,9 +3088,9 @@
                           "parameters": {
                             "parent": {
                               "description": "Required. Parent resource identifying the connection which owns this collection of peered DNS domains in the format: `services\/{service}\/projects\/{project}\/global\/networks\/{network}`. {service} is the peering service that is managing connectivity for the service producer's organization. For Google services that support this functionality, this value is `servicenetworking.googleapis.com`. {project} is a project number e.g. `12345` that contains the service consumer's VPC network. {network} is the name of the service consumer's VPC network.",
+                              "pattern": "^services\/[^\/]+\/projects\/[^\/]+\/global\/networks\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^services\/[^\/]+\/projects\/[^\/]+\/global\/networks\/[^\/]+$",
                               "type": "string"
                             }
                           },
@@ -3124,9 +3124,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. This is in a form services\/{service} where {service} is the name of the private access management service. For example 'service-peering.example.com'.",
+                  "pattern": "^services\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^services\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3157,9 +3157,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The service that is managing peering connectivity for a service producer's organization. For Google services that support this functionality, this value is `services\/servicenetworking.googleapis.com`.",
+                  "pattern": "^services\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^services\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3186,9 +3186,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The service that is managing peering connectivity for a service producer's organization. For Google services that support this functionality, this value is `services\/servicenetworking.googleapis.com`.",
+                  "pattern": "^services\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^services\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3219,9 +3219,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The service that is managing peering connectivity for a service producer's organization. For Google services that support this functionality, this value is `services\/servicenetworking.googleapis.com`.",
+                  "pattern": "^services\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^services\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3248,9 +3248,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The service that is managing peering connectivity for a service producer's organization. For Google services that support this functionality, this value is `services\/servicenetworking.googleapis.com`.",
+                  "pattern": "^services\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^services\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3277,9 +3277,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The service that is managing peering connectivity for a service producer's organization. For Google services that support this functionality, this value is `services\/servicenetworking.googleapis.com`.",
+                  "pattern": "^services\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^services\/[^\/]+$",
                   "type": "string"
                 }
               },

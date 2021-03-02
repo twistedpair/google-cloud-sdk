@@ -915,9 +915,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -977,9 +977,9 @@
           "parameters": {
             "name": {
               "description": "Required. Resource name for the access policy to get. Format `accessPolicies\/{policy_id}`",
+              "pattern": "^accessPolicies\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^accessPolicies\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1022,9 +1022,9 @@
           "parameters": {
             "name": {
               "description": "Output only. Resource name of the `AccessPolicy`. Format: `accessPolicies\/{policy_id}`",
+              "pattern": "^accessPolicies\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^accessPolicies\/[^\/]+$",
               "type": "string"
             },
             "updateMask": {
@@ -1056,9 +1056,9 @@
           "parameters": {
             "name": {
               "description": "Required. Resource name for the access policy to delete. Format `accessPolicies\/{policy_id}`",
+              "pattern": "^accessPolicies\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^accessPolicies\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1086,9 +1086,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name for the access policy to list Access Levels from. Format: `accessPolicies\/{policy_id}`",
+                  "pattern": "^accessPolicies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -1137,9 +1137,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name for the Access Level. Format: `accessPolicies\/{policy_id}\/accessLevels\/{access_level_id}`",
+                  "pattern": "^accessPolicies\/[^\/]+\/accessLevels\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+\/accessLevels\/[^\/]+$",
                   "type": "string"
                 },
                 "accessLevelFormat": {
@@ -1177,9 +1177,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name for the access policy which owns this Access Level. Format: `accessPolicies\/{policy_id}`",
+                  "pattern": "^accessPolicies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1205,9 +1205,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name for the Access Level. The `short_name` component must begin with a letter and only include alphanumeric and '_'. Format: `accessPolicies\/{policy_id}\/accessLevels\/{short_name}`. The maximum length \/\/ of the `short_name` component is 50 characters.",
+                  "pattern": "^accessPolicies\/[^\/]+\/accessLevels\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+\/accessLevels\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -1239,9 +1239,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name for the Access Level. Format: `accessPolicies\/{policy_id}\/accessLevels\/{access_level_id}`",
+                  "pattern": "^accessPolicies\/[^\/]+\/accessLevels\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+\/accessLevels\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1264,9 +1264,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name for the access policy which owns these Access Levels. Format: `accessPolicies\/{policy_id}`",
+                  "pattern": "^accessPolicies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1296,9 +1296,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name for the access policy to list Service Perimeters from. Format: `accessPolicies\/{policy_id}`",
+                  "pattern": "^accessPolicies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -1332,9 +1332,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name for the Service Perimeter. Format: `accessPolicies\/{policy_id}\/servicePerimeters\/{service_perimeters_id}`",
+                  "pattern": "^accessPolicies\/[^\/]+\/servicePerimeters\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+\/servicePerimeters\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1357,9 +1357,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name for the access policy which owns this Service Perimeter. Format: `accessPolicies\/{policy_id}`",
+                  "pattern": "^accessPolicies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1385,9 +1385,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name for the ServicePerimeter. The `short_name` component must begin with a letter and only include alphanumeric and '_'. Format: `accessPolicies\/{policy_id}\/servicePerimeters\/{short_name}`",
+                  "pattern": "^accessPolicies\/[^\/]+\/servicePerimeters\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+\/servicePerimeters\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -1419,9 +1419,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name for the Service Perimeter. Format: `accessPolicies\/{policy_id}\/servicePerimeters\/{service_perimeter_id}`",
+                  "pattern": "^accessPolicies\/[^\/]+\/servicePerimeters\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+\/servicePerimeters\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1444,9 +1444,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name for the access policy which owns these Service Perimeters. Format: `accessPolicies\/{policy_id}`",
+                  "pattern": "^accessPolicies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1472,9 +1472,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name for the parent Access Policy which owns all Service Perimeters in scope for the commit operation. Format: `accessPolicies\/{policy_id}`",
+                  "pattern": "^accessPolicies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^accessPolicies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1508,9 +1508,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Example: \"organizations\/256\"",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -1544,9 +1544,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Example: \"organizations\/256\/gcpUserAccessBindings\/b3-BhcX_Ud5N\"",
+                  "pattern": "^organizations\/[^\/]+\/gcpUserAccessBindings\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/gcpUserAccessBindings\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1569,9 +1569,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Example: \"organizations\/256\"",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1597,9 +1597,9 @@
               "parameters": {
                 "name": {
                   "description": "Immutable. Assigned by the server during creation. The last segment has an arbitrary length and has only URI unreserved characters (as defined by [RFC 3986 Section 2.3](https:\/\/tools.ietf.org\/html\/rfc3986#section-2.3)). Should not be specified by the client during creation. Example: \"organizations\/256\/gcpUserAccessBindings\/b3-BhcX_Ud5N\"",
+                  "pattern": "^organizations\/[^\/]+\/gcpUserAccessBindings\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/gcpUserAccessBindings\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -1631,9 +1631,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Example: \"organizations\/256\/gcpUserAccessBindings\/b3-BhcX_Ud5N\"",
+                  "pattern": "^organizations\/[^\/]+\/gcpUserAccessBindings\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/gcpUserAccessBindings\/[^\/]+$",
                   "type": "string"
                 }
               },

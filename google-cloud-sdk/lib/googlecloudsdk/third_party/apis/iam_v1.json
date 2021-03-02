@@ -1419,9 +1419,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the project associated with the service accounts, such as `projects\/my-project-123`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -1455,9 +1455,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the service account in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1480,9 +1480,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the project associated with the service accounts, such as `projects\/my-project-123`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1508,9 +1508,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource name of the service account. Use one of the following formats: * `projects\/{PROJECT_ID}\/serviceAccounts\/{EMAIL_ADDRESS}` * `projects\/{PROJECT_ID}\/serviceAccounts\/{UNIQUE_ID}` As an alternative, you can use the `-` wildcard character instead of the project ID: * `projects\/-\/serviceAccounts\/{EMAIL_ADDRESS}` * `projects\/-\/serviceAccounts\/{UNIQUE_ID}` When possible, avoid using the `-` wildcard character, because it can cause response messages to contain misleading error codes. For example, if you try to get the service account `projects\/-\/serviceAccounts\/fake@example.com`, which does not exist, the response contains an HTTP `403 Forbidden` error instead of a `404 Not Found` error.",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1536,9 +1536,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource name of the service account. Use one of the following formats: * `projects\/{PROJECT_ID}\/serviceAccounts\/{EMAIL_ADDRESS}` * `projects\/{PROJECT_ID}\/serviceAccounts\/{UNIQUE_ID}` As an alternative, you can use the `-` wildcard character instead of the project ID: * `projects\/-\/serviceAccounts\/{EMAIL_ADDRESS}` * `projects\/-\/serviceAccounts\/{UNIQUE_ID}` When possible, avoid using the `-` wildcard character, because it can cause response messages to contain misleading error codes. For example, if you try to get the service account `projects\/-\/serviceAccounts\/fake@example.com`, which does not exist, the response contains an HTTP `403 Forbidden` error instead of a `404 Not Found` error.",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1564,9 +1564,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the service account in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1589,9 +1589,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource name of the service account in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT_UNIQUE_ID}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account.",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1617,9 +1617,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource name of the service account in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1645,9 +1645,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource name of the service account in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1673,9 +1673,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Deprecated. [Migrate to Service Account Credentials API](https:\/\/cloud.google.com\/iam\/help\/credentials\/migrate-api). The resource name of the service account in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1701,9 +1701,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Deprecated. [Migrate to Service Account Credentials API](https:\/\/cloud.google.com\/iam\/help\/credentials\/migrate-api). The resource name of the service account in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1729,9 +1729,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 },
                 "options.requestedPolicyVersion": {
@@ -1760,9 +1760,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1788,9 +1788,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1821,9 +1821,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the service account in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. Using `-` as a wildcard for the `PROJECT_ID`, will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                       "type": "string"
                     },
                     "keyTypes": {
@@ -1862,9 +1862,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the service account key in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}\/keys\/{key}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/keys\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/keys\/[^\/]+$",
                       "type": "string"
                     },
                     "publicKeyType": {
@@ -1902,9 +1902,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the service account in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1930,9 +1930,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the service account in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1958,9 +1958,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the service account key in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}\/keys\/{key}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/keys\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/keys\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1987,9 +1987,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the service account identity binding in the following format `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}\/identityBindings\/{BINDING}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/identityBindings\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/identityBindings\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2012,9 +2012,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the service account in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2040,9 +2040,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the service account identity binding in the following format `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}\/identityBindings\/{BINDING}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/identityBindings\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/identityBindings\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2065,9 +2065,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the service account in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. Using `-` as a wildcard for the `PROJECT_ID`, will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2096,9 +2096,9 @@
               "parameters": {
                 "parent": {
                   "description": "The `parent` parameter's value depends on the target resource for the request, namely [`roles`](\/iam\/reference\/rest\/v1\/roles), [`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `parent` value format is described below: * [`roles.list()`](\/iam\/reference\/rest\/v1\/roles\/list): An empty string. This method doesn't require a resource; it simply returns all [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in Cloud IAM. Example request URL: `https:\/\/iam.googleapis.com\/v1\/roles` * [`projects.roles.list()`](\/iam\/reference\/rest\/v1\/projects.roles\/list): `projects\/{PROJECT_ID}`. This method lists all project-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles` * [`organizations.roles.list()`](\/iam\/reference\/rest\/v1\/organizations.roles\/list): `organizations\/{ORGANIZATION_ID}`. This method lists all organization-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -2150,9 +2150,9 @@
               "parameters": {
                 "name": {
                   "description": "The `name` parameter's value depends on the target resource for the request, namely [`roles`](\/iam\/reference\/rest\/v1\/roles), [`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`roles.get()`](\/iam\/reference\/rest\/v1\/roles\/get): `roles\/{ROLE_NAME}`. This method returns results from all [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in Cloud IAM. Example request URL: `https:\/\/iam.googleapis.com\/v1\/roles\/{ROLE_NAME}` * [`projects.roles.get()`](\/iam\/reference\/rest\/v1\/projects.roles\/get): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.get()`](\/iam\/reference\/rest\/v1\/organizations.roles\/get): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2175,9 +2175,9 @@
               "parameters": {
                 "parent": {
                   "description": "The `parent` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `parent` value format is described below: * [`projects.roles.create()`](\/iam\/reference\/rest\/v1\/projects.roles\/create): `projects\/{PROJECT_ID}`. This method creates project-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles` * [`organizations.roles.create()`](\/iam\/reference\/rest\/v1\/organizations.roles\/create): `organizations\/{ORGANIZATION_ID}`. This method creates organization-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2203,9 +2203,9 @@
               "parameters": {
                 "name": {
                   "description": "The `name` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`projects.roles.patch()`](\/iam\/reference\/rest\/v1\/projects.roles\/patch): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method updates only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.patch()`](\/iam\/reference\/rest\/v1\/organizations.roles\/patch): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method updates only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -2237,9 +2237,9 @@
               "parameters": {
                 "name": {
                   "description": "The `name` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`projects.roles.delete()`](\/iam\/reference\/rest\/v1\/projects.roles\/delete): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method deletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.delete()`](\/iam\/reference\/rest\/v1\/organizations.roles\/delete): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method deletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
                   "type": "string"
                 },
                 "etag": {
@@ -2268,9 +2268,9 @@
               "parameters": {
                 "name": {
                   "description": "The `name` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`projects.roles.undelete()`](\/iam\/reference\/rest\/v1\/projects.roles\/undelete): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method undeletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.undelete()`](\/iam\/reference\/rest\/v1\/organizations.roles\/undelete): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method undeletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2302,9 +2302,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource to list pools for.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -2343,9 +2343,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the pool to retrieve.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2368,9 +2368,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource to create the pool in. The only supported location is `global`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "workloadIdentityPoolId": {
@@ -2401,9 +2401,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. The resource name of the pool.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -2435,9 +2435,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the pool to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2460,9 +2460,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the pool to undelete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2493,9 +2493,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2522,9 +2522,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The pool to list providers for.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -2563,9 +2563,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the provider to retrieve.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2588,9 +2588,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The pool to create this provider in.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                           "type": "string"
                         },
                         "workloadIdentityPoolProviderId": {
@@ -2621,9 +2621,9 @@
                       "parameters": {
                         "name": {
                           "description": "Output only. The resource name of the provider.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -2655,9 +2655,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the provider to delete.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2680,9 +2680,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the provider to undelete.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2713,9 +2713,9 @@
                           "parameters": {
                             "name": {
                               "description": "The name of the operation resource.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+\/operations\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+\/operations\/[^\/]+$",
                               "type": "string"
                             }
                           },
@@ -2821,9 +2821,9 @@
           "parameters": {
             "name": {
               "description": "The `name` parameter's value depends on the target resource for the request, namely [`roles`](\/iam\/reference\/rest\/v1\/roles), [`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`roles.get()`](\/iam\/reference\/rest\/v1\/roles\/get): `roles\/{ROLE_NAME}`. This method returns results from all [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in Cloud IAM. Example request URL: `https:\/\/iam.googleapis.com\/v1\/roles\/{ROLE_NAME}` * [`projects.roles.get()`](\/iam\/reference\/rest\/v1\/projects.roles\/get): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.get()`](\/iam\/reference\/rest\/v1\/organizations.roles\/get): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+              "pattern": "^roles\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^roles\/[^\/]+$",
               "type": "string"
             }
           },
@@ -2852,9 +2852,9 @@
               "parameters": {
                 "parent": {
                   "description": "The `parent` parameter's value depends on the target resource for the request, namely [`roles`](\/iam\/reference\/rest\/v1\/roles), [`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `parent` value format is described below: * [`roles.list()`](\/iam\/reference\/rest\/v1\/roles\/list): An empty string. This method doesn't require a resource; it simply returns all [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in Cloud IAM. Example request URL: `https:\/\/iam.googleapis.com\/v1\/roles` * [`projects.roles.list()`](\/iam\/reference\/rest\/v1\/projects.roles\/list): `projects\/{PROJECT_ID}`. This method lists all project-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles` * [`organizations.roles.list()`](\/iam\/reference\/rest\/v1\/organizations.roles\/list): `organizations\/{ORGANIZATION_ID}`. This method lists all organization-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -2906,9 +2906,9 @@
               "parameters": {
                 "name": {
                   "description": "The `name` parameter's value depends on the target resource for the request, namely [`roles`](\/iam\/reference\/rest\/v1\/roles), [`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`roles.get()`](\/iam\/reference\/rest\/v1\/roles\/get): `roles\/{ROLE_NAME}`. This method returns results from all [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in Cloud IAM. Example request URL: `https:\/\/iam.googleapis.com\/v1\/roles\/{ROLE_NAME}` * [`projects.roles.get()`](\/iam\/reference\/rest\/v1\/projects.roles\/get): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.get()`](\/iam\/reference\/rest\/v1\/organizations.roles\/get): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2931,9 +2931,9 @@
               "parameters": {
                 "parent": {
                   "description": "The `parent` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `parent` value format is described below: * [`projects.roles.create()`](\/iam\/reference\/rest\/v1\/projects.roles\/create): `projects\/{PROJECT_ID}`. This method creates project-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles` * [`organizations.roles.create()`](\/iam\/reference\/rest\/v1\/organizations.roles\/create): `organizations\/{ORGANIZATION_ID}`. This method creates organization-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2959,9 +2959,9 @@
               "parameters": {
                 "name": {
                   "description": "The `name` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`projects.roles.patch()`](\/iam\/reference\/rest\/v1\/projects.roles\/patch): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method updates only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.patch()`](\/iam\/reference\/rest\/v1\/organizations.roles\/patch): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method updates only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -2993,9 +2993,9 @@
               "parameters": {
                 "name": {
                   "description": "The `name` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`projects.roles.delete()`](\/iam\/reference\/rest\/v1\/projects.roles\/delete): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method deletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.delete()`](\/iam\/reference\/rest\/v1\/organizations.roles\/delete): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method deletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
                   "type": "string"
                 },
                 "etag": {
@@ -3024,9 +3024,9 @@
               "parameters": {
                 "name": {
                   "description": "The `name` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`projects.roles.undelete()`](\/iam\/reference\/rest\/v1\/projects.roles\/undelete): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method undeletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.undelete()`](\/iam\/reference\/rest\/v1\/organizations.roles\/undelete): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method undeletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
                   "type": "string"
                 }
               },

@@ -927,9 +927,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The project ID or project number in which this trigger should be created.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -955,9 +955,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The project ID or project number from which the triggers should be listed.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "limit": {
@@ -1016,9 +1016,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the trigger being retrieved. If needed, replace {namespace_id} with the project ID.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/triggers\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/triggers\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1041,9 +1041,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the trigger being retrieved. If needed, replace {namespace_id} with the project ID.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/triggers\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/triggers\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1069,9 +1069,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the trigger being deleted. If needed, replace {namespace_id} with the project ID.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/triggers\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/triggers\/[^\/]+$",
                       "type": "string"
                     },
                     "propagationPolicy": {
@@ -1113,9 +1113,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the CustomResourceDefinition being retrieved. If needed, replace {namespace_id} with the project ID.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/customresourcedefinitions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/customresourcedefinitions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1135,9 +1135,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The project ID or project number from which the storages should be listed.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "limit": {
@@ -1202,9 +1202,9 @@
               "parameters": {
                 "parent": {
                   "description": "The project ID or project number in which this trigger should be created.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1230,9 +1230,9 @@
               "parameters": {
                 "parent": {
                   "description": "The project ID or project number from which the triggers should be listed.",
+                  "pattern": "^namespaces\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
                   "type": "string"
                 },
                 "limit": {
@@ -1291,9 +1291,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the trigger being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/triggers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/triggers\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1316,9 +1316,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the trigger being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/triggers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/triggers\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1344,9 +1344,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the trigger being deleted. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/triggers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/triggers\/[^\/]+$",
                   "type": "string"
                 },
                 "propagationPolicy": {
@@ -1388,9 +1388,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the CustomResourceDefinition being retrieved. If needed, replace {namespace_id} with the project ID.",
+                  "pattern": "^namespaces\/[^\/]+\/customresourcedefinitions\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/customresourcedefinitions\/[^\/]+$",
                   "type": "string"
                 }
               },

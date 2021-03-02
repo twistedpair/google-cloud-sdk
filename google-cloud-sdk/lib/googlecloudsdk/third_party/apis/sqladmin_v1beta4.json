@@ -1277,7 +1277,7 @@
           "$ref": "SqlScheduledMaintenance"
         },
         "satisfiesPzs": {
-          "description": "The status indicating if instance satisfies physical zone separation. Reserved for future use.",
+          "description": "The status indicating if instance satisfiesPzs. Reserved for future use.",
           "type": "boolean"
         }
       }

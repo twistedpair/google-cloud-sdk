@@ -1593,17 +1593,34 @@ class MeteringFeatureState(_messages.Message):
 
 
 class MultiClusterIngressFeatureSpec(_messages.Message):
-  r"""MultiClusterIngressFeatureSpec contains the input for the
+  r"""LINT.IfChange MultiClusterIngressFeatureSpec contains the input for the
   MultiClusterIngress feature. This spec is a placeholder and is subject to
   change.
 
+  Enums:
+    BillingValueValuesEnum: Customer's billing structure
+
   Fields:
+    billing: Customer's billing structure
     configMembership: Fully-qualified member name which hosts the
       MultiClusterIngress CRD. Example member name: `projects/foo-
       proj/locations/global/memberships/bar`
   """
 
-  configMembership = _messages.StringField(1)
+  class BillingValueValuesEnum(_messages.Enum):
+    r"""Customer's billing structure
+
+    Values:
+      BILLING_UNSPECIFIED: Unknown
+      PAY_AS_YOU_GO: User pays a fee per-endpoint.
+      ANTHOS_LICENSE: User is paying for Anthos as a whole.
+    """
+    BILLING_UNSPECIFIED = 0
+    PAY_AS_YOU_GO = 1
+    ANTHOS_LICENSE = 2
+
+  billing = _messages.EnumField('BillingValueValuesEnum', 1)
+  configMembership = _messages.StringField(2)
 
 
 class MultiClusterIngressFeatureState(_messages.Message):

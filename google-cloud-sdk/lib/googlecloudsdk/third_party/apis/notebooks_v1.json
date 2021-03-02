@@ -739,6 +739,10 @@
             "UPGRADE",
             "ROLLBACK"
           ]
+        },
+        "targetVersion": {
+          "description": "Target VM Version, like m63.",
+          "type": "string"
         }
       }
     },
@@ -995,6 +999,299 @@
         }
       }
     },
+    "ListSchedulesResponse": {
+      "id": "ListSchedulesResponse",
+      "description": "Response for listing scheduled notebook job.",
+      "type": "object",
+      "properties": {
+        "schedules": {
+          "description": "A list of returned instances.",
+          "type": "array",
+          "items": {
+            "$ref": "Schedule"
+          }
+        },
+        "nextPageToken": {
+          "description": "Page token that can be used to continue listing from the last result in the next list call.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Schedules that could not be reached. For example, ['projects\/{project_id}\/location\/{location}\/schedules\/monthly_digest', 'projects\/{project_id}\/location\/{location}\/schedules\/weekly_sentiment'].",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Schedule": {
+      "id": "Schedule",
+      "description": "The definition of a schedule.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The name of this schedule. Format: `projects\/{project_id}\/locations\/{location}\/schedules\/{schedule_id}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Output only. Display name used for UI purposes. Name can only contain alphanumeric characters, hyphens \u2018-\u2019, and underscores \u2018_\u2019.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "A brief description of this environment.",
+          "type": "string"
+        },
+        "state": {
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state.",
+            "The job is executing normally.",
+            "The job is paused by the user. It will not execute. A user can intentionally pause the job using PauseJobRequest.",
+            "The job is disabled by the system due to error. The user cannot directly set a job to be disabled.",
+            "The job state resulting from a failed CloudScheduler.UpdateJob operation. To recover a job from this state, retry CloudScheduler.UpdateJob until a successful response is received."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ENABLED",
+            "PAUSED",
+            "DISABLED",
+            "UPDATE_FAILED"
+          ]
+        },
+        "cronSchedule": {
+          "description": "Cron-tab formatted schedule by which the job will execute Format: minute, hour, day of month, month, day of week e.g. 0 0 * * WED = every Wednesday More examples: https:\/\/crontab.guru\/examples.html",
+          "type": "string"
+        },
+        "timeZone": {
+          "description": "Timezone on which the cron_schedule. The value of this field must be a time zone name from the tz database. TZ Database: https:\/\/en.wikipedia.org\/wiki\/List_of_tz_database_time_zones Note that some time zones include a provision for daylight savings time. The rules for daylight saving time are determined by the chosen tz. For UTC use the string \"utc\". If a time zone is not specified, the default will be in UTC (also known as GMT).",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time the schedule was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time the schedule was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "executionTemplate": {
+          "description": "Notebook Execution Template corresponding to this schedule.",
+          "$ref": "ExecutionTemplate"
+        },
+        "recentExecutions": {
+          "description": "Output only. The most recent execution names triggered from this schedule and their corresponding states.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "Execution"
+          }
+        }
+      }
+    },
+    "ExecutionTemplate": {
+      "id": "ExecutionTemplate",
+      "description": "The description a notebook execution workload.",
+      "type": "object",
+      "properties": {
+        "scaleTier": {
+          "description": "Required. Scale tier of the hardware used for notebook execution.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified Scale Tier.",
+            "A single worker instance. This tier is suitable for learning how to use Cloud ML, and for experimenting with new models using small datasets.",
+            "Many workers and a few parameter servers.",
+            "A large number of workers with many parameter servers.",
+            "A single worker instance with a K80 GPU.",
+            "A single worker instance with a Cloud TPU.",
+            "The CUSTOM tier is not a set tier, but rather enables you to use your own cluster specification. When you use this tier, set values to configure your processing cluster according to these guidelines: * You _must_ set `TrainingInput.masterType` to specify the type of machine to use for your master node. This is the only required setting. * You _may_ set `TrainingInput.workerCount` to specify the number of workers to use. If you specify one or more workers, you _must_ also set `TrainingInput.workerType` to specify the type of machine to use for your worker nodes. * You _may_ set `TrainingInput.parameterServerCount` to specify the number of parameter servers to use. If you specify one or more parameter servers, you _must_ also set `TrainingInput.parameterServerType` to specify the type of machine to use for your parameter servers. Note that all of your workers must use the same machine type, which can be different from your parameter server type and master type. Your parameter servers must likewise use the same machine type, which can be different from your worker type and master type."
+          ],
+          "enum": [
+            "SCALE_TIER_UNSPECIFIED",
+            "BASIC",
+            "STANDARD_1",
+            "PREMIUM_1",
+            "BASIC_GPU",
+            "BASIC_TPU",
+            "CUSTOM"
+          ]
+        },
+        "masterType": {
+          "description": "Specifies the type of virtual machine to use for your training job's master worker. You must specify this field when `scaleTier` is set to `CUSTOM`. You can use certain Compute Engine machine types directly in this field. The following types are supported: - `n1-standard-4` - `n1-standard-8` - `n1-standard-16` - `n1-standard-32` - `n1-standard-64` - `n1-standard-96` - `n1-highmem-2` - `n1-highmem-4` - `n1-highmem-8` - `n1-highmem-16` - `n1-highmem-32` - `n1-highmem-64` - `n1-highmem-96` - `n1-highcpu-16` - `n1-highcpu-32` - `n1-highcpu-64` - `n1-highcpu-96` Alternatively, you can use the following legacy machine types: - `standard` - `large_model` - `complex_model_s` - `complex_model_m` - `complex_model_l` - `standard_gpu` - `complex_model_m_gpu` - `complex_model_l_gpu` - `standard_p100` - `complex_model_m_p100` - `standard_v100` - `large_model_v100` - `complex_model_m_v100` - `complex_model_l_v100` Finally, if you want to use a TPU for training, specify `cloud_tpu` in this field. Learn more about the [special configuration options for training with TPU.",
+          "type": "string"
+        },
+        "acceleratorConfig": {
+          "description": "Configuration (count and accelerator type) for hardware running notebook execution.",
+          "$ref": "SchedulerAcceleratorConfig"
+        },
+        "labels": {
+          "description": "Labels for execution. If execution is scheduled, a field included will be 'nbs-scheduled'. Otherwise, it is an immediate execution, and an included field will be 'nbs-immediate'. Use fields to efficiently index between various types of executions.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "inputNotebookFile": {
+          "description": "Path to the notebook file to execute. Must be in a Google Cloud Storage bucket. Format: gs:\/\/{project_id}\/{folder}\/{notebook_file_name} Ex: gs:\/\/notebook_user\/scheduled_notebooks\/sentiment_notebook.ipynb",
+          "type": "string"
+        },
+        "containerImageUri": {
+          "description": "Container Image URI to a DLVM Example: 'gcr.io\/deeplearning-platform-release\/base-cu100' More examples can be found at: https:\/\/cloud.google.com\/ai-platform\/deep-learning-containers\/docs\/choosing-container",
+          "type": "string"
+        },
+        "outputNotebookFolder": {
+          "description": "Path to the notebook folder to write to. Must be in a Google Cloud Storage bucket path. Format: gs:\/\/{project_id}\/{folder} Ex: gs:\/\/notebook_user\/scheduled_notebooks",
+          "type": "string"
+        },
+        "paramsYamlFile": {
+          "description": "Parameters to be overridden in the notebook during execution. Ref https:\/\/papermill.readthedocs.io\/en\/latest\/usage-parameterize.html on how to specifying parameters in the input notebook and pass them here in an YAML file. Ex: gs:\/\/notebook_user\/scheduled_notebooks\/sentiment_notebook_params.yaml",
+          "type": "string"
+        },
+        "parameters": {
+          "description": "Parameters used within the 'input_notebook_file' notebook.",
+          "type": "string"
+        }
+      }
+    },
+    "SchedulerAcceleratorConfig": {
+      "id": "SchedulerAcceleratorConfig",
+      "description": "Definition of a hardware accelerator. Note that not all combinations of `type` and `core_count` are valid. Check GPUs on Compute Engine to find a valid combination. TPUs are not supported.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Type of this accelerator.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified accelerator type. Default to no GPU.",
+            "Nvidia Tesla K80 GPU.",
+            "Nvidia Tesla P100 GPU.",
+            "Nvidia Tesla V100 GPU.",
+            "Nvidia Tesla P4 GPU.",
+            "Nvidia Tesla T4 GPU.",
+            "TPU v2.",
+            "TPU v3."
+          ],
+          "enum": [
+            "SCHEDULER_ACCELERATOR_TYPE_UNSPECIFIED",
+            "NVIDIA_TESLA_K80",
+            "NVIDIA_TESLA_P100",
+            "NVIDIA_TESLA_V100",
+            "NVIDIA_TESLA_P4",
+            "NVIDIA_TESLA_T4",
+            "TPU_V2",
+            "TPU_V3"
+          ]
+        },
+        "coreCount": {
+          "description": "Count of cores of this accelerator.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "Execution": {
+      "id": "Execution",
+      "description": "The definition of a single executed notebook.",
+      "type": "object",
+      "properties": {
+        "executionTemplate": {
+          "description": "execute metadata including name, hardware spec, region, labels, etc.",
+          "$ref": "ExecutionTemplate"
+        },
+        "name": {
+          "description": "Output only. The resource name of the execute. Format: `projects\/{project_id}\/locations\/{location}\/execution\/{execution_id}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Output only. Name used for UI purposes. Name can only contain alphanumeric characters and underscores '_'.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "A brief description of this execution.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time the Execution was instantiated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time the Execution was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. State of the underlying AI Platform job.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The job state is unspecified.",
+            "The job has been just created and processing has not yet begun.",
+            "The service is preparing to execution the job.",
+            "The job is in progress.",
+            "The job completed successfully.",
+            "The job failed. `error_message` should contain the details of the failure.",
+            "The job is being cancelled. `error_message` should describe the reason for the cancellation.",
+            "The job has been cancelled. `error_message` should describe the reason for the cancellation."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "QUEUED",
+            "PREPARING",
+            "RUNNING",
+            "SUCCEEDED",
+            "FAILED",
+            "CANCELLING",
+            "CANCELLED"
+          ]
+        },
+        "outputNotebookFile": {
+          "description": "Output notebook file generated by this execution",
+          "type": "string"
+        }
+      }
+    },
+    "TriggerScheduleRequest": {
+      "id": "TriggerScheduleRequest",
+      "description": "Request for created scheduled notebooks",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListExecutionsResponse": {
+      "id": "ListExecutionsResponse",
+      "description": "Response for listing scheduled notebook executions",
+      "type": "object",
+      "properties": {
+        "executions": {
+          "description": "A list of returned instances.",
+          "type": "array",
+          "items": {
+            "$ref": "Execution"
+          }
+        },
+        "nextPageToken": {
+          "description": "Page token that can be used to continue listing from the last result in the next list call.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Executions IDs that could not be reached. For example, ['projects\/{project_id}\/location\/{location}\/executions\/imagenet_test1', 'projects\/{project_id}\/location\/{location}\/executions\/classifier_train1'].",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "SetIamPolicyRequest": {
       "id": "SetIamPolicyRequest",
       "description": "Request message for `SetIamPolicy` method.",
@@ -1158,9 +1455,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1199,9 +1496,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1229,9 +1526,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1270,9 +1567,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1295,9 +1592,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1320,9 +1617,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1352,9 +1649,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Format: `parent=projects\/{project_id}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1388,9 +1685,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1413,9 +1710,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Format: `parent=projects\/{project_id}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "instanceId": {
@@ -1446,9 +1743,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Format: `parent=projects\/{project_id}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1474,9 +1771,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1502,9 +1799,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1530,9 +1827,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1558,9 +1855,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1583,9 +1880,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1611,9 +1908,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1639,9 +1936,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1667,9 +1964,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1695,9 +1992,9 @@
                   "parameters": {
                     "notebookInstance": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1720,9 +2017,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1745,9 +2042,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1773,9 +2070,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1801,9 +2098,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1829,9 +2126,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -1860,9 +2157,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1892,9 +2189,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1928,9 +2225,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/environments\/{environment_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1953,9 +2250,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "environmentId": {
@@ -1986,9 +2283,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/environments\/{environment_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2002,6 +2299,300 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a single Environment."
+                }
+              }
+            },
+            "schedules": {
+              "methods": {
+                "list": {
+                  "id": "notebooks.projects.locations.schedules.list",
+                  "path": "v1/{+parent}/schedules",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/schedules",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Format: `parent=projects\/{project_id}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum return size of the list call.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A previous returned page token that can be used to continue listing from the last result.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Filter applied to resulting schedules.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Field to order results by.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListSchedulesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists schedules in a given project and location."
+                },
+                "get": {
+                  "id": "notebooks.projects.locations.schedules.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/schedules/{schedulesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/schedules\/{schedule_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/schedules\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Schedule"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of schedule"
+                },
+                "delete": {
+                  "id": "notebooks.projects.locations.schedules.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/schedules/{schedulesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/schedules\/{schedule_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/schedules\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes schedule and all underlying jobs"
+                },
+                "create": {
+                  "id": "notebooks.projects.locations.schedules.create",
+                  "path": "v1/{+parent}/schedules",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/schedules",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Format: `parent=projects\/{project_id}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "scheduleId": {
+                      "description": "Required. User-defined unique ID of this schedule.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Schedule"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new Scheduled Notebook in a given project and location."
+                },
+                "trigger": {
+                  "id": "notebooks.projects.locations.schedules.trigger",
+                  "path": "v1/{+name}:trigger",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/schedules/{schedulesId}:trigger",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `parent=projects\/{project_id}\/locations\/{location}\/schedules\/{schedule_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/schedules\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "TriggerScheduleRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Triggers execution of an existing schedule."
+                }
+              }
+            },
+            "executions": {
+              "methods": {
+                "list": {
+                  "id": "notebooks.projects.locations.executions.list",
+                  "path": "v1/{+parent}/executions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/executions",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Format: `parent=projects\/{project_id}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum return size of the list call.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A previous returned page token that can be used to continue listing from the last result.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Filter applied to resulting executions.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Sort by field.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListExecutionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists executions in a given project and location"
+                },
+                "get": {
+                  "id": "notebooks.projects.locations.executions.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/executions/{executionsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/schedules\/{execution_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/executions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Execution"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of executions"
+                },
+                "delete": {
+                  "id": "notebooks.projects.locations.executions.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/executions/{executionsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/executions\/{execution_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/executions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes execution"
+                },
+                "create": {
+                  "id": "notebooks.projects.locations.executions.create",
+                  "path": "v1/{+parent}/executions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/executions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Format: `parent=projects\/{project_id}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "executionId": {
+                      "description": "Required. User-defined unique ID of this execution.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Execution"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new Scheduled Notebook in a given project and location."
                 }
               }
             }

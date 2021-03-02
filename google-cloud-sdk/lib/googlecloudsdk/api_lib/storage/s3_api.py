@@ -320,7 +320,6 @@ class S3Api(cloud_api.CloudApi):
                       digesters=None,
                       download_strategy=cloud_api.DownloadStrategy.ONE_SHOT,
                       progress_callback=None,
-                      serialization_data=None,
                       start_byte=0,
                       end_byte=None):
     """See super class."""

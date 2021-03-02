@@ -854,6 +854,67 @@ class AiplatformProjectsLocationsModelsUploadRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class AiplatformProjectsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsOperationsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsOperationsWaitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
 class AiplatformProjectsLocationsSpecialistPoolsCreateRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsSpecialistPoolsCreateRequest object.
 
@@ -7679,7 +7740,7 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadataOutputMetadata(_messages.M
       multi-classification Model. It's not feasible if the outputs are non-
       deterministic, e.g. the Model produces top-k classes or sort the outputs
       by their values. The shape of the value must be an n-dimensional array
-      of strings. The number of dimentions must match that of the outputs to
+      of strings. The number of dimensions must match that of the outputs to
       be explained. The Attribution.output_display_name is populated by
       locating in the mapping with Attribution.output_index.
   """
@@ -9586,7 +9647,7 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataOutputMetadata(_messages.Me
       multi-classification Model. It's not feasible if the outputs are non-
       deterministic, e.g. the Model produces top-k classes or sort the outputs
       by their values. The shape of the value must be an n-dimensional array
-      of strings. The number of dimentions must match that of the outputs to
+      of strings. The number of dimensions must match that of the outputs to
       be explained. The Attribution.output_display_name is populated by
       locating in the mapping with Attribution.output_index.
     outputTensorName: Name of the output tensor. Required and is only
@@ -13137,6 +13198,19 @@ class GoogleCloudAiplatformV1beta1XraiAttribution(_messages.Message):
 
   smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SmoothGradConfig', 1)
   stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleLongrunningListOperationsResponse(_messages.Message):
+  r"""The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):

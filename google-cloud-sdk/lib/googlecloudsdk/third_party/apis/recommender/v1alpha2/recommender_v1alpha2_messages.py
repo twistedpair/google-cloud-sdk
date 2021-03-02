@@ -806,6 +806,66 @@ class GoogleCloudRecommenderV1alpha2RecommendationStateInfo(_messages.Message):
   stateMetadata = _messages.MessageField('StateMetadataValue', 2)
 
 
+class GoogleCloudRecommenderV1alpha2RecommenderConfig(_messages.Message):
+  r"""Configuration for a Recommender.
+
+  Fields:
+    etag: Fingerprint of the RecommenderConfig. Provides optimistic locking
+      when updating.
+    name: Name of recommender config. Eg, projects/[PROJECT_NUMBER]/locations/
+      [LOCATION]/recommenders/[RECOMMENDER_ID]/config
+    recommenderGenerationConfig: RecommenderGenerationConfig which configures
+      the Generation of recommendations for this recommender.
+    updateTime: Last time when the config was updated.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+  recommenderGenerationConfig = _messages.MessageField('GoogleCloudRecommenderV1alpha2RecommenderGenerationConfig', 3)
+  updateTime = _messages.StringField(4)
+
+
+class GoogleCloudRecommenderV1alpha2RecommenderGenerationConfig(_messages.Message):
+  r"""A Configuration to customize the generation of recommendations. Eg,
+  customizing the lookback period considered when generating a recommendation.
+
+  Messages:
+    ParamsValue: Parameters for this RecommenderGenerationConfig. These
+      configs can be used by or are applied to all subtypes.
+
+  Fields:
+    params: Parameters for this RecommenderGenerationConfig. These configs can
+      be used by or are applied to all subtypes.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParamsValue(_messages.Message):
+    r"""Parameters for this RecommenderGenerationConfig. These configs can be
+    used by or are applied to all subtypes.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParamsValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParamsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  params = _messages.MessageField('ParamsValue', 1)
+
+
 class GoogleCloudRecommenderV1alpha2ValueMatcher(_messages.Message):
   r"""Contains various matching options for values for a GCP resource field.
 
@@ -1555,6 +1615,18 @@ class RecommenderProjectsLocationsInsightTypesInsightsMarkDismissedRequest(_mess
 
   googleCloudRecommenderV1alpha2MarkInsightDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkInsightDismissedRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class RecommenderProjectsLocationsRecommendersGetConfigRequest(_messages.Message):
+  r"""A RecommenderProjectsLocationsRecommendersGetConfigRequest object.
+
+  Fields:
+    name: Required. Name of the Recommendation Config to get. Acceptable
+      formats: 1. projects/[PROJECT_NUMBER]/locations/global/recommenders/[REC
+      OMMENDER_ID]/config
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class RecommenderProjectsLocationsRecommendersRecommendationsGetRequest(_messages.Message):

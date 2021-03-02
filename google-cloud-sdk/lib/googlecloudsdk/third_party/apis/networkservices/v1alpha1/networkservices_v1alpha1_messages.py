@@ -1188,6 +1188,21 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListRoutersResponse(_messages.Message):
+  r"""Response returned by the ListRouters method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    routers: List of Router resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  routers = _messages.MessageField('Router', 2, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -2140,6 +2155,131 @@ class NetworkservicesProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class NetworkservicesProjectsLocationsRoutersCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRoutersCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the Router. Must be in the format
+      `projects/*/locations/global`.
+    router: A Router resource to be passed as the request body.
+    routerId: Required. Short name of the Router resource to be created.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  router = _messages.MessageField('Router', 2)
+  routerId = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsRoutersDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRoutersDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the Router to delete. Must be in the format
+      `projects/*/locations/global/routers/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsRoutersGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRoutersGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsRoutersGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRoutersGetRequest object.
+
+  Fields:
+    name: Required. A name of the Router to get. Must be in the format
+      `projects/*/locations/global/routers/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsRoutersListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRoutersListRequest object.
+
+  Fields:
+    pageSize: Maximum number of Routers to return per call.
+    pageToken: The value returned by the last `ListRoutersResponse` Indicates
+      that this is a continuation of a prior `ListRouters` call, and that the
+      system should return the next page of data.
+    parent: Required. The project and location from which the Routers should
+      be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsRoutersPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRoutersPatchRequest object.
+
+  Fields:
+    name: Required. Name of the Router resource. It matches pattern
+      `projects/*/locations/global/routers/`.
+    router: A Router resource to be passed as the request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Router resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  router = _messages.MessageField('Router', 2)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsRoutersSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRoutersSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsRoutersTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRoutersTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -2450,6 +2590,56 @@ class RouteRule(_messages.Message):
   priority = _messages.IntegerField(5)
   routeAction = _messages.MessageField('RouteAction', 6)
   urlRedirect = _messages.MessageField('UrlRedirect', 7)
+
+
+class Router(_messages.Message):
+  r"""Router is the resource representing infrastructure component that is
+  responsible for forwarding traffic and applying policies. For example, it
+  could be a load balancer, sidecar proxy or a GRPC client.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the Router
+      resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    labels: Optional. Set of label tags associated with the Router resource.
+    name: Required. Name of the Router resource. It matches pattern
+      `projects/*/locations/global/routers/`.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the Router resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class Routing(_messages.Message):

@@ -33,6 +33,7 @@ API = 'cloudfunctions'
 API_VERSION = 'v1'
 LOCATIONS_COLLECTION = API + '.projects.locations'
 
+SIGNATURE_TYPES = ['http', 'event', 'cloudevent']
 SEVERITIES = ['DEBUG', 'INFO', 'ERROR']
 EGRESS_SETTINGS = ['PRIVATE-RANGES-ONLY', 'ALL']
 INGRESS_SETTINGS = ['ALL', 'INTERNAL-ONLY', 'INTERNAL-AND-GCLB']
@@ -462,6 +463,28 @@ def RegionAttributeConfig():
   )
 
 
+def AddTriggerLocationFlag(parser):
+  """Add flag for specifying trigger location to the parser."""
+  parser.add_argument(
+      '--trigger-location',
+      help=('The location of the trigger, which must be a region or multi-'
+            'region where the relevant events originate. This is only '
+            'relevant when `--v2` is provided.'),
+      completer=LocationsCompleter,
+  )
+
+
+def AddTriggerEventFiltersFlag(parser):
+  """Add flag for specifying trigger event filters to the parser."""
+  parser.add_argument(
+      '--trigger-event-filters',
+      type=arg_parsers.ArgList(),
+      metavar='FILTERS',
+      help=('The comma-separated Eventarc matching criteria for the trigger. '
+            'This is only relevant when `--v2` is provided.'),
+  )
+
+
 def FunctionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='function',
@@ -510,6 +533,36 @@ def AddServiceAccountFlag(parser):
 
       If not provided, the function will use the project's default service
       account.
+      """)
+
+
+def AddRunServiceAccountFlag(parser):
+  parser.add_argument(
+      '--run-service-account',
+      help="""\
+      The email address of the IAM service account associated with the Cloud
+      Run service for the function. The service account represents the identity
+      of the running function, and determines what permissions the function
+      has.
+
+      If not provided, the function will use the project's default service
+      account for Compute Engine.
+
+      This is only relevant when `--v2` is provided.
+      """)
+
+
+def AddTriggerServiceAccountFlag(parser):
+  parser.add_argument(
+      '--trigger-service-account',
+      help="""\
+      The email address of the IAM service account associated with the Eventarc
+      trigger for the function. This is used for authenticated invocation.
+
+      If not provided, the function will use the project's default service
+      account for Compute Engine.
+
+      This is only relevant when `--v2` is provided.
       """)
 
 

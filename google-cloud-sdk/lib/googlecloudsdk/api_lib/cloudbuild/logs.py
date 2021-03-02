@@ -41,6 +41,13 @@ from googlecloudsdk.core.util import encoding
 import httplib2
 import requests
 
+LOG_STREAM_HELP_TEXT = """
+To live stream log output for this build, please ensure the grpc module is installed. Run:
+  pip install grpcio
+and set:
+  export CLOUDSDK_PYTHON_SITEPACKAGES=1
+"""
+
 
 class NoLogsBucketException(exceptions.Error):
 
@@ -98,8 +105,7 @@ def GetGCLLogTailerTransport():
     # pylint: enable=g-import-not-at-top
   # TODO(b/178405272): remove NameError exception handling
   except (ImportError, NameError):
-    log.out.Print('To live stream log output for this build, please ensure the'
-                  ' grpc module is installed.  Run:\npip install grpcio\n')
+    log.out.Print(LOG_STREAM_HELP_TEXT)
     return None
 
   return LoggingServiceV2GrpcTransport(
@@ -190,9 +196,7 @@ class GCLLogTailer(TailerBase):
         # pylint: enable=g-import-not-at-top
       # TODO(b/178405272): remove NameError exception handling
       except (ImportError, NameError):
-        self._PrintLogLine(
-            'To live stream log output for this build, please ensure the'
-            ' grpc module is installed.  Run:\npip install grpcio\n')
+        self._PrintLogLine(LOG_STREAM_HELP_TEXT)
         return
 
       if not self.stop:

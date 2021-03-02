@@ -477,9 +477,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource to list pools for.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -518,9 +518,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the pool to retrieve.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -543,9 +543,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource to create the pool in. The only supported location is `global`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "workloadIdentityPoolId": {
@@ -576,9 +576,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only. The resource name of the pool.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -610,9 +610,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the pool to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -635,9 +635,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the pool to undelete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -668,9 +668,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -697,9 +697,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The pool to list providers for.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -738,9 +738,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the provider to retrieve.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -763,9 +763,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The pool to create this provider in.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                           "type": "string"
                         },
                         "workloadIdentityPoolProviderId": {
@@ -796,9 +796,9 @@
                       "parameters": {
                         "name": {
                           "description": "Output only. The resource name of the provider.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -830,9 +830,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the provider to delete.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -855,9 +855,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the provider to undelete.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -888,9 +888,9 @@
                           "parameters": {
                             "name": {
                               "description": "The name of the operation resource.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+\/operations\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+\/operations\/[^\/]+$",
                               "type": "string"
                             }
                           },

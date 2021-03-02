@@ -697,9 +697,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -738,9 +738,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -763,9 +763,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -792,9 +792,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The parent must be of the form \"projects\/{projectId}\/locations\/{locationId}\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -820,9 +820,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the environment to get, in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -845,9 +845,9 @@
                   "parameters": {
                     "parent": {
                       "description": "List environments in the given project and location, in the form: \"projects\/{projectId}\/locations\/{locationId}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -881,9 +881,9 @@
                   "parameters": {
                     "name": {
                       "description": "The relative resource name of the environment to update, in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -915,9 +915,9 @@
                   "parameters": {
                     "name": {
                       "description": "The environment to delete, in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -944,9 +944,9 @@
                   "parameters": {
                     "parent": {
                       "description": "List ImageVersions in the given project and location, in the form: \"projects\/{projectId}\/locations\/{locationId}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {

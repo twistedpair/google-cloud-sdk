@@ -1224,7 +1224,7 @@ Example request body:
     )
 
     def SetSecurityPolicy(self, request, global_params=None):
-      r"""Sets the security policy for the specified backend service.
+      r"""Sets the Google Cloud Armor security policy for the specified backend service. For more information, see Google Cloud Armor Overview.
 
       Args:
         request: (ComputeBackendServicesSetSecurityPolicyRequest) input message
@@ -8651,7 +8651,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id='compute.networkFirewallPolicies.addRule',
         ordered_params=['project', 'firewallPolicy'],
         path_params=['firewallPolicy', 'project'],
-        query_params=[],
+        query_params=['requestId'],
         relative_path='projects/{project}/global/firewallPolicies/{firewallPolicy}/addRule',
         request_field='firewallPolicyRule',
         request_type_name='ComputeNetworkFirewallPoliciesAddRuleRequest',
@@ -8911,7 +8911,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id='compute.networkFirewallPolicies.patchRule',
         ordered_params=['project', 'firewallPolicy'],
         path_params=['firewallPolicy', 'project'],
-        query_params=['priority'],
+        query_params=['priority', 'requestId'],
         relative_path='projects/{project}/global/firewallPolicies/{firewallPolicy}/patchRule',
         request_field='firewallPolicyRule',
         request_type_name='ComputeNetworkFirewallPoliciesPatchRuleRequest',
@@ -8963,7 +8963,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id='compute.networkFirewallPolicies.removeRule',
         ordered_params=['project', 'firewallPolicy'],
         path_params=['firewallPolicy', 'project'],
-        query_params=['priority'],
+        query_params=['priority', 'requestId'],
         relative_path='projects/{project}/global/firewallPolicies/{firewallPolicy}/removeRule',
         request_field='',
         request_type_name='ComputeNetworkFirewallPoliciesRemoveRuleRequest',

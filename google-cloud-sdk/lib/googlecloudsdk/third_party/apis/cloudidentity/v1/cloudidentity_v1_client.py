@@ -246,7 +246,7 @@ class CloudidentityV1(base_api.BaseApiClient):
         method_id='cloudidentity.devices.deviceUsers.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['customer'],
+        query_params=[],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='CloudidentityDevicesDeviceUsersDeleteRequest',
@@ -273,7 +273,7 @@ class CloudidentityV1(base_api.BaseApiClient):
         method_id='cloudidentity.devices.deviceUsers.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['customer'],
+        query_params=[],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='CloudidentityDevicesDeviceUsersGetRequest',
@@ -300,7 +300,7 @@ class CloudidentityV1(base_api.BaseApiClient):
         method_id='cloudidentity.devices.deviceUsers.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['customer', 'filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/deviceUsers',
         request_field='',
         request_type_name='CloudidentityDevicesDeviceUsersListRequest',
@@ -403,7 +403,7 @@ class CloudidentityV1(base_api.BaseApiClient):
       r"""Creates a device. Only company-owned device may be created. **Note**: This method is available only to customers who have one of the following SKUs: Enterprise Standard, Enterprise Plus, Enterprise for Education, and Cloud Identity Premium.
 
       Args:
-        request: (CloudidentityDevicesCreateRequest) input message
+        request: (GoogleAppsCloudidentityDevicesV1Device) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -417,10 +417,10 @@ class CloudidentityV1(base_api.BaseApiClient):
         method_id='cloudidentity.devices.create',
         ordered_params=[],
         path_params=[],
-        query_params=['customer'],
+        query_params=[],
         relative_path='v1/devices',
-        request_field='googleAppsCloudidentityDevicesV1Device',
-        request_type_name='CloudidentityDevicesCreateRequest',
+        request_field='<request>',
+        request_type_name='GoogleAppsCloudidentityDevicesV1Device',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -444,7 +444,7 @@ class CloudidentityV1(base_api.BaseApiClient):
         method_id='cloudidentity.devices.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['customer'],
+        query_params=[],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='CloudidentityDevicesDeleteRequest',
@@ -471,7 +471,7 @@ class CloudidentityV1(base_api.BaseApiClient):
         method_id='cloudidentity.devices.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['customer'],
+        query_params=[],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='CloudidentityDevicesGetRequest',
@@ -497,7 +497,7 @@ class CloudidentityV1(base_api.BaseApiClient):
         method_id='cloudidentity.devices.list',
         ordered_params=[],
         path_params=[],
-        query_params=['customer', 'filter', 'orderBy', 'pageSize', 'pageToken', 'view'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'view'],
         relative_path='v1/devices',
         request_field='',
         request_type_name='CloudidentityDevicesListRequest',

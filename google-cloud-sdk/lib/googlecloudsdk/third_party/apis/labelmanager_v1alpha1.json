@@ -547,9 +547,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -576,9 +576,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^labelKeys\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^labelKeys\/[^\/]+$",
               "type": "string"
             }
           },
@@ -604,9 +604,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^labelKeys\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^labelKeys\/[^\/]+$",
               "type": "string"
             },
             "options.requestedPolicyVersion": {
@@ -635,9 +635,9 @@
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+              "pattern": "^labelKeys\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^labelKeys\/[^\/]+$",
               "type": "string"
             }
           },
@@ -701,9 +701,9 @@
           "parameters": {
             "name": {
               "description": "Resource name for LabelKey to be fetched in the format labelKeys\/123.",
+              "pattern": "^labelKeys\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^labelKeys\/[^\/]+$",
               "type": "string"
             }
           },
@@ -746,9 +746,9 @@
           "parameters": {
             "name": {
               "description": "Immutable. Resource name for LabelKey. Must be in the format labelKeys\/123.",
+              "pattern": "^labelKeys\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^labelKeys\/[^\/]+$",
               "type": "string"
             },
             "updateMask": {
@@ -780,9 +780,9 @@
           "parameters": {
             "name": {
               "description": "Resource name for LabelKey to be deleted in the format labelKeys\/123. The LabelKey cannot be a parent of any LabelValues in the active state to be deleted successfully.",
+              "pattern": "^labelKeys\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^labelKeys\/[^\/]+$",
               "type": "string"
             }
           },
@@ -805,9 +805,9 @@
           "parameters": {
             "name": {
               "description": "Resource name for LabelKey to be un-deleted in the format labelKeys\/123. The parent of this LabelKey must be in the active state.",
+              "pattern": "^labelKeys\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^labelKeys\/[^\/]+$",
               "type": "string"
             }
           },
@@ -890,9 +890,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the LabelBinding. This is a String of the form: 'labelBindings\/{id}' (e.g. 'labelBindings\/bGFiZWx8vY2xvdWz').",
+              "pattern": "^labelBindings\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^labelBindings\/[^\/]+$",
               "type": "string"
             }
           },
@@ -957,9 +957,9 @@
           "parameters": {
             "name": {
               "description": "Resource name for LabelValue to be fetched in the format labelValues\/456.",
+              "pattern": "^labelValues\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^labelValues\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1002,9 +1002,9 @@
           "parameters": {
             "name": {
               "description": "Immutable. Resource name for LabelValue in the format labelValues\/456.",
+              "pattern": "^labelValues\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^labelValues\/[^\/]+$",
               "type": "string"
             },
             "updateMask": {
@@ -1036,9 +1036,9 @@
           "parameters": {
             "name": {
               "description": "Resource name for LabelValue to be deleted in the format labelValues\/456.",
+              "pattern": "^labelValues\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^labelValues\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1061,9 +1061,9 @@
           "parameters": {
             "name": {
               "description": "Resource name for LabelValue to be un-deleted in the format labelValues\/456.",
+              "pattern": "^labelValues\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^labelValues\/[^\/]+$",
               "type": "string"
             }
           },

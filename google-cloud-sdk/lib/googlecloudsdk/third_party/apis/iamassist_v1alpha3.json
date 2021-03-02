@@ -857,9 +857,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
+              "pattern": "^operations\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/[^\/]+$",
               "type": "string"
             }
           },
@@ -906,9 +906,9 @@
           "parameters": {
             "name": {
               "description": "Required. The name of the replay to retrieve. Format: replays\/{replay}",
+              "pattern": "^replays\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^replays\/[^\/]+$",
               "type": "string"
             }
           },
@@ -964,9 +964,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The replay to export results for. Format: replays\/{replay}",
+                  "pattern": "^replays\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^replays\/[^\/]+$",
                   "type": "string"
                 }
               },

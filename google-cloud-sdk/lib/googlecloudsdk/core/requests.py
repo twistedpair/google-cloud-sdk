@@ -207,7 +207,7 @@ def Session(
     }
 
   client_side_certificate = None
-  if properties.VALUES.context_aware.use_client_certificate.Get():
+  if properties.VALUES.context_aware.use_client_certificate.GetBool():
     ca_config = context_aware.Config()
     log.debug('Using client certificate %s', ca_config.client_cert_path)
     client_side_certificate = ClientSideCertificate(

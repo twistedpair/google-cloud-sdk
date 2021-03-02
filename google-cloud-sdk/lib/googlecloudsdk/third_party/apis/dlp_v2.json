@@ -4303,9 +4303,9 @@
               "parameters": {
                 "parent": {
                   "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -4331,9 +4331,9 @@
               "parameters": {
                 "parent": {
                   "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -4359,9 +4359,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -4393,9 +4393,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4421,9 +4421,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4449,9 +4449,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4481,9 +4481,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4513,9 +4513,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4541,9 +4541,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of organization and inspectTemplate to be updated, for example `organizations\/433245324\/inspectTemplates\/432452342` or projects\/project-id\/inspectTemplates\/432452342.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4569,9 +4569,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the organization and inspectTemplate to be read, for example `organizations\/433245324\/inspectTemplates\/432452342` or projects\/project-id\/inspectTemplates\/432452342.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4594,9 +4594,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -4640,9 +4640,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the organization and inspectTemplate to be deleted, for example `organizations\/433245324\/inspectTemplates\/432452342` or projects\/project-id\/inspectTemplates\/432452342.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4669,9 +4669,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4697,9 +4697,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of organization and deidentify template to be updated, for example `organizations\/433245324\/deidentifyTemplates\/432452342` or projects\/project-id\/deidentifyTemplates\/432452342.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4725,9 +4725,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the organization and deidentify template to be read, for example `organizations\/433245324\/deidentifyTemplates\/432452342` or projects\/project-id\/deidentifyTemplates\/432452342.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4750,9 +4750,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -4796,9 +4796,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the organization and deidentify template to be deleted, for example `organizations\/433245324\/deidentifyTemplates\/432452342` or projects\/project-id\/deidentifyTemplates\/432452342.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4825,9 +4825,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4853,9 +4853,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the project and the triggeredJob, for example `projects\/dlp-test-project\/jobTriggers\/53234423`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4881,9 +4881,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the trigger to execute a hybrid inspect on, for example `projects\/dlp-test-project\/jobTriggers\/53234423`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4909,9 +4909,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the project and the triggeredJob, for example `projects\/dlp-test-project\/jobTriggers\/53234423`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4934,9 +4934,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -4985,9 +4985,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the project and the triggeredJob, for example `projects\/dlp-test-project\/jobTriggers\/53234423`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -5010,9 +5010,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the trigger to activate, for example `projects\/dlp-test-project\/jobTriggers\/53234423`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -5042,9 +5042,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -5070,9 +5070,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -5136,9 +5136,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the DlpJob resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/dlpJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/dlpJobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -5161,9 +5161,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the DlpJob resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/dlpJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/dlpJobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -5186,9 +5186,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the DlpJob resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/dlpJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/dlpJobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -5214,9 +5214,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the job to execute a hybrid inspect on, for example `projects\/dlp-test-project\/dlpJob\/53234423`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/dlpJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/dlpJobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -5242,9 +5242,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the DlpJob resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/dlpJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/dlpJobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -5274,9 +5274,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -5302,9 +5302,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of organization and storedInfoType to be updated, for example `organizations\/433245324\/storedInfoTypes\/432452342` or projects\/project-id\/storedInfoTypes\/432452342.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -5330,9 +5330,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the organization and storedInfoType to be read, for example `organizations\/433245324\/storedInfoTypes\/432452342` or projects\/project-id\/storedInfoTypes\/432452342.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -5355,9 +5355,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -5401,9 +5401,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the organization and storedInfoType to be deleted, for example `organizations\/433245324\/storedInfoTypes\/432452342` or projects\/project-id\/storedInfoTypes\/432452342.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -5432,9 +5432,9 @@
               "parameters": {
                 "parent": {
                   "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -5464,9 +5464,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -5492,9 +5492,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of organization and inspectTemplate to be updated, for example `organizations\/433245324\/inspectTemplates\/432452342` or projects\/project-id\/inspectTemplates\/432452342.",
+                  "pattern": "^projects\/[^\/]+\/inspectTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/inspectTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -5520,9 +5520,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the organization and inspectTemplate to be read, for example `organizations\/433245324\/inspectTemplates\/432452342` or projects\/project-id\/inspectTemplates\/432452342.",
+                  "pattern": "^projects\/[^\/]+\/inspectTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/inspectTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -5545,9 +5545,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -5591,9 +5591,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the organization and inspectTemplate to be deleted, for example `organizations\/433245324\/inspectTemplates\/432452342` or projects\/project-id\/inspectTemplates\/432452342.",
+                  "pattern": "^projects\/[^\/]+\/inspectTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/inspectTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -5620,9 +5620,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -5648,9 +5648,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of organization and deidentify template to be updated, for example `organizations\/433245324\/deidentifyTemplates\/432452342` or projects\/project-id\/deidentifyTemplates\/432452342.",
+                  "pattern": "^projects\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -5676,9 +5676,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the organization and deidentify template to be read, for example `organizations\/433245324\/deidentifyTemplates\/432452342` or projects\/project-id\/deidentifyTemplates\/432452342.",
+                  "pattern": "^projects\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -5701,9 +5701,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -5747,9 +5747,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the organization and deidentify template to be deleted, for example `organizations\/433245324\/deidentifyTemplates\/432452342` or projects\/project-id\/deidentifyTemplates\/432452342.",
+                  "pattern": "^projects\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -5776,9 +5776,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -5804,9 +5804,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the project and the triggeredJob, for example `projects\/dlp-test-project\/jobTriggers\/53234423`.",
+                  "pattern": "^projects\/[^\/]+\/jobTriggers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/jobTriggers\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -5832,9 +5832,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the project and the triggeredJob, for example `projects\/dlp-test-project\/jobTriggers\/53234423`.",
+                  "pattern": "^projects\/[^\/]+\/jobTriggers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/jobTriggers\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -5857,9 +5857,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -5908,9 +5908,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the project and the triggeredJob, for example `projects\/dlp-test-project\/jobTriggers\/53234423`.",
+                  "pattern": "^projects\/[^\/]+\/jobTriggers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/jobTriggers\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -5933,9 +5933,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the trigger to activate, for example `projects\/dlp-test-project\/jobTriggers\/53234423`.",
+                  "pattern": "^projects\/[^\/]+\/jobTriggers\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/jobTriggers\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -5965,9 +5965,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -5993,9 +5993,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -6059,9 +6059,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the DlpJob resource.",
+                  "pattern": "^projects\/[^\/]+\/dlpJobs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/dlpJobs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6084,9 +6084,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the DlpJob resource to be deleted.",
+                  "pattern": "^projects\/[^\/]+\/dlpJobs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/dlpJobs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6109,9 +6109,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the DlpJob resource to be cancelled.",
+                  "pattern": "^projects\/[^\/]+\/dlpJobs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/dlpJobs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6141,9 +6141,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6169,9 +6169,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of organization and storedInfoType to be updated, for example `organizations\/433245324\/storedInfoTypes\/432452342` or projects\/project-id\/storedInfoTypes\/432452342.",
+                  "pattern": "^projects\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6197,9 +6197,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the organization and storedInfoType to be read, for example `organizations\/433245324\/storedInfoTypes\/432452342` or projects\/project-id\/storedInfoTypes\/432452342.",
+                  "pattern": "^projects\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6222,9 +6222,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -6268,9 +6268,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the organization and storedInfoType to be deleted, for example `organizations\/433245324\/storedInfoTypes\/432452342` or projects\/project-id\/storedInfoTypes\/432452342.",
+                  "pattern": "^projects\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6342,9 +6342,9 @@
               "parameters": {
                 "parent": {
                   "description": "The parent resource name. The format of this value is as follows: locations\/ LOCATION_ID",
+                  "pattern": "^locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^locations\/[^\/]+$",
                   "type": "string"
                 },
                 "languageCode": {
@@ -6390,9 +6390,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6418,9 +6418,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of organization and inspectTemplate to be updated, for example `organizations\/433245324\/inspectTemplates\/432452342` or projects\/project-id\/inspectTemplates\/432452342.",
+                  "pattern": "^organizations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6446,9 +6446,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the organization and inspectTemplate to be read, for example `organizations\/433245324\/inspectTemplates\/432452342` or projects\/project-id\/inspectTemplates\/432452342.",
+                  "pattern": "^organizations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6471,9 +6471,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -6517,9 +6517,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the organization and inspectTemplate to be deleted, for example `organizations\/433245324\/inspectTemplates\/432452342` or projects\/project-id\/inspectTemplates\/432452342.",
+                  "pattern": "^organizations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -6548,9 +6548,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -6576,9 +6576,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of organization and inspectTemplate to be updated, for example `organizations\/433245324\/inspectTemplates\/432452342` or projects\/project-id\/inspectTemplates\/432452342.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -6604,9 +6604,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the organization and inspectTemplate to be read, for example `organizations\/433245324\/inspectTemplates\/432452342` or projects\/project-id\/inspectTemplates\/432452342.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -6629,9 +6629,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -6675,9 +6675,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the organization and inspectTemplate to be deleted, for example `organizations\/433245324\/inspectTemplates\/432452342` or projects\/project-id\/inspectTemplates\/432452342.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/inspectTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -6704,9 +6704,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -6732,9 +6732,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of organization and deidentify template to be updated, for example `organizations\/433245324\/deidentifyTemplates\/432452342` or projects\/project-id\/deidentifyTemplates\/432452342.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -6760,9 +6760,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the organization and deidentify template to be read, for example `organizations\/433245324\/deidentifyTemplates\/432452342` or projects\/project-id\/deidentifyTemplates\/432452342.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -6785,9 +6785,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -6831,9 +6831,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the organization and deidentify template to be deleted, for example `organizations\/433245324\/deidentifyTemplates\/432452342` or projects\/project-id\/deidentifyTemplates\/432452342.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -6860,9 +6860,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -6888,9 +6888,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the project and the triggeredJob, for example `projects\/dlp-test-project\/jobTriggers\/53234423`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -6916,9 +6916,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the project and the triggeredJob, for example `projects\/dlp-test-project\/jobTriggers\/53234423`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -6941,9 +6941,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -6992,9 +6992,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the project and the triggeredJob, for example `projects\/dlp-test-project\/jobTriggers\/53234423`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/jobTriggers\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -7021,9 +7021,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -7091,9 +7091,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -7119,9 +7119,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of organization and storedInfoType to be updated, for example `organizations\/433245324\/storedInfoTypes\/432452342` or projects\/project-id\/storedInfoTypes\/432452342.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -7147,9 +7147,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the organization and storedInfoType to be read, for example `organizations\/433245324\/storedInfoTypes\/432452342` or projects\/project-id\/storedInfoTypes\/432452342.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -7172,9 +7172,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -7218,9 +7218,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the organization and storedInfoType to be deleted, for example `organizations\/433245324\/storedInfoTypes\/432452342` or projects\/project-id\/storedInfoTypes\/432452342.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -7249,9 +7249,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -7277,9 +7277,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of organization and deidentify template to be updated, for example `organizations\/433245324\/deidentifyTemplates\/432452342` or projects\/project-id\/deidentifyTemplates\/432452342.",
+                  "pattern": "^organizations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -7305,9 +7305,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the organization and deidentify template to be read, for example `organizations\/433245324\/deidentifyTemplates\/432452342` or projects\/project-id\/deidentifyTemplates\/432452342.",
+                  "pattern": "^organizations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -7330,9 +7330,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -7376,9 +7376,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the organization and deidentify template to be deleted, for example `organizations\/433245324\/deidentifyTemplates\/432452342` or projects\/project-id\/deidentifyTemplates\/432452342.",
+                  "pattern": "^organizations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/deidentifyTemplates\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -7405,9 +7405,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -7433,9 +7433,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of organization and storedInfoType to be updated, for example `organizations\/433245324\/storedInfoTypes\/432452342` or projects\/project-id\/storedInfoTypes\/432452342.",
+                  "pattern": "^organizations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -7461,9 +7461,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the organization and storedInfoType to be read, for example `organizations\/433245324\/storedInfoTypes\/432452342` or projects\/project-id\/storedInfoTypes\/432452342.",
+                  "pattern": "^organizations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -7486,9 +7486,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -7532,9 +7532,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Resource name of the organization and storedInfoType to be deleted, for example `organizations\/433245324\/storedInfoTypes\/432452342` or projects\/project-id\/storedInfoTypes\/432452342.",
+                  "pattern": "^organizations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
                   "type": "string"
                 }
               },

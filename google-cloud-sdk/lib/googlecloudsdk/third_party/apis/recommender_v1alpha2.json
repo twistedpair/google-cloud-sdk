@@ -654,6 +654,45 @@
           "type": "string"
         }
       }
+    },
+    "GoogleCloudRecommenderV1alpha2RecommenderConfig": {
+      "id": "GoogleCloudRecommenderV1alpha2RecommenderConfig",
+      "description": "Configuration for a Recommender.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of recommender config. Eg, projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\/config",
+          "type": "string"
+        },
+        "recommenderGenerationConfig": {
+          "description": "RecommenderGenerationConfig which configures the Generation of recommendations for this recommender.",
+          "$ref": "GoogleCloudRecommenderV1alpha2RecommenderGenerationConfig"
+        },
+        "etag": {
+          "description": "Fingerprint of the RecommenderConfig. Provides optimistic locking when updating.",
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Last time when the config was updated.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudRecommenderV1alpha2RecommenderGenerationConfig": {
+      "id": "GoogleCloudRecommenderV1alpha2RecommenderGenerationConfig",
+      "description": "A Configuration to customize the generation of recommendations. Eg, customizing the lookback period considered when generating a recommendation.",
+      "type": "object",
+      "properties": {
+        "params": {
+          "description": "Parameters for this RecommenderGenerationConfig. These configs can be used by or are applied to all subtypes.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        }
+      }
     }
   },
   "resources": {
@@ -673,9 +712,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ INSIGHT_TYPE_ID refers to supported insight types: https:\/\/cloud.google.com\/recommender\/docs\/insights\/insight-types.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -714,9 +753,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the insight.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -739,9 +778,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the insight.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -767,9 +806,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the insight.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -795,9 +834,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the insight.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -820,6 +859,34 @@
               }
             },
             "recommenders": {
+              "methods": {
+                "getConfig": {
+                  "id": "recommender.projects.locations.recommenders.getConfig",
+                  "path": "v1alpha2/{+name}",
+                  "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/config",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the Recommendation Config to get. Acceptable formats: 1. projects\/[PROJECT_NUMBER]\/locations\/global\/recommenders\/[RECOMMENDER_ID]\/config",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/config$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudRecommenderV1alpha2RecommenderConfig"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the requested Recommender Config. There is only one instance of the config for each Recommender."
+                }
+              }
+              ,
               "resources": {
                 "recommendations": {
                   "methods": {
@@ -831,9 +898,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ RECOMMENDER_ID refers to supported recommenders: https:\/\/cloud.google.com\/recommender\/docs\/recommenders.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -872,9 +939,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the recommendation.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -897,9 +964,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -925,9 +992,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -953,9 +1020,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -981,9 +1048,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1009,9 +1076,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1028,6 +1095,38 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Marks the Recommendation State as Failed. Users can use this method to indicate to the Recommender API that they have applied the recommendation themselves, and the operation failed. This stops the recommendation content from being updated. Associated insights are frozen and placed in the ACCEPTED state. MarkRecommendationFailed can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED, or FAILED state. Requires the recommender.*.update IAM permission for the specified recommender."
+                    }
+                  }
+                },
+                "config": {
+                  "methods": {
+                    "commit": {
+                      "id": "recommender.projects.locations.recommenders.config.commit",
+                      "path": "v1alpha2/{+name}:commit",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/config:commit",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the Recommendation Config to commit. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/global\/recommenders\/[RECOMMENDER_ID]\/config\"",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/config$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2RecommenderConfig"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2RecommenderConfig"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Commits a Recommender Config change."
                     }
                   }
                 }
@@ -1053,9 +1152,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ INSIGHT_TYPE_ID refers to supported insight types: https:\/\/cloud.google.com\/recommender\/docs\/insights\/insight-types.",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1094,9 +1193,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the insight.",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1119,9 +1218,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the insight.",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1147,9 +1246,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the insight.",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1175,9 +1274,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the insight.",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1211,9 +1310,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ RECOMMENDER_ID refers to supported recommenders: https:\/\/cloud.google.com\/recommender\/docs\/recommenders.",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1252,9 +1351,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the recommendation.",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1277,9 +1376,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1305,9 +1404,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1333,9 +1432,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1361,9 +1460,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1389,9 +1488,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1433,9 +1532,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ INSIGHT_TYPE_ID refers to supported insight types: https:\/\/cloud.google.com\/recommender\/docs\/insights\/insight-types.",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1474,9 +1573,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the insight.",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1499,9 +1598,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the insight.",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1527,9 +1626,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the insight.",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1555,9 +1654,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the insight.",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1591,9 +1690,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ RECOMMENDER_ID refers to supported recommenders: https:\/\/cloud.google.com\/recommender\/docs\/recommenders.",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1632,9 +1731,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the recommendation.",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1657,9 +1756,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1685,9 +1784,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1713,9 +1812,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1741,9 +1840,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1769,9 +1868,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1813,9 +1912,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ INSIGHT_TYPE_ID refers to supported insight types: https:\/\/cloud.google.com\/recommender\/docs\/insights\/insight-types.",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1854,9 +1953,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the insight.",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1879,9 +1978,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the insight.",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1907,9 +2006,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the insight.",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1935,9 +2034,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the insight.",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1971,9 +2070,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ RECOMMENDER_ID refers to supported recommenders: https:\/\/cloud.google.com\/recommender\/docs\/recommenders.",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -2012,9 +2111,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the recommendation.",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2037,9 +2136,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2065,9 +2164,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2093,9 +2192,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2121,9 +2220,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2149,9 +2248,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },

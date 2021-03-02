@@ -1089,9 +1089,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The project on which to execute the request. The format is: projects\/[PROJECT_ID_OR_NUMBER] The [PROJECT_ID_OR_NUMBER] must match the dashboard resource name.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1119,9 +1119,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The scope of the dashboards to list. The format is: projects\/[PROJECT_ID_OR_NUMBER] ",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -1157,9 +1157,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the Dashboard. The format is one of: dashboards\/[DASHBOARD_ID] (for system dashboards) projects\/[PROJECT_ID_OR_NUMBER]\/dashboards\/[DASHBOARD_ID] (for custom dashboards).",
+                  "pattern": "^projects\/[^\/]+\/dashboards\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/dashboards\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1184,9 +1184,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the Dashboard. The format is: projects\/[PROJECT_ID_OR_NUMBER]\/dashboards\/[DASHBOARD_ID] ",
+                  "pattern": "^projects\/[^\/]+\/dashboards\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/dashboards\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1211,9 +1211,9 @@
               "parameters": {
                 "name": {
                   "description": "Immutable. The resource name of the dashboard.",
+                  "pattern": "^projects\/[^\/]+\/dashboards\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/dashboards\/[^\/]+$",
                   "type": "string"
                 }
               },

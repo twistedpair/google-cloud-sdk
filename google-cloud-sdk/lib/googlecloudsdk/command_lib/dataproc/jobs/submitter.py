@@ -44,10 +44,12 @@ class JobSubmitter(base.Command):
         help=('Specifies the maximum total number of times a job can be '
               'restarted after the job fails. '
               'Default is 0 (no retries after job failure).'))
-    parser.add_argument(
-        '--cluster',
-        required=True,
-        help='The Dataproc cluster to submit the job to.')
+    cluster_placement = parser.add_mutually_exclusive_group(required=True)
+    cluster_placement.add_argument(
+        '--cluster', help='The Dataproc cluster to submit the job to.')
+    labels_util.GetCreateLabelsFlag(
+        'Labels of Dataproc cluster on which to place the job.',
+        'cluster-labels').AddToParser(cluster_placement)
 
   def Run(self, args):
     """This is what gets called when the user runs this command."""
@@ -60,15 +62,15 @@ class JobSubmitter(base.Command):
     job_ref = util.ParseJob(job_id, dataproc)
 
     self.PopulateFilesByType(args)
+    cluster = None
+    if args.cluster is not None:
+      cluster_ref = util.ParseCluster(args.cluster, dataproc)
+      request = dataproc.messages.DataprocProjectsRegionsClustersGetRequest(
+          projectId=cluster_ref.projectId,
+          region=cluster_ref.region,
+          clusterName=cluster_ref.clusterName)
 
-    cluster_ref = util.ParseCluster(args.cluster, dataproc)
-    request = dataproc.messages.DataprocProjectsRegionsClustersGetRequest(
-        projectId=cluster_ref.projectId,
-        region=cluster_ref.region,
-        clusterName=cluster_ref.clusterName)
-
-    cluster = dataproc.client.projects_regions_clusters.Get(request)
-
+      cluster = dataproc.client.projects_regions_clusters.Get(request)
     self._staging_dir = self.GetStagingDir(
         cluster, job_ref.jobId, bucket=args.bucket)
     self.ValidateAndStageFiles()
@@ -116,3 +118,7 @@ class JobSubmitter(base.Command):
     """Add type-specific job configuration to job message."""
     # Parse labels (if present)
     job.labels = labels_util.ParseCreateArgs(args, messages.Job.LabelsValue)
+    job.placement.clusterLabels = labels_util.ParseCreateArgs(
+        args,
+        messages.JobPlacement.ClusterLabelsValue,
+        labels_dest='cluster_labels')

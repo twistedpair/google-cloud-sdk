@@ -2043,6 +2043,8 @@ class JobStatistics2(_messages.Message):
       while the table does not exist. "REPLACE": The query replaced the DDL
       target. Example case: the query is CREATE OR REPLACE TABLE, and the
       table already exists. "DROP": The query deleted the DDL target.
+    ddlTargetDataset: [Output-only] The DDL target dataset. Present only for
+      CREATE/ALTER/DROP SCHEMA queries.
     ddlTargetRoutine: The DDL target routine. Present only for CREATE/DROP
       FUNCTION/PROCEDURE queries.
     ddlTargetRowAccessPolicy: [Output-only] [Preview] The DDL target row
@@ -2119,27 +2121,28 @@ class JobStatistics2(_messages.Message):
   cacheHit = _messages.BooleanField(2)
   ddlAffectedRowAccessPolicyCount = _messages.IntegerField(3)
   ddlOperationPerformed = _messages.StringField(4)
-  ddlTargetRoutine = _messages.MessageField('RoutineReference', 5)
-  ddlTargetRowAccessPolicy = _messages.MessageField('RowAccessPolicyReference', 6)
-  ddlTargetTable = _messages.MessageField('TableReference', 7)
-  estimatedBytesProcessed = _messages.IntegerField(8)
-  modelTraining = _messages.MessageField('BigQueryModelTraining', 9)
-  modelTrainingCurrentIteration = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  modelTrainingExpectedTotalIteration = _messages.IntegerField(11)
-  numDmlAffectedRows = _messages.IntegerField(12)
-  queryPlan = _messages.MessageField('ExplainQueryStage', 13, repeated=True)
-  referencedRoutines = _messages.MessageField('RoutineReference', 14, repeated=True)
-  referencedTables = _messages.MessageField('TableReference', 15, repeated=True)
-  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 16, repeated=True)
-  schema = _messages.MessageField('TableSchema', 17)
-  statementType = _messages.StringField(18)
-  timeline = _messages.MessageField('QueryTimelineSample', 19, repeated=True)
-  totalBytesBilled = _messages.IntegerField(20)
-  totalBytesProcessed = _messages.IntegerField(21)
-  totalBytesProcessedAccuracy = _messages.StringField(22)
-  totalPartitionsProcessed = _messages.IntegerField(23)
-  totalSlotMs = _messages.IntegerField(24)
-  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 25, repeated=True)
+  ddlTargetDataset = _messages.MessageField('DatasetReference', 5)
+  ddlTargetRoutine = _messages.MessageField('RoutineReference', 6)
+  ddlTargetRowAccessPolicy = _messages.MessageField('RowAccessPolicyReference', 7)
+  ddlTargetTable = _messages.MessageField('TableReference', 8)
+  estimatedBytesProcessed = _messages.IntegerField(9)
+  modelTraining = _messages.MessageField('BigQueryModelTraining', 10)
+  modelTrainingCurrentIteration = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  modelTrainingExpectedTotalIteration = _messages.IntegerField(12)
+  numDmlAffectedRows = _messages.IntegerField(13)
+  queryPlan = _messages.MessageField('ExplainQueryStage', 14, repeated=True)
+  referencedRoutines = _messages.MessageField('RoutineReference', 15, repeated=True)
+  referencedTables = _messages.MessageField('TableReference', 16, repeated=True)
+  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 17, repeated=True)
+  schema = _messages.MessageField('TableSchema', 18)
+  statementType = _messages.StringField(19)
+  timeline = _messages.MessageField('QueryTimelineSample', 20, repeated=True)
+  totalBytesBilled = _messages.IntegerField(21)
+  totalBytesProcessed = _messages.IntegerField(22)
+  totalBytesProcessedAccuracy = _messages.StringField(23)
+  totalPartitionsProcessed = _messages.IntegerField(24)
+  totalSlotMs = _messages.IntegerField(25)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 26, repeated=True)
 
 
 class JobStatistics3(_messages.Message):

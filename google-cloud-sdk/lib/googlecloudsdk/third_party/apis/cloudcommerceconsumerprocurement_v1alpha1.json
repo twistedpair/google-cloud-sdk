@@ -695,7 +695,8 @@
             "Change is in this state, if the change was approved by partner or auto-approved but is pending to be effective.",
             "Change is in this state, if the change was activated and completed successfully.",
             "Change is in this state, if the change was rejected by partner.",
-            "Change is in this state, if it was abandoned by user."
+            "Change is in this state, if it was abandoned by user.",
+            "Change is in this state, if it is going through downstream provision, the change is not cancellable in this state."
           ],
           "enum": [
             "LINE_ITEM_CHANGE_STATE_UNSPECIFIED",
@@ -703,7 +704,8 @@
             "LINE_ITEM_CHANGE_STATE_APPROVED",
             "LINE_ITEM_CHANGE_STATE_COMPLETED",
             "LINE_ITEM_CHANGE_STATE_REJECTED",
-            "LINE_ITEM_CHANGE_STATE_ABANDONED"
+            "LINE_ITEM_CHANGE_STATE_ABANDONED",
+            "LINE_ITEM_CHANGE_STATE_ACTIVATING"
           ]
         },
         "stateReason": {
@@ -1118,7 +1120,8 @@
             "Change is in this state, if the change was approved by partner or auto-approved but is pending to be effective.",
             "Change is in this state, if the change was activated and completed successfully.",
             "Change is in this state, if the change was rejected by partner.",
-            "Change is in this state, if it was abandoned by user."
+            "Change is in this state, if it was abandoned by user.",
+            "Change is in this state, if it is going through downstream provision, the change is not cancellable in this state."
           ],
           "enum": [
             "CHANGE_STATE_UNSPECIFIED",
@@ -1126,7 +1129,8 @@
             "CHANGE_STATE_APPROVED",
             "CHANGE_STATE_COMPLETED",
             "CHANGE_STATE_REJECTED",
-            "CHANGE_STATE_ABANDONED"
+            "CHANGE_STATE_ABANDONED",
+            "CHANGE_STATE_ACTIVATING"
           ]
         },
         "changeEffectiveTime": {
@@ -1382,9 +1386,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource of this account. This field is of the form \"\/\". Currently supported type: 'billingAccounts\/{billing-account-id}'",
+                  "pattern": "^billingAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1410,9 +1414,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource to query for accounts. This field is of the form `billingAccounts\/{billing-account-id}`.",
+                  "pattern": "^billingAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -1446,9 +1450,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the account to retrieve.",
+                  "pattern": "^billingAccounts\/[^\/]+\/accounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+\/accounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1471,9 +1475,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the account to delete.",
+                  "pattern": "^billingAccounts\/[^\/]+\/accounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+\/accounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1501,9 +1505,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^billingAccounts\/[^\/]+\/accounts\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^billingAccounts\/[^\/]+\/accounts\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1542,9 +1546,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^billingAccounts\/[^\/]+\/accounts\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^billingAccounts\/[^\/]+\/accounts\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1567,9 +1571,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^billingAccounts\/[^\/]+\/accounts\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^billingAccounts\/[^\/]+\/accounts\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1592,9 +1596,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^billingAccounts\/[^\/]+\/accounts\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^billingAccounts\/[^\/]+\/accounts\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1626,9 +1630,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The resource name of the parent resource. This field is of the form `billingAccounts\/{billing-account-id}`.",
+                  "pattern": "^billingAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1654,9 +1658,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the order to retrieve.",
+                  "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1679,9 +1683,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource to query for orders. This field is of the form `billingAccounts\/{billing-account-id}`.",
+                  "pattern": "^billingAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -1720,9 +1724,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource to query for orders. This field is of the form `billingAccounts\/`.",
+                  "pattern": "^billingAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+$",
                   "type": "string"
                 },
                 "newParent": {
@@ -1761,9 +1765,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Name of the order to update.",
+                  "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1789,9 +1793,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the order.",
+                  "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1817,9 +1821,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Name of the order to migrate. This field is in this form: billingAccounts\/{billing-account-id}\/orders\/{order-id}.",
+                  "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1850,9 +1854,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1891,9 +1895,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1916,9 +1920,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1941,9 +1945,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1973,9 +1977,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource of this OrderAllocation. This field is of the form 'billingAccounts\/{billing-account-id}\/orders\/{order-id}'.",
+                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2001,9 +2005,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the OrderAllocation to retrieve. This field is of the form `billingAccounts\/{billing-account-id}\/orders\/{order-id}\/orderAllocations\/{order-allocation-id}`.",
+                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2026,9 +2030,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent resource to query for OrderAllocations. This field is of the form `billingAccounts\/{billing-account-id}\/orders\/{order-id}`.",
+                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -2062,9 +2066,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the allocation. This field is of the form: `billingAccounts\/{billing-account-id}\/orders\/{order-id}\/orderAllocations\/{order-allocation-id}`.",
+                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -2096,9 +2100,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name of the OrderAllocation to delete.",
+                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+$",
                       "type": "string"
                     },
                     "etag": {
@@ -2131,9 +2135,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation's parent resource.",
+                          "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+$",
                           "type": "string"
                         },
                         "filter": {
@@ -2172,9 +2176,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource.",
+                          "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2197,9 +2201,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource to be deleted.",
+                          "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2222,9 +2226,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource to be cancelled.",
+                          "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2262,9 +2266,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the entitlement to retrieve. This field is one of the following forms: `projects\/{project-number}\/entitlements\/{entitlement-id}` `projects\/{project-id}\/entitlements\/{entitlement-id}`.",
+                  "pattern": "^projects\/[^\/]+\/entitlements\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/entitlements\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2287,9 +2291,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource to query for Entitlements. Currently the only parents supported are \"projects\/{project-number}\" and \"projects\/{project-id}\".",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -2327,9 +2331,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource to query for FreeTrials. Currently the only parent supported is \"projects\/{project-id}\".",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2355,9 +2359,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the freeTrial to retrieve. This field is of the form `projects\/{project-id}\/freeTrials\/{freetrial-id}`.",
+                  "pattern": "^projects\/[^\/]+\/freeTrials\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/freeTrials\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2380,9 +2384,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource to query for FreeTrials. Currently the only parent supported is \"projects\/{project-id}\".",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -2426,9 +2430,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/freeTrials\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/freeTrials\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -2467,9 +2471,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/freeTrials\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/freeTrials\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2492,9 +2496,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/freeTrials\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/freeTrials\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2517,9 +2521,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/freeTrials\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/freeTrials\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },

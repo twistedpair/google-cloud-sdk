@@ -1189,7 +1189,7 @@
           "$ref": "Build"
         },
         "filename": {
-          "description": "Path, from the source root, to a file whose contents is used for the template.",
+          "description": "Path, from the source root, to the build configuration file (i.e. cloudbuild.yaml).",
           "type": "string"
         },
         "gitFileSource": {
@@ -1234,6 +1234,10 @@
         "approvalConfig": {
           "description": "Configuration for manual approval to start a build invocation of this BuildTrigger.",
           "$ref": "ApprovalConfig"
+        },
+        "filter": {
+          "description": "A Common Expression Language string.",
+          "type": "string"
         }
       }
     },
@@ -1969,9 +1973,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -1994,9 +1998,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be cancelled.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -2030,9 +2034,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2055,9 +2059,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2087,9 +2091,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The parent resource where this build will be created. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "projectId": {
@@ -2120,9 +2124,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the `Build` to retrieve. Format: `projects\/{project}\/locations\/{location}\/builds\/{build}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/builds\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/builds\/[^\/]+$",
                       "type": "string"
                     },
                     "projectId": {
@@ -2155,9 +2159,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The parent of the collection of `Builds`. Format: `projects\/{project}\/locations\/location`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "projectId": {
@@ -2201,9 +2205,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the `Build` to cancel. Format: `projects\/{project}\/locations\/{location}\/builds\/{build}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/builds\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/builds\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2229,9 +2233,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the `Build` to retry. Format: `projects\/{project}\/locations\/{location}\/builds\/{build}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/builds\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/builds\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2261,9 +2265,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Name of the parent project. For example: projects\/{$project_number} or projects\/{$project_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "projectId": {
@@ -2294,9 +2298,9 @@
                   "parameters": {
                     "name": {
                       "description": "Optional. The full resource name for the GitHubEnterpriseConfig For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -2328,9 +2332,9 @@
                   "parameters": {
                     "name": {
                       "description": "This field should contain the name of the enterprise config resource. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                       "type": "string"
                     },
                     "projectId": {
@@ -2363,9 +2367,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Name of the parent project. For example: projects\/{$project_number} or projects\/{$project_id}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "projectId": {
@@ -2393,9 +2397,9 @@
                   "parameters": {
                     "name": {
                       "description": "This field should contain the name of the enterprise config resource. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                       "type": "string"
                     },
                     "projectId": {
@@ -2428,9 +2432,9 @@
                   "parameters": {
                     "enterpriseConfigResource": {
                       "description": "Required. The name of the enterprise config resource associated with the GitHub App. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2640,9 +2644,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Name of the target build. For example: \"projects\/{$project_id}\/builds\/{$build_id}\"",
+                  "pattern": "^projects\/[^\/]+\/builds\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/builds\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3234,9 +3238,9 @@
               "parameters": {
                 "parent": {
                   "description": "Name of the parent project. For example: projects\/{$project_number} or projects\/{$project_id}",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "projectId": {
@@ -3267,9 +3271,9 @@
               "parameters": {
                 "name": {
                   "description": "Optional. The full resource name for the GitHubEnterpriseConfig For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                  "pattern": "^projects\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -3301,9 +3305,9 @@
               "parameters": {
                 "name": {
                   "description": "This field should contain the name of the enterprise config resource. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                  "pattern": "^projects\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                   "type": "string"
                 },
                 "projectId": {
@@ -3336,9 +3340,9 @@
               "parameters": {
                 "parent": {
                   "description": "Name of the parent project. For example: projects\/{$project_number} or projects\/{$project_id}",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "projectId": {
@@ -3366,9 +3370,9 @@
               "parameters": {
                 "name": {
                   "description": "This field should contain the name of the enterprise config resource. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                  "pattern": "^projects\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                   "type": "string"
                 },
                 "projectId": {
@@ -3401,9 +3405,9 @@
               "parameters": {
                 "enterpriseConfigResource": {
                   "description": "Required. The name of the enterprise config resource associated with the GitHub App. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                  "pattern": "^projects\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                   "type": "string"
                 }
               },

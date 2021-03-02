@@ -928,13 +928,13 @@ def AddGuestFlushFlag(parser, resource, custom_help=None):
 
 
 def AddShieldedInstanceInitialStateKeyArg(parser):
-  """Add the initial state for shielded instance arg."""
+  """Adds the initial state for Shielded instance arg."""
   parser.add_argument(
       '--platform-key-file',
       help="""\
       File path that points to an X.509 certificate in DER format or raw binary
-      file. When you create a shielded VM from this image, this certificate or
-      raw binary file is used as the platform key (PK).
+      file. When you create a Shielded VM instance from this image, this
+      certificate or raw binary file is used as the platform key (PK).
         """)
   parser.add_argument(
       '--key-exchange-key-file',
@@ -942,8 +942,9 @@ def AddShieldedInstanceInitialStateKeyArg(parser):
       metavar='KEK_VALUE',
       help="""\
       Comma-separated list of file paths that point to X.509 certificates in DER
-      format or raw binary files. When you create a shielded VM from this image,
-      these certificates or files are used as key exchange keys (KEK).
+      format or raw binary files. When you create a Shielded VM instance from
+      this image, these certificates or files are used as key exchange keys
+      (KEK).
         """)
   parser.add_argument(
       '--signature-database-file',
@@ -951,9 +952,9 @@ def AddShieldedInstanceInitialStateKeyArg(parser):
       metavar='DB_VALUE',
       help="""\
       Comma-separated list of file paths that point to valid X.509 certificates
-      in DER format or raw binary files. When you create a shielded VM from this
-      image, these certificates or files are  added to the signature database
-      (db).
+      in DER format or raw binary files. When you create a Shielded VM instance
+      from this image, these certificates or files are  added to the signature
+      database (db).
         """)
   parser.add_argument(
       '--forbidden-database-file',
@@ -961,9 +962,9 @@ def AddShieldedInstanceInitialStateKeyArg(parser):
       metavar='DBX_VALUE',
       help="""\
       Comma-separated list of file paths that point to revoked X.509
-      certificates in DER format or raw binary files. When you create a shielded
-      VM from this image, these certificates or files are added to the forbidden
-      signature database (dbx).
+      certificates in DER format or raw binary files. When you create a Shielded
+      VM instance from this image, these certificates or files are added to the
+      forbidden signature database (dbx).
         """)
 
 

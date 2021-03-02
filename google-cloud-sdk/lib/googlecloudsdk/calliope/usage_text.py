@@ -23,14 +23,11 @@ import argparse
 import collections
 import copy
 import difflib
+import enum
 import io
 import re
 import sys
 import textwrap
-
-
-import enum
-
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -624,13 +621,14 @@ class Section(object):
     self.args = args
 
 
-def GetArgSections(arguments, is_root):
+def GetArgSections(arguments, is_root, is_group):
   """Returns the positional/flag sections in document order.
 
   Args:
     arguments: [Flag|Positional], The list of arguments for this command or
       group.
     is_root: bool, True if arguments are for the CLI root command.
+    is_group: bool, True if arguments are for a command group.
 
   Returns:
     ([Section] global_flags)
@@ -639,6 +637,8 @@ def GetArgSections(arguments, is_root):
   categories = {}
   dests = set()
   global_flags = set()
+  if not is_root and is_group:
+    global_flags = {'--help'}
   for arg in arguments:
     if arg.is_hidden:
       continue
@@ -652,7 +652,7 @@ def GetArgSections(arguments, is_root):
       for a in arg.arguments if arg.is_group else [arg]:
         if a.option_strings and not a.is_hidden:
           flag = a.option_strings[0]
-          if flag.startswith('--'):
+          if not is_group and flag.startswith('--'):
             global_flags.add(flag)
       continue
     if arg.is_required:

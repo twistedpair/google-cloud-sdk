@@ -36,7 +36,7 @@ class InvalidSCCInputError(core_exceptions.Error):
 
 
 def AppendOrgArg():
-  """Add Organization as positional resource."""
+  """Add Organization as a positional resource."""
   org_spec_data = yaml_data.ResourceYAMLData.FromPath("scc.organization")
   arg_specs = [
       resource_args.GetResourcePresentationSpec(
@@ -46,6 +46,21 @@ def AppendOrgArg():
           prefixes=False,
           positional=True,
           resource_data=org_spec_data.GetData()),
+  ]
+  return [concept_parsers.ConceptParser(arg_specs, [])]
+
+
+def AppendParentArg():
+  """Add Parent as a positional resource."""
+  parent_spec_data = yaml_data.ResourceYAMLData.FromPath("scc.parent")
+  arg_specs = [
+      resource_args.GetResourcePresentationSpec(
+          verb="to be used for the SCC (Security Command Center) command",
+          name="parent",
+          required=True,
+          prefixes=False,
+          positional=True,
+          resource_data=parent_spec_data.GetData()),
   ]
   return [concept_parsers.ConceptParser(arg_specs, [])]
 
@@ -64,6 +79,33 @@ def SecurityMarksHook(parsed_dict):
   security_marks.marks = encoding.DictToMessage(
       parsed_dict, messages.SecurityMarks.MarksValue)
   return security_marks
+
+
+def GetParent(args):
+  """Converts user input to one of: organization, project, or folder."""
+  organization_resource_pattern = re.compile("organizations/[0-9]+$")
+  id_pattern = re.compile("[0-9]+")
+  if not args.parent:
+    parent = properties.VALUES.scc.parent.Get()
+  else:
+    parent = args.parent
+  if parent is None:
+    # Use organization property as backup for legacy behavior.
+    parent = properties.VALUES.scc.organization.Get()
+  if parent is None:
+    raise InvalidSCCInputError("Could not find Parent argument. Please "
+                               "provide the parent argument.")
+  if id_pattern.match(parent):
+    # Prepend organizations/ if only number value is provided.
+    parent = "organizations/" + parent
+  if not (organization_resource_pattern.match(parent) or
+          parent.startswith("projects/") or parent.startswith("folders/")):
+    error_message = ("Parent must match either [0-9]+, organizations/[0-9]+, "
+                     "projects/.* "
+                     "or folders/.*."
+                     "")
+    raise InvalidSCCInputError(error_message)
+  return parent
 
 
 def GetOrganization(args):
@@ -96,6 +138,23 @@ def GetDefaultOrganization():
   if resource_pattern.match(organization):
     return organization
   return "organizations/" + organization
+
+
+def GetDefaultParent():
+  """Converts user input to one of: organization, project, or folder."""
+  organization_resource_pattern = re.compile("organizations/[0-9]+$")
+  id_pattern = re.compile("[0-9]+")
+  parent = properties.VALUES.scc.parent.Get()
+  if id_pattern.match(parent):
+    # Prepend organizations/ if only number value is provided.
+    parent = "organizations/" + parent
+  if not (organization_resource_pattern.match(parent) or \
+          parent.startswith("projects/") or \
+          parent.startswith("folders/")):
+    raise InvalidSCCInputError(
+        """Parent must match either [0-9]+, organizations/[0-9]+, projects/.*
+      or folders/.*.""")
+  return parent
 
 
 def CleanUpUserInput(mask):

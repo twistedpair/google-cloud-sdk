@@ -8203,9 +8203,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation's parent resource.",
+              "pattern": "^operations$",
               "location": "path",
               "required": true,
-              "pattern": "^operations$",
               "type": "string"
             },
             "filter": {
@@ -8245,9 +8245,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
+              "pattern": "^operations\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/[^\/]+$",
               "type": "string"
             }
           },
@@ -8271,9 +8271,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be deleted.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -8297,9 +8297,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be cancelled.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -8332,9 +8332,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource.",
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -8364,9 +8364,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -8394,9 +8394,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project in which the ProductSet should be created. Format is `projects\/PROJECT_ID\/locations\/LOC_ID`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "productSetId": {
@@ -8428,9 +8428,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project from which ProductSets should be listed. Format is `projects\/PROJECT_ID\/locations\/LOC_ID`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -8465,9 +8465,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the ProductSet to get. Format is: `projects\/PROJECT_ID\/locations\/LOC_ID\/productSets\/PRODUCT_SET_ID`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/productSets\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/productSets\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -8491,9 +8491,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the ProductSet. Format is: `projects\/PROJECT_ID\/locations\/LOC_ID\/productSets\/PRODUCT_SET_ID`. This field is ignored when creating a ProductSet.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/productSets\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/productSets\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -8526,9 +8526,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the ProductSet to delete. Format is: `projects\/PROJECT_ID\/locations\/LOC_ID\/productSets\/PRODUCT_SET_ID`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/productSets\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/productSets\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -8552,9 +8552,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name for the ProductSet to modify. Format is: `projects\/PROJECT_ID\/locations\/LOC_ID\/productSets\/PRODUCT_SET_ID`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/productSets\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/productSets\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -8581,9 +8581,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The resource name for the ProductSet to modify. Format is: `projects\/PROJECT_ID\/locations\/LOC_ID\/productSets\/PRODUCT_SET_ID`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/productSets\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/productSets\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -8610,9 +8610,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project in which the ProductSets should be imported. Format is `projects\/PROJECT_ID\/locations\/LOC_ID`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -8644,9 +8644,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The ProductSet resource for which to retrieve Products. Format is: `projects\/PROJECT_ID\/locations\/LOC_ID\/productSets\/PRODUCT_SET_ID`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/productSets\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/productSets\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -8687,9 +8687,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project in which the Product should be created. Format is `projects\/PROJECT_ID\/locations\/LOC_ID`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "productId": {
@@ -8721,9 +8721,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project OR ProductSet from which Products should be listed. Format: `projects\/PROJECT_ID\/locations\/LOC_ID`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -8758,9 +8758,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the Product to get. Format is: `projects\/PROJECT_ID\/locations\/LOC_ID\/products\/PRODUCT_ID`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/products\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/products\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -8784,9 +8784,9 @@
                   "parameters": {
                     "name": {
                       "description": "The resource name of the product. Format is: `projects\/PROJECT_ID\/locations\/LOC_ID\/products\/PRODUCT_ID`. This field is ignored when creating a product.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/products\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/products\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -8819,9 +8819,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of product to delete. Format is: `projects\/PROJECT_ID\/locations\/LOC_ID\/products\/PRODUCT_ID`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/products\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/products\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -8845,9 +8845,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location in which the Products should be deleted. Format is `projects\/PROJECT_ID\/locations\/LOC_ID`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -8879,9 +8879,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. Resource name of the product in which to create the reference image. Format is `projects\/PROJECT_ID\/locations\/LOC_ID\/products\/PRODUCT_ID`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/products\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/products\/[^\/]+$",
                           "type": "string"
                         },
                         "referenceImageId": {
@@ -8913,9 +8913,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The resource name of the reference image to delete. Format is: `projects\/PROJECT_ID\/locations\/LOC_ID\/products\/PRODUCT_ID\/referenceImages\/IMAGE_ID`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/products\/[^\/]+\/referenceImages\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/products\/[^\/]+\/referenceImages\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -8939,9 +8939,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. Resource name of the product containing the reference images. Format is `projects\/PROJECT_ID\/locations\/LOC_ID\/products\/PRODUCT_ID`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/products\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/products\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -8976,9 +8976,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The resource name of the ReferenceImage to get. Format is: `projects\/PROJECT_ID\/locations\/LOC_ID\/products\/PRODUCT_ID\/referenceImages\/IMAGE_ID`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/products\/[^\/]+\/referenceImages\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/products\/[^\/]+\/referenceImages\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -9008,9 +9008,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Optional. Target project and location to make a call. Format: `projects\/{project-id}\/locations\/{location-id}`. If no parent is specified, a region will be chosen automatically. Supported location-ids: `us`: USA country only, `asia`: East asia areas, like Japan, Taiwan, `eu`: The European Union. Example: `projects\/project-A\/locations\/eu`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -9037,9 +9037,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Optional. Target project and location to make a call. Format: `projects\/{project-id}\/locations\/{location-id}`. If no parent is specified, a region will be chosen automatically. Supported location-ids: `us`: USA country only, `asia`: East asia areas, like Japan, Taiwan, `eu`: The European Union. Example: `projects\/project-A\/locations\/eu`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -9070,9 +9070,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Optional. Target project and location to make a call. Format: `projects\/{project-id}\/locations\/{location-id}`. If no parent is specified, a region will be chosen automatically. Supported location-ids: `us`: USA country only, `asia`: East asia areas, like Japan, Taiwan, `eu`: The European Union. Example: `projects\/project-A\/locations\/eu`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -9099,9 +9099,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Optional. Target project and location to make a call. Format: `projects\/{project-id}\/locations\/{location-id}`. If no parent is specified, a region will be chosen automatically. Supported location-ids: `us`: USA country only, `asia`: East asia areas, like Japan, Taiwan, `eu`: The European Union. Example: `projects\/project-A\/locations\/eu`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -9134,9 +9134,9 @@
               "parameters": {
                 "parent": {
                   "description": "Optional. Target project and location to make a call. Format: `projects\/{project-id}\/locations\/{location-id}`. If no parent is specified, a region will be chosen automatically. Supported location-ids: `us`: USA country only, `asia`: East asia areas, like Japan, Taiwan, `eu`: The European Union. Example: `projects\/project-A\/locations\/eu`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -9163,9 +9163,9 @@
               "parameters": {
                 "parent": {
                   "description": "Optional. Target project and location to make a call. Format: `projects\/{project-id}\/locations\/{location-id}`. If no parent is specified, a region will be chosen automatically. Supported location-ids: `us`: USA country only, `asia`: East asia areas, like Japan, Taiwan, `eu`: The European Union. Example: `projects\/project-A\/locations\/eu`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -9196,9 +9196,9 @@
               "parameters": {
                 "parent": {
                   "description": "Optional. Target project and location to make a call. Format: `projects\/{project-id}\/locations\/{location-id}`. If no parent is specified, a region will be chosen automatically. Supported location-ids: `us`: USA country only, `asia`: East asia areas, like Japan, Taiwan, `eu`: The European Union. Example: `projects\/project-A\/locations\/eu`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -9225,9 +9225,9 @@
               "parameters": {
                 "parent": {
                   "description": "Optional. Target project and location to make a call. Format: `projects\/{project-id}\/locations\/{location-id}`. If no parent is specified, a region will be chosen automatically. Supported location-ids: `us`: USA country only, `asia`: East asia areas, like Japan, Taiwan, `eu`: The European Union. Example: `projects\/project-A\/locations\/eu`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -9262,9 +9262,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource.",
+                  "pattern": "^locations\/[^\/]+\/operations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^locations\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },

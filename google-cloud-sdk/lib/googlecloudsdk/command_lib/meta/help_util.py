@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 
 import collections
 import contextlib
-from distutils import dir_util
 import os
 import re
 import shutil
@@ -50,15 +49,8 @@ class HelpUpdateError(Error):
   """Update errors."""
 
 
-def Whitelisted(path):
-  """Checks if path is to be ignored in the directory differences.
-
-  Args:
-    path: A relative file path name to be checked.
-
-  Returns:
-    True if path is to be ignored in the directory differences.
-  """
+def IsOwnersFile(path):
+  """Return True if path refers to an OWNERS file."""
   return os.path.basename(path) == 'OWNERS'
 
 
@@ -85,7 +77,7 @@ def TimeIt(message):
     start = time.time()
     yield
     elapsed_time = time.time() - start
-    log.info('{} took {}'.format(message, elapsed_time))
+    log.status.Print('{} took {}'.format(message, elapsed_time))
 
 
 class DiffAccumulator(object):
@@ -172,8 +164,10 @@ def DirDiff(old_dir, new_dir, diff):
       is_binary = True
     return (contents, is_binary)
 
-  new_files = GetDirFilesRecursive(new_dir)
-  old_files = GetDirFilesRecursive(old_dir)
+  with TimeIt('GetDirFilesRecursive new files'):
+    new_files = GetDirFilesRecursive(new_dir)
+  with TimeIt('GetDirFilesRecursive old files'):
+    old_files = GetDirFilesRecursive(old_dir)
   for new_file in new_files:
     relative_file = os.path.relpath(new_file, new_dir)
     if diff.Ignore(relative_file):
@@ -237,7 +231,7 @@ class HelpAccumulator(DiffAccumulator):
     Returns:
       True if path is to be ignored in the directory differences.
     """
-    if Whitelisted(relative_file):
+    if IsOwnersFile(relative_file):
       return True
     if not self._restrict:
       return False
@@ -316,12 +310,9 @@ class HelpUpdater(object):
       elapsed_time = time.time() - start
       log.info('Generating Help Document Files took {}'.format(elapsed_time))
 
-      with file_utils.TemporaryDirectory() as old_files_dir:
-        with TimeIt('Copying destination files to temp dir'):
-          dir_util.copy_tree(self._directory, old_files_dir)
-        diff = HelpAccumulator(restrict=restrict)
-        with TimeIt('Diffing'):
-          DirDiff(old_files_dir, temp_dir, diff)
+      diff = HelpAccumulator(restrict=restrict)
+      with TimeIt('Diffing'):
+        DirDiff(self._directory, temp_dir, diff)
       if diff.invalid_file_count:
         # Bail out early on invalid content errors. These must be corrected
         # before proceeding.

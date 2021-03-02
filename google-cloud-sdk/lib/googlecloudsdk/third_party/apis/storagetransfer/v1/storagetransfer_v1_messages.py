@@ -532,9 +532,7 @@ class Operation(_messages.Message):
       cancellation.
     metadata: Represents the transfer operation object. To request a
       TransferOperation object, use transferOperations.get.
-    name: The server-assigned name, which is only unique within the same
-      service that originally returns it. If you use the default HTTP mapping,
-      the `name` should have the format of
+    name: The server-assigned unique name. The format of `name` is
       `transferOperations/some/unique/name`.
     response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
@@ -615,6 +613,17 @@ class PauseTransferOperationRequest(_messages.Message):
 
 class ResumeTransferOperationRequest(_messages.Message):
   r"""Request passed to ResumeTransferOperation."""
+
+
+class RunTransferJobRequest(_messages.Message):
+  r"""Request passed to RunTransferJob.
+
+  Fields:
+    projectId: Required. The ID of the Google Cloud Platform Console project
+      that owns the transfer job.
+  """
+
+  projectId = _messages.StringField(1)
 
 
 class Schedule(_messages.Message):
@@ -840,6 +849,19 @@ class StoragetransferTransferJobsPatchRequest(_messages.Message):
   updateTransferJobRequest = _messages.MessageField('UpdateTransferJobRequest', 2)
 
 
+class StoragetransferTransferJobsRunRequest(_messages.Message):
+  r"""A StoragetransferTransferJobsRunRequest object.
+
+  Fields:
+    jobName: Required. The name of the transfer job.
+    runTransferJobRequest: A RunTransferJobRequest resource to be passed as
+      the request body.
+  """
+
+  jobName = _messages.StringField(1, required=True)
+  runTransferJobRequest = _messages.MessageField('RunTransferJobRequest', 2)
+
+
 class StoragetransferTransferOperationsCancelRequest(_messages.Message):
   r"""A StoragetransferTransferOperationsCancelRequest object.
 
@@ -877,7 +899,7 @@ class StoragetransferTransferOperationsListRequest(_messages.Message):
       `jobNames`, `operationNames`, and `transferStatuses` are optional. The
       valid values for `transferStatuses` are case-insensitive: IN_PROGRESS,
       PAUSED, SUCCESS, FAILED, and ABORTED.
-    name: Required. The value `transferOperations`.
+    name: Not used.
     pageSize: The list page size. The max allowed value is 256.
     pageToken: The list page token.
   """
@@ -1021,7 +1043,10 @@ class TransferJob(_messages.Message):
       fail with an INVALID_ARGUMENT error.
     notificationConfig: Notification configuration.
     projectId: The ID of the Google Cloud Platform Project that owns the job.
-    schedule: Schedule specification.
+    schedule: Specifies schedule for the transfer job. This is an optional
+      field. When the field is not set, the job will never execute a transfer,
+      unless you invoke RunTransferJob or update the job to have a non-empty
+      schedule.
     status: Status of the job. This value MUST be specified for
       `CreateTransferJobRequests`. **Note:** The effect of the new job status
       takes place during a subsequent job run. For example, if you change the
@@ -1179,7 +1204,7 @@ class UpdateTransferJobRequest(_messages.Message):
     transferJob: Required. The job to update. `transferJob` is expected to
       specify only four fields: description, transfer_spec,
       notification_config, and status. An `UpdateTransferJobRequest` that
-      specifies other fields will be rejected with the error INVALID_ARGUMENT.
+      specifies other fields are rejected with the error INVALID_ARGUMENT.
       Updating a job satus to DELETED requires `storagetransfer.jobs.delete`
       permissions.
     updateTransferJobFieldMask: The field mask of the fields in `transferJob`
@@ -1187,7 +1212,7 @@ class UpdateTransferJobRequest(_messages.Message):
       be updated are: description, transfer_spec, notification_config, and
       status. To update the `transfer_spec` of the job, a complete transfer
       specification must be provided. An incomplete specification missing any
-      required fields will be rejected with the error INVALID_ARGUMENT.
+      required fields is rejected with the error INVALID_ARGUMENT.
   """
 
   projectId = _messages.StringField(1)

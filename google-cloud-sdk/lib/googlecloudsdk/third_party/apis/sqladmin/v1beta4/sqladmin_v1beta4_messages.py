@@ -435,8 +435,8 @@ class DatabaseInstance(_messages.Message):
       replicas.
     replicaNames: The replicas of the instance.
     rootPassword: Initial root password. Use only on creation.
-    satisfiesPzs: The status indicating if instance satisfies physical zone
-      separation. Reserved for future use.
+    satisfiesPzs: The status indicating if instance satisfiesPzs. Reserved for
+      future use.
     scheduledMaintenance: The start time of any upcoming scheduled maintenance
       for this instance.
     secondaryGceZone: The Compute Engine zone that the failover instance is

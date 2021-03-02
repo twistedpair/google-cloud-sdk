@@ -580,8 +580,9 @@ class Secret(_messages.Message):
       after the Secret has been created.
     rotation: Optional. Rotation policy attached to the Secret. May be
       excluded if there is no rotation policy.
-    topics: A list of up to 10 Pub/Sub topics to which messages are published
-      when control plane operations are called on the secret or its versions.
+    topics: Optional. A list of up to 10 Pub/Sub topics to which messages are
+      published when control plane operations are called on the secret or its
+      versions.
     ttl: Input only. The TTL for the Secret.
   """
 

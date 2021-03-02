@@ -2903,9 +2903,9 @@
                       "parameters": {
                         "name": {
                           "description": "A full resource name of the step. For example, projects\/my-project\/histories\/bh.1234567890abcdef\/executions\/ 1234567890123456789\/steps\/bs.1234567890abcdef Required.",
+                          "pattern": "^projects\/[^\/]+\/histories\/[^\/]+\/executions\/[^\/]+\/steps\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/histories\/[^\/]+\/executions\/[^\/]+\/steps\/[^\/]+$",
                           "type": "string"
                         },
                         "locale": {

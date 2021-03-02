@@ -33,3 +33,13 @@ class InvalidInstancesFileError(exceptions.Error):
 class NoFieldsSpecifiedError(exceptions.Error):
   """Error indicating that no updates were requested in a Patch operation."""
   pass
+
+
+class DockerError(exceptions.Error):
+  """Exception that passes info on a failed Docker command."""
+
+  def __init__(self, message, cmd, exit_code):
+    super(DockerError, self).__init__(message)
+    self.message = message
+    self.cmd = cmd
+    self.exit_code = exit_code

@@ -5,6 +5,70 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 330.0.0 (2021-03-02)
+
+### Breaking Changes
+
+*   **(Cloud Code)** Downgraded `--env-vars` and `--env-vars-file` to alpha.
+
+
+### Cloud SDK
+
+* Added bundled Python 3 option for macOS installations. See
+`gcloud topics startup` and <https://cloud.google.com/sdk/docs/install#mac>.
+* Fixed issue where `gcloud emulators ... start` commands would leave behind
+  emulator processes when Ctrl+C was pressed.
+
+### Cloud Dataproc
+
+*   Added `--cluster-labels` flag to `gcloud dataproc jobs submit`
+    to allow jobs to be placed on a cluster matching specified cluster labels.
+
+### Cloud Healthcare
+
+* Added `--filter-config-gcs-uri` flag to the following commands:
+  * `gcloud beta healthcare dicoms-stores export gcs`
+  * `gcloud beta healthcare dicoms-stores export bq`
+
+### Cloud On Demand Scanning
+
+*   Updated some error messages to be more clear.
+*   Added a prompt to the beginning of `gcloud beta artifacts docker images
+    scan` to install the `local-extract` component.
+
+### Cloud Pub/Sub
+
+* Promoted `--partitions` flag in `gcloud pubsub lite-topics update` to GA.
+* Added `--view` flag to `gcloud beta schemas list` to allow retrieval of schema definitions.
+
+### Cloud Run
+
+* Fixed bug on force-override prompt for
+  `gcloud beta run domain-mappings create` where it would fail to re-create
+  the domain mapping after deleting the one without the override.
+
+### Compute Engine
+
+* Promoted `gcloud compute public-advertised-prefixes` to beta.
+* Added `--request-coalescing` to `gcloud beta compute backend-services create`,  `gcloud beta compute backend-services update`,
+  `gcloud beta compute backend-buckets create` and `gcloud beta compute backend-buckets update`.
+* Promoted support for `gce-vm-ip` for `--network-endpoint-type` for `gcloud compute network-endpoint-groups create` and `gcloud compute network-endpoint-groups update` to GA.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.39.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Kubernetes Engine
+
+* Added `--pod-ipv4-range` and `--create-pod-ipv4-range` flags to
+  `gcloud beta container node-pools create` to configure pod ranges for the
+  node pools.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 329.0.0 (2021-02-23)
 
 ### Breaking Changes

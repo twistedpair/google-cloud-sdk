@@ -20,14 +20,26 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.ondemandscanning import util as ods_util
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
 
 
-def WaitForOperation(operation):
+class UnsupportedOS(core_exceptions.Error):
+  """Raised when the user attempts to scan from an unsupported operation system.
+
+  Note that this is not the same error as when a user initiates a scan on a
+  container image, but that image itself has an unsupported OS. In this case,
+  the gcloud command itself is running on an unsupported operation system.
+  """
+
+
+def WaitForOperation(operation, version):
   """Silently waits for the given google.longrunning.Operation to complete.
 
   Args:
     operation: The operation to poll.
+    version: The ODS API version endpoints to use to talk to the Operations
+      service.
 
   Raises:
     apitools.base.py.HttpError: if the request returns an HTTP error
@@ -35,7 +47,7 @@ def WaitForOperation(operation):
   Returns:
     The response field of the completed operation.
   """
-  op_service = ods_util.GetClient().projects_locations_operations
+  op_service = ods_util.GetClient(version).projects_locations_operations
   op_resource = resources.REGISTRY.ParseRelativeName(
       operation.name,
       collection='ondemandscanning.projects.locations.operations')

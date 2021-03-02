@@ -382,7 +382,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Attribute definition in the parent Consent store.
+      r"""Creates a new Attribute definition in the parent consent store.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsCreateRequest) input message
@@ -409,7 +409,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Attribute definition. Fails if it is referenced by any User data mapping, the latest revision of any Consent, or the latest approved revision of any Consent content.
+      r"""Deletes the specified Attribute definition. Fails if the Attribute definition is referenced by any User data mapping, the latest revision of any Consent, or the latest approved revision of any Consent content.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsDeleteRequest) input message
@@ -463,7 +463,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the Attribute definitions in the given Consent store.
+      r"""Lists the Attribute definitions in the specified consent store.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsListRequest) input message
@@ -527,7 +527,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Consent artifact in the parent Consent store.
+      r"""Creates a new Consent artifact in the parent consent store.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsCreateRequest) input message
@@ -554,7 +554,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Consent artifact. Fails if it is referenced by the latest revision of any Consent.
+      r"""Deletes the specified Consent artifact. Fails if the artifact is referenced by the latest revision of any Consent.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsDeleteRequest) input message
@@ -608,7 +608,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the Consent artifacts in the given Consent store.
+      r"""Lists the Consent artifacts in the specified consent store.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsListRequest) input message
@@ -645,7 +645,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Consent in the parent Consent store.
+      r"""Creates a new Consent in the parent consent store.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsCreateRequest) input message
@@ -672,7 +672,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the Consent and its revisions. To keep a record of the Consent but mark it inactive, see [RevokeConsent]. To delete a revision of a Consent, see [DeleteConsentRevision]. This operation does not delete the related consent artifact.
+      r"""Deletes the Consent and its revisions. To keep a record of the Consent but mark it inactive, see [RevokeConsent]. To delete a revision of a Consent, see [DeleteConsentRevision]. This operation does not delete the related Consent artifact.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsDeleteRequest) input message
@@ -726,7 +726,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the Consent in the given Consent store, returning each consent's latest revision.
+      r"""Lists the Consent in the given consent store, returning each Consent's latest revision.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRequest) input message
@@ -753,7 +753,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the latest revision of the specified Consent by committing a new revision with the changes. A FAILED_PRECONDITION error occurs if the latest revision of the given consent is in the `REJECTED` or `REVOKED` state.
+      r"""Updates the latest revision of the specified Consent by committing a new revision with the changes. A FAILED_PRECONDITION error occurs if the latest revision of the specified Consent is in the `REJECTED` or `REVOKED` state.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsPatchRequest) input message
@@ -780,7 +780,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def Revoke(self, request, global_params=None):
-      r"""Revokes the latest revision of the specified Consent by committing a new revision with `state` updated to `REVOKED`. If the latest revision of the given consent is in the `REVOKED` state, no new revision is committed. A FAILED_PRECONDITION error occurs if the latest revision of the given consent is in `DRAFT` or `REJECTED` state.
+      r"""Revokes the latest revision of the specified Consent by committing a new revision with `state` updated to `REVOKED`. If the latest revision of the specified Consent is in the `REVOKED` state, no new revision is committed. A FAILED_PRECONDITION error occurs if the latest revision of the given consent is in `DRAFT` or `REJECTED` state.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsRevokeRequest) input message
@@ -844,7 +844,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new User data mapping in the parent Consent store.
+      r"""Creates a new User data mapping in the parent consent store.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsCreateRequest) input message
@@ -925,7 +925,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the User data mappings in the given Consent store.
+      r"""Lists the User data mappings in the specified consent store.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsListRequest) input message
@@ -989,7 +989,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
           }
 
     def CheckDataAccess(self, request, global_params=None):
-      r"""Checks if a particular data_id of a User data mapping in the given Consent store is consented for a given use.
+      r"""Checks if a particular data_id of a User data mapping in the specified consent store is consented for the specified use.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresCheckDataAccessRequest) input message
@@ -1016,7 +1016,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Consent store in the parent dataset. Attempting to create a consent store with the same ID as an existing store fails with an ALREADY_EXISTS error.
+      r"""Creates a new consent store in the parent dataset. Attempting to create a consent store with the same ID as an existing store fails with an ALREADY_EXISTS error.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresCreateRequest) input message
@@ -1043,7 +1043,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Consent store and removes all consent data in the specified consent store.
+      r"""Deletes the specified consent store and removes all the consent store's data.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresDeleteRequest) input message
@@ -1070,7 +1070,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def EvaluateUserConsents(self, request, global_params=None):
-      r"""Evaluates the end user's Consents for all matching User data mappings. Note: User data mappings are indexed asynchronously, so there might be a slight delay between the time a mapping is created or updated and when it is included in the results of EvaluateUserConsents.
+      r"""Evaluates the end user's Consents for all matching User data mappings. Note: User data mappings are indexed asynchronously, which can cause a slight delay between the time mappings are created or updated and when they are included in EvaluateUserConsents results.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresEvaluateUserConsentsRequest) input message
@@ -1097,7 +1097,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the specified Consent store.
+      r"""Gets the specified consent store.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresGetRequest) input message
@@ -1151,7 +1151,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the Consent stores in the given dataset.
+      r"""Lists the consent stores in the given dataset.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresListRequest) input message
@@ -1178,7 +1178,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified Consent store.
+      r"""Updates the specified consent store.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresPatchRequest) input message
@@ -1205,7 +1205,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def QueryAccessibleData(self, request, global_params=None):
-      r"""Queries all data_ids that are consented for a given use in the given Consent store and writes them to a specified destination. The returned Operation includes a progress counter for the number of User data mappings processed. Errors are logged to Cloud Logging (see [Viewing logs] (/healthcare/docs/how-tos/logging)). For example, the following sample log entry shows a `failed to evaluate consent policy` error that occurred during a QueryAccessibleData call to consent store `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_id}`. ```json jsonPayload: { @type: "type.googleapis.com/google.cloud.healthcare.logging.QueryAccessibleDataLogEntry" error: { code: 9 message: "failed to evaluate consent policy" } resourceName: "projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_id}/consents/{consent_id}" } logName: "projects/{project_id}/logs/healthcare.googleapis.com%2Fquery_accessible_data" operation: { id: "projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/operations/{operation_id}" producer: "healthcare.googleapis.com/QueryAccessibleData" } receiveTimestamp: "TIMESTAMP" resource: { labels: { consent_store_id: "{consent_store_id}" dataset_id: "{dataset_id}" location: "{location_id}" project_id: "{project_id}" } type: "healthcare_consent_store" } severity: "ERROR" timestamp: "TIMESTAMP" ```.
+      r"""Queries all data_ids that are consented for a specified use in the given consent store and writes them to a specified destination. The returned Operation includes a progress counter for the number of User data mappings processed. Errors are logged to Cloud Logging (see [Viewing logs] (cloud.google.com/healthcare/docs/how-tos/logging)). For example, the following sample log entry shows a `failed to evaluate consent policy` error that occurred during a QueryAccessibleData call to consent store `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_id}`. ```json jsonPayload: { @type: "type.googleapis.com/google.cloud.healthcare.logging.QueryAccessibleDataLogEntry" error: { code: 9 message: "failed to evaluate consent policy" } resourceName: "projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_id}/consents/{consent_id}" } logName: "projects/{project_id}/logs/healthcare.googleapis.com%2Fquery_accessible_data" operation: { id: "projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/operations/{operation_id}" producer: "healthcare.googleapis.com/QueryAccessibleData" } receiveTimestamp: "TIMESTAMP" resource: { labels: { consent_store_id: "{consent_store_id}" dataset_id: "{dataset_id}" location: "{location_id}" project_id: "{project_id}" } type: "healthcare_consent_store" } severity: "ERROR" timestamp: "TIMESTAMP" ```.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresQueryAccessibleDataRequest) input message

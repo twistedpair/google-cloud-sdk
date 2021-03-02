@@ -76,7 +76,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         method_id='cloudresourcemanager.folders.create',
         ordered_params=[],
         path_params=[],
-        query_params=['parent', 'validateOnly'],
+        query_params=['validateOnly'],
         relative_path='v3/folders',
         request_field='folder',
         request_type_name='CloudresourcemanagerFoldersCreateRequest',
@@ -416,7 +416,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieve a Lien by `name`. Callers of this method will require permission on the `parent` resource. For example, a Lien with a `parent` of `projects/1234` requires permission requires permission `resourcemanager.projects.get` or `resourcemanager.projects.updateLiens`.
+      r"""Retrieve a Lien by `name`. Callers of this method will require permission on the `parent` resource. For example, a Lien with a `parent` of `projects/1234` requires permission `resourcemanager.projects.get`.
 
       Args:
         request: (CloudresourcemanagerLiensGetRequest) input message
@@ -820,7 +820,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the attributes of the Project identified by the specified `name` (for example, `projects/415104041262`). At present this is only useful for updating the display_name and annotatiions. The caller must have modify permissions for this Project.
+      r"""Updates the attributes of the Project identified by the specified `name` (for example, `projects/415104041262`). At present this is only useful for updating the display_name and labels. The caller must have modify permissions for this Project.
 
       Args:
         request: (CloudresourcemanagerProjectsPatchRequest) input message

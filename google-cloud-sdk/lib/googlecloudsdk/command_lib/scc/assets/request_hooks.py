@@ -24,12 +24,13 @@ import re
 from googlecloudsdk.command_lib.scc.hooks import CleanUpUserInput
 from googlecloudsdk.command_lib.scc.hooks import GetOrganization
 from googlecloudsdk.command_lib.scc.hooks import GetOrganizationFromResourceName
+from googlecloudsdk.command_lib.scc.hooks import GetParent
 
 
 def ListAssetsReqHook(ref, args, req):
   """Hook up filter such that the CSCC filter is used rather than gcloud."""
   del ref
-  req.parent = GetOrganization(args)
+  req.parent = GetParent(args)
   if req.fieldMask is not None:
     req.fieldMask = CleanUpUserInput(req.fieldMask)
   req.filter = args.filter

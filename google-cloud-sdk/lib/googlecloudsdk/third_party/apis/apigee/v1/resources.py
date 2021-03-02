@@ -66,6 +66,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_APIPRODUCTS_RATEPLANS = (
+      'organizations.apiproducts.rateplans',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/apiproducts/{apiproductsId}/'
+              'rateplans/{rateplansId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_APIS = (
       'organizations.apis',
       '{+name}',
@@ -162,6 +173,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_DEVELOPERS_SUBSCRIPTIONS = (
+      'organizations.developers.subscriptions',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/developers/{developersId}/'
+              'subscriptions/{subscriptionsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_ENVGROUPS = (
       'organizations.envgroups',
       '{+name}',
@@ -240,6 +262,17 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/environments/{environmentsId}/'
               'apis/{apisId}/revisions/{revisionsId}/debugsessions/'
               '{debugsessionsId}/data/{dataId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_ENVIRONMENTS_ARCHIVEDEPLOYMENTS = (
+      'organizations.environments.archiveDeployments',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/environments/{environmentsId}/'
+              'archiveDeployments/{archiveDeploymentsId}',
       },
       ['name'],
       True
@@ -339,6 +372,17 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/environments/{environmentsId}/'
               'targetservers/{targetserversId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_ENVIRONMENTS_TRACECONFIG_OVERRIDES = (
+      'organizations.environments.traceConfig.overrides',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/environments/{environmentsId}/'
+              'traceConfig/overrides/{overridesId}',
       },
       ['name'],
       True

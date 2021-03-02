@@ -251,6 +251,9 @@ apis:
   clouddebugger:
     v2:
       discovery_doc: clouddebugger_v2.json
+  clouddeploy:
+    v1alpha1:
+      discovery_doc: clouddeploy_v1alpha1.json
   clouderrorreporting:
     v1beta1:
       discovery_doc: clouderrorreporting_v1beta1.json
@@ -1114,3 +1117,7 @@ apis:
           path: projects/{projectsId}/locations/{locationsId}/scans/{scansId}
         projects.locations.scans.vulnerabilities:
           path: projects/{projectsId}/locations/{locationsId}/scans/{scansId}/vulnerabilities
+  mediaasset:
+    v1alpha:
+      discovery_doc: mediaasset_v1alpha.json
+      default: true

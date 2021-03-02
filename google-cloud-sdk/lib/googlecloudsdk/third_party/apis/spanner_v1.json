@@ -259,12 +259,12 @@
           "$ref": "RestoreInfo"
         },
         "encryptionConfig": {
-          "description": "Output only. Custom encryption configuration (Cloud KMS keys). Applicable only for databases using the Customer Managed Encryption Keys (CMEK) feature. This is the encryption configuration that is intended to be used by the database. It may differ from encryption_info during CMEK migration.",
+          "description": "Output only. For databases that are using customer managed encryption, this field contains the encryption configuration for the database. For databases that are using Google default or other types of encryption, this field is empty.",
           "readOnly": true,
           "$ref": "EncryptionConfig"
         },
         "encryptionInfo": {
-          "description": "Output only. Custom encryption information (database encryption state and Cloud KMS key versions in use). Applicable only for databases using the Customer Managed Encryption Keys feature.",
+          "description": "Output only. For databases that are using customer managed encryption, this field contains the encryption information for the database, such as encryption state and the Cloud KMS key versions that are in use. For databases that are using Google default or other types of encryption, this field is empty. This field is propagated lazily from the backend. There might be a delay from when a key version is being used and when it appears in this field.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -334,28 +334,28 @@
     },
     "EncryptionConfig": {
       "id": "EncryptionConfig",
-      "description": "Encryption configuration describing key resources in Cloud KMS used to encrypt\/decrypt a Cloud Spanner database.",
+      "description": "Encryption configuration for a Cloud Spanner database.",
       "type": "object",
       "properties": {
         "kmsKeyName": {
-          "description": "The resource name of the Cloud KMS key that was used to encrypt and decrypt the database. Values are of the form `projects\/\/locations\/\/keyRings\/\/cryptoKeys\/`.",
+          "description": "The Cloud KMS key to be used for encrypting and decrypting the database. Values are of the form `projects\/\/locations\/\/keyRings\/\/cryptoKeys\/`.",
           "type": "string"
         }
       }
     },
     "EncryptionInfo": {
       "id": "EncryptionInfo",
-      "description": "Encryption information for a given resource. If this resource is protected with customer managed encryption, the in-use Cloud KMS key versions will be specified along with their status. CMEK is not currently available to end users.",
+      "description": "Encryption information for a Cloud Spanner database or backup.",
       "type": "object",
       "properties": {
         "encryptionType": {
-          "description": "Output only. The type of encryption used to protect this resource.",
+          "description": "Output only. The type of encryption.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Encryption type was not specified, though data at rest remains encrypted.",
-            "The data backing this resource is encrypted at rest with a key that is fully managed by Google. No key version or status will be populated. This is the default state.",
-            "The data backing this resource is encrypted at rest with a key that is managed by the customer. The active version of the key. 'kms_key_version' will be populated, and 'encryption_status' may be populated."
+            "The data is encrypted at rest with a key that is fully managed by Google. No key version or status will be populated. This is the default state.",
+            "The data is encrypted at rest with a key that is managed by the customer. The active version of the key. `kms_key_version` will be populated, and `encryption_status` may be populated."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
@@ -364,12 +364,12 @@
           ]
         },
         "encryptionStatus": {
-          "description": "Output only. If present, the status of a recent encrypt\/decrypt calls on underlying data for this resource. Regardless of status, data is always encrypted at rest.",
+          "description": "Output only. If present, the status of a recent encrypt\/decrypt call on underlying data for this database or backup. Regardless of status, data is always encrypted at rest.",
           "readOnly": true,
           "$ref": "Status"
         },
         "kmsKeyVersion": {
-          "description": "Output only. The Cloud KMS key versions used for a CMEK-protected Spanner resource.",
+          "description": "Output only. A Cloud KMS key version that is being used to protect the database or backup.",
           "readOnly": true,
           "type": "string"
         }
@@ -392,7 +392,7 @@
           }
         },
         "encryptionConfig": {
-          "description": "Optional.",
+          "description": "Optional. The encryption configuration for the database. If this field is not specified, Cloud Spanner will encrypt\/decrypt all data at rest using Google default encryption.",
           "$ref": "EncryptionConfig"
         }
       }
@@ -619,7 +619,7 @@
           }
         },
         "encryptionInfo": {
-          "description": "Output only. The encryption information for the backup. If the encryption key protecting this resource is customer managed, then kms_key_version will be filled.",
+          "description": "Output only. The encryption information for the backup.",
           "readOnly": true,
           "$ref": "EncryptionInfo"
         }
@@ -657,14 +657,14 @@
           "type": "string"
         },
         "encryptionConfig": {
-          "description": "Optional. An encryption configuration describing the encryption type and key resources in Cloud KMS used to encrypt\/decrypt the database to restore to. If no `encryption_config` is specified, the restored database will use the config default (if set) or the same encryption configuration as the backup by default, namely encryption_type = USE_CONFIG_DEFAULT_OR_DATABASE_ENCRYPTION.",
+          "description": "Optional. An encryption configuration describing the encryption type and key resources in Cloud KMS used to encrypt\/decrypt the database to restore to. If this field is not specified, the restored database will use the same encryption configuration as the backup by default, namely encryption_type = `USE_CONFIG_DEFAULT_OR_DATABASE_ENCRYPTION`.",
           "$ref": "RestoreDatabaseEncryptionConfig"
         }
       }
     },
     "RestoreDatabaseEncryptionConfig": {
       "id": "RestoreDatabaseEncryptionConfig",
-      "description": "Encryption configuration for the database to restore to.",
+      "description": "Encryption configuration for the restored database.",
       "type": "object",
       "properties": {
         "encryptionType": {
@@ -672,9 +672,9 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified. Do not use.",
-            "This is the default option when encryption_config is empty. It will first check whether there is a config default and use it if set. if not set, it will use the backup encryption setting. Note that the config default feature is a new feature that may not be available at the beginning.",
-            "Enforce google default encryption.",
-            "Enforce customer managed encryption. If specified, the kms_key_name must provide a valid Cloud KMS key name."
+            "This is the default option when encryption_config is not specified.",
+            "Use Google default encryption.",
+            "Use customer managed encryption. If specified, `kms_key_name` must must contain a valid Cloud KMS key."
           ],
           "enum": [
             "ENCRYPTION_TYPE_UNSPECIFIED",
@@ -684,7 +684,7 @@
           ]
         },
         "kmsKeyName": {
-          "description": "Optional. The resource name of the Cloud KMS key that will be used to encrypt\/decrypt the database to restore to. Once specified, the database will enforce customer managed encryption, regardless of the backup encryption type. This field should be set only when encryption_type is CUSTOMER_MANAGED_ENCRYPTION. Values are of the form `projects\/\/locations\/\/keyRings\/\/cryptoKeys\/`.",
+          "description": "Optional. The Cloud KMS key that will be used to encrypt\/decrypt the restored database. This field should be set only when encryption_type is `CUSTOMER_MANAGED_ENCRYPTION`. Values are of the form `projects\/\/locations\/\/keyRings\/\/cryptoKeys\/`.",
           "type": "string"
         }
       }
@@ -2104,9 +2104,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project for which a list of supported instance configurations is requested. Values are of the form `projects\/`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -2141,9 +2141,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the requested instance configuration. Values are of the form `projects\/\/instanceConfigs\/`.",
+                  "pattern": "^projects\/[^\/]+\/instanceConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instanceConfigs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2171,9 +2171,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project for which a list of instances is requested. Values are of the form `projects\/`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -2219,9 +2219,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the requested instance. Values are of the form `projects\/\/instances\/`.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 },
                 "fieldMask": {
@@ -2251,9 +2251,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project in which to create the instance. Values are of the form `projects\/`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2280,9 +2280,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. A unique identifier for the instance, which cannot be changed after the instance is created. Values are of the form `projects\/\/instances\/a-z*[a-z0-9]`. The final segment of the name must be between 2 and 64 characters in length.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2309,9 +2309,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the instance to be deleted. Values are of the form `projects\/\/instances\/`",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2335,9 +2335,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The Cloud Spanner resource for which the policy is being set. The format is `projects\/\/instances\/` for instance resources and `projects\/\/instances\/\/databases\/` for databases resources.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2364,9 +2364,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The Cloud Spanner resource for which the policy is being retrieved. The format is `projects\/\/instances\/` for instance resources and `projects\/\/instances\/\/databases\/` for database resources.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2393,9 +2393,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The Cloud Spanner resource for which permissions are being tested. The format is `projects\/\/instances\/` for instance resources and `projects\/\/instances\/\/databases\/` for database resources.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2427,9 +2427,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations$",
                       "type": "string"
                     },
                     "filter": {
@@ -2469,9 +2469,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2495,9 +2495,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2521,9 +2521,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2551,9 +2551,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The instance whose databases should be listed. Values are of the form `projects\/\/instances\/`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -2588,9 +2588,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The name of the instance that will serve the new database. Values are of the form `projects\/\/instances\/`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2617,9 +2617,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the requested database. Values are of the form `projects\/\/instances\/\/databases\/`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2643,9 +2643,9 @@
                   "parameters": {
                     "database": {
                       "description": "Required. The database to update.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2672,9 +2672,9 @@
                   "parameters": {
                     "database": {
                       "description": "Required. The database to be dropped.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2698,9 +2698,9 @@
                   "parameters": {
                     "database": {
                       "description": "Required. The database whose schema we wish to get. Values are of the form `projects\/\/instances\/\/databases\/`",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2724,9 +2724,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The Cloud Spanner resource for which the policy is being set. The format is `projects\/\/instances\/` for instance resources and `projects\/\/instances\/\/databases\/` for databases resources.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2753,9 +2753,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The Cloud Spanner resource for which the policy is being retrieved. The format is `projects\/\/instances\/` for instance resources and `projects\/\/instances\/\/databases\/` for database resources.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2782,9 +2782,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The Cloud Spanner resource for which permissions are being tested. The format is `projects\/\/instances\/` for instance resources and `projects\/\/instances\/\/databases\/` for database resources.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2811,9 +2811,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The name of the instance in which to create the restored database. This instance must be in the same project and have the same instance configuration as the instance containing the source backup. Values are of the form `projects\/\/instances\/`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2845,9 +2845,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation's parent resource.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/operations$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/operations$",
                           "type": "string"
                         },
                         "filter": {
@@ -2887,9 +2887,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2913,9 +2913,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource to be deleted.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2939,9 +2939,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource to be cancelled.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2969,9 +2969,9 @@
                       "parameters": {
                         "database": {
                           "description": "Required. The database in which the new session is created.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2998,9 +2998,9 @@
                       "parameters": {
                         "database": {
                           "description": "Required. The database in which the new sessions are created.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3027,9 +3027,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the session to retrieve.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3053,9 +3053,9 @@
                       "parameters": {
                         "database": {
                           "description": "Required. The database in which to list sessions.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -3095,9 +3095,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the session to delete.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3121,9 +3121,9 @@
                       "parameters": {
                         "session": {
                           "description": "Required. The session in which the SQL query should be performed.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3150,9 +3150,9 @@
                       "parameters": {
                         "session": {
                           "description": "Required. The session in which the SQL query should be performed.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3179,9 +3179,9 @@
                       "parameters": {
                         "session": {
                           "description": "Required. The session in which the DML statements should be performed.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3208,9 +3208,9 @@
                       "parameters": {
                         "session": {
                           "description": "Required. The session in which the read should be performed.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3237,9 +3237,9 @@
                       "parameters": {
                         "session": {
                           "description": "Required. The session in which the read should be performed.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3266,9 +3266,9 @@
                       "parameters": {
                         "session": {
                           "description": "Required. The session in which the transaction runs.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3295,9 +3295,9 @@
                       "parameters": {
                         "session": {
                           "description": "Required. The session in which the transaction to be committed is running.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3324,9 +3324,9 @@
                       "parameters": {
                         "session": {
                           "description": "Required. The session in which the transaction to roll back is running.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3353,9 +3353,9 @@
                       "parameters": {
                         "session": {
                           "description": "Required. The session used to create the partitions.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3382,9 +3382,9 @@
                       "parameters": {
                         "session": {
                           "description": "Required. The session used to create the partitions.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3417,9 +3417,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The Cloud Spanner resource for which the policy is being set. The format is `projects\/\/instances\/` for instance resources and `projects\/\/instances\/\/databases\/` for databases resources.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3446,9 +3446,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The Cloud Spanner resource for which the policy is being retrieved. The format is `projects\/\/instances\/` for instance resources and `projects\/\/instances\/\/databases\/` for database resources.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3475,9 +3475,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The Cloud Spanner resource for which permissions are being tested. The format is `projects\/\/instances\/` for instance resources and `projects\/\/instances\/\/databases\/` for database resources.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3504,9 +3504,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The name of the instance in which the backup will be created. This must be the same instance that contains the database the backup will be created from. The backup will be stored in the location(s) specified in the instance configuration of this instance. Values are of the form `projects\/\/instances\/`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "backupId": {
@@ -3520,9 +3520,9 @@
                       "type": "string",
                       "enumDescriptions": [
                         "Unspecified. Do not use.",
-                        "Use the same encryption configuration as the database. This is the default option when encryption_config is empty. If the database is using customer managed encryption, the backup will be using the same KMS key.",
-                        "Enforce google default encryption.",
-                        "Enforce customer managed encryption. If specified, the kms_key_name must provide a valid Cloud KMS key name."
+                        "Use the same encryption configuration as the database. This is the default option when encryption_config is empty. For example, if the database is using `Customer_Managed_Encryption`, the backup will be using the same Cloud KMS key as the database.",
+                        "Use Google default encryption.",
+                        "Use customer managed encryption. If specified, `kms_key_name` must contain a valid Cloud KMS key."
                       ],
                       "enum": [
                         "ENCRYPTION_TYPE_UNSPECIFIED",
@@ -3532,7 +3532,7 @@
                       ]
                     },
                     "encryptionConfig.kmsKeyName": {
-                      "description": "Optional. The resource name of the Cloud KMS key that will be used to protect the backup. Once specified, the backup will enforce customer managed encryption, regardless of the database encryption type. This field should be set only when encryption_type is CUSTOMER_MANAGED_ENCRYPTION. Values are of the form `projects\/\/locations\/\/keyRings\/\/cryptoKeys\/`.",
+                      "description": "Optional. The Cloud KMS key that will be used to protect the backup. This field should be set only when encryption_type is `CUSTOMER_MANAGED_ENCRYPTION`. Values are of the form `projects\/\/locations\/\/keyRings\/\/cryptoKeys\/`.",
                       "location": "query",
                       "type": "string"
                     }
@@ -3560,9 +3560,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the backup. Values are of the form `projects\/\/instances\/\/backups\/`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3586,9 +3586,9 @@
                   "parameters": {
                     "name": {
                       "description": "Output only for the CreateBackup operation. Required for the UpdateBackup operation. A globally unique identifier for the backup which cannot be changed. Values are of the form `projects\/\/instances\/\/backups\/a-z*[a-z0-9]` The final segment of the name must be between 2 and 60 characters in length. The backup is stored in the location(s) specified in the instance configuration of the instance containing the backup, identified by the prefix of the backup name of the form `projects\/\/instances\/`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -3621,9 +3621,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the backup to delete. Values are of the form `projects\/\/instances\/\/backups\/`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3647,9 +3647,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The instance to list backups from. Values are of the form `projects\/\/instances\/`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -3694,9 +3694,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation's parent resource.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+\/operations$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+\/operations$",
                           "type": "string"
                         },
                         "filter": {
@@ -3736,9 +3736,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3762,9 +3762,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource to be deleted.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3788,9 +3788,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource to be cancelled.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+\/operations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3820,9 +3820,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The instance of the database operations. Values are of the form `projects\/\/instances\/`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -3866,9 +3866,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The instance of the backup operations. Values are of the form `projects\/\/instances\/`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {

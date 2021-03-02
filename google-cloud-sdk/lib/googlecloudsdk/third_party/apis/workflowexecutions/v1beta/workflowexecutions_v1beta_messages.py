@@ -128,9 +128,7 @@ class StackTrace(_messages.Message):
 
 
 class StackTraceElement(_messages.Message):
-  r"""A single stack element (frame) where an error occurred. This field
-  currently only exists in v1Beta. We will need to roll this change out to V1
-  after the feature is thoroughly tested. TODO(b/178540475)
+  r"""A single stack element (frame) where an error occurred.
 
   Fields:
     position: The source position information of the stacktrace element.

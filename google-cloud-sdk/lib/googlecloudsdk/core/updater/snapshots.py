@@ -38,6 +38,7 @@ from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import schemas
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import platforms
 
 import six
 from six.moves import urllib
@@ -507,7 +508,8 @@ class ComponentSnapshot(object):
         size += d.data.size or 0
     return size
 
-  def CreateDiff(self, latest_snapshot, platform_filter=None):
+  def CreateDiff(self, latest_snapshot, platform_filter=None,
+                 enable_fallback=False):
     """Creates a ComponentSnapshotDiff based on this snapshot and the given one.
 
     Args:
@@ -515,12 +517,15 @@ class ComponentSnapshot(object):
         want to compare to.
       platform_filter: platforms.Platform, A platform that components must
         match in order to be considered for any operations.
+      enable_fallback: bool, True to enable fallback from darwin arm64 version
+        to darwin x86_64 version of the component.
 
     Returns:
       A ComponentSnapshotDiff object.
     """
     return ComponentSnapshotDiff(self, latest_snapshot,
-                                 platform_filter=platform_filter)
+                                 platform_filter=platform_filter,
+                                 enable_fallback=enable_fallback)
 
   def CreateComponentInfos(self, platform_filter=None):
     all_components = self.AllComponentIdsMatching(platform_filter)
@@ -579,7 +584,11 @@ class ComponentSnapshotDiff(object):
     latest: CompnentSnapshot, The new snapshot that is being compared.
   """
 
-  def __init__(self, current, latest, platform_filter=None):
+  DARWIN_X86_64 = platforms.Platform(platforms.OperatingSystem.MACOSX,
+                                     platforms.Architecture.x86_64)
+
+  def __init__(self, current, latest, platform_filter=None,
+               enable_fallback=False):
     """Creates a new diff between two ComponentSnapshots.
 
     Args:
@@ -587,17 +596,43 @@ class ComponentSnapshotDiff(object):
       latest: The ComponentSnapshot representing a new state we can move to
       platform_filter: platforms.Platform, A platform that components must
         match in order to be considered for any operations.
+      enable_fallback: bool, True to enable fallback from darwin arm64 version
+        to darwin x86_64 version of the component.
     """
     self.current = current
     self.latest = latest
     self.__platform_filter = platform_filter
+    self.__enable_fallback = (
+        enable_fallback and platform_filter and
+        platform_filter.operating_system == platforms.OperatingSystem.MACOSX and
+        platform_filter.architecture == platforms.Architecture.arm)
 
     self.__all_components = (current.AllComponentIdsMatching(platform_filter) |
                              latest.AllComponentIdsMatching(platform_filter))
-    self.__diffs = [
-        ComponentDiff(component_id, current, latest,
-                      platform_filter=platform_filter)
-        for component_id in self.__all_components]
+
+    if self.__enable_fallback:
+      # Fall back to darwin_x86 version when darwin_arm version is unavailable.
+      self.__all_darwin_x86_64_components = (
+          current.AllComponentIdsMatching(self.DARWIN_X86_64) |
+          latest.AllComponentIdsMatching(self.DARWIN_X86_64))
+      self.__darwin_x86_64_components = (self.__all_darwin_x86_64_components -
+                                         self.__all_components)
+      self.__native_all_components = set(self.__all_components)
+      self.__all_components |= self.__darwin_x86_64_components
+
+      self.__diffs = [
+          ComponentDiff(component_id, current, latest,
+                        platform_filter=platform_filter)
+          for component_id in self.__native_all_components]
+      self.__diffs.extend([
+          ComponentDiff(component_id, current, latest,
+                        platform_filter=self.DARWIN_X86_64)
+          for component_id in self.__darwin_x86_64_components])
+    else:
+      self.__diffs = [
+          ComponentDiff(component_id, current, latest,
+                        platform_filter=platform_filter)
+          for component_id in self.__all_components]
 
     self.__removed_components = set(diff.id for diff in self.__diffs
                                     if diff.state is ComponentState.REMOVED)
@@ -616,6 +651,13 @@ class ComponentSnapshotDiff(object):
     Returns:
       set of str, The component ids that do not exist anywhere.
     """
+    if self.__enable_fallback:
+      native_invalid_ids = set(component_ids) - self.__native_all_components
+      arm_x86_ids = native_invalid_ids & self.__darwin_x86_64_components
+      if arm_x86_ids:
+        log.warning('The ARM versions of the following components are not '
+                    'available yet, using x86 versions instead. [{}]'
+                    .format(', '.join(arm_x86_ids)))
     return set(component_ids) - self.__all_components
 
   def AllDiffs(self):
@@ -685,10 +727,24 @@ class ComponentSnapshotDiff(object):
     """
     # Get the full set of everything that needs to be updated together that we
     # currently have installed
-    connected = self.current.ConnectedComponents(
-        update_seed, platform_filter=self.__platform_filter)
-    connected |= self.latest.ConnectedComponents(
-        connected | set(update_seed), platform_filter=self.__platform_filter)
+    if self.__enable_fallback:
+      native_seed = set(update_seed) & self.__native_all_components
+      darwin_x86_64 = set(update_seed) - native_seed
+      connected = self.current.ConnectedComponents(
+          native_seed, platform_filter=self.__platform_filter)
+      connected |= self.latest.ConnectedComponents(
+          connected | set(native_seed), platform_filter=self.__platform_filter)
+      connected_darwin_x86_64 = self.current.ConnectedComponents(
+          darwin_x86_64, platform_filter=self.DARWIN_X86_64)
+      connected_darwin_x86_64 |= self.latest.ConnectedComponents(
+          connected_darwin_x86_64 | set(darwin_x86_64),
+          platform_filter=self.DARWIN_X86_64)
+      connected |= connected_darwin_x86_64
+    else:
+      connected = self.current.ConnectedComponents(
+          update_seed, platform_filter=self.__platform_filter)
+      connected |= self.latest.ConnectedComponents(
+          connected | set(update_seed), platform_filter=self.__platform_filter)
     removal_candidates = connected & set(self.current.components.keys())
     # We need to remove anything that no longer exists or that has been updated
     return (self.__removed_components |
@@ -712,20 +768,44 @@ class ComponentSnapshotDiff(object):
       set of str, The component ids that should be removed.
     """
     installed_components = list(self.current.components.keys())
-    local_connected = self.current.ConnectedComponents(
-        update_seed, platform_filter=self.__platform_filter)
-    all_required = self.latest.DependencyClosureForComponents(
-        local_connected | set(update_seed),
-        platform_filter=self.__platform_filter)
 
-    # Add in anything in the connected graph that we already have installed.
-    # Even though the update seed might not depend on it, if it was already
-    # installed, it might have been removed in ToRemove() if an update was
-    # available so we should put it back.
-    remote_connected = self.latest.ConnectedComponents(
-        local_connected | set(update_seed),
-        platform_filter=self.__platform_filter)
-    all_required |= remote_connected & set(installed_components)
+    if self.__enable_fallback:
+      native_seed = set(update_seed) & self.__native_all_components
+      darwin_x86_64 = set(update_seed) - native_seed
+
+      local_connected = self.current.ConnectedComponents(
+          native_seed, platform_filter=self.__platform_filter)
+      all_required = self.latest.DependencyClosureForComponents(
+          local_connected | set(native_seed),
+          platform_filter=self.__platform_filter)
+      local_connected_darwin_x86_64 = self.current.ConnectedComponents(
+          darwin_x86_64, platform_filter=self.DARWIN_X86_64)
+      all_required |= self.latest.DependencyClosureForComponents(
+          local_connected_darwin_x86_64 | set(darwin_x86_64),
+          platform_filter=self.DARWIN_X86_64)
+
+      remote_connected = self.latest.ConnectedComponents(
+          local_connected | set(native_seed),
+          platform_filter=self.__platform_filter)
+      remote_connected |= self.latest.ConnectedComponents(
+          local_connected_darwin_x86_64 | set(darwin_x86_64),
+          platform_filter=self.__platform_filter)
+      all_required |= remote_connected & set(installed_components)
+    else:
+      local_connected = self.current.ConnectedComponents(
+          update_seed, platform_filter=self.__platform_filter)
+      all_required = self.latest.DependencyClosureForComponents(
+          local_connected | set(update_seed),
+          platform_filter=self.__platform_filter)
+
+      # Add in anything in the connected graph that we already have installed.
+      # Even though the update seed might not depend on it, if it was already
+      # installed, it might have been removed in ToRemove() if an update was
+      # available so we should put it back.
+      remote_connected = self.latest.ConnectedComponents(
+          local_connected | set(update_seed),
+          platform_filter=self.__platform_filter)
+      all_required |= remote_connected & set(installed_components)
 
     different = self.__new_components | self.__updated_components
 

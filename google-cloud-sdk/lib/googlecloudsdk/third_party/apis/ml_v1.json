@@ -1107,7 +1107,7 @@
     },
     "GoogleCloudMlV1__SaabasAttribution": {
       "id": "GoogleCloudMlV1__SaabasAttribution",
-      "description": "Attributes credit by running a faster aproximation to the TreeShap method. Please refer to this link for more details: https:\/\/blog.datadive.net\/interpreting-random-forests\/ This attribution method is only supported for XGBoost models.",
+      "description": "Attributes credit by running a faster approximation to the TreeShap method. Please refer to this link for more details: https:\/\/blog.datadive.net\/interpreting-random-forests\/ This attribution method is only supported for XGBoost models.",
       "type": "object",
       "properties": {
       }
@@ -3041,9 +3041,9 @@
           "parameters": {
             "name": {
               "description": "Required. The resource name of a model or a version. Authorization: requires the `predict` permission on the specified resource.",
+              "pattern": "^projects\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/.*$",
               "type": "string"
             }
           },
@@ -3069,9 +3069,9 @@
           "parameters": {
             "name": {
               "description": "Required. The resource name of a model or a version. Authorization: requires the `predict` permission on the specified resource.",
+              "pattern": "^projects\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/.*$",
               "type": "string"
             }
           },
@@ -3097,9 +3097,9 @@
           "parameters": {
             "name": {
               "description": "Required. The project name.",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },
@@ -3127,9 +3127,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The project name.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3155,9 +3155,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project for which to list jobs.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -3197,9 +3197,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the job to get the description of.",
+                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3223,9 +3223,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the job to cancel.",
+                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3251,9 +3251,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The job name.",
+                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -3285,9 +3285,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3313,9 +3313,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
                   "type": "string"
                 },
                 "options.requestedPolicyVersion": {
@@ -3344,9 +3344,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3376,9 +3376,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3402,9 +3402,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project for which available locations are to be listed (since some locations might be whitelisted for specific projects).",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -3444,9 +3444,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3469,9 +3469,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3498,9 +3498,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location that the study belongs to. Format: projects\/{project}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "studyId": {
@@ -3531,9 +3531,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The study name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3556,9 +3556,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The project and location that the study belongs to. Format: projects\/{project}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3581,9 +3581,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The study name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3611,9 +3611,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The name of the study that the trial belongs to.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3639,9 +3639,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The name of the study that the trial belongs to.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3667,9 +3667,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The trial name.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3692,9 +3692,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The name of the study that the trial belongs to.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3717,9 +3717,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The trial name.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3745,9 +3745,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The trial name.metat",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3773,9 +3773,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The trial name.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3798,9 +3798,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The trial name.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3826,9 +3826,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. The trial name.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3854,9 +3854,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The name of the study that the pareto-optimal trial belongs to.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -3890,9 +3890,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation's parent resource.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -3931,9 +3931,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource.",
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3956,9 +3956,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource to be cancelled.",
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -3985,9 +3985,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The project name.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -4013,9 +4013,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project whose models are to be listed.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -4055,9 +4055,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the model.",
+                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -4081,9 +4081,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the model.",
+                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -4106,9 +4106,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The project name.",
+                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -4140,9 +4140,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -4168,9 +4168,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                   "type": "string"
                 },
                 "options.requestedPolicyVersion": {
@@ -4199,9 +4199,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -4232,9 +4232,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The name of the model.",
+                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4260,9 +4260,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the model.",
+                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -4294,9 +4294,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The name of the model for which to list the version.",
+                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -4336,9 +4336,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the version.",
+                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4361,9 +4361,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the version. You can get the names of all the versions of a model by calling projects.models.versions.list.",
+                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -4386,9 +4386,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the version to make the default for the model. You can get the names of all the versions of a model by calling projects.models.versions.list.",
+                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
                       "type": "string"
                     }
                   },

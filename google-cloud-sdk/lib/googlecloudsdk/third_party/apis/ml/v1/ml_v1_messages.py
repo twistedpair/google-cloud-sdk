@@ -2104,7 +2104,7 @@ class GoogleCloudMlV1RouteMap(_messages.Message):
 
 
 class GoogleCloudMlV1SaabasAttribution(_messages.Message):
-  r"""Attributes credit by running a faster aproximation to the TreeShap
+  r"""Attributes credit by running a faster approximation to the TreeShap
   method. Please refer to this link for more details:
   https://blog.datadive.net/interpreting-random-forests/ This attribution
   method is only supported for XGBoost models.

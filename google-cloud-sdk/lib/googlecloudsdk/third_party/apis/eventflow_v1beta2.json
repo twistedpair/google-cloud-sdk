@@ -359,9 +359,9 @@
               "parameters": {
                 "namespace": {
                   "description": "Namespace defines the space within each name must be unique. An empty namespace is equivalent to the \"default\" namespace, but \"default\" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty. Must be a DNS_LABEL. Cannot be updated. More info: http:\/\/kubernetes.io\/docs\/user-guide\/namespaces +optional",
+                  "pattern": "^[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^[^\/]+$",
                   "type": "string"
                 }
               },
@@ -388,9 +388,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the flow, of the form \"projects\/{projectId}\/flows\/{flowId}\". (Note, this is different from the flowId that is stored in flow.metadata.name.)",
+                  "pattern": "^projects\/[^\/]+\/flows\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/flows\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -414,9 +414,9 @@
               "parameters": {
                 "parent": {
                   "description": "The parent, of form \"projects\/{projectId}\", from which the flows should be listed.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -451,9 +451,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the flow, of the form \"projects\/{projectId}\/flows\/{flowId}\". (Note, this is different from the flowId that is stored in flow.metadata.name.)",
+                  "pattern": "^projects\/[^\/]+\/flows\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/flows\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -477,16 +477,16 @@
               "parameters": {
                 "namespace": {
                   "description": "Namespace defines the space within each name must be unique. An empty namespace is equivalent to the \"default\" namespace, but \"default\" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty. Must be a DNS_LABEL. Cannot be updated. More info: http:\/\/kubernetes.io\/docs\/user-guide\/namespaces +optional",
+                  "pattern": "^[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^[^\/]+$",
                   "type": "string"
                 },
                 "name": {
                   "description": "Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: http:\/\/kubernetes.io\/docs\/user-guide\/identifiers#names +optional",
+                  "pattern": "^[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^[^\/]+$",
                   "type": "string"
                 }
               },

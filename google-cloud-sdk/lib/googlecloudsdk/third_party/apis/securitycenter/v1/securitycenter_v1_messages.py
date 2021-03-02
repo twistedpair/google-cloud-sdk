@@ -51,8 +51,8 @@ class Asset(_messages.Message):
     securityMarks: User specified security marks. These marks are entirely
       managed by the user and come from the SecurityMarks resource that
       belongs to the asset.
-    updateTime: The time at which the asset was last updated, added, or
-      deleted in Security Command Center.
+    updateTime: The time at which the asset was last updated or added in Cloud
+      SCC.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

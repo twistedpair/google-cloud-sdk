@@ -609,9 +609,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\", LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -650,9 +650,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -675,9 +675,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -703,9 +703,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -731,9 +731,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -759,9 +759,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of the recommendation.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -787,9 +787,9 @@
                       "parameters": {
                         "name": {
                           "description": "Name of Recommendation to create from, the recommendation will be used as the template for creating a Rule. The API will use predefined methods to generate Rules \"similar\" to the given Recommendation.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -823,9 +823,9 @@
               "parameters": {
                 "parent": {
                   "description": "Parent name of the rules to list.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -859,9 +859,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of rule to get.",
+                  "pattern": "^projects\/[^\/]+\/rules\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/rules\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -884,9 +884,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of rule to delete.",
+                  "pattern": "^projects\/[^\/]+\/rules\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/rules\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -909,9 +909,9 @@
               "parameters": {
                 "name": {
                   "description": "Name of rule to apply.",
+                  "pattern": "^projects\/[^\/]+\/rules\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/rules\/[^\/]+$",
                   "type": "string"
                 }
               },

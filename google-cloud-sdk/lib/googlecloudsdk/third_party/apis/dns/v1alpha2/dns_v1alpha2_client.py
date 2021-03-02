@@ -115,7 +115,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Enumerate PeeringZones that target a given network via dns peering.
+      r"""Enumerate PeeringZones that target a given network through DNS peering.
 
       Args:
         request: (DnsActivePeeringZonesListRequest) input message
@@ -151,7 +151,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Atomically update the ResourceRecordSet collection.
+      r"""Atomically updates the ResourceRecordSet collection.
 
       Args:
         request: (DnsChangesCreateRequest) input message
@@ -177,7 +177,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Fetch the representation of an existing Change.
+      r"""Fetches the representation of an existing Change.
 
       Args:
         request: (DnsChangesGetRequest) input message
@@ -203,7 +203,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Enumerate Changes to a ResourceRecordSet collection.
+      r"""Enumerates Changes to a ResourceRecordSet collection.
 
       Args:
         request: (DnsChangesListRequest) input message
@@ -301,7 +301,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Fetch the representation of an existing Operation.
+      r"""Fetches the representation of an existing Operation.
 
       Args:
         request: (DnsManagedZoneOperationsGetRequest) input message
@@ -327,7 +327,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Enumerate Operations for the given ManagedZone.
+      r"""Enumerates Operations for the given ManagedZone.
 
       Args:
         request: (DnsManagedZoneOperationsListRequest) input message
@@ -529,7 +529,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a new Policy.
+      r"""Creates a new Policy.
 
       Args:
         request: (DnsPoliciesCreateRequest) input message
@@ -555,7 +555,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a previously created Policy. Will fail if the policy is still being referenced by a network.
+      r"""Deletes a previously created Policy. Fails if the policy is still being referenced by a network.
 
       Args:
         request: (DnsPoliciesDeleteRequest) input message
@@ -581,7 +581,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Fetch the representation of an existing Policy.
+      r"""Fetches the representation of an existing Policy.
 
       Args:
         request: (DnsPoliciesGetRequest) input message
@@ -607,7 +607,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Enumerate all Policies associated with a project.
+      r"""Enumerates all Policies associated with a project.
 
       Args:
         request: (DnsPoliciesListRequest) input message
@@ -855,7 +855,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Enumerate ResourceRecordSets that have been created but not yet deleted.
+      r"""Enumerates ResourceRecordSets that you have created but not yet deleted.
 
       Args:
         request: (DnsResourceRecordSetsListRequest) input message
@@ -891,7 +891,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a new Response Policy.
+      r"""Creates a new Response Policy.
 
       Args:
         request: (DnsResponsePoliciesCreateRequest) input message
@@ -917,7 +917,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a previously created Response Policy. Will fail if the response policy is non-empty or still being referenced by a network.
+      r"""Delete a previously created Response Policy. Fails if the response policy is non-empty or still being referenced by a network.
 
       Args:
         request: (DnsResponsePoliciesDeleteRequest) input message
@@ -1057,7 +1057,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a new Response Policy Rule.
+      r"""Creates a new Response Policy Rule.
 
       Args:
         request: (DnsResponsePolicyRulesCreateRequest) input message

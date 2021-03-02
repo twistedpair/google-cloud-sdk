@@ -110,64 +110,20 @@
     }
   },
   "schemas": {
-    "GoogleCloudAiplatformV1Dataset": {
-      "id": "GoogleCloudAiplatformV1Dataset",
-      "description": "A collection of DataItems and Annotations on them.",
+    "GoogleLongrunningListOperationsResponse": {
+      "id": "GoogleLongrunningListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "Output only. The resource name of the Dataset.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "displayName": {
-          "description": "Required. The user-defined name of the Dataset. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
-          "type": "string"
-        },
-        "metadataSchemaUri": {
-          "description": "Required. Points to a YAML file stored on Google Cloud Storage describing additional information about the Dataset. The schema is defined as an OpenAPI 3.0.2 Schema Object. The schema files that can be used here are found in gs:\/\/google-cloud-aiplatform\/schema\/dataset\/metadata\/.",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Required. Additional information about the Dataset.",
-          "type": "any"
-        },
-        "createTime": {
-          "description": "Output only. Timestamp when this Dataset was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Timestamp when this Dataset was last updated.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "etag": {
-          "description": "Used to perform consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
-          "type": "string"
-        },
-        "labels": {
-          "description": "The labels with user-defined metadata to organize your Datasets. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. No more than 64 user labels can be associated with one Dataset (System labels are excluded). See https:\/\/goo.gl\/xmQnxf for more information and examples of labels. System reserved label keys are prefixed with \"aiplatform.googleapis.com\/\" and are immutable. Following system labels exist for each Dataset: * \"aiplatform.googleapis.com\/dataset_metadata_schema\": output only, its value is the metadata_schema's title.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleLongrunningOperation"
           }
         },
-        "encryptionSpec": {
-          "description": "Customer-managed encryption key spec for a Dataset. If set, this Dataset and all sub-resources of this Dataset will be secured by this key.",
-          "$ref": "GoogleCloudAiplatformV1EncryptionSpec"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1EncryptionSpec": {
-      "id": "GoogleCloudAiplatformV1EncryptionSpec",
-      "description": "Represents a customer-managed encryption key spec that can be applied to a top-level resource.",
-      "type": "object",
-      "properties": {
-        "kmsKeyName": {
-          "description": "Required. The Cloud KMS resource identifier of the customer managed encryption key used to protect a resource. Has the form: `projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`. The key needs to be in the same region as where the compute resource is created.",
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
           "type": "string"
         }
       }
@@ -231,6 +187,75 @@
               "description": "Properties of the object. Contains field @type with type URL."
             }
           }
+        }
+      }
+    },
+    "GoogleProtobufEmpty": {
+      "id": "GoogleProtobufEmpty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1Dataset": {
+      "id": "GoogleCloudAiplatformV1Dataset",
+      "description": "A collection of DataItems and Annotations on them.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the Dataset.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The user-defined name of the Dataset. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "type": "string"
+        },
+        "metadataSchemaUri": {
+          "description": "Required. Points to a YAML file stored on Google Cloud Storage describing additional information about the Dataset. The schema is defined as an OpenAPI 3.0.2 Schema Object. The schema files that can be used here are found in gs:\/\/google-cloud-aiplatform\/schema\/dataset\/metadata\/.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Required. Additional information about the Dataset.",
+          "type": "any"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this Dataset was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this Dataset was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "etag": {
+          "description": "Used to perform consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "The labels with user-defined metadata to organize your Datasets. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. No more than 64 user labels can be associated with one Dataset (System labels are excluded). See https:\/\/goo.gl\/xmQnxf for more information and examples of labels. System reserved label keys are prefixed with \"aiplatform.googleapis.com\/\" and are immutable. Following system labels exist for each Dataset: * \"aiplatform.googleapis.com\/dataset_metadata_schema\": output only, its value is the metadata_schema's title.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "encryptionSpec": {
+          "description": "Customer-managed encryption key spec for a Dataset. If set, this Dataset and all sub-resources of this Dataset will be secured by this key.",
+          "$ref": "GoogleCloudAiplatformV1EncryptionSpec"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1EncryptionSpec": {
+      "id": "GoogleCloudAiplatformV1EncryptionSpec",
+      "description": "Represents a customer-managed encryption key spec that can be applied to a top-level resource.",
+      "type": "object",
+      "properties": {
+        "kmsKeyName": {
+          "description": "Required. The Cloud KMS resource identifier of the customer managed encryption key used to protect a resource. Has the form: `projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`. The key needs to be in the same region as where the compute resource is created.",
+          "type": "string"
         }
       }
     },
@@ -1037,13 +1062,6 @@
     "GoogleCloudAiplatformV1CancelCustomJobRequest": {
       "id": "GoogleCloudAiplatformV1CancelCustomJobRequest",
       "description": "Request message for JobService.CancelCustomJob.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "GoogleProtobufEmpty": {
-      "id": "GoogleProtobufEmpty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
       "type": "object",
       "properties": {
       }
@@ -3872,7 +3890,7 @@
       "type": "object",
       "properties": {
         "indexDisplayNameMapping": {
-          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimentions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
+          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimensions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
           "type": "any"
         },
         "displayNameMappingKey": {
@@ -5790,7 +5808,7 @@
       "type": "object",
       "properties": {
         "indexDisplayNameMapping": {
-          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimentions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
+          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimensions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
           "type": "any"
         },
         "displayNameMappingKey": {
@@ -11269,6 +11287,157 @@
       "resources": {
         "locations": {
           "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "aiplatform.projects.locations.operations.list",
+                  "path": "v1/{+name}/operations",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "aiplatform.projects.locations.operations.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "delete": {
+                  "id": "aiplatform.projects.locations.operations.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleProtobufEmpty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                },
+                "cancel": {
+                  "id": "aiplatform.projects.locations.operations.cancel",
+                  "path": "v1/{+name}:cancel",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleProtobufEmpty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                },
+                "wait": {
+                  "id": "aiplatform.projects.locations.operations.wait",
+                  "path": "v1/{+name}:wait",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:wait",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to wait on.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "timeout": {
+                      "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-duration"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                }
+              }
+            },
             "datasets": {
               "methods": {
                 "create": {

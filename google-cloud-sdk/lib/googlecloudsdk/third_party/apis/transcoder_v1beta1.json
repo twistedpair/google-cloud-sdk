@@ -384,7 +384,7 @@
       "type": "object",
       "properties": {
         "lufs": {
-          "description": "Specify audio loudness normalization in loudness units relative to full scale (LUFS). Enter a value between -24 and 0, where -24 is the Advanced Television Systems Committee (ATSC A\/85), -23 is the EU R128 broadcast standard, -19 is the prior standard for online mono audio, -18 is the ReplayGain standard, -16 is the prior standard for stereo audio, -14 is the new online audio standard recommended by Spotify, as well as Amazon Echo, and 0 disables normalization. The default is 0.",
+          "description": "Specify audio loudness normalization in loudness units relative to full scale (LUFS). Enter a value between -24 and 0 (the default), where: * -24 is the Advanced Television Systems Committee (ATSC A\/85) standard * -23 is the EU R128 broadcast standard * -19 is the prior standard for online mono audio * -18 is the ReplayGain standard * -16 is the prior standard for stereo audio * -14 is the new online audio standard recommended by Spotify, as well as Amazon Echo * 0 disables normalization",
           "type": "number",
           "format": "double"
         },
@@ -964,6 +964,11 @@
           "description": "Starting from `0s`, create sprites at regular intervals. Specify the interval value in seconds.",
           "type": "string",
           "format": "google-duration"
+        },
+        "quality": {
+          "description": "The quality of the generated sprite sheet. Enter a value between 1 and 100, where 1 is the lowest quality and 100 is the highest quality. The default is 100. A high quality value corresponds to a low image data compression ratio.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1268,9 +1273,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent location to create and process this job. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1296,9 +1301,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1332,9 +1337,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the job to retrieve. Format: `projects\/{project}\/locations\/{location}\/jobs\/{job}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1357,9 +1362,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the job to delete. Format: `projects\/{project}\/locations\/{location}\/jobs\/{job}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1386,9 +1391,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent location to create this job template. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "jobTemplateId": {
@@ -1419,9 +1424,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent location from which to retrieve the collection of job templates. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1455,9 +1460,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the job template to retrieve. Format: `projects\/{project}\/locations\/{location}\/jobTemplates\/{job_template}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1480,9 +1485,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the job template to delete. `projects\/{project}\/locations\/{location}\/jobTemplates\/{job_template}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTemplates\/[^\/]+$",
                       "type": "string"
                     }
                   },

@@ -718,80 +718,6 @@ class MetastoreProjectsLocationsServicesCreateRequest(_messages.Message):
   serviceId = _messages.StringField(4)
 
 
-class MetastoreProjectsLocationsServicesDatabasesGetIamPolicyRequest(_messages.Message):
-  r"""A MetastoreProjectsLocationsServicesDatabasesGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.To learn
-      which resources support conditions in their IAM policies, see the IAM
-      documentation (https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class MetastoreProjectsLocationsServicesDatabasesSetIamPolicyRequest(_messages.Message):
-  r"""A MetastoreProjectsLocationsServicesDatabasesSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class MetastoreProjectsLocationsServicesDatabasesTablesGetIamPolicyRequest(_messages.Message):
-  r"""A MetastoreProjectsLocationsServicesDatabasesTablesGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.To learn
-      which resources support conditions in their IAM policies, see the IAM
-      documentation (https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class MetastoreProjectsLocationsServicesDatabasesTablesSetIamPolicyRequest(_messages.Message):
-  r"""A MetastoreProjectsLocationsServicesDatabasesTablesSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
 class MetastoreProjectsLocationsServicesDeleteRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesDeleteRequest object.
 
@@ -1235,11 +1161,16 @@ class Restore(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the restore.
+    TypeValueValuesEnum: Output only. The type of restore.
 
   Fields:
+    backup: Output only. The relative resource name of the metastore service
+      backup to restore from, in the following form:projects/{project_id}/loca
+      tions/{location_id}/services/{service_id}/backups/{backup_id}
     endTime: Output only. The time when the restore ended.
     startTime: Output only. The time when the restore started.
     state: Output only. The current state of the restore.
+    type: Output only. The type of restore.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1258,9 +1189,23 @@ class Restore(_messages.Message):
     FAILED = 3
     CANCELLED = 4
 
-  endTime = _messages.StringField(1)
-  startTime = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of restore.
+
+    Values:
+      RESTORE_TYPE_UNSPECIFIED: The restore type is unknown.
+      FULL: The service's metadata and configuration are restored.
+      METADATA_ONLY: Only the service's metadata is restored.
+    """
+    RESTORE_TYPE_UNSPECIFIED = 0
+    FULL = 1
+    METADATA_ONLY = 2
+
+  backup = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class Secret(_messages.Message):

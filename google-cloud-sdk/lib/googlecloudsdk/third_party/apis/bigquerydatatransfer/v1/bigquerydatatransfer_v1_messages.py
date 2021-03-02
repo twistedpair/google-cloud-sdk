@@ -250,12 +250,10 @@ class BigquerydatatransferProjectsLocationsTransferConfigsPatchRequest(_messages
       browser, with the page text prompting the user to copy the code and
       paste it in the application.
     name: The resource name of the transfer config. Transfer config names have
-      the form of
+      the form
       `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
-      The name is automatically generated based on the config_id specified in
-      CreateTransferConfigRequest along with project_id and region. If
-      config_id is not provided, usually a uuid, even though it is not
-      guaranteed or required, will be generated for config_id.
+      Where `config_id` is usually a uuid, even though it is not guaranteed or
+      required. The name is ignored when creating a transfer config.
     serviceAccountName: Optional service account name. If this field is set
       and "service_account_name" is set in update_mask, transfer config will
       be updated to use this service account credentials. It requires that
@@ -560,12 +558,10 @@ class BigquerydatatransferProjectsTransferConfigsPatchRequest(_messages.Message)
       browser, with the page text prompting the user to copy the code and
       paste it in the application.
     name: The resource name of the transfer config. Transfer config names have
-      the form of
+      the form
       `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
-      The name is automatically generated based on the config_id specified in
-      CreateTransferConfigRequest along with project_id and region. If
-      config_id is not provided, usually a uuid, even though it is not
-      guaranteed or required, will be generated for config_id.
+      Where `config_id` is usually a uuid, even though it is not guaranteed or
+      required. The name is ignored when creating a transfer config.
     serviceAccountName: Optional service account name. If this field is set
       and "service_account_name" is set in update_mask, transfer config will
       be updated to use this service account credentials. It requires that
@@ -1381,12 +1377,10 @@ class TransferConfig(_messages.Message):
       preferences to the email address of the user who owns this transfer
       config.
     name: The resource name of the transfer config. Transfer config names have
-      the form of
+      the form
       `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
-      The name is automatically generated based on the config_id specified in
-      CreateTransferConfigRequest along with project_id and region. If
-      config_id is not provided, usually a uuid, even though it is not
-      guaranteed or required, will be generated for config_id.
+      Where `config_id` is usually a uuid, even though it is not guaranteed or
+      required. The name is ignored when creating a transfer config.
     nextRunTime: Output only. Next time when data transfer will run.
     notificationPubsubTopic: Pub/Sub topic where notifications will be sent
       after transfer runs associated with this transfer config finish.

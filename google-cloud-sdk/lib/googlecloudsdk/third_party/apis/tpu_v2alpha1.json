@@ -439,6 +439,11 @@
           "items": {
             "$ref": "Symptom"
           }
+        },
+        "useTpuVm": {
+          "description": "Output only.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },
@@ -545,7 +550,8 @@
             "TPU runtime is out of memory.",
             "TPU runtime execution has timed out.",
             "TPU runtime fails to construct a mesh that recognizes each TPU device's neighbors.",
-            "TPU HBM is out of memory."
+            "TPU HBM is out of memory.",
+            "Abusive behaviors have been identified on the current project."
           ],
           "enum": [
             "SYMPTOM_TYPE_UNSPECIFIED",
@@ -553,7 +559,8 @@
             "OUT_OF_MEMORY",
             "EXECUTE_TIMED_OUT",
             "MESH_BUILD_FAIL",
-            "HBM_OUT_OF_MEMORY"
+            "HBM_OUT_OF_MEMORY",
+            "PROJECT_ABUSE"
           ]
         },
         "details": {

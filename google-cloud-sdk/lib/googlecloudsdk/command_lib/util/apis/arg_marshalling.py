@@ -513,7 +513,7 @@ class AutoArgumentGenerator(object):
     return args
 
   def _ParseArguments(self, namespace, prefix, message):
-    """Recursively generates the request message and any sub-messages.
+    """Recursively generates data for the request message and any sub-messages.
 
     Args:
       namespace: The argparse namespace containing the all the parsed arguments.
@@ -521,7 +521,7 @@ class AutoArgumentGenerator(object):
       message: The apitools class for the message.
 
     Returns:
-      The instantiated apitools Message with all fields filled in from flags.
+      A dict of message field data that can be passed to an apitools Message.
     """
     kwargs = {}
     for field in message.all_fields():

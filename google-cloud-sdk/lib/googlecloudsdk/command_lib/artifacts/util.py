@@ -28,12 +28,13 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib import artifacts
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.util import common_args
-
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import parallel
 
 _INVALID_REPO_NAME_ERROR = (
@@ -43,6 +44,29 @@ _INVALID_REPO_NAME_ERROR = (
 _REPO_REGEX = "^[a-z]([a-z0-9-]*[a-z0-9])?$"
 
 _AR_SERVICE_ACCOUNT = "service-{project_num}@gcp-sa-artifactregistry.iam.gserviceaccount.com"
+
+_GCR_BUCKETS = {
+    "us": {
+        "bucket": "us.artifacts.{}.appspot.com",
+        "repository": "us.gcr.io",
+        "location": "us"
+    },
+    "europe": {
+        "bucket": "eu.artifacts.{}.appspot.com",
+        "repository": "eu.gcr.io",
+        "location": "europe"
+    },
+    "asia": {
+        "bucket": "asia.artifacts.{}.appspot.com",
+        "repository": "asia.gcr.io",
+        "location": "asia"
+    },
+    "global": {
+        "bucket": "artifacts.{}.appspot.com",
+        "repository": "gcr.io",
+        "location": "us"
+    }
+}
 
 
 def _GetMessagesForResource(resource_ref):
@@ -254,6 +278,36 @@ def AppendParentInfoToListVersionsAndTagsResponse(response, args):
   return response
 
 
+def GetGCRRepos(buckets, project):
+  """Gets a list of GCR repositories given a list of GCR bucket names."""
+  messages = ar_requests.GetMessages()
+  existing_buckets = GetExistingGCRBuckets(buckets, project)
+  def RepoMsg(bucket):
+    return messages.Repository(
+        name="projects/{}/locations/{}/repositories/{}".format(
+            project, bucket["location"], bucket["repository"]),
+        format=messages.Repository.FormatValueValuesEnum.DOCKER),
+  return map(RepoMsg, existing_buckets)
+
+
+def GetExistingGCRBuckets(buckets, project):
+  """Gets the list of GCR bucket names that exist in the project."""
+  existing_buckets = []
+
+  project_id_for_bucket = project
+  if ":" in project:
+    domain, project_id = project.split(":")
+    project_id_for_bucket = "{}.{}.a".format(project_id, domain)
+  for bucket in buckets:
+    try:
+      ar_requests.TestStorageIAMPermission(
+          bucket["bucket"].format(project_id_for_bucket), project)
+      existing_buckets.append(bucket)
+    except apitools_exceptions.HttpNotFoundError:
+      continue
+  return existing_buckets
+
+
 def ListRepositories(args):
   """Lists repositories in a given project.
 
@@ -337,3 +391,213 @@ def SlashUnescapePackageNameHook(ref, args, req):
     escaped_pkg_name = package.replace("/", "%2F")
     req.name = req.name.replace(package, escaped_pkg_name)
   return req
+
+
+def IssueGetProjectSettingsRequest(unused_ref, args):
+  return ar_requests.GetProjectSettings(GetProject(args))
+
+
+def GetRedirectionEnablementReport(project):
+  """Prints a redirection enablement report and returns mis-configured repos.
+
+  This checks all the GCR repositories in the supplied project and checks if
+  they each have a repository in Artifact Registry create to be the redirection
+  target. It prints a report as it validates.
+
+  Args:
+    project: The project to validate
+
+  Returns:
+    A list of the GCR repos that do not have a redirection repo configured in
+    Artifact Registry.
+  """
+  locations = ar_requests.ListLocations(project, 100)
+
+  # Sorting is performed so that Python2 & 3 agree on the order of API calls
+  # in scenario tests.
+  gcr_repos = GetExistingGCRBuckets(
+      sorted(_GCR_BUCKETS.values(), key=lambda x: x["repository"]), project)
+
+  failed_repos = []
+  repo_report = []
+  report_line = []
+  con = console_attr.GetConsoleAttr()
+
+  # For each gcr repo in a location that our environment supports,
+  # is there an associated repo in AR?
+  for gcr_repo in gcr_repos:
+    if gcr_repo["location"] in locations:
+      report_line = [gcr_repo["repository"], gcr_repo["location"]]
+      ar_repo_name = "projects/{}/locations/{}/repositories/{}".format(
+          project, gcr_repo["location"], gcr_repo["repository"])
+      try:
+        ar_repo = ar_requests.GetRepository(ar_repo_name)
+        report_line.append(con.Colorize(ar_repo.name, "green"))
+      except apitools_exceptions.HttpNotFoundError:
+        report_line.append(con.Colorize("NOT FOUND", "red"))
+        failed_repos.append(gcr_repo)
+      repo_report.append(report_line)
+
+  log.status.Print("Redirection enablement report:\n")
+  printer = resource_printer.Printer("table", out=log.status)
+  printer.AddHeading([
+      con.Emphasize("Container Registry Host", bold=True),
+      con.Emphasize("Location", bold=True),
+      con.Emphasize("Artifact Registry Repository", bold=True)
+  ])
+  for line in repo_report:
+    printer.AddRecord(line)
+  printer.Finish()
+  log.status.Print()
+  return failed_repos
+
+
+def CheckRedirectionPermission(project):
+  con = console_attr.GetConsoleAttr()
+  authorized = ar_requests.TestRedirectionIAMPermission(project)
+  if not authorized:
+    log.status.Print(
+        con.Colorize("FAIL: ", "red") + "This operation requires "
+        "the {} permission(s) on project {}.".format(
+            ",".join(ar_requests.REDIRECT_PERMISSIONS), project))
+  return authorized
+
+
+def EnableUpgradeRedirection(unused_ref, args):
+  """Enables upgrade redirection for the active project."""
+  project = GetProject(args)
+  con = console_attr.GetConsoleAttr()
+  dry_run = args.dry_run
+
+  log.status.Print("Performing redirection enablement checks...\n")
+
+  if not CheckRedirectionPermission(project):
+    return None
+
+  failed_repos = GetRedirectionEnablementReport(project)
+
+  if failed_repos:
+    log.status.Print(
+        con.Colorize("WARNING: ", "yellow") +
+        "Not all Container Registry repositories have Artifact Registry repositories created to handle redirected requests."
+    )
+
+    for failed_repo in failed_repos:
+      log.status.Print(
+          "\nContainer Registry repository '{}' should redirect to "
+          "an Artifact Registry Docker repository in location '{}' named '{}'. "
+          "This repository can be created with:\n".format(
+              con.Emphasize(failed_repo["repository"], bold=True),
+              con.Emphasize(failed_repo["location"], bold=True),
+              con.Emphasize(failed_repo["repository"], bold=True)))
+
+      log.status.Print(
+          con.Emphasize(
+              "gcloud artifacts repositories create {} --location={} --project={} --repository-format=DOCKER"
+              .format(failed_repo["repository"], failed_repo["location"],
+                      project)))
+
+    log.status.Print(
+        "\nIf Artifact Registry repositories are not created, the following Container Registry repositories will no"
+        " longer serve requests:")
+    for failed_repo in failed_repos:
+      log.status.Print(con.Emphasize(failed_repo["repository"], bold=True))
+
+  else:
+    log.status.Print(
+        con.Colorize("OK: ", "green") +
+        "All Container Registry repositories have equivalent Artifact Registry "
+        "repostories.\n")
+
+  if dry_run:
+    log.status.Print("Dry run enabled, no changes made.")
+    return None
+
+  update = console_io.PromptContinue(
+      "\nThis action will redirect all Container Registry traffic to Artifact Registry for project {}."
+      " After enabling redirection, you can route traffic back to Container Registry if needed, "
+      " or you can finalize redirection to make redirection permanent.".format(
+          project),
+      default=False)
+  if not update:
+    log.status.Print("No changes made.")
+    return None
+
+  return ar_requests.EnableUpgradeRedirection(GetProject(args))
+
+
+def DisableUpgradeRedirection(unused_ref, args):
+  """Disables upgrade redirection for the active project."""
+  project = GetProject(args)
+  messages = ar_requests.GetMessages()
+  con = console_attr.GetConsoleAttr()
+
+  log.status.Print("Disabling upgrade redirection...\n")
+  if not CheckRedirectionPermission(project):
+    return None
+
+  # If the current state is finalized, then disabling is not possible
+  log.status.Print("Checking current redirection status...\n")
+  settings = ar_requests.GetProjectSettings(GetProject(args))
+  current_status = settings.legacyRedirectionState
+
+  if (current_status == messages.ProjectSettings
+      .LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_FINALIZED):
+    log.status.Print(
+        con.Colorize("FAIL:", "red") + " Redirection has already "
+        "been finalized for project {}. Disabling redirection is not possible "
+        "once it has been finalized.".format(project))
+    return None
+
+  update = console_io.PromptContinue(
+      "This action will disable the redirection of Container Registry traffic to Artifact Registry for project {}"
+      .format(project),
+      default=False)
+  if not update:
+    log.status.Print("No changes made.")
+    return None
+  return ar_requests.DisableUpgradeRedirection(project)
+
+
+def FinalizeUpgradeRedirection(unused_ref, args):
+  """Finalizes upgrade redirection for the active project."""
+  con = console_attr.GetConsoleAttr()
+  project = GetProject(args)
+  messages = ar_requests.GetMessages()
+
+  log.status.Print("Finalizing upgrade redirection...\n")
+  if not CheckRedirectionPermission(project):
+    return None
+
+  # Check the current status is enabled first.
+  log.status.Print("Checking current redirection status...\n")
+  settings = ar_requests.GetProjectSettings(GetProject(args))
+  current_status = settings.legacyRedirectionState
+  if (current_status != messages.ProjectSettings
+      .LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_ENABLED):
+    log.status.Print(
+        "Redirection is not currently enabled for project {}.".format(project))
+    log.status.Print(
+        "Enable redirection using 'gcloud artifacts settings enable-upgrade-redirection'"
+    )
+    return None
+
+  # Run the same report as enabling in case new repos have been added since.
+  failed_repos = GetRedirectionEnablementReport(project)
+  if failed_repos:
+    log.status.Print(
+        con.Colorize("FAIL: ", "red") +
+        "Redirection cannot be enabled until all Container Registry repos have equivalent Artifact Registry repositories to redirect to:"
+    )
+    return None
+
+  update = console_io.PromptContinue(
+      "This action permanently redirects gcr.io traffic to Artifact Registry "
+      "for project {}. Image data from Container Registry will be deleted "
+      "30 days after redirection is finalized.".format(
+          con.Emphasize(project, bold=True)),
+      default=False)
+  if not update:
+    log.status.Print("No changes made.")
+    return None
+  return ar_requests.FinalizeUpgradeRedirection(GetProject(args))

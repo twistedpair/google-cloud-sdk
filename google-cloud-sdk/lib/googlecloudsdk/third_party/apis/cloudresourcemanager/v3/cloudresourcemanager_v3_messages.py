@@ -135,15 +135,12 @@ class CloudresourcemanagerFoldersCreateRequest(_messages.Message):
 
   Fields:
     folder: A Folder resource to be passed as the request body.
-    parent: Required. The resource name of the new Folder's parent. Must be of
-      the form `folders/{folder_id}` or `organizations/{org_id}`.
     validateOnly: Optional. True to perform validations necessary for creating
       the resource, but not actually perform the action.
   """
 
   folder = _messages.MessageField('Folder', 1)
-  parent = _messages.StringField(2)
-  validateOnly = _messages.BooleanField(3)
+  validateOnly = _messages.BooleanField(2)
 
 
 class CloudresourcemanagerFoldersDeleteRequest(_messages.Message):
@@ -194,7 +191,7 @@ class CloudresourcemanagerFoldersListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of Folders to return in the
-      response.
+      response. If unspecified, server picks an appropriate default.
     pageToken: Optional. A pagination token returned from a previous call to
       `ListFolders` that indicates where this listing should continue from.
     parent: Required. The resource name of the Organization or Folder whose
@@ -1756,7 +1753,7 @@ class SearchFoldersRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of folders to return in the
-      response.
+      response. If unspecified, server picks an appropriate default.
     pageToken: Optional. A pagination token returned from a previous call to
       `SearchFolders` that indicates from where search should continue.
     query: Optional. Search criteria used to select the Folders to return. If
@@ -1809,7 +1806,7 @@ class SearchOrganizationsRequest(_messages.Message):
       `domain:google.com` returns Organization resources corresponding to the
       domain `google.com`.
     pageSize: Optional. The maximum number of Organizations to return in the
-      response.
+      response. If unspecified, server picks an appropriate default.
     pageToken: Optional. A pagination token returned from a previous call to
       `SearchOrganizations` that indicates from where listing should continue.
   """

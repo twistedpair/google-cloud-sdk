@@ -28,6 +28,7 @@ from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.calliope.concepts import handlers
 from googlecloudsdk.calliope.concepts import util
 from googlecloudsdk.command_lib.kms import resource_args as kms_args
+from googlecloudsdk.command_lib.privateca import completers as privateca_completers
 from googlecloudsdk.command_lib.privateca import exceptions as privateca_exceptions
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
@@ -48,7 +49,9 @@ def ReusableConfigAttributeConfig():
 def CertificateAttributeConfig(fallthroughs=None):
   # Certificate is always an anchor attribute so help_text is unused.
   return concepts.ResourceParameterAttributeConfig(
-      name='certificate', fallthroughs=fallthroughs or [])
+      name='certificate',
+      completer=privateca_completers.CertificatesCompleter,
+      fallthroughs=fallthroughs or [])
 
 
 def CertificateAuthorityAttributeConfig(arg_name='certificate_authority',
@@ -65,6 +68,7 @@ def LocationAttributeConfig(arg_name='location', fallthroughs=None):
   return concepts.ResourceParameterAttributeConfig(
       name=arg_name,
       help_text='The location of the {resource}.',
+      completer=privateca_completers.LocationsCompleter,
       fallthroughs=fallthroughs)
 
 
@@ -76,7 +80,7 @@ def ProjectAttributeConfig(arg_name='project', fallthroughs=None):
 
   Args:
     arg_name: Name of the flag used to specify this attribute. Defaults to
-              'project'.
+      'project'.
     fallthroughs: List of deps.Fallthrough objects to provide project values.
 
   Returns:
@@ -135,7 +139,8 @@ def CreateReusableConfigResourceSpec(location_fallthroughs=None):
       resource_name='reusable config',
       reusableConfigsId=ReusableConfigAttributeConfig(),
       locationsId=LocationAttributeConfig(fallthroughs=location_fallthroughs),
-      projectsId=ProjectAttributeConfig(fallthroughs=[project_fallthrough]))
+      projectsId=ProjectAttributeConfig(fallthroughs=[project_fallthrough]),
+      disable_auto_completers=False)
 
 
 def CreateCertificateAuthorityResourceSpec(
@@ -150,7 +155,8 @@ def CreateCertificateAuthorityResourceSpec(
       certificateAuthoritiesId=CertificateAuthorityAttributeConfig(
           certificate_authority_attribute, fallthroughs=ca_id_fallthroughs),
       locationsId=LocationAttributeConfig(location_attribute),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
 
 
 def CreateCertificateResourceSpec(display_name, id_fallthroughs=None):
@@ -162,7 +168,8 @@ def CreateCertificateResourceSpec(display_name, id_fallthroughs=None):
           fallthroughs=id_fallthroughs or []),
       certificateAuthoritiesId=CertificateAuthorityAttributeConfig('issuer'),
       locationsId=LocationAttributeConfig('issuer-location'),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
 
 
 def AddCertificateAuthorityPositionalResourceArg(parser, verb):
@@ -197,6 +204,7 @@ def AddCertificatePositionalResourceArg(parser, verb):
       CreateCertificateResourceSpec(arg_name),
       'The certificate {}.'.format(verb),
       required=True).AddToParser(parser)
+
 
 # Resource validation.
 

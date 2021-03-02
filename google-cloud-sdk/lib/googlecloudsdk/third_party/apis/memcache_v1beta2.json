@@ -824,8 +824,12 @@
           }
         },
         "eligibility": {
-          "description": "Optional. User-defined instance eligibility.",
+          "description": "Optional. Global per-instance SLI eligibility which applies to all defined SLIs. Exactly one of 'eligibility' and 'per_sli_eligibility' fields must be used.",
           "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility"
+        },
+        "perSliEligibility": {
+          "description": "Optional. Multiple per-instance SLI eligibilities which apply for individual SLIs. Exactly one of 'eligibility' and 'per_sli_eligibility' fields must be used.",
+          "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility"
         }
       }
     },
@@ -835,7 +839,7 @@
       "type": "object",
       "properties": {
         "sliName": {
-          "description": "Name of an SLI that this exclusion applies to. Can be left empty, signaling that the instance should be excluded from all SLIs defined in the service SLO configuration.",
+          "description": "Name of an SLI that this exclusion applies to. Can be left empty, signaling that the instance should be excluded from all SLIs.",
           "type": "string"
         },
         "startTime": {
@@ -888,6 +892,20 @@
         "reason": {
           "description": "User-defined reason for the current value of instance eligibility. Usually, this can be directly mapped to the internal state. An empty reason is allowed.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility": {
+      "id": "GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility",
+      "description": "PerSliSloEligibility is a mapping from an SLI name to eligibility.",
+      "type": "object",
+      "properties": {
+        "eligibilities": {
+          "description": "An entry in the eligibilities map specifies an eligibility for a particular SLI for the given instance. The SLI key in the name must be a valid SLI name specified in the Eligibility Exporter binary flags otherwise an error will be emitted by Eligibility Exporter and the oncaller will be alerted. If an SLI has been defined in the binary flags but the eligibilities map does not contain it, the corresponding SLI time series will not be emitted by the Eligibility Exporter. This ensures a smooth rollout and compatibility between the data produced by different versions of the Eligibility Exporters. If eligibilities map contains a key for an SLI which has not been declared in the binary flags, there will be an error message emitted in the Eligibility Exporter log and the metric for the SLI in question will not be emitted.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility"
+          }
         }
       }
     },
@@ -1192,9 +1210,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1233,9 +1251,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1263,9 +1281,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1304,9 +1322,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1329,9 +1347,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1354,9 +1372,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1386,9 +1404,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the instance location using the form: `projects\/{project_id}\/locations\/{location_id}` where `location_id` refers to a GCP region",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1432,9 +1450,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Memcached instance resource name in the format: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` where `location_id` refers to a GCP region",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1457,9 +1475,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The resource name of the instance location using the form: `projects\/{project_id}\/locations\/{location_id}` where `location_id` refers to a GCP region",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "instanceId": {
@@ -1490,9 +1508,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Unique name of the resource in this scope including project and location using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` Note: Memcached instances are managed and addressed at the regional level so `location_id` here refers to a Google Cloud region; however, users may choose which zones Memcached nodes should be provisioned in within an instance. Refer to zones field for more details.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1524,9 +1542,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the Memcached instance for which the parameters should be updated.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1552,9 +1570,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Memcached instance resource name in the format: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` where `location_id` refers to a GCP region",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1577,9 +1595,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. Resource name of the Memcached instance for which parameter group updates should be applied.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1605,9 +1623,9 @@
                   "parameters": {
                     "instance": {
                       "description": "Required. Resource name of the Memcached instance for which software update should be applied.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },

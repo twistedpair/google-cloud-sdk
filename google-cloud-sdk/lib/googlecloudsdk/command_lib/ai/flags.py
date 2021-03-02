@@ -251,6 +251,18 @@ def GetDeployedModelId(required=True):
       required=required)
 
 
+def GetIndexIdArg(required=True):
+  return base.Argument(
+      '--index', help='The ID of the index.', required=required)
+
+
+def GetDeployedIndexId(required=True):
+  return base.Argument(
+      '--deployed-index-id',
+      help='Id of the deployed index.',
+      required=required)
+
+
 def GetDisplayNameArg(noun, required=True):
   return base.Argument(
       '--display-name',
@@ -368,6 +380,23 @@ For example:
   ]))).AddToParser(parser)
 
 
+def AddAutomaticResourcesArgs(parser, resource_type):
+  """Add arguments for automatic deployment resources."""
+  base.Argument(
+      '--min-replica-count',
+      type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+      help=("""\
+Minimum number of machine replicas the {} will be always deployed
+on. If specified, the value must be equal to or larger than 1.
+""".format(resource_type))).AddToParser(parser)
+
+  base.Argument(
+      '--max-replica-count',
+      type=int,
+      help=('Maximum number of machine replicas the {} will be '
+            'always deployed on.'.format(resource_type))).AddToParser(parser)
+
+
 def GetEnableAccessLoggingArg():
   return base.Argument(
       '--enable-access-logging',
@@ -448,6 +477,25 @@ def AddRegionResourceArg(parser, verb):
       '--region',
       GetRegionResourceSpec(),
       'Cloud region {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def GetDefaultOperationResourceSpec():
+  return concepts.ResourceSpec(
+      constants.DEFAULT_OPERATION_COLLECTION,
+      resource_name='operation',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=RegionAttributeConfig(),
+      disable_auto_completers=False)
+
+
+def AddOperationResourceArg(parser):
+  """Add a resource argument for a cloud AI Platform operation."""
+  resource_name = 'operation'
+  concept_parsers.ConceptParser.ForResource(
+      resource_name,
+      GetDefaultOperationResourceSpec(),
+      'The ID of the operation.',
       required=True).AddToParser(parser)
 
 
@@ -565,6 +613,22 @@ inclusive.
   )
 
 
+def GetMetadataFilePathArg(noun, required=False):
+  return base.Argument(
+      '--metadata-file',
+      required=required,
+      help='Path to a local JSON file that contains the additional metadata information about the {noun}.'
+      .format(noun=noun))
+
+
+def GetMetadataSchemaUriArg(noun):
+  return base.Argument(
+      '--metadata-schema-uri',
+      required=False,
+      help='Points to a YAML file stored on Google Cloud Storage describing additional information about {noun}.'
+      .format(noun=noun))
+
+
 def AddIndexResourceArg(parser, verb):
   """Add a resource argument for a cloud AI Platform index.
 
@@ -640,6 +704,17 @@ def GetIndexEndpointResourceSpec(resource_name='index_endpoint'):
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=RegionAttributeConfig(),
       disable_auto_completers=False)
+
+
+# TODO(b/357812579): Consider switch to use resource arg.
+def GetNetworkArg(required=True):
+  """Add arguments for VPC network."""
+  return base.Argument(
+      '--network',
+      required=required,
+      help="""
+      The Google Compute Engine network name to which the IndexEndpoint should be peered.
+      """)
 
 
 def GetTensorboardResourceSpec(resource_name='tensorboard'):

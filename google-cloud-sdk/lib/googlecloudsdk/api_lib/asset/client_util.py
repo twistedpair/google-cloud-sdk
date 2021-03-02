@@ -413,9 +413,6 @@ class AssetExportClient(object):
   def Export(self, args):
     """Export assets with the asset export method."""
     content_type = ContentTypeTranslation(args.content_type)
-    content_type = getattr(
-        self.message_module.ExportAssetsRequest.ContentTypeValueValuesEnum,
-        content_type)
     partition_key = PartitionKeyTranslation(args.partition_key)
     partition_key = getattr(
         self.message_module.PartitionSpec.PartitionKeyValueValuesEnum,
@@ -440,6 +437,9 @@ class AssetExportClient(object):
       snapshot_time = times.FormatDateTime(args.snapshot_time)
     if (self.api_version == V1P7BETA1_API_VERSION and
         content_type == 'RELATIONSHIP'):
+      content_type = getattr(
+          self.message_module.ExportAssetsRequest.ContentTypeValueValuesEnum,
+          content_type)
       export_assets_request = self.message_module.ExportAssetsRequest(
           assetTypes=args.asset_types,
           contentType=content_type,
@@ -450,6 +450,9 @@ class AssetExportClient(object):
       raise gcloud_exceptions.InvalidArgumentException('Export relationship'
                                                        ' not supported')
     else:
+      content_type = getattr(
+          self.message_module.ExportAssetsRequest.ContentTypeValueValuesEnum,
+          content_type)
       export_assets_request = self.message_module.ExportAssetsRequest(
           assetTypes=args.asset_types,
           contentType=content_type,

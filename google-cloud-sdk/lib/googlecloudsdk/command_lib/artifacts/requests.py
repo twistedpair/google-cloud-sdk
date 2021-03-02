@@ -21,9 +21,11 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.cloudkms import iam as kms_iam
+from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.iam import util as iam_api
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
+from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import resources
 
 ARTIFACTREGISTRY_API_NAME = "artifactregistry"
@@ -35,6 +37,8 @@ STORAGE_API_VERSION = "v1"
 _GCR_PERMISSION = "storage.objects.list"
 
 CRYPTO_KEY_COLLECTION = "cloudkms.projects.locations.keyRings.cryptoKeys"
+
+REDIRECT_PERMISSIONS = ["storage.buckets.update"]
 
 
 def GetStorageClient():
@@ -230,6 +234,15 @@ def ListLocations(project_id, page_size=None):
   return sorted([loc.locationId for loc in locations])
 
 
+def TestStorageIAMPermission(bucket, project):
+  """Tests storage IAM permission for a given bucket for the user project."""
+  client = GetStorageClient()
+  messages = GetStorageMessages()
+  test_req = messages.StorageBucketsTestIamPermissionsRequest(
+      bucket=bucket, permissions=_GCR_PERMISSION, userProject=project)
+  return client.buckets.TestIamPermissions(test_req)
+
+
 def GetCryptoKeyPolicy(kms_key):
   """Gets the IAM policy for a given crypto key."""
   crypto_key_ref = resources.REGISTRY.ParseRelativeName(
@@ -252,3 +265,53 @@ def GetServiceAccount(service_account):
   return client.projects_serviceAccounts.Get(
       messages.IamProjectsServiceAccountsGetRequest(
           name=iam_util.EmailToAccountResourceName(service_account)))
+
+
+def TestRedirectionIAMPermission(project):
+  """Tests the user has the storage.buckets.update IAM permission on the project."""
+  project_ref = project_util.ParseProject(project)
+  result = projects_api.TestIamPermissions(project_ref, REDIRECT_PERMISSIONS)
+  return set(REDIRECT_PERMISSIONS) == set(result.permissions)
+
+
+def GetProjectSettings(project_id):
+  client = GetClient()
+  messages = GetMessages()
+  get_settings_req = messages.ArtifactregistryProjectsGetProjectSettingsRequest(
+      name="projects/" + project_id + "/projectSettings")
+  return client.projects.GetProjectSettings(get_settings_req)
+
+
+def EnableUpgradeRedirection(project_id):
+  messages = GetMessages()
+  return SetUpgradeRedirectionState(
+      project_id, messages.ProjectSettings.LegacyRedirectionStateValueValuesEnum
+      .REDIRECTION_FROM_GCR_IO_ENABLED)
+
+
+def DisableUpgradeRedirection(project_id):
+  messages = GetMessages()
+  return SetUpgradeRedirectionState(
+      project_id, messages.ProjectSettings.LegacyRedirectionStateValueValuesEnum
+      .REDIRECTION_FROM_GCR_IO_DISABLED)
+
+
+def FinalizeUpgradeRedirection(project_id):
+  messages = GetMessages()
+  return SetUpgradeRedirectionState(
+      project_id, messages.ProjectSettings.LegacyRedirectionStateValueValuesEnum
+      .REDIRECTION_FROM_GCR_IO_FINALIZED)
+
+
+def SetUpgradeRedirectionState(project_id, redirection_state):
+  """Sets the upgrade redirection state for the supplied project."""
+  client = GetClient()
+  messages = GetMessages()
+  project_settings = messages.ProjectSettings(
+      legacyRedirectionState=redirection_state)
+  update_mask = "legacy_redirection_state"
+  update_settings_req = messages.ArtifactregistryProjectsUpdateProjectSettingsRequest(
+      name="projects/" + project_id + "/projectSettings",
+      projectSettings=project_settings,
+      updateMask=update_mask)
+  return client.projects.UpdateProjectSettings(update_settings_req)

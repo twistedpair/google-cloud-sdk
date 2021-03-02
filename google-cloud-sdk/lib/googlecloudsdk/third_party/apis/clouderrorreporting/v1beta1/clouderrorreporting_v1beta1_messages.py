@@ -131,10 +131,11 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
       To view additional results, pass this token along with the identical
       query parameters as the first request.
     projectName: Required. The resource name of the Google Cloud Platform
-      project. Written as `projects/{projectID}` or `projects/{projectNumber},
-      where `{projectID}` and `{projectNumber}` can be [found in the Google
-      Cloud Console]( https://support.google.com/cloud/answer/6158840).
-      Examples: `projects/my-project-123`, `projects/5551234`.
+      project. Written as `projects/{projectID}` or
+      `projects/{projectNumber}`, where `{projectID}` and `{projectNumber}`
+      can be found in the [Google Cloud
+      Console](https://support.google.com/cloud/answer/6158840). Examples:
+      `projects/my-project-123`, `projects/5551234`.
     serviceFilter_resourceType: Optional. The exact value to match against
       [`ServiceContext.resource_type`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.resource_type).

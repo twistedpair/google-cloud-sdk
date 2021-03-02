@@ -107,27 +107,6 @@ def GetFunctionRef(name):
       collection='cloudfunctions.projects.locations.functions')
 
 
-# BEGIN V2
-
-V2_VERSION_MAP = {
-    calliope_base.ReleaseTrack.ALPHA: 'v2alpha',
-    calliope_base.ReleaseTrack.BETA: 'v2beta',
-    calliope_base.ReleaseTrack.GA: 'v2'
-}
-
-
-def GetV2MessagesModule(release_track=calliope_base.ReleaseTrack.GA):
-  api_version = V2_VERSION_MAP.get(release_track)
-  return apis.GetMessagesModule(_API_NAME, api_version)
-
-
-def GetV2ClientInstance(release_track=calliope_base.ReleaseTrack.GA):
-  api_version = V2_VERSION_MAP.get(release_track)
-  return apis.GetClientInstance(_API_NAME, api_version)
-
-
-# END V2
-
 _ID_CHAR = '[a-zA-Z0-9_]'
 _P_CHAR = "[][~@#$%&.,?:;+*='()-]"
 # capture: '{' ID_CHAR+ ('=' '*''*'?)? '}'

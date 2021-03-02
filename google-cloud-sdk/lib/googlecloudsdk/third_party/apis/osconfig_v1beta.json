@@ -1838,9 +1838,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The project in which to run this patch in the form `projects\/*`",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1866,9 +1866,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Name of the patch in the form `projects\/*\/patchJobs\/*`",
+                  "pattern": "^projects\/[^\/]+\/patchJobs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/patchJobs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1891,9 +1891,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Name of the patch in the form `projects\/*\/patchJobs\/*`",
+                  "pattern": "^projects\/[^\/]+\/patchJobs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/patchJobs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1919,9 +1919,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. In the form of `projects\/*`",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -1965,9 +1965,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The parent for the instances are in the form of `projects\/*\/patchJobs\/*`.",
+                      "pattern": "^projects\/[^\/]+\/patchJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/patchJobs\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -2012,9 +2012,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The project to apply this patch deployment to in the form `projects\/*`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "patchDeploymentId": {
@@ -2045,9 +2045,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2070,9 +2070,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The resource name of the parent in the form `projects\/*`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -2106,9 +2106,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2135,9 +2135,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The resource name of the parent using one of the following forms: `projects\/{project_number}`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "guestPolicyId": {
@@ -2168,9 +2168,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the guest policy using one of the following forms: `projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.",
+                  "pattern": "^projects\/[^\/]+\/guestPolicies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/guestPolicies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2193,9 +2193,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The resource name of the parent using one of the following forms: `projects\/{project_number}`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -2229,9 +2229,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. Unique name of the resource in this project using one of the following forms: `projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.",
+                  "pattern": "^projects\/[^\/]+\/guestPolicies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/guestPolicies\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -2263,9 +2263,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the guest policy using one of the following forms: `projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.",
+                  "pattern": "^projects\/[^\/]+\/guestPolicies\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/guestPolicies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2294,9 +2294,9 @@
                   "parameters": {
                     "instance": {
                       "description": "Required. The VM instance whose policies are being looked up.",
+                      "pattern": "^projects\/[^\/]+\/zones\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/zones\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },

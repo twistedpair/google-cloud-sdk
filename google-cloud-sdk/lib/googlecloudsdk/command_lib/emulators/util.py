@@ -270,25 +270,13 @@ def Exec(args, log_file=None):
     process, The process handle of the subprocess that has been started.
   """
   reroute_stdout = log_file or subprocess.PIPE
-  if platforms.OperatingSystem.IsWindows():
-    creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
-
-  # pylint: disable=subprocess-popen-preexec-fn start_new_session flag
-  # is only available on py3
-    process = subprocess.Popen(args,
-                               stdout=reroute_stdout,
-                               stderr=subprocess.STDOUT,
-                               creationflags=creationflags)
-  else:
-    # check if pid is session leader
+  if not platforms.OperatingSystem.IsWindows():
+    # Check if pid is session leader.
     if os.getsid(0) != os.getpid():
       os.setpgid(0, 0)
-    # pylint: disable=subprocess-popen-preexec-fn start_new_session flag
-    # is only available on py3
-    process = subprocess.Popen(args,
-                               stdout=reroute_stdout,
-                               stderr=subprocess.STDOUT,
-                               preexec_fn=os.setsid)
+  process = subprocess.Popen(args,
+                             stdout=reroute_stdout,
+                             stderr=subprocess.STDOUT)
   try:
     yield process
   finally:

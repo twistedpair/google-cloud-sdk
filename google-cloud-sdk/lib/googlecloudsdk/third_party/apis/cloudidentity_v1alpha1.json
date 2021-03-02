@@ -1993,24 +1993,6 @@
         }
       }
     },
-    "ApplyIdpMetadataResponse": {
-      "id": "ApplyIdpMetadataResponse",
-      "description": "The apply IDP metadata response.",
-      "type": "object",
-      "properties": {
-        "inboundSamlSsoProfile": {
-          "description": "The updated InboundSamlSsoProfile.",
-          "$ref": "InboundSamlSsoProfile"
-        },
-        "idpSigningKeys": {
-          "description": "The updated IdpSigningKeys' metadata.",
-          "type": "array",
-          "items": {
-            "$ref": "IdpSigningKey"
-          }
-        }
-      }
-    },
     "IdpSigningKey": {
       "id": "IdpSigningKey",
       "description": "Signing validation key.",
@@ -2061,48 +2043,6 @@
           "type": "integer",
           "format": "int32"
         }
-      }
-    },
-    "CreateInboundSamlSsoProfileOperationMetadata": {
-      "id": "CreateInboundSamlSsoProfileOperationMetadata",
-      "description": "Details of the create InboundSamlSsoProfile operation.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "UpdateInboundSamlSsoProfileOperationMetadata": {
-      "id": "UpdateInboundSamlSsoProfileOperationMetadata",
-      "description": "Details of the update InboundSamlSsoProfile operation.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "DeleteInboundSamlSsoProfileOperationMetadata": {
-      "id": "DeleteInboundSamlSsoProfileOperationMetadata",
-      "description": "Details of the delete InboundSamlSsoProfile operation.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "ApplyIdpMetadataOperationMetadata": {
-      "id": "ApplyIdpMetadataOperationMetadata",
-      "description": "Details of the ApplyIdpMetadata operation.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "DeleteIdpSigningKeyOperationMetadata": {
-      "id": "DeleteIdpSigningKeyOperationMetadata",
-      "description": "Details of the delete IdpSigningKey operation.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "AddIdpSigningKeyOperationMetadata": {
-      "id": "AddIdpSigningKeyOperationMetadata",
-      "description": "Details of the Add IdpSigningKey operation.",
-      "type": "object",
-      "properties": {
       }
     }
   },

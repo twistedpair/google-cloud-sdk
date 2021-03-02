@@ -667,8 +667,9 @@ class BuildTrigger(_messages.Message):
       build whenever a Cloud Scheduler event is received.
     description: Human-readable description of this trigger.
     disabled: If true, the trigger will never automatically execute a build.
-    filename: Path, from the source root, to a file whose contents is used for
-      the template.
+    filename: Path, from the source root, to the build configuration file
+      (i.e. cloudbuild.yaml).
+    filter: A Common Expression Language string.
     gitFileSource: The file source describing the local or remote Build
       template.
     github: GitHubEventsConfig describes the configuration of a trigger that
@@ -745,18 +746,19 @@ class BuildTrigger(_messages.Message):
   description = _messages.StringField(5)
   disabled = _messages.BooleanField(6)
   filename = _messages.StringField(7)
-  gitFileSource = _messages.MessageField('GitFileSource', 8)
-  github = _messages.MessageField('GitHubEventsConfig', 9)
-  id = _messages.StringField(10)
-  ignoredFiles = _messages.StringField(11, repeated=True)
-  includedFiles = _messages.StringField(12, repeated=True)
-  name = _messages.StringField(13)
-  pubsubConfig = _messages.MessageField('PubsubConfig', 14)
-  sourceToBuild = _messages.MessageField('GitRepoSource', 15)
-  substitutions = _messages.MessageField('SubstitutionsValue', 16)
-  tags = _messages.StringField(17, repeated=True)
-  triggerTemplate = _messages.MessageField('RepoSource', 18)
-  webhookConfig = _messages.MessageField('WebhookConfig', 19)
+  filter = _messages.StringField(8)
+  gitFileSource = _messages.MessageField('GitFileSource', 9)
+  github = _messages.MessageField('GitHubEventsConfig', 10)
+  id = _messages.StringField(11)
+  ignoredFiles = _messages.StringField(12, repeated=True)
+  includedFiles = _messages.StringField(13, repeated=True)
+  name = _messages.StringField(14)
+  pubsubConfig = _messages.MessageField('PubsubConfig', 15)
+  sourceToBuild = _messages.MessageField('GitRepoSource', 16)
+  substitutions = _messages.MessageField('SubstitutionsValue', 17)
+  tags = _messages.StringField(18, repeated=True)
+  triggerTemplate = _messages.MessageField('RepoSource', 19)
+  webhookConfig = _messages.MessageField('WebhookConfig', 20)
 
 
 class BuiltImage(_messages.Message):

@@ -1499,9 +1499,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -1530,9 +1530,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be deleted.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -1560,9 +1560,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be cancelled.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -1597,9 +1597,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^operations\/projects\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^operations\/projects\/.*$",
                       "type": "string"
                     },
                     "filter": {
@@ -1654,9 +1654,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The unique name of the project in which to create the new instance. Values are of the form `projects\/{project}`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1687,9 +1687,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The unique name of the requested instance. Values are of the form `projects\/{project}\/instances\/{instance}`.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1718,9 +1718,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The unique name of the project for which a list of instances is requested. Values are of the form `projects\/{project}`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -1754,9 +1754,9 @@
               "parameters": {
                 "name": {
                   "description": "The unique name of the instance. Values are of the form `projects\/{project}\/instances\/a-z+[a-z0-9]`.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1787,9 +1787,9 @@
               "parameters": {
                 "name": {
                   "description": "The unique name of the instance. Values are of the form `projects\/{project}\/instances\/a-z+[a-z0-9]`.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -1826,9 +1826,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The unique name of the instance to be deleted. Values are of the form `projects\/{project}\/instances\/{instance}`.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1856,9 +1856,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1889,9 +1889,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1922,9 +1922,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1960,9 +1960,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The unique name of the instance in which to create the new cluster. Values are of the form `projects\/{project}\/instances\/{instance}`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "clusterId": {
@@ -1998,9 +1998,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The unique name of the requested cluster. Values are of the form `projects\/{project}\/instances\/{instance}\/clusters\/{cluster}`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2029,9 +2029,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The unique name of the instance for which a list of clusters is requested. Values are of the form `projects\/{project}\/instances\/{instance}`. Use `{instance} = '-'` to list Clusters for all Instances in a project, e.g., `projects\/myproject\/instances\/-`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -2065,9 +2065,9 @@
                   "parameters": {
                     "name": {
                       "description": "The unique name of the cluster. Values are of the form `projects\/{project}\/instances\/{instance}\/clusters\/a-z*`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2098,9 +2098,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The unique name of the cluster to be deleted. Values are of the form `projects\/{project}\/instances\/{instance}\/clusters\/{cluster}`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2133,9 +2133,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. This must be one of the clusters in the instance in which this table is located. The backup will be stored in this cluster. Values are of the form `projects\/{project}\/instances\/{instance}\/clusters\/{cluster}`.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
                           "type": "string"
                         },
                         "backupId": {
@@ -2170,9 +2170,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the backup. Values are of the form `projects\/{project}\/instances\/{instance}\/clusters\/{cluster}\/backups\/{backup}`.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2199,9 +2199,9 @@
                       "parameters": {
                         "name": {
                           "description": "A globally unique identifier for the backup which cannot be changed. Values are of the form `projects\/{project}\/instances\/{instance}\/clusters\/{cluster}\/ backups\/_a-zA-Z0-9*` The final segment of the name must be between 1 and 50 characters in length. The backup is stored in the cluster identified by the prefix of the backup name of the form `projects\/{project}\/instances\/{instance}\/clusters\/{cluster}`.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -2237,9 +2237,9 @@
                       "parameters": {
                         "name": {
                           "description": "Required. Name of the backup to delete. Values are of the form `projects\/{project}\/instances\/{instance}\/clusters\/{cluster}\/backups\/{backup}`.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2266,9 +2266,9 @@
                       "parameters": {
                         "parent": {
                           "description": "Required. The cluster to list backups from. Values are of the form `projects\/{project}\/instances\/{instance}\/clusters\/{cluster}`. Use `{cluster} = '-'` to list backups for all clusters in an instance, e.g., `projects\/{project}\/instances\/{instance}\/clusters\/-`.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
                           "type": "string"
                         },
                         "filter": {
@@ -2316,9 +2316,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2348,9 +2348,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2380,9 +2380,9 @@
                       "parameters": {
                         "resource": {
                           "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2418,9 +2418,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The unique name of the instance in which to create the new app profile. Values are of the form `projects\/{project}\/instances\/{instance}`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "appProfileId": {
@@ -2461,9 +2461,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The unique name of the requested app profile. Values are of the form `projects\/{project}\/instances\/{instance}\/appProfiles\/{app_profile}`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/appProfiles\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/appProfiles\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2492,9 +2492,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The unique name of the instance for which a list of app profiles is requested. Values are of the form `projects\/{project}\/instances\/{instance}`. Use `{instance} = '-'` to list AppProfiles for all Instances in a project, e.g., `projects\/myproject\/instances\/-`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -2533,9 +2533,9 @@
                   "parameters": {
                     "name": {
                       "description": "The unique name of the app profile. Values are of the form `projects\/{project}\/instances\/{instance}\/appProfiles\/_a-zA-Z0-9*`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/appProfiles\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/appProfiles\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -2577,9 +2577,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The unique name of the app profile to be deleted. Values are of the form `projects\/{project}\/instances\/{instance}\/appProfiles\/{app_profile}`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/appProfiles\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/appProfiles\/[^\/]+$",
                       "type": "string"
                     },
                     "ignoreWarnings": {
@@ -2616,9 +2616,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The unique name of the instance in which to create the table. Values are of the form `projects\/{project}\/instances\/{instance}`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2648,9 +2648,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The unique name of the instance for which tables should be listed. Values are of the form `projects\/{project}\/instances\/{instance}`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "view": {
@@ -2710,9 +2710,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The unique name of the requested table. Values are of the form `projects\/{project}\/instances\/{instance}\/tables\/{table}`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "type": "string"
                     },
                     "view": {
@@ -2761,9 +2761,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The unique name of the table to be deleted. Values are of the form `projects\/{project}\/instances\/{instance}\/tables\/{table}`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2790,9 +2790,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The unique name of the table whose families should be modified. Values are of the form `projects\/{project}\/instances\/{instance}\/tables\/{table}`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2822,9 +2822,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The unique name of the table on which to drop a range of rows. Values are of the form `projects\/{project}\/instances\/{instance}\/tables\/{table}`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2854,9 +2854,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The unique name of the Table for which to create a consistency token. Values are of the form `projects\/{project}\/instances\/{instance}\/tables\/{table}`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2886,9 +2886,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The unique name of the Table for which to check replication consistency. Values are of the form `projects\/{project}\/instances\/{instance}\/tables\/{table}`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2918,9 +2918,9 @@
                   "parameters": {
                     "parent": {
                       "description": "Required. The name of the instance in which to create the restored table. This instance must be the parent of the source backup. Values are of the form `projects\/\/instances\/`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2950,9 +2950,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -2982,9 +2982,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3014,9 +3014,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -3052,9 +3052,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -3099,9 +3099,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },

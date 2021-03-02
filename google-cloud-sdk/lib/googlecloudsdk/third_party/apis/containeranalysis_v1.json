@@ -2103,9 +2103,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the occurrence in the form of `projects\/[PROJECT_ID]\/occurrences\/[OCCURRENCE_ID]`.",
+                  "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2128,9 +2128,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project to list occurrences for in the form of `projects\/[PROJECT_ID]`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -2169,9 +2169,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the occurrence in the form of `projects\/[PROJECT_ID]\/occurrences\/[OCCURRENCE_ID]`.",
+                  "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2194,9 +2194,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project in the form of `projects\/[PROJECT_ID]`, under which the occurrence is to be created.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2222,9 +2222,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project in the form of `projects\/[PROJECT_ID]`, under which the occurrences are to be created.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2250,9 +2250,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the occurrence in the form of `projects\/[PROJECT_ID]\/occurrences\/[OCCURRENCE_ID]`.",
+                  "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -2284,9 +2284,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the occurrence in the form of `projects\/[PROJECT_ID]\/occurrences\/[OCCURRENCE_ID]`.",
+                  "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2309,9 +2309,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2337,9 +2337,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2365,9 +2365,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2393,9 +2393,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project to get a vulnerability summary for in the form of `projects\/[PROJECT_ID]`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -2427,9 +2427,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the note in the form of `projects\/[PROVIDER_ID]\/notes\/[NOTE_ID]`.",
+                  "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2452,9 +2452,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project to list notes for in the form of `projects\/[PROJECT_ID]`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -2493,9 +2493,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the note in the form of `projects\/[PROVIDER_ID]\/notes\/[NOTE_ID]`.",
+                  "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2518,9 +2518,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project in the form of `projects\/[PROJECT_ID]`, under which the note is to be created.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "noteId": {
@@ -2551,9 +2551,9 @@
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project in the form of `projects\/[PROJECT_ID]`, under which the notes are to be created.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2579,9 +2579,9 @@
               "parameters": {
                 "name": {
                   "description": "Required. The name of the note in the form of `projects\/[PROVIDER_ID]\/notes\/[NOTE_ID]`.",
+                  "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -2613,9 +2613,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2641,9 +2641,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2669,9 +2669,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -2702,9 +2702,9 @@
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the note to list occurrences for in the form of `projects\/[PROVIDER_ID]\/notes\/[NOTE_ID]`.",
+                      "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -2751,9 +2751,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation's parent resource.",
+              "pattern": "^operations$",
               "location": "path",
               "required": true,
-              "pattern": "^operations$",
               "type": "string"
             },
             "filter": {
@@ -2792,9 +2792,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -2817,9 +2817,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be deleted.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -2842,9 +2842,9 @@
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be cancelled.",
+              "pattern": "^operations\/.*$",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
